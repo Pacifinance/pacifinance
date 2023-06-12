@@ -140,7 +140,7 @@ app.post("/pwdchange", async (req, res) => {
     }
     // The new passwords are equal: hash the new password and store it in the db
     // Then, force the logout (redirect to /logout route)
-    hashed_new_pwd = utils.hashPassword(new_pwd, process.env.SALT_ROUNDS);
+    let hashed_new_pwd = utils.hashPassword(new_pwd, process.env.SALT_ROUNDS);
     await db.users.setPasswordOfUserId(req.session.userId, hashed_new_pwd);
     res.redirect("logout");
 });

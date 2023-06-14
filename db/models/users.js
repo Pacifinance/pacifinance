@@ -34,7 +34,7 @@ async function get(where, select) {
  * @returns User document
  */
 async function getOne(where, select) {
-    return await User.findOne(where, select);
+    return await User.findOne(where, select).exec();
 }
 
 /**
@@ -44,7 +44,7 @@ async function getOne(where, select) {
  * @returns User document
  */
 async function setOne(where, update) {
-    return await User.findOneAndUpdate(where, {$set: update});
+    return await User.findOneAndUpdate(where, {$set: update}).exec();
 }
 
 /* ==================== Specific queries ==================== */
@@ -54,7 +54,7 @@ async function setOne(where, update) {
  * @returns List of User documents
  */
 async function getAllUsersIds() {
-    return await get({}, "userId");
+    return await get({}, "-_id userId");
 }
 
 /**
@@ -63,7 +63,7 @@ async function getAllUsersIds() {
  * @returns User document
  */
 async function getPasswordByUserId(user_id) {
-    return await getOne({userId: user_id}, "password");
+    return await getOne({userId: user_id}, "-_id password");
 }
 
 /**
@@ -82,7 +82,7 @@ async function setPasswordOfUserId(user_id, hashed_new_pwd) {
  * @returns User document
  */
 async function getRightsByUserId(user_id) {
-    return await getOne({userId: user_id}, "insertRights");
+    return await getOne({userId: user_id}, "-_id insertRights");
 }
 
 /**
@@ -91,7 +91,7 @@ async function getRightsByUserId(user_id) {
  * @returns User document
  */
 async function getSessionByUserId(user_id) {
-    return await getOne({userId: user_id}, "session");
+    return await getOne({userId: user_id}, "-_id session");
 }
 
 /**

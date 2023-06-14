@@ -10,6 +10,20 @@ function sanitizeInput(data) {
     return sanitized_data;
 }
 
+function isBalanceValid(data) {
+    data.stocks.real = Number(data.stocks.real);
+    data.stocks.invested = Number(data.stocks.invested);
+    data.bank = Number(data.bank);
+    data.cash = Number(data.cash);
+    data.crypto.real = Number(data.crypto.real);
+    data.crypto.invested = Number(data.crypto.invested);
+    return (
+        !isNaN(data.stocks.real) && !isNaN(data.stocks.invested) &&
+        !isNaN(data.bank) && !isNaN(data.cash) &&
+        !isNaN(data.crypto.real) && !isNaN(data.crypto.real)
+    )
+}
+
 function hashPassword(password, salt_rounds) {
     // Hash the password using the given number of salt rounds
     // Cast to Number is used to make sure that the correct technique is used
@@ -42,6 +56,7 @@ function incrementDateByOneDay(date) {
 
 module.exports = {
     sanitizeInput,
+    isBalanceValid,
     hashPassword,
     checkPassword,
     generateSessionId,

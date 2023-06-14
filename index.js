@@ -186,16 +186,18 @@ app.post("/balances/add", async (req, res) => {
     }
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
-    let balance = new db.balances.Balance();
-    balance.data = req.body.balance;
-    if (!balance.isValid())
+    const balance = req.body.balance;
+    if (!utils.isBalanceValid(balance))
     {
         res.status(400);
         res.send();
         return;
     }
     // Add the balance to the database and send status code 200 (OK)
-    await db.balances.insertNew(balance);
+    await db.balances.insertNew(
+        req.session.userId, Date.now(), balance.stocks.real, balance.stocks.invested,
+        balance.bank, balance.cash, balance.crypto.real, balance.crypto.invested
+    );
     res.status(200);
     res.send();
 });

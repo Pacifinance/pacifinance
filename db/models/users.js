@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    userId: {type: String, default: "0"},
-    password: {type: String, default: "*"},
-    roles: {type: [String], default: ["user"]},
-    insertRights: {type: Boolean, default: false},
-    session: {
-        sessionId: {type: String, default: "0"},
-        expirationDate: {type: Date, default: new Date(0)}
-    }
+    userId: {type: String, required: true, unique: true, dropDups: true},
+    password: {type: String, required: true},
+    roles: {type: [String], required: true},
+    insertRights: {type: Boolean, required: true},
+    session: {type: {
+        sessionId: {type: String, required: true, unique: true, dropDups: true},
+        expirationDate: {type: Date, required: true}
+    }, required: true}
 });
 
 /* ==================== Template queries ==================== */

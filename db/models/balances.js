@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
 
 const balanceSchema = new mongoose.Schema({
-    userId: {type: String, default: "0"},
-    date: {type: Date, default: Date.now()},
-    stocks: {
-        real: {type: Number, default: 0.0},
-        invested: {type: Number, default: 0.0}
-    },
-    bank: {type: Number, default: 0.0},
-    cash: {type: Number, default: 0.0},
-    crypto: {
-        real: {type: Number, default: 0.0},
-        invested: {type: Number, default: 0.0}
-    }
+    userId: {type: String, required: true},
+    date: {type: Date, required: true},
+    stocks: {type: {
+        real: {type: Number, required: true},
+        invested: {type: Number, required: true}
+    }, required: true},
+    bank: {type: Number, required: true},
+    cash: {type: Number, required: true},
+    crypto: {type: {
+        real: {type: Number, required: true},
+        invested: {type: Number, required: true}
+    }, required: true}
 });
 
 /* ==================== Template queries ==================== */

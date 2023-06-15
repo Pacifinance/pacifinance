@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
  */
 async function get(where, select) {
     let users = [];
-    const result = await User.find(where, select).exec();
+    const result = await User.find(where, select).lean().exec();
     for (let r of result)
         users.push(r)
     return users;
@@ -34,7 +34,7 @@ async function get(where, select) {
  * @returns User document
  */
 async function getOne(where, select) {
-    return await User.findOne(where, select).exec();
+    return await User.findOne(where, select).lean().exec();
 }
 
 /**
@@ -44,7 +44,7 @@ async function getOne(where, select) {
  * @returns User document
  */
 async function setOne(where, update) {
-    return await User.findOneAndUpdate(where, {$set: update}).exec();
+    return await User.findOneAndUpdate(where, {$set: update}).lean().exec();
 }
 
 /* ==================== Specific queries ==================== */

@@ -23,8 +23,7 @@ const balanceSchema = new mongoose.Schema({
  * @returns Balance document
  */
 async function addOne(data) {
-    const balance = new Balance(data);
-    return await balance.save();
+    return (await Balance.create(data)).toJSON();
 }
 
 /**
@@ -37,7 +36,7 @@ async function addOne(data) {
  */
 async function getLastNSorted(where, select, sort, limit) {
     let balances = [];
-    const result = await Balance.find(where, select).sort(sort).limit(limit).exec();
+    const result = await Balance.find(where, select).sort(sort).limit(limit).lean().exec();
     for (let r of result)
         balances.push(r)
     return balances;

@@ -18,7 +18,7 @@ app.use(session({
     resave: true,
     cookie: {maxAge: day_ms}
 }));
-app.use(express.static("public"));
+app.use(express.static("build"));
 app.use(express.json());
 
 /* ==================== Express.js routes ==================== */

@@ -21,7 +21,7 @@ app.use(session({
 app.use(express.static("build"));
 app.use(express.json());
 
-/* ==================== Express.js routes ==================== */
+/* ============================ Express.js routes ============================ */
 
 async function checkUserSession(session) {
     const now = new Date(Date.now());
@@ -186,7 +186,7 @@ app.post("/balances/add", async (req, res) => {
     }
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
-    const balance = req.body.balance;
+    let balance = req.body.balance;
     if (!utils.isBalanceValid(balance))
     {
         res.status(400);

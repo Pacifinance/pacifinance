@@ -17,16 +17,21 @@ function sanitizeInput(data) {
 
 /**
  * Checks if a balance is valid
- * @param {Object} data - Balance to check
+ * @param {Object} data - Balance to check (sanitized and modified by this function)
  * @returns true if the balance is valid, false otherwise
  */
 function isBalanceValid(data) {
+    // Cast all values to Number for type integrity
     data.stocks.real = Number(data.stocks.real);
     data.stocks.invested = Number(data.stocks.invested);
     data.bank = Number(data.bank);
     data.cash = Number(data.cash);
     data.crypto.real = Number(data.crypto.real);
     data.crypto.invested = Number(data.crypto.invested);
+    // The 'invested' fields are optional: if they don't exist, set them to 0
+    if (isNaN(data.stocks.invested)) data.stocks.invested = 0.0;
+    if (isNaN(data.crypto.invested)) data.crypto.invested = 0.0;
+    // Return true if all fields exist and they are valid numbers
     return (
         !isNaN(data.stocks.real) && !isNaN(data.stocks.invested) &&
         !isNaN(data.bank) && !isNaN(data.cash) &&

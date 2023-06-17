@@ -73,7 +73,7 @@ function Sidebar() {
                             className={currentLink === 1 ? "active" : "none"}
                             onClick={() => setCurrentLink(1)}
                             >
-                                <Link to="/">
+                                <Link to="/dashboard">
                                     <BiHomeAlt />
                                     
                                 </Link>

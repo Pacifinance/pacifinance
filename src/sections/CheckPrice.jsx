@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Navbar from '../components/Navbar'
 import Analytic from '../components/AnalyticDashboard'
 //import Expenses from './Expenses'
-function Dashboard() {
+function CheckPrice() {
     return (
         <Section>
             <div className="grid">        

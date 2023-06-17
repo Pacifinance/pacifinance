@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
@@ -9,6 +9,7 @@ import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import { PieChart, Pie, Cell } from "recharts";
+import axios from 'axios';
 
 // const [activeIndex, setActiveIndex] = useState(null);
 
@@ -20,11 +21,13 @@ import { PieChart, Pie, Cell } from "recharts";
 //   setActiveIndex(null);
 // };
 
+
+
 const data = [
-    { name: "Group A", value: 400 },
-    { name: "Group B", value: 300 },
-    { name: "Group C", value: 300 },
-    { name: "Group D", value: 200 }
+    { name: "Stocks", value: {stocksReal} },
+    { name: "Bank", value: {bank} },
+    { name: "Cash", value: {cash} },
+    { name: "Crypto", value: {cryptoReal} }
   ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -59,6 +62,33 @@ const renderCustomizedLabel = ({
 };
 
 function Analytic() {
+    const [balances, setBalances] = useState([]);
+    useEffect(() => {
+        // function to fetch the balances from the API
+        const fetchBalances = async () => {
+          try {
+            const response = await axios.get('/balances/get');
+            setBalances(response.data);
+            console.log(response.data);
+            const { stocks } = response.data;
+            const { bank } = response.data;
+            const { cash } = response.data;
+            const { crypto } = response.data;
+            const stocksReal = stocks.real;
+            const cryptoReal = crypto.real;
+            console.log(stocksReal);
+            console.log(bank);
+            console.log(cash);
+            console.log(cryptoReal);
+          } catch (error) {
+            console.error('Errore durante la richiesta GET:', error);
+          }
+        };
+    
+        // call the function to fetch the balances
+        fetchBalances();
+      }, []);
+
     return (
         
         <div className="wrapper">
@@ -77,7 +107,7 @@ function Analytic() {
                     <h6>in Stocks & ETF</h6>
                 </div>
                 <div className="money">
-                    <h5>€1200</h5>
+                    <h5>{stocksReal}€</h5>
                 </div>
             </div>
 
@@ -91,11 +121,11 @@ function Analytic() {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Invested</h6>
+                    <h6>Deposited</h6>
                     <h6>in Bank</h6>
                 </div>
                 <div className="money">
-                    <h5>€1500</h5>
+                    <h5>{bank}€</h5>
                 </div>
             </div>
 
@@ -113,7 +143,7 @@ function Analytic() {
                     <h6>money</h6>
                 </div>
                 <div className="money">
-                    <h5>€1200</h5>
+                    <h5>{cash}€</h5>
                 </div>
             </div>
             
@@ -131,7 +161,7 @@ function Analytic() {
                     <h6>in Crypto</h6>
                 </div>
                 <div className="money">
-                    <h5>€1500</h5>
+                    <h5>{cryptoReal}€</h5>
                 </div>
             </div>   
         </Section>

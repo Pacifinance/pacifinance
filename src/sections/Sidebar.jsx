@@ -30,7 +30,7 @@ function Sidebar() {
     const [showPopup, setShowPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const navigate = useNavigate();
-    
+
     const handleOptionSelect = (option) => {
         setSelectedOption(option);
         setShowPopup(true);
@@ -46,7 +46,7 @@ function Sidebar() {
             console.log(response.data);
             if(response.status === 200) {
               console.log("Logout successfull");
-              navigate('/login'); //direct redirect 
+              navigate('/'); //direct redirect 
       
             }
             else {

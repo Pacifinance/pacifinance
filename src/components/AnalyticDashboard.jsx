@@ -58,6 +58,11 @@ const renderCustomizedLabel = ({
 
 function Analytic() {
     const [balances, setBalances] = useState([]);
+    const [stocksReal, setStocksReal] = useState(0);
+    const [cryptoReal, setCryptoReal] = useState(0);
+    const [bank, setBank] = useState(0);
+    const [cash, setCash] = useState(0);
+
     useEffect(() => {
         // function to fetch the balances from the API
         const fetchBalances = async () => {
@@ -82,15 +87,15 @@ function Analytic() {
     
         // call the function to fetch the balances
         fetchBalances();
-      }, []);
-      
-      const data = [
+    }, []);
+
+    const data = [
         { name: "Stocks", value: {stocksReal} },
         { name: "Bank", value: {bank} },
         { name: "Cash", value: {cash} },
         { name: "Crypto", value: {cryptoReal} }
-      ];
-
+    ];
+      
     return (
         
         <div className="wrapper">

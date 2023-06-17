@@ -63,23 +63,27 @@ function checkPassword(plain_password, hashed_password) {
 
 /**
  * Generates a random character
+ * @param {boolean} alpha - if true an alphanumeric character is generated, numeric only otherwise
  * @returns A character
  */
-function generateRandomCharacter() {
-    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+function generateRandomCharacter(alpha=true) {
+    let characters = "0123456789";
+    if (alpha) characters = "abcdefghijklmnopqrstuvwxyz" + characters;
     const index = Math.floor(Math.random() * characters.length);
     return characters[index];
 }
 
 /**
- * Generates a random session ID
- * @returns A session ID as a random string
+ * Generates a random string (like user and session IDs)
+ * @param {BigInt} length - length of the string to generate
+ * @param {boolean} alpha - if true an alphanumeric string is generated, numeric only otherwise
+ * @returns A random string
  */
-function generateSessionId() {
-    // Generate 32 random characters
+function generateRandomString(length, alpha=true) {
+    // Generate 'length' random characters
     let characters = [];
-    for (let i = 0; i < 32; i++)
-        characters.push(generateRandomCharacter());
+    for (let i = 0; i < length; i++)
+        characters.push(generateRandomCharacter(alpha));
     return characters.join('');
 }
 
@@ -99,6 +103,6 @@ module.exports = {
     isBalanceValid,
     hashPassword,
     checkPassword,
-    generateSessionId,
+    generateRandomString,
     incrementDateByOneDay
 }

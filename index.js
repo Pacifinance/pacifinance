@@ -72,7 +72,7 @@ app.post("/login", async (req, res) => {
     }
     // The password is correct:
     // Generate a random session ID and set the session expiration date
-    const session_id = utils.generateSessionId();
+    const session_id = utils.generateRandomString(db.users.sessionIdLength, true);
     const now = new Date(Date.now());
     const expiration_date = utils.incrementDateByOneDay(now);
     // Add the user ID and session information to the cookie

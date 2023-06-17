@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 
+const userIdLength = 6;
+const sessionIdLength = 32;
+
 const userSchema = new mongoose.Schema({
     userId: {type: String, required: true, unique: true, dropDups: true},
     password: {type: String, required: true},
@@ -110,7 +113,8 @@ async function setSessionOfUserId(user_id, session_id, expiration_date) {
 const User = mongoose.model("User", userSchema);
 
 module.exports = {
-    User,
+    userIdLength,
+    sessionIdLength,
     getAllUsersIds,
     getPasswordByUserId,
     setPasswordOfUserId,

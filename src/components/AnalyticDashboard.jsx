@@ -23,12 +23,7 @@ import axios from 'axios';
 
 
 
-const data = [
-    { name: "Stocks", value: {stocksReal} },
-    { name: "Bank", value: {bank} },
-    { name: "Cash", value: {cash} },
-    { name: "Crypto", value: {cryptoReal} }
-  ];
+
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -88,6 +83,13 @@ function Analytic() {
         // call the function to fetch the balances
         fetchBalances();
       }, []);
+      
+      const data = [
+        { name: "Stocks", value: {stocksReal} },
+        { name: "Bank", value: {bank} },
+        { name: "Cash", value: {cash} },
+        { name: "Crypto", value: {cryptoReal} }
+      ];
 
     return (
         

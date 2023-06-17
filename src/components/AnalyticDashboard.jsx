@@ -57,7 +57,6 @@ const renderCustomizedLabel = ({
 };
 
 function Analytic() {
-    const [balances, setBalances] = useState([]);
     const [stocksReal, setStocksReal] = useState(0);
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bank, setBank] = useState(0);
@@ -67,19 +66,19 @@ function Analytic() {
         // function to fetch the balances from the API
         const fetchBalances = async () => {
           try {
-            const response = await axios.get('/balances/get');
-            setBalances(response.data[0]); //only the first element of the array is needed (the last one)
-            console.log(response.data[0]);
+            const response = await axios.get('/balances/get'); //only the first element of the array is needed (the last one)
             const { stocks } = response.data[0];
             console.log(stocks);
             const { bank } = response.data[0];
             const { cash } = response.data[0];
             console.log(bank);
             console.log(cash);
+            setBank(bank);
+            setCash(cash);
             const { crypto } = response.data[0];
             console.log(crypto);
-            const stocksReal = stocks.real;
-            const cryptoReal = crypto.real;
+            setStocksReal(stocks.real);
+            setCryptoReal(crypto.real);
             console.log(stocksReal);
             console.log(cryptoReal);
           } catch (error) {
@@ -92,10 +91,10 @@ function Analytic() {
     }, []);
 
     const data = [
-        { name: "Stocks", value: {stocksReal} },
-        { name: "Bank", value: {bank} },
-        { name: "Cash", value: {cash} },
-        { name: "Crypto", value: {cryptoReal} }
+        { name: "Stocks", value: stocksReal },
+        { name: "Bank", value: bank },
+        { name: "Cash", value: cash },
+        { name: "Crypto", value: cryptoReal }
     ];
       
     return (

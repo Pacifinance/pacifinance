@@ -76,7 +76,10 @@ async function insertNew(user_id, date, stocks_real, stocks_invested, bank, cash
  * @returns Balance document
  */
 async function getLatestByUserId(user_id) {
-    return await getLastNSorted({userId: user_id}, "-_id", {date: -1}, 1);
+    const res = await getLastNSorted({userId: user_id}, "-_id", {date: -1}, 1);
+    if (res.length === 0)
+        return null;
+    return res[0];
 }
 
 /**

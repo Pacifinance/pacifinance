@@ -24,18 +24,18 @@ app.use(express.json());
 /* ==================== Express.js routes ==================== */
 
 async function checkUserSession(session) {
-    const now = Date.now();
+    const now = new Date(Date.now());
     // Check if the session in the cookie is valid
     if (!session || !session.userId || !session.sessionId ||
         !session.expirationDate || session.expirationDate < now)
         return false;
     // Check if the user has session information in the database
     const user = await db.users.getSessionByUserId(session.userId);
-    if (user === undefined)
+    if (user === null)
         return false;
     // Check if this session info is valid
-    if (user.data.session.sessionId !== session.sessionId ||
-        user.data.session.expirationDate < now)
+    if (user.session.sessionId !== session.sessionId ||
+        user.session.expirationDate < now)
         return false;
     return true;
 }
@@ -56,7 +56,7 @@ app.post("/login", async (req, res) => {
     // Check if the user exists in the db. Send status code 401
     // (Unauthorized) if the user does not exist
     const user = await db.users.getPasswordByUserId(user_id);
-    if (user === undefined)
+    if (user === null)
     {
         res.status(401);
         res.send();
@@ -64,7 +64,7 @@ app.post("/login", async (req, res) => {
     }
     // Check if the password is correct. Send status code 401
     // (Unauthorized) if the password is wrong
-    if (!utils.checkPassword(user_pwd, user.data.password))
+    if (!utils.checkPassword(user_pwd, user.password))
     {
         res.status(401);
         res.send();
@@ -159,7 +159,7 @@ app.get("/balances/get", async (req, res) => {
     const balances = await db.balances.getYearlyBalanceByUserId(req.session.userId);
     let balances_data = [];
     for (let balance of balances)
-        balances_data.push(balance.data);
+        balances_data.push(balance);
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(balances_data);
@@ -178,7 +178,7 @@ app.post("/balances/add", async (req, res) => {
     // Check if the user has the rights to insert its balance.
     // Send status code 403 (Forbidden) if it has no rights
     const user = await db.users.getRightsByUserId(req.session.userId);
-    if (user === undefined || !user.data.insertRights)
+    if (user === null || !user.insertRights)
     {
         res.status(403);
         res.send();
@@ -218,9 +218,9 @@ app.get("/leaderboards", async (req, res) => {
     let balances = [];
     for (let user of users)
     {
-        const balance = await db.balances.getLatestByUserId(user.data.userId);
-        if (balance !== undefined)
-            balances.push(balance.data);
+        const balance = await db.balances.getLatestByUserId(user.userId);
+        if (balance !== null)
+            balances.push(balance);
     }
     // Send the data to the client with status code 200 (OK)
     res.status(200);

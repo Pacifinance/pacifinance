@@ -35,6 +35,7 @@ function Sidebar() {
         setSelectedOption(option);
         setShowPopup(true);
         setShowDropdown(false);
+
       };
     
       const handleLogout = async (event) => {
@@ -165,6 +166,16 @@ function Sidebar() {
                                             onClick={() => handleOptionSelect(option)} >
                                         
                                             {option.label}
+
+                                            {showPopup && (
+                                                <div className="popup-container">
+                                                    <div className="popup-window">
+                                                    <h3>{selectedOption.label}</h3>
+                                                    {/* Add content for the popup here */}
+                                                    </div>
+                                                    <div className="overlay" onClick={() => setShowPopup(false)}></div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                     <div className="dropdown-option logout" onClick={handleLogout}>
@@ -341,6 +352,35 @@ gap: 2rem;
             margin-top: 8px;
             color: #dc3545;
         }
+
+        .popup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          .popup-window {
+            width: 400px;
+            padding: 20px;
+            background-color: white;
+            border: 2px solid orange;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          }
+          
+          .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+          }
     }
 }
 

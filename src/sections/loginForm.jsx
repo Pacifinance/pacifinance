@@ -24,11 +24,15 @@ function LoginPage() {
           console.log(response.data);
           if(response.status === 200) {
             console.log("Login successfull");
-            navigate('/dashboard'); //direct redirect 
+            navigate('/dashboard'); //direct redirect
+            alert("Login successfull");
     
           }
           else {
-            console.log("Login failed");
+            // console.log("Login failed");
+            alert("Login failed");
+            setUsername('');
+            setPassword('');
           }
           
         } catch (error) {

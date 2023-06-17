@@ -11,6 +11,8 @@ import { BsCircleFill, BsBook, BsInfoCircle } from "react-icons/bs";
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { Link } from "react-router-dom";
 import avatarImage from "../assets/account-logo.png"
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 //import {Route, Link, Routes, useLocation} from 'react-router-dom';
 
 
@@ -27,17 +29,33 @@ function Sidebar() {
     ];
     const [showPopup, setShowPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-
+    const navigate = useNavigate();
+    
     const handleOptionSelect = (option) => {
         setSelectedOption(option);
         setShowPopup(true);
         setShowDropdown(false);
       };
     
-      const handleLogout = () => {
+      const handleLogout = async (event) => {
         // Perform logout logic here
         // Redirect the user to the login page
-        window.location.href = '/login';
+        event.preventDefault();
+        try {
+            const response = await axios.post('/logout');
+            console.log(response.data);
+            if(response.status === 200) {
+              console.log("Logout successfull");
+              navigate('/login'); //direct redirect 
+      
+            }
+            else {
+              console.log("Login failed");
+            }
+            
+          } catch (error) {
+            console.error(error);
+          }
       };
 
     return (

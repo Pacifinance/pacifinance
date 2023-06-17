@@ -8,12 +8,14 @@ function App() {
     <Div>
       <Sidebar />
       <Dashboard />
+      
       {/* <RighSidebar /> */}
     </Div>
   );
 }
 
 export default App;
+
 const Div = styled.div `
-position: relative;
+  position: relative;
 `;

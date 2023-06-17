@@ -8,7 +8,7 @@ function Dashboard() {
     return (
         <Section>
             <div className="grid"> 
-                    <Notification />      
+                    {/* <Notification />       */}
                     <Navbar />
                     <Analytic />
             </div>
@@ -19,8 +19,7 @@ function Dashboard() {
 //<Expenses />  
 export default Dashboard
 const Section = styled.section `
-margin-left: 5vw;
-margin-right: 14px;
+margin-left: 6vw;
 padding: 2rem;
 height: 60rem;
 background-color: #ECF0F1;
@@ -32,9 +31,7 @@ background-color: #ECF0F1;
     flex-direction: column;
     gap: 1rem;
    
-}
-
-// `;
+}`;
 
 
 

@@ -8,13 +8,15 @@ import CheckPrices from './CheckPricesPage';
 import Leaderboard from './LeaderboardPage';
 import Knowledge from './KnowledgePage';
 import Info from './InfoPage';
+import Login from './LoginPage';
 //import NotFound from './NotFound';
 
 function AppRouter() {
   return (
     <>
         <Routes>
-            <Route path="/" exact element={<Dashboard />} />
+            <Route path="/dashboard" exact element={<Dashboard />} />
+            <Route path="/" exact element={<Login />} />
             <Route path="/your-charts" element={<YourCharts />} />
             <Route path="/insert-values" element={<InsertValues />} />
             <Route path="/check-prices" element={<CheckPrices />} />

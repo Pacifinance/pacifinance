@@ -60,6 +60,7 @@ const renderCustomizedLabel = ({
 
 function Analytic() {
     return (
+        
         <div className="wrapper">
         <Section>
             <div className="analytic ">
@@ -104,7 +105,7 @@ function Analytic() {
                         <BsCashCoin />
                     </div>
                     <div className="action">
-                    <AiOutlineMore />
+                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -122,7 +123,7 @@ function Analytic() {
                         <FaBitcoin />
                     </div>
                     <div className="action">
-                    <AiOutlineMore />
+                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">

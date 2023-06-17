@@ -68,17 +68,19 @@ function Analytic() {
         const fetchBalances = async () => {
           try {
             const response = await axios.get('/balances/get');
-            setBalances(response.data);
-            console.log(response.data);
-            const { stocks } = response.data;
-            const { bank } = response.data;
-            const { cash } = response.data;
-            const { crypto } = response.data;
+            setBalances(response.data[0]); //only the first element of the array is needed (the last one)
+            console.log(response.data[0]);
+            const { stocks } = response.data[0];
+            console.log(stocks);
+            const { bank } = response.data[0];
+            const { cash } = response.data[0];
+            console.log(bank);
+            console.log(cash);
+            const { crypto } = response.data[0];
+            console.log(crypto);
             const stocksReal = stocks.real;
             const cryptoReal = crypto.real;
             console.log(stocksReal);
-            console.log(bank);
-            console.log(cash);
             console.log(cryptoReal);
           } catch (error) {
             console.error('Errore durante la richiesta GET:', error);

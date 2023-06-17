@@ -35,11 +35,7 @@ async function addOne(data) {
  * @returns List of Balance documents
  */
 async function getLastNSorted(where, select, sort, limit) {
-    let balances = [];
-    const result = await Balance.find(where, select).sort(sort).limit(limit).lean().exec();
-    for (let r of result)
-        balances.push(r)
-    return balances;
+    return await Balance.find(where, select).sort(sort).limit(limit).lean().exec();
 }
 
 /* ==================== Specific queries ==================== */

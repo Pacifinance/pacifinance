@@ -20,11 +20,7 @@ const userSchema = new mongoose.Schema({
  * @returns List of User documents
  */
 async function get(where, select) {
-    let users = [];
-    const result = await User.find(where, select).lean().exec();
-    for (let r of result)
-        users.push(r)
-    return users;
+    return await User.find(where, select).lean().exec();
 }
 
 /**

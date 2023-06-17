@@ -30,13 +30,15 @@ function LoginPage() {
           }
           else {
             // console.log("Login failed");
-            alert("Login failed");
-            setUsername('');
-            setPassword('');
+            alert("Nothing done");
+            
           }
           
         } catch (error) {
           console.error(error);
+          setUsername('');
+          setPassword('');
+          alert("Login failed");
         }
     
       };

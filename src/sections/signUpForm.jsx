@@ -10,7 +10,7 @@ function SignUpPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
-    const [redirectToSignIn, setRedirectToSignIn] = useState(false);
+    // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
 
     const navigate = useNavigate();
     // useeffect used to ensure that it runs only after the component has rendered and the state has been updated
@@ -21,22 +21,22 @@ function SignUpPage() {
     // }, [redirectToSignIn, navigate]);
 
 
-    const openSuccessModal = () => {
-        setShowSuccessModal(true);
-    };
+    // const openSuccessModal = () => {
+    //     setShowSuccessModal(true);
+    // };
     
-    const closeSuccessModal = () => {
-        setShowSuccessModal(false);
-        setRedirectToSignIn(true);
-    };
+    // const closeSuccessModal = () => {
+    //     setShowSuccessModal(false);
+    //     setRedirectToSignIn(true);
+    // };
     
-    const openErrorModal = () => {
-        setShowErrorModal(true);
-    };
+    // const openErrorModal = () => {
+    //     setShowErrorModal(true);
+    // };
     
-    const closeErrorModal = () => {
-        setShowErrorModal(false);
-    };
+    // const closeErrorModal = () => {
+    //     setShowErrorModal(false);
+    // };
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -44,10 +44,6 @@ function SignUpPage() {
 
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
-    };
-
-    const handleRedirectToSignIn = () => {
-        navigate('/sign-in');
     };
     
     const handleSubmit = async (event) => {
@@ -59,15 +55,12 @@ function SignUpPage() {
           if(response.status === 200) {
             console.log("Sign up successfull");
             generated_user_id = response.data.user_id;
-            // openSuccessModal();
-            setRedirectToSignIn(true);
-            alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: <strong>" + generated_user_id + "</strong>.\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
-            
+            alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: " + generated_user_id + ".\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
+            navigate('/sign-in');
 
     
           }
           else {
-            // console.log("Login failed");
             alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
             
           }
@@ -110,13 +103,10 @@ function SignUpPage() {
                         <button type="submit">Registrati</button>
                     </form>
                 </div>
-                {redirectToSignIn && (
-                    <button onClick={handleRedirectToSignIn}>Vai al sign-in</button>
-                )}
             </div>
 
             
-            {showSuccessModal && (
+            {/* {showSuccessModal && (
                 <Modal
                 isOpen={showSuccessModal}
                 onRequestClose={closeSuccessModal}
@@ -140,7 +130,7 @@ function SignUpPage() {
                 <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
                 <button onClick={closeErrorModal}>Chiudi</button>
                 </Modal>
-            )}
+            )} */}
         </SignUp>
     );
     }

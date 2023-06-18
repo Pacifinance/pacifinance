@@ -72,9 +72,9 @@ app.post("/registration", async (req, res) => {
     const hashed_password = utils.hashPassword(user_pwd, process.env.SALT_ROUNDS);
     // Add the user to the DB
     await db.users.insertNew(user_id, hashed_password);
-    // Send status code 200 (OK)
+    // Send the user ID to the client with status code 200 (OK)
     res.status(200);
-    res.send();
+    res.json({user_id: user_id});
 });
 
 app.post("/login", async (req, res) => {
@@ -135,7 +135,7 @@ app.post("/logout", async (req, res) => {
     }
     // Invalidate the session in the database by setting the
     // expiration date to 01/01/1970 and an invalid ID
-    await db.users.setSessionOfUserId(req.session.userId, "0", new Date(0));
+    await db.users.setSessionOfUserId(req.session.userId, req.session.userId, new Date(0));
     // Destroy the session
     req.session.destroy();
     // Send status code 200 (OK)

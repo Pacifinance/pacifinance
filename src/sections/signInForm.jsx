@@ -2,16 +2,16 @@ import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
-import { generated_user_id } from './signUpForm.jsx';
+// import { generated_user_id } from './signUpForm.jsx';
 
 function SignInPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    if (generated_user_id !== '') {
-      setUsername(generated_user_id);
-    }  
+    // if (generated_user_id !== '') {
+    //   setUsername(generated_user_id);
+    // }  
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);

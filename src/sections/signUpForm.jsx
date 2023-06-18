@@ -97,25 +97,31 @@ function SignUpPage() {
                     </form>
                 </div>
             </div>
-            <Modal
+            {showSuccessModal && (
+                <Modal
                 isOpen={showSuccessModal}
                 onRequestClose={closeSuccessModal}
                 className="modal"
                 overlayClassName="modal-overlay"
                 contentLabel="Popup"
-            >
-            <h2>Ti sei registrato con successo, Grazie. Ora puoi effettuare il login</h2>
-            <h3>Il tuo id utente è: {generated_user_id}</h3>
-            </Modal>
-            <Modal
+                >
+                <h2>Ti sei registrato con successo, Grazie. Ora puoi effettuare il login</h2>
+                <h3>Il tuo id utente è: {generated_user_id}</h3>
+                <button onClick={closeSuccessModal}>Chiudi</button>
+                </Modal>
+            )}
+            {showErrorModal && (
+                <Modal
                 isOpen={showErrorModal}
                 onRequestClose={closeErrorModal}
                 className="modal"
                 overlayClassName="modal-overlay"
                 contentLabel="Popup"
-            >
+                >
                 <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
-            </Modal>
+                <button onClick={closeErrorModal}>Chiudi</button>
+                </Modal>
+            )}
         </SignUp>
     );
     }

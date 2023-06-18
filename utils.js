@@ -94,7 +94,18 @@ function generateRandomString(length, alpha=true) {
  */
 function incrementDateByOneDay(date) {
     let new_date = new Date(date);
-    new_date.setDate(new_date.getDate() + 1);
+    new_date.setUTCDate(new_date.getUTCDate() + 1);
+    return new_date;
+}
+
+/**
+ * Subtracts one month to a date
+ * @param {Date} date - date to decrement
+ * @returns Decremented date
+ */
+function decrementDateByOneMonth(date) {
+    let new_date = new Date(date);
+    new_date.setUTCMonth(new_date.getUTCMonth() - 1);
     return new_date;
 }
 
@@ -104,5 +115,6 @@ module.exports = {
     hashPassword,
     checkPassword,
     generateRandomString,
-    incrementDateByOneDay
+    incrementDateByOneDay,
+    decrementDateByOneMonth
 }

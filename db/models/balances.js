@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const utils = require("../../utils.js");
 
 const balanceSchema = new mongoose.Schema({
-    userId: {type: String, required: true},
-    date: {type: Date, required: true},
+    userId: {type: String, required: true, index: true},
+    date: {type: Date, required: true, index: true},
     stocks: {type: {
         real: {type: Number, required: true},
         invested: {type: Number, required: true}
@@ -88,7 +89,31 @@ async function getLatestByUserId(user_id) {
  * @returns List of Balance documents
  */
 async function getYearlyBalanceByUserId(user_id) {
-    return await getLastNSorted({userId: user_id}, "-_id", {date: -1}, 12);
+    // return await getLastNSorted({userId: user_id}, "-_id", {date: -1}, 12);
+    // Get start and end of the current month
+    const now = new Date(Date.now());
+    let month_start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
+    let month_end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()+1));
+    // Find the most recent balance for each one of the last 12 months
+    let balances = [];
+    for (let i = 0; i < 12; i++)
+    {
+        // Find the balance of the month
+        const res = await getLastNSorted({
+                userId: user_id, date: {$gte: month_start, $lt: month_end}
+            }, 
+            "-_id", {date: -1}, 1
+        );
+        // If a balance was found for this month, then add it to the array
+        let balance = {};
+        if (res.length > 0)
+            balance = res[0]; // [0] is the most recent since the query sorts the results by date
+        balances.push({date: month_start, balance: balance});
+        // Decrease the month start and end by one month for the next iteration
+        month_start = utils.decrementDateByOneMonth(month_start);
+        month_end = utils.decrementDateByOneMonth(month_end);
+    }
+    return balances;
 }
 
 /**

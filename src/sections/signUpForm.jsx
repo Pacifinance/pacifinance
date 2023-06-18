@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Modal from 'react-modal';
-import { useNavigate } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
 var generated_user_id = '';
@@ -10,9 +10,9 @@ function SignUpPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
-    const navigate = useNavigate();
+    const [redirectToSignIn, setRedirectToSignIn] = useState(false);
 
-    
+    // const navigate = useNavigate();
 
     const openSuccessModal = () => {
         setShowSuccessModal(true);
@@ -20,7 +20,7 @@ function SignUpPage() {
     
     const closeSuccessModal = () => {
         setShowSuccessModal(false);
-        navigate('/sign-in');
+        setRedirectToSignIn(true);
     };
     
     const openErrorModal = () => {
@@ -65,8 +65,12 @@ function SignUpPage() {
           openErrorModal();
         }
     
-      };
+    };
 
+    if (redirectToSignIn) {
+        return <Redirect to="/sign-in" />;
+    }
+    
     return (
         
         <SignUp>

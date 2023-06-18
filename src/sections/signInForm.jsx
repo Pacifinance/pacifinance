@@ -30,7 +30,7 @@ function SignInPage() {
           if(response.status === 200) {
             console.log("Sign in successfull");
             navigate('/dashboard'); //direct redirect
-            alert("Sign in successfull");
+            // alert("Sign in successfull");
     
           }
           else {
@@ -99,6 +99,7 @@ function SignInPage() {
   
     .sign-in-form h2 {
       color: white;
+      margin-bottom: 20px;
     }
   
     .sign-in-form label {

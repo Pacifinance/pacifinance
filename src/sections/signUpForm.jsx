@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-// import Modal from 'react-modal';
+import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
@@ -9,8 +9,8 @@ var generated_user_id = '';
 function SignUpPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    // const [showSuccessModal, setShowSuccessModal] = useState(false);
-    // const [showErrorModal, setShowErrorModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
 
     const navigate = useNavigate();
@@ -22,22 +22,29 @@ function SignUpPage() {
     // }, [redirectToSignIn, navigate]);
 
 
-    // const openSuccessModal = () => {
-    //     setShowSuccessModal(true);
-    // };
+    const openSuccessModal = () => {
+        setShowSuccessModal(true);
+    };
     
-    // const closeSuccessModal = () => {
-    //     setShowSuccessModal(false);
-    //     setRedirectToSignIn(true);
-    // };
+    const closeSuccessModal = () => {
+        setShowSuccessModal(false);
+        navigator.clipboard.writeText(generated_user_id)
+          .then(() => {
+            navigate('/sign-in');
+          })
+          .catch((error) => {
+            console.error('Errore durante la copia negli appunti:', error);
+            navigate('/sign-in');
+          });
+    };
     
-    // const openErrorModal = () => {
-    //     setShowErrorModal(true);
-    // };
+    const openErrorModal = () => {
+        setShowErrorModal(true);
+    };
     
-    // const closeErrorModal = () => {
-    //     setShowErrorModal(false);
-    // };
+    const closeErrorModal = () => {
+        setShowErrorModal(false);
+    };
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -56,10 +63,9 @@ function SignUpPage() {
           if(response.status === 200) {
             console.log("Sign up successfull");
             generated_user_id = response.data.user_id;
-            alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: " + generated_user_id + ".\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
-            navigate('/sign-in');
-
-    
+            openSuccessModal();
+            // alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: " + generated_user_id + ".\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
+            // navigate('/sign-in');
           }
           else {
             alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
@@ -81,7 +87,7 @@ function SignUpPage() {
             <div className="signUp-page">
                 <div className="signUp-form">
                     <h1>Registrazione</h1>
-                    <h2>Il sistema genererà per te un id casuale</h2>
+                    <h3>Il sistema genererà per te un id casuale</h3>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="password">Password:</label>
                         <input
@@ -107,7 +113,7 @@ function SignUpPage() {
             </div>
 
             
-            {/* {showSuccessModal && (
+            {showSuccessModal && (
                 <Modal
                 isOpen={showSuccessModal}
                 onRequestClose={closeSuccessModal}
@@ -115,9 +121,9 @@ function SignUpPage() {
                 overlayClassName="modal-overlay"
                 contentLabel="Popup"
                 >
-                <h2>Ti sei registrato con successo, Grazie. Ora puoi effettuare il login</h2>
-                <h3>Il tuo id utente è: {generated_user_id}</h3>
-                <button onClick={closeSuccessModal}>Chiudi</button>
+                <h2>Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n</h2>
+                <h3>Il tuo id utente è: {generated_user_id}\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. </h3>
+                <button onClick={closeSuccessModal}>Copia il tuo Id</button>
                 </Modal>
             )}
             {showErrorModal && (
@@ -131,7 +137,7 @@ function SignUpPage() {
                 <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
                 <button onClick={closeErrorModal}>Chiudi</button>
                 </Modal>
-            )} */}
+            )}
         </SignUp>
     );
     }
@@ -158,9 +164,9 @@ function SignUpPage() {
         margin-bottom: 5px;
     }
 
-    .signUp-form h2 {
+    .signUp-form h3 {
       color: white;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
   
     .signUp-form label {

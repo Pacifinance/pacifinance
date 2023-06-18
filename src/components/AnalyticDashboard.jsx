@@ -73,20 +73,31 @@ function Analytic() {
                 console.log("No data found");
                 return;
             }
+            
             const stocks = response.data[0].balance.stocks;
             console.log(stocks);
             const bank = response.data[0].balance.bank;
             const cash = response.data[0].balance.cash;
+            const crypto = response.data[0].balance.crypto;
             console.log(bank);
             console.log(cash);
-            setBank(bank);
-            setCash(cash);
-            const crypto = response.data[0].balance.crypto;
+            
+            if (bank !== undefined) {
+                setBank(bank);
+            }
+            else if (cash !== undefined) {
+                setCash(cash);
+            }
+            else if (stocks !== undefined) {
+                setStocksReal(stocks.real);
+            }
+            else if (crypto !== undefined) {
+                setCryptoReal(crypto.real);
+            }
             console.log(crypto);
-            setStocksReal(stocks.real);
-            setCryptoReal(crypto.real);
-            console.log(stocksReal);
-            console.log(cryptoReal);
+            
+            // console.log(stocksReal);
+            // console.log(cryptoReal);
 
           } catch (error) {
             console.error('Errore durante la richiesta GET:', error);

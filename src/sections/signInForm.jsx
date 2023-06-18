@@ -25,7 +25,7 @@ function SignInPage() {
         event.preventDefault();
         
         try {
-          const response = await axios.post('/sign-in', { user_id: username, password: password });
+          const response = await axios.post('/login', { user_id: username, password: password }); //the path in the db is called login
           console.log(response.data);
           if(response.status === 200) {
             console.log("Sign in successfull");

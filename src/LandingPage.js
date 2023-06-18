@@ -6,7 +6,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleSignIn = () => {
-    navigate('/login');
+    navigate('/sing-in');
   };
 
   const handleSignUp = () => {
@@ -18,7 +18,7 @@ const LandingPage = () => {
       <Header>
         <Logo>UpsetFinance</Logo>
         <ButtonGroup>
-          <Button primary onClick={handleSignIn}>Login</Button>
+          <Button primary onClick={handleSignIn}>Sign In</Button>
           <Button onClick={handleSignUp}>Sign Up</Button>
         </ButtonGroup>
       </Header>

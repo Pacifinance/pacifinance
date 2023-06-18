@@ -20,6 +20,7 @@ function SignUpPage() {
     
     const closeSuccessModal = () => {
         setShowSuccessModal(false);
+        navigate('/sign-in');
     };
     
     const openErrorModal = () => {
@@ -45,10 +46,9 @@ function SignUpPage() {
           const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword });
           console.log(response.data);
           if(response.status === 200) {
-            console.log("Login successfull");
+            console.log("Sign up successfull");
             generated_user_id = response.data.user_id;
             openSuccessModal();
-            navigate('/login'); //direct redirect
             // alert("Ti sei registrato con successo, Grazie. Ora puoi effettuare il login");
     
           }

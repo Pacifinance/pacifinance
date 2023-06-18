@@ -1,7 +1,7 @@
 import React from 'react';
 import LoginForm from './sections/loginForm';
 
-function App() {
+function LoginPage() {
   return (
     <div>
       {/* Altri componenti */}
@@ -10,4 +10,4 @@ function App() {
   );
 }
 
-export default App;
+export default LoginPage;

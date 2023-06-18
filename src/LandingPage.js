@@ -10,7 +10,7 @@ const LandingPage = () => {
   };
 
   const handleSignUp = () => {
-    navigate('/signup');
+    navigate('/sign-up');
   };
 
   return (
@@ -25,7 +25,9 @@ const LandingPage = () => {
       <HeroSection>
         <HeroText>
           <h1>Benvenuto in UpsetFinance</h1>
-          <p>La piattaforma sicura per gestire i tuoi investimenti.</p>
+          <p>La piattaforma sicura per controllare i tuoi risparmi e i tuoi investimenti.</p>
+          <p>Per segnare le tue spese e gestirle al meglio.</p>
+          <p>La prima piattaforma che ti permette di confrontarti con altri utenti nel tuo settore, nel tuo paese o all'estero.</p>
           <CTAButton>Scopri di più</CTAButton>
         </HeroText>
         <HeroImage src="/path/to/hero-image.jpg" alt="Hero Image" />

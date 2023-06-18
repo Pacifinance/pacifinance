@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
-// import { generated_user_id } from './signUpForm.jsx';
+import { generated_user_id } from './signUpForm.jsx';
 
 function SignInPage() {
     const [username, setUsername] = useState('');
@@ -51,8 +51,8 @@ function SignInPage() {
     return (
         <SignIn>
             <div className="sign-in-page">
-                <div className="sing-in-form">
-                    <h2>Sign-in</h2>
+                <div className="sign-in-form">
+                    <h2>Benvenuto</h2>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="username">Username:</label>
                         <input

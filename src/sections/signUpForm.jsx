@@ -35,7 +35,7 @@ function SignUpPage() {
           }
           
         } catch (error) {
-          console.error(error);ù
+          console.error(error);
           setPassword('');
           setConfirmPassword('');
           alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");

@@ -72,9 +72,9 @@ app.post("/registration", async (req, res) => {
     const hashed_password = utils.hashPassword(user_pwd, process.env.SALT_ROUNDS);
     // Add the user to the DB
     await db.users.insertNew(user_id, hashed_password);
-    // Send status code 200 (OK)
+    // Send the user ID to the client with status code 200 (OK)
     res.status(200);
-    res.send();
+    res.json({user_id: user_id});
 });
 
 app.post("/login", async (req, res) => {

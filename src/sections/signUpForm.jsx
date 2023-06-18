@@ -13,8 +13,13 @@ function SignUpPage() {
     const [redirectToSignIn, setRedirectToSignIn] = useState(false);
 
     const navigate = useNavigate();
+    // useeffect used to ensure that it runs only after the component has rendered and the state has been updated
+    useEffect(() => {
+        if (redirectToSignIn) {
+          navigate('/sign-in');
+        }
+    }, [redirectToSignIn, navigate]);
 
-    // const navigate = useNavigate();
 
     const openSuccessModal = () => {
         setShowSuccessModal(true);
@@ -68,10 +73,6 @@ function SignUpPage() {
         }
     
     };
-
-    if (redirectToSignIn) {
-        navigate("/sign-in");
-    }
 
     return (
         

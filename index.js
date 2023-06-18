@@ -21,7 +21,17 @@ app.use(session({
 app.use(express.static("build"));
 app.use(express.json());
 
-/* ============================ Express.js routes ============================ */
+async function generateUserId() {
+    // Get the list of all user IDs
+    const users = await db.users.getAllUsersIds();
+    let ids = users.map(({userId}) => userId);
+    // Generate a random user ID until a unique one is generated
+    let user_id = "";
+    do {
+        user_id = utils.generateRandomString(db.users.userIdLength, false);
+    } while (ids.includes(user_id));
+    return user_id;
+}
 
 async function checkUserSession(session) {
     const now = new Date(Date.now());
@@ -39,6 +49,33 @@ async function checkUserSession(session) {
         return false;
     return true;
 }
+
+/* ============================ Express.js routes ============================ */
+
+app.post("/registration", async (req, res) => {
+    // Sanitize user input. Send status code 400 (Bad Request)
+    // in case of invalid data (empty strings after sanitization)
+    // or if the two passwords don't match
+    let user_pwd = req.body.user_pwd;
+    let repeated_pwd = req.body.repeated_pwd;
+    user_pwd = utils.sanitizeInput(user_pwd);
+    repeated_pwd = utils.sanitizeInput(repeated_pwd);
+    if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd)
+    {
+        res.status(400);
+        res.send();
+        return;
+    }
+    // Generate a random user ID
+    const user_id = await generateUserId();
+    // Hash the password
+    const hashed_password = utils.hashPassword(user_pwd, process.env.SALT_ROUNDS);
+    // Add the user to the DB
+    await db.users.insertNew(user_id, hashed_password);
+    // Send status code 200 (OK)
+    res.status(200);
+    res.send();
+});
 
 app.post("/login", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
@@ -212,7 +249,7 @@ app.get("/leaderboards", async (req, res) => {
         res.send();
         return;
     }
-    // Get the list of all users
+    // Get the list of all user IDs
     const users = await db.users.getAllUsersIds();
     // For each user get its latest balance
     let balances = [];

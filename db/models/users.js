@@ -17,6 +17,15 @@ const userSchema = new mongoose.Schema({
 /* ==================== Template queries ==================== */
 
 /**
+ * Adds a user
+ * @param {Object} data - data of the new User document 
+ * @returns User document
+ */
+async function addOne(data) {
+    return (await User.create(data)).toJSON();
+}
+
+/**
  * Gets a list of users that match a filter
  * @param {Object} where - filter to match
  * @param {String} select - fields to return
@@ -47,6 +56,25 @@ async function setOne(where, update) {
 }
 
 /* ==================== Specific queries ==================== */
+
+/**
+ * Adds a new user
+ * @param {String} user_id - ID of the user
+ * @param {String} password - hashed password
+ */
+async function insertNew(user_id, password) {
+    const data = {
+        userId: user_id,
+        password: password,
+        roles: ["user"],
+        insertRights: true,
+        session: {
+            sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
+            expirationDate: new Date(0)
+        }
+    }
+    return await addOne(data);
+}
 
 /**
  * Gets all user IDs
@@ -115,6 +143,7 @@ const User = mongoose.model("User", userSchema);
 module.exports = {
     userIdLength,
     sessionIdLength,
+    insertNew,
     getAllUsersIds,
     getPasswordByUserId,
     setPasswordOfUserId,

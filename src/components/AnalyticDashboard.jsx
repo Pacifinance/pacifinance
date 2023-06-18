@@ -68,7 +68,7 @@ function Analytic() {
           try {
             const response = await axios.get('/balances/get'); //only the first element of the array is needed (the last one)
             //respose.data is not empty
-            if(response.data.length === 0) {
+            if(response.data.length === 0 || response.data[0] === {}) {
                 console.log("No data found");
                 return;
             }
@@ -86,7 +86,7 @@ function Analytic() {
             setCryptoReal(crypto.real);
             console.log(stocksReal);
             console.log(cryptoReal);
-            
+
           } catch (error) {
             console.error('Errore durante la richiesta GET:', error);
           }

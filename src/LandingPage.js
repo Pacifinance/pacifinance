@@ -6,7 +6,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleSignIn = () => {
-    navigate('/sing-in');
+    navigate('/sign-in');
   };
 
   const handleSignUp = () => {

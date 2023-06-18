@@ -123,7 +123,7 @@ function SignUpPage() {
                     isOpen={showSuccessModal}
                     onRequestClose={closeSuccessModal}
                     className="modal"
-                    overlayClassName="modal-overlay"
+                    // overlayClassName="modal-overlay"
                     contentLabel="Popup"
                 >
                     <h2>Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n</h2>
@@ -149,7 +149,7 @@ function SignUpPage() {
                     isOpen={showErrorModal}
                     onRequestClose={closeErrorModal}
                     className="modal"
-                    overlayClassName="modal-overlay"
+                    // overlayClassName="modal-overlay"
                     contentLabel="Popup"
                 >
                     <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
@@ -160,7 +160,7 @@ function SignUpPage() {
         </SignUp>
     );
     }
-    export { generated_user_id };
+    // export { generated_user_id };
     export default SignUpPage;
 
     const SignUp = styled.div`
@@ -214,32 +214,15 @@ function SignUpPage() {
     }
 
     .modal {
-        position: absolute;
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: white;
         border: 2px solid orange;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         color: black;
         text-align: center;
         padding: 20px;
-    }
-      
-    .modal-content {
-        background-color: white;
-        border: 2px solid orange;
-        color: black;
-        text-align: center;
-        padding: 20px;
-    }
-      
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
       
   `;

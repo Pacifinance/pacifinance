@@ -10,6 +10,7 @@ import Knowledge from './KnowledgePage';
 import Info from './InfoPage';
 import Login from './LoginPage';
 import LandingPage from './LandingPage';
+import SignUp from './SignUpPage';
 //import NotFound from './NotFound';
 
 function AppRouter() {
@@ -17,8 +18,9 @@ function AppRouter() {
     <>
         <Routes>
             <Route path="/" exact element={<LandingPage />} />
-            <Route path="/dashboard" exact element={<Dashboard />} />
+            <Route path="/sign-up" exact element={<SignUp />} />
             <Route path="/login" exact element={<Login />} />
+            <Route path="/dashboard" exact element={<Dashboard />} />
             <Route path="/your-charts" element={<YourCharts />} />
             <Route path="/insert-values" element={<InsertValues />} />
             <Route path="/check-prices" element={<CheckPrices />} />

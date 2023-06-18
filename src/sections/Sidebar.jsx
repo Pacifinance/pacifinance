@@ -167,15 +167,7 @@ function Sidebar() {
                                         
                                             {option.label}
 
-                                            {showPopup && (
-                                                <div className="popup-container">
-                                                    <div className="popup-window">
-                                                    <h3>{selectedOption.label}</h3>
-                                                    {/* Add content for the popup here */}
-                                                    </div>
-                                                    <div className="overlay" onClick={() => setShowPopup(false)}></div>
-                                                </div>
-                                            )}
+                                            
                                         </div>
                                     ))}
                                     <div className="dropdown-option logout" onClick={handleLogout}>
@@ -184,6 +176,15 @@ function Sidebar() {
                                 </div>
                             )}
                         </div>
+                        {showPopup && (
+                            <div className="popup-container">
+                                <div className="popup-window">
+                                <h3>{selectedOption.label}</h3>
+                                {/* Add content for the popup here */}
+                                </div>
+                                <div className="overlay" onClick={() => setShowPopup(false)}></div>
+                            </div>
+                        )}
                     </div>
             </div>
         </Section>

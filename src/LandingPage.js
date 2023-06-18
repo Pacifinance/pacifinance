@@ -18,7 +18,7 @@ const LandingPage = () => {
       <Header>
         <Logo>UpsetFinance</Logo>
         <ButtonGroup>
-          <Button primary onClick={handleSignIn}>Sign In</Button>
+          <Button primary onClick={handleSignIn}>Login</Button>
           <Button onClick={handleSignUp}>Sign Up</Button>
         </ButtonGroup>
       </Header>

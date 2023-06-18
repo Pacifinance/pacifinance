@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
@@ -6,8 +7,28 @@ import axios from 'axios';
 function SignUpPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
     const navigate = useNavigate();
+
+    let generated_user_id = '';
+
+    const openSuccessModal = () => {
+        setShowSuccessModal(true);
+    };
     
+    const closeSuccessModal = () => {
+        setShowSuccessModal(false);
+    };
+    
+    const openErrorModal = () => {
+        setShowErrorModal(true);
+    };
+    
+    const closeErrorModal = () => {
+        setShowErrorModal(false);
+    };
+
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
     };
@@ -24,13 +45,15 @@ function SignUpPage() {
           console.log(response.data);
           if(response.status === 200) {
             console.log("Login successfull");
+            generated_user_id = response.data.user_id;
             navigate('/login'); //direct redirect
-            alert("Ti sei registrato con successo, Grazie. Ora puoi effettuare il login");
+            openSuccessModal();
+            // alert("Ti sei registrato con successo, Grazie. Ora puoi effettuare il login");
     
           }
           else {
             // console.log("Login failed");
-            alert("Non ha funzionato qualcosa");
+            openErrorModal();
             
           }
           
@@ -38,12 +61,13 @@ function SignUpPage() {
           console.error(error);
           setPassword('');
           setConfirmPassword('');
-          alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
+          openErrorModal();
         }
     
       };
 
     return (
+        
         <SignUp>
             <div className="signUp-page">
                 <div className="signUp-form">
@@ -72,6 +96,21 @@ function SignUpPage() {
                     </form>
                 </div>
             </div>
+            <Modal
+                isOpen={showSuccessModal}
+                onRequestClose={closeSuccessModal}
+                contentLabel="Popup"
+            >
+            <h2>Ti sei registrato con successo, Grazie. Ora puoi effettuare il login</h2>
+            <h3>Il tuo id utente è: {generated_user_id}</h3>
+            </Modal>
+            <Modal
+                isOpen={showErrorModal}
+                onRequestClose={closeErrorModal}
+                contentLabel="Popup"
+            >
+                <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
+            </Modal>
         </SignUp>
     );
     }

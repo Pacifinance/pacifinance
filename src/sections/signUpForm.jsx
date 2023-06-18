@@ -1,15 +1,16 @@
-import React, {useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import React, {useState} from 'react';
+// import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
+
 var generated_user_id = '';
 
 function SignUpPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [showErrorModal, setShowErrorModal] = useState(false);
+    // const [showSuccessModal, setShowSuccessModal] = useState(false);
+    // const [showErrorModal, setShowErrorModal] = useState(false);
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
 
     const navigate = useNavigate();
@@ -151,9 +152,15 @@ function SignUpPage() {
       flex-direction: column;
       align-items: center;
     }
-  
+
+    .signUp-form h1 {
+        color: white;
+        margin-bottom: 5px;
+    }
+
     .signUp-form h2 {
       color: white;
+      margin-bottom: 16px;
     }
   
     .signUp-form label {

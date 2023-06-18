@@ -111,8 +111,8 @@ function Analytic() {
 
     const data = [
         { name: "Stocks", value: stocksReal },
-        { name: "Bank", value: bank },
-        { name: "Cash", value: cash },
+        { name: "Bank", value: bankReal },
+        { name: "Cash", value: cashReal },
         { name: "Crypto", value: cryptoReal }
     ];
       
@@ -152,7 +152,7 @@ function Analytic() {
                     <h6>in Bank</h6>
                 </div>
                 <div className="money">
-                    <h5>{bank}€</h5>
+                    <h5>{bankReal}€</h5>
                 </div>
             </div>
 
@@ -170,7 +170,7 @@ function Analytic() {
                     <h6>money</h6>
                 </div>
                 <div className="money">
-                    <h5>{cash}€</h5>
+                    <h5>{cashReal}€</h5>
                 </div>
             </div>
             

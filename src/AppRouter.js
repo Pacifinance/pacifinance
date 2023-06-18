@@ -8,7 +8,7 @@ import CheckPrices from './CheckPricesPage';
 import Leaderboard from './LeaderboardPage';
 import Knowledge from './KnowledgePage';
 import Info from './InfoPage';
-import Login from './LoginPage';
+import SignIn from './SignInPage';
 import LandingPage from './LandingPage';
 import SignUp from './SignUpPage';
 //import NotFound from './NotFound';
@@ -19,7 +19,7 @@ function AppRouter() {
         <Routes>
             <Route path="/" exact element={<LandingPage />} />
             <Route path="/sign-up" exact element={<SignUp />} />
-            <Route path="/login" exact element={<Login />} />
+            <Route path="/sign-in" exact element={<SignIn />} />
             <Route path="/dashboard" exact element={<Dashboard />} />
             <Route path="/your-charts" element={<YourCharts />} />
             <Route path="/insert-values" element={<InsertValues />} />

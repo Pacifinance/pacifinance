@@ -2,11 +2,16 @@ import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
+import { generated_user_id } from './signUpForm.jsx';
 
-function LoginPage() {
+function SignInPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+
+    if (generated_user_id !== '') {
+      setUsername(generated_user_id);
+    }  
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -20,16 +25,16 @@ function LoginPage() {
         event.preventDefault();
         
         try {
-          const response = await axios.post('/login', { user_id: username, password: password });
+          const response = await axios.post('/sign-in', { user_id: username, password: password });
           console.log(response.data);
           if(response.status === 200) {
-            console.log("Login successfull");
+            console.log("Sign in successfull");
             navigate('/dashboard'); //direct redirect
-            alert("Login successfull");
+            alert("Sign in successfull");
     
           }
           else {
-            // console.log("Login failed");
+            // console.log("sign-in failed");
             alert("Nothing done");
             
           }
@@ -38,16 +43,16 @@ function LoginPage() {
           console.error(error);
           setUsername('');
           setPassword('');
-          alert("Login failed");
+          alert("Sign in failed");
         }
     
       };
 
     return (
-        <Login>
-            <div className="login-page">
-                <div className="login-form">
-                    <h2>Login</h2>
+        <SignIn>
+            <div className="sign-in-page">
+                <div className="sing-in-form">
+                    <h2>Sign-in</h2>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="username">Username:</label>
                         <input
@@ -71,14 +76,14 @@ function LoginPage() {
                     </form>
                 </div>
             </div>
-        </Login>
+        </SignIn>
     );
     }
 
-    export default LoginPage;
+    export default SignInPage;
 
-    const Login = styled.div`
-    .login-page {
+    const SignIn = styled.div`
+    .sign-in-page {
       background-color: black;
       height: 100vh;
       display: flex;
@@ -86,22 +91,22 @@ function LoginPage() {
       align-items: center;
     }
   
-    .login-form {
+    .sign-in-form {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
   
-    .login-form h2 {
+    .sign-in-form h2 {
       color: white;
     }
   
-    .login-form label {
+    .sign-in-form label {
       color: white;
       margin-bottom: 8px;
     }
   
-    .login-form input {
+    .sign-in-form input {
       padding: 8px;
       border: none;
       background-color: transparent;
@@ -109,11 +114,11 @@ function LoginPage() {
       margin-bottom: 16px;
     }
   
-    .login-form input::placeholder {
+    .sign-in-form input::placeholder {
       color: orange;
     }
   
-    .login-form button {
+    .sign-in-form button {
       padding: 8px 16px;
       background-color: orange;
       color: white;

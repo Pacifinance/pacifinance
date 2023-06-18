@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 var generated_user_id = '';
 
@@ -11,6 +12,8 @@ function SignUpPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const inputRef = useRef(null);
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
 
     const navigate = useNavigate();
@@ -25,17 +28,19 @@ function SignUpPage() {
     const openSuccessModal = () => {
         setShowSuccessModal(true);
     };
+
+    // const copyToClipboard = () => {
+    //     if ('clipboard' in navigator) {
+    //         navigator.clipboard.writeText(generated_user_id);
+    //         setIsCopied(true);
+    //     }
+    //     setIsCopied(true);
+    //   };
     
     const closeSuccessModal = () => {
         setShowSuccessModal(false);
-        navigator.clipboard.writeText(generated_user_id)
-          .then(() => {
-            navigate('/sign-in');
-          })
-          .catch((error) => {
-            console.error('Errore durante la copia negli appunti:', error);
-            navigate('/sign-in');
-          });
+        // copyToClipboard();
+        navigate('/sign-in');
     };
     
     const openErrorModal = () => {
@@ -115,27 +120,41 @@ function SignUpPage() {
             
             {showSuccessModal && (
                 <Modal
-                isOpen={showSuccessModal}
-                onRequestClose={closeSuccessModal}
-                className="modal"
-                overlayClassName="modal-overlay"
-                contentLabel="Popup"
+                    isOpen={showSuccessModal}
+                    onRequestClose={closeSuccessModal}
+                    className="modal"
+                    overlayClassName="modal-overlay"
+                    contentLabel="Popup"
                 >
-                <h2>Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n</h2>
-                <h3>Il tuo id utente è: {generated_user_id}\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. </h3>
-                <button onClick={closeSuccessModal}>Copia il tuo Id</button>
+                    <h2>Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n</h2>
+                    <h3>Il tuo id utente è: {generated_user_id}\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. </h3>
+                    <input type="text" ref={inputRef} value={generated_user_id} readOnly style={{ position: 'fixed', top: '-9999px' }} />
+                    <CopyToClipboard
+                        text={generated_user_id}
+                        onCopy={() => {
+                            setIsCopied(true);
+                            setTimeout(() => {
+                                setIsCopied(false);
+                            }, 1000);
+                        }}
+                    >
+                        <button onClick={closeSuccessModal}>
+                            <span>{isCopied ? 'Copiato!' : 'Copia il tuo ID'}</span>
+                        </button>
+                    </CopyToClipboard>
                 </Modal>
             )}
             {showErrorModal && (
                 <Modal
-                isOpen={showErrorModal}
-                onRequestClose={closeErrorModal}
-                className="modal"
-                overlayClassName="modal-overlay"
-                contentLabel="Popup"
+                    isOpen={showErrorModal}
+                    onRequestClose={closeErrorModal}
+                    className="modal"
+                    overlayClassName="modal-overlay"
+                    contentLabel="Popup"
                 >
-                <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
-                <button onClick={closeErrorModal}>Chiudi</button>
+                    <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
+                    <button onClick={closeErrorModal}>
+                    </button>
                 </Modal>
             )}
         </SignUp>

@@ -59,21 +59,22 @@ const renderCustomizedLabel = ({
 function Analytic() {
     const [stocksReal, setStocksReal] = useState(0);
     const [cryptoReal, setCryptoReal] = useState(0);
-    const [bank, setBank] = useState(0);
-    const [cash, setCash] = useState(0);
+    const [bankReal, setBank] = useState(0);
+    const [cashReal, setCash] = useState(0);
 
     useEffect(() => {
         // function to fetch the balances from the API
         const fetchBalances = async () => {
           try {
             const response = await axios.get('/balances/get'); //only the first element of the array is needed (the last one)
+            console.log(response);
             console.log(response.data);
             //respose.data is not empty
-            if(response.data.length === 0 || response.data[0] === {}) {
+            if(response.data.length === 0 || response.data[0].balance === {}) {
                 console.log("No data found");
                 return;
             }
-            
+            //SISTEMARE
             const stocks = response.data[0].balance.stocks;
             console.log(stocks);
             const bank = response.data[0].balance.bank;
@@ -81,17 +82,17 @@ function Analytic() {
             const crypto = response.data[0].balance.crypto;
             console.log(bank);
             console.log(cash);
-            
+
             if (bank !== undefined) {
                 setBank(bank);
             }
-            else if (cash !== undefined) {
+            if (cash !== undefined) {
                 setCash(cash);
             }
-            else if (stocks !== undefined) {
+            if (stocks !== undefined) {
                 setStocksReal(stocks.real);
             }
-            else if (crypto !== undefined) {
+            if (crypto !== undefined) {
                 setCryptoReal(crypto.real);
             }
             console.log(crypto);

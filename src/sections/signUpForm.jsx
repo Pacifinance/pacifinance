@@ -14,11 +14,11 @@ function SignUpPage() {
 
     const navigate = useNavigate();
     // useeffect used to ensure that it runs only after the component has rendered and the state has been updated
-    useEffect(() => {
-        if (redirectToSignIn) {
-          navigate('/sign-in');
-        }
-    }, [redirectToSignIn, navigate]);
+    // useEffect(() => {
+    //     if (redirectToSignIn) {
+    //       navigate('/sign-in');
+    //     }
+    // }, [redirectToSignIn, navigate]);
 
 
     const openSuccessModal = () => {
@@ -45,6 +45,10 @@ function SignUpPage() {
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
     };
+
+    const handleRedirectToSignIn = () => {
+        navigate('/sign-in');
+    };
     
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -55,13 +59,16 @@ function SignUpPage() {
           if(response.status === 200) {
             console.log("Sign up successfull");
             generated_user_id = response.data.user_id;
-            openSuccessModal();
-            // alert("Ti sei registrato con successo, Grazie. Ora puoi effettuare il login");
+            // openSuccessModal();
+            setRedirectToSignIn(true);
+            alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: <strong>" + generated_user_id + "</strong>.\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
+            
+
     
           }
           else {
             // console.log("Login failed");
-            openErrorModal();
+            alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
             
           }
           
@@ -69,7 +76,7 @@ function SignUpPage() {
           console.error(error);
           setPassword('');
           setConfirmPassword('');
-          openErrorModal();
+          alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
         }
     
     };
@@ -103,7 +110,12 @@ function SignUpPage() {
                         <button type="submit">Registrati</button>
                     </form>
                 </div>
+                {redirectToSignIn && (
+                    <button onClick={handleRedirectToSignIn}>Vai al sign-in</button>
+                )}
             </div>
+
+            
             {showSuccessModal && (
                 <Modal
                 isOpen={showSuccessModal}

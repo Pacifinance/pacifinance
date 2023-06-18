@@ -72,15 +72,15 @@ function Analytic() {
                 console.log("No data found");
                 return;
             }
-            const { stocks } = response.data[0];
+            const stocks = response.data[0].balance.stocks;
             console.log(stocks);
-            const { bank } = response.data[0];
-            const { cash } = response.data[0];
+            const bank = response.data[0].balance.bank;
+            const cash = response.data[0].balance.cash;
             console.log(bank);
             console.log(cash);
             setBank(bank);
             setCash(cash);
-            const { crypto } = response.data[0];
+            const crypto = response.data[0].balance.crypto;
             console.log(crypto);
             setStocksReal(stocks.real);
             setCryptoReal(crypto.real);

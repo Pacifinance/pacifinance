@@ -21,7 +21,7 @@ const Section = styled.section`
     position: fixed;
     right: 0;
     top: 0;
-    background-color: #17202A;
+    background-color: #3d3d3d;
     height: 100vh;
     width: 20vw;
     display: flex;

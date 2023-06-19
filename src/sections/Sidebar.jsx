@@ -193,9 +193,10 @@ function Sidebar() {
 
 export default Sidebar
 const Section = styled.section`
+font-family: Roboto, sans-serif;
 position: fixed;
 left: 0;
-background-color: black;
+background-color: #3d3d3d;
 height: 100vh;
 width: 6vw;
 display: flex;

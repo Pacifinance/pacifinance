@@ -71,6 +71,7 @@ export default InsertValue;
 
 
 const StyledSection = styled.div`
+  font-family: Roboto, sans-serif; 
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,5 +1,5 @@
 import React from 'react';
-import SignInForm from './sections/signInForm';
+import SignInForm from './sections/SignInForm';
 
 function SignInPage() {
   return (

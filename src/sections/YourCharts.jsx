@@ -21,11 +21,12 @@ function Dashboard() {
 //<Expenses />  
 export default Dashboard
 const Section = styled.section `
+font-family: Roboto, sans-serif;
 margin-left: 5vw;
 margin-right: 14px;
 padding: 2rem;
 height: 60rem;
-background-color: #F5F5FD;
+background-color: #3d3d3d;
 .grid{ 
     margin-top: 0.5rem;
     z-index: 2;

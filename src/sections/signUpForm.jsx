@@ -164,8 +164,10 @@ function SignUpPage() {
     export default SignUpPage;
 
     const SignUp = styled.div`
+    font-family: Roboto, sans-serif;
+    
     .signUp-page {
-      background-color: black;
+      background-color: #3d3d3d;
       height: 100vh;
       display: flex;
       justify-content: center;
@@ -202,12 +204,12 @@ function SignUpPage() {
     }
   
     .signUp-form input::placeholder {
-      color: orange;
+      color: #FF8000;
     }
   
     .signUp-form button {
       padding: 8px 16px;
-      background-color: orange;
+      background-color: #FF8000;
       color: white;
       border: none;
       cursor: pointer;
@@ -219,7 +221,7 @@ function SignUpPage() {
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: white;
-        border: 2px solid orange;
+        border: 4px solid #FF8000;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         color: black;
         text-align: center;

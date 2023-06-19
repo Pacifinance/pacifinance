@@ -83,8 +83,10 @@ function SignInPage() {
     export default SignInPage;
 
     const SignIn = styled.div`
+    font-family: Roboto, sans-serif;
+    
     .sign-in-page {
-      background-color: black;
+      background-color: #3d3d3d;
       height: 100vh;
       display: flex;
       justify-content: center;
@@ -116,12 +118,12 @@ function SignInPage() {
     }
   
     .sign-in-form input::placeholder {
-      color: orange;
+      color: #FF8000;
     }
   
     .sign-in-form button {
       padding: 8px 16px;
-      background-color: orange;
+      background-color: #FF8000;
       color: white;
       border: none;
       cursor: pointer;

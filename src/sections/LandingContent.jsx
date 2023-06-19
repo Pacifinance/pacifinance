@@ -58,7 +58,7 @@ const LandingContent = () => {
 
 const Container = styled.div`
   font-family: Roboto, sans-serif;
-  height: 100vh;
+  // height: 100vh;
   background-color: ${(props) => props.theme.backgroundColor};
   color: ${(props) => props.theme.textColor};
 `;
@@ -72,7 +72,14 @@ const HeroSection = styled.section`
 
 const HeroText = styled.div`
   max-width: 500px;
+  p {
+    margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
+  }
+  h1 {
+    margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
+  }
 `;
+
 
 const CTAButton = styled.button`
   background-color: orange;
@@ -91,6 +98,7 @@ const HeroImage = styled.img`
 
 const FeaturesSection = styled.section`
   display: grid;
+  bottom: 0;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   padding: 60px;

@@ -16,42 +16,43 @@ const Header = () => {
   };
   
   return (
-    <Container>
+    <ContainerHeader>
       <Logo>UpsetFinance</Logo>
       <ToggleModeButton />
       <ButtonGroup>
         <Button primary onClick={handleSignIn}>Sign In</Button>
         <Button onClick={handleSignUp}>Sign Up</Button>
       </ButtonGroup>
-    </Container>
+    </ContainerHeader>
   );
 };
 
 const Footer = () => {
   return (
-    <Container>
+    <ContainerFooter>
       <FooterText>UpsetFinance &copy; 2023. All rights reserved.</FooterText>
-    </Container>
+    </ContainerFooter>
   );
 };
 
-const Container = styled.header`
+const ContainerHeader = styled.header`
   background-color: ${(props) => props.theme.backgroundColor};
-  color: white;
+  color: ${(props) => props.theme.textColor};
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
-// Header = styled.header`
-//   background-color: ${(props) => props.theme.backgroundColor};
-//   color: white;
-//   padding: 20px;
-//   display: flex;
-//   align-items: center;
-//   justify-content: space-between;
-// `;
+const ContainerFooter = styled.footer`
+  background-color: ${(props) => props.theme.backgroundColor};
+  color: ${(props) => props.theme.textColor};
+  // padding-bottom: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20;
+`;
 
 const Button = styled.button`
   background-color: ${(props) => props.theme.buttonBackground};
@@ -72,15 +73,9 @@ const ButtonGroup = styled.div`
   gap: 10px;
 `;
 
-// Footer = styled.footer`
-//   background-color: black;
-//   color: white;
-//   padding: 20px;
-//   text-align: center;
-// `;
-
 const FooterText = styled.p`
   font-size: 14px;
+  // color: ${(props) => props.theme.textColor};
 `;
 
 

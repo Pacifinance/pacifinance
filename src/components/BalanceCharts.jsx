@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useContext} from "react";
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/lib/component/Tooltip"; 
 import { XAxis } from "recharts/lib/cartesian/XAxis";
@@ -7,6 +7,7 @@ import { BarChart } from "recharts/lib/chart/BarChart";
 import { Bar } from "recharts/lib/cartesian/Bar";
 import { Legend } from "recharts/lib/component/Legend";
 import styled from 'styled-components'
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const data = [
   {
@@ -108,7 +109,48 @@ const data = [
 ];
 
 
+
+
 export default function Balance() {
+  const { theme } = useContext(ThemeContext);
+  const { mode } = theme;
+
+  const Section = styled.section`
+    h3 {
+      text-align: center;
+    }
+    h5{
+      text-align: center;
+      color: grey;
+      margin-bottom: 2rem;
+    }
+    .portfolio {
+      color: black;
+      width: 100%;
+      .portfolio__details {
+        display: flex;
+        justify-content: space-between;
+        margin: 1rem 0;
+        div {
+          display: flex;
+          gap: 1rem;
+          h5 {
+            color: gray;
+          }
+        }
+      }
+      .portfolio__graph {
+        height: 10rem;
+        width: 100%;
+        .recharts-default-tooltip {
+          background-color: ${theme.backgroundColor} !important;
+          border-color: black !important;
+          color: white !important;
+        }
+      }
+    }
+  `;
+
   return (
     <Section>
       <h3>Balance</h3>
@@ -142,38 +184,4 @@ export default function Balance() {
   );
 }
 
-const Section = styled.section`
-  h3 {
-    text-align: center;
-  }
-  h5{
-    text-align: center;
-    color: grey;
-    margin-bottom: 2rem;
-  }
-  .portfolio {
-    color: black;
-    width: 100%;
-    .portfolio__details {
-      display: flex;
-      justify-content: space-between;
-      margin: 1rem 0;
-      div {
-        display: flex;
-        gap: 1rem;
-        h5 {
-          color: gray;
-        }
-      }
-    }
-    .portfolio__graph {
-      height: 10rem;
-      width: 100%;
-      .recharts-default-tooltip {
-        background-color: black !important;
-        border-color: black !important;
-        color: white !important;
-      }
-    }
-  }
-`;
+

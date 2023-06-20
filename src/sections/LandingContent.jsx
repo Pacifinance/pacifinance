@@ -12,7 +12,7 @@ const LandingContent = () => {
   //to elimnate the white row between the content and the footer put height: 81vh in the container
   const Container = styled.div`
     font-family: Roboto, sans-serif;
-    height: 80.5vh; 
+    height: 81vh; 
     background-color: ${theme.backgroundColor};
     color: ${theme.textColor};
   `;

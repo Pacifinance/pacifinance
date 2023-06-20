@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useContext} from "react";
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/lib/component/Tooltip";
 import { XAxis } from "recharts/lib/cartesian/XAxis";
@@ -7,6 +7,7 @@ import { LineChart } from "recharts/lib/chart/LineChart";
 import { Line } from "recharts/lib/cartesian/Line";
 import { Legend } from "recharts/lib/component/Legend";
 import styled from 'styled-components'
+import { ThemeContext } from '../contexts/ThemeContext';
 
 
 const data = [
@@ -85,6 +86,60 @@ const data = [
 ];
 
 export default function Incomes() {
+  const { theme } = useContext(ThemeContext);
+  const { mode } = theme;
+
+  const Section = styled.section`
+    h5{
+      color: grey;
+      
+    }
+    h3{
+      color: black;
+      border-top: 1px solid grey;
+      margin top: 10px;
+    }
+
+    .incomes {
+        margin-top: 4rem;
+        color: black;
+        width: 100%;
+        .incomes__details {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 1rem ;
+            div {
+                display: flex;
+                gap: 1rem;
+              color: grey;
+            }
+        }
+        .incomes__graph {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            color: grey;
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                td {
+                    text-align: center;
+                    padding: 5px;
+                    justify-content: space-evenly;
+                  
+                    img{
+                    height: 2.5rem;
+                    width: 2.5rem;
+                    border-radius: 3rem;
+                }
+                    
+                }
+                
+            }
+        }
+    }
+    `;
+
   return (
     <Section>
       <h3>Incomes vs Outcomes</h3>
@@ -117,53 +172,3 @@ export default function Incomes() {
   );
 }
 
-const Section = styled.section`
-h5{
-  color: grey;
-  
-}
-h3{
-  color: black;
-  border-top: 1px solid grey;
-  margin top: 10px;
-}
-
-.incomes {
-    margin-top: 4rem;
-    color: black;
-    width: 100%;
-    .incomes__details {
-        display: flex;
-        justify-content: space-between;
-        margin: 1rem 1rem ;
-        div {
-            display: flex;
-            gap: 1rem;
-           color: grey;
-        }
-    }
-    .incomes__graph {
-        display: flex;
-        justify-content: space-between;
-        margin: 1rem 0;
-        color: grey;
-        table {
-            border-collapse: collapse;
-            width: 100%;
-             td {
-                text-align: center;
-                padding: 5px;
-                justify-content: space-evenly;
-               
-                img{
-                height: 2.5rem;
-                width: 2.5rem;
-                border-radius: 3rem;
-            }
-                
-            }
-            
-        }
-    }
-}
-`;

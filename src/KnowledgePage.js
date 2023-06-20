@@ -17,5 +17,5 @@ function App() {
 
 export default App;
 const Div = styled.div `
-position: relative;
+  position: relative;
 `;

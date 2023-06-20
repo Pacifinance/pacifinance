@@ -20,13 +20,13 @@ const Header = () => {
   };
 
   const ContainerHeader = styled.header`
-  background-color: ${theme.backgroundColor};
-  color: ${theme.textColor};
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  `;
+    background-color: ${theme.backgroundColor};
+    color: ${theme.textColor};
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    `;
 
   const Button = styled.button`
     background-color: ${theme.buttonBackgroundColor};
@@ -46,9 +46,6 @@ const Header = () => {
     display: flex;
     gap: 10px;
   `;
-
-
-
 
   
   return (

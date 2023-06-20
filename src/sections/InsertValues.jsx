@@ -1,12 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 const InsertValue = () => {
+  const { theme } = useContext(ThemeContext);
+  const { mode } = theme;
   const [bank, setBank] = useState(0);
   const [cash, setCash] = useState(0);
   const [stocks, setStocks] = useState(0);
   const [crypto, setCrypto] = useState(0);
   const [salary, setSalary] = useState(0);
+
+  const StyledSection = styled.div`
+    font-family: Roboto, sans-serif; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px;
+  `;
+
+  const StyledInputs = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-bottom: 20px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-right: 20px;
+    }
+
+    input {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      padding: 5px;
+    }
+  `;
+
+  const StyledTable = styled.table`
+    border-collapse: collapse;
+    width: 100%;
+
+    td, th {
+      border: 1px solid black;
+      padding: 5px;
+    }
+
+    th {
+      background-color: ${theme.backgroundColor};
+    }
+  `;
+  
   const [tableData, setTableData] = useState([
     { category: "Food", value: 0 },
     { category: "Housing", value: 0 },
@@ -68,48 +116,3 @@ const InsertValue = () => {
 };
 
 export default InsertValue;
-
-
-const StyledSection = styled.div`
-  font-family: Roboto, sans-serif; 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 50px;
-`;
-
-const StyledInputs = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  width: 100%;
-  margin-bottom: 20px;
-
-  label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-right: 20px;
-  }
-
-  input {
-    margin-top: 10px;
-    font-size: 1.2rem;
-    padding: 5px;
-  }
-`;
-
-const StyledTable = styled.table`
-  border-collapse: collapse;
-  width: 100%;
-
-  td, th {
-    border: 1px solid black;
-    padding: 5px;
-  }
-
-  th {
-    background-color: #F5F5F5;
-  }
-`;

@@ -1,13 +1,64 @@
-import React, {useState} from 'react';
+import React, {useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
+import { ThemeContext } from '../contexts/ThemeContext';
 // import { generated_user_id } from './signUpForm.jsx';
 
 function SignInPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const { theme } = useContext(ThemeContext);
+    const { mode } = theme;
     const navigate = useNavigate();
+
+    const SignIn = styled.div`
+      font-family: Roboto, sans-serif;
+      
+      .sign-in-page {
+        background-color: ${theme.backgroundColor};
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    
+      .sign-in-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    
+      .sign-in-form h2 {
+        color: ${theme.textColor};
+        margin-bottom: 20px;
+      }
+    
+      .sign-in-form label {
+        color: ${theme.textColor};
+        margin-bottom: 8px;
+      }
+    
+      .sign-in-form input {
+        padding: 8px;
+        border: none;
+        background-color: transparent;
+        color: ${theme.textColor};
+        margin-bottom: 16px;
+      }
+    
+      .sign-in-form input::placeholder {
+        color: ${theme.textColor};
+      }
+    
+      .sign-in-form button {
+        padding: 8px 16px;
+        background-color: ${theme.buttonColor}};
+        color: ${theme.textColor};
+        border: none;
+        cursor: pointer;
+      }
+    `;
 
     // if (generated_user_id !== '') {
     //   setUsername(generated_user_id);
@@ -81,51 +132,3 @@ function SignInPage() {
     }
 
     export default SignInPage;
-
-    const SignIn = styled.div`
-    font-family: Roboto, sans-serif;
-    
-    .sign-in-page {
-      background-color: #3d3d3d;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-    .sign-in-form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .sign-in-form h2 {
-      color: white;
-      margin-bottom: 20px;
-    }
-  
-    .sign-in-form label {
-      color: white;
-      margin-bottom: 8px;
-    }
-  
-    .sign-in-form input {
-      padding: 8px;
-      border: none;
-      background-color: transparent;
-      color: white;
-      margin-bottom: 16px;
-    }
-  
-    .sign-in-form input::placeholder {
-      color: #FF8000;
-    }
-  
-    .sign-in-form button {
-      padding: 8px 16px;
-      background-color: #FF8000;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-  `;

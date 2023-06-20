@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styled from 'styled-components'
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
@@ -9,6 +9,7 @@ import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import { PieChart, Pie, Cell } from "recharts";
+import { ThemeContext } from '../contexts/ThemeContext';
 import axios from 'axios';
 
 // const [activeIndex, setActiveIndex] = useState(null);
@@ -61,6 +62,68 @@ function Analytic() {
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bankReal, setBank] = useState(0);
     const [cashReal, setCash] = useState(0);
+    const { theme } = useContext(ThemeContext);
+    const { mode } = theme;
+
+    const Section = styled.section `
+        display: flex;
+        grid-template-columns: repeat(4, 1fr);
+        justify-content: space-between;
+        margin: 0 60px;
+        .analytic {
+            justify-content: space-between;
+            padding: 1rem 2rem 1rem 2rem;
+            border-radius: 1rem;
+            color: ${theme.textColor};
+            background-color: ${theme.backgroundColor};
+            justify-content: space-evenly;
+            align-items: center;
+            transition: 0.5s ease-in-out;
+            width: 170px;
+        
+            .design{
+                display: flex;
+                align-items: center;
+                
+                .logo {
+                    background-color: ${theme.backgroundColor};
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                
+                    svg {
+                        font-size: 2rem;
+                    }
+                }
+                .action {
+                    margin-left: 80px;
+                svg{
+                    font-size: 1.5rem;
+                }
+                }
+
+            }
+            .transfer {
+                margin-top: 20px;
+                color: grey
+            }
+            .money {
+                margin-top: 20px;  
+            }
+        }
+    `;
+
+    const Wrapper = styled.div`
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 0 60px;
+
+        .pie-chart-section {
+            margin-top: 50px;
+            margin-right: 50px;
+        }
+        `;
 
     useEffect(() => {
         // function to fetch the balances from the API
@@ -218,63 +281,4 @@ function Analytic() {
     )
 }
 
-export default Analytic
-const Section = styled.section `
-    display: flex;
-    grid-template-columns: repeat(4, 1fr);
-    justify-content: space-between;
-    margin: 0 60px;
-    .analytic {
-        justify-content: space-between;
-        padding: 1rem 2rem 1rem 2rem;
-        border-radius: 1rem;
-        color: black;
-        background-color: white;
-        justify-content: space-evenly;
-        align-items: center;
-        transition: 0.5s ease-in-out;
-        width: 170px;
-       
-        .design{
-            display: flex;
-            align-items: center;
-            
-            .logo {
-                background-color: white;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-               
-                svg {
-                    font-size: 2rem;
-                }
-            }
-            .action {
-                margin-left: 80px;
-               svg{
-                font-size: 1.5rem;
-               }
-            }
-
-        }
-        .transfer {
-            margin-top: 20px;
-            color: grey
-        }
-        .money {
-            margin-top: 20px;  
-        }
-    }
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin: 0 60px;
-
-  .pie-chart-section {
-    margin-top: 50px;
-    margin-right: 50px;
-  }
-`;
+export default Analytic;

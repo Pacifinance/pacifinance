@@ -1,9 +1,10 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useContext} from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { ThemeContext } from '../contexts/ThemeContext';
 
 var generated_user_id = '';
 
@@ -14,7 +15,76 @@ function SignUpPage() {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
+    const { theme } = useContext(ThemeContext);
+    const { mode } = theme;
+
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
+
+    const SignUp = styled.div`
+        font-family: Roboto, sans-serif;
+        
+        .signUp-page {
+            background-color: ${theme.backgroundColor};
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        .signUp-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .signUp-form h1 {
+            color: ${theme.textColor};
+            margin-bottom: 5px;
+        }
+
+        .signUp-form h3 {
+            color: ${theme.textColor};
+            margin-bottom: 20px;
+        }
+    
+        .signUp-form label {
+            color: ${theme.textColor};
+            margin-bottom: 8px;
+        }
+    
+        .signUp-form input {
+            padding: 8px;
+            border: none;
+            background-color: transparent;
+            color: ${theme.textColor};
+            margin-bottom: 16px;
+        }
+    
+        .signUp-form input::placeholder {
+            color: ${theme.textColor};
+        }
+    
+        .signUp-form button {
+            padding: 8px 16px;
+            background-color: ${theme.buttonColor}};
+            color: ${theme.textColor};
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: ${theme.backgroundColor};
+            border: 4px solid ${theme.buttonColor};
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            color: ${theme.textColor};
+            text-align: center;
+            padding: 20px;
+        
+    `;
 
     const navigate = useNavigate();
     // useeffect used to ensure that it runs only after the component has rendered and the state has been updated
@@ -162,69 +232,3 @@ function SignUpPage() {
     }
     // export { generated_user_id };
     export default SignUpPage;
-
-    const SignUp = styled.div`
-    font-family: Roboto, sans-serif;
-    
-    .signUp-page {
-      background-color: #3d3d3d;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-    .signUp-form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .signUp-form h1 {
-        color: white;
-        margin-bottom: 5px;
-    }
-
-    .signUp-form h3 {
-      color: white;
-      margin-bottom: 20px;
-    }
-  
-    .signUp-form label {
-      color: white;
-      margin-bottom: 8px;
-    }
-  
-    .signUp-form input {
-      padding: 8px;
-      border: none;
-      background-color: transparent;
-      color: white;
-      margin-bottom: 16px;
-    }
-  
-    .signUp-form input::placeholder {
-      color: #FF8000;
-    }
-  
-    .signUp-form button {
-      padding: 8px 16px;
-      background-color: #FF8000;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    .modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        border: 4px solid #FF8000;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        color: black;
-        text-align: center;
-        padding: 20px;
-      
-  `;

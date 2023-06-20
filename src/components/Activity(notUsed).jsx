@@ -1,12 +1,77 @@
-import React from 'react'
+import React, {useState, useContext} from 'react'
 import styled from 'styled-components'
 import { MdOutlineWaterDrop } from "react-icons/md";
 import { GiPayMoney } from "react-icons/gi";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { AiOutlineWifi } from "react-icons/ai";
+import { ThemeContext } from '../contexts/ThemeContext';
 
 
 function Activity() {
+    const { theme } = useContext(ThemeContext);
+    const { mode } = theme;
+
+    const Section = styled.section `
+        display: grid;
+        gap: 0.2rem;
+        .title{
+            margin-left: 15px;
+            h4{
+                font-weight:bold;
+            }
+            h6{
+                color: white;
+            }
+        }
+        .analytic {
+            padding: 0.3rem 0.8rem 0.3rem 1.2rem;
+            
+            color: white;
+            justify-content: space-evenly;
+            align-items: center;
+            gap: 1rem;
+            transition: 0.5s ease-in-out;
+            &:hover {
+                background-color: ${theme.backgroundColor};
+                color: black;
+                svg {
+                    color: black;
+                }
+            }
+            float: both;
+            .design{
+                display: flex;
+                align-items: center;  
+                gap:1rem;
+                .logo{
+                    background-color: white;
+                    border-radius: 1rem;
+                    border: 1px solid white;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0.5rem;
+                    svg{
+                        font-size: 1.5rem;
+                    }
+
+                }
+                .color{
+                    color: ${theme.textColor};
+                }
+            }
+            .money{
+                h5{
+                    float: right;
+                    margin-top: -30px;
+                }
+            }
+            
+            
+            
+        }
+        
+    `;
     return (
         <Section>
             <div>
@@ -88,65 +153,5 @@ function Activity() {
     )
 }
 
-export default Activity
-const Section = styled.section `
-    display: grid;
-    gap: 0.2rem;
-    .title{
-        margin-left: 15px;
-        h4{
-            font-weight:bold;
-        }
-        h6{
-            color: white;
-        }
-    }
-    .analytic {
-        padding: 0.3rem 0.8rem 0.3rem 1.2rem;
-        
-        color: white;
-        justify-content: space-evenly;
-        align-items: center;
-        gap: 1rem;
-        transition: 0.5s ease-in-out;
-        &:hover {
-            background-color: #3d3d3d;
-            color: black;
-            svg {
-                color: black;
-            }
-        }
-        float: both;
-        .design{
-            display: flex;
-            align-items: center;  
-            gap:1rem;
-            .logo{
-                background-color: white;
-                border-radius: 1rem;
-                border: 1px solid white;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 0.5rem;
-                svg{
-                    font-size: 1.5rem;
-                }
+export default Activity;
 
-            }
-            .color{
-                color: white;
-            }
-        }
-        .money{
-            h5{
-                float: right;
-                margin-top: -30px;
-            }
-        }
-        
-        
-        
-    }
-    
-`;

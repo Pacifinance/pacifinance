@@ -75,7 +75,7 @@ function Analytic() {
             padding: 1rem 2rem 1rem 2rem;
             border-radius: 1rem;
             color: ${theme.textColor};
-            background-color: ${theme.backgroundColor};
+            background-color: ${theme.jollyColor};
             justify-content: space-evenly;
             align-items: center;
             transition: 0.5s ease-in-out;

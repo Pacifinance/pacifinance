@@ -5,6 +5,7 @@ export const ThemeContext = createContext();
 export const themes = {
   light: {
     mode: 'light',
+    jollyColor: '#FF8000',
     primaryColor: '#fff',
     textColor: 'black',//#222629
     backgroundColor: '#fff',
@@ -13,6 +14,7 @@ export const themes = {
   },
   dark: {
     mode: 'dark',
+    jollyColor: 'white',
     primaryColor: '#000000',
     textColor: '#fff',
     backgroundColor: '#3d3d3d',

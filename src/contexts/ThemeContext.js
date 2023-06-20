@@ -1,28 +1,38 @@
 import React, { createContext, useState } from 'react';
 
-const themes = {
+export const ThemeContext = createContext();
+
+export const themes = {
   light: {
-    primaryColor: '#3d3d3d',
-    textColor: '#222629',
+    mode: 'light',
+    primaryColor: '#fff',
+    textColor: 'black',//#222629
     backgroundColor: '#fff',
-    buttonBackground: 'orange',
+    buttonBackgroundColor: '#FF8000',
+    iconBackgroundColor: '#FF8000',
   },
   dark: {
-    primaryColor: '#fff',
+    mode: 'dark',
+    primaryColor: '#000000',
     textColor: '#fff',
-    backgroundColor: '#222629',
-    buttonBackground: 'orange',
+    backgroundColor: '#3d3d3d',
+    buttonBackgroundColor: '#FF8000',
+    iconBackgroundColor: '#FF8000',
   },
 };
 
-export const ThemeContext = createContext();
+
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(themes.dark);
 
   const toggleMode = () => {
-    setTheme(theme === themes.light ? themes.dark : themes.light);
+    setTheme(prevTheme => ({
+      ...prevTheme,
+      mode: prevTheme.mode === 'dark' ? 'light' : 'dark'
+    }));
   };
+  
 
   return (
     <ThemeContext.Provider value={{ theme, toggleMode }}>

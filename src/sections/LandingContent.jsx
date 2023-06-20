@@ -1,13 +1,87 @@
 import React, { useState, useContext } from 'react';
-import { ThemeContext, themes } from '../contexts/ThemeContext';
+import { ThemeContext } from '../contexts/ThemeContext';
 import styled from 'styled-components';
 
 
 
 
 const LandingContent = () => {
-  const { theme, toggleMode } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const { mode } = theme;
+
+  //to elimnate the white row between the content and the footer put height: 81vh in the container
+  const Container = styled.div`
+    font-family: Roboto, sans-serif;
+    height: 80.5vh; 
+    background-color: ${theme.backgroundColor};
+    color: ${theme.textColor};
+  `;
+
+  const CTAButton = styled.button`
+    background-color: ${theme.buttonBackgroundColor};
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+  `;
+  const HeroSection = styled.section`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px;
+  `;
+
+  const HeroText = styled.div`
+    max-width: 500px;
+    p {
+      margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
+    }
+    h1 {
+      margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
+    }
+  `;
+
+
+
+
+  const HeroImage = styled.img`
+    max-width: 600px;
+    height: auto;
+  `;
+
+  const FeaturesSection = styled.section`
+    display: grid;
+    bottom: 0;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 60px;
+  `;
+
+  const Feature = styled.div`
+    display: flex;
+    align-items: center;
+  `;
+
+  const FeatureIcon = styled.div`
+    background-color: ${theme.iconBackgroundColor};
+    color: white;
+    padding: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  `;
+
+  const FeatureText = styled.div`
+    margin-left: 20px;
+  `;
+
+  const Icon = styled.div`
+    /* Aggiungi qui l'icona desiderata */
+  `;
 
   return (
     <Container mode={mode}>
@@ -55,77 +129,5 @@ const LandingContent = () => {
 };
 
 //o lato, sans-serif;
-
-const Container = styled.div`
-  font-family: Roboto, sans-serif;
-  // height: 100vh;
-  background-color: ${(props) => props.theme.backgroundColor};
-  color: ${(props) => props.theme.textColor};
-`;
-
-const HeroSection = styled.section`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 60px;
-`;
-
-const HeroText = styled.div`
-  max-width: 500px;
-  p {
-    margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
-  }
-  h1 {
-    margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
-  }
-`;
-
-
-const CTAButton = styled.button`
-  background-color: orange;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  font-size: 18px;
-  cursor: pointer;
-`;
-
-const HeroImage = styled.img`
-  max-width: 600px;
-  height: auto;
-`;
-
-const FeaturesSection = styled.section`
-  display: grid;
-  bottom: 0;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  padding: 60px;
-`;
-
-const Feature = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const FeatureIcon = styled.div`
-  background-color: orange;
-  color: white;
-  padding: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-`;
-
-const FeatureText = styled.div`
-  margin-left: 20px;
-`;
-
-const Icon = styled.div`
-  /* Aggiungi qui l'icona desiderata */
-`;
 
 export default LandingContent;

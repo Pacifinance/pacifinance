@@ -5,7 +5,7 @@ import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
 // import { generated_user_id } from './signUpForm.jsx';
 
-function SignInPage() {
+function SignInForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { theme } = useContext(ThemeContext);
@@ -131,4 +131,4 @@ function SignInPage() {
     );
     }
 
-    export default SignInPage;
+    export default SignInForm;

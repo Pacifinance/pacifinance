@@ -14,7 +14,7 @@ import MuiCustomStyled from '../contexts/MuiCustomStyled';
 
 var generated_user_id = '';
 
-function SignUpPage() {
+function SignUpForm() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -313,4 +313,4 @@ function SignUpPage() {
     );
     }
     // export { generated_user_id };
-    export default SignUpPage;
+    export default SignUpForm;

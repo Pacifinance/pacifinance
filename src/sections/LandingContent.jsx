@@ -135,7 +135,7 @@ const LandingContent = () => {
           </FeatureIcon>
           <FeatureText>
             <h3>Sicurezza garantita</h3>
-            <p>Darti sicuri, anonimi e non sensibili<br></br> La privacy dell'utente è la nostra priorità. </p>
+            <p>Dati sicuri, anonimi e non sensibili<br></br> La privacy dell'utente è la nostra priorità. </p>
           </FeatureText>
         </Feature>
         <Feature>

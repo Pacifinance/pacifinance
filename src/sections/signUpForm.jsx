@@ -5,12 +5,20 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ThemeContext } from '../contexts/ThemeContext';
+import InfoIcon from '@mui/icons-material/Info';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
+//for the modal
+import MuiCustomStyled from '../contexts/MuiCustomStyled';
 
 var generated_user_id = '';
 
 function SignUpPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
@@ -19,13 +27,14 @@ function SignUpPage() {
     const { mode } = theme;
 
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
+    const { CustomDialog, CustomButton, CustomDialogTitle, CustomDialogContent, CustomDialogContentText, CustomDialogActions } = MuiCustomStyled;
 
     const SignUp = styled.div`
         font-family: Roboto, sans-serif;
         
         .signUp-page {
             background-color: ${theme.backgroundColor};
-            height: 100vh;
+            height: 50vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -42,10 +51,38 @@ function SignUpPage() {
             margin-bottom: 5px;
         }
 
-        .signUp-form h3 {
-            color: ${theme.textColor};
-            margin-bottom: 20px;
+        .icon-with-text {
+            display: flex;
+            color: ${theme.buttonBackgroundColor};
+            align-items: center; /* Allinea verticalmente gli elementi */
+          }
+          
+        .icon-with-text h4 {
+            color: ${theme.buttonBackgroundColor};
+            margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
         }
+
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .password-icon {
+            position: absolute;
+            top: 51%;
+            right: 56%;
+            transform: translateY(50%);
+            cursor: pointer;
+        }
+
+        .password-icon2 {
+            font-size: 16px;
+            position: absolute;
+            top: 51%;
+            right: 34%;
+            transform: translateY(50%);
+            cursor: pointer;
+        }
+          
     
         .signUp-form label {
             color: ${theme.textColor};
@@ -66,11 +103,12 @@ function SignUpPage() {
     
         .signUp-form button {
             padding: 8px 16px;
-            background-color: ${theme.buttonColor}};
+            background-color: ${theme.buttonBackgroundColor}};
             color: ${theme.textColor};
-            border: none;
+            // border: none;
             cursor: pointer;
         }
+        
 
         .modal {
             position: fixed;
@@ -78,7 +116,7 @@ function SignUpPage() {
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: ${theme.backgroundColor};
-            border: 4px solid ${theme.buttonColor};
+            border: 4px solid ${theme.buttonBackgroundColor};
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
             color: ${theme.textColor};
             text-align: center;
@@ -107,6 +145,15 @@ function SignUpPage() {
     //     setIsCopied(true);
     //   };
     
+    const handleTogglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleToggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    
     const closeSuccessModal = () => {
         setShowSuccessModal(false);
         // copyToClipboard();
@@ -123,10 +170,12 @@ function SignUpPage() {
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
+        inputRef.current.focus();
     };
 
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
+        inputRef.current.focus();
     };
     
     const handleSubmit = async (event) => {
@@ -143,15 +192,17 @@ function SignUpPage() {
             // navigate('/sign-in');
           }
           else {
-            alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
+            // alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
+            openErrorModal();
             
           }
           
         } catch (error) {
-          console.error(error);
-          setPassword('');
-          setConfirmPassword('');
-          alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
+            console.error(error);
+            setPassword('');
+            setConfirmPassword('');
+            openErrorModal();
+        //   alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
         }
     
     };
@@ -162,25 +213,38 @@ function SignUpPage() {
             <div className="signUp-page">
                 <div className="signUp-form">
                     <h1>Registrazione</h1>
-                    <h3>Il sistema genererà per te un id casuale</h3>
+                    <div class="icon-with-text">
+                        <InfoIcon />
+                        <h4>Il sistema genererà per te un id casuale</h4>
+                    </div>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="password">Password:</label>
                         <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             id="password"
                             value={password}
                             onChange={handlePasswordChange}
                             required
+                            ref={inputRef} 
                         />
+                        <div className="password-icon" onClick={handleTogglePasswordVisibility}>
+                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                        </div>
+
 
                         <label htmlFor="password">Conferma password:</label>
                         <input
-                            type="password"
+                            type={showConfirmPassword ? 'text' : 'password'}
                             id="confirmPassword"
                             value={confirmPassword}
                             onChange={handleConfirmPasswordChange}
                             required
+                            ref={inputRef} 
                         />
+                        <div className="password-icon2" onClick={handleToggleConfirmPasswordVisibility}>
+                            {showConfirmPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                        </div>
+
 
                         <button type="submit">Registrati</button>
                     </form>
@@ -189,43 +253,61 @@ function SignUpPage() {
 
             
             {showSuccessModal && (
-                <Modal
-                    isOpen={showSuccessModal}
-                    onRequestClose={closeSuccessModal}
-                    className="modal"
-                    // overlayClassName="modal-overlay"
-                    contentLabel="Popup"
+                <CustomDialog
+                    open={showSuccessModal} 
+                    onClose={closeSuccessModal}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
                 >
-                    <h2>Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n</h2>
-                    <h3>Il tuo id utente è: {generated_user_id}\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. </h3>
-                    <input type="text" ref={inputRef} value={generated_user_id} readOnly style={{ position: 'fixed', top: '-9999px' }} />
-                    <CopyToClipboard
-                        text={generated_user_id}
-                        onCopy={() => {
-                            setIsCopied(true);
-                            setTimeout(() => {
+                    <CustomDialogTitle id="alert-dialog-title">
+                        {" Registrazione avvenuta con successo"}
+                    </CustomDialogTitle>
+                    <CustomDialogContent>
+                        <CustomDialogContentText id="alert-dialog-description">
+                            Il tuo id utente è: {generated_user_id}.<br></br> Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.
+                        </CustomDialogContentText>
+                    </CustomDialogContent>
+                    <CustomDialogActions>
+                        <input type="text" ref={inputRef} value={generated_user_id} readOnly style={{ position: 'fixed', top: '-9999px' }} />
+                        <CopyToClipboard
+                            text={generated_user_id}
+                            onCopy={() => {
+                                setIsCopied(true);
+                                setTimeout(() => {
                                 setIsCopied(false);
-                            }, 1000);
-                        }}
-                    >
-                        <button onClick={closeSuccessModal}>
-                            <span>{isCopied ? 'Copiato!' : 'Copia il tuo ID'}</span>
-                        </button>
-                    </CopyToClipboard>
-                </Modal>
+                                    }, 1000);
+                            }}
+                        >
+                            <CustomButton onClick={closeSuccessModal} autofocus>
+                                <span>{isCopied ? 'Copiato!' : 'Copia il tuo ID'}</span>
+                            </CustomButton>
+                        </CopyToClipboard>
+                    </CustomDialogActions>
+                </CustomDialog>   
             )}
             {showErrorModal && (
-                <Modal
-                    isOpen={showErrorModal}
-                    onRequestClose={closeErrorModal}
-                    className="modal"
-                    // overlayClassName="modal-overlay"
-                    contentLabel="Popup"
+                <CustomDialog
+                    open={showErrorModal}
+                    onClose={closeErrorModal}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
                 >
-                    <h2>Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.</h2>
-                    <button onClick={closeErrorModal}>
-                    </button>
-                </Modal>
+                    <CustomDialogTitle id="alert-dialog-title">
+                        {"Errore in fase di registrazione"}
+                    </CustomDialogTitle>
+                    <CustomDialogContent>
+                        <CustomDialogContentText id="alert-dialog-description">
+                            Si è verificato un errore nella registrazione del tuo account. <br></br>
+                            Per favore riprova tra un istante.<br></br>
+                            E' probabile che un account con il tuo stesso id utente sia già <br></br> presente nel sistema.
+                        </CustomDialogContentText>
+                    </CustomDialogContent>
+                    <CustomDialogActions>
+                        <CustomButton onClick={closeErrorModal} autoFocus>
+                            Ok, va bene
+                        </CustomButton>
+                    </CustomDialogActions>
+              </CustomDialog>
             )}
         </SignUp>
     );

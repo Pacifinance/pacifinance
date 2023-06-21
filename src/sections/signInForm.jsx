@@ -17,7 +17,7 @@ function SignInPage() {
       
       .sign-in-page {
         background-color: ${theme.backgroundColor};
-        height: 100vh;
+        height: 5vh;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -53,7 +53,7 @@ function SignInPage() {
     
       .sign-in-form button {
         padding: 8px 16px;
-        background-color: ${theme.buttonColor}};
+        background-color: ${theme.buttonBackgroundColor}};
         color: ${theme.textColor};
         border: none;
         cursor: pointer;
@@ -94,7 +94,7 @@ function SignInPage() {
           console.error(error);
           setUsername('');
           setPassword('');
-          alert("Sign in failed");
+          alert("L'utente non è presente nel nostro database.");
         }
     
       };

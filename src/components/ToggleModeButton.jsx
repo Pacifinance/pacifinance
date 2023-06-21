@@ -11,25 +11,25 @@ const ToggleModeButton = () => {
   // Estrai il tema corrente
   const { mode } = theme;
 
+
   return (
     <Button onClick={toggleMode} mode={mode}>
       {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-      Toggle Mode
     </Button>
   );
 };
 
 const Button = styled.button`
-  background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
-  color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+    background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
+    color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
+    padding: 6px 10px;
+    border-radius: 4px;
+    border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#FF8000')};
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `;
 
 export default ToggleModeButton;

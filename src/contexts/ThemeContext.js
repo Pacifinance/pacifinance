@@ -30,7 +30,7 @@ export const ThemeProvider = ({ children }) => {
 
   const toggleMode = () => {
     setTheme(prevTheme => ({
-      ...prevTheme,
+      ...themes[prevTheme.mode === 'dark' ? 'light' : 'dark'], // Copia l'intero oggetto tema corrispondente al nuovo modo
       mode: prevTheme.mode === 'dark' ? 'light' : 'dark'
     }));
   };

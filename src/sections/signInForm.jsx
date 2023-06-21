@@ -17,7 +17,7 @@ function SignInForm() {
       
       .sign-in-page {
         background-color: ${theme.backgroundColor};
-        height: 5vh;
+        height: 50vh;
         display: flex;
         justify-content: center;
         align-items: center;

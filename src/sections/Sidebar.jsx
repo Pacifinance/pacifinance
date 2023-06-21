@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import avatarImage from "../assets/account-logo.png"
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import ToggleModeButton from '../components/ToggleModeButton';
 import { ThemeContext } from '../contexts/ThemeContext';
 
 
@@ -341,7 +342,9 @@ function Sidebar() {
                           
                         </ul>
                     </div>
-
+                    <div className="toggle">
+                        <ToggleModeButton />
+                    </div>
                         
                     <div className="notification">
                         <AiOutlineBell />

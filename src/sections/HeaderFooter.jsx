@@ -13,14 +13,24 @@ const Header = () => {
   const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
   const { mode } = theme;
-  const [isModalOpen, setModalOpen] = useState(false);
+  // const [isModalOpen, setModalOpen] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
  
-  const handleOpenModal = () => {
-    setModalOpen(true);
+  const handleOpenSignIn = () => {
+    setIsSignIn(true);
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
+  const handleOpenSignUp = () => {
+    setIsSignUp(true);
+  };
+
+  const handleCloseSignIn= () => {
+    setIsSignIn(false);
+  };
+
+  const handleCloseSignUp= () => {
+    setIsSignUp(false);
   };
 
 
@@ -39,7 +49,7 @@ const Header = () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    `;
+  `;
 
   const Button = styled.button`
     background-color: ${theme.buttonBackgroundColor};
@@ -68,8 +78,22 @@ const Header = () => {
     gap: 10px;
   `;
 
-  const ModalSignInUp = styled.div`
-    display: ${isModalOpen ? 'flex' : 'none'};
+  const ModalSignIn = styled.div`
+    display: ${isSignIn ? 'flex' : 'none'};
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  `;
+
+  const ModalSignUp = styled.div`
+    display: ${isSignUp ? 'flex' : 'none'};
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -98,20 +122,20 @@ const Header = () => {
         <ButtonContainer>
           <ToggleModeButton />
           <ButtonGroup>
-            <Button id="openSignInModalButton" onClick={handleOpenModal}>Sign In</Button>
-            <ModalSignInUp> 
+            <Button id="openSignInModalButton" onClick={handleOpenSignIn}>Sign In</Button>
+            <ModalSignIn> 
               <ModalContent>
-                  <span class="close" onClick={handleCloseModal}>&times;</span>
+                  <span class="close" onClick={handleCloseSignIn}>&times;</span>
                   <SignInForm />
               </ModalContent>
-            </ModalSignInUp>
-            <Button id="openSignUpModalButton"onClick={handleOpenModal}>Sign Up</Button>
-            <ModalSignInUp> 
+            </ModalSignIn>
+            <Button id="openSignUpModalButton"onClick={handleOpenSignUp}>Sign Up</Button>
+            <ModalSignUp> 
               <ModalContent>
-                  <span class="close" onClick={handleCloseModal}>&times;</span>
+                  <span class="close" onClick={handleCloseSignUp}>&times;</span>
                   <SignUpForm />
               </ModalContent>
-            </ModalSignInUp>
+            </ModalSignUp>
           </ButtonGroup>
         </ButtonContainer>
       </ContainerHeader>

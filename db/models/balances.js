@@ -122,7 +122,6 @@ async function getYearlyBalanceByUserId(user_id) {
 const Balance = mongoose.model("Balance", balanceSchema);
 
 module.exports = {
-    Balance,
     insertNew,
     getLatestByUserId,
     getYearlyBalanceByUserId

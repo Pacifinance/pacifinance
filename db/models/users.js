@@ -6,6 +6,9 @@ const sessionIdLength = 32;
 const userSchema = new mongoose.Schema({
     userId: {type: String, required: true, unique: true, dropDups: true},
     password: {type: String, required: true},
+    nickname: {type: String, default: ""},
+    nation: {type: String, default: ""},
+    occupation: {type: String, default: ""},
     roles: {type: [String], required: true},
     session: {type: {
         sessionId: {type: String, required: true, unique: true, dropDups: true},
@@ -65,8 +68,10 @@ async function insertNew(user_id, password) {
     const data = {
         userId: user_id,
         password: password,
+        nickname: "",
+        nation: "",
+        occupation: "",
         roles: ["user"],
-        insertRights: true,
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
             expirationDate: new Date(0)
@@ -100,6 +105,36 @@ async function getPasswordByUserId(user_id) {
  */
 async function setPasswordOfUserId(user_id, hashed_new_pwd) {
     return await setOne({userId: user_id}, {password: hashed_new_pwd});
+}
+
+/**
+ * Updates the nickname of a user
+ * @param {*} user_id - ID of the user
+ * @param {*} nickname - nickname to set
+ * @returns User document
+ */
+async function setNicknameOfUserId(user_id, nickname) {
+    return await setOne({userId: user_id}, {nickname: nickname});
+}
+
+/**
+ * Updates the nation of a user
+ * @param {*} user_id - ID of the user
+ * @param {*} nickname - nation to set
+ * @returns User document
+ */
+async function setNationOfUserId(user_id, nation) {
+    return await setOne({userId: user_id}, {nation: nation});
+}
+
+/**
+ * Updates the occupation of a user
+ * @param {*} user_id - ID of the user
+ * @param {*} occupation - occupation to set
+ * @returns User document
+ */
+async function setOccupationOfUserId(user_id, occupation) {
+    return await setOne({userId: user_id}, {occupation: occupation});
 }
 
 /**
@@ -137,6 +172,9 @@ module.exports = {
     getAllUsersIds,
     getPasswordByUserId,
     setPasswordOfUserId,
+    setNicknameOfUserId,
+    setNationOfUserId,
+    setOccupationOfUserId,
     getSessionByUserId,
     setSessionOfUserId
 };

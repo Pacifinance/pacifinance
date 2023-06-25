@@ -47,7 +47,7 @@ async function getLastNSorted(where, select, sort, limit) {
  * @param {Number} stocks - stocks amount
  * @param {Number} bank - bank amount
  * @param {Number} cash - cash amount
- * @param {Number} crypto - real crypto amount
+ * @param {Number} crypto - crypto amount
  * @param {String} category_tag - category tag of the expense
  * @returns Expense document
  */

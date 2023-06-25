@@ -212,15 +212,6 @@ app.post("/balances/add", async (req, res) => {
         res.send();
         return;
     }
-    // Check if the user has the rights to insert its balance.
-    // Send status code 403 (Forbidden) if it has no rights
-    const user = await db.users.getRightsByUserId(req.session.userId);
-    if (user === null || !user.insertRights)
-    {
-        res.status(403);
-        res.send();
-        return;
-    }
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
     let balance = req.body.balance;

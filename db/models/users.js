@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
     userId: {type: String, required: true, unique: true, dropDups: true},
     password: {type: String, required: true},
     roles: {type: [String], required: true},
-    insertRights: {type: Boolean, required: true},
     session: {type: {
         sessionId: {type: String, required: true, unique: true, dropDups: true},
         expirationDate: {type: Date, required: true}
@@ -104,15 +103,6 @@ async function setPasswordOfUserId(user_id, hashed_new_pwd) {
 }
 
 /**
- * Gets the rights of a user
- * @param {String} user_id - ID of the user
- * @returns User document
- */
-async function getRightsByUserId(user_id) {
-    return await getOne({userId: user_id}, "-_id insertRights");
-}
-
-/**
  * Gets the session of a user
  * @param {String} user_id - ID of the user
  * @returns User document
@@ -147,7 +137,6 @@ module.exports = {
     getAllUsersIds,
     getPasswordByUserId,
     setPasswordOfUserId,
-    getRightsByUserId,
     getSessionByUserId,
     setSessionOfUserId
 };

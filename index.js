@@ -255,6 +255,50 @@ app.get("/balances/top", async (req, res) => {
     res.json(balances);
 });
 
+app.post("/expenses/add", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Sanitize user input. Send status code 400 (Bad Request)
+    // in case of invalid data (not numbers)
+    let expense = req.body.expense;
+    if (!utils.isExpenseValid(expense))
+    {
+        res.status(400);
+        res.send();
+        return;
+    }
+    // Add the expense to the database and send status code 200 (OK)
+    await db.expenses.insertNew(
+        req.session.userId, expense.date, expense.stocks, expense.bank, expense.cash, expense.crypto, expense.category_tag
+    );
+    res.status(200);
+    res.send();
+});
+
+app.get("/expenses/get", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Get the most recent expenses from the database
+    const expenses = await db.expenses.getMostRecentByUserId(req.session.userId);
+    // Send the data to the client with status code 200 (OK)
+    res.status(200);
+    res.json(expenses);
+});
+
 app.listen(process.env.PORT, () => {
     console.log("Server is listening");
     db.connect(process.env.DB_URI)

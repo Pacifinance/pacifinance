@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const db = require("./db/mongo.js");
 
 /**
  * Sanitizes user input by removing blank spaces and HTML tags
@@ -36,6 +37,27 @@ function isBalanceValid(data) {
         !isNaN(data.stocks.real) && !isNaN(data.stocks.invested) &&
         !isNaN(data.bank) && !isNaN(data.cash) &&
         !isNaN(data.crypto.real) && !isNaN(data.crypto.real)
+    );
+}
+
+/**
+ * Checks if an expense is valid
+ * @param {Object} data - Expense to check (sanitized and modified by this function)
+ * @returns true if the expense is valid, false otherwise
+ */
+function isExpenseValid(data) {
+    // Cast all values to Number for type integrity
+    data.stocks = Number(data.stocks);
+    data.bank = Number(data.bank);
+    data.cash = Number(data.cash);
+    data.crypto = Number(data.crypto);
+    // If the date field is not set or invalid, set it to now
+    let now = new Date(Date.now());
+    if (data.date > now) data.date = now;
+    // Return true if all fields are valid and the category tag is recognized
+    return (
+        !isNaN(data.stocks) && !isNaN(data.bank) && !isNaN(data.cash) &&
+        !isNaN(data.crypto) && db.expenses.tags.includes(data.category_tag)
     );
 }
 
@@ -112,6 +134,7 @@ function decrementDateByOneMonth(date) {
 module.exports = {
     sanitizeInput,
     isBalanceValid,
+    isExpenseValid,
     hashPassword,
     checkPassword,
     generateRandomString,

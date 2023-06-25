@@ -143,7 +143,7 @@ app.post("/logout", async (req, res) => {
     res.send();
 });
 
-app.post("/pwdchange", async (req, res) => {
+app.post("/user/set-password", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);
@@ -230,7 +230,7 @@ app.post("/balances/add", async (req, res) => {
     res.send();
 });
 
-app.get("/leaderboards", async (req, res) => {
+app.get("/balances/top", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);

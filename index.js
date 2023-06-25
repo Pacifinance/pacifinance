@@ -182,26 +182,6 @@ app.post("/user/set-password", async (req, res) => {
     res.redirect("logout");
 });
 
-app.get("/balances/get", async (req, res) => {
-    // Check if the session is valid. Send status code 401
-    // (Unauthorized) if it's not valid
-    const valid_session = await checkUserSession(req.session);
-    if (!valid_session)
-    {
-        res.status(401);
-        res.send();
-        return;
-    }
-    // Get the last 12 month of balances from the database
-    const balances = await db.balances.getYearlyBalanceByUserId(req.session.userId);
-    let balances_data = [];
-    for (let balance of balances)
-        balances_data.push(balance);
-    // Send the data to the client with status code 200 (OK)
-    res.status(200);
-    res.json(balances_data);
-});
-
 app.post("/balances/add", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
@@ -228,6 +208,23 @@ app.post("/balances/add", async (req, res) => {
     );
     res.status(200);
     res.send();
+});
+
+app.get("/balances/get", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Get the last 12 month of balances from the database
+    const balances = await db.balances.getYearlyBalanceByUserId(req.session.userId);
+    // Send the data to the client with status code 200 (OK)
+    res.status(200);
+    res.json(balances);
 });
 
 app.get("/balances/top", async (req, res) => {

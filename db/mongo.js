@@ -11,6 +11,7 @@ async function connect(uri) {
  * Updates the user ID of all documents associated to a user
  * @param {String} old_user_id - Current ID of the user
  * @param {String} new_user_id - New ID to set
+ * @returns Raw command response or undefined
  */
 async function updateUserIdOfUserId(old_user_id, new_user_id) {
     // Open a MongoDB session and start a transaction

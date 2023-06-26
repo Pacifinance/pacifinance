@@ -78,7 +78,7 @@ async function insertNew(user_id, date, stocks, bank, cash, crypto, category_tag
  * Updates all expenses of a user with a new user ID
  * @param {String} old_user_id - Current ID of the user
  * @param {String} new_user_id - New ID to set
- * @returns 
+ * @returns Query result
  */
 async function setUserIdByUserId(old_user_id, new_user_id) {
     return await set({userId: old_user_id}, {userId: new_user_id});

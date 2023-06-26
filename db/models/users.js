@@ -129,8 +129,8 @@ async function setNicknameOfUserId(user_id, nickname) {
 
 /**
  * Updates the nation of a user
- * @param {*} user_id - ID of the user
- * @param {*} nickname - nation to set
+ * @param {String} user_id - ID of the user
+ * @param {String} nickname - nation to set
  * @returns User document
  */
 async function setNationOfUserId(user_id, nation) {

@@ -143,6 +143,33 @@ app.post("/logout", async (req, res) => {
     res.send();
 });
 
+app.post("/user/set-id", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Generate a new random user ID
+    const new_user_id = await generateUserId();
+    // Update the user ID of all documents of this user using a transaction
+    const query_result = db.updateUserIdOfUserId(req.session.userId, new_user_id);
+    // Check if the transaction failed. Send status code 500
+    // (Internal Server Error) in case of error
+    if (query_result === undefined)
+    {
+        res.status(500);
+        res.send();
+        return;
+    }
+    // Force the logout (redirect to /logout route)
+    req.session.userId = new_user_id; // the user ID in the session is updated to the new one
+    res.redirect("logout");
+});
+
 app.post("/user/set-password", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid

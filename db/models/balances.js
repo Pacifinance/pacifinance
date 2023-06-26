@@ -39,6 +39,16 @@ async function getLastNSorted(where, select, sort, limit) {
     return await Balance.find(where, select).sort(sort).limit(limit).lean().exec();
 }
 
+/**
+ * Updates all balances that match a filter
+ * @param {Object} where - filter to match
+ * @param {Object} update - fields to update
+ * @returns Query result
+ */
+async function set(where, update) {
+    return await Balance.updateMany(where, {$set: update}).lean().exec();
+}
+
 /* ==================== Specific queries ==================== */
 
 /**
@@ -69,6 +79,16 @@ async function insertNew(user_id, date, stocks_real, stocks_invested, bank, cash
         }
     };
     return await addOne(data);
+}
+
+/**
+ * Updates all balances of a user with a new user ID
+ * @param {String} old_user_id - Current ID of the user
+ * @param {String} new_user_id - New ID to set
+ * @returns 
+ */
+async function setUserIdByUserId(old_user_id, new_user_id) {
+    return await set({userId: old_user_id}, {userId: new_user_id});
 }
 
 /**
@@ -123,6 +143,7 @@ const Balance = mongoose.model("Balance", balanceSchema);
 
 module.exports = {
     insertNew,
+    setUserIdByUserId,
     getLatestByUserId,
     getYearlyBalanceByUserId
 };

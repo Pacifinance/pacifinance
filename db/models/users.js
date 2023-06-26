@@ -90,11 +90,11 @@ async function getAllUsersIds() {
 
 /**
  * Updates the ID of a user
- * @param {*} old_user_id - Current ID of the user
- * @param {*} new_user_id - New ID to set
+ * @param {String} old_user_id - Current ID of the user
+ * @param {String} new_user_id - New ID to set
  * @returns User document
  */
-async function setUserId(old_user_id, new_user_id) {
+async function setUserIdByUserId(old_user_id, new_user_id) {
     return await setOne({userId: old_user_id}, {userId: new_user_id});
 }
 
@@ -180,7 +180,7 @@ module.exports = {
     sessionIdLength,
     insertNew,
     getAllUsersIds,
-    setUserId,
+    setUserIdByUserId,
     getPasswordByUserId,
     setPasswordOfUserId,
     setNicknameOfUserId,

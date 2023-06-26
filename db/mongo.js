@@ -17,7 +17,7 @@ async function updateUserIdOfUserId(old_user_id, new_user_id) {
     const session = await mongoose.startSession();
     return session.withTransaction(async () => {
         // Update the user ID in the users collection
-        await users.setUserId(old_user_id, new_user_id);
+        await users.setUserIdByUserId(old_user_id, new_user_id);
         // Update the user ID of all balances of that user
         await balances.setUserIdByUserId(old_user_id, new_user_id);
         // Update the user ID of all expenses of that user

@@ -219,11 +219,20 @@ app.post("/balances/add", async (req, res) => {
         res.send();
         return;
     }
-    // Add the balance to the database and send status code 200 (OK)
-    await db.balances.insertNew(
+    // Add the balance to the database
+    const doc = await db.balances.insertNew(
         req.session.userId, Date.now(), balance.stocks.real, balance.stocks.invested,
         balance.bank, balance.cash, balance.crypto.real, balance.crypto.invested
     );
+    // Check if the document was inserted successfully. Send
+    // status code 500 (Internal Server Error) if it failed
+    if (doc === null)
+    {
+        res.status(500);
+        res.send();
+        return;
+    }
+    // Send status code 200 (OK)
     res.status(200);
     res.send();
 });
@@ -290,9 +299,18 @@ app.post("/expenses/add", async (req, res) => {
         return;
     }
     // Add the expense to the database and send status code 200 (OK)
-    await db.expenses.insertNew(
+    const doc = await db.expenses.insertNew(
         req.session.userId, expense.date, expense.stocks, expense.bank, expense.cash, expense.crypto, expense.category_tag
     );
+    // Check if the document was inserted successfully. Send
+    // status code 500 (Internal Server Error) if it failed
+    if (doc === null)
+    {
+        res.status(500);
+        res.send();
+        return;
+    }
+    // Send status code 200 (OK)
     res.status(200);
     res.send();
 });

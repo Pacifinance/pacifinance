@@ -5,21 +5,21 @@ export const ThemeContext = createContext();
 export const themes = {
   light: {
     mode: 'light',
-    jollyColor: '#FF8000',
+    jollyColor: '#6fca3a',
     primaryColor: '#fff',
     textColor: 'black',//#222629
     backgroundColor: '#fff',
-    buttonBackgroundColor: '#FF8000',
-    iconBackgroundColor: '#FF8000',
+    buttonBackgroundColor: '#6fca3a',
+    iconBackgroundColor: '#6fca3a',
   },
   dark: {
     mode: 'dark',
     jollyColor: 'white',
-    primaryColor: '#000000',
+    primaryColor: '#0d0f13', //black
     textColor: '#fff',
-    backgroundColor: '#3d3d3d',
-    buttonBackgroundColor: '#FF8000',
-    iconBackgroundColor: '#FF8000',
+    backgroundColor: '#222831', //#222831 0 #3d3d3d
+    buttonBackgroundColor: '#6fca3a',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro
+    iconBackgroundColor: '#6fca3a',
   },
 };
 

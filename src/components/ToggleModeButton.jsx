@@ -24,7 +24,7 @@ const Button = styled.button`
     color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
     padding: 6px 10px;
     border-radius: 4px;
-    border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#FF8000')};
+    border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#000')};
     font-size: 16px;
     cursor: pointer;
     display: flex;

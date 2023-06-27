@@ -106,7 +106,7 @@ const LandingContent = () => {
   return (
     <Container mode={mode}>
       <Title>
-        <UpsetText>Upset</UpsetText>
+        <UpsetText>Paci</UpsetText>
         <FinanceText>Finance</FinanceText>
       </Title>
       <HeroSection>

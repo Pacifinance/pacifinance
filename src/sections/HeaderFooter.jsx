@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import MuiCustomStyled from '../contexts/MuiCustomStyled';
+import LogoPaci from '../assets/Brand/PacifinanceLogoPNG.png';
 
 
 const Header = () => {
@@ -56,7 +57,7 @@ const Header = () => {
     color: ${theme.textColor};  
     padding: 10px 20px;
     border-radius: 4px;
-    border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#FF8000')};
+    border-color: ${mode === 'dark' ? '#fff' : '#000'};
     border-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
     align-items: center;
     font-size: 16px;
@@ -64,7 +65,10 @@ const Header = () => {
   `;
 
   const Logo = styled.h1`
-    font-size: 24px;
+    font-size: 0px;
+    img {
+      width: 90px;
+    }
   `;
 
   const ButtonGroup = styled.div`
@@ -118,7 +122,9 @@ const Header = () => {
     
     return (
       <ContainerHeader>
-        <Logo>Logo</Logo>
+        <Logo>
+          <img src={LogoPaci} alt="Pacifinance Logo" />
+        </Logo>
         <ButtonContainer>
           <ToggleModeButton />
           <ButtonGroup>

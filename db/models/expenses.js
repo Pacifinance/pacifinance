@@ -39,16 +39,6 @@ async function getLastNSorted(where, select, sort, limit) {
     return await Expense.find(where, select).sort(sort).limit(limit).lean().exec();
 }
 
-/**
- * Updates all expenses that match a filter
- * @param {Object} where - filter to match
- * @param {Object} update - fields to update
- * @returns Query result
- */
-async function set(where, update) {
-    return await Expense.updateMany(where, {$set: update}).lean().exec();
-}
-
 /* ==================== Specific queries ==================== */
 
 /**
@@ -79,16 +69,6 @@ async function insertNew(user_id, date, stocks, bank, cash, crypto, category_tag
 }
 
 /**
- * Updates all expenses of a user with a new user ID
- * @param {String} old_user_id - Current ID of the user
- * @param {String} new_user_id - New ID to set
- * @returns Query result
- */
-async function setUserIdByUserId(old_user_id, new_user_id) {
-    return await set({userId: old_user_id}, {userId: new_user_id});
-}
-
-/**
  * Gets the most recent expenses of a user
  * @param {String} user_id - ID of the user
  * @returns List of Expense documents
@@ -105,6 +85,5 @@ const Expense = mongoose.model("Expense", expenseSchema);
 module.exports = {
     tags,
     insertNew,
-    setUserIdByUserId,
     getMostRecentByUserId
 };

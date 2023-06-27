@@ -153,18 +153,9 @@ app.post("/user/set-id", async (req, res) => {
         res.send();
         return;
     }
-    // Generate a new random user ID
+    // Generate a new random user ID and update the corresponding User document
     const new_user_id = await generateUserId();
-    // Update the user ID of all documents of this user using a transaction
-    const query_result = db.updateUserIdOfUserId(req.session.userId, new_user_id);
-    // Check if the transaction failed. Send status code 500
-    // (Internal Server Error) in case of error
-    if (query_result === undefined)
-    {
-        res.status(500);
-        res.send();
-        return;
-    }
+    await db.users.setUserIdByUserId(req.session.userId, new_user_id);
     // Force the logout (redirect to /logout route)
     req.session.userId = new_user_id; // the user ID in the session is updated to the new one
     res.redirect("logout");

@@ -332,6 +332,12 @@ app.get("/expenses/get", async (req, res) => {
     res.json(expenses);
 });
 
+app.get("/expenses/tags", async (req, res) => {
+    // Send the array of tags to the client with status code 200 (OK)
+    res.status(200);
+    res.json(db.expenses.tags);
+});
+
 app.listen(process.env.PORT, () => {
     console.log("Server is listening");
     db.connect(process.env.DB_URI)

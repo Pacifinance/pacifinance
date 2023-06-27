@@ -57,7 +57,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-function Analytic() {
+function AnalyticDashboard() {
     const [stocksReal, setStocksReal] = useState(0);
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bankReal, setBank] = useState(0);
@@ -75,18 +75,19 @@ function Analytic() {
             padding: 1rem 2rem 1rem 2rem;
             border-radius: 1rem;
             color: ${theme.textColor};
-            background-color: ${theme.jollyColor};
+            background-color: white;
             justify-content: space-evenly;
             align-items: center;
             transition: 0.5s ease-in-out;
             width: 170px;
+            border: 1px solid ${theme.backgroundColor};
         
             .design{
                 display: flex;
                 align-items: center;
                 
                 .logo {
-                    background-color: ${theme.backgroundColor};
+                    background-color: white;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -109,6 +110,34 @@ function Analytic() {
             }
             .money {
                 margin-top: 20px;  
+            }
+        }
+
+        .title{
+            h5{
+                color: ${theme.textColor};
+            }
+        }
+        .search {
+            background-color: ${theme.backgroundColor};
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 8rem 1rem 1rem;
+            border-radius: 1.5rem;
+            svg{
+                color: ${theme.textColor};
+            }
+            input{
+                background-color: transparent;
+                border: none;
+                color: ${theme.textColor};
+                &:focus{
+                    outline: none;
+                }
+                &::placeholder {
+                    color: ${theme.textColor};
+                }
             }
         }
     `;
@@ -183,6 +212,10 @@ function Analytic() {
         
         <div className="wrapper">
         <Section>
+            <div className="title">
+                <h1>Dashboard</h1>
+                <h5>Check Portfolio</h5>
+            </div>
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#FF6600' }}>
@@ -281,4 +314,4 @@ function Analytic() {
     )
 }
 
-export default Analytic;
+export default AnalyticDashboard;

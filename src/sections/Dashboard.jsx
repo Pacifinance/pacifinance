@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react'
 import styled from 'styled-components'
 import Navbar from '../components/Navbar'
 import Notification from '../components/Notification'
-import Analytic from '../components/AnalyticDashboard'
+import AnalyticDashboard from '../components/AnalyticDashboard'
 import { ThemeContext } from '../contexts/ThemeContext';
 
 //import Expenses from './Expenses'
@@ -30,8 +30,8 @@ function Dashboard() {
         <Section>
             <div className="grid"> 
                     {/* <Notification />       */}
-                    <Navbar />
-                    <Analytic />
+                    {/* <Navbar /> */} 
+                    <AnalyticDashboard />
             </div>
         </Section>
     )

@@ -28,17 +28,17 @@ function SignUpForm() {
 
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
     const {
-        myGenericModal,
-        myGenericModalContent,
-        myGenericButton,
-        myCloseButton,
-        muiDialog,
-        muiButton,
-        muiDialogTitle,
-        muiDialogContent,
-        muiDialogContentText,
-        muiDialogActions,
-      } = ModalsCustomStyled();
+        MyGenericModal,
+        MyGenericModalContent,
+        MyButton,
+        MyCloseButton,
+        MuiCustomDialog,
+        MuiCustomButton,
+        MuiCustomDialogTitle,
+        MuiCustomDialogContent,
+        MuiCustomDialogContentText,
+        MuiCustomDialogActions,
+    } = ModalsCustomStyled();
 
     const navigate = useNavigate();
     // useeffect used to ensure that it runs only after the component has rendered and the state has been updated
@@ -67,11 +67,11 @@ function SignUpForm() {
         setShowErrorModal(false);
     };
 
-    // const ModalSuccessSignUp = styled(myGenericModal)`
+    // const ModalSuccessSignUp = styled(MyGenericModal)`
     //     display: ${setShowSuccessModal ? 'flex' : 'none'};
     // `;
 
-    // const ModalErrorSignUp = styled(myGenericModal)`
+    // const ModalErrorSignUp = styled(MyGenericModal)`
     //     display: ${setShowErrorModal ? 'flex' : 'none'};
     // `;
 
@@ -101,7 +101,7 @@ function SignUpForm() {
             setIsCopied(true);
         }
         setIsCopied(true);
-      };
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -235,7 +235,7 @@ function SignUpForm() {
             <div className="signUp-page">
                 <div className="signUp-form">
                     <h1>Registrazione</h1>
-                    <div class="icon-with-text">
+                    <div className="icon-with-text">
                         <InfoIcon />
                         <h4>Il sistema genererà per te un id casuale</h4>
                     </div>
@@ -243,7 +243,7 @@ function SignUpForm() {
                         <label htmlFor="password">Password:</label>
                         <input
                             type={showPassword ? 'text' : 'password'}
-                            id="password"
+                            id="passwordSignUp"
                             value={password}
                             onChange={handlePasswordChange}
                             required
@@ -257,7 +257,7 @@ function SignUpForm() {
                         <label htmlFor="password">Conferma password:</label>
                         <input
                             type={showConfirmPassword ? 'text' : 'password'}
-                            id="confirmPassword"
+                            id="confirmPasswordSignUp"
                             value={confirmPassword}
                             onChange={handleConfirmPasswordChange}
                             required
@@ -268,28 +268,28 @@ function SignUpForm() {
                         </div>
 
 
-                        <Button type="submit">Registrati</Button>
+                        <MyButton type="submit">Registrati</MyButton>
 
                     </form>
                 </div>
             </div>
             
             {showSuccessModal && (
-                <muiCustomDialog
+                <MuiCustomDialog
                     open={showSuccessModal}
                     onClose={closeSuccessModal}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <muiCustomDialogTitle id="alert-dialog-title">
+                    <MuiCustomDialogTitle id="alert-dialog-title">
                         {" Registrazione avvenuta con successo"}
-                    </muiCustomDialogTitle>
-                    <muiCustomDialogContent>
-                        <muiCustomDialogContentText id="alert-dialog-description">
+                    </MuiCustomDialogTitle>
+                    <MuiCustomDialogContent>
+                        <MuiCustomDialogContentText id="alert-dialog-description">
                             Il tuo id utente è: {generated_user_id}.<br></br> Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.
-                        </muiCustomDialogContentText>
-                    </muiCustomDialogContent>
-                    <muiCustomDialogActions>
+                        </MuiCustomDialogContentText>
+                    </MuiCustomDialogContent>
+                    <MuiCustomDialogActions>
                         <input type="text" ref={inputRef} value={generated_user_id} readOnly style={{ position: 'fixed', top: '-9999px' }} />
                         <CopyToClipboard
                             text={generated_user_id}
@@ -300,35 +300,35 @@ function SignUpForm() {
                                     }, 1000);
                             }}
                         >
-                            <muiCustomButton onClick={closeSuccessModal} autofocus>
+                            <MuiCustomButton onClick={closeSuccessModal} autofocus>
                                 <span>{isCopied ? 'Copiato!' : 'Copia il tuo ID'}</span>
-                            </muiCustomButton>
+                            </MuiCustomButton>
                         </CopyToClipboard>
-                    </muiCustomDialogActions>
-                </muiCustomDialog>   
+                    </MuiCustomDialogActions>
+                </MuiCustomDialog>   
             )}
             {showErrorModal && (
-                <muiCustomDialog
+                <MuiCustomDialog
                     open={showErrorModal}
                     onClose={closeErrorModal}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <muiCustomDialogTitle id="alert-dialog-title">
+                    <MuiCustomDialogTitle id="alert-dialog-title">
                         {"Errore in fase di registrazione"}
-                    </muiCustomDialogTitle>
-                    <muiCustomDialogContent>
-                        <muiCustomDialogContentText id="alert-dialog-description">
+                    </MuiCustomDialogTitle>
+                    <MuiCustomDialogContent>
+                        <MuiCustomDialogContentText id="alert-dialog-description">
                             Si è verificato un errore nella registrazione del tuo account. <br></br>
                             Per favore riprova tra un istante.<br></br>
-                        </muiCustomDialogContentText>
-                    </muiCustomDialogContent>
-                    <muiCustomDialogActions>
-                        <muiCustomButton onClick={closeErrorModal} autoFocus>
+                        </MuiCustomDialogContentText>
+                    </MuiCustomDialogContent>
+                    <MuiCustomDialogActions>
+                        <MuiCustomButton onClick={closeErrorModal} autoFocus>
                             Ok, va bene
-                        </muiCustomButton>
-                    </muiCustomDialogActions>
-            </muiCustomDialog>
+                        </MuiCustomButton>
+                    </MuiCustomDialogActions>
+                </MuiCustomDialog>
             )}
 
             

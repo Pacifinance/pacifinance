@@ -10,30 +10,30 @@ import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 function SignInForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [modalIsOpen, setModalIsOpen] = useState(true);
+    const [showErrorModal, setShowErrorModal] = useState(false);
     const { theme } = useContext(ThemeContext);
     const { mode } = theme;
     const navigate = useNavigate();
 
     const {
-      GenericModal,
-      Button,
-      CloseButton,
-      CustomDialog,
-      CustomButton,
-      CustomDialogTitle,
-      CustomDialogContent,
-      CustomDialogContentText,
-      CustomDialogActions,
-      GenericModalContent,
+      MyGenericModal,
+      MyGenericModalContent,
+      MyButton,
+      MuiCloseButton,
+      MuiCustomDialog,
+      MuiCustomButton,
+      MuiCustomDialogTitle,
+      MuiCustomDialogContent,
+      MuiCustomDialogContentText,
+      MuiCustomDialogActions,
     } = ModalsCustomStyled();
 
     const handleOpenModal = () => {
-      setModalIsOpen(true);
+      setShowErrorModal(true);
     };
   
     const handleCloseModal = () => {
-      setModalIsOpen(false);
+      setShowErrorModal(false);
     };
 
     const handleUsernameChange = (event) => {
@@ -58,7 +58,7 @@ function SignInForm() {
           }
           else {
             // console.log("sign-in failed");
-            alert("Nothing done");
+            handleOpenModal();
             
           }
           
@@ -66,7 +66,7 @@ function SignInForm() {
           console.error(error);
           setUsername('');
           setPassword('');
-          alert("L'utente non è presente nel nostro database.");
+          handleOpenModal();
         }
     
     };
@@ -101,8 +101,8 @@ function SignInForm() {
       }
       
       .icon-with-text h4 {
-          color: ${theme.buttonBackgroundColor};
-          margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
+        color: ${theme.buttonBackgroundColor};
+        margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
       }
     
       .sign-in-form label {
@@ -124,18 +124,18 @@ function SignInForm() {
     `;
 
     //voglio prendere il generic modL rinominarlo e aggiungergli delle caratteristiche
-    const GenericModalSignIn = styled(GenericModal)`
-      background-color: ${theme.backgroundColor};
-      color: ${theme.textColor};
-      border: 1px solid ${theme.buttonBackgroundColor};
-      border-radius: 4px;
-      padding: 16px;
-      width: 400px;
-      height: 200px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
+    const GenericModalSignIn = styled(MyGenericModal)`
+      // background-color: ${theme.backgroundColor};
+      // color: ${theme.textColor};
+      // border: 1px solid ${theme.buttonBackgroundColor};
+      // border-radius: 4px;
+      // padding: 16px;
+      // width: 400px;
+      // height: 200px;
+      // display: flex;
+      // flex-direction: column;
+      // justify-content: space-between;
+      // align-items: center;
     `;
 
     // if (generated_user_id !== '') {
@@ -164,16 +164,39 @@ function SignInForm() {
                         <label htmlFor="password">Password:</label>
                         <input
                             type="password"
-                            id="password"
+                            id="passwordSignIn"
                             value={password}
                             onChange={handlePasswordChange}
                             required
                         />
 
-                        <Button type="submit">Accedi</Button>
+                        <MyButton type="submit">Accedi</MyButton>
                     </form>
                 </div>
             </div>
+            {showErrorModal && (
+                <MuiCustomDialog
+                    open={showErrorModal}
+                    onClose={handleCloseModal}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <MuiCustomDialogTitle id="alert-dialog-title">
+                        {"Errore in fase di accesso"}
+                    </MuiCustomDialogTitle>
+                    <MuiCustomDialogContent>
+                        <MuiCustomDialogContentText id="alert-dialog-description">
+                            Si è verificato un errore nell'accesso con il tuo account. <br></br>
+                            Controlla di digitare correttamente id e password.<br></br>
+                        </MuiCustomDialogContentText>
+                    </MuiCustomDialogContent>
+                    <MuiCustomDialogActions>
+                        <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                            Ok, va bene
+                        </MuiCustomButton>
+                    </MuiCustomDialogActions>
+                </MuiCustomDialog>
+            )}
         </SignIn>
     );
     }

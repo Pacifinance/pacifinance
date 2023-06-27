@@ -12,41 +12,41 @@ const ModalsCustomStyled = () => {
   const { theme } = useContext(ThemeContext);
   const { mode } = theme;
 
-  const muiCustomDialog = styled(Dialog)`
+  const MuiCustomDialog = styled(Dialog)`
     // background-color: ${theme.backgroundColor};
     // color: ${theme.textColor};
     // border: 4px solid ${theme.buttonBackgroundColor};
   `;
 
-  const muiCustomButton = styled(Button)`
+  const MuiCustomButton = styled(Button)`
     background-color: ${theme.buttonBackgroundColor};
     color: ${theme.textColor};
     hover: ${theme.BackgroundColor};
   `;
 
-  const muiCustomDialogTitle = styled(DialogTitle)`
+  const MuiCustomDialogTitle = styled(DialogTitle)`
     font-family: Roboto, sans-serif;
     color: ${theme.buttonBackgroundColor};
   `;
 
-  const muiCustomDialogContent = styled(DialogContent)`
+  const MuiCustomDialogContent = styled(DialogContent)`
     // font-family: Roboto, sans-serif;
     // color: ${theme.textColor};
     // // background-color: ${theme.backgroundColor};
   `;
 
-  const muiCustomDialogContentText = styled(DialogContentText)`
+  const MuiCustomDialogContentText = styled(DialogContentText)`
     font-family: Roboto, sans-serif;
     color: ${theme.textColor};
   `;
 
-  const muiCustomDialogActions = styled(DialogActions)`
+  const MuiCustomDialogActions = styled(DialogActions)`
     // font-family: Roboto, sans-serif;
     // color: ${theme.textColor};
     // background-color: ${theme.backgroundColor};
   `;
 
-  const myGenericModal = styled.div`
+  const MyGenericModal = styled.div`
     align-items: center;
     justify-content: center;
     pointer-events: 'none';
@@ -60,7 +60,7 @@ const ModalsCustomStyled = () => {
     background-color: rgba(0, 0, 0, 0.5);
   `;
 
-  const myGenericModalContent = styled.div`
+  const MyGenericModalContent = styled.div`
     background-color: ${theme.backgroundColor};
     margin: auto;
     max-width: 80%;
@@ -69,7 +69,7 @@ const ModalsCustomStyled = () => {
     overflow: auto;
   `;
 
-  const myButton = styled.button`
+  const MyButton = styled.button`
     background-color: ${theme.buttonBackgroundColor};
     color: ${theme.textColor};  
     padding: 10px 20px;
@@ -81,7 +81,7 @@ const ModalsCustomStyled = () => {
     cursor: pointer;
   `;
 
-  const myCloseButton = styled.span`
+  const MyCloseButton = styled.span`
     cursor: pointer;
     color: ${theme.textColor};
     background-color: ${theme.buttonBackgroundColor};
@@ -98,16 +98,16 @@ const ModalsCustomStyled = () => {
   `;
 
   return {
-    muiCustomDialog,
-    muiCustomButton,
-    muiCustomDialogTitle,
-    muiCustomDialogContent,
-    muiCustomDialogContentText,
-    muiCustomDialogActions,
-    myGenericModal,
-    myGenericModalContent,
-    myButton,
-    myCloseButton,
+    MuiCustomDialog,
+    MuiCustomButton,
+    MuiCustomDialogTitle,
+    MuiCustomDialogContent,
+    MuiCustomDialogContentText,
+    MuiCustomDialogActions,
+    MyGenericModal,
+    MyGenericModalContent,
+    MyButton,
+    MyCloseButton,
   };
 };
 

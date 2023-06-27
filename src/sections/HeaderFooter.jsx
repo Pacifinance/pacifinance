@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
-import LogoPaci from '../assets/Brand/PacifinanceLogoPNG2.png';
+import LogoPaci from '../components/Logo';
+
 
 
 const Header = () => {
@@ -15,19 +16,19 @@ const Header = () => {
   const { theme } = useContext(ThemeContext);
   const { mode } = theme;
   // const [isModalOpen, setModalOpen] = useState(false);
-  const [isSignIn, setIsSignIn] = useState(true);
+  const [isSignIn, setIsSignIn] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const {
-    myGenericModal,
-    myGenericModalContent,
-    myCloseButton,
-    myButton,
-    CustomDialog,
-    CustomButton,
-    CustomDialogTitle,
-    CustomDialogContent,
-    CustomDialogContentText,
-    CustomDialogActions,
+    MyGenericModal,
+    MyGenericModalContent,
+    MyCloseButton,
+    MyButton,
+    MuiCustomDialog,
+    MuiCustomButton,
+    MuiCustomDialogTitle,
+    MuiCustomDialogContent,
+    MuiCustomDialogContentText,
+    MuiCustomDialogActions,
     
   } = ModalsCustomStyled();
  
@@ -83,36 +84,34 @@ const Header = () => {
     gap: 10px;
   `;
 
-  const ModalSignIn = styled(myGenericModal)`
+  const ModalSignIn = styled(MyGenericModal)`
     display: ${isSignIn ? 'flex' : 'none'};
   `;
 
-  const ModalSignUp = styled(myGenericModal)`
+  const ModalSignUp = styled(MyGenericModal)`
     display: ${isSignUp ? 'flex' : 'none'};
   `;
 
     
     return (
       <ContainerHeader>
-        <Logo>
-          <img src={LogoPaci} alt="Pacifinance Logo" />
-        </Logo>
+        <LogoPaci />
         <ButtonContainer>
           <ToggleModeButton />
           <ButtonGroup>
-            <myButton id="openSignInModalButton" onClick={handleOpenSignIn}>Sign In</myButton>
+            <MyButton id="openSignInModalButton" onClick={handleOpenSignIn}>Sign In</MyButton>
             <ModalSignIn> 
-              <myGenericModalContent>
-                  <myCloseButton class="close" onClick={handleCloseSignIn}>&times;</myCloseButton>
+              <MyGenericModalContent>
+                  <MyCloseButton className="close" onClick={handleCloseSignIn}>&times;</MyCloseButton>
                   <SignInForm />
-              </myGenericModalContent>
+              </MyGenericModalContent>
             </ModalSignIn>
-            <myButton id="openSignUpModalButton"onClick={handleOpenSignUp}>Sign Up</myButton>
+            <MyButton id="openSignUpModalButton"onClick={handleOpenSignUp}>Sign Up</MyButton>
             <ModalSignUp> 
-              <myGenericModalContent>
-                  <myCloseButton class="close" onClick={handleCloseSignUp}>&times;</myCloseButton>
+              <MyGenericModalContent>
+                  <MyCloseButton className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>
                   <SignUpForm />
-              </myGenericModalContent>
+              </MyGenericModalContent>
             </ModalSignUp>
           </ButtonGroup>
         </ButtonContainer>

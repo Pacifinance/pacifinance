@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import ToggleModeButton from '../components/ToggleModeButton';
 import { ThemeContext } from '../contexts/ThemeContext';
+import LogoPaci from '../components/Logo';
 
 
 
@@ -25,6 +26,8 @@ function Sidebar() {
     const [selectedOption, setSelectedOption] = useState(null);
     const options = [
         { value: 'account', label: 'Account' },
+        { value: 'changeUsername', label: 'Genera username' },
+        { value: 'changeid', label: 'Cambio id' },
         { value: 'changePassword', label: 'Cambio password' },
         // { value: 'logout', label: 'Logout' },
     ];
@@ -52,7 +55,7 @@ function Sidebar() {
         
             }
             else {
-                console.log("Login failed");
+                console.log("Logout failed");
             }
             
         } catch (error) {
@@ -262,9 +265,7 @@ function Sidebar() {
         <Section>
             <div className="top">
                     <div className="brand">
-                        <BsCircleFill className="color1" style={{ color: '#F7B510' }}/>
-                        <BsCircleFill className="color4" style={{ color: '#BCBCBC' }}/>
-                        <BsCircleFill className="color3" style={{ color: '#F7B510' }}/>
+                        <LogoPaci />
                     </div>
                     <div className="links">
                         <ul>

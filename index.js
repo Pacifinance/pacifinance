@@ -298,7 +298,7 @@ app.post("/expenses/add", async (req, res) => {
         res.send();
         return;
     }
-    // Add the expense to the database and send status code 200 (OK)
+    // Add the expense to the database
     const doc = await db.expenses.insertNew(
         req.session.userId, expense.date, expense.stocks, expense.bank, expense.cash, expense.crypto, expense.category_tag
     );

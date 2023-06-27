@@ -81,6 +81,15 @@ async function insertNew(user_id, password) {
 }
 
 /**
+ * Gets the object reference of a user
+ * @param {String} user_id - ID of the user
+ * @returns User document
+ */
+async function getReferenceByUserId(user_id) {
+    return await getOne({userId: user_id}, "_id");
+}
+
+/**
  * Gets all user IDs
  * @returns List of User documents
  */
@@ -179,6 +188,7 @@ module.exports = {
     userIdLength,
     sessionIdLength,
     insertNew,
+    getReferenceByUserId,
     getAllUsersIds,
     setUserIdByUserId,
     getPasswordByUserId,

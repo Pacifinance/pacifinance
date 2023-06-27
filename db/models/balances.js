@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const users = require("./users.js");
 const utils = require("../../utils.js");
 
 const balanceSchema = new mongoose.Schema({
-    userId: {type: String, required: true, index: true},
+    userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
     stocks: {type: {
         real: {type: Number, required: true},
@@ -64,8 +65,11 @@ async function set(where, update) {
  * @returns Balance document
  */
 async function insertNew(user_id, date, stocks_real, stocks_invested, bank, cash, crypto_real, crypto_invested) {
+    const user = await users.getReferenceByUserId(user_id);
+    if (user === null)
+        return null;
     const data = {
-        userId: user_id,
+        userRef: user._id,
         date: date,
         stocks: {
             real: stocks_real,

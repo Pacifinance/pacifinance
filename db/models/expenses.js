@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const users = require("./users.js");
 
 let tags = [...[
     "Subscription (digital services)", "Subscription (public transport)", "Gift", "Shopping", "Food", "House", "Social", "Travelling",
@@ -6,7 +7,7 @@ let tags = [...[
 ].sort(), "Other"];
 
 const expenseSchema = new mongoose.Schema({
-    userId: {type: String, required: true, index: true},
+    userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
     stocks: {type: Number, default: 0},
     bank: {type: Number, default: 0},
@@ -62,8 +63,11 @@ async function set(where, update) {
  * @returns Expense document
  */
 async function insertNew(user_id, date, stocks, bank, cash, crypto, category_tag) {
+    const user = await users.getReferenceByUserId(user_id);
+    if (user === null)
+        return null;
     const data = {
-        userId: user_id,
+        userId: user._id,
         date: date,
         stocks: stocks,
         bank: bank,

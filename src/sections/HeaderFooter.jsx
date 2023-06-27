@@ -6,8 +6,8 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { useNavigate } from "react-router-dom";
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
-import MuiCustomStyled from '../contexts/MuiCustomStyled';
-import LogoPaci from '../assets/Brand/PacifinanceLogoPNG.png';
+import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
+import LogoPaci from '../assets/Brand/PacifinanceLogoPNG2.png';
 
 
 const Header = () => {
@@ -17,6 +17,19 @@ const Header = () => {
   // const [isModalOpen, setModalOpen] = useState(false);
   const [isSignIn, setIsSignIn] = useState(true);
   const [isSignUp, setIsSignUp] = useState(false);
+  const {
+    myGenericModal,
+    myGenericModalContent,
+    myCloseButton,
+    myButton,
+    CustomDialog,
+    CustomButton,
+    CustomDialogTitle,
+    CustomDialogContent,
+    CustomDialogContentText,
+    CustomDialogActions,
+    
+  } = ModalsCustomStyled();
  
   const handleOpenSignIn = () => {
     setIsSignIn(true);
@@ -52,18 +65,6 @@ const Header = () => {
     justify-content: space-between;
   `;
 
-  const Button = styled.button`
-    background-color: ${theme.buttonBackgroundColor};
-    color: ${theme.textColor};  
-    padding: 10px 20px;
-    border-radius: 4px;
-    border-color: ${mode === 'dark' ? '#fff' : '#000'};
-    border-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
-    align-items: center;
-    font-size: 16px;
-    cursor: pointer;
-  `;
-
   const Logo = styled.h1`
     font-size: 0px;
     img {
@@ -82,41 +83,12 @@ const Header = () => {
     gap: 10px;
   `;
 
-  const ModalSignIn = styled.div`
+  const ModalSignIn = styled(myGenericModal)`
     display: ${isSignIn ? 'flex' : 'none'};
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
   `;
 
-  const ModalSignUp = styled.div`
+  const ModalSignUp = styled(myGenericModal)`
     display: ${isSignUp ? 'flex' : 'none'};
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-  `;
-
-  const ModalContent = styled.div`
-    background-color: ${theme.backgroundColor};
-    margin: auto;
-    max-width: 80%;
-    max-height: 80%;
-    padding: 20px;
-    overflow: auto;
   `;
 
     
@@ -128,19 +100,19 @@ const Header = () => {
         <ButtonContainer>
           <ToggleModeButton />
           <ButtonGroup>
-            <Button id="openSignInModalButton" onClick={handleOpenSignIn}>Sign In</Button>
+            <myButton id="openSignInModalButton" onClick={handleOpenSignIn}>Sign In</myButton>
             <ModalSignIn> 
-              <ModalContent>
-                  <span class="close" onClick={handleCloseSignIn}>&times;</span>
+              <myGenericModalContent>
+                  <myCloseButton class="close" onClick={handleCloseSignIn}>&times;</myCloseButton>
                   <SignInForm />
-              </ModalContent>
+              </myGenericModalContent>
             </ModalSignIn>
-            <Button id="openSignUpModalButton"onClick={handleOpenSignUp}>Sign Up</Button>
+            <myButton id="openSignUpModalButton"onClick={handleOpenSignUp}>Sign Up</myButton>
             <ModalSignUp> 
-              <ModalContent>
-                  <span class="close" onClick={handleCloseSignUp}>&times;</span>
+              <myGenericModalContent>
+                  <myCloseButton class="close" onClick={handleCloseSignUp}>&times;</myCloseButton>
                   <SignUpForm />
-              </ModalContent>
+              </myGenericModalContent>
             </ModalSignUp>
           </ButtonGroup>
         </ButtonContainer>
@@ -173,7 +145,7 @@ const Footer = () => {
 
   return (
     <ContainerFooter>
-      <FooterText>UpsetFinance &copy; 2023. All rights reserved.</FooterText>
+      <FooterText>Pacifinance &copy; 2023. All rights reserved.</FooterText>
     </ContainerFooter>
   );
 };

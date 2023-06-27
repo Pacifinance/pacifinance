@@ -81,7 +81,10 @@ async function insertNew(user_id, date, stocks_real, stocks_invested, bank, cash
  * @returns Balance document
  */
 async function getLatestByUserId(user_id) {
-    const res = await getLastNSorted({userId: user_id}, "-_id", {date: -1}, 1);
+    const user = await users.getReferenceByUserId(user_id);
+    if (user === null)
+        return null;
+    const res = await getLastNSorted({userRef: user._id}, "-_id", {date: -1}, 1);
     if (res.length === 0)
         return null;
     return res[0];
@@ -98,12 +101,15 @@ async function getYearlyBalanceByUserId(user_id) {
     let month_start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
     let month_end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()+1));
     // Find the most recent balance for each one of the last 12 months
+    const user = await users.getReferenceByUserId(user_id);
+    if (user === null)
+        return [];
     let balances = [];
     for (let i = 0; i < 12; i++)
     {
         // Find the balance of the month
         const res = await getLastNSorted({
-                userId: user_id, date: {$gte: month_start, $lt: month_end}
+                userRef: user._id, date: {$gte: month_start, $lt: month_end}
             }, 
             "-_id", {date: -1}, 1
         );

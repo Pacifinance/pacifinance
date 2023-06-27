@@ -74,7 +74,10 @@ async function insertNew(user_id, date, stocks, bank, cash, crypto, category_tag
  * @returns List of Expense documents
  */
 async function getMostRecentByUserId(user_id) {
-    return await getLastNSorted({userId: user_id}, "-_id", {date: -1}, 10);
+    const user = await users.getReferenceByUserId(user_id);
+    if (user === null)
+        return [];
+    return await getLastNSorted({userRef: user._id}, "-_id", {date: -1}, 10);
 }
 
 /**

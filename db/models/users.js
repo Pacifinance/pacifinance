@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
     nation: {type: String, default: ""},
     occupation: {type: String, default: ""},
     roles: {type: [String], required: true},
+    expenseCategories: [{
+        name: {type: String, required: true},
+        tag: {type: String, required: true}
+    }],
     session: {type: {
         sessionId: {type: String, required: true, unique: true, dropDups: true},
         expirationDate: {type: Date, required: true}
@@ -72,6 +76,7 @@ async function insertNew(user_id, password) {
         nation: "",
         occupation: "",
         roles: ["user"],
+        expenseCategories: [],
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
             expirationDate: new Date(0)

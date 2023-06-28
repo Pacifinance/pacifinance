@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { Grid } from '@material-ui/core';
 import InfoIcon from '@mui/icons-material/Info';
+
 // import { generated_user_id } from './signUpForm.jsx';
 import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 
 function SignInForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { theme } = useContext(ThemeContext);
     const { mode } = theme;
@@ -26,6 +29,12 @@ function SignInForm() {
       MuiCustomDialogContent,
       MuiCustomDialogContentText,
       MuiCustomDialogActions,
+      MuiCustomTextField,
+      MuiCustomIconButton,
+      MuiCustomInputAdornment,
+      MuiCustomVisibility,
+      MuiCustomVisibilityOff,
+      MuiUseStyles,
     } = ModalsCustomStyled();
 
     const handleOpenModal = () => {
@@ -42,6 +51,14 @@ function SignInForm() {
   
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
+    };
+
+    const handleClickShowPassword = () => {
+      setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+      event.preventDefault();
     };
     
     const handleSubmit = async (event) => {
@@ -70,6 +87,8 @@ function SignInForm() {
         }
     
     };
+
+    const classes = MuiUseStyles();
 
     const SignIn = styled.div`
       font-family: Roboto, sans-serif;
@@ -152,25 +171,42 @@ function SignInForm() {
                         <h4>Inserisci il tuo id e la tua password per continuare</h4>
                     </div>
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor="username">Username:</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={handleUsernameChange}
-                            required
+                        <MuiCustomTextField
+                          label="Username"
+                          type="text"
+                          value={username}
+                          onChange={handleUsernameChange}
+                          fullWidth
+                          required
+                          className={classes.root}
                         />
-
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="passwordSignIn"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            required
+                        <MuiCustomTextField
+                          label="Password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={password}
+                          onChange={handlePasswordChange}
+                          required
+                          fullWidth
+                          className={classes.root}
+                          InputProps={{
+                            endAdornment: (
+                              <MuiCustomInputAdornment position="end">
+                                <MuiCustomIconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={handleClickShowPassword}
+                                  onMouseDown={handleMouseDownPassword}
+                                  className={classes.icon}
+                                >
+                                  {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                </MuiCustomIconButton>
+                              </MuiCustomInputAdornment>
+                            ),
+                          }}
                         />
+                        <MyButton type="submit" fullWidth>
+                          Accedi
+                        </MyButton>
 
-                        <MyButton type="submit">Accedi</MyButton>
                     </form>
                 </div>
             </div>
@@ -202,3 +238,21 @@ function SignInForm() {
     }
 
     export default SignInForm;
+
+    {/* <label htmlFor="username">Username:</label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={handleUsernameChange}
+                            required
+                        /> */}
+
+    {/* <label htmlFor="password">Password:</label>
+                        <input
+                            type="password"
+                            id="passwordSignIn"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            required
+                        /> */}

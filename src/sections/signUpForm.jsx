@@ -6,8 +6,6 @@ import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ThemeContext } from '../contexts/ThemeContext';
 import InfoIcon from '@mui/icons-material/Info';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 //for the modal
 import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
@@ -38,6 +36,12 @@ function SignUpForm() {
         MuiCustomDialogContent,
         MuiCustomDialogContentText,
         MuiCustomDialogActions,
+        MuiCustomTextField,
+        MuiCustomIconButton,
+        MuiCustomInputAdornment,
+        MuiCustomVisibility,
+        MuiCustomVisibilityOff,
+        MuiUseStyles,
     } = ModalsCustomStyled();
 
     const navigate = useNavigate();
@@ -95,6 +99,10 @@ function SignUpForm() {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+      };
+
     const copyToClipboard = () => {
         if ('clipboard' in navigator) {
             navigator.clipboard.writeText(generated_user_id);
@@ -132,6 +140,8 @@ function SignUpForm() {
         }
     
     };
+
+    const classes = MuiUseStyles();
 
     const SignUp = styled.div`
         font-family: Roboto, sans-serif;
@@ -171,7 +181,7 @@ function SignUpForm() {
             position: relative;
         }
         
-        .password-icon {
+        */ .password-icon {
             position: absolute;
             top: 51%;
             right: 56%;
@@ -186,7 +196,7 @@ function SignUpForm() {
             right: 34%;
             transform: translateY(50%);
             cursor: pointer;
-        }
+        }*/
           
     
         .signUp-form label {
@@ -240,7 +250,53 @@ function SignUpForm() {
                         <h4>Il sistema genererà per te un id casuale</h4>
                     </div>
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor="password">Password:</label>
+                        <MuiCustomTextField
+                            label="Password"
+                            type={showPassword ? 'text' : 'password'}
+                            value={password}
+                            onChange={handlePasswordChange}
+                            required
+                            fullWidth
+                            className={classes.root}
+                            InputProps={{
+                                endAdornment: (
+                                <MuiCustomInputAdornment position="end">
+                                    <MuiCustomIconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleTogglePasswordVisibility}
+                                    onMouseDown={handleMouseDownPassword}
+                                    className={classes.icon}
+                                    >
+                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                    </MuiCustomIconButton>
+                                </MuiCustomInputAdornment>
+                                ),
+                            }}
+                            />
+                            <MuiCustomTextField
+                                label="Conferma Password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={handlePasswordChange}
+                                required
+                                fullWidth
+                                className={classes.root}
+                                InputProps={{
+                                    endAdornment: (
+                                    <MuiCustomInputAdornment position="end">
+                                        <MuiCustomIconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleToggleConfirmPasswordVisibility}
+                                        onMouseDown={handleMouseDownPassword}
+                                        className={classes.icon}
+                                        >
+                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                        </MuiCustomIconButton>
+                                    </MuiCustomInputAdornment>
+                                    ),
+                                }}
+                                />
+                        {/* <label htmlFor="password">Password:</label>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             id="passwordSignUp"
@@ -251,10 +307,10 @@ function SignUpForm() {
                         />
                         <div className="password-icon" onClick={handleTogglePasswordVisibility}>
                             {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </div>
+                        </div> */}
 
 
-                        <label htmlFor="password">Conferma password:</label>
+                        {/* <label htmlFor="password">Conferma password:</label>
                         <input
                             type={showConfirmPassword ? 'text' : 'password'}
                             id="confirmPasswordSignUp"
@@ -265,7 +321,7 @@ function SignUpForm() {
                         />
                         <div className="password-icon2" onClick={handleToggleConfirmPasswordVisibility}>
                             {showConfirmPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </div>
+                        </div> */}
 
 
                         <MyButton type="submit">Registrati</MyButton>

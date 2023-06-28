@@ -6,6 +6,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { IconButton, InputAdornment, TextField } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core';
 import { ThemeContext } from './ThemeContext';
 
 const ModalsCustomStyled = () => {
@@ -46,6 +50,44 @@ const ModalsCustomStyled = () => {
     // background-color: ${theme.backgroundColor};
   `;
 
+  const MuiCustomTextField = styled(TextField)`
+      && {
+        // label.Mui-focused {
+        //   color: blue;
+        // }
+        .MuiInput-underline:after {
+          border-bottom-color: ${theme.buttonBackgroundColor};
+        }
+        .Mui-focused .MuiInput-underline:after {
+          border-bottom-color: blue;
+        }
+      }
+    `;
+
+  const MuiCustomIconButton = styled(IconButton)`
+  `;
+
+  const MuiCustomInputAdornment = styled(InputAdornment)`
+  `;
+
+  const MuiCustomVisibility = styled(Visibility)`
+  `;
+
+  const MuiCustomVisibilityOff = styled(VisibilityOff)`
+  `;
+
+  const MuiCustomGrid = styled(Grid)`
+  `;
+
+  const MuiUseStyles = makeStyles((theme) => ({
+    root: {
+      width: '50%',
+    },
+    icon: {
+      color: 'white',
+    },
+  }));
+
   const MyGenericModal = styled.div`
     align-items: center;
     justify-content: center;
@@ -58,6 +100,8 @@ const ModalsCustomStyled = () => {
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    border: 4px solid ${theme.jollyColor};
   `;
 
   const MyGenericModalContent = styled.div`
@@ -104,6 +148,13 @@ const ModalsCustomStyled = () => {
     MuiCustomDialogContent,
     MuiCustomDialogContentText,
     MuiCustomDialogActions,
+    MuiCustomGrid,
+    MuiCustomTextField,
+    MuiCustomIconButton,
+    MuiCustomInputAdornment,
+    MuiCustomVisibility,
+    MuiCustomVisibilityOff,
+    MuiUseStyles,
     MyGenericModal,
     MyGenericModalContent,
     MyButton,

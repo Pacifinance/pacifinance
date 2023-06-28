@@ -7,7 +7,7 @@ import { BiHomeAlt } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineBell, AiOutlineCaretDown } from "react-icons/ai";
 
 import { BsCircleFill, BsBook, BsInfoCircle } from "react-icons/bs";
-
+import Tooltip from '@material-ui/core/Tooltip';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { Link } from "react-router-dom";
 import avatarImage from "../assets/account-logo.png"
@@ -63,6 +63,12 @@ function Sidebar() {
         }
     };
 
+    const SidebarToggleModeButton = styled(ToggleModeButton)`
+        padding: 6px 10px;
+        font-size: 16px;
+        gap: 2px;
+    `;
+
     const Section = styled.section`
         font-family: Roboto, sans-serif;
         position: fixed;
@@ -79,41 +85,26 @@ function Sidebar() {
         .top{
             display: flex;
             flex-direction: column;
-            gap: 4rem;
+            gap: 1.5rem;
             width: 100%;
-            .brand {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 1.3rem 0;
-                .color1{
-                    color: red;
-                }
-                .color2{
-                    color: yellow;
-                }
-                .color3{
-                    color: green;
-                }
-                svg {
-                    margin: 0 2px;
-                    font-size: 0.8rem;
-                    
-                }
-            
-            }
             .links {
             
                 ul {
                 
-                    margin-bottom: 3rem;
+                    margin-bottom: 0.5rem;
+
                     .active {
-                        border-right: 0.2rem solid black;   
-                        a {
-                            color: ${theme.buttonBackgroundColor};
-                        }
+                        border-right: 0.2rem solid black;
                     }
+                    
+                    .active a {
+                        color: ${theme.buttonBackgroundColor};
+                    }
+                    
+                    .active svg {
+                        color: ${theme.buttonBackgroundColor};
+                    }
+                      
                     
                     li{
                         display: flex;
@@ -143,7 +134,7 @@ function Sidebar() {
                         transition: 0.3s ease-in-out;
                         &:hover{
                             a {
-                                color: ${theme.backgroundColor};
+                                color: ${theme.buttonBackgroundColor};
                             }
                         }
                     
@@ -151,112 +142,116 @@ function Sidebar() {
                 
                 }
             }
+        }
+        .toggle-button {
+            margin-left: 2rem; /* Distanza dal bordo sinistro */
+            font-size: 1rem; /* Dimensioni del pulsante */
+        }
 
-            .notification{
+        .notification{
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 0.5rem;
+            /*padding: 0.5rem 1rem;*/
+            .font_icon{
+                font-size: 1.5rem;
+            }
+
+            svg{
+                color: ${theme.textColor};
+            }
+
+            .image {
                 display: flex;
-                align-items: center;
                 gap: 1rem;
-                padding: 0 1rem;
-                .font_icon{
-                    font-size: 1.5rem;
-                }
-
-                svg{
-                    color: white;
-                }
-
-                .image {
-                    display: flex;
-                    gap: 1rem;
-                    img{
-                        height: 2.5rem;
-                        width: 2.5rem;
-                        border-radius: 3rem;
-                    }
-                }
-
-                .account-image {
+                img{
                     height: 2.5rem;
                     width: 2.5rem;
                     border-radius: 3rem;
-                    background-color: white; /* Imposta il colore di sfondo dell'immagine */
-                }
-
-                .bell-icon {
-                    font-size: 2rem; /* Imposta la grandezza desiderata */
-                }
-
-                
-                .dropdown-container {
-                    position: relative;
-                }
-                
-                .dropdown-header {
-                    cursor: pointer;
-                }
-                
-                .dropdown-menu {
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    width: 200px;
-                    background-color: #fff;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    padding: 8px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                }
-                
-                .dropdown-option {
-                    padding: 8px;
-                    cursor: pointer;
-                }
-                
-                .dropdown-option:hover {
-                    background-color: #f5f5f5;
-                }
-                
-                .dropdown-option.selected {
-                    background-color: #007bff;
-                    color: #fff;
-                }
-                
-                .dropdown-option.logout {
-                    margin-top: 8px;
-                    color: #dc3545;
-                }
-
-                .popup-container {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                
-                .popup-window {
-                    width: 400px;
-                    padding: 20px;
-                    background-color: white;
-                    border: 2px solid orange;
-                    border-radius: 10px;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-                }
-                
-                .overlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-color: rgba(255, 255, 255, 0.8);
                 }
             }
-        }
 
+            .account-image {
+                height: 2rem;
+                width: 2rem;
+                border-radius: 3rem;
+                background-color: white; /* Imposta il colore di sfondo dell'immagine */
+            }
+
+            .bell-icon {
+                font-size: 2rem; /* Imposta la grandezza desiderata */
+            }
+
+            
+            .dropdown-container {
+                position: relative;
+            }
+            
+            .dropdown-header {
+                cursor: pointer;
+            }
+            
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 200px;
+                background-color: #fff;
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                padding: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .dropdown-option {
+                padding: 6px;
+                cursor: pointer;
+            }
+            
+            .dropdown-option:hover {
+                background-color: #f5f5f5;
+            }
+            
+            .dropdown-option.selected {
+                background-color: #007bff;
+                color: #fff;
+            }
+            
+            .dropdown-option.logout {
+                margin-top: 8px;
+                color: #dc3545;
+            }
+
+            .popup-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .popup-window {
+                width: 400px;
+                padding: 20px;
+                background-color: white;
+                border: 2px solid orange;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+        }
 
         `
         ;
@@ -264,87 +259,87 @@ function Sidebar() {
     return (
         <Section>
             <div className="top">
-                    <div className="brand">
-                        <LogoPaci />
-                    </div>
+                    <LogoPaci />
                     <div className="links">
                         <ul>
-                            <li
-                            className={currentLink === 1 ? "active" : "none"}
-                            onClick={() => setCurrentLink(1)}
-                            >
-                                <Link to="/dashboard">
-                                    <BiHomeAlt />
-                                    
-                                </Link>
-                            </li>
-
-                            <li
-                            className={currentLink === 6 ? "active" : "none"}
-                            onClick={() => setCurrentLink(6)}
-                            >
-                                <Link to="/your-charts">
-                                    <AiOutlineDotChart />
-                                    
-                                </Link>
-                            </li>
-
-                            <li
-                            className={currentLink === 3 ? "active" : "none"}
-                            onClick={() => setCurrentLink(3)}
-                            >
-                                <Link to="/insert-values">
-                                    <HiOutlinePencilAlt/>
-                                    
-                                </Link>
-                            </li>
+                            <Tooltip title="Dashboard" placement="right">
+                                <li
+                                    className={currentLink === 1 ? "active" : ""}
+                                    onClick={() => setCurrentLink(1)}
+                                >
+                                    <Link to="/dashboard">
+                                        <BiHomeAlt />
+                                    </Link>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title="I tuoi grafici" placement="right">
+                                <li
+                                    className={currentLink === 6 ? "active" : ""}
+                                    onClick={() => setCurrentLink(6)}
+                                >
+                                    <Link to="/your-charts">
+                                        <AiOutlineDotChart />
+                                    </Link>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title="Inserimento dati" placement="right">
+                                <li
+                                    className={currentLink === 3 ? "active" : "none"}
+                                    onClick={() => setCurrentLink(3)}
+                                >
+                                    <Link to="/insert-values">
+                                        <HiOutlinePencilAlt />
+                                    </Link>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title="Controlla i mercati" placement="right">
+                                <li
+                                    className={currentLink === 2 ? "active" : "none"}
+                                    onClick={() => setCurrentLink(2)}
+                                >
+                                    <Link to="/check-prices">
+                                        <AiOutlineFundProjectionScreen />
+                                    </Link>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title="Classifica" placement="right">
+                                <li
+                                    className={currentLink === 5 ? "active" : "none"}
+                                    onClick={() => setCurrentLink(5)}
+                                >
+                                    <Link to="/leaderboard">
+                                        <AiOutlineTrophy />
+                                    </Link>
+                                </li>
+                            </Tooltip>
                             
-                            <li
-                            className={currentLink === 2 ? "active" : "none"}
-                            onClick={() => setCurrentLink(2)}
-                            >
-                                <Link to="/check-prices">
-                                    <AiOutlineFundProjectionScreen />
-                                    
-                                </Link>
-                            </li>
-
-                            <li
-                            className={currentLink === 5 ? "active" : "none"}
-                            onClick={() => setCurrentLink(5)}
-                            >
-                                <Link to="/leaderboard">
-                                    <AiOutlineTrophy />
-                                    
-                                </Link>
-                            </li>
-                            
-                            
-
-                            <li
-                            className={currentLink === 7 ? "active" : "none"}
-                            onClick={() => setCurrentLink(7)}
-                            >
-                                <Link to="/knowledge">
-                                    <BsBook />
-                                    
-                                </Link>
-                            </li>
-
-                            <li
-                            className={currentLink === 8 ? "active" : "none"}
-                            onClick={() => setCurrentLink(8)}
-                            >
-                                <Link to="/info">
-                                    <BsInfoCircle/>
-                                    
-                                </Link>
-                            </li>
+                            <Tooltip title="Conoscenze" placement="right">
+                                <li
+                                    className={currentLink === 7 ? "active" : "none"}
+                                    onClick={() => setCurrentLink(7)}
+                                >
+                                    <Link to="/knowledge">
+                                        
+                                            <BsBook />
+                                        
+                                        
+                                    </Link>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title="Info" placement="right">
+                                <li
+                                    className={currentLink === 8 ? "active" : "none"}
+                                    onClick={() => setCurrentLink(8)}
+                                >
+                                    <Link to="/info">
+                                        
+                                            <BsInfoCircle/>
+                                        
+                                    </Link>
+                                </li>
+                            </Tooltip>
                           
                         </ul>
-                    </div>
-                    <div className="toggle">
-                        <ToggleModeButton />
                     </div>
                         
                     <div className="notification">
@@ -387,6 +382,10 @@ function Sidebar() {
                                 <div className="overlay" onClick={() => setShowPopup(false)}></div>
                             </div>
                         )}
+                    </div>
+
+                    <div className="toggle-button">
+                        <SidebarToggleModeButton />
                     </div>
             </div>
         </Section>

@@ -141,6 +141,14 @@ const ModalsCustomStyled = () => {
     }
   `;
 
+  const TitleDashboard = styled.h1 `
+        color: ${theme.textColor};
+        font-size: 2rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+        margin-left: 2rem;
+    `;
+
   return {
     MuiCustomDialog,
     MuiCustomButton,
@@ -159,6 +167,7 @@ const ModalsCustomStyled = () => {
     MyGenericModalContent,
     MyButton,
     MyCloseButton,
+    TitleDashboard,
   };
 };
 

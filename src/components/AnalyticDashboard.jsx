@@ -74,13 +74,13 @@ function AnalyticDashboard() {
             justify-content: space-between;
             padding: 1rem 2rem 1rem 2rem;
             border-radius: 1rem;
-            color: ${theme.textColor};
+            color: black;
             background-color: white;
             justify-content: space-evenly;
             align-items: center;
             transition: 0.5s ease-in-out;
             width: 170px;
-            border: 1px solid ${theme.backgroundColor};
+            border: 3px solid ${theme.buttonBackgroundColor};
         
             .design{
                 display: flex;
@@ -212,10 +212,6 @@ function AnalyticDashboard() {
         
         <div className="wrapper">
         <Section>
-            <div className="title">
-                <h1>Dashboard</h1>
-                <h5>Check Portfolio</h5>
-            </div>
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#FF6600' }}>

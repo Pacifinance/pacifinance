@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
-import Info from './sections/Info';
+// import Info from './sections/Info';
 
-function App() {
+function InfoPage() {
   return (
     <Div>
       <Sidebar />
@@ -13,7 +13,7 @@ function App() {
   );
 }
 
-export default App;
+export default InfoPage;
 const Div = styled.div `
   position: relative;
 `;

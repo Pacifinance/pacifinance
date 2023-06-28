@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import InsertValues from './sections/InsertValues';
 
-function App() {
+function InsertPage() {
   return (
     <Div>
       <Sidebar />
@@ -12,7 +12,7 @@ function App() {
   );
 }
 
-export default App;
+export default InsertPage;
 const Div = styled.div `
   position: relative;
 `;

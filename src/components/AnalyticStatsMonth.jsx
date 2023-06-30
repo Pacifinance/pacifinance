@@ -156,7 +156,7 @@ function AnalyticCharts() {
             margin-top: 50px;
             margin-right: 50px;
         }
-        `;
+    `;
 
     useEffect(() => {
         // function to fetch the balances from the API

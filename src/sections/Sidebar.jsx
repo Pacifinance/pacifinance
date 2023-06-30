@@ -24,10 +24,15 @@ function Sidebar() {
     const [selectedOption, setSelectedOption] = useState(null);
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showChangeIDModal, setShowChangeIDModal] = useState(false);
+    const [showID, setShowID] = useState(false);
+    const [showUsername, setShowUsername] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
+    const [ShowChangePWDSuccess,setShowChangePWDSuccess]= useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [newID, setNewID] = useState('');
+    const [newUsername, setNewUsername] = useState('');
     const navigate = useNavigate();
 
     const options = [
@@ -55,11 +60,68 @@ function Sidebar() {
 
     };
 
+    const handleGenerateID = async (event) => {
+        try{
+            console.log("Genero id");
+            const response = await axios.post('/user/set-id'); //only the first element of the array is needed (the last one)
+            console.log(response);
+            console.log(response.data);
+            console.log("ID generato correttamente");
+            const newID = response.data;
+            setNewID(newID);
+            setShowID(true);
+            
+
+
+        }
+        catch(error){
+            console.log(error);
+        }
+
+    };
+
+    const handleGenerateUsername = async (event) => {
+        try{
+            console.log("Genero username");
+            const response = await axios.get('/user/set-username'); //only the first element of the array is needed (the last one)
+            console.log(response);
+            console.log(response.data);
+            console.log("Username generato correttamente");
+            const newUsername = response.data;
+            setNewUsername(newUsername);
+            setShowUsername(true);
+        }   
+        catch(error){
+            console.log(error);
+        }
+    };
+
+    const handleChangePassword = async (event) => {
+        try{
+            console.log("Cambio password");
+            const response = await axios.get('/user/set-password'); //only the first element of the array is needed (the last one)
+            console.log(response);
+            console.log(response.data);
+            handleCloseModal();
+            setShowChangePWDSuccess(true);
+        }
+        catch(error){
+            console.log(error);
+        }
+    };
+
+
     const handleCloseModal = () => {
         setShowAccountModal(false);
         setShowChangeIDModal(false);
         setShowChangeUsernameModal(false);
         setShowChangePWDModal(false);
+    };
+
+    const handleCloseSecondaryModal = () => {
+        setShowChangePWDSuccess(false);
+        setShowID(false);
+        setShowUsername(false);
     };
     
     const handleLogout = async (event) => {
@@ -465,7 +527,7 @@ function Sidebar() {
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
                                 <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                    <MuiCustomButton onClick={handleGenerateUsername} autoFocus>
                                         Genera Username
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -491,7 +553,7 @@ function Sidebar() {
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
                                 <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                    <MuiCustomButton onClick={handleGenerateID} autoFocus>
                                         Voglio cambiare id
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -516,7 +578,78 @@ function Sidebar() {
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
                                 <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                    <MuiCustomButton onClick={handleChangePassword} autoFocus>
+                                        Ok, va bene
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
+                        {showID && (
+                            <MuiCustomDialog
+                                open={showID}
+                                onClose={handleCloseSecondaryModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"Il tuo nuovo ID è: " + newID}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Salvalo per poterlo utilizzare per il login <br></br> 
+                                        Verrai reinderizzato alla pagina di signin. <br></br>
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                        Ok, va bene
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
+                        {showUsername && (
+                            <MuiCustomDialog
+                                open={showUsername}
+                                onClose={handleCloseSecondaryModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"Il tuo nuovo Username è: " + newUsername}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Salvalo per poter accedere tramite username <br></br> 
+                                        Verrai reinderizzato alla pagina di sign-in. <br></br>
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                        Ok, va bene
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
+                        {ShowChangePWDSuccess && (
+                            <MuiCustomDialog
+                                open={showChangePWDModal}
+                                onClose={handleCloseSecondaryModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"La tua password è stata reimpostata correttamente"}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Verrai renderizzato alla pagina di sign-in. <br></br> 
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>

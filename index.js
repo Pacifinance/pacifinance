@@ -153,12 +153,17 @@ app.post("/user/set-id", async (req, res) => {
         res.send();
         return;
     }
+    // Invalidate the session in the database by setting the
+    // expiration date to 01/01/1970 and an invalid ID
+    await db.users.setSessionOfUserId(req.session.userId, req.session.userId, new Date(0));
+    // Destroy the session
+    req.session.destroy();
     // Generate a new random user ID and update the corresponding User document
     const new_user_id = await generateUserId();
     await db.users.setUserIdByUserId(req.session.userId, new_user_id);
-    // Force the logout (redirect to /logout route)
-    req.session.userId = new_user_id; // the user ID in the session is updated to the new one
-    res.redirect("logout");
+    // Send the new user ID to the cliend with status code 200 (OK)
+    res.status(200);
+    res.json({new_id: new_user_id});
 });
 
 app.post("/user/set-password", async (req, res) => {

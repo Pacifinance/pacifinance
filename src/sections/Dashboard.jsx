@@ -24,7 +24,8 @@ function Dashboard() {
             flex-direction: column;
             gap: 1rem;
         
-        }`;
+        }
+    `;
     
     
 

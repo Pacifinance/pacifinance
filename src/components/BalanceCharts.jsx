@@ -153,8 +153,6 @@ export default function Balance() {
 
   return (
     <Section>
-      <h3>Balance</h3>
-      <h5>Portfolio check in the months</h5>
       <BarChart
         width={500}
         height={300}
@@ -177,9 +175,37 @@ export default function Balance() {
         <Bar dataKey="InStocks" stackId="a" fill="#0072c6" />
         <Bar dataKey="InCash" stackId="a" fill="#82ca9d" />
         
+  
         
 
       </BarChart>
+
+      {/* <h3>Incomes vs Outcomes</h3>
+      <h5>Check Incomes and outcomes</h5>
+      <LineChart
+        width={500}
+        height={300}
+        data={data}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis tick={{fontSize: 9}} interval={1} dataKey="name" />
+        <YAxis tick={{fontSize: 12}} />
+        <Tooltip />
+        <Legend />
+        <Line
+          type="monotone"
+          dataKey="Incomes"
+          stroke="#8884d8"
+          activeDot={{ r: 8 }}
+        />
+        <Line type="monotone" dataKey="Expenses" stroke="#82ca9d" />
+      </LineChart> */}
     </Section>
   );
 }

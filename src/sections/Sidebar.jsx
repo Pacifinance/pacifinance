@@ -1,4 +1,3 @@
-//VERSIONE JSX:
 import React, {useState, useContext} from 'react'
 import Select from 'react-select';
 import styled from 'styled-components'
@@ -16,14 +15,21 @@ import { useNavigate } from "react-router-dom";
 import ToggleModeButton from '../components/ToggleModeButton';
 import { ThemeContext } from '../contexts/ThemeContext';
 import LogoPaci from '../components/Logo';
-
-
+import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 
 function Sidebar() {
     const { theme } = useContext(ThemeContext);
     const { mode } = theme;
     const [currentLink, setCurrentLink] = useState(1);
     const [selectedOption, setSelectedOption] = useState(null);
+    const [showAccountModal, setShowAccountModal] = useState(false);
+    const [showChangeIDModal, setShowChangeIDModal] = useState(false);
+    const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
+    const [showChangePWDModal, setShowChangePWDModal] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const navigate = useNavigate();
+
     const options = [
         { value: 'account', label: 'Account' },
         { value: 'changeUsername', label: 'Genera username' },
@@ -31,15 +37,29 @@ function Sidebar() {
         { value: 'changePassword', label: 'Cambio password' },
         // { value: 'logout', label: 'Logout' },
     ];
-    const [showPopup, setShowPopup] = useState(false);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const navigate = useNavigate();
+    
 
     const handleOptionSelect = (option) => {
-        setSelectedOption(option);
-        setShowPopup(true);
-        setShowDropdown(false);
+        console.log(`Option selected:`, option);
+        console.log(`Option selected:`, option.value);
+        if (option && option.value) {
+            setSelectedOption(option);
+            console.log(`Option selected:`, option);
+            console.log(`Option selected:`, option.value);
+            if(selectedOption.value === 'account') setShowAccountModal(true);
+            else if(selectedOption.value === 'changeUsername') setShowChangeUsernameModal(true);
+            else if(selectedOption.value === 'changeid') setShowChangeIDModal(true);
+            else if(selectedOption.value === 'changePassword') setShowChangePWDModal(true);
+            setShowDropdown(false);
+        }
 
+    };
+
+    const handleCloseModal = () => {
+        setShowAccountModal(false);
+        setShowChangeIDModal(false);
+        setShowChangeUsernameModal(false);
+        setShowChangePWDModal(false);
     };
     
     const handleLogout = async (event) => {
@@ -62,6 +82,27 @@ function Sidebar() {
             console.error(error);
         }
     };
+
+    const {
+        MyGenericModal,
+        MyGenericModalContent,
+        MyButton,
+        MuiCloseButton,
+        MuiCustomDialog,
+        MuiCustomButton,
+        MuiCustomDialogTitle,
+        MuiCustomDialogContent,
+        MuiCustomDialogContentText,
+        MuiCustomDialogActions,
+        MuiCustomTextField,
+        MuiCustomIconButton,
+        MuiCustomInputAdornment,
+        MuiCustomVisibility,
+        MuiCustomVisibilityOff,
+        MuiUseStyles,
+    } = ModalsCustomStyled();
+
+
 
     const SidebarToggleModeButton = styled(ToggleModeButton)`
         padding: 6px 10px;
@@ -382,6 +423,106 @@ function Sidebar() {
                                 <div className="overlay" onClick={() => setShowPopup(false)}></div>
                             </div>
                         )}
+                        {showAccountModal && (
+                            <MuiCustomDialog
+                                open={showAccountModal}
+                                onClose={handleCloseModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"Profilo"}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Si è verificato un errore nell'accesso con il tuo account. <br></br>
+                                        Controlla di digitare correttamente id e password.<br></br>
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                        Ok, va bene
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
+                        {showChangeUsernameModal && (
+                            <MuiCustomDialog
+                                open={showChangeUsernameModal}
+                                onClose={handleCloseModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"GeneraUsername"}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Per aumentare la tua privacy e il tuo coinvolgimento <br></br>
+                                        abbiamo pensato di creare un generatore di Username casuali e univoci.<br></br>
+                                        La generazione sarà guidata da alcuni tuoi input. Se sarà necessario potrai cambiarlo in futuro.<br></br>
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                        Genera Username
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
+                        {showChangeIDModal && (
+                            <MuiCustomDialog
+                                open={showChangeIDModal}
+                                onClose={handleCloseModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"Cambio ID"}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Per mantenere la tua privacy ti diamo la possibilità di <br></br>
+                                        cambiare il tuo id, quando ne hai bisogno.<br></br>
+                                        Il sistema genererà un nuovo id casuale e univoco.<br></br>
+                                        Inserisci il tuo vecchio id e la tua password per confermare il cambio.<br></br>
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                        Voglio cambiare id
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
+                        {showChangePWDModal && (
+                            <MuiCustomDialog
+                                open={showChangePWDModal}
+                                onClose={handleCloseModal}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                    {"Cambio Password"}
+                                </MuiCustomDialogTitle>
+                                <MuiCustomDialogContent>
+                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                        Per cambiare la tua password ti chiediamo di inserire <br></br> 
+                                        la tua email usata in fase di registrazione e il tuo id. <br></br>
+                                        TI invieremo un'email con un link per il cambio password.<br></br>
+                                    </MuiCustomDialogContentText>
+                                </MuiCustomDialogContent>
+                                <MuiCustomDialogActions>
+                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                        Ok, va bene
+                                    </MuiCustomButton>
+                                </MuiCustomDialogActions>
+                            </MuiCustomDialog>
+                        )}
+
                     </div>
 
                     <div className="toggle-button">

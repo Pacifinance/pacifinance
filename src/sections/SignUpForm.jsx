@@ -13,6 +13,8 @@ import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 var generated_user_id = '';
 
 function SignUpForm() {
+    const { theme } = useContext(ThemeContext);
+    const { mode } = theme;
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -21,8 +23,6 @@ function SignUpForm() {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
-    const { theme } = useContext(ThemeContext);
-    const { mode } = theme;
 
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
     const {
@@ -45,12 +45,6 @@ function SignUpForm() {
     } = ModalsCustomStyled();
 
     const navigate = useNavigate();
-    // useeffect used to ensure that it runs only after the component has rendered and the state has been updated
-    // useEffect(() => {
-    //     if (redirectToSignIn) {
-    //       navigate('/sign-in');
-    //     }
-    // }, [redirectToSignIn, navigate]);
 
 
     const openSuccessModal = () => {
@@ -71,24 +65,12 @@ function SignUpForm() {
         setShowErrorModal(false);
     };
 
-    // const ModalSuccessSignUp = styled(MyGenericModal)`
-    //     display: ${setShowSuccessModal ? 'flex' : 'none'};
-    // `;
-
-    // const ModalErrorSignUp = styled(MyGenericModal)`
-    //     display: ${setShowErrorModal ? 'flex' : 'none'};
-    // `;
-
-    
-
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
-        inputRef.current.focus();
     };
 
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
-        inputRef.current.focus();
     };
 
     const handleTogglePasswordVisibility = () => {
@@ -180,23 +162,6 @@ function SignUpForm() {
         .input-wrapper {
             position: relative;
         }
-        
-        */ .password-icon {
-            position: absolute;
-            top: 51%;
-            right: 56%;
-            transform: translateY(50%);
-            cursor: pointer;
-        }
-
-        .password-icon2 {
-            font-size: 16px;
-            position: absolute;
-            top: 51%;
-            right: 34%;
-            transform: translateY(50%);
-            cursor: pointer;
-        }*/
           
     
         .signUp-form label {
@@ -224,26 +189,13 @@ function SignUpForm() {
             cursor: pointer;
         }
         
-
-        // .modal {
-        //     position: fixed;
-        //     top: 50%;
-        //     left: 50%;
-        //     transform: translate(-50%, -50%);
-        //     background-color: ${theme.backgroundColor};
-        //     border: 4px solid ${theme.buttonBackgroundColor};
-        //     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        //     color: ${theme.textColor};
-        //     text-align: center;
-        //     padding: 20px;
-        
     `;
 
     return (
         
         <SignUp>
             <div className="signUp-page">
-                <div className="signUp-form">
+                <div className="signUp-form" style={{ display: 'flex' }}>
                     <h1>Registrazione</h1>
                     <div className="icon-with-text">
                         <InfoIcon />
@@ -276,8 +228,8 @@ function SignUpForm() {
                             <MuiCustomTextField
                                 label="Conferma Password"
                                 type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={handlePasswordChange}
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
                                 required
                                 fullWidth
                                 className={classes.root}
@@ -285,46 +237,18 @@ function SignUpForm() {
                                     endAdornment: (
                                     <MuiCustomInputAdornment position="end">
                                         <MuiCustomIconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleToggleConfirmPasswordVisibility}
-                                        onMouseDown={handleMouseDownPassword}
-                                        className={classes.icon}
+                                            aria-label="toggle password visibility"
+                                            onClick={handleToggleConfirmPasswordVisibility}
+                                            onMouseDown={handleMouseDownPassword}
+                                            className={classes.icon}
                                         >
                                         {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                         </MuiCustomIconButton>
                                     </MuiCustomInputAdornment>
                                     ),
                                 }}
-                                />
-                        {/* <label htmlFor="password">Password:</label>
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            id="passwordSignUp"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            required
-                            ref={inputRef} 
-                        />
-                        <div className="password-icon" onClick={handleTogglePasswordVisibility}>
-                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </div> */}
-
-
-                        {/* <label htmlFor="password">Conferma password:</label>
-                        <input
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            id="confirmPasswordSignUp"
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                            required
-                            ref={inputRef} 
-                        />
-                        <div className="password-icon2" onClick={handleToggleConfirmPasswordVisibility}>
-                            {showConfirmPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </div> */}
-
-
-                        <MyButton type="submit">Registrati</MyButton>
+                            />
+                        <MyButton type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Registrati</MyButton>
 
                     </form>
                 </div>
@@ -393,29 +317,3 @@ function SignUpForm() {
 }
 // export { generated_user_id };
 export default SignUpForm;
-
-
-    {/* <ModalSuccessSignUp
-                isOpen={showSuccessModal}
-                onRequestClose={closeSuccessModal}
-                contentLabel="Registrazione avvenuta con successo"
-            >
-                <GenericModalContent>
-                    <CloseButton className="close" onClick={closeSuccessModal}>
-                        &times;
-                    </CloseButton>
-                    <h1>Registrazione avvenuta con successo</h1>
-                </GenericModalContent>
-            </ModalSuccessSignUp>
-            <ModalErrorSignUp
-                isOpen={showErrorModal}
-                onRequestClose={closeErrorModal}
-                contentLabel="Errore nella registrazione"
-            >
-                <GenericModalContent>
-                    <CloseButton className="close" onClick={closeErrorModal}>
-                        &times;
-                    </CloseButton>
-                    <h1>Si è verificato un errore nella registrazione del tuo account</h1>
-                </GenericModalContent>
-            </ModalErrorSignUp> */}

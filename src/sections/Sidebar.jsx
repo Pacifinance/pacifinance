@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useRef, useContext} from 'react';
 import Select from 'react-select';
 import styled from 'styled-components'
 import { BiHomeAlt } from "react-icons/bi";
@@ -20,12 +20,16 @@ import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 function Sidebar() {
     const { theme } = useContext(ThemeContext);
     const { mode } = theme;
+    const inputRef = useRef(null);
     const [currentLink, setCurrentLink] = useState(1);
     const [selectedOption, setSelectedOption] = useState(null);
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showChangeIDModal, setShowChangeIDModal] = useState(false);
     const [showID, setShowID] = useState(false);
     const [showUsername, setShowUsername] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
     const [ShowChangePWDSuccess,setShowChangePWDSuccess]= useState(false);
@@ -33,7 +37,12 @@ function Sidebar() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [newID, setNewID] = useState('');
     const [newUsername, setNewUsername] = useState('');
+    const [OldPassword, setOldPassword] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
+
+    const classes = MuiUseStyles();
 
     const options = [
         { value: 'account', label: 'Account' },
@@ -43,6 +52,28 @@ function Sidebar() {
         // { value: 'logout', label: 'Logout' },
     ];
     
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+        inputRef.current.focus();
+    };
+
+    const handleConfirmPasswordChange = (event) => {
+        setConfirmPassword(event.target.value);
+        inputRef.current.focus();
+    };
+
+    const handleTogglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleToggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
 
     const handleOptionSelect = (option) => {
         console.log(`Option selected:`, option);
@@ -62,17 +93,17 @@ function Sidebar() {
 
     const handleGenerateID = async (event) => {
         try{
+            handleCloseModal();
             console.log("Genero id");
             const response = await axios.post('/user/set-id'); //only the first element of the array is needed (the last one)
             console.log(response);
             console.log(response.data);
+            console.log(response.data.new_id)
             console.log("ID generato correttamente");
-            const newID = response.data;
+            const newID = response.data.new_id;
             setNewID(newID);
             setShowID(true);
-            
-
-
+            handleLogout();
         }
         catch(error){
             console.log(error);
@@ -98,12 +129,19 @@ function Sidebar() {
 
     const handleChangePassword = async (event) => {
         try{
-            console.log("Cambio password");
-            const response = await axios.get('/user/set-password'); //only the first element of the array is needed (the last one)
-            console.log(response);
-            console.log(response.data);
-            handleCloseModal();
-            setShowChangePWDSuccess(true);
+            if(password === confirmPassword){ //forse inutile
+                //richiesta al server per controllare che la vecchia password sia corretta
+                //se è corretta, richiesta al server per cambiare la password
+                //DA FARE
+                
+                console.log("Cambio password");
+                const response = await axios.get('/user/set-password'); //only the first element of the array is needed (the last one)
+                console.log(response);
+                console.log(response.data);
+                handleCloseModal();
+                setShowChangePWDSuccess(true);
+                handleLogout();
+            }
         }
         catch(error){
             console.log(error);
@@ -573,8 +611,83 @@ function Sidebar() {
                                 <MuiCustomDialogContent>
                                     <MuiCustomDialogContentText id="alert-dialog-description">
                                         Per cambiare la tua password ti chiediamo di inserire <br></br> 
-                                        la tua email usata in fase di registrazione e il tuo id. <br></br>
+                                        la tua password <br></br>
                                         TI invieremo un'email con un link per il cambio password.<br></br>
+                                        <form onSubmit={handleChangePassword}>
+                                            <MuiCustomTextField
+                                                label="OldPassword"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={OldPassword}
+                                                onChange={handlePasswordChange}
+                                                required
+                                                fullWidth
+                                                className={classes.root}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                    <MuiCustomInputAdornment position="end">
+                                                        <MuiCustomIconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleTogglePasswordVisibility}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        className={classes.icon}
+                                                        >
+                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        </MuiCustomIconButton>
+                                                    </MuiCustomInputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                            <MuiCustomTextField
+                                                label="Password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={password}
+                                                onChange={handlePasswordChange}
+                                                required
+                                                fullWidth
+                                                className={classes.root}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                    <MuiCustomInputAdornment position="end">
+                                                        <MuiCustomIconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleTogglePasswordVisibility}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        className={classes.icon}
+                                                        >
+                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        </MuiCustomIconButton>
+                                                    </MuiCustomInputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                            <MuiCustomTextField
+                                                label="Conferma Password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={password}
+                                                onChange={handleConfirmPasswordChange}
+                                                required
+                                                fullWidth
+                                                className={classes.root}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                    <MuiCustomInputAdornment position="end">
+                                                        <MuiCustomIconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleToggleConfirmPasswordVisibility}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        className={classes.icon}
+                                                        >
+                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        </MuiCustomIconButton>
+                                                    </MuiCustomInputAdornment>
+                                                    ),
+                                                }}
+                                            />
+
+
+                                            <MyButton type="submit">Cambia password</MyButton>
+
+                                        </form>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
                                 <MuiCustomDialogActions>

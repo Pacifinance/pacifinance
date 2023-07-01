@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
+import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
 
 
 
@@ -57,7 +58,7 @@ const LandingContent = () => {
     justify-content: space-between;
     margin-left: 5%;
     margin-top: 2%;
-    margin-bottom: 2%;
+    margin-bottom: 0.5%;
     // padding: 60px;
   `;
 
@@ -75,15 +76,16 @@ const LandingContent = () => {
   const CentralImage = styled.img`
     max-width: 600px;
     height: auto;
+    margin-right: 3%;
   `;
 
   const FeaturesSection = styled.section`
     display: grid;
-    bottom: 0;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
+    bottom: 0;
     gap: 60px;
-    padding: 60px;
+    // padding: 60px;
     max-width: 1400px; /* Aggiungi una larghezza massima desiderata */
     margin: 0 auto; /* Centra orizzontalmente il contenitore */
   `;
@@ -129,7 +131,8 @@ const LandingContent = () => {
           <p>Check del portafoglio, delle entrate e delle spese nel tempo.</p>
           <CTAButton>Scopri di più</CTAButton>
         </CentralText>
-        {/* <HeroImage src="/path/to/hero-image.jpg" alt="Hero Image" /> */}
+        <CentralImage src={LandingPageImage} alt="Pacifinance Art"/>
+        
       </CentralSection>
       <FeaturesSection>
         <Feature>

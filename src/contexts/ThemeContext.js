@@ -9,17 +9,17 @@ export const themes = {
     primaryColor: '#fff',
     textColor: 'black',//#222629
     backgroundColor: '#fff',
-    buttonBackgroundColor: '#6fca3a',
-    iconBackgroundColor: '#6fca3a',
+    buttonBackgroundColor: '#079164',
+    iconBackgroundColor: '#079164',
   },
   dark: {
     mode: 'dark',
     jollyColor: 'white',
     primaryColor: '#0d0f13', //black
     textColor: '#fff',
-    backgroundColor: '#222831', //#222831 0 #3d3d3d
-    buttonBackgroundColor: '#6fca3a',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro
-    iconBackgroundColor: '#6fca3a',
+    backgroundColor: '#222831', //#222831 o #3d3d3d 
+    buttonBackgroundColor: '#079164 ',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
+    iconBackgroundColor: '#079164 ',
   },
 };
 

@@ -65,6 +65,7 @@ function SignInForm() {
         event.preventDefault();
         // navigate('/dashboard'); //da commentare solo per test in locale
         try {
+          //username could be user_id o username
           const response = await axios.post('/login', { user_id: username, password: password }); //the path in the db is called login
           console.log(response.data);
           if(response.status === 200) {
@@ -172,7 +173,7 @@ function SignInForm() {
                     </div>
                     <form onSubmit={handleSubmit}>
                         <MuiCustomTextField
-                          label="Username"
+                          label="Id o Username"
                           type="text"
                           value={username}
                           onChange={handleUsernameChange}
@@ -238,21 +239,3 @@ function SignInForm() {
     }
 
     export default SignInForm;
-
-    {/* <label htmlFor="username">Username:</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={handleUsernameChange}
-                            required
-                        /> */}
-
-    {/* <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="passwordSignIn"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            required
-                        /> */}

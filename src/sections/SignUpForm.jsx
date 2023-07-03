@@ -181,15 +181,28 @@ function SignUpForm() {
             color: ${theme.textColor};
         }
     
-        .signUp-form button {
-            padding: 8px 16px;
-            background-color: ${theme.buttonBackgroundColor}};
-            color: ${theme.textColor};
-            // border: none;
-            cursor: pointer;
-        }
+        // .signUp-form button {
+        //     // padding: 8px 16px;
+        //     background-color: ${theme.buttonBackgroundColor}};
+        //     color: ${theme.textColor};
+        //     // border: none;
+        //     cursor: pointer;
+        // }
+
+        .button-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            margin-top: 20px;
+          }
+
+        
         
     `;
+
+    const SignUpButton = styled(MyButton)`
+            margin-right: 40%;
+    <`;
 
     return (
         
@@ -199,7 +212,7 @@ function SignUpForm() {
                     <h1>Registrazione</h1>
                     <div className="icon-with-text">
                         <InfoIcon />
-                        <h4>Il sistema genererà per te un id casuale</h4>
+                        <h4>Il sistema genererà per te un id univoco e casuale</h4>
                     </div>
                     <form onSubmit={handleSubmit}>
                         <MuiCustomTextField
@@ -219,7 +232,7 @@ function SignUpForm() {
                                     onMouseDown={handleMouseDownPassword}
                                     className={classes.icon}
                                     >
-                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                     </MuiCustomIconButton>
                                 </MuiCustomInputAdornment>
                                 ),
@@ -227,7 +240,7 @@ function SignUpForm() {
                             />
                             <MuiCustomTextField
                                 label="Conferma Password"
-                                type={showPassword ? 'text' : 'password'}
+                                type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}
                                 onChange={handleConfirmPasswordChange}
                                 required
@@ -242,13 +255,15 @@ function SignUpForm() {
                                             onMouseDown={handleMouseDownPassword}
                                             className={classes.icon}
                                         >
-                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                        {showConfirmPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                         </MuiCustomIconButton>
                                     </MuiCustomInputAdornment>
                                     ),
                                 }}
                             />
-                        <MyButton type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Registrati</MyButton>
+                        <div className="button-wrapper">
+                            <SignUpButton type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Registrati</SignUpButton>
+                        </div>
 
                     </form>
                 </div>

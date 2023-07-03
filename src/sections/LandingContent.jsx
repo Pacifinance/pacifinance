@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import styled from 'styled-components';
+// import { css } from 'styled-components';
 // import { Title } from '@material-ui/icons';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -17,20 +18,21 @@ const LandingContent = () => {
   //to elimnate the white row between the content and the footer put height: 81vh in the container
   const Container = styled.div`
     font-family: Roboto, sans-serif;
-    height: 81vh; 
+    height: 100%; 
     background-color: ${theme.backgroundColor};
     color: ${theme.textColor};
+    padding-bottom: 105px;
   `;
   const Title = styled.h1`
     font-size: 60px;
-    margin-bottom: 10px; /* Aggiungi qui il valore di spaziatura desiderato */
+    margin-bottom: 5px; /* Aggiungi qui il valore di spaziatura desiderato */
     text-align: center;
 
   `;
 
   const Subtitle = styled.h2`
     font-size: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     text-align: center;
     color: ${theme.buttonBackgroundColor};
   `;
@@ -57,7 +59,7 @@ const LandingContent = () => {
     align-items: center;
     justify-content: space-between;
     margin-left: 5%;
-    margin-top: 2%;
+    // margin-top: 2%;
     margin-bottom: 0.5%;
     // padding: 60px;
   `;
@@ -170,135 +172,6 @@ const LandingContent = () => {
 //o lato, sans-serif;
 
 export default LandingContent;
-
-
-
-
-// import React, { useState, useContext } from 'react';
-// import { ThemeContext } from '../contexts/ThemeContext';
-// import styled from 'styled-components';
-// import LockIcon from '@mui/icons-material/Lock';
-// import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import ShieldIcon from '@mui/icons-material/Shield';
-
-// const LandingContent = () => {
-//   const { theme } = useContext(ThemeContext);
-//   const { mode } = theme;
-
-//   const Container = styled.div`
-//     font-family: 'Roboto', sans-serif;
-//     height: 100vh;
-//     background-image: url('/path/to/background-image.jpg');
-//     background-size: cover;
-//     background-position: center;
-//     color: ${theme.textColor};
-//   `;
-
-//   const Title = styled.h1`
-//     font-size: 48px;
-//     margin-bottom: 10px;
-//     text-align: center;
-//     color: ${theme.buttonBackgroundColor};
-//   `;
-
-//   const Subtitle = styled.h2`
-//     font-size: 36px;
-//     margin-bottom: 20px;
-//     text-align: center;
-//     color: ${theme.buttonBackgroundColor};
-//   `;
-
-//   const FeaturesSection = styled.section`
-//     display: grid;
-//     grid-template-columns: repeat(3, 1fr);
-//     gap: 60px;
-//     padding: 60px;
-//     max-width: 1400px;
-//     margin: 0 auto;
-//     background-color: ${theme.backgroundColor};
-//     border-radius: 10px;
-//     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-//   `;
-
-//   const Feature = styled.div`
-//     display: flex;
-//     align-items: center;
-//     margin-bottom: 20px;
-//   `;
-
-//   const FeatureIcon = styled.div`
-//     background-color: ${theme.buttonBackgroundColor};
-//     color: white;
-//     padding: 20px;
-//     border-radius: 50%;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     font-size: 24px;
-//     margin-right: 20px;
-//   `;
-
-//   const FeatureText = styled.div`
-//     margin-left: 20px;
-//   `;
-
-//   const Icon = styled.div`
-//     color: ${theme.jollyColor};
-//   `;
-
-//   const CTAButton = styled.button`
-//     background-color: ${theme.buttonBackgroundColor};
-//     color: white;
-//     padding: 12px 24px;
-//     border: none;
-//     border-radius: 4px;
-//     font-size: 18px;
-//     cursor: pointer;
-//     margin-top: 40px;
-//     display: block;
-//     margin-left: auto;
-//     margin-right: auto;
-//   `;
-
-//   return (
-//     <Container mode={mode}>
-//       <Title>Paci Finance</Title>
-//       <Subtitle>La piattaforma sicura e privacy oriented per la finanza personale</Subtitle>
-//       <FeaturesSection>
-//         <Feature>
-//           <FeatureIcon>
-//             <CheckCircleIcon />
-//           </FeatureIcon>
-//           <FeatureText>
-//             <h3>Facile da usare</h3>
-//             <p>Controlla i tuoi risparmi e i tuoi investimenti in modo semplice e intuitivo.</p>
-//           </FeatureText>
-//         </Feature>
-//         <Feature>
-//           <FeatureIcon>
-//             <ShieldIcon />
-//           </FeatureIcon>
-//           <FeatureText>
-//             <h3>Sicurezza garantita</h3>
-//             <p>Dati sicuri, anonimi e non sensibili. La privacy dell'utente è la nostra priorità.</p>
-//           </FeatureText>
-//         </Feature>
-//         <Feature>
-//           <FeatureIcon>
-//             <LockIcon />
-//           </FeatureIcon>
-//           <FeatureText>
-//             <h3>Confronto con altri utenti</h3>
-//             <p>Confrontati con altri utenti sia nel tuo settore che non, sia nel tuo paese che all'estero.</p>
-//           </FeatureText>
-//         </Feature>
-//       </FeaturesSection>
-//       <CTAButton>Scopri di più</CTAButton>
-//     </Container>
-//   );
-// };
-
-// export default LandingContent;
 
 
 

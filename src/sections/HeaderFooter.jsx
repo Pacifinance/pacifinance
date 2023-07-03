@@ -121,33 +121,32 @@ const Header = () => {
     );
   };
 
-const Footer = () => {
-  const { theme } = useContext(ThemeContext);
-  const { mode } = theme;
-
-  const ContainerFooter = styled.footer`
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: ${theme.backgroundColor};
-    color: ${theme.textColor};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  `;
-
-  const FooterText = styled.p`
-    font-size: 14px;
-  `;
-
-  return (
-    <ContainerFooter>
-      <FooterText>Pacifinance &copy; 2023. All rights reserved.</FooterText>
-    </ContainerFooter>
-  );
-};
-
+  const Footer = () => {
+    const { theme } = useContext(ThemeContext);
+    const { mode } = theme;
+  
+    const ContainerFooter = styled.footer`
+      background-color: ${theme.backgroundColor};
+      color: ${theme.textColor};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    `;
+  
+    const FooterText = styled.p`
+      font-size: 14px;
+    `;
+  
+    return (
+      <ContainerFooter>
+        <FooterText>Pacifinance &copy; 2023. All rights reserved.</FooterText>
+      </ContainerFooter>
+    );
+  };
 
 export { Header, Footer };

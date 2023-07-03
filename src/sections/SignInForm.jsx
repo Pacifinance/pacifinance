@@ -141,6 +141,17 @@ function SignInForm() {
       .sign-in-form input::placeholder {
         color: ${theme.textColor};
       }
+
+      .button-wrapper {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        margin-top: 20px;
+      }
+    `;
+
+    const SignInButton = styled(MyButton)`
+      margin-right: 40%;
     `;
 
     //voglio prendere il generic modL rinominarlo e aggiungergli delle caratteristiche
@@ -165,7 +176,7 @@ function SignInForm() {
     return (
         <SignIn>
             <div className="sign-in-page">
-                <div className="sign-in-form">
+                <div className="sign-in-form" >
                     <h1>Accedi</h1>
                     <div class="icon-with-text">
                         <InfoIcon />
@@ -204,9 +215,11 @@ function SignInForm() {
                             ),
                           }}
                         />
-                        <MyButton type="submit" fullWidth>
-                          Accedi
-                        </MyButton>
+                        <div className="button-wrapper">
+                          <SignInButton type="submit" fullWidth>
+                            Accedi
+                          </SignInButton>
+                        </div>
 
                     </form>
                 </div>

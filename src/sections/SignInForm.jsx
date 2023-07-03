@@ -81,7 +81,7 @@ function SignInForm() {
           }
           
         } catch (error) {
-          console.error(error);
+          // console.error(error);
           setUsername('');
           setPassword('');
           handleOpenModal();
@@ -153,25 +153,6 @@ function SignInForm() {
     const SignInButton = styled(MyButton)`
       margin-right: 40%;
     `;
-
-    //voglio prendere il generic modL rinominarlo e aggiungergli delle caratteristiche
-    const GenericModalSignIn = styled(MyGenericModal)`
-      // background-color: ${theme.backgroundColor};
-      // color: ${theme.textColor};
-      // border: 1px solid ${theme.buttonBackgroundColor};
-      // border-radius: 4px;
-      // padding: 16px;
-      // width: 400px;
-      // height: 200px;
-      // display: flex;
-      // flex-direction: column;
-      // justify-content: space-between;
-      // align-items: center;
-    `;
-
-    // if (generated_user_id !== '') {
-    //   setUsername(generated_user_id);
-    // }  
 
     return (
         <SignIn>

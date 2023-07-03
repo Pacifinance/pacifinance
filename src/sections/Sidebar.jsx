@@ -42,6 +42,25 @@ function Sidebar() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
+    const {
+        MyGenericModal,
+        MyGenericModalContent,
+        MyButton,
+        MuiCloseButton,
+        MuiCustomDialog,
+        MuiCustomButton,
+        MuiCustomDialogTitle,
+        MuiCustomDialogContent,
+        MuiCustomDialogContentText,
+        MuiCustomDialogActions,
+        MuiCustomTextField,
+        MuiCustomIconButton,
+        MuiCustomInputAdornment,
+        MuiCustomVisibility,
+        MuiCustomVisibilityOff,
+        MuiUseStyles,
+    } = ModalsCustomStyled();
+
     const classes = MuiUseStyles();
 
     const options = [
@@ -182,25 +201,6 @@ function Sidebar() {
             console.error(error);
         }
     };
-
-    const {
-        MyGenericModal,
-        MyGenericModalContent,
-        MyButton,
-        MuiCloseButton,
-        MuiCustomDialog,
-        MuiCustomButton,
-        MuiCustomDialogTitle,
-        MuiCustomDialogContent,
-        MuiCustomDialogContentText,
-        MuiCustomDialogActions,
-        MuiCustomTextField,
-        MuiCustomIconButton,
-        MuiCustomInputAdornment,
-        MuiCustomVisibility,
-        MuiCustomVisibilityOff,
-        MuiUseStyles,
-    } = ModalsCustomStyled();
 
 
 

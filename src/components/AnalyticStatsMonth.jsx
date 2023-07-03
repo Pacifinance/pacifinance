@@ -230,7 +230,7 @@ function AnalyticCharts() {
                     <h6>in Stocks & ETF</h6>
                 </div>
                 <div className="money">
-                    <h5>{stocksReal}€</h5>
+                    <h5>{stocksReal}%</h5>
                 </div>
             </div>
 
@@ -248,7 +248,7 @@ function AnalyticCharts() {
                     <h6>in Bank</h6>
                 </div>
                 <div className="money">
-                    <h5>{bankReal}€</h5>
+                    <h5>{bankReal}%</h5>
                 </div>
             </div>
 
@@ -266,7 +266,7 @@ function AnalyticCharts() {
                     <h6>money</h6>
                 </div>
                 <div className="money">
-                    <h5>{cashReal}€</h5>
+                    <h5>{cashReal}%</h5>
                 </div>
             </div>
             
@@ -284,7 +284,7 @@ function AnalyticCharts() {
                     <h6>in Crypto</h6>
                 </div>
                 <div className="money">
-                    <h5>{cryptoReal}€</h5>
+                    <h5>{cryptoReal}%</h5>
                 </div>
             </div>
             <div className="analytic ">
@@ -300,7 +300,7 @@ function AnalyticCharts() {
                     <h6>Entrate</h6>
                 </div>
                 <div className="money">
-                    <h5>{stocksReal}€</h5>
+                    <h5>{stocksReal}%</h5>
                 </div>
             </div>
 
@@ -317,7 +317,7 @@ function AnalyticCharts() {
                     <h6>Uscite</h6>
                 </div>
                 <div className="money">
-                    <h5>{stocksReal}€</h5>
+                    <h5>{stocksReal}%</h5>
                 </div>
             </div>
             
@@ -334,7 +334,7 @@ function AnalyticCharts() {
                     <h6>Rismarmi</h6>
                 </div>
                 <div className="money">
-                    <h5>{stocksReal}€</h5>
+                    <h5>{stocksReal}%</h5>
                 </div>
             </div>
         </Section>

@@ -58,7 +58,7 @@ function SignUpForm() {
     const closeSuccessModal = () => {
         setShowSuccessModal(false);
         copyToClipboard();
-        navigate('/sign-in');
+        navigate('/');
     };
     
     const closeErrorModal = () => {
@@ -114,7 +114,7 @@ function SignUpForm() {
           }
           
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             setPassword('');
             setConfirmPassword('');
             openErrorModal();

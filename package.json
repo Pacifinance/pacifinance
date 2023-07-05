@@ -1,5 +1,10 @@
 {
-  "name": "finance",
+  "name": "pacifinance.com",
+  "subdomain": "",
+  "domains": [
+    "pacifinance.com",
+    "www.pacifinance.com"
+  ],
   "version": "0.1.0",
   "private": true,
   "dependencies": {

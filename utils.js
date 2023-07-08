@@ -55,18 +55,15 @@ function isBalanceValid(data) {
  * @returns true if the expense is valid, false otherwise
  */
 function isExpenseValid(data) {
-    // Cast all values to Number for type integrity
-    data.stocks = Number(data.stocks);
-    data.bank = Number(data.bank);
-    data.cash = Number(data.cash);
-    data.crypto = Number(data.crypto);
+    // Cast the amount to Number for type integrity
+    data.amount = Number(data.stocks);
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
     if (data.date > now) data.date = now;
     // Return true if all fields are valid and the category tag is recognized
     return (
-        !isNaN(data.stocks) && !isNaN(data.bank) && !isNaN(data.cash) &&
-        !isNaN(data.crypto) && db.expenses.tags.includes(data.category_tag)
+        !isNaN(data.amount) && (data.is_expense !== undefined) && [true, false].includes(data.is_expense)
+        && db.expenses.tags.includes(data.category_tag)
     );
 }
 

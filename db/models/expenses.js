@@ -9,10 +9,8 @@ let tags = [...[
 const expenseSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
-    stocks: {type: Number, default: 0},
-    bank: {type: Number, default: 0},
-    cash: {type: Number, default: 0},
-    crypto: {type: Number, default: 0},
+    amount: {type: Number, required: true},
+    isExpense: {type: Boolean, required: true},
     categoryTag: {type: String, required: true}
 });
 
@@ -45,24 +43,20 @@ async function getLastNSorted(where, select, sort, limit) {
  * Adds an expense associated to a user
  * @param {String} user_id - ID of the user
  * @param {Date} date - date of the expense
- * @param {Number} stocks - stocks amount
- * @param {Number} bank - bank amount
- * @param {Number} cash - cash amount
- * @param {Number} crypto - crypto amount
+ * @param {Number} amount - amount of the expense
+ * @param {Boolean} is_expense - true if this is entry is an expense, false if it's an income
  * @param {String} category_tag - category tag of the expense
  * @returns Expense document
  */
-async function insertNew(user_id, date, stocks, bank, cash, crypto, category_tag) {
+async function insertNew(user_id, date, amount, is_expense, category_tag) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
     const data = {
         userId: user._id,
         date: date,
-        stocks: stocks,
-        bank: bank,
-        cash: cash,
-        crypto: crypto,
+        amount: amount,
+        isExpense: is_expense,
         categoryTag: category_tag
     };
     return await addOne(data);

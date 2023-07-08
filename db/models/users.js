@@ -6,6 +6,7 @@ const sessionIdLength = 32;
 const userSchema = new mongoose.Schema({
     userId: {type: String, required: true, unique: true, dropDups: true},
     password: {type: String, required: true},
+    creationDate: {type: Date, required: true},
     nickname: {type: String, default: ""},
     nation: {type: String, default: ""},
     occupation: {type: String, default: ""},
@@ -72,6 +73,7 @@ async function insertNew(user_id, password) {
     const data = {
         userId: user_id,
         password: password,
+        creationDate: new Date(Date.now()),
         nickname: "",
         nation: "",
         occupation: "",

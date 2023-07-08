@@ -332,13 +332,13 @@ app.post("/expenses/get", async (req, res) => {
     }
     // Check if the body contains a reference date. Send
     // status code 400 (Bad Request) in case of missing or invalid date
-    if (req.body.date === undefined)
+    const reference_date = new Date(req.body.date); // Cast for type integrity
+    if (req.body.date === undefined || reference_date === undefined)
     {
         res.status(400);
         res.send();
         return;
     }
-    const reference_date = new Date(req.body.date); // Cast for type integrity
     // Get the expenses from the database for the desired month
     const expenses = await db.expenses.getMonthlyExpensesByUserId(req.session.userId, reference_date);
     // Send the data to the client with status code 200 (OK)

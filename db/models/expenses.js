@@ -53,7 +53,7 @@ async function insertNew(user_id, date, amount, is_expense, category_tag) {
     if (user === null)
         return null;
     const data = {
-        userId: user._id,
+        userRef: user._id,
         date: date,
         amount: amount,
         isExpense: is_expense,

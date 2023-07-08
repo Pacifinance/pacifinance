@@ -23,19 +23,28 @@ function sanitizeInput(data) {
  */
 function isBalanceValid(data) {
     // Cast all values to Number for type integrity
-    data.stocks.real = Number(data.stocks.real);
-    data.stocks.invested = Number(data.stocks.invested);
     data.bank = Number(data.bank);
     data.cash = Number(data.cash);
+    data.digital_services = Number(data.digital_services);
+    data.stocks.real = Number(data.stocks.real);
+    data.stocks.invested = Number(data.stocks.invested);
+    data.etf.real = Number(data.etf.real);
+    data.etf.invested = Number(data.stocks.invested);
+    data.bitcoin.real = Number(data.bitcoin.real);
+    data.bitcoin.invested = Number(data.bitcoin.invested);
     data.crypto.real = Number(data.crypto.real);
     data.crypto.invested = Number(data.crypto.invested);
     // The 'invested' fields are optional: if they don't exist, set them to 0
     if (isNaN(data.stocks.invested)) data.stocks.invested = 0.0;
+    if (isNaN(data.etf.invested)) data.etf.invested = 0.0;
+    if (isNaN(data.bitcoin.invested)) data.bitcoin.invested = 0.0;
     if (isNaN(data.crypto.invested)) data.crypto.invested = 0.0;
     // Return true if all fields exist and they are valid numbers
     return (
+        !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
         !isNaN(data.stocks.real) && !isNaN(data.stocks.invested) &&
-        !isNaN(data.bank) && !isNaN(data.cash) &&
+        !isNaN(data.etf.real) && !isNaN(data.etf.invested) &&
+        !isNaN(data.bitcoin.real) && !isNaN(data.bitcoin.invested) &&
         !isNaN(data.crypto.real) && !isNaN(data.crypto.real)
     );
 }

@@ -227,8 +227,9 @@ app.post("/balances/add", async (req, res) => {
     }
     // Add the balance to the database
     const doc = await db.balances.insertNew(
-        req.session.userId, Date.now(), balance.stocks.real, balance.stocks.invested,
-        balance.bank, balance.cash, balance.crypto.real, balance.crypto.invested
+        req.session.userId, Date.now(), balance.bank, balance.cash, balance.digital_services,
+        balance.stocks.real, balance.stocks.invested, balance.etf.real, balance.etf.invested,
+        balance.bitcoin.real, balance.bitcoin.invested, balance.crypto.real, balance.crypto.invested
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

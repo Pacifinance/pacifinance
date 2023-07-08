@@ -236,7 +236,7 @@ function AnalyticDashboard() {
             try {
                 const currentDate = new Date(Date.now()); //current date in UTC format
                 const expensesArray = await axios.post('/expenses/get', {date: currentDate}); //post to crypt datas
-                
+
                 console.log(expensesArray);
                 //respose.data is not empty
                 if(expensesArray.length === 0) {
@@ -306,7 +306,7 @@ function AnalyticDashboard() {
         datasets: [
           {
             label: '# of Votes',
-            data: [stocksReal, ETFReal],
+            data: [incomesMonth, expensesMonth],
             backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
             borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
             borderWidth: 1,

@@ -244,7 +244,7 @@ app.post("/balances/add", async (req, res) => {
     res.send();
 });
 
-app.get("/balances/get", async (req, res) => {
+app.post("/balances/get", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);
@@ -261,7 +261,7 @@ app.get("/balances/get", async (req, res) => {
     res.json(balances);
 });
 
-app.get("/balances/top", async (req, res) => {
+app.post("/balances/top", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);
@@ -320,7 +320,7 @@ app.post("/expenses/add", async (req, res) => {
     res.send();
 });
 
-app.get("/expenses/get", async (req, res) => {
+app.post("/expenses/get", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);
@@ -330,14 +330,23 @@ app.get("/expenses/get", async (req, res) => {
         res.send();
         return;
     }
-    // Get the most recent expenses from the database
-    const expenses = await db.expenses.getMostRecentByUserId(req.session.userId);
+    // Check if the body contains a reference date. Send
+    // status code 400 (Bad Request) in case of missing or invalid date
+    if (req.body.date === undefined)
+    {
+        res.status(400);
+        res.send();
+        return;
+    }
+    const reference_date = new Date(req.body.date); // Cast for type integrity
+    // Get the expenses from the database for the desired month
+    const expenses = await db.expenses.getMonthlyExpensesByUserId(req.session.userId, reference_date);
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(expenses);
 });
 
-app.get("/expenses/tags", async (req, res) => {
+app.post("/expenses/tags", async (req, res) => {
     // Send the array of tags to the client with status code 200 (OK)
     res.status(200);
     res.json(db.expenses.tags);

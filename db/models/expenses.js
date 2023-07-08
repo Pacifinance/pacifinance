@@ -30,11 +30,10 @@ async function addOne(data) {
  * @param {Object} where - filter to match
  * @param {String} select - fields to return
  * @param {Object} sort - fields to sort by and their order
- * @param {BigInt} limit - maximum number of results
  * @returns List of Expense documents
  */
-async function getLastNSorted(where, select, sort, limit) {
-    return await Expense.find(where, select).sort(sort).limit(limit).lean().exec();
+async function getSorted(where, select, sort) {
+    return await Expense.find(where, select).sort(sort).lean().exec();
 }
 
 /* ==================== Specific queries ==================== */
@@ -65,13 +64,18 @@ async function insertNew(user_id, date, amount, is_expense, category_tag) {
 /**
  * Gets the most recent expenses of a user
  * @param {String} user_id - ID of the user
+ * @param {Date} reference_date - Date object containing the year and month to look for
  * @returns List of Expense documents
  */
-async function getMostRecentByUserId(user_id) {
+async function getMonthlyExpensesByUserId(user_id, reference_date) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return [];
-    return await getLastNSorted({userRef: user._id}, "-_id", {date: -1}, 10);
+    // Get start and end of the current month
+    const month_start = new Date(Date.UTC(reference_date.getUTCFullYear(), reference_date.getUTCMonth()));
+    const month_end = new Date(Date.UTC(reference_date.getUTCFullYear(), reference_date.getUTCMonth()+1));
+    // Get and return the monthly expenses in descending order of date
+    return await getSorted({userRef: user._id, date: {$gte: month_start, $lt: month_end}}, "-_id -__v -userRef", {date: -1});
 }
 
 /**
@@ -82,5 +86,5 @@ const Expense = mongoose.model("Expense", expenseSchema);
 module.exports = {
     tags,
     insertNew,
-    getMostRecentByUserId
+    getMonthlyExpensesByUserId
 };

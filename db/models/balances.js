@@ -110,7 +110,7 @@ async function getLatestByUserId(user_id) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
-    const res = await getLastNSorted({userRef: user._id}, "-_id", {date: -1}, 1);
+    const res = await getLastNSorted({userRef: user._id}, "-_id -__v -userRef", {date: -1}, 1);
     if (res.length === 0)
         return null;
     return res[0];
@@ -137,7 +137,7 @@ async function getYearlyBalanceByUserId(user_id) {
         const res = await getLastNSorted({
                 userRef: user._id, date: {$gte: month_start, $lt: month_end}
             }, 
-            "-_id", {date: -1}, 1
+            "-_id -__v -userRef", {date: -1}, 1
         );
         // If a balance was found for this month, then add it to the array
         let balance = {};

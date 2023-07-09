@@ -214,8 +214,9 @@ function SignUpForm() {
                         <InfoIcon />
                         <h4>Il sistema genererà per te un id univoco e casuale</h4>
                     </div>
-                    <form onSubmit={handleSubmit}>
+                    <form id="signUp-PasswordConfirm" onSubmit={handleSubmit}>
                         <MuiCustomTextField
+                            id="password"
                             label="Password"
                             type={showPassword ? 'text' : 'password'}
                             value={password}
@@ -239,6 +240,7 @@ function SignUpForm() {
                             }}
                             />
                             <MuiCustomTextField
+                                id="confirmPassword"    
                                 label="Conferma Password"
                                 type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}

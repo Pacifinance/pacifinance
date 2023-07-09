@@ -17,50 +17,62 @@ const ModalsCustomStyled = () => {
   const { mode } = theme;
 
   const MuiCustomDialog = styled(Dialog)`
-    // background-color: ${theme.backgroundColor};
-    // color: ${theme.textColor};
-    // border: 4px solid ${theme.buttonBackgroundColor};
+    && {
+      // background-color: ${theme.backgroundColor};
+      // color: ${theme.textColor};
+      // border: 4px solid ${theme.buttonBackgroundColor};
+    }
   `;
 
   const MuiCustomButton = styled(Button)`
-    background-color: ${theme.buttonBackgroundColor};
-    color: ${theme.textColor};
-    hover: ${theme.BackgroundColor};
+    && {
+      background-color: ${theme.buttonBackgroundColor};
+      color: ${theme.textColor};
+      hover: ${theme.BackgroundColor};
+    }
   `;
 
   const MuiCustomDialogTitle = styled(DialogTitle)`
-    font-family: Roboto, sans-serif;
-    color: ${theme.buttonBackgroundColor};
+    && {
+      font-family: Roboto, sans-serif;
+      color: ${theme.buttonBackgroundColor};
+    }
   `;
 
   const MuiCustomDialogContent = styled(DialogContent)`
-    // font-family: Roboto, sans-serif;
-    // color: ${theme.textColor};
-    // // background-color: ${theme.backgroundColor};
+    && {
+      // font-family: Roboto, sans-serif;
+      // color: ${theme.textColor};
+      // // background-color: ${theme.backgroundColor};
+    }
   `;
 
   const MuiCustomDialogContentText = styled(DialogContentText)`
-    font-family: Roboto, sans-serif;
-    color: ${theme.textColor};
+    && {
+      font-family: Roboto, sans-serif;
+      color: ${theme.textColor};
+    }
   `;
 
   const MuiCustomDialogActions = styled(DialogActions)`
-    // font-family: Roboto, sans-serif;
-    // color: ${theme.textColor};
-    // background-color: ${theme.backgroundColor};
+    && {
+      // font-family: Roboto, sans-serif;
+      // color: ${theme.textColor};
+      // background-color: ${theme.backgroundColor};
+    }
   `;
 
   const MuiCustomTextField = styled(TextField)`
       && {
-        // label.Mui-focused {
-        //   color: blue;
-        // }
-        .MuiInput-underline:after {
-          border-bottom-color: ${theme.buttonBackgroundColor};
-        }
-        .Mui-focused .MuiInput-underline:after {
-          border-bottom-color: blue;
-        }
+          label.Mui-focused {
+            color: white;
+          }
+          .MuiInput-underline:after {
+            border-bottom-color: ${theme.buttonBackgroundColor};
+          }
+          .Mui-focused .MuiInput-underline:after {
+            border-bottom-color: blue;
+          }
       }
     `;
 

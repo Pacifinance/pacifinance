@@ -18,17 +18,12 @@ const Header = () => {
   // const [isModalOpen, setModalOpen] = useState(false);
   const [isSignIn, setIsSignIn] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+
   const {
     MyGenericModal,
     MyGenericModalContent,
     MyCloseButton,
     MyButton,
-    MuiCustomDialog,
-    MuiCustomButton,
-    MuiCustomDialogTitle,
-    MuiCustomDialogContent,
-    MuiCustomDialogContentText,
-    MuiCustomDialogActions,
     
   } = ModalsCustomStyled();
  

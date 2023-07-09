@@ -12,7 +12,7 @@ function UserProvider({ children }) {
     const fetchUserData = async () => {
       try {
         //check if user is authenticated
-        if (isAuthenticated()) {
+        if (isAuthenticated) {
             // If the user is authenticated, make two API calls to get the user's balances and expenses
             const balancesResponse = await axios.post('/balances/get');
             const expensesResponse = await axios.post('/expenses/get');

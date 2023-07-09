@@ -1,31 +1,27 @@
-import React, {useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
-import { Grid } from '@material-ui/core';
 import InfoIcon from '@mui/icons-material/Info';
-//commento di test per git
-// import { generated_user_id } from './signUpForm.jsx';
 import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 
 function SignInForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    // const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const { mode } = theme;
     const navigate = useNavigate();
 
+    const usernameRef = useRef(null);
+    const passwordRef = useRef(null);
+
     const {
-      MyGenericModal,
-      MyGenericModalContent,
       MyButton,
-      MuiCloseButton,
       MuiCustomDialog,
       MuiCustomButton,
       MuiCustomDialogTitle,
@@ -63,6 +59,7 @@ function SignInForm() {
     const handleMouseDownPassword = (event) => {
       event.preventDefault();
     };
+
     
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -90,6 +87,9 @@ function SignInForm() {
           setPassword('');
           handleOpenModal();
         }
+
+        usernameRef.current.focus();
+        passwordRef.current.focus();
     
     };
 
@@ -167,8 +167,10 @@ function SignInForm() {
                         <InfoIcon />
                         <h4>Inserisci il tuo id e la tua password per continuare</h4>
                     </div>
-                    <form onSubmit={handleSubmit}>
+                    <form id = "signIn-IdPassword" onSubmit={handleSubmit}>
                         <MuiCustomTextField
+                          id = "username"
+                          
                           label="Id o Username"
                           type="text"
                           value={username}
@@ -178,6 +180,7 @@ function SignInForm() {
                           className={classes.root}
                         />
                         <MuiCustomTextField
+                          id = "password"
                           label="Password"
                           type={showPassword ? 'text' : 'password'}
                           value={password}

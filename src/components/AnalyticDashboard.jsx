@@ -14,7 +14,7 @@ import { BsCoin } from "react-icons/bs";
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, ArcElement, LinearScale} from 'chart.js';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { UserContext } from './contexts/UserContext';
+import { UserContext } from '../contexts/UserContext';
 import axios from 'axios';
 
 

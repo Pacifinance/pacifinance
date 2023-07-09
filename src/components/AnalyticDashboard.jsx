@@ -8,30 +8,50 @@ import { BsBank } from "react-icons/bs";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import { ThemeContext } from '../contexts/ThemeContext';
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
-import axios from 'axios';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, ArcElement, LinearScale} from 'chart.js';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { UserContext } from './contexts/UserContext';
+import axios from 'axios';
+
 
 Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
 function AnalyticDashboard() {
-    const [stocksReal, setStocksReal] = useState(0);
-    const [ETFReal, setETFReal] = useState(0);
-    const [bitcoinReal, setBitcoinReal] = useState(0);
-    const [cryptoReal, setCryptoReal] = useState(0);
-    const [bankReal, setBank] = useState(0);
-    const [cashReal, setCash] = useState(0);
-    const [digitalServicesReal, setDigitalServices] = useState(0);
-    const [totalReal, setTotalReal] = useState(0);
-    const [incomesMonth, setIncomesMonth] = useState(0);
-    const [expensesMonth, setExpensesMonth] = useState(0);
-    const [SavedMonth, setSavedMonth] = useState(0);
+    // const [stocksReal, setStocksReal] = useState(0);
+    // const [ETFReal, setETFReal] = useState(0);
+    // const [bitcoinReal, setBitcoinReal] = useState(0);
+    // const [cryptoReal, setCryptoReal] = useState(0);
+    // const [bankReal, setBank] = useState(0);
+    // const [cashReal, setCash] = useState(0);
+    // const [digitalServicesReal, setDigitalServices] = useState(0);
+    // const [totalReal, setTotalReal] = useState(0);
+    // const [incomesMonth, setIncomesMonth] = useState(0);
+    // const [expensesMonth, setExpensesMonth] = useState(0);
+    // const [SavedMonth, setSavedMonth] = useState(0);
     const { theme } = useContext(ThemeContext);
+    const { userData } = useContext(UserContext);
     const { mode } = theme;
+
+    const balances = userData ? userData.balances : null;
+    const expenses = userData ? userData.expenses : null;
+
+    const stocksReal = balances ? balances.stocks.real : 0;
+    const ETFReal = balances ? balances.etf.real : 0;
+    const bitcoinReal = balances ? balances.bitcoin.real : 0;
+    const cryptoReal = balances ? balances.crypto.real : 0;
+    const bankReal = balances ? balances.bank.real : 0;
+    const cashReal = balances ? balances.cash.real : 0;
+    const digitalServicesReal = balances ? balances.digitalServices.real : 0;
+    const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
+    const incomesMonth = expenses ? expenses.incomes : 0;
+    const expensesMonth = expenses ? expenses.expenses : 0;
+    const savedMonth = incomesMonth - expensesMonth;
+
+
 
 
     const Section = styled.section `
@@ -172,108 +192,108 @@ function AnalyticDashboard() {
         }
     `;
 
-    useEffect(() => {
-        // function to fetch the balances from the API
-        const fetchBalances = async () => {
-          try {
-            const response = await axios.post('/balances/get'); //only the first element of the array is needed (the last one)
-            console.log(response);
-            console.log(response.data);
-            //respose.data is not empty
-            if(response.data.length === 0 || response.data[0].balance === {}) {
-                console.log("No data found");
-                return;
-            }
-            //SISTEMARE
-            const stocksObject = response.data[0].balance.stocks;
-            console.log(stocksObject);
-            const bankObject = response.data[0].balance.bank;
-            const cashObject = response.data[0].balance.cash;
-            const cryptoObject = response.data[0].balance.crypto;
-            const etfObject = response.data[0].balance.etf;
-            const digitalServicesObject = response.data[0].balance.digitalServices;
-            const bitcoinObject = response.data[0].balance.bitcoin;
-            const totalCapital = 0;
+    // useEffect(() => {
+    //     // function to fetch the balances from the API
+    //     const fetchBalances = async () => {
+    //       try {
+    //         const response = await axios.post('/balances/get'); //only the first element of the array is needed (the last one)
+    //         console.log(response);
+    //         console.log(response.data);
+    //         //respose.data is not empty
+    //         if(response.data.length === 0 || response.data[0].balance === {}) {
+    //             console.log("No data found");
+    //             return;
+    //         }
+    //         //SISTEMARE
+    //         const stocksObject = response.data[0].balance.stocks;
+    //         console.log(stocksObject);
+    //         const bankObject = response.data[0].balance.bank;
+    //         const cashObject = response.data[0].balance.cash;
+    //         const cryptoObject = response.data[0].balance.crypto;
+    //         const etfObject = response.data[0].balance.etf;
+    //         const digitalServicesObject = response.data[0].balance.digitalServices;
+    //         const bitcoinObject = response.data[0].balance.bitcoin;
+    //         const totalCapital = 0;
 
-            console.log(bankObject);
-            console.log(cashObject);
+    //         console.log(bankObject);
+    //         console.log(cashObject);
 
-            if (bankObject !== undefined) {
-                setBank(bankObject);
-            }
-            if (cashObject !== undefined) {
-                setCash(cashObject);
-            }
-            if (digitalServicesObject !== undefined) {
-                setDigitalServices(digitalServicesObject);
-            }
-            if (stocksObject !== undefined) {
-                setStocksReal(stocksObject.real);
-            }
-            if (etfObject !== undefined) {
-                setETFReal(etfObject.real);
-            }
-            if (bitcoinObject !== undefined) {
-                setBitcoinReal(bitcoinObject.real);
-            }
-            if (cryptoObject !== undefined) {
-                setCryptoReal(cryptoObject.real);
-            }
-            totalCapital = stocksReal + ETFReal + bankReal + cashReal + cryptoReal + bitcoinReal + digitalServicesReal;
-            setTotalReal(totalCapital);
+    //         if (bankObject !== undefined) {
+    //             setBank(bankObject);
+    //         }
+    //         if (cashObject !== undefined) {
+    //             setCash(cashObject);
+    //         }
+    //         if (digitalServicesObject !== undefined) {
+    //             setDigitalServices(digitalServicesObject);
+    //         }
+    //         if (stocksObject !== undefined) {
+    //             setStocksReal(stocksObject.real);
+    //         }
+    //         if (etfObject !== undefined) {
+    //             setETFReal(etfObject.real);
+    //         }
+    //         if (bitcoinObject !== undefined) {
+    //             setBitcoinReal(bitcoinObject.real);
+    //         }
+    //         if (cryptoObject !== undefined) {
+    //             setCryptoReal(cryptoObject.real);
+    //         }
+    //         totalCapital = stocksReal + ETFReal + bankReal + cashReal + cryptoReal + bitcoinReal + digitalServicesReal;
+    //         setTotalReal(totalCapital);
             
-            console.log(cryptoObject);
+    //         console.log(cryptoObject);
             
-            // console.log(stocksReal);
-            // console.log(cryptoReal);
+    //         // console.log(stocksReal);
+    //         // console.log(cryptoReal);
 
-          } catch (error) {
-            console.error('Errore durante la richiesta GET:', error);
-          }
-        };
+    //       } catch (error) {
+    //         console.error('Errore durante la richiesta GET:', error);
+    //       }
+    //     };
 
-        const fetchIncomeExpenses = async () => {
-            try {
-                const currentDate = new Date(Date.now()); //current date in UTC format
-                const expensesObject = await axios.post('/expenses/get', {date: currentDate}); //post to crypt datas
+    //     const fetchIncomeExpenses = async () => {
+    //         try {
+    //             const currentDate = new Date(Date.now()); //current date in UTC format
+    //             const expensesObject = await axios.post('/expenses/get', {date: currentDate}); //post to crypt datas
 
-                console.log(expensesObject);
-                //respose.data is not empty
-                if(expensesObject.data.length === 0) {
-                    console.log("No data found");
-                    setSavedMonth(0);
-                    return;
-                }
+    //             console.log(expensesObject);
+    //             //respose.data is not empty
+    //             if(expensesObject.data.length === 0) {
+    //                 console.log("No data found");
+    //                 setSavedMonth(0);
+    //                 return;
+    //             }
 
-                let totalExpenses = 0;
-                let totalIncome = 0;
+    //             let totalExpenses = 0;
+    //             let totalIncome = 0;
 
-                expensesObject.data.forEach((expense) => { //.data is an array of objects, so we can use forEach
-                    if (expense.isExpense) {
-                        totalExpenses += expense.amount;
-                    } else {
-                        totalIncome += expense.amount;
-                    }
-                });
+    //             expensesObject.data.forEach((expense) => { //.data is an array of objects, so we can use forEach
+    //                 if (expense.isExpense) {
+    //                     totalExpenses += expense.amount;
+    //                 } else {
+    //                     totalIncome += expense.amount;
+    //                 }
+    //             });
 
-                console.log('Totale spese:', totalExpenses);
-                console.log('Totale income:', totalIncome);
+    //             console.log('Totale spese:', totalExpenses);
+    //             console.log('Totale income:', totalIncome);
                 
-                setIncomesMonth(totalIncome);
-                setExpensesMonth(totalExpenses);
+    //             setIncomesMonth(totalIncome);
+    //             setExpensesMonth(totalExpenses);
 
-                const Saved = totalIncome - totalExpenses;
-                console.log(Saved);
-                setSavedMonth(Saved);
+    //             const Saved = totalIncome - totalExpenses;
+    //             console.log(Saved);
+    //             setSavedMonth(Saved);
 
-            } catch (error) {
-                console.error('Errore durante la richiesta GET:', error);
-            }
-        }
-        // call the function to fetch the balances
-        fetchBalances();
-        fetchIncomeExpenses();
-    }, []);
+    //         } catch (error) {
+    //             console.error('Errore durante la richiesta GET:', error);
+    //         }
+    //     }
+    //     // call the function to fetch the balances
+    //     fetchBalances();
+    //     fetchIncomeExpenses();
+    // }, []);
 
     const barChartCapitalData = {
         labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],

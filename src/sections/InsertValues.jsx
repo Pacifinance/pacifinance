@@ -345,7 +345,7 @@ const InsertValue = () => {
                 }}
               />
             </label>
-
+            <MySecondaryButton onClick={handleAddIncome}>Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
         </>
       );
@@ -433,11 +433,41 @@ const InsertValue = () => {
                         return value;
                       }}
                   >
-                    <MenuItem value="Stipendio">TipoSpesa1</MenuItem>
-                    <MenuItem value="Lavoro-indipendente">TipoSpesa2</MenuItem>
-                    <MenuItem value="Entrata-extra">TipoSpesa3</MenuItem>
-                    <MenuItem value="Regalo">TipoSpesa4</MenuItem>
-                    <MenuItem value="Pensione">TipoSpesa5</MenuItem>
+                    <MenuItem value="Digital services">Servizio digitale</MenuItem>
+                    <MenuItem value="Gift">Regalo</MenuItem>
+                    <MenuItem value="Shopping">Shopping</MenuItem>
+                    <MenuItem value="Food">Cibo</MenuItem>
+                    <MenuItem value="House">Casa</MenuItem>
+                    <MenuItem value="Social">Divertimento</MenuItem>
+                    <MenuItem value="Travelling">Viaggio</MenuItem>
+                    <MenuItem value="Investments">Investimento</MenuItem>
+                    <MenuItem value="Health">Salute e benessere</MenuItem>
+                    <MenuItem value="Taxes">Tassa</MenuItem>
+                    <MenuItem value="Vehicle">Veicolo</MenuItem>
+                    <MenuItem value="Transports">Trasporto</MenuItem>
+                    <MenuItem value="Other">Altro</MenuItem>
+              </Select>
+              {/* <input
+                type="number"
+                value={expense}
+                onChange={(e) => setExpense(e.target.value)}
+              /> */}
+            </label>
+            <label>
+              Tipologia pagamento
+              <Select value={categoryIncome} onChange={handleCategoryExpensesChange} style={{ backgroundColor: 'white' }} displayEmpty
+                      renderValue={(value) => {
+                        if (value === 0) {
+                          return "Seleziona una tipologia";
+                        }
+                        return value;
+                      }}
+                  >
+                    <MenuItem value="Single payment">Pagamento univoco</MenuItem>
+                    <MenuItem value="Subscription">Abbonamento</MenuItem>
+                    <MenuItem value="Installments">Rata</MenuItem>
+                    
+                    
               </Select>
               {/* <input
                 type="number"

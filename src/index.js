@@ -3,16 +3,19 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter as Router}  from "react-router-dom";
 import './index.css';
 import AppRouter from './AppRouter';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider } from './contexts/ThemeContext'
+import { UserProvider } from './contexts/UserContext';
 
 
 ReactDOM.render(
   <ThemeProvider>
-    <React.StrictMode>
-      <Router>
-        <AppRouter />
-      </Router>
-    </React.StrictMode>
+    <UserProvider>
+      <React.StrictMode>
+        <Router>
+          <AppRouter />
+        </Router>
+      </React.StrictMode>
+    </UserProvider>
   </ThemeProvider>,
   document.getElementById('root')
 );

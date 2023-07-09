@@ -162,7 +162,7 @@ function AnalyticCharts() {
         // function to fetch the balances from the API
         const fetchBalances = async () => {
           try {
-            const response = await axios.get('/balances/get'); //only the first element of the array is needed (the last one)
+            const response = await axios.post('/balances/get'); //only the first element of the array is needed (the last one)
             console.log(response);
             console.log(response.data);
             //respose.data is not empty

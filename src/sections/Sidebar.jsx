@@ -133,7 +133,7 @@ function Sidebar() {
     const handleGenerateUsername = async (event) => {
         try{
             console.log("Genero username");
-            const response = await axios.get('/user/set-username'); //only the first element of the array is needed (the last one)
+            const response = await axios.post('/user/set-username'); //only the first element of the array is needed (the last one)
             console.log(response);
             console.log(response.data);
             console.log("Username generato correttamente");
@@ -154,7 +154,7 @@ function Sidebar() {
                 //DA FARE
                 
                 console.log("Cambio password");
-                const response = await axios.get('/user/set-password'); //only the first element of the array is needed (the last one)
+                const response = await axios.post('/user/set-password'); //only the first element of the array is needed (the last one)
                 console.log(response);
                 console.log(response.data);
                 handleCloseModal();

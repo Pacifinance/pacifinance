@@ -176,7 +176,7 @@ function AnalyticDashboard() {
         // function to fetch the balances from the API
         const fetchBalances = async () => {
           try {
-            const response = await axios.get('/balances/get'); //only the first element of the array is needed (the last one)
+            const response = await axios.post('/balances/get'); //only the first element of the array is needed (the last one)
             console.log(response);
             console.log(response.data);
             //respose.data is not empty
@@ -235,11 +235,11 @@ function AnalyticDashboard() {
         const fetchIncomeExpenses = async () => {
             try {
                 const currentDate = new Date(Date.now()); //current date in UTC format
-                const expensesArray = await axios.post('/expenses/get', {date: currentDate}); //post to crypt datas
+                const expensesObject = await axios.post('/expenses/get', {date: currentDate}); //post to crypt datas
 
-                console.log(expensesArray);
+                console.log(expensesObject);
                 //respose.data is not empty
-                if(expensesArray.length === 0) {
+                if(response.data.length === 0) {
                     console.log("No data found");
                     setSavedMonth(0);
                     return;
@@ -248,7 +248,7 @@ function AnalyticDashboard() {
                 let totalExpenses = 0;
                 let totalIncome = 0;
 
-                expensesArray.forEach((expense) => {
+                expensesObject.data.forEach((expense) => { //.data is an array of objects, so we can use forEach
                     if (expense.isExpense) {
                         totalExpenses += expense.amount;
                     } else {

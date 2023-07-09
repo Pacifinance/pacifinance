@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { UserContext } from '../contexts/UserContext';
 import { Grid } from '@material-ui/core';
 import InfoIcon from '@mui/icons-material/Info';
 //commento di test per git
@@ -13,7 +14,9 @@ function SignInForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    // const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
+    const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const { mode } = theme;
     const navigate = useNavigate();
@@ -70,6 +73,7 @@ function SignInForm() {
           console.log(response.data);
           if(response.status === 200) {
             console.log("Sign in successfull");
+            handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
             navigate('/dashboard'); //direct redirect
             // alert("Sign in successfull");
     

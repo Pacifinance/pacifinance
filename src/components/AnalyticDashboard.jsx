@@ -43,15 +43,13 @@ function AnalyticDashboard() {
     const ETFReal = balances ? balances.etf.real : 0;
     const bitcoinReal = balances ? balances.bitcoin.real : 0;
     const cryptoReal = balances ? balances.crypto.real : 0;
-    const bankReal = balances ? balances.bank.real : 0;
-    const cashReal = balances ? balances.cash.real : 0;
-    const digitalServicesReal = balances ? balances.digitalServices.real : 0;
+    const bankReal = balances ? balances.bank : 0;
+    const cashReal = balances ? balances.cash : 0;
+    const digitalServicesReal = balances ? balances.digitalServices : 0;
     const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
     const incomesMonth = expenses ? expenses.incomes : 0;
     const expensesMonth = expenses ? expenses.expenses : 0;
     const savedMonth = incomesMonth - expensesMonth;
-
-
 
 
     const Section = styled.section `

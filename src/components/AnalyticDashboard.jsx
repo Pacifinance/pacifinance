@@ -239,7 +239,7 @@ function AnalyticDashboard() {
 
                 console.log(expensesObject);
                 //respose.data is not empty
-                if(response.data.length === 0) {
+                if(expensesObject.data.length === 0) {
                     console.log("No data found");
                     setSavedMonth(0);
                     return;

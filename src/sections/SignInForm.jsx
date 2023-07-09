@@ -17,9 +17,6 @@ function SignInForm() {
     const { mode } = theme;
     const navigate = useNavigate();
 
-    const usernameRef = useRef(null);
-    const passwordRef = useRef(null);
-
     const {
       MyButton,
       MuiCustomDialog,
@@ -87,9 +84,6 @@ function SignInForm() {
           setPassword('');
           handleOpenModal();
         }
-
-        usernameRef.current.focus();
-        passwordRef.current.focus();
     
     };
 

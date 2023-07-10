@@ -20,79 +20,62 @@ import axios from 'axios';
 
 Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
+Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
+
 function AnalyticDashboard() {
-    // const [stocksReal, setStocksReal] = useState(0);
-    // const [ETFReal, setETFReal] = useState(0);
-    // const [bitcoinReal, setBitcoinReal] = useState(0);
-    // const [cryptoReal, setCryptoReal] = useState(0);
-    // const [bankReal, setBank] = useState(0);
-    // const [cashReal, setCash] = useState(0);
-    // const [digitalServicesReal, setDigitalServices] = useState(0);
-    // const [totalReal, setTotalReal] = useState(0);
-    // const [incomesMonth, setIncomesMonth] = useState(0);
-    // const [expensesMonth, setExpensesMonth] = useState(0);
-    // const [SavedMonth, setSavedMonth] = useState(0);
 
-    //SISTEMARE
-    //         const stocksObject = response.data[0].balance.stocks;
-    //         console.log(stocksObject);
-    //         const bankObject = response.data[0].balance.bank;
-    //         const cashObject = response.data[0].balance.cash;
-    //         const cryptoObject = response.data[0].balance.crypto;
-    //         const etfObject = response.data[0].balance.etf;
-    //         const digitalServicesObject = response.data[0].balance.digitalServices;
-    //         const bitcoinObject = response.data[0].balance.bitcoin;
-    //         const totalCapital = 0;
-
-    //         console.log(bankObject);
-    //         console.log(cashObject);
-
-    //         if (bankObject !== undefined) {
-    //             setBank(bankObject);
-    //         }
-    //         if (cashObject !== undefined) {
-    //             setCash(cashObject);
-    //         }
-    //         if (digitalServicesObject !== undefined) {
-    //             setDigitalServices(digitalServicesObject);
-    //         }
-    //         if (stocksObject !== undefined) {
-    //             setStocksReal(stocksObject.real);
     const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
+    const [isLoading, setIsLoading] = useState(true);
     const { mode } = theme;
-    console.log(userData);
-    console.log(userData.balances);
-    console.log(userData.expenses);
-    const balances = userData ? userData.balances : null;
-    const expenses = userData ? userData.expenses : null;
-
-    const stocksReal = balances ? balances.stocks.real : 0;
-    const ETFReal = balances ? balances.etf.real : 0;
-    const bitcoinReal = balances ? balances.bitcoin.real : 0;
-    const cryptoReal = balances ? balances.crypto.real : 0;
-    const bankReal = balances ? balances.bank : 0;
-    const cashReal = balances ? balances.cash : 0;
-    const digitalServicesReal = balances ? balances.digitalServices : 0;
-    const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-    var incomesMonth = 0;
-    var expensesMonth = 0;
     
+    useEffect(() => {
+        const fetchData = async () => {
+          if (userData) {
+            try {
+                console.log(userData);
+                console.log(userData.balances);
+                console.log(userData.expenses);
+                const balances = userData ? userData.balances : null;
+                const expenses = userData ? userData.expenses : null;
+            
+                const stocksReal = balances ? balances.stocks.real : 0;
+                const ETFReal = balances ? balances.etf.real : 0;
+                const bitcoinReal = balances ? balances.bitcoin.real : 0;
+                const cryptoReal = balances ? balances.crypto.real : 0;
+                const bankReal = balances ? balances.bank : 0;
+                const cashReal = balances ? balances.cash : 0;
+                const digitalServicesReal = balances ? balances.digitalServices : 0;
+                const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
+                var incomesMonth = 0;
+                var expensesMonth = 0;
+                if(expenses.length === 0) {
+                    console.log("No data found");
+                    return;
+                }
+            
+                expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
+                    if (expense.isExpense) {
+                        expensesMonth += expense.amount;
+                    } else {
+                        incomesMonth += expense.amount;
+                    }
+                });
+            
+                var savedMonth = incomesMonth - expensesMonth;
+                setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
+            } catch (error) {
+              console.error('Errore durante le operazioni:', error);
+            }
+          }
+        };
+    
+    fetchData();
+    }, [userData]);
 
-    if(expenses.length === 0) {
-        console.log("No data found");
-        return;
+    if (isLoading) {
+    return <div>Loading...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
     }
-
-    expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
-        if (expense.isExpense) {
-            expensesMonth += expense.amount;
-        } else {
-            incomesMonth += expense.amount;
-        }
-    });
-
-    var savedMonth = incomesMonth - expensesMonth;
 
 
     const Section = styled.section `

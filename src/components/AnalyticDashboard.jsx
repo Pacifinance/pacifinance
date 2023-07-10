@@ -61,7 +61,9 @@ function AnalyticDashboard() {
     const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const { mode } = theme;
-
+    console.log(userData);
+    console.log(userData.balances);
+    console.log(userData.expenses);
     const balances = userData ? userData.balances : null;
     const expenses = userData ? userData.expenses : null;
 
@@ -73,8 +75,8 @@ function AnalyticDashboard() {
     const cashReal = balances ? balances.cash : 0;
     const digitalServicesReal = balances ? balances.digitalServices : 0;
     const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-    var incomesMonth = 0;
-    var expensesMonth = 0;
+    // var incomesMonth = 0;
+    // var expensesMonth = 0;
     
 
     // if(expenses.length === 0) {
@@ -82,15 +84,15 @@ function AnalyticDashboard() {
     //     return;
     // }
 
-    expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
-        if (expense.isExpense) {
-            expensesMonth += expense.amount;
-        } else {
-            incomesMonth += expense.amount;
-        }
-    });
+    // expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
+    //     if (expense.isExpense) {
+    //         expensesMonth += expense.amount;
+    //     } else {
+    //         incomesMonth += expense.amount;
+    //     }
+    // });
 
-    var savedMonth = incomesMonth - expensesMonth;
+    // var savedMonth = incomesMonth - expensesMonth;
 
 
     const Section = styled.section `
@@ -365,7 +367,8 @@ function AnalyticDashboard() {
         datasets: [
           {
             label: '# of Votes',
-            data: [incomesMonth, expensesMonth, savedMonth],
+            // data: [incomesMonth, expensesMonth, savedMonth],
+            data: [100,200,300],
             backgroundColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 0, 0, 1)', 'rgba(144, 238, 144, 1)'],
             borderColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 99, 132, 1)', 'rgba(144, 238, 144, 1)'],
             borderWidth: 1,

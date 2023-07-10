@@ -75,24 +75,24 @@ function AnalyticDashboard() {
     const cashReal = balances ? balances.cash : 0;
     const digitalServicesReal = balances ? balances.digitalServices : 0;
     const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-    // var incomesMonth = 0;
-    // var expensesMonth = 0;
+    var incomesMonth = 0;
+    var expensesMonth = 0;
     
 
-    // if(expenses.length === 0) {
-    //     console.log("No data found");
-    //     return;
-    // }
+    if(expenses.length === 0) {
+        console.log("No data found");
+        return;
+    }
 
-    // expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
-    //     if (expense.isExpense) {
-    //         expensesMonth += expense.amount;
-    //     } else {
-    //         incomesMonth += expense.amount;
-    //     }
-    // });
+    expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
+        if (expense.isExpense) {
+            expensesMonth += expense.amount;
+        } else {
+            incomesMonth += expense.amount;
+        }
+    });
 
-    // var savedMonth = incomesMonth - expensesMonth;
+    var savedMonth = incomesMonth - expensesMonth;
 
 
     const Section = styled.section `

@@ -13,6 +13,7 @@ function UserProvider({ children }) {
       try {
         //check if user is authenticated
         if (isAuthenticated) {
+            console.log('Sono loggato e ora faccio le chiamate API in UserContext.js')
             // If the user is authenticated, make two API calls to get the user's balances and expenses
             const currentDate = new Date(Date.now()); //current date in UTC format
             const balancesResponse = await axios.post('/balances/get');
@@ -20,6 +21,9 @@ function UserProvider({ children }) {
 
             const balances = balancesResponse.data[0].balance;
             const expenses = expensesResponse.data;
+
+            console.log('balances', balances);
+            console.log('expenses', expenses);
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
             setUserData({ balances, expenses });

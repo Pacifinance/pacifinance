@@ -47,8 +47,8 @@ function AnalyticDashboard() {
                 console.log(userData);
                 console.log(userData.balances);
                 console.log(userData.expenses);
-                var balances = userData ? userData.balances : null; //userData = balancesResponse.data[0] (in UserContext.js)
-                var expenses = userData ? userData : null; //userData = expensesResponse.data (in UserContext.js)
+                var balances = userData ? userData.balances.balance : null; //userData = balancesResponse.data[0] (in UserContext.js)
+                var expenses = userData ? userData.expense : null; //userData = expensesResponse.data (in UserContext.js)
         
                 stocksReal = balances ? balances.stocks.real : 0;
                 ETFReal = balances ? balances.etf.real : 0;

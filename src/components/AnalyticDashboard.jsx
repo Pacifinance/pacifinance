@@ -77,10 +77,10 @@ function AnalyticDashboard() {
     var expensesMonth = 0;
     
 
-    if(expenses.length === 0) {
-        console.log("No data found");
-        return;
-    }
+    // if(expenses.length === 0) {
+    //     console.log("No data found");
+    //     return;
+    // }
 
     expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
         if (expense.isExpense) {

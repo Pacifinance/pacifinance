@@ -18,7 +18,7 @@ function UserProvider({ children }) {
             const balancesResponse = await axios.post('/balances/get');
             const expensesResponse = await axios.post('/expenses/get', {date: currentDate});
 
-            const balances = balancesResponse.data;
+            const balances = balancesResponse.data[0].balance;
             const expenses = expensesResponse.data;
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API

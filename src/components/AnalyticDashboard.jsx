@@ -32,6 +32,32 @@ function AnalyticDashboard() {
     // const [incomesMonth, setIncomesMonth] = useState(0);
     // const [expensesMonth, setExpensesMonth] = useState(0);
     // const [SavedMonth, setSavedMonth] = useState(0);
+
+    //SISTEMARE
+    //         const stocksObject = response.data[0].balance.stocks;
+    //         console.log(stocksObject);
+    //         const bankObject = response.data[0].balance.bank;
+    //         const cashObject = response.data[0].balance.cash;
+    //         const cryptoObject = response.data[0].balance.crypto;
+    //         const etfObject = response.data[0].balance.etf;
+    //         const digitalServicesObject = response.data[0].balance.digitalServices;
+    //         const bitcoinObject = response.data[0].balance.bitcoin;
+    //         const totalCapital = 0;
+
+    //         console.log(bankObject);
+    //         console.log(cashObject);
+
+    //         if (bankObject !== undefined) {
+    //             setBank(bankObject);
+    //         }
+    //         if (cashObject !== undefined) {
+    //             setCash(cashObject);
+    //         }
+    //         if (digitalServicesObject !== undefined) {
+    //             setDigitalServices(digitalServicesObject);
+    //         }
+    //         if (stocksObject !== undefined) {
+    //             setStocksReal(stocksObject.real);
     const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const { mode } = theme;
@@ -47,9 +73,24 @@ function AnalyticDashboard() {
     const cashReal = balances ? balances.cash : 0;
     const digitalServicesReal = balances ? balances.digitalServices : 0;
     const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-    const incomesMonth = expenses ? expenses.incomes : 0;
-    const expensesMonth = expenses ? expenses.expenses : 0;
-    const savedMonth = incomesMonth - expensesMonth;
+    var incomesMonth = 0;
+    var expensesMonth = 0;
+    
+
+    if(expenses.length === 0) {
+        console.log("No data found");
+        return;
+    }
+
+    expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
+        if (expense.isExpense) {
+            expensesMonth += expense.amount;
+        } else {
+            incomesMonth += expense.amount;
+        }
+    });
+
+    var savedMonth = incomesMonth - expensesMonth;
 
 
     const Section = styled.section `
@@ -324,9 +365,9 @@ function AnalyticDashboard() {
         datasets: [
           {
             label: '# of Votes',
-            data: [incomesMonth, expensesMonth],
-            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+            data: [incomesMonth, expensesMonth, savedMonth],
+            backgroundColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 0, 0, 1)', 'rgba(144, 238, 144, 1)'],
+            borderColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 99, 132, 1)', 'rgba(144, 238, 144, 1)'],
             borderWidth: 1,
           },
         ],

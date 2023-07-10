@@ -19,7 +19,7 @@ function UserProvider({ children }) {
             const balancesResponse = await axios.post('/balances/get');
             const expensesResponse = await axios.post('/expenses/get', {date: currentDate});
 
-            const balances = balancesResponse.data[0].balance;
+            const balances = balancesResponse.data[0];
             const expenses = expensesResponse.data;
 
             console.log('balances', balances);

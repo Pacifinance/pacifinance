@@ -28,7 +28,18 @@ function AnalyticDashboard() {
     const { userData } = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(true);
     const { mode } = theme;
-    
+    let stocksReal = 0;
+    let ETFReal = 0;
+    let bankReal = 0;
+    let cashReal = 0;
+    let cryptoReal = 0;
+    let bitcoinReal = 0;
+    let digitalServicesReal = 0;
+    let totalReal = 0;
+    let incomesMonth = 0;
+    let expensesMonth = 0;
+    let savedMonth = 0;
+
     useEffect(() => {
         const fetchData = async () => {
           if (userData) {
@@ -36,19 +47,19 @@ function AnalyticDashboard() {
                 console.log(userData);
                 console.log(userData.balances);
                 console.log(userData.expenses);
-                const balances = userData ? userData.balances : null;
-                const expenses = userData ? userData.expenses : null;
-            
-                const stocksReal = balances ? balances.stocks.real : 0;
-                const ETFReal = balances ? balances.etf.real : 0;
-                const bitcoinReal = balances ? balances.bitcoin.real : 0;
-                const cryptoReal = balances ? balances.crypto.real : 0;
-                const bankReal = balances ? balances.bank : 0;
-                const cashReal = balances ? balances.cash : 0;
-                const digitalServicesReal = balances ? balances.digitalServices : 0;
-                const totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-                var incomesMonth = 0;
-                var expensesMonth = 0;
+                balances = userData ? userData.balances : null;
+                expenses = userData ? userData.expenses : null;
+        
+                stocksReal = balances ? balances.stocks.real : 0;
+                ETFReal = balances ? balances.etf.real : 0;
+                bitcoinReal = balances ? balances.bitcoin.real : 0;
+                cryptoReal = balances ? balances.crypto.real : 0;
+                bankReal = balances ? balances.bank : 0;
+                cashReal = balances ? balances.cash : 0;
+                digitalServicesReal = balances ? balances.digitalServices : 0;
+                totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
+                incomesMonth = 0;
+                expensesMonth = 0;
                 if(expenses.length === 0) {
                     console.log("No data found");
                     return;
@@ -62,7 +73,7 @@ function AnalyticDashboard() {
                     }
                 });
             
-                var savedMonth = incomesMonth - expensesMonth;
+                savedMonth = incomesMonth - expensesMonth;
                 setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
             } catch (error) {
               console.error('Errore durante le operazioni:', error);

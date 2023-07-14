@@ -16,9 +16,10 @@ import { Chart, BarElement, CategoryScale, ArcElement, LinearScale} from 'chart.
 import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
 import axios from 'axios';
+import { set } from 'mongoose';
 
 
-Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
+// Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
 Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
@@ -28,17 +29,18 @@ function AnalyticDashboard() {
     const { userData } = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(true);
     const { mode } = theme;
-    let stocksReal = 0;
-    let ETFReal = 0;
-    let bankReal = 0;
-    let cashReal = 0;
-    let cryptoReal = 0;
-    let bitcoinReal = 0;
-    let digitalServicesReal = 0;
-    let totalReal = 0;
-    let incomesMonth = 0;
-    let expensesMonth = 0;
-    let savedMonth = 0;
+    const [stocksReal, setStocksReal] = useState(0);
+    const [etfReal, setETFReal] = useState(0);
+    const [bankReal, setBankReal] = useState(0);
+    const [cashReal, setCashReal] = useState(0);
+    const [cryptoReal, setCryptoReal] = useState(0);
+    const [bitcoinReal, setBitcoinReal] = useState(0);
+    const [digitalServicesReal, setDigitalServicesReal] = useState(0);
+    const [totalReal, setTotalReal] = useState(0);
+    const [incomesMonth, setIncomesMonth] = useState(0);
+    const [expensesMonth, setExpensesMonth] = useState(0);
+    const [savedMonth, setSavedMonth] = useState(0);
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,33 +49,22 @@ function AnalyticDashboard() {
                 console.log(userData);
                 console.log(userData.balances);
                 console.log(userData.expenses);
-                var balances = userData ? userData.balances.balance : null; //userData = balancesResponse.data[0] (in UserContext.js)
-                var expenses = userData ? userData.expense : null; //userData = expensesResponse.data (in UserContext.js)
-        
-                stocksReal = balances ? balances.stocks.real : 0;
-                ETFReal = balances ? balances.etf.real : 0;
-                bitcoinReal = balances ? balances.bitcoin.real : 0;
-                cryptoReal = balances ? balances.crypto.real : 0;
-                bankReal = balances ? balances.bank : 0;
-                cashReal = balances ? balances.cash : 0;
-                digitalServicesReal = balances ? balances.digitalServices : 0;
-                totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-                incomesMonth = 0;
-                expensesMonth = 0;
-                if(!expenses ?? expenses.length === 0) {
-                    console.log("No data found");
-                    return;
-                }
-            
-                expenses.forEach((expense) => { //.data is an array of objects, so we can use forEach
-                    if (expense.isExpense) {
-                        expensesMonth += expense.amount;
-                    } else {
-                        incomesMonth += expense.amount;
-                    }
-                });
-            
-                savedMonth = incomesMonth - expensesMonth;
+                
+                // Set the state with the data from the database
+                setStocksReal(userData ? userData.stocksReal : 0);
+                setETFReal(userData ? userData.etfReal : 0);
+                setBitcoinReal(userData ? userData.bitcoinReal : 0);
+                setCryptoReal(userData ? userData.cryptoReal : 0);
+                setBankReal(userData? userData.bankReal : 0);
+                setCashReal(userData ? userData.cashReal : 0);
+                setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
+                setTotalReal(userData ? userData.totalReal : 0);
+                setExpensesMonth(userData ? userData.expensesMonth : 0);
+                setIncomesMonth(userData ? userData.incomesMonth : 0);
+                setSavedMonth(userData ? userData.savedMonth : 0);
+
+                
+                
                 setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
             } catch (error) {
               console.error('Errore durante le operazioni:', error);
@@ -84,16 +75,70 @@ function AnalyticDashboard() {
     fetchData();
     }, [userData]);
 
+    // useEffect(() => {
+    //     const calculateTotalReal = () => {
+    //         const total = stocksReal + etfReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
+    //         setTotalReal(formatNumber(total));
+    //       };
+      
+    //     calculateTotalReal();
+    // }, [stocksReal, etfReal, bitcoinReal, cryptoReal, bankReal, cashReal, digitalServicesReal]);
+
     if (isLoading) {
-    return <div>Loading...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
+        return <div>Loading...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
     }
+
+    const options = {
+        plugins: {
+          tooltip: {
+            enabled: false,
+            external: (context) => {
+              // Get the tooltip element
+              let tooltipEl = document.getElementById('custom-tooltip');
+    
+              // Create the tooltip element if it doesn't exist
+              if (!tooltipEl) {
+                tooltipEl = document.createElement('div');
+                tooltipEl.id = 'custom-tooltip';
+                tooltipEl.classList.add('custom-tooltip');
+                document.body.appendChild(tooltipEl);
+              }
+    
+              // Hide the tooltip if there is no active element
+              if (context.tooltip.dataPoints.length === 0) {
+                tooltipEl.style.display = 'none';
+                return;
+              }
+    
+              // Get the first data point
+              const dataPoint = context.tooltip.dataPoints[0];
+    
+              // Update the tooltip content
+              tooltipEl.innerHTML = `Value: ${dataPoint.formattedValue}`;
+    
+              // Position the tooltip
+              const position = context.chart.canvas.getBoundingClientRect();
+              tooltipEl.style.display = 'block';
+              tooltipEl.style.left = position.left + window.scrollX + dataPoint.tooltipPosition.x + 'px';
+              tooltipEl.style.top = position.top + window.scrollY + dataPoint.tooltipPosition.y + 'px';
+            }
+          }
+        }
+    };
 
 
     const Section = styled.section `
         font-family: Roboto, sans-serif;
         background-color: ${theme.backgroundColor};
+        
     `;
-    
+    const CapitalValue = styled.h1 `
+        font-size: 2.5rem;
+        color: ${theme.textColor};
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    `;
+
     const UpperSection = styled.section `
         display: flex;
         grid-template-columns: repeat(3, 1fr);
@@ -225,154 +270,83 @@ function AnalyticDashboard() {
                 color: ${theme.textColor};
             }
         }
+
+        .custom-tooltip {
+            position: absolute;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 0.5rem;
+            font-size: 14px;
+            border-radius: 4px;
+          }
     `;
-
-    // useEffect(() => {
-    //     // function to fetch the balances from the API
-    //     const fetchBalances = async () => {
-    //       try {
-    //         const response = await axios.post('/balances/get'); //only the first element of the array is needed (the last one)
-    //         console.log(response);
-    //         console.log(response.data);
-    //         //respose.data is not empty
-    //         if(response.data.length === 0 || response.data[0].balance === {}) {
-    //             console.log("No data found");
-    //             return;
-    //         }
-    //         //SISTEMARE
-    //         const stocksObject = response.data[0].balance.stocks;
-    //         console.log(stocksObject);
-    //         const bankObject = response.data[0].balance.bank;
-    //         const cashObject = response.data[0].balance.cash;
-    //         const cryptoObject = response.data[0].balance.crypto;
-    //         const etfObject = response.data[0].balance.etf;
-    //         const digitalServicesObject = response.data[0].balance.digitalServices;
-    //         const bitcoinObject = response.data[0].balance.bitcoin;
-    //         const totalCapital = 0;
-
-    //         console.log(bankObject);
-    //         console.log(cashObject);
-
-    //         if (bankObject !== undefined) {
-    //             setBank(bankObject);
-    //         }
-    //         if (cashObject !== undefined) {
-    //             setCash(cashObject);
-    //         }
-    //         if (digitalServicesObject !== undefined) {
-    //             setDigitalServices(digitalServicesObject);
-    //         }
-    //         if (stocksObject !== undefined) {
-    //             setStocksReal(stocksObject.real);
-    //         }
-    //         if (etfObject !== undefined) {
-    //             setETFReal(etfObject.real);
-    //         }
-    //         if (bitcoinObject !== undefined) {
-    //             setBitcoinReal(bitcoinObject.real);
-    //         }
-    //         if (cryptoObject !== undefined) {
-    //             setCryptoReal(cryptoObject.real);
-    //         }
-    //         totalCapital = stocksReal + ETFReal + bankReal + cashReal + cryptoReal + bitcoinReal + digitalServicesReal;
-    //         setTotalReal(totalCapital);
-            
-    //         console.log(cryptoObject);
-            
-    //         // console.log(stocksReal);
-    //         // console.log(cryptoReal);
-
-    //       } catch (error) {
-    //         console.error('Errore durante la richiesta GET:', error);
-    //       }
-    //     };
-
-    //     const fetchIncomeExpenses = async () => {
-    //         try {
-    //             const currentDate = new Date(Date.now()); //current date in UTC format
-    //             const expensesObject = await axios.post('/expenses/get', {date: currentDate}); //post to crypt datas
-
-    //             console.log(expensesObject);
-    //             //respose.data is not empty
-    //             if(expensesObject.data.length === 0) {
-    //                 console.log("No data found");
-    //                 setSavedMonth(0);
-    //                 return;
-    //             }
-
-    //             let totalExpenses = 0;
-    //             let totalIncome = 0;
-
-    //             expensesObject.data.forEach((expense) => { //.data is an array of objects, so we can use forEach
-    //                 if (expense.isExpense) {
-    //                     totalExpenses += expense.amount;
-    //                 } else {
-    //                     totalIncome += expense.amount;
-    //                 }
-    //             });
-
-    //             console.log('Totale spese:', totalExpenses);
-    //             console.log('Totale income:', totalIncome);
-                
-    //             setIncomesMonth(totalIncome);
-    //             setExpensesMonth(totalExpenses);
-
-    //             const Saved = totalIncome - totalExpenses;
-    //             console.log(Saved);
-    //             setSavedMonth(Saved);
-
-    //         } catch (error) {
-    //             console.error('Errore durante la richiesta GET:', error);
-    //         }
-    //     }
-    //     // call the function to fetch the balances
-    //     fetchBalances();
-    //     fetchIncomeExpenses();
-    // }, []);
 
     const barChartCapitalData = {
         labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],
         datasets: [
           {
-            label: '# of Votes',
-            data: [stocksReal, ETFReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
-            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+            label: 'Valore allocato',
+            data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
+            backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
+            borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
             borderWidth: 1,
           },
         ],
+        options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 500, // Make sure y axis doesn't go beyond 500
+                ticks: {
+                    stepSize: 100, // Imposta l'intervallo tra i valori sull'asse y
+                },
+              },
+            },
+        },
       };
       
       const pieChartCapitalData = {
         labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],
         datasets: [
           {
-            label: '# of Votes',
-            data: [stocksReal, ETFReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
-            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+            label: '% allocata',
+            data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
+            backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(129, 236, 236,1.0)'],
+            borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(129, 236, 236,1.0)'],
             borderWidth: 1,
           },
         ],
       };
 
       const barChartIncExpData = {
-        labels: ['Entrate', 'Spese'],
+        labels: ['Entrate', 'Spese', 'Risparmio'],
         datasets: [
           {
-            label: '# of Votes',
-            // data: [incomesMonth, expensesMonth, savedMonth],
-            data: [100,200,300],
+            label: 'Valore mensile',
+            data: [incomesMonth, expensesMonth, savedMonth],
             backgroundColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 0, 0, 1)', 'rgba(144, 238, 144, 1)'],
             borderColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 99, 132, 1)', 'rgba(144, 238, 144, 1)'],
             borderWidth: 1,
           },
         ],
+        options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 500, // Imposta il valore massimo sull'asse y in base alle tue esigenze
+                ticks: {
+                    stepSize: 100, // Imposta l'intervallo tra i valori sull'asse y
+                },
+              },
+            },
+        },
       };
       
     return (
         
         <Section>
+            <CapitalValue>Il tuo patrimonio totale è: {totalReal}€</CapitalValue>
             <UpperSection>
                 <div className="analytic ">
                     <div className="design">
@@ -412,7 +386,7 @@ function AnalyticDashboard() {
 
                 <div className="analytic ">
                     <div className="design">
-                        <div className="logo" style={{ color: '#329239' }}>
+                        <div className="logo" style={{ color: '#74b9ff' }}>
                             <SiMoneygram />
                         </div>
                         <div className="action">
@@ -450,7 +424,7 @@ function AnalyticDashboard() {
 
                 <div className="analytic ">
                     <div className="design">
-                        <div className="logo" style={{ color: '#FF6600' }}>
+                        <div className="logo" style={{ color: '#a29bfe' }}>
                             <AiOutlineStock />
                         </div>
                         <div className="action">
@@ -462,7 +436,7 @@ function AnalyticDashboard() {
                         <h6>in ETF</h6>
                     </div>
                     <div className="money">
-                        <h5>{ETFReal}€</h5>
+                        <h5>{etfReal}€</h5>
                     </div>
                 </div>
                 
@@ -486,7 +460,7 @@ function AnalyticDashboard() {
 
                 <div className="analytic ">
                     <div className="design">
-                        <div className="logo" style={{ color: '#F7B510' }}>
+                        <div className="logo" style={{ color: '#d63031' }}>
                             <BsCoin />
                         </div>
                         <div className="action">
@@ -506,17 +480,19 @@ function AnalyticDashboard() {
             
                 <div className="bar-chart-section">
                     <h2>Distribuzione capitale</h2>
-                    <Bar data={barChartCapitalData} />
+                    <Bar data={barChartCapitalData} options={options}/>
+
                 </div>
 
                 <div className="pie-chart-section">
                     <h2>% Distribuzione Capitale</h2>
-                    <Pie data={pieChartCapitalData} />
+                    <Pie data={pieChartCapitalData} options={options}/>
+
                 </div>
 
                 <div className="bar-chart-section">
                     <h2>Entrate | Spese</h2>
-                    <Bar data={barChartIncExpData} />
+                    <Bar data={barChartIncExpData} options={options}/>            
                 </div>
 
             </GraphsSection>

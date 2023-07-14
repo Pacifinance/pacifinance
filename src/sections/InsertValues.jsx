@@ -1,6 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { ThemeContext } from "../contexts/ThemeContext";
+import { UserContext } from '../contexts/UserContext';
 import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 import { Button, ButtonGroup, Select, MenuItem } from "@mui/material";
 import { set } from "mongoose";
@@ -9,14 +10,20 @@ import { Title } from "@material-ui/icons";
 
 const InsertValue = () => {
   const { theme } = useContext(ThemeContext);
+  const { userData } = useContext(UserContext);
   const { mode } = theme;
-  const [bank, setBank] = useState(0);
-  const [cash, setCash] = useState(0);
-  const [digitalPayment, setDigitalPayment] = useState(0);
-  const [stocks, setStocks] = useState(0);
-  const [etf, setETF] = useState(0);
-  const [crypto, setCrypto] = useState(0);
-  const [bitcoin, setBitcoin] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stocksReal, setStocksReal] = useState(0);
+  const [etfReal, setETFReal] = useState(0);
+  const [bankReal, setBankReal] = useState(0);
+  const [cashReal, setCashReal] = useState(0);
+  const [cryptoReal, setCryptoReal] = useState(0);
+  const [bitcoinReal, setBitcoinReal] = useState(0);
+  const [digitalServicesReal, setDigitalServicesReal] = useState(0);
+  const [totalReal, setTotalReal] = useState(0);
+  const [incomesMonth, setIncomesMonth] = useState(0);
+  const [expensesMonth, setExpensesMonth] = useState(0);
+  const [savedMonth, setSavedMonth] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState(0);
   const [categoryExpense, setCategoryExpense] = useState(0);
   const [income, setIncome] = useState(0);
@@ -27,6 +34,41 @@ const InsertValue = () => {
   const [tableDataExpenses, setTableDataExpenses] = useState([]);
 
   const { TitleDashboard, MyButton } = ModalsCustomStyled();
+  
+  
+
+  useEffect(() => {
+      const fetchData = async () => {
+        if (userData) {
+          try {
+              console.log(userData);
+              console.log(userData.balances);
+              console.log(userData.expenses);
+              
+              // Set the state with the data from the database
+              setStocksReal(userData ? userData.stocksReal : 0);
+              setETFReal(userData ? userData.etfReal : 0);
+              setBitcoinReal(userData ? userData.bitcoinReal : 0);
+              setCryptoReal(userData ? userData.cryptoReal : 0);
+              setBankReal(userData? userData.bankReal : 0);
+              setCashReal(userData ? userData.cashReal : 0);
+              setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
+              setTotalReal(userData ? userData.totalReal : 0);
+              setExpensesMonth(userData ? userData.expensesMonth : 0);
+              setIncomesMonth(userData ? userData.incomesMonth : 0);
+              setSavedMonth(userData ? userData.savedMonth : 0);
+
+              
+              
+              setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
+          } catch (error) {
+            console.error('Errore durante le operazioni:', error);
+          }
+        }
+      };
+  
+  fetchData();
+  }, [userData]);
 
   const ModifiedTitleDashboard = styled(TitleDashboard)`
     font-size: 2rem;
@@ -262,8 +304,8 @@ const InsertValue = () => {
               Depositati in Banca
               <input
                 type="number"
-                value={bank}
-                onChange={(e) => setBank(e.target.value)}
+                value={bankReal}
+                onChange={(e) => setBankReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}
@@ -274,8 +316,8 @@ const InsertValue = () => {
               Contanti e monete
               <input
                 type="number"
-                value={cash}
-                onChange={(e) => setCash(e.target.value)}
+                value={cashReal}
+                onChange={(e) => setCashReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}
@@ -286,8 +328,8 @@ const InsertValue = () => {
               Su servizi di pagam. digitali
               <input
                 type="number"
-                value={digitalPayment}
-                onChange={(e) => setDigitalPayment(e.target.value)}
+                value={digitalServicesReal}
+                onChange={(e) => setDigitalServicesReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}
@@ -302,8 +344,8 @@ const InsertValue = () => {
               Azioni
               <input
                 type="number"
-                value={stocks}
-                onChange={(e) => setStocks(e.target.value)}
+                value={stocksReal}
+                onChange={(e) => setStocksReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}
@@ -314,8 +356,8 @@ const InsertValue = () => {
               ETF
               <input
                 type="number"
-                value={etf}
-                onChange={(e) => setETF(e.target.value)}
+                value={etfReal}
+                onChange={(e) => setETFReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}
@@ -326,8 +368,8 @@ const InsertValue = () => {
               Bitcoin
               <input
                 type="number"
-                value={bitcoin}
-                onChange={(e) => setBitcoin(e.target.value)}
+                value={bitcoinReal}
+                onChange={(e) => setBitcoinReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}
@@ -338,8 +380,8 @@ const InsertValue = () => {
               Criptovalute
               <input
                 type="number"
-                value={crypto}
-                onChange={(e) => setCrypto(e.target.value)}
+                value={cryptoReal}
+                onChange={(e) => setCryptoReal(e.target.value)}
                 style={{
                   textAlign: "center",
                 }}

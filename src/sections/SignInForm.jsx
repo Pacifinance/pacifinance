@@ -164,7 +164,6 @@ function SignInForm() {
                     <form id = "signIn-IdPassword" onSubmit={handleSubmit}>
                         <MuiCustomTextField
                           id = "username"
-                          
                           label="Id o Username"
                           type="text"
                           value={username}
@@ -174,7 +173,7 @@ function SignInForm() {
                           className={classes.root}
                         />
                         <MuiCustomTextField
-                          id = "password"
+                          id = "passwordSignIn"
                           label="Password"
                           type={showPassword ? 'text' : 'password'}
                           value={password}

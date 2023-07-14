@@ -216,7 +216,7 @@ function SignUpForm() {
                     </div>
                     <form id="signUp-PasswordConfirm" onSubmit={handleSubmit}>
                         <MuiCustomTextField
-                            id="password"
+                            id="passwordSignUp"
                             label="Password"
                             type={showPassword ? 'text' : 'password'}
                             value={password}

@@ -60,7 +60,7 @@ function AnalyticDashboard() {
                 totalReal = stocksReal + ETFReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
                 incomesMonth = 0;
                 expensesMonth = 0;
-                if(expenses.length === 0) {
+                if(!expenses ?? expenses.length === 0) {
                     console.log("No data found");
                     return;
                 }

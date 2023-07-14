@@ -7,8 +7,8 @@ function App() {
   return (
     <Div>
       <Sidebar />
-      {/* <Leaderboard /> */}
-      <ComingSoon />
+      <Leaderboard />
+      {/* <ComingSoon /> */}
     </Div>
   );
 }

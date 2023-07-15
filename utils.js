@@ -59,7 +59,7 @@ function isExpenseValid(data) {
     data.amount = Number(data.stocks);
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
-    if (data.date > now) data.date = now;
+    if (data.date === undefined || data.date > now) data.date = now;
     // Return true if all fields are valid and the category tag is recognized
     return (
         !isNaN(data.amount) && (data.is_expense !== undefined) && [true, false].includes(data.is_expense)

@@ -17,28 +17,38 @@ function sanitizeInput(data) {
 }
 
 /**
+ * Rounds a currency value to the second decimal digit
+ * @param {Number} n - Currency value
+ * @returns Rounded currency value
+ */
+function roundCurrency(n) {
+    if (n === undefined) return 0;
+    // Round to the second decimal digit
+	let r = +n.toFixed(2); // toFixed() returns a string, but with the + in front it becomes a number
+    // If the rounding was of the 'ceiling' type, make it 'floor'
+	if (r > n) r -= 0.01;
+    // Round again to the second decimal digit to account for floating point shenanigans
+	return +r.toFixed(2);
+}
+
+/**
  * Checks if a balance is valid
  * @param {Object} data - Balance to check (sanitized and modified by this function)
  * @returns true if the balance is valid, false otherwise
  */
 function isBalanceValid(data) {
-    // Cast all values to Number for type integrity
-    data.bank = Number(data.bank);
-    data.cash = Number(data.cash);
-    data.digital_services = Number(data.digital_services);
-    data.stocks.real = Number(data.stocks.real);
-    data.stocks.invested = Number(data.stocks.invested);
-    data.etf.real = Number(data.etf.real);
-    data.etf.invested = Number(data.stocks.invested);
-    data.bitcoin.real = Number(data.bitcoin.real);
-    data.bitcoin.invested = Number(data.bitcoin.invested);
-    data.crypto.real = Number(data.crypto.real);
-    data.crypto.invested = Number(data.crypto.invested);
-    // The 'invested' fields are optional: if they don't exist, set them to 0
-    if (isNaN(data.stocks.invested)) data.stocks.invested = 0.0;
-    if (isNaN(data.etf.invested)) data.etf.invested = 0.0;
-    if (isNaN(data.bitcoin.invested)) data.bitcoin.invested = 0.0;
-    if (isNaN(data.crypto.invested)) data.crypto.invested = 0.0;
+    // Cast all values to Number for type integrity, then round them to the second decimal digit
+    data.bank = roundCurrency(Number(data.bank));
+    data.cash = roundCurrency(Number(data.cash));
+    data.digital_services = roundCurrency(Number(data.digital_services));
+    data.stocks.real = roundCurrency(Number(data.stocks.real));
+    data.stocks.invested = roundCurrency(Number(data.stocks.invested));
+    data.etf.real = roundCurrency(Number(data.etf.real));
+    data.etf.invested = roundCurrency(Number(data.stocks.invested));
+    data.bitcoin.real = roundCurrency(Number(data.bitcoin.real));
+    data.bitcoin.invested = roundCurrency(Number(data.bitcoin.invested));
+    data.crypto.real = roundCurrency(Number(data.crypto.real));
+    data.crypto.invested = roundCurrency(Number(data.crypto.invested));
     // Return true if all fields exist and they are valid numbers
     return (
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
@@ -56,7 +66,7 @@ function isBalanceValid(data) {
  */
 function isExpenseValid(data) {
     // Cast the amount to Number for type integrity
-    data.amount = Number(data.stocks);
+    data.amount = roundCurrency(Number(data.stocks));
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
     if (data.date === undefined || data.date > now) data.date = now;
@@ -140,6 +150,7 @@ function decrementDateByOneMonth(date) {
 
 module.exports = {
     sanitizeInput,
+    roundCurrency,
     isBalanceValid,
     isExpenseValid,
     hashPassword,

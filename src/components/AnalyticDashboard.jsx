@@ -18,9 +18,6 @@ import { UserContext } from '../contexts/UserContext';
 import axios from 'axios';
 import { set } from 'mongoose';
 
-
-// Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
-
 Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
 function AnalyticDashboard() {

@@ -62,8 +62,9 @@ function isExpenseValid(data) {
     if (data.date === undefined || data.date > now) data.date = now;
     // Return true if all fields are valid and the category tag is recognized
     return (
-        !isNaN(data.amount) && (data.is_expense !== undefined) && [true, false].includes(data.is_expense)
-        && db.expenses.tags.includes(data.category_tag)
+        !isNaN(data.amount) && (data.is_expense !== undefined) && [true, false].includes(data.is_expense) &&
+        (data.payment_type !== undefined) && db.expenses.payment_types.includes(data.payment_type) &&
+        db.expenses.tags.includes(data.category_tag)
     );
 }
 

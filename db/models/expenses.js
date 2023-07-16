@@ -2,15 +2,17 @@ const mongoose = require("mongoose");
 const users = require("./users.js");
 
 let tags = [...[
-    "Subscription (digital services)", "Subscription (public transport)", "Gift", "Shopping", "Food", "House", "Social", "Travelling",
-    "Investments", "Health", "Taxes and installments", "Vehicle", "Transport"
+    "Digital services", "Gift", "Shopping", "Food", "House", "Social", "Travelling", "Investments", "Health", "Taxes", "Vehicle", "Transports"
 ].sort(), "Other"];
+
+const payment_types = [0, 1, 2, 3];
 
 const expenseSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
     amount: {type: Number, required: true},
     isExpense: {type: Boolean, required: true},
+    paymentType: {type: Number, required: true}, // 0=None, 1=Single, 2=Subscription, 3=Installment
     categoryTag: {type: String, required: true}
 });
 
@@ -44,10 +46,11 @@ async function getSorted(where, select, sort) {
  * @param {Date} date - date of the expense
  * @param {Number} amount - amount of the expense
  * @param {Boolean} is_expense - true if this is entry is an expense, false if it's an income
+ * @param {Number} payment_type - type of payment (None, Single, Subscription or Installment) as an integer [0;3]
  * @param {String} category_tag - category tag of the expense
  * @returns Expense document
  */
-async function insertNew(user_id, date, amount, is_expense, category_tag) {
+async function insertNew(user_id, date, amount, is_expense, payment_type, category_tag) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
@@ -56,6 +59,7 @@ async function insertNew(user_id, date, amount, is_expense, category_tag) {
         date: date,
         amount: amount,
         isExpense: is_expense,
+        paymentType: payment_type,
         categoryTag: category_tag
     };
     return await addOne(data);
@@ -85,6 +89,7 @@ const Expense = mongoose.model("Expense", expenseSchema);
 
 module.exports = {
     tags,
+    payment_types,
     insertNew,
     getMonthlyExpensesByUserId
 };

@@ -306,7 +306,10 @@ app.post("/expenses/add", async (req, res) => {
         return;
     }
     // Add the expense to the database
-    const doc = await db.expenses.insertNew(req.session.userId, expense.date, expense.amount, expense.is_expense, expense.category_tag);
+    const doc = await db.expenses.insertNew(
+        req.session.userId, expense.date, expense.amount, expense.is_expense,
+        expense.payment_type, expense.category_tag
+    );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
     if (doc === null)

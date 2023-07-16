@@ -187,6 +187,15 @@ async function setSessionOfUserId(user_id, session_id, expiration_date) {
 }
 
 /**
+ * Gets all public information of a user
+ * @param {String} user_id - ID of the user
+ * @returns User document
+ */
+async function getPublicInfoByUserId(user_id) {
+    return await getOne({userId: user_id}, "-_id -__v -password -roles -session");
+}
+
+/**
  * User model
  */
 const User = mongoose.model("User", userSchema);
@@ -204,5 +213,6 @@ module.exports = {
     setNationOfUserId,
     setOccupationOfUserId,
     getSessionByUserId,
-    setSessionOfUserId
+    setSessionOfUserId,
+    getPublicInfoByUserId
 };

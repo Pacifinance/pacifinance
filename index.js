@@ -206,6 +206,23 @@ app.post("/user/set-password", async (req, res) => {
     res.redirect("logout");
 });
 
+app.post("/user/get", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Get the user's public information
+    const user = await db.users.getPublicInfoByUserId(req.session.userId);
+    // Send the data to the client with status code 200 (OK)
+    res.status(200);
+    res.json(user);
+});
+
 app.post("/balances/add", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid

@@ -7,6 +7,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
+import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 
 
 
@@ -14,6 +15,11 @@ import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
 const LandingContent = () => {
   const { theme } = useContext(ThemeContext);
   const { mode } = theme;
+
+  const {
+    MyButton,
+    
+  } = ModalsCustomStyled();
 
   //to elimnate the white row between the content and the footer put height: 81vh in the container
   const Container = styled.div`
@@ -45,15 +51,15 @@ const LandingContent = () => {
     color: ${theme.textColor};
   `;
 
-  const CTAButton = styled.button`
-    background-color: ${theme.buttonBackgroundColor};
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 4px;
-    font-size: 18px;
-    cursor: pointer;
-  `;
+  // const CTAButton = styled.button`
+  //   background-color: ${theme.buttonBackgroundColor};
+  //   color: white;
+  //   padding: 12px 24px;
+  //   border: none;
+  //   border-radius: 4px;
+  //   font-size: 18px;
+  //   cursor: pointer;
+  // `;
   const CentralSection = styled.section`
     display: flex;
     align-items: center;
@@ -131,7 +137,7 @@ const LandingContent = () => {
           <p>La piattaforma sicura e privacy oriented per la finanza personale.</p>
           <p>Potrai confrontarti con altri utenti sia nel tuo settore <br></br> che non, nel tuo paese o all'estero.</p>
           <p>Check del portafoglio, delle entrate e delle spese nel tempo.</p>
-          <CTAButton>Scopri di più</CTAButton>
+          <MyButton>Scopri di più</MyButton>
         </CentralText>
         <CentralImage src={LandingPageImage} alt="Pacifinance Art"/>
         

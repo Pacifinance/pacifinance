@@ -127,30 +127,31 @@ const ModalsCustomStyled = () => {
 
   const MyButton = styled.button`
     background-color: ${theme.buttonBackgroundColor};
-    color: ${theme.textColor};  
+    color: white;  
     padding: 10px 20px;
+    border: none;
     border-radius: 4px;
-    border-color: ${mode === 'dark' ? '#fff' : '#000'};
-    border-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    // border-color: ${mode === 'dark' ? '#fff' : '#000'};
+    // border-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
     align-items: center;
     font-size: 16px;
     cursor: pointer;
   `;
 
   const MyCloseButton = styled.span`
-    cursor: pointer;
-    color: ${theme.textColor};
     background-color: ${theme.buttonBackgroundColor};
+    color: white;
+    border: none;
     border-radius: 4px;
-    border: 1px solid ${mode === 'dark' ? '#fff' : '#000'};
-    width: 20px; /* Aggiungi il valore desiderato per la lunghezza */
-    height: 20px; /* Aggiungi il valore desiderato per l'altezza */
+    width: 20px; 
+    height: 20px; 
     text-align: center;
     display: inline-block;
     line-height: 20px;
     &:hover {
       color: #000;
     }
+    cursor: pointer;
   `;
 
   const TitleDashboard = styled.h1 `

@@ -22,9 +22,9 @@ const ToggleModeButton = () => {
 const Button = styled.button`
     background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
     color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
-    padding: 1px 1px; /* this for change the height and the width of the button */
+    padding: 3px 3px; /* this for change the height and the width of the button */
     border-radius: 4px;
-    border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#000')};
+    // border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#000')};
     font-size: 8px;
     cursor: pointer;
     display: flex;

@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { ThemeContext } from "../contexts/ThemeContext";
-import { UserContext } from '../contexts/UserContext';
+import { UserContext, UserProvider } from '../contexts/UserContext';
 import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 import { Button, ButtonGroup, Select, MenuItem } from "@mui/material";
+import { Calendar } from 'react-calendar';
 import { set } from "mongoose";
 // import NumberFormatBase from 'react-number-format'; //crea errori di compilazione
 import { Title } from "@material-ui/icons";
+import axios from 'axios';
 
 const InsertValue = () => {
   const { theme } = useContext(ThemeContext);
-  const { userData } = useContext(UserContext);
+  const { userData, UserProvider } = useContext(UserContext);
   const { mode } = theme;
   const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
@@ -26,12 +28,17 @@ const InsertValue = () => {
   const [savedMonth, setSavedMonth] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState(0);
   const [categoryExpense, setCategoryExpense] = useState(0);
+  const [typoExpense, setTypoExpense] = useState(0);
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
   const [lastExpensesAdds, setLastExpensesAdds] = useState([]);
   const [tableDataIncomes, setTableDataIncomes] = useState([]);
   const [tableDataExpenses, setTableDataExpenses] = useState([]);
+  const [dateTime, setDateTime] = useState(null);
+  const [incomeDate, setIncomeDate] = useState(null);
+  const [expenseDate, setExpenseDate] = useState(null);
+  const [balanceDate, setBalanceDate] = useState(null);
 
   const { TitleDashboard, MyButton } = ModalsCustomStyled();
   
@@ -58,7 +65,11 @@ const InsertValue = () => {
               setIncomesMonth(userData ? userData.incomesMonth : 0);
               setSavedMonth(userData ? userData.savedMonth : 0);
 
-              
+              //set datas
+              const now = new Date();
+              setDateTime(now);
+              setIncomeDate(now);
+              setExpenseDate(now);
               
               setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
           } catch (error) {
@@ -254,7 +265,39 @@ const InsertValue = () => {
     setCategoryExpense(event.target.value);
   };
 
-  const handleAddIncome = () => {
+  const handleTypoExpensesChange = (event) => {
+    setTypoExpense(event.target.value);
+  };
+
+  const handleChangeBalance = async () => {
+    const balancesJson = { 
+      balance : {
+        bank : bankReal,
+        cash : cashReal,
+        digital_services : digitalServicesReal,
+        stocks : {
+          real : stocksReal
+        },
+        etf : {
+          real : etfReal
+        },
+        bitcoin : {
+          real : bitcoinReal
+        },
+        crypto : {
+          real : cryptoReal
+        },
+
+      }
+    }
+
+    const balancesChange = await axios.post('/balances/add', balancesJson);
+    if (balancesChange.data.success) {
+      UserProvider();
+    }
+  };
+
+  const handleAddIncome = async () => {
     const newIncomeAdd = {
       categoryIncome,
       value: income,
@@ -262,10 +305,27 @@ const InsertValue = () => {
     setLastIncomesAdds([...tableDataIncomes, newIncomeAdd]);  //.slice(0, 10));
     setIncome(0);
     setCategoryIncome(0);
+
+    const incomeJson = { 
+      expense : {
+        date : incomeDate, // variable date TO SET
+        amount : income,
+        is_expense : false,
+        payment_type : 0,
+        category_tag : categoryIncome,
+
+      }
+    }
+
+    const incomeAdd = await axios.post('/expenses/add', incomeJson);
+    if (incomeAdd.data.success) {
+      UserProvider();
+    }
+
    
   };
 
-  const handleAddExpenses = () => {
+  const handleAddExpenses = async () => {
     const newExpenseAdd = {
       categoryExpense,
       value: expense,
@@ -273,6 +333,22 @@ const InsertValue = () => {
     setLastExpensesAdds([...tableDataExpenses, newExpenseAdd]); //.slice(0, 20));
     setExpense(0);
     setCategoryExpense(0);
+
+    const expenseJson = { 
+      expense : {
+        date : expenseDate, // variable date TO SET
+        amount : expense,
+        is_expense : true,
+        payment_type : Number(typoExpense),
+        category_tag : categoryExpense,
+
+      }
+    }
+
+    const expenseAdd = await axios.post('/expenses/add', expenseJson);
+    if (expenseAdd.data.success) {
+      UserProvider();
+    }
   };
 
   const handleIncomesDelete = (index) => {
@@ -387,7 +463,19 @@ const InsertValue = () => {
                 }}
               />
             </label>
-            <MySecondaryButton onClick={handleAddIncome}>Aggiorna il tuo patrimonio</MySecondaryButton>
+            <Calendar
+              onSelectDate={(date) => {
+                setBalanceDate({
+                  year: date.getFullYear(),
+                  month: date.getMonth(),
+                });
+              }}
+              value={balanceDate}
+              disableDaySelection
+            />
+          </StyledInputs>
+          <StyledInputs>
+            <MySecondaryButton onClick={handleChangeBalance}>Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
         </>
       );
@@ -405,13 +493,26 @@ const InsertValue = () => {
                     return value;
                   }}
               >
-                <MenuItem value="Stipendio">Stipendio</MenuItem>
-                <MenuItem value="Lavoro-indipendente">Entrata da lavoro indipendente</MenuItem>
-                <MenuItem value="Entrata-extra">Entrata extra</MenuItem>
-                <MenuItem value="Regalo">Regalo</MenuItem>
-                <MenuItem value="Pensione">Pensione</MenuItem>
+                <MenuItem id= "Stipendio" value="Stipendio">Stipendio</MenuItem>
+                <MenuItem id= "Lavoro-indipendente" value="Lavoro indipendente">Entrata da lavoro indipendente</MenuItem>
+                <MenuItem id= "Entrata-extra" value="Entrata extra">Entrata extra</MenuItem>
+                <MenuItem id= "Regalo" value="Regalo">Regalo</MenuItem>
+                <MenuItem id= "Pensione" value="Pensione">Pensione</MenuItem>
               </Select>
             </label>
+            <div>
+            <Calendar
+              onSelectDate={(date) => {
+                setIncomeDate({
+                  year: date.getFullYear(),
+                  month: date.getMonth(),
+                });
+              }}
+              value={incomeDate}
+              disableDaySelection
+            />
+              <h1>Income for {incomeDate.toLocaleDateString()}</h1>
+            </div>
             <label>
               Valore
               <input
@@ -467,7 +568,7 @@ const InsertValue = () => {
           <StyledAddSection>
             <label>
               Categoria
-              <Select value={categoryIncome} onChange={handleCategoryExpensesChange} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={categoryExpense} onChange={handleCategoryExpensesChange} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
                         if (value === 0) {
                           return "Seleziona una categoria";
@@ -475,19 +576,19 @@ const InsertValue = () => {
                         return value;
                       }}
                   >
-                    <MenuItem value="Digital services">Servizio digitale</MenuItem>
-                    <MenuItem value="Gift">Regalo</MenuItem>
-                    <MenuItem value="Shopping">Shopping</MenuItem>
-                    <MenuItem value="Food">Cibo</MenuItem>
-                    <MenuItem value="House">Casa</MenuItem>
-                    <MenuItem value="Social">Divertimento</MenuItem>
-                    <MenuItem value="Travelling">Viaggio</MenuItem>
-                    <MenuItem value="Investments">Investimento</MenuItem>
-                    <MenuItem value="Health">Salute e benessere</MenuItem>
-                    <MenuItem value="Taxes">Tassa</MenuItem>
-                    <MenuItem value="Vehicle">Veicolo</MenuItem>
-                    <MenuItem value="Transports">Trasporto</MenuItem>
-                    <MenuItem value="Other">Altro</MenuItem>
+                    <MenuItem id="Digital services" value="Servizio digitale">Servizio digitale</MenuItem>
+                    <MenuItem id="Gift" value="Regalo">Regalo</MenuItem>
+                    <MenuItem id="Shopping" value="Shopping">Shopping</MenuItem>
+                    <MenuItem id="Food" value="Cibo">Cibo</MenuItem>
+                    <MenuItem id="House" value="Casa">Casa</MenuItem>
+                    <MenuItem id="Social" value="Divertimento">Divertimento</MenuItem>
+                    <MenuItem id="Travelling" value="Viaggio">Viaggio</MenuItem>
+                    <MenuItem id="Investments" value="Investimento">Investimento</MenuItem>
+                    <MenuItem id="Health" value="Salute e benessere">Salute e benessere</MenuItem>
+                    <MenuItem id="Taxes" value="Tassa">Tassa</MenuItem>
+                    <MenuItem id="Vehicle" value="Veicolo">Veicolo</MenuItem>
+                    <MenuItem id="Transports" value="Trasporto">Trasporto</MenuItem>
+                    <MenuItem id="Other" value="Altro">Altro</MenuItem>
               </Select>
               {/* <input
                 type="number"
@@ -497,7 +598,7 @@ const InsertValue = () => {
             </label>
             <label>
               Tipologia pagamento
-              <Select value={categoryIncome} onChange={handleCategoryExpensesChange} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={typoExpense} onChange={handleTypoExpensesChange} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
                         if (value === 0) {
                           return "Seleziona una tipologia";
@@ -505,17 +606,20 @@ const InsertValue = () => {
                         return value;
                       }}
                   >
-                    <MenuItem value="Single payment">Pagamento univoco</MenuItem>
-                    <MenuItem value="Subscription">Abbonamento</MenuItem>
-                    <MenuItem value="Installments">Rata</MenuItem>
-                    
-                    
+                  <MenuItem id= "0" value="Pagamento univoco">Pagamento univoco</MenuItem>
+                  <MenuItem id= "1" value="Abbonamento">Abbonamento</MenuItem>
+                  <MenuItem id= "2" value="Rata">Rata</MenuItem>
               </Select>
-              {/* <input
-                type="number"
-                value={expense}
-                onChange={(e) => setExpense(e.target.value)}
-              /> */}
+              <Calendar
+                onSelectDate={(date) => {
+                  setExpenseDate({
+                    year: date.getFullYear(),
+                    month: date.getMonth(),
+                  });
+                }}
+                value={expenseDate}
+                disableDaySelection
+              />
             </label>
             <label>
               Spesa

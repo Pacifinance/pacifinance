@@ -1,6 +1,8 @@
 const express = require("express");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const https = require("https");
+const fs = require("fs");
 require("dotenv").config();
 const db = require("./db/mongo.js");
 const utils = require("./utils.js");
@@ -8,6 +10,11 @@ const utils = require("./utils.js");
 const day_ms = 24 * 60 * 60 * 1000;
 
 /* ==================== Express.js server initialization ==================== */
+
+const options = {
+    key: fs.readFileSync(process.env.KEY_PATH),
+    cert: fs.readFileSync(process.env.CERT_PATH)
+};
 
 const app = express();
 app.use(cookieParser());
@@ -372,14 +379,13 @@ app.post("/expenses/tags", async (req, res) => {
     res.json(db.expenses.tags);
 });
 
-app.listen(process.env.PORT, () => {
-    console.log("Server is listening");
-    db.connect(process.env.DB_URI)
-        .then(() => {
-            console.log("Connected to DB");
-        })
-        .catch(() => {
-            console.log("Cannot connect to DB: exiting");
-            process.exit(1);
-        });
-});
+db.connect(process.env.DB_URI)
+    .then(() => {
+        console.log("Connected to DB");
+    })
+    .catch(() => {
+        console.log("Cannot connect to DB: exiting");
+        process.exit(1);
+    });
+
+https.createServer(options, app).listen(process.env.PORT);

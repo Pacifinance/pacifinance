@@ -1,136 +1,37 @@
-import React, { useState, useContext } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
-import styled from 'styled-components';
-// import { css } from 'styled-components';
-// import { Title } from '@material-ui/icons';
+import React from 'react';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
-import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
-
-
-
+import {
+  MyButton,
+  Container,
+  Title,
+  PaciText,
+  FinanceText,
+  Subtitle,
+  CentralSection,
+  CentralText,
+  CentralImage,
+  FeaturesSection,
+  Feature,
+  FeatureIcon,
+  FeatureText,
+} from '../contexts/MyStyled';
 
 const LandingContent = () => {
-  const { theme } = useContext(ThemeContext);
-  const { mode } = theme;
 
-  const {
-    MyButton,
-    
-  } = ModalsCustomStyled();
-
-  //to elimnate the white row between the content and the footer put height: 81vh in the container
-  const Container = styled.div`
-    font-family: Roboto, sans-serif;
-    height: 100%; 
-    background-color: ${theme.backgroundColor};
-    color: ${theme.textColor};
-    padding-bottom: 105px;
-  `;
-  const Title = styled.h1`
-    font-size: 60px;
-    margin-bottom: 5px; /* Aggiungi qui il valore di spaziatura desiderato */
-    text-align: center;
-
-  `;
-
-  const Subtitle = styled.h2`
-    font-size: 14px;
-    margin-bottom: 5px;
-    text-align: center;
-    color: ${theme.buttonBackgroundColor};
-  `;
-
-  const UpsetText = styled.span`
-    color: ${theme.buttonBackgroundColor};
-  `;
-
-  const FinanceText = styled.span`
-    color: ${theme.textColor};
-  `;
-
-  // const CTAButton = styled.button`
-  //   background-color: ${theme.buttonBackgroundColor};
-  //   color: white;
-  //   padding: 12px 24px;
-  //   border: none;
-  //   border-radius: 4px;
-  //   font-size: 18px;
-  //   cursor: pointer;
-  // `;
-  const CentralSection = styled.section`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-left: 5%;
-    // margin-top: 2%;
-    margin-bottom: 0.5%;
-    // padding: 60px;
-  `;
-
-  const CentralText = styled.div`
-    max-width: 800px;
-    // text-align: center;
-    p {
-      margin-bottom: 20px; 
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-  `;
-
-  const CentralImage = styled.img`
-    max-width: 600px;
-    height: auto;
-    margin-right: 3%;
-  `;
-
-  const FeaturesSection = styled.section`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-    bottom: 0;
-    gap: 60px;
-    // padding: 60px;
-    max-width: 1400px; /* Aggiungi una larghezza massima desiderata */
-    margin: 0 auto; /* Centra orizzontalmente il contenitore */
-  `;
-
-  const Feature = styled.div`
-    display: flex;
-    align-items: center;
-  `;
-
-  const FeatureIcon = styled.div`
-    background-color: ${theme.iconBackgroundColor};
-    color: white;
-    padding: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-  `;
-
-  const FeatureText = styled.div`
-    margin-left: 20px;
-  `;
-
-  const Icon = styled.div`
-    /* Aggiungi qui l'icona desiderata */
-    color: ${theme.jollyColor};
-    text-color: ${theme.jollyColor};
-  `;
+  
+  
 
   return (
-    <Container mode={mode}>
+    <Container>
       <Title>
-        <UpsetText>Paci</UpsetText>
+        <PaciText>Paci</PaciText>
         <FinanceText>Finance</FinanceText>
-        <Subtitle>Personal, Privacy, Pacify</Subtitle>
       </Title>
+      <Subtitle>Personal, Privacy, Pacify</Subtitle>
+      
       <CentralSection>
         <CentralText>
           <h1>Privacy, Sicurezza e Confronto</h1>
@@ -178,6 +79,23 @@ const LandingContent = () => {
 //o lato, sans-serif;
 
 export default LandingContent;
+
+
+// const {
+  //   MyButton,
+  //   Container,
+  //   Title,
+  //   PaciText,
+  //   FinanceText,
+  //   Subtitle,
+  //   CentralSection,
+  //   CentralText,
+  //   CentralImage,
+  //   FeaturesSection,
+  //   Feature,
+  //   FeatureIcon,
+  //   FeatureText,
+  // } = MyStyled();
 
 
 

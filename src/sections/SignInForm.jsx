@@ -1,11 +1,25 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import styled from 'styled-components';
 import axios from 'axios';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
 import InfoIcon from '@mui/icons-material/Info';
-import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
+import {
+  MuiCustomDialog,
+  MuiCustomButton,
+  MuiCustomDialogTitle,
+  MuiCustomDialogContent,
+  MuiCustomDialogContentText,
+  MuiCustomDialogActions,
+  MuiCustomTextField,
+  MuiCustomIconButton,
+  MuiCustomInputAdornment,
+  MuiCustomVisibility,
+  MuiCustomVisibilityOff,
+  SignIn,
+  SignInButton,
+  MuiUseStyles,
+} from '../contexts/MyStyled';
+
 
 function SignInForm() {
     const [username, setUsername] = useState('');
@@ -13,25 +27,26 @@ function SignInForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
-    const { theme } = useContext(ThemeContext);
-    const { mode } = theme;
     const navigate = useNavigate();
 
-    const {
-      MyButton,
-      MuiCustomDialog,
-      MuiCustomButton,
-      MuiCustomDialogTitle,
-      MuiCustomDialogContent,
-      MuiCustomDialogContentText,
-      MuiCustomDialogActions,
-      MuiCustomTextField,
-      MuiCustomIconButton,
-      MuiCustomInputAdornment,
-      MuiCustomVisibility,
-      MuiCustomVisibilityOff,
-      MuiUseStyles,
-    } = ModalsCustomStyled();
+    // const {
+    //   MuiCustomDialog,
+    //   MuiCustomButton,
+    //   MuiCustomDialogTitle,
+    //   MuiCustomDialogContent,
+    //   MuiCustomDialogContentText,
+    //   MuiCustomDialogActions,
+    //   MuiCustomTextField,
+    //   MuiCustomIconButton,
+    //   MuiCustomInputAdornment,
+    //   MuiCustomVisibility,
+    //   MuiCustomVisibilityOff,
+    //   SignIn,
+    //   SignInButton,
+    //   MuiUseStyles,
+    // } = MyStyled()
+
+    const classes = MuiUseStyles();
 
     const handleOpenModal = () => {
       setShowErrorModal(true);
@@ -60,7 +75,7 @@ function SignInForm() {
     
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // navigate('/dashboard'); //da commentare solo per test in locale
+        navigate('/dashboard'); //da commentare solo per test in locale
         try {
           //username could be user_id o username
           const response = await axios.post('/login', { user_id: username, password: password }); //the path in the db is called login
@@ -87,77 +102,14 @@ function SignInForm() {
     
     };
 
-    const classes = MuiUseStyles();
-
-    const SignIn = styled.div`
-      font-family: Roboto, sans-serif;
-      
-      .sign-in-page {
-        background-color: ${theme.backgroundColor};
-        height: 50vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
     
-      .sign-in-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-    
-      .sign-in-form h1 {
-        color: ${theme.textColor};
-        margin-bottom: 20px;
-      }
-
-      .icon-with-text {
-        display: flex;
-        color: ${theme.buttonBackgroundColor};
-        align-items: center; /* Allinea verticalmente gli elementi */
-        margin-bottom: 50px;
-      }
-      
-      .icon-with-text h4 {
-        color: ${theme.buttonBackgroundColor};
-        margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
-      }
-    
-      .sign-in-form label {
-        color: ${theme.textColor};
-        margin-bottom: 8px;
-      }
-    
-      .sign-in-form input {
-        padding: 8px;
-        border: none;
-        background-color: transparent;
-        color: ${theme.textColor};
-        margin-bottom: 16px;
-      }
-    
-      .sign-in-form input::placeholder {
-        color: ${theme.textColor};
-      }
-
-      .button-wrapper {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-        margin-top: 20px;
-      }
-    `;
-
-    const SignInButton = styled(MyButton)`
-      margin-right: 40%;
-    `;
 
     return (
         <SignIn>
             <div className="sign-in-page">
                 <div className="sign-in-form" >
                     <h1>Accedi</h1>
-                    <div class="icon-with-text">
+                    <div className="icon-with-text">
                         <InfoIcon />
                         <h4>Inserisci il tuo id e la tua password per continuare</h4>
                     </div>
@@ -171,7 +123,6 @@ function SignInForm() {
                           fullWidth
                           required
                           className={classes.root}
-                          autofocus
                         />
                         <MuiCustomTextField
                           id = "passwordSignIn"
@@ -182,7 +133,6 @@ function SignInForm() {
                           required
                           fullWidth
                           className={classes.root}
-                          autofocus
                           InputProps={{
                             endAdornment: (
                               <MuiCustomInputAdornment position="end">

@@ -1,20 +1,31 @@
-import React, {useState, useRef, useContext} from 'react';
+import React, {useState, useRef} from 'react';
 // import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
-import styled from 'styled-components';
 import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { ThemeContext } from '../contexts/ThemeContext';
 import InfoIcon from '@mui/icons-material/Info';
 
-//for the modal
-import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
+//for the modal and styled components
+import {
+    SignUp,
+    SignUpButton,
+    MuiCustomDialog,
+    MuiCustomButton,
+    MuiCustomDialogTitle,
+    MuiCustomDialogContent,
+    MuiCustomDialogContentText,
+    MuiCustomDialogActions,
+    MuiCustomTextField,
+    MuiCustomIconButton,
+    MuiCustomInputAdornment,
+    MuiCustomVisibility,
+    MuiCustomVisibilityOff,
+    MuiUseStyles,
+} from '../contexts/MyStyled';
 
 var generated_user_id = '';
 
 function SignUpForm() {
-    const { theme } = useContext(ThemeContext);
-    const { mode } = theme;
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -25,24 +36,22 @@ function SignUpForm() {
     const inputRef = useRef(null);
 
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
-    const {
-        MyGenericModal,
-        MyGenericModalContent,
-        MyButton,
-        MyCloseButton,
-        MuiCustomDialog,
-        MuiCustomButton,
-        MuiCustomDialogTitle,
-        MuiCustomDialogContent,
-        MuiCustomDialogContentText,
-        MuiCustomDialogActions,
-        MuiCustomTextField,
-        MuiCustomIconButton,
-        MuiCustomInputAdornment,
-        MuiCustomVisibility,
-        MuiCustomVisibilityOff,
-        MuiUseStyles,
-    } = ModalsCustomStyled();
+    // const {
+    //     SignUp,
+    //     SignUpButton,
+    //     MuiCustomDialog,
+    //     MuiCustomButton,
+    //     MuiCustomDialogTitle,
+    //     MuiCustomDialogContent,
+    //     MuiCustomDialogContentText,
+    //     MuiCustomDialogActions,
+    //     MuiCustomTextField,
+    //     MuiCustomIconButton,
+    //     MuiCustomInputAdornment,
+    //     MuiCustomVisibility,
+    //     MuiCustomVisibilityOff,
+    //     MuiUseStyles,
+    // } = MyStyled();
 
     const navigate = useNavigate();
 
@@ -124,85 +133,6 @@ function SignUpForm() {
     };
 
     const classes = MuiUseStyles();
-
-    const SignUp = styled.div`
-        font-family: Roboto, sans-serif;
-        
-        .signUp-page {
-            background-color: ${theme.backgroundColor};
-            height: 50vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    
-        .signUp-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .signUp-form h1 {
-            color: ${theme.textColor};
-            margin-bottom: 20px;
-        }
-
-        .icon-with-text {
-            display: flex;
-            color: ${theme.buttonBackgroundColor};
-            align-items: center; /* Allinea verticalmente gli elementi */
-            margin-bottom: 50px;
-          }
-          
-        .icon-with-text h4 {
-            color: ${theme.buttonBackgroundColor};
-            margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-          
-    
-        .signUp-form label {
-            color: ${theme.textColor};
-            margin-bottom: 8px;
-        }
-    
-        .signUp-form input {
-            padding: 8px;
-            border: none;
-            background-color: transparent;
-            color: ${theme.textColor};
-            margin-bottom: 16px;
-        }
-    
-        .signUp-form input::placeholder {
-            color: ${theme.textColor};
-        }
-    
-        // .signUp-form button {
-        //     // padding: 8px 16px;
-        //     background-color: ${theme.buttonBackgroundColor}};
-        //     color: ${theme.textColor};
-        //     // border: none;
-        //     cursor: pointer;
-        // }
-
-        .button-wrapper {
-            display: flex;
-            justify-content: flex-end;
-            width: 100%;
-            margin-top: 20px;
-          }
-
-        
-        
-    `;
-
-    const SignUpButton = styled(MyButton)`
-            margin-right: 40%;
-    <`;
 
     return (
         

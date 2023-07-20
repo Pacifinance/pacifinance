@@ -1,19 +1,26 @@
 import React, { useEffect, useState, useContext } from "react";
-import styled from "styled-components";
-import { ThemeContext } from "../contexts/ThemeContext";
 import { UserContext, UserProvider } from '../contexts/UserContext';
-import ModalsCustomStyled from '../contexts/ModalsCustomStyled';
 import { Button, ButtonGroup, Select, MenuItem } from "@mui/material";
 import { Calendar } from 'react-calendar';
 import { set } from "mongoose";
 // import NumberFormatBase from 'react-number-format'; //crea errori di compilazione
 import { Title } from "@material-ui/icons";
 import axios from 'axios';
+import {
+  MyButton,
+  MySecondaryButton,
+  StyledSection,
+  StyledAddSection,
+  StyledTable,
+  StyledLastAdds,
+  StyledInputs,
+  TitleLastAdds,
+  TitleSection,
+  ModifiedTitleDashboard,
+} from '../contexts/MyStyled';
 
 const InsertValue = () => {
-  const { theme } = useContext(ThemeContext);
   const { userData, UserProvider } = useContext(UserContext);
-  const { mode } = theme;
   const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
   const [etfReal, setETFReal] = useState(0);
@@ -40,7 +47,18 @@ const InsertValue = () => {
   const [expenseDate, setExpenseDate] = useState(null);
   const [balanceDate, setBalanceDate] = useState(null);
 
-  const { TitleDashboard, MyButton } = ModalsCustomStyled();
+  // const {
+  //   MyButton,
+  //   MySecondaryButton,
+  //   StyledSection,
+  //   StyledAddSection,
+  //   StyledTable,
+  //   StyledLastAdds,
+  //   StyledInputs,
+  //   TitleLastAdds,
+  //   TitleSection,
+  //   ModifiedTitleDashboard,
+  // } = MyStyled();
   
   
 
@@ -80,168 +98,6 @@ const InsertValue = () => {
   
   fetchData();
   }, [userData]);
-
-  const ModifiedTitleDashboard = styled(TitleDashboard)`
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: left; 
-    margin-top: 70px; 
-    margin-left: 6vw;
-  `;
-
-  const MySecondaryButton = styled(MyButton)`
-    font-size: 1.2rem;
-  `;
-
-  const TitleLastAdds = styled.h2`
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: ${theme.textColor};
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 6vw;
-  `;
-
-  const TitleSection = styled.h2`
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: ${theme.textColor};
-    margin-top: 40px;
-    margin-bottom: 20px;
-    margin-left: 6vw;
-  `;
-
-  const StyledSection = styled.div`
-    font-family: Roboto, sans-serif; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    background-color: ${theme.backgroundColor};
-    .grid{ 
-      margin-top: 2rem;
-      z-index: 2;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-  
-  }`;
-
-  const StyledInputs = styled.div`
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    height: 100%;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    margin-left: 6vw;
-    color: ${theme.textColor};
-
-    label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-      margin-right: 20px;
-      margin-left: 20px;
-    }
-
-    input {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      padding: 5px;
-    }
-
-    button {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      padding: 5px;
-    }
-  `;
-
-  const StyledTable = styled.table`
-    border-collapse: collapse;
-    width: 50%;
-    background-color: ${theme.backgroundColor};
-    color: ${theme.textColor};
-    margin-bottom: 20px;
-    margin-left: 6vw;
-
-    td, th {
-      border: 1px solid black;
-      padding: 5px;
-      text-align: center;
-      background-color: ${theme.backgroundColor};
-    }
-
-    th {
-      background-color: ${theme.backgroundColor};
-    }
-  `;
-
-  const StyledAddSection = styled.div`
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    margin-bottom: 20px;
-    margin-top: 40px;
-    margin-left: 6vw;
-    color: ${theme.textColor};
-
-    label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-      margin-right: 20px;
-    }
-
-    input {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      padding: 5px;
-    }
-
-    button {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      padding: 5px;
-    }
-  `;
-
-  const StyledLastAdds = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: ${theme.textColor};
-    margin-bottom: 20px;
-    margin-left: 6vw;
-    width: 100%;
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      width: 100%;
-    }
-
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    button {
-      font-size: 1.2rem;
-      padding: 5px;
-      background-color: ${theme.backgroundColor};
-    }
-  `;
 
   const handleInputIncomeChange = (index, e) => {
     const { name, value } = e.target;

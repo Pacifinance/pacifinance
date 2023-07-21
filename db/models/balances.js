@@ -5,6 +5,7 @@ const utils = require("../../utils.js");
 const balanceSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
+    userDate: {type: Date, required: true, index: true},
     bank: {type: Number, required: true},
     cash: {type: Number, required: true},
     digitalServices: {type: Number, required: true},
@@ -42,11 +43,13 @@ async function addOne(data) {
  * @param {Object} where - filter to match
  * @param {String} select - fields to return
  * @param {Object} sort - fields to sort by and their order
- * @param {BigInt} limit - maximum number of results
- * @returns List of Balance documents
+ * @returns Balance document
  */
-async function getLastNSorted(where, select, sort, limit) {
-    return await Balance.find(where, select).sort(sort).limit(limit).lean().exec();
+async function getOneSorted(where, select, sort) {
+    const res = await Balance.find(where, select).sort(sort).limit(1).lean().exec();
+    if (res.length === 0)
+        return null;
+    return res[0];
 }
 
 /* ==================== Specific queries ==================== */
@@ -54,7 +57,7 @@ async function getLastNSorted(where, select, sort, limit) {
 /**
  * Adds a balance associated to a user
  * @param {String} user_id - ID of the user
- * @param {Date} date - timestamp of the insertion
+ * @param {Date} user_date - month and year inserted by the user
  * @param {Number} bank - bank amount
  * @param {Number} cash - cash amount
  * @param {Number} digital_services - amount on digital services platforms
@@ -69,7 +72,7 @@ async function getLastNSorted(where, select, sort, limit) {
  * @returns Balance document
  */
 async function insertNew(
-    user_id, date, bank, cash, digital_services, stocks_real, stocks_invested,
+    user_id, user_date, bank, cash, digital_services, stocks_real, stocks_invested,
     etf_real, etf_invested, bitcoin_real, bitcoin_invested, crypto_real, crypto_invested
 ) {
     const user = await users.getReferenceByUserId(user_id);
@@ -77,7 +80,8 @@ async function insertNew(
         return null;
     const data = {
         userRef: user._id,
-        date: date,
+        date: new Date(Date.now()),
+        userDate: user_date,
         bank: bank,
         cash: cash,
         digitalServices: digital_services,
@@ -110,10 +114,9 @@ async function getLatestByUserId(user_id) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
-    const res = await getLastNSorted({userRef: user._id}, "-_id -__v -userRef", {date: -1}, 1);
-    if (res.length === 0)
-        return null;
-    return res[0];
+    // Get the balances with the most recent user-inserted date. Among these balances, the latest one
+    // is that with the most recent insertion date (the one that overwrites all the others)
+    return await getOneSorted({userRef: user._id}, "-_id -__v -userRef", {userDate: -1, date: -1});
 }
 
 /**
@@ -133,16 +136,14 @@ async function getYearlyBalanceByUserId(user_id) {
     let balances = [];
     for (let i = 0; i < 12; i++)
     {
-        // Find the balance of the month
-        const res = await getLastNSorted({
-                userRef: user._id, date: {$gte: month_start, $lt: month_end}
+        // Find the most recent balance of the month
+        const res = await getOneSorted({
+                userRef: user._id, userDate: {$gte: month_start, $lt: month_end}
             }, 
-            "-_id -__v -userRef", {date: -1}, 1
+            "-_id -__v -userRef", {userDate: -1, date: -1}
         );
-        // If a balance was found for this month, then add it to the array
-        let balance = {};
-        if (res.length > 0)
-            balance = res[0]; // [0] is the most recent since the query sorts the results by date
+        // If a balance was found for this month, then add it to the array; otherwise, add an empty object
+        const balance = (res !== null) ? res : {};
         balances.push({date: month_start, balance: balance});
         // Decrease the month start and end by one month for the next iteration
         month_start = utils.decrementDateByOneMonth(month_start);

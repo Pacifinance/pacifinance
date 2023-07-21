@@ -251,7 +251,7 @@ app.post("/balances/add", async (req, res) => {
     }
     // Add the balance to the database
     const doc = await db.balances.insertNew(
-        req.session.userId, Date.now(), balance.bank, balance.cash, balance.digital_services,
+        req.session.userId, balance.date, balance.bank, balance.cash, balance.digital_services,
         balance.stocks.real, balance.stocks.invested, balance.etf.real, balance.etf.invested,
         balance.bitcoin.real, balance.bitcoin.invested, balance.crypto.real, balance.crypto.invested
     );

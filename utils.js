@@ -22,7 +22,7 @@ function sanitizeInput(data) {
  * @returns Rounded currency value
  */
 function roundCurrency(n) {
-    if (n === undefined) return 0;
+    if (n === undefined || isNaN(n)) return 0;
     // Round to the second decimal digit
 	let r = +n.toFixed(2); // toFixed() returns a string, but with the + in front it becomes a number
     // If the rounding was of the 'ceiling' type, make it 'floor'

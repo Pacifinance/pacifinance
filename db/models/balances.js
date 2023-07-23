@@ -120,7 +120,7 @@ async function getLatestByUserId(user_id) {
 }
 
 /**
- * Gets the yearly balance of a user
+ * Gets the balances of a user for the last 24 months
  * @param {String} user_id - ID of the user
  * @returns List of Balance documents
  */
@@ -129,12 +129,12 @@ async function getYearlyBalanceByUserId(user_id) {
     const now = new Date(Date.now());
     let month_start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
     let month_end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()+1));
-    // Find the most recent balance for each one of the last 12 months
+    // Find the most recent balance for each one of the last 24 months
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return [];
     let balances = [];
-    for (let i = 0; i < 12; i++)
+    for (let i = 0; i < 24; i++)
     {
         // Find the most recent balance of the month
         const res = await getOneSorted({

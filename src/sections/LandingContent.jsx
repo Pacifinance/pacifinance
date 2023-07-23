@@ -3,25 +3,41 @@ import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
-import {
-  MyButton,
-  Container,
-  Title,
-  PaciText,
-  FinanceText,
-  Subtitle,
-  CentralSection,
-  CentralText,
-  CentralImage,
-  FeaturesSection,
-  Feature,
-  FeatureIcon,
-  FeatureText,
-} from '../contexts/MyStyled';
+// import {
+//   MyButton,
+//   Container,
+//   Title,
+//   PaciText,
+//   FinanceText,
+//   Subtitle,
+//   CentralSection,
+//   CentralText,
+//   CentralImage,
+//   FeaturesSection,
+//   Feature,
+//   FeatureIcon,
+//   FeatureText,
+// } from '../contexts/MyStyled';
+
+import MyStyled from '../contexts/MyStyled';
 
 const LandingContent = () => {
 
-  
+  const {
+    MyButton,
+    Container,
+    Title,
+    PaciText,
+    FinanceText,
+    Subtitle,
+    CentralSection,
+    CentralText,
+    CentralImage,
+    FeaturesSection,
+    Feature,
+    FeatureIcon,
+    FeatureText,
+  } = MyStyled();
   
 
   return (
@@ -79,23 +95,6 @@ const LandingContent = () => {
 //o lato, sans-serif;
 
 export default LandingContent;
-
-
-// const {
-  //   MyButton,
-  //   Container,
-  //   Title,
-  //   PaciText,
-  //   FinanceText,
-  //   Subtitle,
-  //   CentralSection,
-  //   CentralText,
-  //   CentralImage,
-  //   FeaturesSection,
-  //   Feature,
-  //   FeatureIcon,
-  //   FeatureText,
-  // } = MyStyled();
 
 
 

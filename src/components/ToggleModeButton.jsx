@@ -13,13 +13,13 @@ const ToggleModeButton = () => {
 
 
   return (
-    <Button onClick={toggleMode} mode={mode}>
+    <ButtonToggle onClick={toggleMode} mode={mode}>
       {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-    </Button>
+    </ButtonToggle>
   );
 };
 
-const Button = styled.button`
+const ButtonToggle = styled.button`
     background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
     color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
     padding: 3px 3px; /* this for change the height and the width of the button */

@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
-import Graphs from './sections/YourCharts';
+import StatsCharts from './sections/StatsCharts';
 function App() {
   return (
     <Div>
       <Sidebar />
-      <Graphs />
+      <StatsCharts />
     </Div>
   );
 }

@@ -6,22 +6,23 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from '@mui/icons-material/Info';
 
 //for the modal and styled components
-import {
-    SignUp,
-    SignUpButton,
-    MuiCustomDialog,
-    MuiCustomButton,
-    MuiCustomDialogTitle,
-    MuiCustomDialogContent,
-    MuiCustomDialogContentText,
-    MuiCustomDialogActions,
-    MuiCustomTextField,
-    MuiCustomIconButton,
-    MuiCustomInputAdornment,
-    MuiCustomVisibility,
-    MuiCustomVisibilityOff,
-    MuiUseStyles,
-} from '../contexts/MyStyled';
+// import {
+//     SignUp,
+//     SignUpButton,
+//     MuiCustomDialog,
+//     MuiCustomButton,
+//     MuiCustomDialogTitle,
+//     MuiCustomDialogContent,
+//     MuiCustomDialogContentText,
+//     MuiCustomDialogActions,
+//     MuiCustomTextField,
+//     MuiCustomIconButton,
+//     MuiCustomInputAdornment,
+//     MuiCustomVisibility,
+//     MuiCustomVisibilityOff,
+//     MuiUseStyles,
+// } from '../contexts/MyStyled';
+import MyStyled from '../contexts/MyStyled';
 
 var generated_user_id = '';
 
@@ -36,22 +37,22 @@ function SignUpForm() {
     const inputRef = useRef(null);
 
     // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
-    // const {
-    //     SignUp,
-    //     SignUpButton,
-    //     MuiCustomDialog,
-    //     MuiCustomButton,
-    //     MuiCustomDialogTitle,
-    //     MuiCustomDialogContent,
-    //     MuiCustomDialogContentText,
-    //     MuiCustomDialogActions,
-    //     MuiCustomTextField,
-    //     MuiCustomIconButton,
-    //     MuiCustomInputAdornment,
-    //     MuiCustomVisibility,
-    //     MuiCustomVisibilityOff,
-    //     MuiUseStyles,
-    // } = MyStyled();
+    const {
+        SignUp,
+        SignUpButton,
+        MuiCustomDialog,
+        MuiCustomButton,
+        MuiCustomDialogTitle,
+        MuiCustomDialogContent,
+        MuiCustomDialogContentText,
+        MuiCustomDialogActions,
+        MuiCustomTextField,
+        MuiCustomIconButton,
+        MuiCustomInputAdornment,
+        MuiCustomVisibility,
+        MuiCustomVisibilityOff,
+        MuiUseStyles,
+    } = MyStyled();
 
     const navigate = useNavigate();
 

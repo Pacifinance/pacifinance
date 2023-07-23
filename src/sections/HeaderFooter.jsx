@@ -3,19 +3,21 @@ import ToggleModeButton from '../components/ToggleModeButton';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import LogoPaci from '../components/Logo';
-import {
-  useTheme,
-  MyGenericModalContent,
-  MyCloseButton,
-  MyButton,
-  ButtonContainer,
-  ButtonGroup,
-  ContainerHeader,
-  ContainerFooter,
-  FooterText,
-  ModalSignIn,
-  ModalSignUp,
-} from '../contexts/MyStyled';
+import MyStyled from '../contexts/MyStyled';
+// import {
+//   useTheme,
+//   MyGenericModalContent,
+//   MyCloseButton,
+//   MyButton,
+//   ButtonContainer,
+//   ButtonGroup,
+//   ContainerHeader,
+//   ContainerFooter,
+//   FooterText,
+//   ModalSignIn,
+//   ModalSignUp,
+// } from '../contexts/MyStyled';
+
 
 
 
@@ -23,22 +25,20 @@ import {
 
 function Header() {
 
-  const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
+  // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
 
-  // const {
-  //   MyGenericModalContent,
-  //   MyCloseButton,
-  //   MyButton,
-  //   ButtonContainer,
-  //   ButtonGroup,
-  //   ContainerHeader,
-  //   ModalSignIn,
-  //   ModalSignUp,
-  //   ContainerFooter,
-  //   FooterText,
-  //   setIsOpenSignIn,
-  //   setIsOpenSignUp,
-  // } = MyStyled();
+  const {
+    MyGenericModalContent,
+    MyCloseButton,
+    MyButton,
+    ButtonContainer,
+    ButtonGroup,
+    ContainerHeader,
+    ModalSignIn,
+    ModalSignUp,
+    setIsOpenSignIn,
+    setIsOpenSignUp,
+  } = MyStyled();
 
   const handleOpenSignIn = () => {
     setIsOpenSignIn(true);
@@ -86,10 +86,10 @@ function Header() {
   };
 
   function Footer() {
-    // const {
-    //   ContainerFooter,
-    //   FooterText,
-    // } = MyStyled();
+    const {
+      ContainerFooter,
+      FooterText,
+    } = MyStyled();
 
   return (
     <ContainerFooter>

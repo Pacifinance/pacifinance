@@ -1,17 +1,12 @@
-import React, {useState, useContext} from 'react'
-import styled from 'styled-components'
-import { ThemeContext } from '../contexts/ThemeContext';
+import React from 'react'
 import LogoPaci from '../assets/Brand/PacifinanceLogoPNG3NoBg.png';
+import MyStyled from '../contexts/MyStyled';
+
 function Logo() {
-    const { theme } = useContext(ThemeContext);
-    const { mode } = theme;
     
-    const Logo = styled.h1`
-    font-size: 0px;
-    img {
-      width: 90px;
-    }
-  `;
+  const {
+    Logo,
+  } = MyStyled()
 
     return (
         <Logo>

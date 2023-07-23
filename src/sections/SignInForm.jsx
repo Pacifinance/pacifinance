@@ -3,22 +3,24 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { UserContext } from '../contexts/UserContext';
 import InfoIcon from '@mui/icons-material/Info';
-import {
-  MuiCustomDialog,
-  MuiCustomButton,
-  MuiCustomDialogTitle,
-  MuiCustomDialogContent,
-  MuiCustomDialogContentText,
-  MuiCustomDialogActions,
-  MuiCustomTextField,
-  MuiCustomIconButton,
-  MuiCustomInputAdornment,
-  MuiCustomVisibility,
-  MuiCustomVisibilityOff,
-  SignIn,
-  SignInButton,
-  MuiUseStyles,
-} from '../contexts/MyStyled';
+// import {
+//   MuiCustomDialog,
+//   MuiCustomButton,
+//   MuiCustomDialogTitle,
+//   MuiCustomDialogContent,
+//   MuiCustomDialogContentText,
+//   MuiCustomDialogActions,
+//   MuiCustomTextField,
+//   MuiCustomIconButton,
+//   MuiCustomInputAdornment,
+//   MuiCustomVisibility,
+//   MuiCustomVisibilityOff,
+//   SignIn,
+//   SignInButton,
+//   MuiUseStyles,
+// } from '../contexts/MyStyled';
+
+import MyStyled from '../contexts/MyStyled';
 
 
 function SignInForm() {
@@ -29,22 +31,22 @@ function SignInForm() {
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
 
-    // const {
-    //   MuiCustomDialog,
-    //   MuiCustomButton,
-    //   MuiCustomDialogTitle,
-    //   MuiCustomDialogContent,
-    //   MuiCustomDialogContentText,
-    //   MuiCustomDialogActions,
-    //   MuiCustomTextField,
-    //   MuiCustomIconButton,
-    //   MuiCustomInputAdornment,
-    //   MuiCustomVisibility,
-    //   MuiCustomVisibilityOff,
-    //   SignIn,
-    //   SignInButton,
-    //   MuiUseStyles,
-    // } = MyStyled()
+    const {
+      MuiCustomDialog,
+      MuiCustomButton,
+      MuiCustomDialogTitle,
+      MuiCustomDialogContent,
+      MuiCustomDialogContentText,
+      MuiCustomDialogActions,
+      MuiCustomTextField,
+      MuiCustomIconButton,
+      MuiCustomInputAdornment,
+      MuiCustomVisibility,
+      MuiCustomVisibilityOff,
+      SignIn,
+      SignInButton,
+      MuiUseStyles,
+    } = MyStyled()
 
     const classes = MuiUseStyles();
 

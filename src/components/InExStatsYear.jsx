@@ -1,0 +1,172 @@
+import React, { useEffect, useState, useContext } from 'react'
+import { UserContext } from '../contexts/UserContext';
+//import { BsCreditCard } from "react-icons/bs";
+import { AiOutlineMore } from "react-icons/ai";
+//import { BiTransfer } from "react-icons/bi";
+import { BsBank } from "react-icons/bs";
+//import { GiTakeMyMoney } from "react-icons/gi";
+import { FaBitcoin } from "react-icons/fa";
+import { BsCashCoin } from "react-icons/bs";
+import { AiOutlineStock } from "react-icons/ai";
+import MyStyled from '../contexts/MyStyled';
+import { PieChart, Pie, Cell } from "recharts";
+
+// const [activeIndex, setActiveIndex] = useState(null);
+
+// const handleMouseEnter = (_, index) => {
+//   setActiveIndex(index);
+// };
+
+// const handleMouseLeave = () => {
+//   setActiveIndex(null);
+// };
+
+
+
+
+
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  index,
+  dataEntry
+}) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    {/* {` (${dataEntry.name}: ${dataEntry.value})`} // aggiunto qui */}
+    </text>
+  );
+};
+
+function InExStatsYear() {
+    const { userData } = useContext(UserContext);
+    const [incomesMonth, setIncomesMonth] = useState(0);
+    const [expensesMonth, setExpensesMonth] = useState(0);
+    const [savedMonth, setSavedMonth] = useState(0);
+    const [incomesPreYearSameMonth, setIncomesPreYearSameMonth] = useState(0);
+    const [expensesPreYearSameMonth, setExpensesPreYearSameMonth] = useState(0);
+    const [savedPreYearSameMonth, setSavedPreYearSameMonth] = useState(0);
+
+    const {
+        SectionAMonth,
+        WrapperAMonth,
+      } = MyStyled()
+    
+
+    useEffect(() => {
+        const fetchData = async () => {
+          if (userData) {
+            try {
+                console.log(userData);
+                console.log(userData.expenses);
+                
+                // Set the state with the data from the database
+
+                //CURRENT MONTH
+                setExpensesMonth(userData ? userData.expensesMonth : 0);
+                setIncomesMonth(userData ? userData.incomesMonth : 0);
+                setSavedMonth(userData ? userData.savedMonth : 0);
+
+                //PREVIOUS YEAR SAME MONTH
+                setExpensesPreYearSameMonth(userData ? userData.expensesPreYearSameMonth : 0);
+                setIncomesPreYearSameMonth(userData ? userData.incomesPreYearSameMonth : 0);
+                setSavedPreYearSameMonth(userData ? userData.savedPreYearSameMonth : 0);
+
+            } catch (error) {
+              console.error('Errore durante le operazioni:', error);
+            }
+          }
+        };
+    
+    fetchData();
+    }, [userData]);
+
+    // const data = [
+    //     { name: "Stocks", value: stocksReal },
+    //     { name: "Bank", value: bankReal },
+    //     { name: "Cash", value: cashReal },
+    //     { name: "Crypto", value: cryptoReal }
+    // ];
+      
+    return (
+        
+        <div className="wrapper">
+        {/* <h1>Il tuo patrimonio è cresciuto di: {((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100} % </h1> */}
+        <SectionAMonth>
+            <div className="analytic ">
+                <div className="design">
+                    <div className="logo" style={{ color: '#FF6600' }}>
+                        <AiOutlineStock />
+                    </div>
+                    <div className="action">
+                    <AiOutlineMore />
+                    </div>
+                </div>
+                <div className="transfer">
+                    <h6>Variazione</h6>
+                    <h6>entrate in %</h6>
+                </div>
+                <div className="money">
+                    <h5>{((incomesMonth - incomesPreYearSameMonth) / incomesPreYearSameMonth)*100} %</h5>
+                </div>
+            </div>
+
+            <div className="analytic ">
+                <div className="design">
+                    <div className="logo" style={{ color: '#FF6600' }}>
+                        <AiOutlineStock />
+                    </div>
+                    <div className="action">
+                    <AiOutlineMore />
+                    </div>
+                </div>
+                <div className="transfer">
+                    <h6>Variazione</h6>
+                    <h6>Uscite in %</h6>
+                </div>
+                <div className="money">
+                    <h5>{((expensesMonth - expensesPreYearSameMonth) / expensesPreYearSameMonth) * 100} %</h5>
+                </div>
+            </div>
+            
+            <div className="analytic ">
+                <div className="design">
+                    <div className="logo" style={{ color: '#FF6600' }}>
+                        <AiOutlineStock />
+                    </div>
+                    <div className="action">
+                    <AiOutlineMore />
+                    </div>
+                </div>
+                <div className="transfer">
+                    <h6>Variazione</h6>
+                    <h6>Rismarmi in %</h6>
+                </div>
+                <div className="money">
+                    <h5>{((savedMonth - savedPreYearSameMonth) / savedPreYearSameMonth) * 100} %</h5>
+                </div>
+            </div>
+        </SectionAMonth>
+    </div>
+    )
+}
+
+export default InExStatsYear;

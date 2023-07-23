@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // import { Route, Router } from 'react-router-dom';
 import Dashboard from './DashboardPage';
-import YourCharts from './ChartsPage';
+import StatsCharts from './StatsChartsPage';
 import InsertValues from './InsertPage';
 import CheckPrices from './CheckPricesPage';
 import Leaderboard from './LeaderboardPage';
@@ -21,7 +21,7 @@ function AppRouter() {
             <Route path="/sign-up" exact element={<SignUp />} />
             <Route path="/sign-in" exact element={<SignIn />} />
             <Route path="/dashboard" exact element={<Dashboard />} />
-            <Route path="/your-charts" element={<YourCharts />} />
+            <Route path="/your-charts" element={<StatsCharts />} />
             <Route path="/insert-values" element={<InsertValues />} />
             <Route path="/check-prices" element={<CheckPrices />} />
             <Route path="/leaderboard" element={<Leaderboard />} />

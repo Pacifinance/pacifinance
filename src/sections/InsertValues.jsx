@@ -6,21 +6,22 @@ import { set } from "mongoose";
 // import NumberFormatBase from 'react-number-format'; //crea errori di compilazione
 import { Title } from "@material-ui/icons";
 import axios from 'axios';
-import {
-  MyButton,
-  MySecondaryButton,
-  StyledSection,
-  StyledAddSection,
-  StyledTable,
-  StyledLastAdds,
-  StyledInputs,
-  TitleLastAdds,
-  TitleSection,
-  ModifiedTitleDashboard,
-} from '../contexts/MyStyled';
+// import {
+//   MyButton,
+//   MySecondaryButton,
+//   StyledSection,
+//   StyledAddSection,
+//   StyledTable,
+//   StyledLastAdds,
+//   StyledInputs,
+//   TitleLastAdds,
+//   TitleSection,
+//   ModifiedTitleDashboard,
+// } from '../contexts/MyStyled';
+import MyStyled from '../contexts/MyStyled';
 
 const InsertValue = () => {
-  const { userData, UserProvider } = useContext(UserContext);
+  const { userData, handleSetIsUpdated } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
   const [etfReal, setETFReal] = useState(0);
@@ -43,60 +44,62 @@ const InsertValue = () => {
   const [tableDataIncomes, setTableDataIncomes] = useState([]);
   const [tableDataExpenses, setTableDataExpenses] = useState([]);
   const [dateTime, setDateTime] = useState(null);
-  const [incomeDate, setIncomeDate] = useState(null);
-  const [expenseDate, setExpenseDate] = useState(null);
-  const [balanceDate, setBalanceDate] = useState(null);
+  const [incomeDate, setIncomeDate] = useState(new Date());
+  const [expenseDate, setExpenseDate] = useState(new Date());
+  const [balanceDate, setBalanceDate] = useState(new Date());
+  //TO set the calendar date format without the day of the week
+  const formatShortWeekday = (locale, date) => "";
 
-  // const {
-  //   MyButton,
-  //   MySecondaryButton,
-  //   StyledSection,
-  //   StyledAddSection,
-  //   StyledTable,
-  //   StyledLastAdds,
-  //   StyledInputs,
-  //   TitleLastAdds,
-  //   TitleSection,
-  //   ModifiedTitleDashboard,
-  // } = MyStyled();
+  const {
+    MyButton,
+    MySecondaryButton,
+    StyledSection,
+    StyledAddSection,
+    StyledTable,
+    StyledLastAdds,
+    StyledInputs,
+    StyledCalendar,
+    TitleLastAdds,
+    TitleSection,
+    ModifiedTitleDashboard,
+  } = MyStyled();
   
-  
+  const fetchData = async () => {
+    
+      if (userData) {
+        try {
+            console.log(userData);
+            console.log(userData.balances);
+            console.log(userData.expenses);
+            
+            // Set the state with the data from the database
+            setStocksReal(userData ? userData.stocksReal : 0);
+            setETFReal(userData ? userData.etfReal : 0);
+            setBitcoinReal(userData ? userData.bitcoinReal : 0);
+            setCryptoReal(userData ? userData.cryptoReal : 0);
+            setBankReal(userData? userData.bankReal : 0);
+            setCashReal(userData ? userData.cashReal : 0);
+            setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
+            setTotalReal(userData ? userData.totalReal : 0);
+            setExpensesMonth(userData ? userData.expensesMonth : 0);
+            setIncomesMonth(userData ? userData.incomesMonth : 0);
+            setSavedMonth(userData ? userData.savedMonth : 0);
+
+            //set datas
+            const now = new Date();
+            setDateTime(now);
+            setIncomeDate(now);
+            setExpenseDate(now);
+            
+            setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
+        } catch (error) {
+          console.error('Errore durante le operazioni:', error);
+        }
+      }
+  };
 
   useEffect(() => {
-      const fetchData = async () => {
-        if (userData) {
-          try {
-              console.log(userData);
-              console.log(userData.balances);
-              console.log(userData.expenses);
-              
-              // Set the state with the data from the database
-              setStocksReal(userData ? userData.stocksReal : 0);
-              setETFReal(userData ? userData.etfReal : 0);
-              setBitcoinReal(userData ? userData.bitcoinReal : 0);
-              setCryptoReal(userData ? userData.cryptoReal : 0);
-              setBankReal(userData? userData.bankReal : 0);
-              setCashReal(userData ? userData.cashReal : 0);
-              setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-              setTotalReal(userData ? userData.totalReal : 0);
-              setExpensesMonth(userData ? userData.expensesMonth : 0);
-              setIncomesMonth(userData ? userData.incomesMonth : 0);
-              setSavedMonth(userData ? userData.savedMonth : 0);
-
-              //set datas
-              const now = new Date();
-              setDateTime(now);
-              setIncomeDate(now);
-              setExpenseDate(now);
-              
-              setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
-          } catch (error) {
-            console.error('Errore durante le operazioni:', error);
-          }
-        }
-      };
-  
-  fetchData();
+    fetchData();
   }, [userData]);
 
   const handleInputIncomeChange = (index, e) => {
@@ -122,12 +125,13 @@ const InsertValue = () => {
   };
 
   const handleTypoExpensesChange = (event) => {
-    setTypoExpense(event.target.value);
+    setTypoExpense(event.target.id);
   };
 
   const handleChangeBalance = async () => {
     const balancesJson = { 
       balance : {
+        date : balanceDate,
         bank : bankReal,
         cash : cashReal,
         digital_services : digitalServicesReal,
@@ -148,8 +152,14 @@ const InsertValue = () => {
     }
 
     const balancesChange = await axios.post('/balances/add', balancesJson);
-    if (balancesChange.data.success) {
-      UserProvider();
+    if (balancesChange.status === 200) {
+      console.log("Bilancio aggiornato aggiorno lo user context");
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      alert("Bilancio aggiornato correttamente");
+      fetchData();
+    }
+    else {
+      alert("Errore nell'aggiornamento del bilancio");
     }
   };
 
@@ -164,7 +174,7 @@ const InsertValue = () => {
 
     const incomeJson = { 
       expense : {
-        date : incomeDate, // variable date TO SET
+        date : incomeDate, 
         amount : income,
         is_expense : false,
         payment_type : 0,
@@ -174,8 +184,15 @@ const InsertValue = () => {
     }
 
     const incomeAdd = await axios.post('/expenses/add', incomeJson);
+    
     if (incomeAdd.data.success) {
-      UserProvider();
+      console.log("Entrate aggiornate aggiorno lo user context");
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      alert("Bilancio aggiornato correttamente");
+      fetchData();
+    }
+    else {
+      alert("Errore nell'aggiornamento del bilancio");
     }
 
    
@@ -192,7 +209,7 @@ const InsertValue = () => {
 
     const expenseJson = { 
       expense : {
-        date : expenseDate, // variable date TO SET
+        date : expenseDate,
         amount : expense,
         is_expense : true,
         payment_type : Number(typoExpense),
@@ -203,10 +220,16 @@ const InsertValue = () => {
 
     const expenseAdd = await axios.post('/expenses/add', expenseJson);
     if (expenseAdd.data.success) {
-      UserProvider();
+      console.log("Spese aggiornate, aggiorno lo user context");
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      alert("Bilancio aggiornato correttamente");
+      fetchData();
+    }
+    else {
+      alert("Errore nell'aggiornamento del bilancio");
     }
   };
-
+  
   const handleIncomesDelete = (index) => {
     const newIncomeAdds = [...lastIncomesAdds];
     newIncomeAdds.splice(index, 1);
@@ -224,6 +247,29 @@ const InsertValue = () => {
   const handlePageChange = (page) => {
     setActivePage(page);
   };
+
+  const handleBalanceDate = (date) => {
+    setBalanceDate(date);
+    // const selectedYear = date.getFullYear();
+    // const selectedMonth = date.getMonth();
+    // const selectedDay = date.getDate();
+  };
+
+  const handleIncomeDate = (date) => {
+    setIncomeDate(date);
+    // const selectedYear = date.getFullYear();
+    // const selectedMonth = date.getMonth();
+    // const selectedDay = date.getDate();
+  };
+
+  const handleExpenseDate = (date) => {
+    setExpenseDate(date);
+    // const selectedYear = date.getFullYear();
+    // const selectedMonth = date.getMonth();
+    // const selectedDay = date.getDate();
+  };
+
+
 
   const renderPage = () => {
     if (activePage === "bilancio") {
@@ -319,15 +365,14 @@ const InsertValue = () => {
                 }}
               />
             </label>
-            <Calendar
-              onSelectDate={(date) => {
-                setBalanceDate({
-                  year: date.getFullYear(),
-                  month: date.getMonth(),
-                });
-              }}
+            
+          </StyledInputs>
+          <StyledInputs>
+          <StyledCalendar
+              onChange={handleBalanceDate}
               value={balanceDate}
-              disableDaySelection
+              calendarType="US"
+              formatShortWeekday={formatShortWeekday}
             />
           </StyledInputs>
           <StyledInputs>
@@ -356,19 +401,6 @@ const InsertValue = () => {
                 <MenuItem id= "Pensione" value="Pensione">Pensione</MenuItem>
               </Select>
             </label>
-            <div>
-            <Calendar
-              onSelectDate={(date) => {
-                setIncomeDate({
-                  year: date.getFullYear(),
-                  month: date.getMonth(),
-                });
-              }}
-              value={incomeDate}
-              disableDaySelection
-            />
-              <h1>Income for {incomeDate.toLocaleDateString()}</h1>
-            </div>
             <label>
               Valore
               <input
@@ -377,6 +409,20 @@ const InsertValue = () => {
                 onChange={(e) => setIncome(e.target.value)}
               />
             </label>
+            <div>
+              <h3>Entrata del {incomeDate.toLocaleDateString()}</h3>
+              <StyledCalendar
+                onChange={handleIncomeDate}
+                value={incomeDate}
+                calendarType="US"
+                formatShortWeekday={formatShortWeekday}
+              />
+            </div>
+          
+          </StyledAddSection>
+            
+            
+          <StyledAddSection> 
             <MySecondaryButton onClick={handleAddIncome}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds>Ultime 10 entrate del mese</TitleLastAdds>
@@ -466,16 +512,7 @@ const InsertValue = () => {
                   <MenuItem id= "1" value="Abbonamento">Abbonamento</MenuItem>
                   <MenuItem id= "2" value="Rata">Rata</MenuItem>
               </Select>
-              <Calendar
-                onSelectDate={(date) => {
-                  setExpenseDate({
-                    year: date.getFullYear(),
-                    month: date.getMonth(),
-                  });
-                }}
-                value={expenseDate}
-                disableDaySelection
-              />
+              
             </label>
             <label>
               Spesa
@@ -485,6 +522,16 @@ const InsertValue = () => {
                 onChange={(e) => setExpense(e.target.value)}
               />
             </label>
+            <div>
+              <StyledCalendar
+                onChange={handleIncomeDate}
+                value={expenseDate}
+                calendarType="US"
+                formatShortWeekday={formatShortWeekday}
+              />
+            </div>
+          </StyledAddSection>
+          <StyledAddSection>
             <MyButton onClick={handleAddExpenses}>Aggiungi spesa</MyButton>
           </StyledAddSection>
           <TitleLastAdds>Ultime 20 spese del mese</TitleLastAdds>

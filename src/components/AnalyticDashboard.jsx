@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import styled from 'styled-components'
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
 //import { BiTransfer } from "react-icons/bi";
@@ -13,19 +12,16 @@ import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, ArcElement, LinearScale} from 'chart.js';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
 import axios from 'axios';
 import { set } from 'mongoose';
+import MyStyled from '../contexts/MyStyled';
 
 Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
 function AnalyticDashboard() {
-
-    const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(true);
-    const { mode } = theme;
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
@@ -37,6 +33,13 @@ function AnalyticDashboard() {
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
+    const {
+        SectionADashboard,
+        CapitalValue,
+        UpperSection,
+        LowerSection,
+        GraphsSection,
+      } = MyStyled()
     
 
     useEffect(() => {
@@ -45,7 +48,7 @@ function AnalyticDashboard() {
             try {
                 console.log(userData);
                 console.log(userData.balances);
-                console.log(userData.expenses);
+                console.log(userData.expensesIncomes);
                 
                 // Set the state with the data from the database
                 setStocksReal(userData ? userData.stocksReal : 0);
@@ -123,226 +126,70 @@ function AnalyticDashboard() {
         }
     };
 
-
-    const Section = styled.section `
-        font-family: Roboto, sans-serif;
-        background-color: ${theme.backgroundColor};
-        
-    `;
-    const CapitalValue = styled.h1 `
-        font-size: 2.5rem;
-        color: ${theme.textColor};
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    `;
-
-    const UpperSection = styled.section `
-        display: flex;
-        grid-template-columns: repeat(3, 1fr);
-        justify-content: space-between;
-        margin: 0 18%;
-        .analytic {
-            justify-content: space-between;
-            padding: 1rem 2rem 1rem 2rem;
-            border-radius: 1rem;
-            color: black;
-            background-color: white;
-            justify-content: space-evenly;
-            align-items: center;
-            transition: 0.5s ease-in-out;
-            width: 170px;
-            border: 3px solid ${theme.buttonBackgroundColor};
-        
-            .design{
-                display: flex;
-                align-items: center;
-                
-                .logo {
-                    background-color: white;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                
-                    svg {
-                        font-size: 2rem;
-                    }
-                }
-                .action {
-                    margin-left: 80px;
-                svg{
-                    font-size: 1.5rem;
-                }
-                }
-
-            }
-            .transfer {
-                margin-top: 20px;
-                color: grey
-            }
-            .money {
-                margin-top: 20px;  
-            }
-        }
-
-        .title{
-            h5{
-                color: ${theme.textColor};
-            }
-        }
-    `;
-
-    const LowerSection = styled.div`
-        display : flex;
-        grid-template-columns: repeat(4, 1fr);
-        justify-content: space-between;
-        margin: 5% 6%;
-        .analytic {
-            justify-content: space-between;
-            padding: 1rem 2rem 1rem 2rem;
-            border-radius: 1rem;
-            color: black;
-            background-color: white;
-            justify-content: space-evenly;
-            align-items: center;
-            transition: 0.5s ease-in-out;
-            width: 170px;
-            border: 3px solid ${theme.buttonBackgroundColor};
-        
-            .design{
-                display: flex;
-                align-items: center;
-                
-                .logo {
-                    background-color: white;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                
-                    svg {
-                        font-size: 2rem;
-                    }
-                }
-                .action {
-                    margin-left: 80px;
-                svg{
-                    font-size: 1.5rem;
-                }
-                }
-
-            }
-            .transfer {
-                margin-top: 20px;
-                color: grey
-            }
-            .money {
-                margin-top: 20px;  
-            }
-        }
-
-        .title{
-            h5{
-                color: ${theme.textColor};
-            }
-        }
-    `;
-
-    const GraphsSection = styled.div`
-        display: flex;
-        grid-template-columns: repeat(4, 1fr);
-        justify-content: space-between;
-        margin: 0 60px;
-        
-        .bar-chart-section {
-            margin-top: 50px;
-            margin-left: 50px;
-            h2{
-                color: ${theme.textColor};
-            }
-        }
-        
-        .pie-chart-section {
-            margin-top: 50px;
-            margin-right: 50px;
-            h2{
-                color: ${theme.textColor};
-            }
-        }
-
-        .custom-tooltip {
-            position: absolute;
-            z-index: 9999;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 0.5rem;
-            font-size: 14px;
-            border-radius: 4px;
-          }
-    `;
-
     const barChartCapitalData = {
         labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],
         datasets: [
-          {
-            label: 'Valore allocato',
-            data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
-            backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
-            borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
-            borderWidth: 1,
-          },
+            {
+                label: 'Valore allocato',
+                data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
+                backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
+                borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
+                borderWidth: 1,
+            },
         ],
         options: {
             scales: {
-              y: {
+                y: {
                 beginAtZero: true,
                 max: 500, // Make sure y axis doesn't go beyond 500
                 ticks: {
                     stepSize: 100, // Imposta l'intervallo tra i valori sull'asse y
                 },
-              },
+                },
             },
         },
-      };
-      
-      const pieChartCapitalData = {
+        };
+        
+        const pieChartCapitalData = {
         labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],
         datasets: [
-          {
+            {
             label: '% allocata',
             data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
-            backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(129, 236, 236,1.0)'],
-            borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(129, 236, 236,1.0)'],
+            backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
+                borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
             borderWidth: 1,
-          },
+            },
         ],
-      };
+    };
 
-      const barChartIncExpData = {
-        labels: ['Entrate', 'Spese', 'Risparmio'],
+    const barChartIncExpData = {
+        labels: ['Entrate', 'Spese', 'Risparmiato'],
         datasets: [
-          {
+            {
             label: 'Valore mensile',
             data: [incomesMonth, expensesMonth, savedMonth],
             backgroundColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 0, 0, 1)', 'rgba(144, 238, 144, 1)'],
             borderColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 99, 132, 1)', 'rgba(144, 238, 144, 1)'],
             borderWidth: 1,
-          },
+            },
         ],
         options: {
             scales: {
-              y: {
+                y: {
                 beginAtZero: true,
                 max: 500, // Imposta il valore massimo sull'asse y in base alle tue esigenze
                 ticks: {
                     stepSize: 100, // Imposta l'intervallo tra i valori sull'asse y
                 },
-              },
+                },
             },
         },
-      };
+    };
       
     return (
         
-        <Section>
+        <SectionADashboard>
             <CapitalValue>Il tuo patrimonio totale è: {totalReal}€</CapitalValue>
             <UpperSection>
                 <div className="analytic ">
@@ -493,7 +340,7 @@ function AnalyticDashboard() {
                 </div>
 
             </GraphsSection>
-        </Section>
+        </SectionADashboard>
 
         
     )

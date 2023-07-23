@@ -9,23 +9,26 @@ import avatarImage from "../assets/account-logo.png"
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import LogoPaci from '../components/Logo';
-import {
-    SidebarToggleModeButton,
-    SidebarSection,
-    MyButton,
-    MuiCustomDialog,
-    MuiCustomButton,
-    MuiCustomDialogTitle,
-    MuiCustomDialogContent,
-    MuiCustomDialogContentText,
-    MuiCustomDialogActions,
-    MuiCustomTextField,
-    MuiCustomIconButton,
-    MuiCustomInputAdornment,
-    MuiCustomVisibility,
-    MuiCustomVisibilityOff,
-    MuiUseStyles,
-} from '../contexts/MyStyled';
+// import {
+//     SidebarToggleModeButton,
+//     SidebarSection,
+//     MyButton,
+//     MuiCustomDialog,
+//     MuiCustomButton,
+//     MuiCustomDialogTitle,
+//     MuiCustomDialogContent,
+//     MuiCustomDialogContentText,
+//     MuiCustomDialogActions,
+//     MuiCustomTextField,
+//     MuiCustomIconButton,
+//     MuiCustomInputAdornment,
+//     MuiCustomVisibility,
+//     MuiCustomVisibilityOff,
+//     MuiUseStyles,
+// } from '../contexts/MyStyled';
+
+import MyStyled from '../contexts/MyStyled';
+
 
 function Sidebar() {
     const inputRef = useRef(null);
@@ -50,23 +53,23 @@ function Sidebar() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
-    // const {
-    //     SidebarToggleModeButton,
-    //     SidebarSection,
-    //     MyButton,
-    //     MuiCustomDialog,
-    //     MuiCustomButton,
-    //     MuiCustomDialogTitle,
-    //     MuiCustomDialogContent,
-    //     MuiCustomDialogContentText,
-    //     MuiCustomDialogActions,
-    //     MuiCustomTextField,
-    //     MuiCustomIconButton,
-    //     MuiCustomInputAdornment,
-    //     MuiCustomVisibility,
-    //     MuiCustomVisibilityOff,
-    //     MuiUseStyles,
-    // } = MyStyled();
+    const {
+        SidebarToggleModeButton,
+        SidebarSection,
+        MyButton,
+        MuiCustomDialog,
+        MuiCustomButton,
+        MuiCustomDialogTitle,
+        MuiCustomDialogContent,
+        MuiCustomDialogContentText,
+        MuiCustomDialogActions,
+        MuiCustomTextField,
+        MuiCustomIconButton,
+        MuiCustomInputAdornment,
+        MuiCustomVisibility,
+        MuiCustomVisibilityOff,
+        MuiUseStyles,
+    } = MyStyled();
 
     const classes = MuiUseStyles();
 

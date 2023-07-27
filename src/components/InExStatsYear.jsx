@@ -2,12 +2,9 @@ import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
-//import { BiTransfer } from "react-icons/bi";
-import { BsBank } from "react-icons/bs";
-//import { GiTakeMyMoney } from "react-icons/gi";
-import { FaBitcoin } from "react-icons/fa";
-import { BsCashCoin } from "react-icons/bs";
-import { AiOutlineStock } from "react-icons/ai";
+import { GiReceiveMoney } from "react-icons/gi";
+import { GiExpense } from "react-icons/gi";
+import { MdOutlineSavings } from "react-icons/md"; 
 import MyStyled from '../contexts/MyStyled';
 import { PieChart, Pie, Cell } from "recharts";
 
@@ -113,11 +110,11 @@ function InExStatsYear() {
         <SectionAMonth>
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
+                    <div className="logo" style={{ color: '#079164' }}>
+                        <GiReceiveMoney />
                     </div>
                     <div className="action">
-                    <AiOutlineMore />
+                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -131,11 +128,11 @@ function InExStatsYear() {
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
+                    <div className="logo" style={{ color: '#ff3838' }}>
+                        <GiExpense />
                     </div>
                     <div className="action">
-                    <AiOutlineMore />
+                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -149,11 +146,11 @@ function InExStatsYear() {
             
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
+                    <div className="logo" style={{ color: '#33d9b2' }}>
+                        < MdOutlineSavings />
                     </div>
                     <div className="action">
-                    <AiOutlineMore />
+                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">

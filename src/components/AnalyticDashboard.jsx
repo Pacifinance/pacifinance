@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, PureComponent } from 'react';
+import { PieChart, Pie, Sector, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
 //import { BiTransfer } from "react-icons/bi";
@@ -10,14 +11,8 @@ import { AiOutlineStock } from "react-icons/ai";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart, BarElement, CategoryScale, ArcElement, LinearScale} from 'chart.js';
 import { UserContext } from '../contexts/UserContext';
-import axios from 'axios';
-import { set } from 'mongoose';
 import MyStyled from '../contexts/MyStyled';
-
-Chart.register(CategoryScale, ArcElement, LinearScale, BarElement);
 
 function AnalyticDashboard() {
     const { userData } = useContext(UserContext);
@@ -88,103 +83,50 @@ function AnalyticDashboard() {
         return <div>Loading...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
     }
 
-    const options = {
-        plugins: {
-          tooltip: {
-            enabled: false,
-            external: (context) => {
-              // Get the tooltip element
-              let tooltipEl = document.getElementById('custom-tooltip');
-    
-              // Create the tooltip element if it doesn't exist
-              if (!tooltipEl) {
-                tooltipEl = document.createElement('div');
-                tooltipEl.id = 'custom-tooltip';
-                tooltipEl.classList.add('custom-tooltip');
-                document.body.appendChild(tooltipEl);
-              }
-    
-              // Hide the tooltip if there is no active element
-              if (context.tooltip.dataPoints.length === 0) {
-                tooltipEl.style.display = 'none';
-                return;
-              }
-    
-              // Get the first data point
-              const dataPoint = context.tooltip.dataPoints[0];
-    
-              // Update the tooltip content
-              tooltipEl.innerHTML = `Value: ${dataPoint.formattedValue}`;
-    
-              // Position the tooltip
-              const position = context.chart.canvas.getBoundingClientRect();
-              tooltipEl.style.display = 'block';
-              tooltipEl.style.left = position.left + window.scrollX + dataPoint.tooltipPosition.x + 'px';
-              tooltipEl.style.top = position.top + window.scrollY + dataPoint.tooltipPosition.y + 'px';
-            }
-          }
-        }
-    };
+    const capitalData = {
+        Azioni: stocksReal >= 0 ? stocksReal : 0,
+        ETF: etfReal >= 0 ? etfReal : 0,
+        Banca: bankReal >= 0 ? bankReal : 0,
+        Banconote: cashReal >= 0 ? cashReal : 0,
+        Criptovalute: cryptoReal >= 0 ? cryptoReal : 0,
+        Bitcoin: bitcoinReal >= 0 ? bitcoinReal : 0,
+        ServiziDigitali: digitalServicesReal >= 0 ? digitalServicesReal : 0,
+    }
 
-    const barChartCapitalData = {
-        labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],
-        datasets: [
-            {
-                label: 'Valore allocato',
-                data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
-                backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
-                borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
-                borderWidth: 1,
-            },
-        ],
-        options: {
-            scales: {
-                y: {
-                beginAtZero: true,
-                max: 500, // Make sure y axis doesn't go beyond 500
-                ticks: {
-                    stepSize: 100, // Imposta l'intervallo tra i valori sull'asse y
-                },
-                },
-            },
-        },
-        };
-        
-        const pieChartCapitalData = {
-        labels: ['Azioni', 'ETF', 'Banca', 'Banconote', 'Criptovalute', 'Bitcoin', 'Digital Services'],
-        datasets: [
-            {
-            label: '% allocata',
-            data: [stocksReal, etfReal, bankReal, cashReal, cryptoReal, bitcoinReal, digitalServicesReal],
-            backgroundColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
-                borderColor: ['rgba(255, 102, 0, 1)', 'rgba(162, 155, 254,1.0)', 'rgba(13, 87, 155, 1)', 'rgba(50, 146, 57, 1)', 'rgba(214, 48, 49,1.0)', 'rgba(247, 181, 16, 1.0)', 'rgba(129, 236, 236,1.0)'],
-            borderWidth: 1,
-            },
-        ],
-    };
+    //Creare le variabili colori in MyStyled e importarle qui 
+    const colorsBalances = {
+        Azioni: '#FF6600',
+        ETF: '#a29bfe',
+        Banca: '#0D579B',
+        Banconote: '#329239',
+        Criptovalute: '#d63031',
+        Bitcoin: '#F7B510',
+        ServiziDigitali: '#74b9ff',
+    }
 
-    const barChartIncExpData = {
-        labels: ['Entrate', 'Spese', 'Risparmiato'],
-        datasets: [
-            {
-            label: 'Valore mensile',
-            data: [incomesMonth, expensesMonth, savedMonth],
-            backgroundColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 0, 0, 1)', 'rgba(144, 238, 144, 1)'],
-            borderColor: ['rgba(7, 145, 100, 1)', 'rgba(255, 99, 132, 1)', 'rgba(144, 238, 144, 1)'],
-            borderWidth: 1,
-            },
-        ],
-        options: {
-            scales: {
-                y: {
-                beginAtZero: true,
-                max: 500, // Imposta il valore massimo sull'asse y in base alle tue esigenze
-                ticks: {
-                    stepSize: 100, // Imposta l'intervallo tra i valori sull'asse y
-                },
-                },
-            },
-        },
+    const incExpData = {
+        Entrate: incomesMonth >= 0 ? incomesMonth : 0,
+        Spese: expensesMonth >= 0 ? expensesMonth : 0,
+        Risparmiato: savedMonth >= 0 ? savedMonth : 0,
+    }
+
+    const colorsIncExp = {
+        Entrate: '#079164',
+        Spese: '#FF0000',
+        Risparmiato: '#90EE90',
+    }
+
+    const RADIAN = Math.PI / 180;
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+        <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${(percent * 100).toFixed(0)}%`}
+        </text>
+    );
     };
       
     return (
@@ -324,19 +266,98 @@ function AnalyticDashboard() {
             
                 <div className="bar-chart-section">
                     <h2>Distribuzione capitale</h2>
-                    <Bar data={barChartCapitalData} options={options}/>
+                    <div style={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer width="100%" height="300">
+                            <BarChart
+                                width={500}
+                                height={300}
+                                data={capitalData}
+                                margin={{
+                                    top: 20,
+                                    right: 15,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                            >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="Azioni" fill = {colorsBalances.Azioni}  />
+                            <Bar dataKey="ETF" fill = {colorsBalances.ETF} />
+                            <Bar dataKey="Bitcoin" fill = {colorsBalances.Bitcoin} />
+                            <Bar dataKey="Criptovalute" fill = {colorsBalances.Criptovalute} />
+                            <Bar dataKey="Contante" fill = {colorsBalances.Contante} />
+                            <Bar dataKey="Servizi Digitali" fill = {colorsBalances.ServiziDigitali} />
+                            <Bar dataKey="Banca" fill = {colorsBalances.Banca} />
+                            
+
+                            
+                            
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
 
                 </div>
 
                 <div className="pie-chart-section">
                     <h2>% Distribuzione Capitale</h2>
-                    <Pie data={pieChartCapitalData} options={options}/>
+                    <div style={{ width: '100%', height: 400 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart width={500} height={500}>
+                            <Pie
+                                data={capitalData}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                label={renderCustomizedLabel}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                            >
+                                
+                            <Cell datakey="Azioni" fill={colorsBalances.Azioni} />
+                            <Cell datakey="ETF" fill={colorsBalances.ETF} />
+                            <Cell datakey="Bitcoin" fill={colorsBalances.Bitcoin} />
+                            <Cell datakey="Criptovalute" fill={colorsBalances.Criptovalute} />
+                            <Cell datakey="Contante" fill={colorsBalances.Contante} />
+                            <Cell datakey="Servizi Digitali" fill={colorsBalances.ServiziDigitali} />
+                            <Cell datakey="Banca" fill={colorsBalances.Banca} />
+                                
+                            </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
 
                 </div>
 
                 <div className="bar-chart-section">
                     <h2>Entrate | Spese</h2>
-                    <Bar data={barChartIncExpData} options={options}/>            
+                    <div style={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                width={500}
+                                height={300}
+                                data={incExpData}
+                                margin={{
+                                    top: 20,
+                                    right: 15,
+                                    left: 5,
+                                    bottom: 5,
+                                }}
+                            >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="Entrate" fill = {colorsIncExp.Entrate}  />
+                            <Bar dataKey="Uscite" fill = {colorsIncExp.Uscite}  />
+                            <Bar dataKey="Risparmiato" fill = {colorsIncExp.Risparmiato}  />
+                            </BarChart>
+                        </ResponsiveContainer>    
+                    </div>      
                 </div>
 
             </GraphsSection>

@@ -52,6 +52,7 @@ const InsertValue = () => {
 
   const {
     MyButton,
+    MySectionButton,
     MySecondaryButton,
     StyledSection,
     StyledAddSection,
@@ -579,34 +580,34 @@ const InsertValue = () => {
     <StyledSection>
         <ModifiedTitleDashboard>Inserimento Dati</ModifiedTitleDashboard>
         <ButtonGroup variant="contained" aria-label="outlined primary button group">
-          <MyButton
+          <MySectionButton
             onClick={() => handlePageChange("bilancio")}
             style={{
               backgroundColor:
-                activePage === "bilancio" ? "" : "transparent",
+                activePage === "bilancio" ? "" : "#222831",
               marginLeft: "6vw",
             }}
           >
             Aggiorna Bilancio
-          </MyButton>
-          <MyButton
+          </MySectionButton>
+          <MySectionButton
             onClick={() => handlePageChange("income")}
             style={{
               backgroundColor:
-                activePage === "income" ? "" : "transparent",
+                activePage === "income" ? "" : "#222831",
             }}
           >
             Aggiungi Entrate
-          </MyButton>
-          <MyButton
+          </MySectionButton>
+          <MySectionButton
             onClick={() => handlePageChange("expenses")}
             style={{
               backgroundColor:
-                activePage === "expenses" ? "" : "transparent",
+                activePage === "expenses" ? "" : "#222831",
             }}
           >
             Aggiungi Spese
-          </MyButton>
+          </MySectionButton>
         </ButtonGroup>
         {renderPage()}
     </StyledSection>

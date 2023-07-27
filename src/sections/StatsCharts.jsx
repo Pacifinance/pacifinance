@@ -14,7 +14,7 @@ import InExStatsYear from '../components/InExStatsYear'
 
 function StatsCharts() {
     const { userData } = useContext(UserContext);
-    const { ModifiedTitleDashboard, StyledSection, ButtonGroup, MyButton, SecondaryTitle } = MyStyled();
+    const { ModifiedTitleDashboard, StyledSection, ButtonGroup, MySectionButton, SecondaryTitle } = MyStyled();
     const [activePage, setActivePage] = useState("statsBilancio");
     const formattedPreMonthDate = userData?.preMonthDate ? new Date(userData.preMonthDate).toISOString().slice(0, 10) : "";
     const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate ? new Date(userData.preYearSameMonthDate).toISOString().slice(0, 10) : "";
@@ -29,11 +29,11 @@ function StatsCharts() {
           return (
             
             <>
-                <SecondaryTitle>- Il tuo bilancio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
+                <SecondaryTitle>- Il tuo patrimonio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <BalancesStatsMonth />
-                <SecondaryTitle>- Il tuo bilancio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
+                <SecondaryTitle>- Il tuo patrimonio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <BalancesStatsYear />
-                <SecondaryTitle>- check del bilancio nei mesi</SecondaryTitle>
+                <SecondaryTitle>- check del bilancio negli ultimi 12 mesi</SecondaryTitle>
                 <BalancesCharts />
 
             </>
@@ -45,7 +45,7 @@ function StatsCharts() {
                 <InExStatsMonth />
                 <SecondaryTitle>- le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <InExStatsYear />
-                <SecondaryTitle>- check delle entrate e delle uscite nei mesi</SecondaryTitle>
+                <SecondaryTitle>- check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
     //          <InOutCharts />
             </>
           );
@@ -56,25 +56,25 @@ function StatsCharts() {
         <StyledSection>
             <ModifiedTitleDashboard>Le tue Statistiche</ModifiedTitleDashboard>
             <ButtonGroup variant="contained" aria-label="outlined primary button group">
-              <MyButton
+              <MySectionButton
                 onClick={() => handlePageChange("statsBilancio")}
                 style={{
                   backgroundColor:
-                    activePage === "statsBilancio" ? "" : "transparent",
+                    activePage === "statsBilancio" ? "" : "#222831",
                   marginLeft: "6vw",
                 }}
               >
                 Statistiche Bilancio
-              </MyButton>
-              <MyButton
+              </MySectionButton>
+              <MySectionButton
                 onClick={() => handlePageChange("statsIncomesExpenses")}
                 style={{
                   backgroundColor:
-                    activePage === "statsIncomesExpenses" ? "" : "transparent",
+                    activePage === "statsIncomesExpenses" ? "" : "#222831",
                 }}
               >
                 Statistiche Entrate e Spese
-              </MyButton>
+              </MySectionButton>
             </ButtonGroup>
             {renderPage()}
         </StyledSection>

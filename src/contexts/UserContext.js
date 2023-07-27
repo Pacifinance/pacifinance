@@ -31,7 +31,7 @@ function UserProvider({ children }) {
             const expensesIncomesResponse = await axios.post('/expenses/get', {date: currentDate});
             const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
-
+            console.log('Array completo di risposta: ', balancesResponse.data);
             //GET DATA FROM RESPONSES
             var balances = {};
             //add a control to check if the user has data in this month and previous month
@@ -48,17 +48,12 @@ function UserProvider({ children }) {
                   }
                 }    
             } 
-            // const balances = balancesResponse.data[0]?.balance;
-
-            //balancesResponse.data[0] is the last balance of the current month (the older ones are overwritten by the most recent one (for the month))
-            //so in balancesReponse.data[1] there is the last balance of the previous month
-            //so in balancesResponse.data[12].balance
-            //create variables to store the balances of the previous month
-            const balancesPreMonth = balancesResponse.data[1]?.balance ?? 0;  //Using ?? 0, if the value is undefined or empty, set it to 0
-            const balancesPreYearSameMonth = balancesResponse.data[12]?.balance ?? 0;         
-            const expensesIncomes = expensesIncomesResponse.data ?? [];
-            const expensesIncomesPreMonth = expensesIncomesPreMonthResponse.data ?? [];
-            const expensesIncomesPreYearSameMonth = expensesIncomesPreYearSameMonthResponse.data ?? [];
+            
+            const balancesPreMonth = (balancesResponse.data[1] || 0).balance || 0;  //Using ?? 0, if the value is undefined or empty, set it to 0
+            const balancesPreYearSameMonth = (balancesResponse.data[12] || 0).balance || 0;         
+            const expensesIncomes = expensesIncomesResponse.data || [];
+            const expensesIncomesPreMonth = expensesIncomesPreMonthResponse.data || [];
+            const expensesIncomesPreYearSameMonth = expensesIncomesPreYearSameMonthResponse.data || [];
 
             console.log('balances', balances);
             console.log('balancesPreMonth', balancesPreMonth);
@@ -132,11 +127,36 @@ function UserProvider({ children }) {
             const savedPreYearSameMonth = incomesPreYearSameMonth - expensesPreYearSameMonth;
 
 
+            //DATAS FOR THE CHARTS
 
-            
+            const last12MonthsData = [];
+
+            // Loop per i 12 mesi precedenti
+            for (let i = 0; i < 12; i++) {
+              // Calcola il mese corrente (potrei prendere il mese dai dati dal db senza calcolarlo)
+              const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+              const currentMonthAsString = currentMonth.toLocaleString('default', { month: 'long' });
+
+              // Recupera il bilancio per il mese corrente (se disponibile, altrimenti imposta a 0)
+              const currentMonthBalance = balancesResponse.data[i]?.balance ?? 0;
+
+              const monthData = {
+                month: currentMonthAsString,
+                cashReal: currentMonthBalance.cash || 0,
+                bankReal: currentMonthBalance.bank || 0,
+                digitalServicesReal: currentMonthBalance.digitalServices || 0,
+                stocksReal: (currentMonthBalance.stocks || 0).real || 0,
+                etfReal: (currentMonthBalance.etf || 0).real || 0,
+                bitcoinReal: (currentMonthBalance.bitcoin || 0).real || 0,
+                cryptoReal: (currentMonthBalance.crypto || 0).real || 0
+              };
+
+              // Aggiungi l'oggetto all'array dei dati degli ultimi 12 mesi
+              last12MonthsData.push(monthData);
+            }
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate});
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData});
             handleSetIsUpdated(true);
         }
       } catch (error) {

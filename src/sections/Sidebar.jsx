@@ -110,10 +110,14 @@ function Sidebar() {
             setSelectedOption(option);
             console.log(`Option selected:`, option);
             console.log(`Option selected:`, option.value);
-            if(selectedOption.value === 'account') setShowAccountModal(true);
-            else if(selectedOption.value === 'changeUsername') setShowChangeUsernameModal(true);
-            else if(selectedOption.value === 'changeid') setShowChangeIDModal(true);
-            else if(selectedOption.value === 'changePassword') setShowChangePWDModal(true);
+            if(option.value === 'account') setShowAccountModal(true);
+            else if(option.value === 'changeUsername') setShowChangeUsernameModal(true);
+            else if(option.value === 'changeid') setShowChangeIDModal(true);
+            else if(option.value === 'changePassword') setShowChangePWDModal(true);
+            // if(selectedOption.value === 'account') setShowAccountModal(true);
+            // else if(selectedOption.value === 'changeUsername') setShowChangeUsernameModal(true);
+            // else if(selectedOption.value === 'changeid') setShowChangeIDModal(true);
+            // else if(selectedOption.value === 'changePassword') setShowChangePWDModal(true);
             setShowDropdown(false);
         }
 
@@ -131,7 +135,10 @@ function Sidebar() {
             const newID = response.data.new_id;
             setNewID(newID);
             setShowID(true);
-            handleLogout();
+            event.preventDefault();
+            
+            // handleLogout(event);
+            
         }
         catch(error){
             console.log(error);
@@ -186,10 +193,15 @@ function Sidebar() {
 
     const handleCloseSecondaryModal = () => {
         setShowChangePWDSuccess(false);
-        setShowID(false);
+        // setShowID(false);
         setShowUsername(false);
     };
-    
+
+    const handleCloseModalAndLogout = () => {
+        setShowID(false);
+        navigate('/');
+    };
+
     const handleLogout = async (event) => {
         // Perform logout logic here
         // Redirect the user to the login page
@@ -221,10 +233,12 @@ function Sidebar() {
                                 <li
                                     className={currentLink === 1 ? "active" : ""}
                                     onClick={() => setCurrentLink(1)}
-                                >
-                                    <Link to="/dashboard">
-                                        <BiHomeAlt />
-                                    </Link>
+                                >   
+                                    <div>
+                                        <Link to="/dashboard">
+                                            <BiHomeAlt />
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                             <Tooltip title="I tuoi grafici" placement="right">
@@ -232,65 +246,72 @@ function Sidebar() {
                                     className={currentLink === 6 ? "active" : ""}
                                     onClick={() => setCurrentLink(6)}
                                 >
-                                    <Link to="/your-charts">
-                                        <AiOutlineDotChart />
-                                    </Link>
+                                    <div>
+                                        <Link to="/your-charts">
+                                            <AiOutlineDotChart />
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                             <Tooltip title="Inserimento dati" placement="right">
                                 <li
-                                    className={currentLink === 3 ? "active" : "none"}
+                                    className={currentLink === 3 ? "active" : ""}
                                     onClick={() => setCurrentLink(3)}
                                 >
-                                    <Link to="/insert-values">
-                                        <HiOutlinePencilAlt />
-                                    </Link>
+                                    <div>
+                                        <Link to="/insert-values">
+                                            <HiOutlinePencilAlt />
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                             <Tooltip title="Controlla i mercati" placement="right">
                                 <li
-                                    className={currentLink === 2 ? "active" : "none"}
+                                    className={currentLink === 2 ? "active" : ""}
                                     onClick={() => setCurrentLink(2)}
                                 >
-                                    <Link to="/check-prices">
-                                        <AiOutlineFundProjectionScreen />
-                                    </Link>
+                                    <div>
+                                        <Link to="/check-prices">
+                                            <AiOutlineFundProjectionScreen />
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                             <Tooltip title="Classifica" placement="right">
                                 <li
-                                    className={currentLink === 5 ? "active" : "none"}
+                                    className={currentLink === 5 ? "active" : ""}
                                     onClick={() => setCurrentLink(5)}
                                 >
-                                    <Link to="/leaderboard">
-                                        <AiOutlineTrophy />
-                                    </Link>
+                                    <div>
+                                        <Link to="/leaderboard">
+                                            <AiOutlineTrophy />
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                             
                             <Tooltip title="Conoscenze" placement="right">
                                 <li
-                                    className={currentLink === 7 ? "active" : "none"}
+                                    className={currentLink === 7 ? "active" : ""}
                                     onClick={() => setCurrentLink(7)}
                                 >
-                                    <Link to="/knowledge">
-                                        
+                                    <div>
+                                        <Link to="/knowledge">
                                             <BsBook />
-                                        
-                                        
-                                    </Link>
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                             <Tooltip title="Info" placement="right">
                                 <li
-                                    className={currentLink === 8 ? "active" : "none"}
+                                    className={currentLink === 8 ? "active" : ""}
                                     onClick={() => setCurrentLink(8)}
                                 >
-                                    <Link to="/info">
-                                        
-                                            <BsInfoCircle/>
-                                        
-                                    </Link>
+                                    <div>
+                                        <Link to="/info">
+                                                <BsInfoCircle/>
+                                        </Link>
+                                    </div>
                                 </li>
                             </Tooltip>
                           
@@ -529,7 +550,7 @@ function Sidebar() {
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
                                 <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                    <MuiCustomButton onClick={handleCloseModalAndLogout} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>

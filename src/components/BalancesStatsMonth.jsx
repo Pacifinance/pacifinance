@@ -8,6 +8,9 @@ import { BsBank } from "react-icons/bs";
 //import { GiTakeMyMoney } from "react-icons/gi";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
+import { SiMoneygram } from "react-icons/si";
+import { MdOutlineAutoGraph } from "react-icons/md";
+import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import { PieChart, Pie, Cell } from "recharts";
 import MyStyled from '../contexts/MyStyled';
@@ -66,9 +69,11 @@ function BalancesStatsMonth() {
     const [bitcoinRealPreMonth, setBitcoinRealPreMonth] = useState(0);
     const [digitalServicesRealPreMonth, setDigitalServicesRealPreMonth] = useState(0);
     const [totalRealPreMonth, setTotalRealPreMonth] = useState(0);
+    
 
     const {
         SectionAMonth,
+        TitleDashboard,
         WrapperAMonth,
       } = MyStyled()
     
@@ -123,7 +128,7 @@ function BalancesStatsMonth() {
     return (
         
         <div className="wrapper">
-        <h1>Il tuo patrimonio è variato del: {((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100} % </h1>
+        <TitleDashboard>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100).toFixed(2)} % </TitleDashboard>
         <SectionAMonth>
             
             <div className="analytic ">
@@ -131,16 +136,13 @@ function BalancesStatsMonth() {
                     <div className="logo" style={{ color: '#0D579B'}}>
                         <BsBank />
                     </div>
-                    <div className="action">
-                    <AiOutlineMore />
-                    </div>
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>deposito in Banca in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((bankReal - bankRealPreMonth) / bankRealPreMonth) * 100} %</h5>
+                    <h5>{(((bankReal - bankRealPreMonth) / bankRealPreMonth) * 100).toFixed(2)} %</h5>
                 </div>
             </div>
 
@@ -148,9 +150,6 @@ function BalancesStatsMonth() {
                 <div className="design">
                     <div className="logo" style={{ color: '#329239' }}>
                         <BsCashCoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -158,17 +157,14 @@ function BalancesStatsMonth() {
                     <h6>soldi fisici in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((cashReal - cashRealPreMonth) / cashRealPreMonth) * 100} %</h5>
+                    <h5>{(((cashReal - cashRealPreMonth) / cashRealPreMonth) * 100).toFixed(2)} %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#329239' }}>
-                        <BsCashCoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
+                    <div className="logo" style={{ color: '#74b9ff' }}>
+                        <SiMoneygram />
                     </div>
                 </div>
                 <div className="transfer">
@@ -176,17 +172,14 @@ function BalancesStatsMonth() {
                     <h6>Servizi digitali in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((digitalServicesReal - digitalServicesRealPreMonth) / digitalServicesRealPreMonth) * 100} %</h5>
+                    <h5>{(((digitalServicesReal - digitalServicesRealPreMonth) / digitalServicesRealPreMonth) * 100).toFixed(2)} %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
-                    </div>
-                    <div className="action">
-                    <AiOutlineMore />
+                        <MdOutlineAutoGraph />
                     </div>
                 </div>
                 <div className="transfer">
@@ -194,17 +187,14 @@ function BalancesStatsMonth() {
                     <h6>Stocks in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((stocksReal - stocksRealPreMonth) / stocksRealPreMonth)*100} %</h5>
+                    <h5>{(((stocksReal - stocksRealPreMonth) / stocksRealPreMonth)*100).toFixed(2)} %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
+                    <div className="logo" style={{ color: '#a29bfe' }}>
                         <AiOutlineStock />
-                    </div>
-                    <div className="action">
-                    <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -212,7 +202,7 @@ function BalancesStatsMonth() {
                     <h6>ETF in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((etfReal - etfRealPreMonth) / etfRealPreMonth)*100} %</h5>
+                    <h5>{(((etfReal - etfRealPreMonth) / etfRealPreMonth)*100).toFixed(2)} %</h5>
                 </div>
             </div>
 
@@ -220,9 +210,6 @@ function BalancesStatsMonth() {
                 <div className="design">
                     <div className="logo" style={{ color: '#F7B510' }}>
                         <FaBitcoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -230,17 +217,14 @@ function BalancesStatsMonth() {
                     <h6>Bitcoin in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((bitcoinReal - bitcoinRealPreMonth) / bitcoinRealPreMonth) * 100 } %</h5>
+                    <h5>{(((bitcoinReal - bitcoinRealPreMonth) / bitcoinRealPreMonth) * 100).toFixed(2) } %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#F7B510' }}>
-                        <FaBitcoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
+                    <div className="logo" style={{ color: '#d63031' }}>
+                        <BsCoin />
                     </div>
                 </div>
                 <div className="transfer">
@@ -248,7 +232,7 @@ function BalancesStatsMonth() {
                     <h6>Crypto in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((cryptoReal - cryptoRealPreMonth) / cryptoRealPreMonth) * 100 } %</h5>
+                    <h5>{(((cryptoReal - cryptoRealPreMonth) / cryptoRealPreMonth) * 100).toFixed(2) } %</h5>
                 </div>
             </div>
         </SectionAMonth>

@@ -8,7 +8,9 @@ import { BsBank } from "react-icons/bs";
 //import { GiTakeMyMoney } from "react-icons/gi";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
-import { AiOutlineStock } from "react-icons/ai";
+import { GiReceiveMoney } from "react-icons/gi";
+import { GiExpense } from "react-icons/gi";
+import { MdOutlineSavings } from "react-icons/md"; 
 import { PieChart, Pie, Cell } from "recharts";
 import MyStyled from '../contexts/MyStyled';
 import axios from 'axios';
@@ -108,8 +110,8 @@ function InExStatsMonth() {
             
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
+                    <div className="logo" style={{ color: '#079164 ' }}>
+                        <GiReceiveMoney />
                     </div>
                     <div className="action">
                     <AiOutlineMore />
@@ -126,8 +128,8 @@ function InExStatsMonth() {
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
+                    <div className="logo" style={{ color: '#ff3838' }}>
+                        <GiExpense />
                     </div>
                     <div className="action">
                     <AiOutlineMore />
@@ -144,8 +146,8 @@ function InExStatsMonth() {
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
+                    <div className="logo" style={{ color: '#33d9b2' }}>
+                        <MdOutlineSavings />
                     </div>
                     <div className="action">
                     <AiOutlineMore />

@@ -7,6 +7,9 @@ import { BsBank } from "react-icons/bs";
 //import { GiTakeMyMoney } from "react-icons/gi";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
+import { SiMoneygram } from "react-icons/si";
+import { MdOutlineAutoGraph } from "react-icons/md";
+import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import MyStyled from '../contexts/MyStyled';
 import { PieChart, Pie, Cell } from "recharts";
@@ -83,6 +86,7 @@ function BalancesStatsYear() {
 
     const {
         SectionAMonth,
+        TitleDashboard,
         WrapperAMonth,
       } = MyStyled()
     
@@ -122,6 +126,7 @@ function BalancesStatsYear() {
                 setExpensesPreYearSameMonth(userData ? userData.expensesPreYearSameMonth : 0);
                 setIncomesPreYearSameMonth(userData ? userData.incomesPreYearSameMonth : 0);
                 setSavedPreYearSameMonth(userData ? userData.savedPreYearSameMonth : 0);
+                console.log("Bilancio anno precedente: ",totalRealPreYearSameMonth);
 
             } catch (error) {
               console.error('Errore durante le operazioni:', error);
@@ -142,15 +147,12 @@ function BalancesStatsYear() {
     return (
         
         <div className="wrapper">
-        <h1>Il tuo patrimonio è cresciuto di: {((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100} % </h1>
+        <TitleDashboard>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100).toFixed(2)} % </TitleDashboard>
         <SectionAMonth>
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#0D579B'}}>
                         <BsBank />
-                    </div>
-                    <div className="action">
-                    <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -158,7 +160,7 @@ function BalancesStatsYear() {
                     <h6>deposito in Banca in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((bankReal - bankRealPreYearSameMonth) / bankRealPreYearSameMonth) * 100} %</h5>
+                    <h5>{(((bankReal - bankRealPreYearSameMonth) / bankRealPreYearSameMonth) * 100).toFixed(2)} %</h5>
                 </div>
             </div>
 
@@ -166,9 +168,6 @@ function BalancesStatsYear() {
                 <div className="design">
                     <div className="logo" style={{ color: '#329239' }}>
                         <BsCashCoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -176,35 +175,30 @@ function BalancesStatsYear() {
                     <h6>soldi fisici in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((cashReal - cashRealPreYearSameMonth) / cashRealPreYearSameMonth) * 100} %</h5>
+                    <h5>{(((cashReal - cashRealPreYearSameMonth) / cashRealPreYearSameMonth) * 100).toFixed(2)} %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#329239' }}>
-                        <BsCashCoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
+                    <div className="logo" style={{ color: '#74b9ff' }}>
+                        <SiMoneygram />
                     </div>
                 </div>
+                
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Servizi digitali in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((digitalServicesReal - digitalServicesRealPreYearSameMonth) / digitalServicesRealPreYearSameMonth) * 100} %</h5>
+                    <h5>{(((digitalServicesReal - digitalServicesRealPreYearSameMonth) / digitalServicesRealPreYearSameMonth) * 100).toFixed(2)} %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#FF6600' }}>
-                        <AiOutlineStock />
-                    </div>
-                    <div className="action">
-                    <AiOutlineMore />
+                        <MdOutlineAutoGraph />
                     </div>
                 </div>
                 <div className="transfer">
@@ -212,17 +206,14 @@ function BalancesStatsYear() {
                     <h6>Stocks in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((stocksReal - stocksRealPreYearSameMonth)/stocksRealPreYearSameMonth)*100} %</h5>
+                    <h5>{(((stocksReal - stocksRealPreYearSameMonth)/stocksRealPreYearSameMonth)*100).toFixed(2)} %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#FF6600' }}>
+                    <div className="logo" style={{ color: '#a29bfe' }}>
                         <AiOutlineStock />
-                    </div>
-                    <div className="action">
-                    <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -230,7 +221,7 @@ function BalancesStatsYear() {
                     <h6>ETF in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((etfReal - etfRealPreYearSameMonth)/etfRealPreYearSameMonth)*100} %</h5>
+                    <h5>{(((etfReal - etfRealPreYearSameMonth)/etfRealPreYearSameMonth)*100).toFixed(2)} %</h5>
                 </div>
             </div>
 
@@ -238,9 +229,6 @@ function BalancesStatsYear() {
                 <div className="design">
                     <div className="logo" style={{ color: '#F7B510' }}>
                         <FaBitcoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
                     </div>
                 </div>
                 <div className="transfer">
@@ -248,17 +236,14 @@ function BalancesStatsYear() {
                     <h6>Bitcoin in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((bitcoinReal - bitcoinRealPreYearSameMonth) / bitcoinRealPreYearSameMonth) * 100 } %</h5>
+                    <h5>{(((bitcoinReal - bitcoinRealPreYearSameMonth) / bitcoinRealPreYearSameMonth) * 100).toFixed(2) } %</h5>
                 </div>
             </div>
 
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#F7B510' }}>
-                        <FaBitcoin />
-                    </div>
-                    <div className="action">
-                        <AiOutlineMore />
+                    <div className="logo" style={{ color: '#d63031' }}>
+                        <BsCoin />
                     </div>
                 </div>
                 <div className="transfer">
@@ -266,7 +251,7 @@ function BalancesStatsYear() {
                     <h6>Crypto in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((cryptoReal - cryptoRealPreYearSameMonth) / cryptoRealPreYearSameMonth) * 100 } %</h5>
+                    <h5>{(((cryptoReal - cryptoRealPreYearSameMonth) / cryptoRealPreYearSameMonth) * 100).toFixed(2) } %</h5>
                 </div>
             </div>
         </SectionAMonth>

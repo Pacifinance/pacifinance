@@ -12,7 +12,14 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { UserContext } from '../contexts/UserContext';
-import MyStyled from '../contexts/MyStyled';
+// import MyStyled from '../contexts/MyStyled';
+import {
+        SectionADashboard,
+        CapitalValue,
+        UpperSection,
+        LowerSection,
+        GraphsSection,
+  } from '../contexts/MyStyled';
 
 function AnalyticDashboard() {
     const { userData } = useContext(UserContext);
@@ -28,13 +35,13 @@ function AnalyticDashboard() {
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
-    const {
-        SectionADashboard,
-        CapitalValue,
-        UpperSection,
-        LowerSection,
-        GraphsSection,
-      } = MyStyled()
+    // const {
+    //     SectionADashboard,
+    //     CapitalValue,
+    //     UpperSection,
+    //     LowerSection,
+    //     GraphsSection,
+    //   } = MyStyled()
     
 
     useEffect(() => {

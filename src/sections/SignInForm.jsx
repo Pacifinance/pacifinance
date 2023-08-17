@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -20,7 +21,7 @@ import {
   MuiUseStyles,
 } from '../contexts/MyStyled';
 
-import MyStyled from '../contexts/MyStyled';
+// import MyStyled from '../contexts/MyStyled';
 
 // const handleUsernameChange = (setUsername, event) => {
 //   setUsername(event.target.value);
@@ -30,21 +31,8 @@ import MyStyled from '../contexts/MyStyled';
 //     setPassword(event.target.value);
 // };
 
-const handleUsernameChange = ({ MuiCustomTextField, username, setUsername }) => {
-  // return <input value={email} onChange={(e) => setUsername(e.target.value)} />;
-  return <MuiCustomTextField
-    id = "username"
-    label="Id o Username"
-    type="text"
-    value={username}
-    onChange={(event) => setUsername(event.target.value)}
-    fullWidth
-    required
-    // className={classes.root}
-  />
-};
-
 export default function SignInForm() {
+    const { theme } = useContext(ThemeContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -120,17 +108,26 @@ export default function SignInForm() {
     
 
     return (
-        <SignIn>
+        <SignIn theme={theme}>
             <div className="sign-in-page">
                 <div className="sign-in-form" >
                     <h1>Accedi</h1>
                     <div className="icon-with-text">
-                        <InfoIcon />
+                        <InfoIcon theme={theme}/>
                         <h4>Inserisci il tuo id e la tua password per continuare</h4>
                     </div>
                     <form id = "signIn-IdPassword" onSubmit={handleSubmit}>
-                        {handleUsernameChange({MuiCustomTextField, username, setUsername})}
-                        <MuiCustomTextField
+                        <MuiCustomTextField theme={theme}
+                          id = "username"
+                          label="Id o Username"
+                          type="text"
+                          value={username}
+                          onChange={(event) => setUsername(event.target.value)}
+                          fullWidth
+                          required
+                          className={classes.root}
+                        />
+                        <MuiCustomTextField theme={theme}
                           id = "passwordSignIn"
                           label="Password"
                           type={showPassword ? 'text' : 'password'}
@@ -141,8 +138,8 @@ export default function SignInForm() {
                           className={classes.root}
                           InputProps={{
                             endAdornment: (
-                              <MuiCustomInputAdornment position="end">
-                                <MuiCustomIconButton
+                              <MuiCustomInputAdornment theme={theme} position="end">
+                                <MuiCustomIconButton theme={theme}
                                   aria-label="toggle password visibility"
                                   onClick={handleClickShowPassword}
                                   onMouseDown={handleMouseDownPassword}
@@ -155,7 +152,7 @@ export default function SignInForm() {
                           }}
                         />
                         <div className="button-wrapper">
-                          <SignInButton type="submit" fullWidth>
+                          <SignInButton theme={theme} type="submit" fullWidth>
                             Accedi
                           </SignInButton>
                         </div>
@@ -164,23 +161,23 @@ export default function SignInForm() {
                 </div>
             </div>
             {showErrorModal && (
-                <MuiCustomDialog
+                <MuiCustomDialog theme={theme}
                     open={showErrorModal}
                     onClose={handleCloseModal}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <MuiCustomDialogTitle id="alert-dialog-title">
+                    <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                         {"Errore in fase di accesso"}
                     </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent>
-                        <MuiCustomDialogContentText id="alert-dialog-description">
+                    <MuiCustomDialogContent theme={theme}>
+                        <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                             Si è verificato un errore nell'accesso con il tuo account. <br></br>
                             Controlla di digitare correttamente id e password.<br></br>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
-                    <MuiCustomDialogActions>
-                        <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                    <MuiCustomDialogActions theme={theme}>
+                        <MuiCustomButton theme={theme} onClick={handleCloseModal} autoFocus>
                             Ok, va bene
                         </MuiCustomButton>
                     </MuiCustomDialogActions>

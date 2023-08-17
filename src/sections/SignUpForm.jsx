@@ -1,32 +1,35 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useContext} from 'react';
 // import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from '@mui/icons-material/Info';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 //for the modal and styled components
-// import {
-//     SignUp,
-//     SignUpButton,
-//     MuiCustomDialog,
-//     MuiCustomButton,
-//     MuiCustomDialogTitle,
-//     MuiCustomDialogContent,
-//     MuiCustomDialogContentText,
-//     MuiCustomDialogActions,
-//     MuiCustomTextField,
-//     MuiCustomIconButton,
-//     MuiCustomInputAdornment,
-//     MuiCustomVisibility,
-//     MuiCustomVisibilityOff,
-//     MuiUseStyles,
-// } from '../contexts/MyStyled';
-import MyStyled from '../contexts/MyStyled';
+import {
+    SignUp,
+    SignUpButton,
+    MuiCustomDialog,
+    MuiCustomButton,
+    MuiCustomDialogTitle,
+    MuiCustomDialogContent,
+    MuiCustomDialogContentText,
+    MuiCustomDialogActions,
+    MuiCustomTextField,
+    MuiCustomIconButton,
+    MuiCustomInputAdornment,
+    MuiCustomVisibility,
+    MuiCustomVisibilityOff,
+    MuiUseStyles,
+} from '../contexts/MyStyled';
+// import MyStyled from '../contexts/MyStyled';
 
 var generated_user_id = '';
 
-function SignUpForm() {
+// export { generated_user_id };
+export default function SignUpForm() {
+    const { theme } = useContext(ThemeContext);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -35,24 +38,6 @@ function SignUpForm() {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
-
-    // const [redirectToSignIn, setRedirectToSignIn] = useState(false);
-    const {
-        SignUp,
-        SignUpButton,
-        MuiCustomDialog,
-        MuiCustomButton,
-        MuiCustomDialogTitle,
-        MuiCustomDialogContent,
-        MuiCustomDialogContentText,
-        MuiCustomDialogActions,
-        MuiCustomTextField,
-        MuiCustomIconButton,
-        MuiCustomInputAdornment,
-        MuiCustomVisibility,
-        MuiCustomVisibilityOff,
-        MuiUseStyles,
-    } = MyStyled();
 
     const navigate = useNavigate();
 
@@ -137,16 +122,17 @@ function SignUpForm() {
 
     return (
         
-        <SignUp>
+        <SignUp theme={theme}>
             <div className="signUp-page">
                 <div className="signUp-form" style={{ display: 'flex' }}>
                     <h1>Registrazione</h1>
                     <div className="icon-with-text">
-                        <InfoIcon />
+                        <InfoIcon theme={theme}/>
                         <h4>Il sistema genererà per te un id univoco e casuale</h4>
                     </div>
                     <form id="signUp-PasswordConfirm" onSubmit={handleSubmit}>
                         <MuiCustomTextField
+                            theme={theme}
                             id="passwordSignUp"
                             label="Password"
                             type={showPassword ? 'text' : 'password'}
@@ -157,8 +143,8 @@ function SignUpForm() {
                             className={classes.root}
                             InputProps={{
                                 endAdornment: (
-                                <MuiCustomInputAdornment position="end">
-                                    <MuiCustomIconButton
+                                <MuiCustomInputAdornment theme={theme} position="end">
+                                    <MuiCustomIconButton theme={theme}
                                     aria-label="toggle password visibility"
                                     onClick={handleTogglePasswordVisibility}
                                     onMouseDown={handleMouseDownPassword}
@@ -171,6 +157,7 @@ function SignUpForm() {
                             }}
                             />
                             <MuiCustomTextField
+                                theme={theme}
                                 id="confirmPassword"    
                                 label="Conferma Password"
                                 type={showConfirmPassword ? 'text' : 'password'}
@@ -181,8 +168,9 @@ function SignUpForm() {
                                 className={classes.root}
                                 InputProps={{
                                     endAdornment: (
-                                    <MuiCustomInputAdornment position="end">
+                                    <MuiCustomInputAdornment theme={theme} position="end">
                                         <MuiCustomIconButton
+                                            theme={theme}
                                             aria-label="toggle password visibility"
                                             onClick={handleToggleConfirmPasswordVisibility}
                                             onMouseDown={handleMouseDownPassword}
@@ -195,7 +183,7 @@ function SignUpForm() {
                                 }}
                             />
                         <div className="button-wrapper">
-                            <SignUpButton type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Registrati</SignUpButton>
+                            <SignUpButton theme={theme} type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Registrati</SignUpButton>
                         </div>
 
                     </form>
@@ -204,22 +192,23 @@ function SignUpForm() {
             
             {showSuccessModal && (
                 <MuiCustomDialog
+                    theme={theme}
                     open={showSuccessModal}
                     onClose={closeSuccessModal}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <MuiCustomDialogTitle id="alert-dialog-title">
+                    <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                         {" Registrazione avvenuta con successo"}
                     </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent>
-                        <MuiCustomDialogContentText id="alert-dialog-description">
+                    <MuiCustomDialogContent theme={theme}>
+                        <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                             Il tuo id utente è: {generated_user_id}.<br></br> Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
-                    <MuiCustomDialogActions>
+                    <MuiCustomDialogActions theme={theme}>
                         <input type="text" ref={inputRef} value={generated_user_id} readOnly style={{ position: 'fixed', top: '-9999px' }} />
-                        <CopyToClipboard
+                        <CopyToClipboard 
                             text={generated_user_id}
                             onCopy={() => {
                                 setIsCopied(true);
@@ -228,7 +217,7 @@ function SignUpForm() {
                                     }, 1000);
                             }}
                         >
-                            <MuiCustomButton onClick={closeSuccessModal} autofocus>
+                            <MuiCustomButton theme={theme} onClick={closeSuccessModal} autofocus>
                                 <span>{isCopied ? 'Copiato!' : 'Copia il tuo ID'}</span>
                             </MuiCustomButton>
                         </CopyToClipboard>
@@ -236,23 +225,23 @@ function SignUpForm() {
                 </MuiCustomDialog>   
             )}
             {showErrorModal && (
-                <MuiCustomDialog
+                <MuiCustomDialog theme={theme}
                     open={showErrorModal}
                     onClose={closeErrorModal}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <MuiCustomDialogTitle id="alert-dialog-title">
+                    <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                         {"Errore in fase di registrazione"}
                     </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent>
-                        <MuiCustomDialogContentText id="alert-dialog-description">
+                    <MuiCustomDialogContent theme={theme}>
+                        <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                             Si è verificato un errore nella registrazione del tuo account. <br></br>
                             Per favore riprova tra un istante.<br></br>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
-                    <MuiCustomDialogActions>
-                        <MuiCustomButton onClick={closeErrorModal} autoFocus>
+                    <MuiCustomDialogActions theme={theme}>
+                        <MuiCustomButton theme={theme} onClick={closeErrorModal} autoFocus>
                             Ok, va bene
                         </MuiCustomButton>
                     </MuiCustomDialogActions>
@@ -263,5 +252,3 @@ function SignUpForm() {
         </SignUp>
     );
 }
-// export { generated_user_id };
-export default SignUpForm;

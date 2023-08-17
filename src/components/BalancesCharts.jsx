@@ -7,7 +7,8 @@ import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { BarChart } from "recharts/lib/chart/BarChart";
 import { Bar } from "recharts/lib/cartesian/Bar";
 import { Legend } from "recharts/lib/component/Legend";
-import MyStyled from '../contexts/MyStyled';
+import { SectionBalancesCharts } from '../contexts/MyStyled';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 
 
@@ -15,9 +16,10 @@ import MyStyled from '../contexts/MyStyled';
 export default function BalancesCharts() {
 
   const { userData } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
 
-  const { SectionBalancesCharts } = MyStyled();
+  // const { SectionBalancesCharts } = MyStyled();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +53,7 @@ export default function BalancesCharts() {
   }));
 
   return (
-    <SectionBalancesCharts>
+    <SectionBalancesCharts theme={theme}>
       <BarChart
         width={500}
         height={300}

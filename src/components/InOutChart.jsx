@@ -6,7 +6,7 @@ import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { LineChart } from "recharts/lib/chart/LineChart";
 import { Line } from "recharts/lib/cartesian/Line";
 import { Legend } from "recharts/lib/component/Legend";
-import MyStyled from '../contexts/MyStyled';
+import { SectionInOut } from '../contexts/MyStyled';
 
 
 const data = [
@@ -86,7 +86,7 @@ const data = [
 
 export default function Incomes() {
 
-  const { SectionInOut } = MyStyled();
+  // const { SectionInOut } = MyStyled();
 
   return (
     <SectionInOut>

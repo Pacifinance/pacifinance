@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
-import styled from 'styled-components'
+import { ThemeContext } from '../contexts/ThemeContext';
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
 //import { BiTransfer } from "react-icons/bi";
@@ -13,7 +13,7 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import { PieChart, Pie, Cell } from "recharts";
-import MyStyled from '../contexts/MyStyled';
+import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
 import axios from 'axios';
 
 
@@ -51,7 +51,8 @@ const renderCustomizedLabel = ({
   );
 };
 
-function BalancesStatsMonth() {
+export default function BalancesStatsMonth() {
+    const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
@@ -69,13 +70,6 @@ function BalancesStatsMonth() {
     const [bitcoinRealPreMonth, setBitcoinRealPreMonth] = useState(0);
     const [digitalServicesRealPreMonth, setDigitalServicesRealPreMonth] = useState(0);
     const [totalRealPreMonth, setTotalRealPreMonth] = useState(0);
-    
-
-    const {
-        SectionAMonth,
-        TitleDashboard,
-        WrapperAMonth,
-      } = MyStyled()
     
 
     useEffect(() => {
@@ -128,8 +122,8 @@ function BalancesStatsMonth() {
     return (
         
         <div className="wrapper">
-        <TitleDashboard>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100).toFixed(2)} % </TitleDashboard>
-        <SectionAMonth>
+        <TitleDashboard theme={theme}>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100).toFixed(2)} % </TitleDashboard>
+        <SectionAMonth theme={theme}>
             
             <div className="analytic ">
                 <div className="design">
@@ -239,5 +233,3 @@ function BalancesStatsMonth() {
     </div>
     )
 }
-
-export default BalancesStatsMonth;

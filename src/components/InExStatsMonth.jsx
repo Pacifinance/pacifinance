@@ -12,7 +12,7 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import { PieChart, Pie, Cell } from "recharts";
-import MyStyled from '../contexts/MyStyled';
+import {SectionAMonth, WrapperAMonth} from '../contexts/MyStyled';
 import axios from 'axios';
 
 
@@ -50,7 +50,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-function InExStatsMonth() {
+export default function InExStatsMonth() {
     const { userData } = useContext(UserContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
@@ -59,10 +59,10 @@ function InExStatsMonth() {
     const [expensesPreMonth, setExpensesPreMonth] = useState(0);
     const [savedPreMonth, setSavedPreMonth] = useState(0);
 
-    const {
-        SectionAMonth,
-        WrapperAMonth,
-      } = MyStyled()
+    // const {
+    //     SectionAMonth,
+    //     WrapperAMonth,
+    //   } = MyStyled()
     
 
     useEffect(() => {
@@ -166,4 +166,3 @@ function InExStatsMonth() {
     )
 }
 
-export default InExStatsMonth;

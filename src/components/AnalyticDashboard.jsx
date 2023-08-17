@@ -12,7 +12,8 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { UserContext } from '../contexts/UserContext';
-// import MyStyled from '../contexts/MyStyled';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { colorsBalances, colorsIncExp } from '../contexts/Themes';
 import {
         SectionADashboard,
         CapitalValue,
@@ -22,6 +23,7 @@ import {
   } from '../contexts/MyStyled';
 
 function AnalyticDashboard() {
+    const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(true);
     const [stocksReal, setStocksReal] = useState(0);
@@ -101,15 +103,7 @@ function AnalyticDashboard() {
     }
 
     //Creare le variabili colori in MyStyled e importarle qui 
-    const colorsBalances = {
-        Azioni: '#FF6600',
-        ETF: '#a29bfe',
-        Banca: '#0D579B',
-        Banconote: '#329239',
-        Criptovalute: '#d63031',
-        Bitcoin: '#F7B510',
-        ServiziDigitali: '#74b9ff',
-    }
+    
 
     const incExpData = {
         Entrate: incomesMonth >= 0 ? incomesMonth : 0,
@@ -117,11 +111,7 @@ function AnalyticDashboard() {
         Risparmiato: savedMonth >= 0 ? savedMonth : 0,
     }
 
-    const colorsIncExp = {
-        Entrate: '#079164',
-        Spese: '#FF0000',
-        Risparmiato: '#90EE90',
-    }
+    
 
     const RADIAN = Math.PI / 180;
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -138,9 +128,9 @@ function AnalyticDashboard() {
       
     return (
         
-        <SectionADashboard>
-            <CapitalValue>Il tuo patrimonio totale è: {totalReal}€</CapitalValue>
-            <UpperSection>
+        <SectionADashboard theme={theme}>
+            <CapitalValue theme={theme}>Il tuo patrimonio totale è: {totalReal}€</CapitalValue>
+            <UpperSection theme={theme}>
                 <div className="analytic ">
                     <div className="design">
                         <div className="logo" style={{ color: '#0D579B'}}>
@@ -196,7 +186,7 @@ function AnalyticDashboard() {
                 </div>
 
             </UpperSection>
-            <LowerSection>
+            <LowerSection theme={theme}>
                 <div className="analytic ">
                     <div className="design">
                         <div className="logo" style={{ color: '#FF6600' }}>
@@ -269,7 +259,7 @@ function AnalyticDashboard() {
                     </div>
                 </div>
             </LowerSection> 
-            <GraphsSection>
+            <GraphsSection theme={theme}>
             
                 <div className="bar-chart-section">
                     <h2>Distribuzione capitale</h2>

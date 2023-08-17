@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
 //import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
 //import { BiTransfer } from "react-icons/bi";
@@ -11,7 +12,7 @@ import { SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import MyStyled from '../contexts/MyStyled';
+import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
 import { PieChart, Pie, Cell } from "recharts";
 
 // const [activeIndex, setActiveIndex] = useState(null);
@@ -60,6 +61,7 @@ const renderCustomizedLabel = ({
 };
 
 function BalancesStatsYear() {
+    const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
@@ -84,11 +86,11 @@ function BalancesStatsYear() {
     const [expensesPreYearSameMonth, setExpensesPreYearSameMonth] = useState(0);
     const [savedPreYearSameMonth, setSavedPreYearSameMonth] = useState(0);
 
-    const {
-        SectionAMonth,
-        TitleDashboard,
-        WrapperAMonth,
-      } = MyStyled()
+    // const {
+    //     SectionAMonth,
+    //     TitleDashboard,
+    //     WrapperAMonth,
+    //   } = MyStyled()
     
 
     useEffect(() => {
@@ -147,8 +149,8 @@ function BalancesStatsYear() {
     return (
         
         <div className="wrapper">
-        <TitleDashboard>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100).toFixed(2)} % </TitleDashboard>
-        <SectionAMonth>
+        <TitleDashboard theme={theme}>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100).toFixed(2)} % </TitleDashboard>
+        <SectionAMonth theme={theme}>
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#0D579B'}}>

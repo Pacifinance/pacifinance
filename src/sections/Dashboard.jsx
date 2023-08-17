@@ -1,20 +1,15 @@
 import React, {useState, useContext} from 'react'
-import styled from 'styled-components'
+// import styled from 'styled-components'
 import AnalyticDashboard from '../components/AnalyticDashboard'
-import { ThemeContext } from '../contexts/ThemeContext';
-// import { TitleDashboard, Section } from '../contexts/MyStyled';
-import MyStyled from '../contexts/MyStyled';
+// import { ThemeProvider } from '../contexts/ThemeContext';
+import { TitleDashboard, Section } from '../contexts/MyStyled';
+// import MyStyled from '../contexts/MyStyled';
 
-//import Expenses from './Expenses'
 function Dashboard() {
-    const { theme } = useContext(ThemeContext);
-    const { mode } = theme;
-    const { TitleDashboard, Section } = MyStyled();
-
+    // const { theme } = useContext(ThemeContext);
+    // const { mode } = theme;
+    // const { TitleDashboard, Section } = MyStyled();
     
-    
-    
-
     return (
         <Section>
             <div className="grid"> 

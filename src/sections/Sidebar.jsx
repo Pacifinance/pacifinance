@@ -9,28 +9,28 @@ import avatarImage from "../assets/account-logo.png"
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import LogoPaci from '../components/Logo';
-// import {
-//     SidebarToggleModeButton,
-//     SidebarSection,
-//     MyButton,
-//     MuiCustomDialog,
-//     MuiCustomButton,
-//     MuiCustomDialogTitle,
-//     MuiCustomDialogContent,
-//     MuiCustomDialogContentText,
-//     MuiCustomDialogActions,
-//     MuiCustomTextField,
-//     MuiCustomIconButton,
-//     MuiCustomInputAdornment,
-//     MuiCustomVisibility,
-//     MuiCustomVisibilityOff,
-//     MuiUseStyles,
-// } from '../contexts/MyStyled';
-
-import MyStyled from '../contexts/MyStyled';
+import { ThemeContext } from '../contexts/ThemeContext';
+import {
+    SidebarToggleModeButton,
+    SidebarSection,
+    MyButton,
+    MuiCustomDialog,
+    MuiCustomButton,
+    MuiCustomDialogTitle,
+    MuiCustomDialogContent,
+    MuiCustomDialogContentText,
+    MuiCustomDialogActions,
+    MuiCustomTextField,
+    MuiCustomIconButton,
+    MuiCustomInputAdornment,
+    MuiCustomVisibility,
+    MuiCustomVisibilityOff,
+    MuiUseStyles,
+} from '../contexts/MyStyled';
 
 
 function Sidebar() {
+    const { theme } = useContext(ThemeContext);
     const inputRef = useRef(null);
     const [currentLink, setCurrentLink] = useState(1);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -52,24 +52,6 @@ function Sidebar() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
-
-    const {
-        SidebarToggleModeButton,
-        SidebarSection,
-        MyButton,
-        MuiCustomDialog,
-        MuiCustomButton,
-        MuiCustomDialogTitle,
-        MuiCustomDialogContent,
-        MuiCustomDialogContentText,
-        MuiCustomDialogActions,
-        MuiCustomTextField,
-        MuiCustomIconButton,
-        MuiCustomInputAdornment,
-        MuiCustomVisibility,
-        MuiCustomVisibilityOff,
-        MuiUseStyles,
-    } = MyStyled();
 
     const classes = MuiUseStyles();
 
@@ -224,7 +206,7 @@ function Sidebar() {
     };
 
     return (
-        <SidebarSection>
+        <SidebarSection theme={theme}>
             <div className="top">
                     <LogoPaci />
                     <div className="links">
@@ -359,23 +341,23 @@ function Sidebar() {
                             </div>
                         )}
                         {showAccountModal && (
-                            <MuiCustomDialog
+                            <MuiCustomDialog theme={theme}
                                 open={showAccountModal}
                                 onClose={handleCloseModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"Profilo"}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Si è verificato un errore nell'accesso con il tuo account. <br></br>
                                         Controlla di digitare correttamente id e password.<br></br>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleCloseModal} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -384,23 +366,24 @@ function Sidebar() {
 
                         {showChangeUsernameModal && (
                             <MuiCustomDialog
+                                theme={theme}
                                 open={showChangeUsernameModal}
                                 onClose={handleCloseModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"GeneraUsername"}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Per aumentare la tua privacy e il tuo coinvolgimento <br></br>
                                         abbiamo pensato di creare un generatore di Username casuali e univoci.<br></br>
                                         La generazione sarà guidata da alcuni tuoi input. Se sarà necessario potrai cambiarlo in futuro.<br></br>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleGenerateUsername} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleGenerateUsername} autoFocus>
                                         Genera Username
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -409,24 +392,25 @@ function Sidebar() {
 
                         {showChangeIDModal && (
                             <MuiCustomDialog
+                                theme={theme}
                                 open={showChangeIDModal}
                                 onClose={handleCloseModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"Cambio ID"}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Per mantenere la tua privacy ti diamo la possibilità di <br></br>
                                         cambiare il tuo id, quando ne hai bisogno.<br></br>
                                         Il sistema genererà un nuovo id casuale e univoco.<br></br>
                                         Inserisci il tuo vecchio id e la tua password per confermare il cambio.<br></br>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleGenerateID} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleGenerateID} autoFocus>
                                         Voglio cambiare id
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -435,21 +419,23 @@ function Sidebar() {
 
                         {showChangePWDModal && (
                             <MuiCustomDialog
+                                theme={theme}
                                 open={showChangePWDModal}
                                 onClose={handleCloseModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"Cambio Password"}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Per cambiare la tua password ti chiediamo di inserire <br></br> 
                                         la tua password <br></br>
                                         TI invieremo un'email con un link per il cambio password.<br></br>
                                         <form onSubmit={handleChangePassword}>
                                             <MuiCustomTextField
+                                                theme={theme}
                                                 label="OldPassword"
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={OldPassword}
@@ -459,12 +445,13 @@ function Sidebar() {
                                                 className={classes.root}
                                                 InputProps={{
                                                     endAdornment: (
-                                                    <MuiCustomInputAdornment position="end">
+                                                    <MuiCustomInputAdornment theme={theme} position="end">
                                                         <MuiCustomIconButton
-                                                        aria-label="toggle password visibility"
-                                                        onClick={handleTogglePasswordVisibility}
-                                                        onMouseDown={handleMouseDownPassword}
-                                                        className={classes.icon}
+                                                            theme={theme}
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleTogglePasswordVisibility}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            className={classes.icon}
                                                         >
                                                         {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                                         </MuiCustomIconButton>
@@ -473,6 +460,7 @@ function Sidebar() {
                                                 }}
                                             />
                                             <MuiCustomTextField
+                                                theme={theme}
                                                 label="Password"
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={password}
@@ -496,6 +484,7 @@ function Sidebar() {
                                                 }}
                                             />
                                             <MuiCustomTextField
+                                                theme={theme}
                                                 label="Conferma Password"
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={password}
@@ -520,13 +509,13 @@ function Sidebar() {
                                             />
 
 
-                                            <MyButton type="submit">Cambia password</MyButton>
+                                            <MyButton theme={theme} type="submit">Cambia password</MyButton>
 
                                         </form>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleChangePassword} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleChangePassword} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -535,22 +524,23 @@ function Sidebar() {
 
                         {showID && (
                             <MuiCustomDialog
+                                theme={theme}
                                 open={showID}
                                 onClose={handleCloseSecondaryModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"Il tuo nuovo ID è: " + newID}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Salvalo per poterlo utilizzare per il login <br></br> 
                                         Verrai reinderizzato alla pagina di signin. <br></br>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseModalAndLogout} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleCloseModalAndLogout} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -559,22 +549,23 @@ function Sidebar() {
 
                         {showUsername && (
                             <MuiCustomDialog
+                                theme={theme}
                                 open={showUsername}
                                 onClose={handleCloseSecondaryModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"Il tuo nuovo Username è: " + newUsername}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Salvalo per poter accedere tramite username <br></br> 
                                         Verrai reinderizzato alla pagina di sign-in. <br></br>
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleCloseSecondaryModal} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -583,21 +574,22 @@ function Sidebar() {
 
                         {ShowChangePWDSuccess && (
                             <MuiCustomDialog
+                                theme={theme}
                                 open={showChangePWDModal}
                                 onClose={handleCloseSecondaryModal}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <MuiCustomDialogTitle id="alert-dialog-title">
+                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
                                     {"La tua password è stata reimpostata correttamente"}
                                 </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent>
-                                    <MuiCustomDialogContentText id="alert-dialog-description">
+                                <MuiCustomDialogContent theme={theme}>
+                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
                                         Verrai renderizzato alla pagina di sign-in. <br></br> 
                                     </MuiCustomDialogContentText>
                                 </MuiCustomDialogContent>
-                                <MuiCustomDialogActions>
-                                    <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                <MuiCustomDialogActions theme={theme}>
+                                    <MuiCustomButton theme={theme} onClick={handleCloseSecondaryModal} autoFocus>
                                         Ok, va bene
                                     </MuiCustomButton>
                                 </MuiCustomDialogActions>
@@ -607,7 +599,7 @@ function Sidebar() {
                     </div>
 
                     <div className="toggle-button">
-                        <SidebarToggleModeButton />
+                        <SidebarToggleModeButton theme={theme} />
                     </div>
             </div>
         </SidebarSection>

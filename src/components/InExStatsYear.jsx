@@ -5,7 +5,7 @@ import { AiOutlineMore } from "react-icons/ai";
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
-import MyStyled from '../contexts/MyStyled';
+import {SectionAMonth, WrapperAMonth} from '../contexts/MyStyled';
 import { PieChart, Pie, Cell } from "recharts";
 
 // const [activeIndex, setActiveIndex] = useState(null);
@@ -62,10 +62,10 @@ function InExStatsYear() {
     const [expensesPreYearSameMonth, setExpensesPreYearSameMonth] = useState(0);
     const [savedPreYearSameMonth, setSavedPreYearSameMonth] = useState(0);
 
-    const {
-        SectionAMonth,
-        WrapperAMonth,
-      } = MyStyled()
+    // const {
+    //     SectionAMonth,
+    //     WrapperAMonth,
+    //   } = MyStyled()
     
 
     useEffect(() => {

@@ -1,17 +1,17 @@
 import React from 'react'
 import LogoPaci from '../assets/Brand/PacifinanceLogoPNG3NoBg.png';
-import MyStyled from '../contexts/MyStyled';
+import {LogoStyled} from '../contexts/MyStyled';
 
 function Logo() {
     
-  const {
-    Logo,
-  } = MyStyled()
+  // const {
+  //   Logo,
+  // } = MyStyled()
 
     return (
-        <Logo>
+        <LogoStyled>
             <img src={LogoPaci} alt="Pacifinance Logo" />
-        </Logo>
+        </LogoStyled>
     )
 }
 

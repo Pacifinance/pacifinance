@@ -6,15 +6,16 @@ import BalancesCharts from '../components/BalancesCharts'
 import InOutCharts from '../components/InOutChart'
 // import { TitleDashboard, Section, SecondaryTitle } from '../contexts/MyStyled';
 import { UserContext } from '../contexts/UserContext';
-import MyStyled from '../contexts/MyStyled';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { ModifiedTitleDashboard, StyledSection, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
 import InExStatsMonth from '../components/InExStatsMonth'
 import InExStatsYear from '../components/InExStatsYear'
 
 
 
-function StatsCharts() {
+export default function StatsCharts() {
     const { userData } = useContext(UserContext);
-    const { ModifiedTitleDashboard, StyledSection, ButtonGroup, MySectionButton, SecondaryTitle } = MyStyled();
+    const { theme } = useContext(ThemeContext);
     const [activePage, setActivePage] = useState("statsBilancio");
     const formattedPreMonthDate = userData?.preMonthDate ? new Date(userData.preMonthDate).toISOString().slice(0, 10) : "";
     const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate ? new Date(userData.preYearSameMonthDate).toISOString().slice(0, 10) : "";
@@ -29,11 +30,11 @@ function StatsCharts() {
           return (
             
             <>
-                <SecondaryTitle>- Il tuo patrimonio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>- Il tuo patrimonio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <BalancesStatsMonth />
-                <SecondaryTitle>- Il tuo patrimonio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>- Il tuo patrimonio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <BalancesStatsYear />
-                <SecondaryTitle>- check del bilancio negli ultimi 12 mesi</SecondaryTitle>
+                <SecondaryTitle theme={theme}>- check del bilancio negli ultimi 12 mesi</SecondaryTitle>
                 <BalancesCharts />
 
             </>
@@ -41,11 +42,11 @@ function StatsCharts() {
         } else if (activePage === "statsIncomesExpenses") {
           return (
             <>
-                <SecondaryTitle>- le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>- le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <InExStatsMonth />
-                <SecondaryTitle>- le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>- le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <InExStatsYear />
-                <SecondaryTitle>- check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
+                <SecondaryTitle theme={theme}>- check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
     //          <InOutCharts />
             </>
           );
@@ -53,10 +54,11 @@ function StatsCharts() {
       };
 
     return (
-        <StyledSection>
-            <ModifiedTitleDashboard>Le tue Statistiche</ModifiedTitleDashboard>
-            <ButtonGroup variant="contained" aria-label="outlined primary button group">
+        <StyledSection theme={theme}>
+            <ModifiedTitleDashboard theme={theme} >Le tue Statistiche</ModifiedTitleDashboard>
+            <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
               <MySectionButton
+                theme={theme}
                 onClick={() => handlePageChange("statsBilancio")}
                 style={{
                   backgroundColor:
@@ -67,6 +69,7 @@ function StatsCharts() {
                 Statistiche Bilancio
               </MySectionButton>
               <MySectionButton
+                theme={theme}
                 onClick={() => handlePageChange("statsIncomesExpenses")}
                 style={{
                   backgroundColor:
@@ -80,8 +83,5 @@ function StatsCharts() {
         </StyledSection>
       );
 }
-
-export default StatsCharts;
-
 
 

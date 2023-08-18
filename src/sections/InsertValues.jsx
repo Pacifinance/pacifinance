@@ -233,6 +233,10 @@ export default function InsertValue () {
                   type="number"
                   value={bankReal}
                   onChange={(e) => setBankReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setBankReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -260,6 +264,10 @@ export default function InsertValue () {
                   type="number"
                   value={cashReal}
                   onChange={(e) => setCashReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setCashReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -287,6 +295,10 @@ export default function InsertValue () {
                   type="number"
                   value={digitalServicesReal}
                   onChange={(e) => setDigitalServicesReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setDigitalServicesReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -318,6 +330,10 @@ export default function InsertValue () {
                   type="number"
                   value={stocksReal}
                   onChange={(e) => setStocksReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setStocksReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -345,6 +361,10 @@ export default function InsertValue () {
                   type="number"
                   value={etfReal}
                   onChange={(e) => setETFReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setETFReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -372,6 +392,10 @@ export default function InsertValue () {
                   type="number"
                   value={bitcoinReal}
                   onChange={(e) => setBitcoinReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setBitcoinReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -399,6 +423,10 @@ export default function InsertValue () {
                   type="number"
                   value={cryptoReal}
                   onChange={(e) => setCryptoReal(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setCryptoReal(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -430,7 +458,7 @@ export default function InsertValue () {
             />
           </StyledInputs>
           <StyledInputs theme={theme}>
-            <MySecondaryButton theme={theme} onClick={handleChangeBalance(handleSetIsUpdated, fetchData, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Aggiorna il tuo patrimonio</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(handleSetIsUpdated, fetchData, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)} >Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
         </>
       );
@@ -462,6 +490,10 @@ export default function InsertValue () {
                   type="number"
                   value={income}
                   onChange={(e) => setIncome(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setIncome(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -486,6 +518,10 @@ export default function InsertValue () {
               <StyledCalendar
                 theme={theme}
                 onChange={() =>setIncomeDate(incomeDate)}
+                onBlur={(e) => {
+                  const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  setBankReal(cleanedValue);
+                }}
                 value={incomeDate}
                 calendarType="US"
                 formatShortWeekday={formatShortWeekday}
@@ -496,7 +532,7 @@ export default function InsertValue () {
             
             
           <StyledAddSection theme={theme}> 
-            <MySecondaryButton theme={theme} onClick={handleAddIncome(setLastIncomesAdds, handleSetIsUpdated, tableDataIncomes, setIncome, setCategoryIncome, categoryIncome, income, incomeDate, fetchData)}>Aggiungi entrata</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setLastIncomesAdds, handleSetIsUpdated, tableDataIncomes, setIncome, setCategoryIncome, categoryIncome, income, incomeDate, fetchData)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 10 entrate del mese</TitleLastAdds>
           <StyledTable theme={theme}>
@@ -594,6 +630,10 @@ export default function InsertValue () {
                   type="number"
                   value={expense}
                   onChange={(e) => setExpense(e.target.value)}
+                  onBlur={(e) => {
+                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                    setExpense(cleanedValue);
+                  }}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -624,7 +664,7 @@ export default function InsertValue () {
             </div>
           </StyledAddSection>
           <StyledAddSection theme={theme}>
-            <MyButton theme={theme} onClick={handleAddExpenses(setLastExpensesAdds, handleSetIsUpdated, tableDataExpenses, typoExpense,setExpense, setCategoryExpense, categoryExpense, expense, expenseDate, fetchData)}>Aggiungi spesa</MyButton>
+            <MyButton theme={theme} onClick={() => handleAddExpenses(setLastExpensesAdds, handleSetIsUpdated, tableDataExpenses, typoExpense,setExpense, setCategoryExpense, categoryExpense, expense, expenseDate, fetchData)}>Aggiungi spesa</MyButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 20 spese del mese</TitleLastAdds>
           <StyledTable theme={theme}>
@@ -670,7 +710,7 @@ export default function InsertValue () {
   return (
     <StyledSection theme={theme}>
         <ModifiedTitleDashboard theme={theme}>Inserimento Dati</ModifiedTitleDashboard>
-        <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
+        <ButtonGroup variant="contained" aria-label="outlined primary button group">
           <MySectionButton theme={theme}
             onClick={() => setActivePage("bilancio")}
             style={{

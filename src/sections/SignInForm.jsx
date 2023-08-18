@@ -40,23 +40,6 @@ export default function SignInForm() {
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
 
-    // const {
-    //   MuiCustomDialog,
-    //   MuiCustomButton,
-    //   MuiCustomDialogTitle,
-    //   MuiCustomDialogContent,
-    //   MuiCustomDialogContentText,
-    //   MuiCustomDialogActions,
-    //   MuiCustomTextField,
-    //   MuiCustomIconButton,
-    //   MuiCustomInputAdornment,
-    //   MuiCustomVisibility,
-    //   MuiCustomVisibilityOff,
-    //   SignIn,
-    //   SignInButton,
-    //   MuiUseStyles,
-    // } = MyStyled()
-
     const classes = MuiUseStyles();
 
     const handleOpenModal = () => {
@@ -78,7 +61,7 @@ export default function SignInForm() {
     
     const handleSubmit = async (event) => {
         event.preventDefault();
-        navigate('/dashboard'); //da commentare solo per test in locale
+        //navigate('/dashboard'); //da commentare solo per test in locale
         try {
           //username could be user_id o username
           const response = await axios.post('/login', { user_id: username, password: password }); //the path in the db is called login

@@ -47,7 +47,7 @@ export default function StatsCharts() {
                 <SecondaryTitle theme={theme}>- le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <InExStatsYear />
                 <SecondaryTitle theme={theme}>- check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
-    //          <InOutCharts />
+                <InOutCharts />
             </>
           );
         }

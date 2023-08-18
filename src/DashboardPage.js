@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import Dashboard from './sections/Dashboard';
-function App() {
+function DashboardPage() {
   return (
     <Div>
       <Sidebar />
@@ -11,7 +11,7 @@ function App() {
   );
 }
 
-export default App;
+export default DashboardPage;
 
 const Div = styled.div `
   position: relative;

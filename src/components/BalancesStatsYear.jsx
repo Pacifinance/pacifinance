@@ -138,13 +138,6 @@ function BalancesStatsYear() {
     
     fetchData();
     }, [userData]);
-
-    // const data = [
-    //     { name: "Stocks", value: stocksReal },
-    //     { name: "Bank", value: bankReal },
-    //     { name: "Cash", value: cashReal },
-    //     { name: "Crypto", value: cryptoReal }
-    // ];
       
     return (
         

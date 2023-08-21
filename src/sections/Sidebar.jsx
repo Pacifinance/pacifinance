@@ -598,7 +598,7 @@ function Sidebar() {
 
                     </div>
 
-                    <div className="toggle-button">
+                    <div className="toggle-button" >
                         <SidebarToggleModeButton theme={theme} />
                     </div>
             </div>

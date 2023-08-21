@@ -15,91 +15,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import { Calendar } from 'react-calendar';
 
-
-
-export const MuiCustomDialog = styled(Dialog)`
-  && {
-    // background-color: ${(props) => (props.theme.backgroundColor)};
-    // color: ${(props) => (props.theme.textColor)};
-    // border: 4px solid ${(props) => (props.theme.buttonBackgroundColor)};
-  }
+export const PageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100vh; // Imposta l'altezza della pagina al 100% della viewport
+  display: flex;
 `;
-
-export const MuiCustomButton = styled(Button)`
-  && {
-    background-color: ${(props) => (props.theme.buttonBackgroundColor)};
-    color: ${(props) => (props.theme.textColor)};
-    hover: ${(props) => (props.theme.backgroundColor)};
-  }
-`;
-
-export const MuiCustomDialogTitle = styled(DialogTitle)`
-  && {
-    font-family: Roboto, sans-serif;
-    color: ${(props) => (props.theme.buttonBackgroundColor)};
-  }
-`;
-
-export const MuiCustomDialogContent = styled(DialogContent)`
-  && {
-    // font-family: Roboto, sans-serif;
-    // color: ${(props) => (props.theme.textColor)};
-    // // background-color: ${(props) => (props.theme.backgroundColor)};
-  }
-`;
-
-export const MuiCustomDialogContentText = styled(DialogContentText)`
-  && {
-    font-family: Roboto, sans-serif;
-    color: ${(props) => (props.theme.textColor)};
-  }
-`;
-
-export const MuiCustomDialogActions = styled(DialogActions)`
-  && {
-    // font-family: Roboto, sans-serif;
-    // color: ${(props) => (props.theme.textColor)};
-    // background-color: ${(props) => (props.theme.backgroundColor)};
-  }
-`;
-
-export const MuiCustomTextField = styled(TextField)`
-    && {
-        label.Mui-focused {
-          color: white;
-        }
-        .MuiInput-underline:after {
-          border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
-        }
-        .Mui-focused .MuiInput-underline:after {
-          border-bottom-color: blue;
-        }
-    }
-  `;
-
-export const MuiCustomIconButton = styled(IconButton)`
-`;
-
-export const MuiCustomInputAdornment = styled(InputAdornment)`
-`;
-
-export const MuiCustomVisibility = styled(Visibility)`
-`;
-
-export const MuiCustomVisibilityOff = styled(VisibilityOff)`
-`;
-
-export const MuiCustomGrid = styled(Grid)`
-`;
-
-export const MuiUseStyles = makeStyles((theme) => ({
-  root: {
-    width: '50%',
-  },
-  icon: {
-    color: 'white',
-  },
-}));
 
 export const Section = styled.section `
       font-family: Roboto, sans-serif; 
@@ -382,6 +303,8 @@ export const SignUp = styled.div`
 
 export const MySecondaryButton = styled(MyButton)`
   font-size: 1.2rem;
+  margin-bottom: 1rem;
+  max-height: 3rem;
 `;
 
 export const SecondaryTitle = styled.h2 `
@@ -416,7 +339,9 @@ export const StyledSection = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
+  overflow: hidden; // to hide the scroll bar
   .grid{ 
     margin-top: 2rem;
     z-index: 2;
@@ -432,9 +357,8 @@ export const StyledInputs = styled.div`
   justify-content: space-evenly;
   width: 100%;
   height: 100%;
-  margin-top: 40px;
-  margin-bottom: 20px;
-  margin-left: 6vw;
+  margin-top: 1vw;
+  margin-left: 12vw;
   color: ${(props) => (props.theme.textColor)};
 
   label {
@@ -728,17 +652,17 @@ export const SidebarSection = styled.section`
             }
         }
     }
+    //i wanna set the toogle-button at the vertical center of the sidebar
     .toggle-button {
-        margin-left: 2rem; /* Distanza dal bordo sinistro */
-        font-size: 1rem; /* Dimensioni del pulsante */
+        display: flex;
+        justify-content: center;
     }
 
     .notification{
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        margin-left: 0.5rem;
-        /*padding: 0.5rem 1rem;*/
+        justify-content: center;
+        gap: 0.2rem;
         .font_icon{
             font-size: 1.5rem;
         }
@@ -749,6 +673,7 @@ export const SidebarSection = styled.section`
 
         .image {
             display: flex;
+            justify-content: center;
             gap: 1rem;
             img{
                 height: 2.5rem;
@@ -1280,6 +1205,91 @@ export const StyledSelect = styled.select`
   }
 
 `;
+
+
+export const MuiCustomDialog = styled(Dialog)`
+  && {
+    // background-color: ${(props) => (props.theme.backgroundColor)};
+    // color: ${(props) => (props.theme.textColor)};
+    // border: 4px solid ${(props) => (props.theme.buttonBackgroundColor)};
+  }
+`;
+
+export const MuiCustomButton = styled(Button)`
+  && {
+    background-color: ${(props) => (props.theme.buttonBackgroundColor)};
+    color: ${(props) => (props.theme.textColor)};
+    hover: ${(props) => (props.theme.backgroundColor)};
+  }
+`;
+
+export const MuiCustomDialogTitle = styled(DialogTitle)`
+  && {
+    font-family: Roboto, sans-serif;
+    color: ${(props) => (props.theme.buttonBackgroundColor)};
+  }
+`;
+
+export const MuiCustomDialogContent = styled(DialogContent)`
+  && {
+    // font-family: Roboto, sans-serif;
+    // color: ${(props) => (props.theme.textColor)};
+    // // background-color: ${(props) => (props.theme.backgroundColor)};
+  }
+`;
+
+export const MuiCustomDialogContentText = styled(DialogContentText)`
+  && {
+    font-family: Roboto, sans-serif;
+    color: ${(props) => (props.theme.textColor)};
+  }
+`;
+
+export const MuiCustomDialogActions = styled(DialogActions)`
+  && {
+    // font-family: Roboto, sans-serif;
+    // color: ${(props) => (props.theme.textColor)};
+    // background-color: ${(props) => (props.theme.backgroundColor)};
+  }
+`;
+
+export const MuiCustomTextField = styled(TextField)`
+    && {
+        label.Mui-focused {
+          color: white;
+        }
+        .MuiInput-underline:after {
+          border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
+        }
+        .Mui-focused .MuiInput-underline:after {
+          border-bottom-color: blue;
+        }
+    }
+  `;
+
+export const MuiCustomIconButton = styled(IconButton)`
+`;
+
+export const MuiCustomInputAdornment = styled(InputAdornment)`
+`;
+
+export const MuiCustomVisibility = styled(Visibility)`
+`;
+
+export const MuiCustomVisibilityOff = styled(VisibilityOff)`
+`;
+
+export const MuiCustomGrid = styled(Grid)`
+`;
+
+export const MuiUseStyles = makeStyles((theme) => ({
+  root: {
+    width: '50%',
+  },
+  icon: {
+    color: 'white',
+  },
+}));
 
 
 

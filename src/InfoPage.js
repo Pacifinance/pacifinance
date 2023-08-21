@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
+import ComingSoon from './components/ComingSoon';
 // import Info from './sections/Info';
 
 function InfoPage() {
@@ -8,7 +9,7 @@ function InfoPage() {
     <Div>
       <Sidebar />
       {/* <Info /> */}
-      {/* <ComingSoon /> */}
+      <ComingSoon />
     </Div>
   );
 }

@@ -710,7 +710,7 @@ export default function InsertValue () {
   return (
     <StyledSection theme={theme}>
         <ModifiedTitleDashboard theme={theme}>Inserimento Dati</ModifiedTitleDashboard>
-        <ButtonGroup variant="contained" aria-label="outlined primary button group">
+        <ButtonGroup  aria-label="outlined primary button group">
           <MySectionButton theme={theme}
             onClick={() => setActivePage("bilancio")}
             style={{
@@ -740,7 +740,6 @@ export default function InsertValue () {
             Aggiungi Spese
           </MySectionButton>
         </ButtonGroup>
-        {/* {renderPage({theme, fetchData, setIncome, setCategoryIncome, setIncomeDate, setLastIncomesAdds, setTableDataIncomes, setCategoryExpense, setTypoExpense, setExpense, setLastExpensesAdds, setTableDataExpenses, setBalanceDate, setExpenseDate, handleSetIsUpdated, activePage, balanceDate, formatShortWeekday, income, incomeDate, categoryIncome,tableDataIncomes, lastIncomesAdds, expense, expenseDate, tableDataExpenses, lastExpensesAdds, categoryExpense, typoExpense, bankReal, setBankReal, cashReal, setCashReal, digitalServicesReal, setDigitalServicesReal, stocksReal, setStocksReal, etfReal, setETFReal, bitcoinReal, setBitcoinReal, cryptoReal, setCryptoReal, TitleSection, StyledInputs, MySecondaryButton,StyledAddSection, StyledCalendar, TitleLastAdds, StyledTable, StyledLastAdds, MyButton})} */}
         {renderPage()}
     </StyledSection>
   );

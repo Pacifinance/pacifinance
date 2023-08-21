@@ -1,5 +1,6 @@
 import React, {useState, useContext} from 'react';
 import Modal from 'react-modal';
+import { themes } from './Themes';
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,7 +13,6 @@ import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-// import { ThemeContext } from './ThemeContext';
 import { Calendar } from 'react-calendar';
 
 
@@ -1216,6 +1216,71 @@ export const SidebarSection = styled.section`
         padding: 2px 0;
       }
     `;
+
+  export const StyledRankingsSection = styled.div`
+    h2 {
+      color: #ffffff; /* Testo bianco */
+    }
+    ol {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      color: #ffffff;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+  `;
+
+export const StyledRankingPage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  background-color: #1a1a1a; /* Sfondo scuro */
+`;
+
+export const CenteredRankings = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+`;
+
+export const RankingsTitle = styled.h1`
+  color: ${themes.dark.buttonBackgroundColor};
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 30px;
+  margin-bottom: 30px;
+`;
+
+export const StyledSelectContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const StyledLabel = styled.label`
+  color: white;
+  margin-right: 10px;
+`;
+
+export const StyledSelect = styled.select`
+  color: white;
+  background-color: transparent;
+  border: 1px solid white;
+  padding: 5px;
+  border-radius: 5px;
+  margin-right: 10px;
+
+  option {
+    background-color: ${themes.dark.backgroundColor}; /* Cambia lo sfondo dell'opzione */
+    color: ${themes.dark.textColor}; /* Cambia il colore del testo dell'opzione */
+  }
+  option:hover {
+    box-shadow: 0 0 10px 100px ${themes.dark.buttonBackgroundColor} inset;
+  }
+
+`;
+
 
 
 

@@ -28,6 +28,7 @@ function UserProvider({ children }) {
 
             //CALL API TO GET DATA
             const balancesResponse = await axios.post('/balances/get');
+            const allExpensesIncomes = await axios.post('/expenses/get'); //maybe without a date parameter it returns all the data
             const expensesIncomesResponse = await axios.post('/expenses/get', {date: currentDate});
             const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
@@ -88,7 +89,26 @@ function UserProvider({ children }) {
             const bitcoinRealPreYearSameMonth = (balancesPreYearSameMonth.bitcoin || 0).real || 0;
             const cryptoRealPreYearSameMonth = (balancesPreYearSameMonth.crypto || 0).real || 0;
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
+            //Set the variable with all expense and one with all income to list them in the insert page (TODO)
+            var lastExpenses = [];
+            var lastIncomes = [];
+            //The structure must be like this:
+            // const newExpenseAdd = {
+            //   categoryExpense,
+            //   typoExpense,
+            //   expense,
+            //   expenseDate,
+            // };
+            allExpensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
+                        if (data.isExpense) {
+                            lastExpenses.push(data);
+                        }
+                        else {
+                            lastIncomes.push(data);
+                        }
+            });
 
+            //Set the variables for expenses and incomes of the current month, previous month and previous year same month
             var expensesMonth = 0;
             var incomesMonth = 0;
             var expensesPreMonth = 0;

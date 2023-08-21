@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../contexts/UserContext';
+import { StyledSelectContainer, StyledLabel, StyledSelect, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
 
 // Componente per il selettore di mese e anno
 function MonthYearSelector({ selectedMonth, selectedYear, onMonthChange, onYearChange }) {
@@ -16,44 +18,51 @@ function MonthYearSelector({ selectedMonth, selectedYear, onMonthChange, onYearC
   };
 
   return (
-    <div>
-      <label>Mese:</label>
-      <select value={selectedMonth} onChange={handleMonthChange}>
-        {months.map((month, index) => (
-          <option key={index} value={index + 1}>{month}</option>
-        ))}
-      </select>
-
-      <label>Anno:</label>
-      <select value={selectedYear} onChange={handleYearChange}>
-        {years.map((year) => (
-          <option key={year} value={year}>{year}</option>
-        ))}
-      </select>
-    </div>
-  );
-}
+      <StyledSelectContainer>
+        <StyledLabel>Mese:</StyledLabel>
+        <StyledSelect value={selectedMonth} onChange={handleMonthChange}>
+          {months.map((month, index) => (
+            <option key={index} value={index + 1}>{month}</option>
+          ))}
+        </StyledSelect>
+  
+        <StyledLabel>Anno:</StyledLabel>
+        <StyledSelect value={selectedYear} onChange={handleYearChange}>
+          {years.map((year) => (
+            <option key={year} value={year}>{year}</option>
+          ))}
+        </StyledSelect>
+      </StyledSelectContainer>
+    );
+  }
 
 // Componente per la sezione delle classifiche
 function RankingsSection({ title, rankings }) {
   return (
-    <div>
+    <StyledRankingsSection>
       <h2>{title}</h2>
       <ol>
         {rankings.map((ranking, index) => (
           <li key={ranking.userId}>
-            {ranking.username}: {ranking.position}°
+            Posizione: {ranking.position} (Complimenti! Sei nella top {((ranking.position / rankings.length) * 100).toFixed(2)}% degli utenti!)
           </li>
         ))}
       </ol>
-    </div>
+    </StyledRankingsSection>
   );
 }
 
 // Componente per la pagina delle classifiche
 function RankingComponent() {
+  const { userData, handleSetIsUpdated } = useContext(UserContext);
   const [selectedMonth, setSelectedMonth] = useState(1);
-  const [selectedYear, setSelectedYear] = useState(2023); // Imposta l'anno corrente o un valore predefinito
+  const [selectedYear, setSelectedYear] = useState(2023);
+  const [generalRankings, setGeneralRankings] = useState([]);
+  const [similarUsersRankings, setSimilarUsersRankings] = useState([]);
+  const [incomeRankings, setIncomeRankings] = useState([]);
+  const [expenseRankings, setExpenseRankings] = useState([]);
+  const [incomeSimilarUsersRankings, setIncomeSimilarUsersRankings] = useState([]);
+  const [expenseSimilarUsersRankings, setExpenseSimilarUsersRankings] = useState([]);
 
   const handleMonthChange = (month) => {
     setSelectedMonth(month);
@@ -63,52 +72,28 @@ function RankingComponent() {
     setSelectedYear(year);
   };
 
-  // Simulazione dei dati delle classifiche
-  const generalRankings = [
-    { userId: 1, username: 'Utente1', position: 1 },
-    { userId: 2, username: 'Utente2', position: 2 },
-    { userId: 3, username: 'Utente3', position: 3 },
-    // ...
-  ];
-
-  const similarUsersRankings = [
-    { userId: 4, username: 'Utente4', position: 1 },
-    { userId: 5, username: 'Utente5', position: 2 },
-    { userId: 6, username: 'Utente6', position: 3 },
-    // ...
-  ];
-
-  const incomeRankings = [
-    { userId: 7, username: 'Utente7', position: 1 },
-    { userId: 8, username: 'Utente8', position: 2 },
-    { userId: 9, username: 'Utente9', position: 3 },
-    // ...
-  ];
-
-  const expenseRankings = [
-    { userId: 10, username: 'Utente10', position: 1 },
-    { userId: 11, username: 'Utente11', position: 2 },
-    { userId: 12, username: 'Utente12', position: 3 },
-    // ...
-  ];
-
   return (
-    <div>
-      <h1>Classifiche</h1>
-
+    <StyledRankingPage>
       <MonthYearSelector
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
         onMonthChange={handleMonthChange}
         onYearChange={handleYearChange}
       />
+      <RankingsTitle >Classifiche generali : </RankingsTitle>
+      <CenteredRankings>
+        <RankingsSection title="Classifica Patrimonio" rankings={generalRankings} />
+        <RankingsSection title="Classifica Guadagni" rankings={incomeRankings} />
+        <RankingsSection title="Classifica Spese" rankings={expenseRankings} />
+      </CenteredRankings>
+      <RankingsTitle  >Classifiche utenti simili : </RankingsTitle >
+      <CenteredRankings>
+        <RankingsSection title="Classifica Patrimonio" rankings={similarUsersRankings} />
+        <RankingsSection title="Classifica Guadagni" rankings={incomeSimilarUsersRankings} />
+        <RankingsSection title="Classifica Spese" rankings={expenseSimilarUsersRankings} />
 
-      <RankingsSection title="Classifica Generale" rankings={generalRankings} />
-      <RankingsSection title="Classifica Utenti Simili" rankings={similarUsersRankings} />
-      <RankingsSection title="Classifica Guadagni" rankings={incomeRankings} />
-      <RankingsSection title="Classifica Spese" rankings={expenseRankings} />
-    </div>
+      </CenteredRankings>
+    </StyledRankingPage>
   );
 }
-
 export default RankingComponent;

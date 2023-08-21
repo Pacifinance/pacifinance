@@ -103,14 +103,15 @@ const handleAddIncome = async (setLastIncomesAdds, handleSetIsUpdated, tableData
  
 };
 
-const handleAddExpenses = async (setLastExpensesAdds, handleSetIsUpdated, tableDataExpenses, typoExpense,setExpense, setCategoryExpense, categoryExpense, expense, expenseDate, fetchData) => {
+const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, handleSetIsUpdated, tableDataExpenses, typoExpense,  categoryExpense, expense, expenseDate) => {
   const newExpenseAdd = {
     categoryExpense,
-    value: expense,
+    typoExpense,
+    expense,
+    expenseDate,
   };
   setLastExpensesAdds([...tableDataExpenses, newExpenseAdd]); //.slice(0, 20));
-  setExpense(0);
-  setCategoryExpense(0);
+  
 
   const expenseJson = { 
     expense : {
@@ -122,6 +123,11 @@ const handleAddExpenses = async (setLastExpensesAdds, handleSetIsUpdated, tableD
 
     }
   }
+
+  setExpense(0);
+  setCategoryExpense(0);
+  setTypoExpense(0);
+  setExpenseDate(new Date());
 
   const expenseAdd = await axios.post('/expenses/add', expenseJson);
   if (expenseAdd.data.success) {
@@ -146,6 +152,8 @@ const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
   newExpenseAdds.splice(index, 1);
   setLastExpensesAdds(newExpenseAdds);
 };
+
+
 
 
 export default function InsertValue () {
@@ -202,6 +210,9 @@ export default function InsertValue () {
             setIncomesMonth(userData ? userData.incomesMonth : 0);
             setSavedMonth(userData ? userData.savedMonth : 0);
 
+            setTableDataExpenses(userData ? userData.expenses : []); // da modificare
+            setTableDataIncomes(userData ? userData.incomes : []); // da modificare
+
             //set datas
             const now = new Date();
             setDateTime(now);
@@ -218,6 +229,18 @@ export default function InsertValue () {
   useEffect(() => {
     fetchData();
   }, [userData]);
+
+  function renderExpenseItems(lastExpenses) {
+    return lastExpenses.map((add, index) => (
+        <tr key={index}>
+          <td>{add.categoryExpense}</td>
+          <td>{add.typoExpense}</td>
+          <td>{add.expense}€</td>
+          <td>{add.expenseDate.getDate()}/{add.expenseDate.getMonth() + 1}/{add.expenseDate.getFullYear()}</td>
+        </tr>
+      ));
+  }
+
 
   const renderPage = () => {
     if (activePage === "bilancio") {
@@ -468,7 +491,7 @@ export default function InsertValue () {
           <StyledAddSection theme={theme}>
             <label>
               Categoria
-              <Select value={categoryIncome} onChange={() =>setCategoryIncome(categoryIncome)} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={categoryIncome} onChange={(event) =>setCategoryIncome(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
                   renderValue={(value) => {
                     if (value === 0) {
                       return "Seleziona una categoria";
@@ -579,7 +602,7 @@ export default function InsertValue () {
           <StyledAddSection theme={theme}>
             <label>
               Categoria
-              <Select value={categoryExpense} onChange={() =>setCategoryExpense(categoryExpense)} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={categoryExpense} onChange={(event) =>setCategoryExpense(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
                         if (value === 0) {
                           return "Seleziona una categoria";
@@ -601,15 +624,10 @@ export default function InsertValue () {
                     <MenuItem id="Transports" value="Trasporto">Trasporto</MenuItem>
                     <MenuItem id="Other" value="Altro">Altro</MenuItem>
               </Select>
-              {/* <input
-                type="number"
-                value={expense}
-                onChange={(e) => setExpense(e.target.value)}
-              /> */}
             </label>
             <label>
               Tipologia pagamento
-              <Select value={typoExpense} onChange={() =>setTypoExpense(typoExpense)} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={typoExpense} onChange={(event) =>setTypoExpense(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
                         if (value === 0) {
                           return "Seleziona una tipologia";
@@ -656,7 +674,7 @@ export default function InsertValue () {
             <div>
               <StyledCalendar
                 theme={theme}
-                onChange={() =>setIncomeDate(expenseDate)}
+                onChange={() =>setExpenseDate(expenseDate)}
                 value={expenseDate}
                 calendarType="US"
                 formatShortWeekday={formatShortWeekday}
@@ -664,44 +682,22 @@ export default function InsertValue () {
             </div>
           </StyledAddSection>
           <StyledAddSection theme={theme}>
-            <MyButton theme={theme} onClick={() => handleAddExpenses(setLastExpensesAdds, handleSetIsUpdated, tableDataExpenses, typoExpense,setExpense, setCategoryExpense, categoryExpense, expense, expenseDate, fetchData)}>Aggiungi spesa</MyButton>
+            <MyButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, handleSetIsUpdated, tableDataExpenses, typoExpense,  categoryExpense, expense, expenseDate)}>Aggiungi spesa</MyButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 20 spese del mese</TitleLastAdds>
           <StyledTable theme={theme}>
             <thead>
               <tr>
                 <th>Categoria</th>
+                <th>Tipologia</th>
                 <th>Valore</th>
+                <th>Data Spesa</th>
               </tr>
             </thead>
             <tbody>
-              {tableDataExpenses.map((data, index) => (
-                <tr key={index}>
-                  <td>{data.categoryExpense}</td>
-                  <td>
-                    <input
-                      type="number"
-                      name="value"
-                      value={data.value}
-                      onChange={(e) => handleInputExpenseChange(setTableDataExpenses, tableDataExpenses, index, e)}
-                    />
-                  </td>
-                </tr>
-              ))}
+              {renderExpenseItems(lastExpensesAdds)}
             </tbody>
           </StyledTable>
-          <StyledLastAdds theme={theme}>
-            <ul>
-              {lastExpensesAdds.map((add, index) => (
-                <li key={index}>
-                  <div>
-                    {add.categoryExpense} - {add.expense}€
-                  </div>
-                  <button onClick={() => handleExpensesDelete(setLastExpensesAdds, lastExpensesAdds, index)}>X</button>
-                </li>
-              ))}
-            </ul>
-          </StyledLastAdds>
         </>
       );
     }

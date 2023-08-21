@@ -72,14 +72,14 @@ function Header() {
           <ButtonContainer >
             <ToggleModeButton />
             <ButtonGroup theme={theme}>
-              <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>Sign In</MyButton>
+              <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>Accedi</MyButton>
               <ModalSignIn theme={theme} isOpen={isOpenSignIn}> 
                 <MyGenericModalContent theme={theme}>
                     <MyCloseButton theme={theme} className="close" onClick={handleCloseSignIn}>&times;</MyCloseButton>
                     <SignInForm theme={theme} />
                 </MyGenericModalContent>
               </ModalSignIn>
-              <MyButton theme={theme} id="openSignUpModalButton"onClick={handleOpenSignUp}>Sign Up</MyButton>
+              <MyButton theme={theme} id="openSignUpModalButton"onClick={handleOpenSignUp}>Registrati</MyButton>
               <ModalSignUp theme={theme} isOpen={isOpenSignUp}> 
                 <MyGenericModalContent theme={theme}>
                     <MyCloseButton theme={theme} className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>

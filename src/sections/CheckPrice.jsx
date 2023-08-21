@@ -1,18 +1,17 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
-import Analytic from '../components/AnalyticDashboard'
-import { Section } from '../contexts/MyStyled';
+import { theme } from '../contexts/ThemeContext';
+import { Section, TitleDashboard } from '../contexts/MyStyled';
+import FinanceCheckAPI from '../components/FinanceCheckAPI';
+import { Title } from 'chart.js';
+
 
 
 
 function CheckPrice() {
-    // const { Section } = MyStyled();
     return (
-        <Section>
-            <div className="grid">        
-                    <Navbar />
-                    <Analytic />
-            </div>
+        <Section theme = {theme}>
+            <TitleDashboard theme={theme}>Controllo dei mercati</TitleDashboard>
+            <FinanceCheckAPI />
         </Section>
     )
 }

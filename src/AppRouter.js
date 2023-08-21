@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import { Route, Router } from 'react-router-dom';
 import Dashboard from './DashboardPage';
 import StatsCharts from './StatsChartsPage';
 import InsertValues from './InsertPage';

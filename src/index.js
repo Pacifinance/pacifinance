@@ -5,15 +5,18 @@ import './index.css';
 import AppRouter from './AppRouter';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
+import { PageProvider } from './contexts/PageContext'; // Importa il contesto della pagina attiva
 
 ReactDOM.render(
     <ThemeProvider>
       <UserProvider>
-        <React.StrictMode>
-          <Router>
-            <AppRouter />
-          </Router>
-        </React.StrictMode>
+        <PageProvider>
+          <React.StrictMode>
+            <Router>
+              <AppRouter />
+            </Router>
+          </React.StrictMode>
+        </PageProvider>
       </UserProvider>
     </ThemeProvider>,
     document.getElementById('root')

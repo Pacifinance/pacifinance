@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import LogoPaci from '../components/Logo';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { IconContext } from '../contexts/PageContext';
 import {
     SidebarToggleModeButton,
     SidebarSection,
@@ -32,7 +33,8 @@ import {
 function Sidebar() {
     const { theme } = useContext(ThemeContext);
     const inputRef = useRef(null);
-    const [currentLink, setCurrentLink] = useState(1);
+    const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
+    // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
     const [selectedOption, setSelectedOption] = useState(null);
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showChangeIDModal, setShowChangeIDModal] = useState(false);
@@ -61,6 +63,11 @@ function Sidebar() {
         { value: 'changeid', label: 'Cambio id' },
         { value: 'changePassword', label: 'Cambio password' },
     ];
+
+    const handleIconClick = (iconIndex, pageLink) => {
+        setActiveIcon(iconIndex);
+        // setCurrentPage(pageLink);
+    };
     
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -213,10 +220,9 @@ function Sidebar() {
                         <ul>
                             <Tooltip title="Dashboard" placement="right">
                                 <li
-                                    className={currentLink === 1 ? "active" : ""}
-                                    onClick={() => setCurrentLink(1)}
+                                    className={activeIcon === 0 ? "active" : ""}
                                 >   
-                                    <div>
+                                    <div onClick={() => handleIconClick(0, 'dashboard')}>
                                         <Link to="/dashboard">
                                             <BiHomeAlt />
                                         </Link>
@@ -225,10 +231,9 @@ function Sidebar() {
                             </Tooltip>
                             <Tooltip title="I tuoi grafici" placement="right">
                                 <li
-                                    className={currentLink === 6 ? "active" : ""}
-                                    onClick={() => setCurrentLink(6)}
+                                    className={activeIcon === 1 ? "active" : ""}
                                 >
-                                    <div>
+                                    <div onClick={() => handleIconClick(1, 'your-charts')}>
                                         <Link to="/your-charts">
                                             <AiOutlineDotChart />
                                         </Link>
@@ -237,10 +242,9 @@ function Sidebar() {
                             </Tooltip>
                             <Tooltip title="Inserimento dati" placement="right">
                                 <li
-                                    className={currentLink === 3 ? "active" : ""}
-                                    onClick={() => setCurrentLink(3)}
+                                    className={activeIcon === 2 ? "active" : ""}
                                 >
-                                    <div>
+                                    <div onClick={() => handleIconClick(2, 'insert-values')}>
                                         <Link to="/insert-values">
                                             <HiOutlinePencilAlt />
                                         </Link>
@@ -249,10 +253,9 @@ function Sidebar() {
                             </Tooltip>
                             <Tooltip title="Controlla i mercati" placement="right">
                                 <li
-                                    className={currentLink === 2 ? "active" : ""}
-                                    onClick={() => setCurrentLink(2)}
+                                    className={activeIcon === 3 ? "active" : ""}
                                 >
-                                    <div>
+                                    <div onClick={() => handleIconClick(3, 'check-prices')}>
                                         <Link to="/check-prices">
                                             <AiOutlineFundProjectionScreen />
                                         </Link>
@@ -261,10 +264,9 @@ function Sidebar() {
                             </Tooltip>
                             <Tooltip title="Classifica" placement="right">
                                 <li
-                                    className={currentLink === 5 ? "active" : ""}
-                                    onClick={() => setCurrentLink(5)}
+                                    className={activeIcon === 4 ? "active" : ""}
                                 >
-                                    <div>
+                                    <div onClick={() => handleIconClick(4, 'leaderboard')}>
                                         <Link to="/leaderboard">
                                             <AiOutlineTrophy />
                                         </Link>
@@ -274,10 +276,9 @@ function Sidebar() {
                             
                             <Tooltip title="Conoscenze" placement="right">
                                 <li
-                                    className={currentLink === 7 ? "active" : ""}
-                                    onClick={() => setCurrentLink(7)}
+                                    className={activeIcon === 5 ? "active" : ""}
                                 >
-                                    <div>
+                                    <div onClick={() => handleIconClick(5, 'knowledge')}>
                                         <Link to="/knowledge">
                                             <BsBook />
                                         </Link>
@@ -286,10 +287,9 @@ function Sidebar() {
                             </Tooltip>
                             <Tooltip title="Info" placement="right">
                                 <li
-                                    className={currentLink === 8 ? "active" : ""}
-                                    onClick={() => setCurrentLink(8)}
+                                    className={activeIcon === 6 ? "active" : ""}
                                 >
-                                    <div>
+                                    <div onClick={() => handleIconClick(6, 'info')}>
                                         <Link to="/info">
                                                 <BsInfoCircle/>
                                         </Link>
@@ -487,7 +487,7 @@ function Sidebar() {
                                                 theme={theme}
                                                 label="Conferma Password"
                                                 type={showPassword ? 'text' : 'password'}
-                                                value={password}
+                                                value={confirmPassword}
                                                 onChange={handleConfirmPasswordChange}
                                                 required
                                                 fullWidth

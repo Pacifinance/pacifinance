@@ -1,18 +1,19 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import RankingComponent from '../components/RankingComponent'
+import { UserContext, UserProvider } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
 import { TitleDashboard, Section } from '../contexts/MyStyled';
-// import MyStyled from '../contexts/MyStyled';
 
-//import Expenses from './Expenses'
+
 function Dashboard() {
-    // const { TitleDashboard, Section } = MyStyled();
+    const { theme } = useContext(ThemeContext);
+    const { userData, handleSetIsUpdated } = useContext(UserContext);
     
     
-
     return (
-        <Section>
+        <Section theme={theme}>
             <div className="grid"> 
-                    <TitleDashboard>Classifiche nel tempo</TitleDashboard>
+                    <TitleDashboard theme={theme}>Classifiche nel tempo</TitleDashboard>
                     <RankingComponent />
             </div>
         </Section>

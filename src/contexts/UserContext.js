@@ -28,8 +28,8 @@ function UserProvider({ children }) {
 
             //CALL API TO GET DATA
             const balancesResponse = await axios.post('/balances/get');
-            const allExpensesIncomes = await axios.post('/expenses/get'); //maybe without a date parameter it returns all the data
-            const expensesIncomesResponse = await axios.post('/expenses/get', {date: currentDate});
+            // const allExpensesIncomes = await axios.post('/expenses/get'); //maybe without a date parameter it returns all the data
+            const expensesIncomesResponse = await axios.post('/expenses/get', {date: currentDate}); //this will be used also to display the expenses and incomes of the current month and i will add a button "load more per i mesi precedenti"
             const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
             console.log('Array completo di risposta: ', balancesResponse.data);
@@ -90,8 +90,8 @@ function UserProvider({ children }) {
             const cryptoRealPreYearSameMonth = (balancesPreYearSameMonth.crypto || 0).real || 0;
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
             //Set the variable with all expense and one with all income to list them in the insert page (TODO)
-            var lastExpenses = [];
-            var lastIncomes = [];
+            // var lastExpenses = [];
+            // var lastIncomes = [];
             //The structure must be like this:
             // const newExpenseAdd = {
             //   categoryExpense,
@@ -99,14 +99,16 @@ function UserProvider({ children }) {
             //   expense,
             //   expenseDate,
             // };
-            allExpensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
-                        if (data.isExpense) {
-                            lastExpenses.push(data);
-                        }
-                        else {
-                            lastIncomes.push(data);
-                        }
-            });
+
+
+            // allExpensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
+            //             if (data.isExpense) {
+            //                 lastExpenses.push(data);
+            //             }
+            //             else {
+            //                 lastIncomes.push(data);
+            //             }
+            // });
 
             //Set the variables for expenses and incomes of the current month, previous month and previous year same month
             var expensesMonth = 0;

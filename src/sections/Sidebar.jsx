@@ -304,7 +304,7 @@ function Sidebar() {
                         <AiOutlineBell />
                         <div className="account-container">
                             <div className="account-image-wrapper">
-                                <img src={avatarImage} alt="Account" className="account-image" />
+                                <img src={avatarImage} alt="Account" className="account-image" onContextMenu={(e) => e.preventDefault()}/>
                             </div>
                         </div>
                         <div className="dropdown-container">
@@ -317,12 +317,17 @@ function Sidebar() {
                                         <div
                                             key={option.value}
                                             className={`dropdown-option ${selectedOption === option ? 'selected' : ''}`}
-                                            
-                                            onClick={() => handleOptionSelect(option)} >
-                                        
+                                            onClick={() => {
+                                                if (option.value !== 'changeUsername' && option.value !== 'profile') {
+                                                    handleOptionSelect(option);
+                                                }
+                                            }}
+                                            style={{
+                                                cursor: option.value === 'changeUsername' || option.value === 'account' ? 'not-allowed' : 'pointer',
+                                                opacity: option.value === 'changeUsername' || option.value === 'account' ? 0.5 : 1
+                                            }}
+                                        >
                                             {option.label}
-
-                                            
                                         </div>
                                     ))}
                                     <div className="dropdown-option logout" onClick={handleLogout}>

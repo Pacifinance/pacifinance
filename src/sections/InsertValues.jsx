@@ -73,7 +73,11 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
     income,
     incomeDate,
   };
-  setLastIncomesAdds([...tableDataIncomes, newIncomeAdd]);  //.slice(0, 10));
+  if (Array.isArray(tableDataIncomes)) {
+    setLastIncomesAdds([...tableDataIncomes, newIncomeAdd]);
+  } else {
+    setLastIncomesAdds([newIncomeAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
+  }  //.slice(0, 10));
   
 
   const incomeJson = { 
@@ -88,7 +92,7 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
   }
 
   setIncome(0);
-  setCategoryIncome(0);
+  setCategoryIncome("");
   setIncomeDate(new Date());
 
   const incomeAdd = await axios.post('/expenses/add', incomeJson);
@@ -113,7 +117,11 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
     expense,
     expenseDate,
   };
-  setLastExpensesAdds([...tableDataExpenses, newExpenseAdd]); //.slice(0, 20));
+  if (Array.isArray(tableDataExpenses)) {
+    setLastExpensesAdds([...tableDataExpenses, newExpenseAdd]); //.slice(0, 20));
+  } else {
+    setLastExpensesAdds([newExpenseAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
+  }
   
 
   const expenseJson = { 
@@ -128,8 +136,8 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
   }
 
   setExpense(0);
-  setCategoryExpense(0);
-  setTypoExpense(0);
+  setCategoryExpense("");
+  setTypoExpense("");
   setExpenseDate(new Date());
 
   const expenseAdd = await axios.post('/expenses/add', expenseJson);
@@ -174,9 +182,9 @@ export default function InsertValue () {
   const [incomesMonth, setIncomesMonth] = useState(0);
   const [expensesMonth, setExpensesMonth] = useState(0);
   const [savedMonth, setSavedMonth] = useState(0);
-  const [categoryIncome, setCategoryIncome] = useState(0);
-  const [categoryExpense, setCategoryExpense] = useState(0);
-  const [typoExpense, setTypoExpense] = useState(0);
+  const [categoryIncome, setCategoryIncome] = useState("");
+  const [categoryExpense, setCategoryExpense] = useState("");
+  const [typoExpense, setTypoExpense] = useState("");
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
@@ -491,7 +499,7 @@ export default function InsertValue () {
               theme={theme}
               value={balanceDate}
               onChange={(date) =>setBalanceDate(date)}
-              calendarType="US"
+              calendarType="gregory"
               formatShortWeekday={formatShortWeekday}
             />
           </StyledInputs>
@@ -508,7 +516,7 @@ export default function InsertValue () {
               Categoria
               <Select value={categoryIncome} onChange={(event) =>setCategoryIncome(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
                   renderValue={(value) => {
-                    if (value === 0) {
+                    if (value === "") {
                       return "Seleziona una categoria";
                     }
                     return value;
@@ -557,7 +565,7 @@ export default function InsertValue () {
                 theme={theme}
                 onChange={(date) =>setIncomeDate(date)}
                 value={incomeDate}
-                calendarType="US"
+                calendarType="gregory"
                 formatShortWeekday={formatShortWeekday}
               />
             </div>
@@ -592,7 +600,7 @@ export default function InsertValue () {
               Categoria
               <Select value={categoryExpense} onChange={(event) =>setCategoryExpense(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
-                        if (value === 0) {
+                        if (value === "") {
                           return "Seleziona una categoria";
                         }
                         return value;
@@ -617,7 +625,7 @@ export default function InsertValue () {
               Tipologia pagamento
               <Select value={typoExpense} onChange={(event) =>setTypoExpense(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
-                        if (value === 0) {
+                        if (value === "") {
                           return "Seleziona una tipologia";
                         }
                         return value;
@@ -664,7 +672,7 @@ export default function InsertValue () {
                 theme={theme}
                 onChange={(date) =>setExpenseDate(date)}
                 value={expenseDate}
-                calendarType="US"
+                calendarType="gregory"
                 formatShortWeekday={formatShortWeekday}
               />
             </div>

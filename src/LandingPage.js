@@ -1,17 +1,17 @@
 import React from 'react';
 import { Header, Footer } from './sections/HeaderFooter';
 import LandingContent from './sections/LandingContent';
+// import { PageWrapper } from './contexts/MyStyled';
 
 
-function LandingPage() {
+export default function LandingPage() {
   return (
     <div>
-        <Header />
-        <LandingContent />
-        <Footer />
+      <Header />
+      <LandingContent />
+      <Footer />
     </div>
+    
   );
 }
-
-export default LandingPage;
 

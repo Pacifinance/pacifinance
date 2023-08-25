@@ -122,7 +122,13 @@ export default function InExStatsMonth() {
                     <h6>entrate in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((incomesMonth - incomesPreMonth) / incomesPreMonth)*100} %</h5>
+                    <h5>
+                        {incomesPreMonth === 0
+                        ? 'N.A.' 
+                        :isNaN(((incomesMonth - incomesPreMonth) / incomesPreMonth)*100)
+                            ? 'N.A.'
+                            : `${(((incomesMonth - incomesPreMonth) / incomesPreMonth)*100).toFixed(2)} %`}
+                    </h5>
                 </div>
             </div>
 
@@ -140,7 +146,13 @@ export default function InExStatsMonth() {
                     <h6>Uscite in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100} %</h5>
+                    <h5>
+                        {expensesPreMonth === 0
+                        ? 'N.A.' 
+                        :isNaN(((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100)
+                            ? 'N.A.'
+                            : `${(((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100).toFixed(2)} %`}
+                    </h5>
                 </div>
             </div>
 
@@ -158,7 +170,13 @@ export default function InExStatsMonth() {
                     <h6>Rismarmi in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((savedMonth - savedPreMonth) / savedPreMonth) * 100} %</h5>
+                    <h5>
+                        {savedPreMonth === 0
+                        ? 'N.A.' 
+                        :isNaN(((savedMonth - savedPreMonth) / savedPreMonth) * 100)
+                            ? 'N.A.'
+                            : `${(((savedMonth - savedPreMonth) / savedPreMonth) * 100).toFixed(2)} %`}
+                    </h5>
                 </div>
             </div>
         </SectionAMonth>

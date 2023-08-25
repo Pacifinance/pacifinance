@@ -72,49 +72,41 @@ function AnalyticDashboard() {
     fetchData();
     }, [userData]);
 
-    // useEffect(() => {
-    //     const calculateTotalReal = () => {
-    //         const total = stocksReal + etfReal + bitcoinReal + cryptoReal + bankReal + cashReal + digitalServicesReal;
-    //         setTotalReal(formatNumber(total));
-    //       };
-      
-    //     calculateTotalReal();
-    // }, [stocksReal, etfReal, bitcoinReal, cryptoReal, bankReal, cashReal, digitalServicesReal]);
+    //commented to work in local on the dashboard
+    // if (isLoading) {
+    //     return <div>Caricamento...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
+    // }
 
-    if (isLoading) {
-        return <div>Loading...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
-    }
+    const capitalData = [
+        { name: 'Azioni', value: stocksReal >= 0 ? stocksReal : 0 },
+        { name: 'ETF', value: etfReal >= 0 ? etfReal : 0 },
+        { name: 'Banca', value: bankReal >= 0 ? bankReal : 0 },
+        { name: 'Banconote', value: cashReal >= 0 ? cashReal : 0 },
+        { name: 'Criptovalute', value: cryptoReal >= 0 ? cryptoReal : 0 },
+        { name: 'Bitcoin', value: bitcoinReal >= 0 ? bitcoinReal : 0 },
+        { name: 'ServiziDigitali', value: digitalServicesReal >= 0 ? digitalServicesReal : 0 },
+    ];
 
-    const capitalData = {
-        Azioni: stocksReal >= 0 ? stocksReal : 0,
-        ETF: etfReal >= 0 ? etfReal : 0,
-        Banca: bankReal >= 0 ? bankReal : 0,
-        Banconote: cashReal >= 0 ? cashReal : 0,
-        Criptovalute: cryptoReal >= 0 ? cryptoReal : 0,
-        Bitcoin: bitcoinReal >= 0 ? bitcoinReal : 0,
-        ServiziDigitali: digitalServicesReal >= 0 ? digitalServicesReal : 0,
-    }
+    const incExpData = [
+        { name: 'Entrate', value: incomesMonth >= 0 ? incomesMonth : 0 },
+        { name: 'Spese', value: expensesMonth >= 0 ? expensesMonth : 0 },
+        { name: 'Risparmiato', value: savedMonth >= 0 ? savedMonth : 0 },
+    ];
 
-    //Creare le variabili colori in MyStyled e importarle qui 
-    
+    console.log(capitalData);
+    console.log(incExpData);
 
-    const incExpData = {
-        Entrate: incomesMonth >= 0 ? incomesMonth : 0,
-        Spese: expensesMonth >= 0 ? expensesMonth : 0,
-        Risparmiato: savedMonth >= 0 ? savedMonth : 0,
-    }
-
-    
-
-    const RADIAN = Math.PI / 180;
+    //used for render the label in the pie chart as a percentage inside the pie
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+        const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
         const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
+        const labelValue = `${(percent * 100).toFixed(0)}%`;
+    
         return (
-            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-                {`${(percent * 100).toFixed(0)}%`}
+            <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
+                {labelValue}
             </text>
         );
     };
@@ -129,9 +121,9 @@ function AnalyticDashboard() {
                         <div className="logo" style={{ color: '#0D579B'}}>
                             <BsBank />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                         <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Depositati</h6>
@@ -147,9 +139,9 @@ function AnalyticDashboard() {
                         <div className="logo" style={{ color: '#329239' }}>
                             <BsCashCoin />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                             <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Contante</h6>
@@ -165,9 +157,9 @@ function AnalyticDashboard() {
                         <div className="logo" style={{ color: '#74b9ff' }}>
                             <SiMoneygram />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                             <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Servizi</h6>
@@ -185,9 +177,9 @@ function AnalyticDashboard() {
                         <div className="logo" style={{ color: '#FF6600' }}>
                             <MdOutlineAutoGraph />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                         <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Investiti</h6>
@@ -203,9 +195,9 @@ function AnalyticDashboard() {
                         <div className="logo" style={{ color: '#a29bfe' }}>
                             <AiOutlineStock />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                         <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Investiti</h6>
@@ -221,9 +213,9 @@ function AnalyticDashboard() {
                         <div className="logo" style={{ color: '#F7B510' }}>
                             <FaBitcoin />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                             <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Investiti</h6>
@@ -233,15 +225,24 @@ function AnalyticDashboard() {
                         <h5>{bitcoinReal}€</h5>
                     </div>
                 </div>
-
+                {/* <div className="analytic ">
+                <div className="design">
+                    <div className="logo" style={{ color: '#F7B510' }}>
+                        <FaBitcoin />
+                    </div>
+                </div>
+                <div className="transfer">
+                    <h6>Variazione</h6>
+                    <h6>Bitcoin in %</h6>
+                </div>             */}
                 <div className="analytic ">
                     <div className="design">
                         <div className="logo" style={{ color: '#d63031' }}>
                             <BsCoin />
                         </div>
-                        <div className="action">
+                        {/* <div className="action">
                             <AiOutlineMore />
-                        </div>
+                        </div> */}
                     </div>
                     <div className="transfer">
                         <h6>Investiti</h6>
@@ -256,35 +257,22 @@ function AnalyticDashboard() {
             
                 <div className="bar-chart-section">
                     <h2>Distribuzione capitale</h2>
-                    <div style={{ width: '100%', height: 300 }}>
-                        <ResponsiveContainer width="100%" height="300">
-                            <BarChart
-                                width={500}
-                                height={300}
-                                data={capitalData}
-                                margin={{
-                                    top: 20,
-                                    right: 15,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
-                            >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="Azioni" fill = {colorsBalances.Azioni}  />
-                            <Bar dataKey="ETF" fill = {colorsBalances.ETF} />
-                            <Bar dataKey="Bitcoin" fill = {colorsBalances.Bitcoin} />
-                            <Bar dataKey="Criptovalute" fill = {colorsBalances.Criptovalute} />
-                            <Bar dataKey="Contante" fill = {colorsBalances.Contante} />
-                            <Bar dataKey="Servizi Digitali" fill = {colorsBalances.ServiziDigitali} />
-                            <Bar dataKey="Banca" fill = {colorsBalances.Banca} />
-                            
+                    <div style={{ width: 400, height: 300 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart width={500} height={300} data={capitalData} margin={{
+                                        top: 20,
+                                        right: 15,
+                                    }}>
+                                <Bar dataKey="value">
+                                    {capitalData.map(entry => (
+                                        <Cell key={entry.name} fill={colorsBalances[entry.name]} />
+                                    ))}
+                                </Bar>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
+                                <XAxis dataKey="name" interval={0} angle={45} textAnchor="start" tick={{ fill: 'white' }} />
+                                <YAxis tick={{ fill: 'white' }} />
 
-                            
-                            
+                                <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -293,60 +281,60 @@ function AnalyticDashboard() {
 
                 <div className="pie-chart-section">
                     <h2>% Distribuzione Capitale</h2>
-                    <div style={{ width: '100%', height: 400 }}>
+                    <div style={{ width: 400, height: 400 }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <PieChart width={500} height={500}>
-                            <Pie
-                                data={capitalData}
-                                cx="50%"
-                                cy="50%"
-                                labelLine={false}
-                                label={renderCustomizedLabel}
-                                outerRadius={80}
-                                fill="#8884d8"
-                                dataKey="value"
-                            >
-                                
-                            <Cell datakey="Azioni" fill={colorsBalances.Azioni} />
-                            <Cell datakey="ETF" fill={colorsBalances.ETF} />
-                            <Cell datakey="Bitcoin" fill={colorsBalances.Bitcoin} />
-                            <Cell datakey="Criptovalute" fill={colorsBalances.Criptovalute} />
-                            <Cell datakey="Contante" fill={colorsBalances.Contante} />
-                            <Cell datakey="Servizi Digitali" fill={colorsBalances.ServiziDigitali} />
-                            <Cell datakey="Banca" fill={colorsBalances.Banca} />
-                                
-                            </Pie>
+                            <PieChart width={500} height={500} margin={{
+                                top: 20,
+                                left: 60,
+                            }}>
+                                <Pie
+                                    data={capitalData}
+                                    cx="35%"
+                                    cy="35%"
+                                    label={renderCustomizedLabel}
+                                    labelLine={false}
+                                    outerRadius={130}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                >
+                                    {capitalData.map(entry => (
+                                        <Cell key={entry.name} fill={colorsBalances[entry.name]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+                                    labelStyle={{ color: '#07916 !important', fontWeight: 'bold' }}
+                                    formatter={(value, name, entry) => {
+                                        const total = capitalData.reduce((acc, entry) => acc + entry.value, 0);
+                                        const percentage = (entry.value / total) * 100;
+                                        return [`${name}: ${value} (${percentage.toFixed(0)}%)`];
+                                    }}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
-
                 </div>
 
                 <div className="bar-chart-section">
                     <h2>Entrate | Spese</h2>
-                    <div style={{ width: '100%', height: 300 }}>
+                    <div style={{ width: 350, height: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                width={500}
-                                height={300}
-                                data={incExpData}
-                                margin={{
-                                    top: 20,
-                                    right: 15,
-                                    left: 5,
-                                    bottom: 5,
-                                }}
-                            >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="Entrate" fill = {colorsIncExp.Entrate}  />
-                            <Bar dataKey="Uscite" fill = {colorsIncExp.Uscite}  />
-                            <Bar dataKey="Risparmiato" fill = {colorsIncExp.Risparmiato}  />
-                            </BarChart>
-                        </ResponsiveContainer>    
+                                <BarChart width={500} height={300} data={incExpData} margin={{
+                                            top: 20,
+                                            right: 15,
+                                        }}>
+                                    <Bar dataKey="value">
+                                        {incExpData.map(entry => (
+                                            <Cell key={entry.name} fill={colorsIncExp[entry.name]} />
+                                        ))}
+                                    </Bar>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
+                                    <XAxis dataKey="name" interval={0} angle={45} textAnchor="start" tick={{ fill: 'white' }} />
+                                    <YAxis tick={{ fill: 'white' }} />
+
+                                    <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}/>
+                                </BarChart>
+                            </ResponsiveContainer>
                     </div>      
                 </div>
 

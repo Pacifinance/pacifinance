@@ -8,10 +8,8 @@ function Dashboard() {
     
     return (
         <Section theme={theme}>
-            <div className="grid"> 
-                    <TitleDashboard theme={theme}>Dashboard</TitleDashboard>
-                    <AnalyticDashboard />
-            </div>
+            <TitleDashboard theme={theme}>Dashboard</TitleDashboard>
+            <AnalyticDashboard /> 
         </Section>
     )
 }

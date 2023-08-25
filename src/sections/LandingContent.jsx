@@ -6,7 +6,7 @@ import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
 import { ThemeContext } from '../contexts/ThemeContext';
 import {
   MyButton,
-  Container,
+  LandingPageContainer,
   Title,
   PaciText,
   FinanceText,
@@ -20,31 +20,13 @@ import {
   FeatureText,
 } from '../contexts/MyStyled';
 
-// import MyStyled from '../contexts/MyStyled';
-
 export default function LandingContent() {
 
   const { theme } = useContext(ThemeContext);
-
-  // const {
-  //   MyButton,
-  //   Container,
-  //   Title,
-  //   PaciText,
-  //   FinanceText,
-  //   Subtitle,
-  //   CentralSection,
-  //   CentralText,
-  //   CentralImage,
-  //   FeaturesSection,
-  //   Feature,
-  //   FeatureIcon,
-  //   FeatureText,
-  // } = MyStyled();
   
 
   return (
-      <Container theme={theme}>
+      <LandingPageContainer theme={theme}>
         <Title theme={theme}>
           <PaciText theme={theme}>Paci</PaciText>
           <FinanceText theme={theme}>Finance</FinanceText>
@@ -59,7 +41,7 @@ export default function LandingContent() {
             <p>Check del portafoglio, delle entrate e delle spese nel tempo.</p>
             <MyButton theme={theme}>Scopri di più</MyButton>
           </CentralText>
-          <CentralImage src={LandingPageImage} alt="Pacifinance Art"/>
+          <CentralImage src={LandingPageImage} alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
           
         </CentralSection>
         <FeaturesSection theme={theme}>
@@ -91,7 +73,7 @@ export default function LandingContent() {
             </FeatureText>
           </Feature>
         </FeaturesSection>
-      </Container>
+      </LandingPageContainer>
   );
 };
 

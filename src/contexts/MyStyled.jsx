@@ -17,7 +17,7 @@ import { Calendar } from 'react-calendar';
 
 export const PageWrapper = styled.div`
   position: relative;
-  width: 100%;
+  width: 100vw;
   height: 100vh; // Imposta l'altezza della pagina al 100% della viewport
   display: flex;
 `;
@@ -25,18 +25,9 @@ export const PageWrapper = styled.div`
 export const Section = styled.section `
       font-family: Roboto, sans-serif; 
       margin-left: 6vw;
-      padding: 2rem;
+      padding-top: 4rem;
       height: 100vh;
       background-color: ${(props) => (props.theme.backgroundColor)};
-      .grid{ 
-          margin-top: 2rem;
-          z-index: 2;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-      
-      }
 `;
 
 export const MyGenericModal = styled.div`
@@ -96,7 +87,7 @@ export const TitleDashboard = styled.h1 `
       font-size: 2rem;
       font-weight: 400;
       margin-bottom: 2rem;
-      margin-left: 2rem;
+      margin-left: 6%;
   `;
 
 export const SignIn = styled.div`
@@ -467,9 +458,10 @@ export const StyledLastAdds = styled.div`
 `;
 
   export const CapitalValue = styled.h1 `
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: ${(props) => (props.theme.textColor)};
       margin-top: 1rem;
+      margin-left: 2rem;
       margin-bottom: 1rem;
   `;
 
@@ -480,6 +472,14 @@ export const Container = styled.div`
   color: ${(props) => (props.theme.textColor)};
   padding-bottom: 105px;
 `;
+
+export const LandingPageContainer = styled.div`
+  font-family: Roboto, sans-serif;
+  height: 100vh;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  color: ${(props) => (props.theme.textColor)};
+`;
+
 export const Title = styled.h1`
   font-size: 60px;
   margin-bottom: 5px; /* Aggiungi qui il valore di spaziatura desiderato */
@@ -533,6 +533,7 @@ export const CentralImage = styled.img`
   max-width: 600px;
   height: auto;
   margin-right: 3%;
+  draggable="false"
 `;
 
 export const FeaturesSection = styled.section`
@@ -768,23 +769,25 @@ export const SidebarSection = styled.section`
 
   export const UpperSection = styled.section `
       display: flex;
-      grid-template-columns: repeat(3, 1fr);
+      margin-top: 2rem;
+      margin-left: 2rem;
       justify-content: space-between;
-      margin: 0 18%;
       .analytic {
-          justify-content: space-between;
-          padding: 1rem 2rem 1rem 2rem;
+          display: flex;
+          flex-direction: column; /* Imposta la direzione dei figli come colonna */
           border-radius: 1rem;
-          color: black;
-          background-color: white;
-          justify-content: space-evenly;
+          justify-content: center;
           align-items: center;
+          padding: 1rem 2rem 1rem 2rem;
+          color: black;
+          margin-right: 10%;
+          margin-left: 10%;
+          background-color: white;
           transition: 0.5s ease-in-out;
           width: 170px;
           border: 3px solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
-              display: flex;
               align-items: center;
               
               .logo {
@@ -823,13 +826,16 @@ export const SidebarSection = styled.section`
 
   export const LowerSection = styled.div`
       display : flex;
-      grid-template-columns: repeat(4, 1fr);
+      margin-top: 2rem;
+      margin-left: 2rem;
       justify-content: space-between;
-      margin: 5% 6%;
       .analytic {
-          justify-content: space-between;
+          display: flex;
+          flex-direction: column; /* Imposta la direzione dei figli come colonna */
           padding: 1rem 2rem 1rem 2rem;
           border-radius: 1rem;
+          margin-right: 6%;
+          margin-left: 6%;
           color: black;
           background-color: white;
           justify-content: space-evenly;
@@ -878,35 +884,22 @@ export const SidebarSection = styled.section`
 
   export const GraphsSection = styled.div`
       display: flex;
-      grid-template-columns: repeat(4, 1fr);
       justify-content: space-between;
-      margin: 0 60px;
-      
       .bar-chart-section {
-          margin-top: 50px;
-          margin-left: 50px;
+          margin-top: 4%;
+          margin-left: 6%;
+          margin-right: 6%;
           h2{
               color: ${(props) => (props.theme.textColor)};
           }
       }
       
       .pie-chart-section {
-          margin-top: 50px;
-          margin-right: 50px;
+          margin-top: 4%;
           h2{
               color: ${(props) => (props.theme.textColor)};
           }
       }
-
-      .custom-tooltip {
-          position: absolute;
-          z-index: 9999;
-          background-color: rgba(0, 0, 0, 0.7);
-          color: #fff;
-          padding: 0.5rem;
-          font-size: 14px;
-          border-radius: 4px;
-        }
   `;
 
   export const SectionBalancesCharts = styled.section`
@@ -959,9 +952,8 @@ export const SidebarSection = styled.section`
 
   export const SectionAMonth = styled.section `
       display: flex;
-      grid-template-columns: repeat(4, 1fr);
       justify-content: space-between;
-      margin: 0 60px;
+      margin-left: 6%;
       .section-break {
           display: block;
           margin-bottom: 1rem; /* Adjust the margin as needed */
@@ -976,7 +968,6 @@ export const SidebarSection = styled.section`
         margin-right: 1rem;
         color: black;
         background-color: white;
-        align-items: center;
         transition: 0.5s ease-in-out;
         width: 170px;
         border: 3px solid ${(props) => (props.theme.buttonBackgroundColor)};
@@ -1205,6 +1196,30 @@ export const StyledSelect = styled.select`
   }
 
 `;
+
+
+export const StyledComingSoon = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* centra gli elementi orizzontalmente */
+    min-height: 100vh;
+
+    .coming-soon-title {
+      font-size: 4rem;
+      font-weight: bold;
+      text-align: center; /* centra il testo orizzontalmente */
+    }
+
+    .coming-soon-subtitle {
+      font-size: 1.5rem;
+      font-weight: normal;
+      text-align: center; /* centra il testo orizzontalmente */
+    }
+  `;
+
+
+  //****************************************************** MUI CUSTOM STYLED ******************************************************************* *//
 
 
 export const MuiCustomDialog = styled(Dialog)`

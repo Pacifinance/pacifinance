@@ -86,12 +86,8 @@ const data = [
 
 export default function Incomes() {
 
-  // const { SectionInOut } = MyStyled();
-
   return (
     <SectionInOut>
-      <h3>Entrate vs uscite</h3>
-      <h5>Controllo delle entrate e uscite nei mesi</h5>
       <LineChart
         width={500}
         height={300}

@@ -122,7 +122,13 @@ function InExStatsYear() {
                     <h6>entrate in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((incomesMonth - incomesPreYearSameMonth) / incomesPreYearSameMonth)*100} %</h5>
+                    <h5>
+                        {incomesPreYearSameMonth === 0
+                        ? 'N.A.' 
+                        :isNaN(((incomesMonth - incomesPreYearSameMonth) / incomesPreYearSameMonth) * 100)
+                            ? 'N.A.'
+                            : `${(((incomesMonth - incomesPreYearSameMonth) / incomesPreYearSameMonth) * 100).toFixed(2)} %`}
+                    </h5>
                 </div>
             </div>
 
@@ -140,7 +146,13 @@ function InExStatsYear() {
                     <h6>Uscite in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((expensesMonth - expensesPreYearSameMonth) / expensesPreYearSameMonth) * 100} %</h5>
+                    <h5>
+                        {expensesPreYearSameMonth === 0
+                        ? 'N.A.' 
+                        :isNaN(((expensesMonth - expensesPreYearSameMonth) / expensesPreYearSameMonth) * 100)
+                            ? 'N.A.'
+                            : `${(((expensesMonth - expensesPreYearSameMonth) / expensesPreYearSameMonth) * 100).toFixed(2)} %`}
+                    </h5>
                 </div>
             </div>
             
@@ -158,7 +170,13 @@ function InExStatsYear() {
                     <h6>Rismarmi in %</h6>
                 </div>
                 <div className="money">
-                    <h5>{((savedMonth - savedPreYearSameMonth) / savedPreYearSameMonth) * 100} %</h5>
+                    <h5>
+                        {savedPreYearSameMonth === 0
+                        ? 'N.A.' 
+                        :isNaN(((savedMonth - savedPreYearSameMonth) / savedPreYearSameMonth) * 100)
+                            ? 'N.A.'
+                            : `${(((savedMonth - savedPreYearSameMonth) / savedPreYearSameMonth) * 100).toFixed(2)} %`}
+                    </h5>
                 </div>
             </div>
         </SectionAMonth>

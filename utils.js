@@ -151,6 +151,11 @@ function decrementDateByOneMonth(date) {
     return new_date;
 }
 
+function capitalizeFirst(str) {
+    str = str.toLowerCase()
+    return str[0].toUpperCase() + str.slice(1)
+}
+
 module.exports = {
     sanitizeInput,
     roundCurrency,
@@ -160,5 +165,6 @@ module.exports = {
     checkPassword,
     generateRandomString,
     incrementDateByOneDay,
-    decrementDateByOneMonth
+    decrementDateByOneMonth,
+    capitalizeFirst
 }

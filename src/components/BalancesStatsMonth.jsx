@@ -14,6 +14,7 @@ import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import { PieChart, Pie, Cell } from "recharts";
 import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
+import { primaryColor } from '../contexts/Themes';
 import axios from 'axios';
 
 
@@ -122,7 +123,12 @@ export default function BalancesStatsMonth() {
     return (
         
         <div className="wrapper">
-        <TitleDashboard theme={theme}>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100).toFixed(2)} % </TitleDashboard>
+        <TitleDashboard theme={theme}>
+            Il tuo patrimonio è variato del:{" "}
+            <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
+                {(((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100).toFixed(2)} %
+            </span>
+        </TitleDashboard>
         <SectionAMonth theme={theme}>
             
             <div className="analytic ">

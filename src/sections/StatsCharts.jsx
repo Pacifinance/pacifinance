@@ -17,8 +17,13 @@ export default function StatsCharts() {
     const { userData } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const [activePage, setActivePage] = useState("statsBilancio");
-    const formattedPreMonthDate = userData?.preMonthDate ? new Date(userData.preMonthDate).toISOString().slice(0, 10) : "";
-    const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate ? new Date(userData.preYearSameMonthDate).toISOString().slice(0, 10) : "";
+    const formattedPreMonthDate = userData?.preMonthDate
+      ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
+      : "";
+
+    const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate
+      ? new Date(userData.preYearSameMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
+      : "";
     
 
     const handlePageChange = (page) => {

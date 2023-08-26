@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useContext, PureComponent } from 'react';
 import { PieChart, Pie, Sector, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-//import { BsCreditCard } from "react-icons/bs";
-import { AiOutlineMore } from "react-icons/ai";
-//import { BiTransfer } from "react-icons/bi";
+// import { AiOutlineMore } from "react-icons/ai"; NOT USED NOW 
 import { BsBank } from "react-icons/bs";
-//import { GiTakeMyMoney } from "react-icons/gi";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
@@ -12,6 +9,7 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { UserContext } from '../contexts/UserContext';
+import { primaryColor } from '../contexts/Themes';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { colorsBalances, colorsIncExp } from '../contexts/Themes';
 import {
@@ -114,7 +112,12 @@ function AnalyticDashboard() {
     return (
         
         <SectionADashboard theme={theme}>
-            <CapitalValue theme={theme}>Il tuo patrimonio totale è: {totalReal}€</CapitalValue>
+            <CapitalValue theme={theme}>
+                Il tuo patrimonio totale è:{" "}
+                <span style={{ color: primaryColor }}>
+                    {totalReal.toLocaleString('it-IT')}€
+                </span>
+            </CapitalValue>
             <UpperSection theme={theme}>
                 <div className="analytic ">
                     <div className="design">
@@ -130,7 +133,7 @@ function AnalyticDashboard() {
                         <h6>in Banca</h6>
                     </div>
                     <div className="money">
-                        <h5>{bankReal}€</h5>
+                        <h5>{bankReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
 
@@ -148,7 +151,7 @@ function AnalyticDashboard() {
                         <h6>e monete</h6>
                     </div>
                     <div className="money">
-                        <h5>{cashReal}€</h5>
+                        <h5>{cashReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
 
@@ -166,7 +169,7 @@ function AnalyticDashboard() {
                         <h6>Pagamenti digitali</h6>
                     </div>
                     <div className="money">
-                        <h5>{digitalServicesReal}€</h5>
+                        <h5>{digitalServicesReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
 
@@ -186,7 +189,7 @@ function AnalyticDashboard() {
                         <h6>in Azioni</h6>
                     </div>
                     <div className="money">
-                        <h5>{stocksReal}€</h5>
+                        <h5>{stocksReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
 
@@ -204,7 +207,7 @@ function AnalyticDashboard() {
                         <h6>in ETF</h6>
                     </div>
                     <div className="money">
-                        <h5>{etfReal}€</h5>
+                        <h5>{etfReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
                 
@@ -222,7 +225,7 @@ function AnalyticDashboard() {
                         <h6>in Bitcoin</h6>
                     </div>
                     <div className="money">
-                        <h5>{bitcoinReal}€</h5>
+                        <h5>{bitcoinReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
                 {/* <div className="analytic ">
@@ -249,7 +252,7 @@ function AnalyticDashboard() {
                         <h6>in Criptovalute</h6>
                     </div>
                     <div className="money">
-                        <h5>{cryptoReal}€</h5>
+                        <h5>{cryptoReal.toLocaleString('it-IT')}€</h5>
                     </div>
                 </div>
             </LowerSection> 
@@ -271,8 +274,29 @@ function AnalyticDashboard() {
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
                                 <XAxis dataKey="name" interval={0} angle={45} textAnchor="start" tick={{ fill: 'white' }} />
                                 <YAxis tick={{ fill: 'white' }} />
+                                <Tooltip
+                                    content={({ payload, label, active }) => {
+                                        if (active) {
+                                            const data = payload[0].payload; // Dati relativi all'elemento selezionato
 
-                                <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }} />
+                                            // Formatta il valore con migliaia e simbolo dell'euro
+                                            const formattedValue = new Intl.NumberFormat('it-IT', {
+                                                style: 'currency',
+                                                currency: 'EUR',
+                                                maximumFractionDigits: 0,
+                                            }).format(data.value);
+
+                                            return (
+                                                <div style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                                    <p>{label}</p>
+                                                    <p style={{ color: 'black' }}>{formattedValue}</p>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
+                                />
+                                {/* <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }} /> */}
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -303,11 +327,19 @@ function AnalyticDashboard() {
                                 </Pie>
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-                                    labelStyle={{ color: '#07916 !important', fontWeight: 'bold' }}
+                                    labelStyle={{ color: '#079164', fontWeight: 'bold' }}
                                     formatter={(value, name, entry) => {
                                         const total = capitalData.reduce((acc, entry) => acc + entry.value, 0);
                                         const percentage = (entry.value / total) * 100;
-                                        return [`${name}: ${value} (${percentage.toFixed(0)}%)`];
+
+                                        // Formatta il valore con migliaia e simbolo dell'euro
+                                        const formattedValue = new Intl.NumberFormat('it-IT', {
+                                            style: 'currency',
+                                            currency: 'EUR',
+                                            maximumFractionDigits: 0,
+                                        }).format(value);
+
+                                        return [`${name}: ${formattedValue} (${percentage.toFixed(0)}%)`];
                                     }}
                                 />
                             </PieChart>
@@ -332,7 +364,29 @@ function AnalyticDashboard() {
                                     <XAxis dataKey="name" interval={0} angle={45} textAnchor="start" tick={{ fill: 'white' }} />
                                     <YAxis tick={{ fill: 'white' }} />
 
-                                    <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}/>
+                                    <Tooltip
+                                        content={({ payload, label, active }) => {
+                                            if (active) {
+                                                const data = payload[0].payload; // Dati relativi all'elemento selezionato
+
+                                                // Formatta il valore con migliaia e simbolo dell'euro
+                                                const formattedValue = new Intl.NumberFormat('it-IT', {
+                                                    style: 'currency',
+                                                    currency: 'EUR',
+                                                    maximumFractionDigits: 0,
+                                                }).format(data.value);
+
+                                                return (
+                                                    <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                                        <p>{label}</p>
+                                                        <p style={{ color: 'black' }}>{formattedValue}</p>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        }}
+                                        contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+                                    />
                                 </BarChart>
                             </ResponsiveContainer>
                     </div>      

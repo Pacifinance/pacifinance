@@ -68,8 +68,21 @@ export default function BalancesCharts() {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis tick={{fontSize: 9}} interval={1} dataKey="name" />
         <YAxis tick={{fontSize: 12}} />
-        <Tooltip />
-        <Legend />
+        <Tooltip
+            contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+            labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
+            formatter={(value, name, entry) => {
+                
+                const formattedValue = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    maximumFractionDigits: 0,
+                }).format(value);
+
+                return [`${name}: ${formattedValue}`];
+            }}
+        />
+        <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>
         
         
         <Bar dataKey="Banca" stackId="a" fill="#0D579B" />

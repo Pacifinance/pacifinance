@@ -86,6 +86,24 @@ const data = [
 
 export default function Incomes() {
 
+// impostare i dati presi dell'utente per le spese e le entrate TODO
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       if (userData) {
+//         try {
+//             console.log(userData);
+//             console.log(userData.expensesIncomes);
+            
+            
+//         } catch (error) {
+//           console.error('Errore durante le operazioni:', error);
+//         }
+//       }
+//     };
+
+// fetchData();
+// }, [userData]);
+
   return (
     <SectionInOut>
       <LineChart
@@ -102,7 +120,20 @@ export default function Incomes() {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis tick={{fontSize: 9}} interval={1} dataKey="name" />
         <YAxis tick={{fontSize: 12}} />
-        <Tooltip />
+        <Tooltip
+            contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+            labelStyle={{ color: 'black', fontWeight: 'bold' }}
+            formatter={(value, name, entry) => {
+                
+                const formattedValue = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    maximumFractionDigits: 0,
+                }).format(value);
+
+                return [`${name}: ${formattedValue}`];
+            }}
+        />
         <Legend />
         <Line type="monotone" dataKey="Entrate" stroke="#079164" activeDot={{ r: 8 }} />
         <Line type="monotone" dataKey="Uscite" stroke="#ff3838" />

@@ -22,6 +22,8 @@ export const themes = {
   },
 };
 
+export const primaryColor = '#079164';
+
 export const colorsBalances = {
   Azioni: '#FF6600',
   ETF: '#a29bfe',

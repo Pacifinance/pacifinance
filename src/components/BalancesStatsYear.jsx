@@ -13,7 +13,8 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
-import { PieChart, Pie, Cell } from "recharts";
+import { primaryColor } from '../contexts/Themes';
+// import { PieChart, Pie, Cell } from "recharts";
 
 // const [activeIndex, setActiveIndex] = useState(null);
 
@@ -31,34 +32,34 @@ import { PieChart, Pie, Cell } from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  index,
-  dataEntry
-}) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+// const RADIAN = Math.PI / 180;
+// const renderCustomizedLabel = ({
+//   cx,
+//   cy,
+//   midAngle,
+//   innerRadius,
+//   outerRadius,
+//   percent,
+//   index,
+//   dataEntry
+// }) => {
+//   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+//   const x = cx + radius * Math.cos(-midAngle * RADIAN);
+//   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    {/* {` (${dataEntry.name}: ${dataEntry.value})`} // aggiunto qui */}
-    </text>
-  );
-};
+//   return (
+//     <text
+//       x={x}
+//       y={y}
+//       fill="white"
+//       textAnchor={x > cx ? "start" : "end"}
+//       dominantBaseline="central"
+//     >
+//       {`${(percent * 100).toFixed(0)}%`}
+//     {/* {` (${dataEntry.name}: ${dataEntry.value})`} // aggiunto qui */}
+//     </text>
+//   );
+// };
 
 function BalancesStatsYear() {
     const { theme } = useContext(ThemeContext);
@@ -142,7 +143,12 @@ function BalancesStatsYear() {
     return (
         
         <div className="wrapper">
-        <TitleDashboard theme={theme}>Il tuo patrimonio è variato del: {(((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100).toFixed(2)} % </TitleDashboard>
+        <TitleDashboard theme={theme}>
+            Il tuo patrimonio è variato del:{" "}
+            <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
+                {(((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100).toFixed(2)} %
+            </span>
+        </TitleDashboard>
         <SectionAMonth theme={theme}>
             <div className="analytic ">
                 <div className="design">

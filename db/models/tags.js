@@ -48,6 +48,16 @@ async function getOne(where, select) {
     return await Tag.findOne(where, select).lean().exec();
 }
 
+/**
+ * Updates a tag that match a filter
+ * @param {Object} where - filter to match
+ * @param {Object} update - fields to update
+ * @returns Tag document
+ */
+async function setOne(where, update) {
+    return await Tag.findOneAndUpdate(where, {$set: update}).lean().exec();
+}
+
 /* ==================== Specific queries ==================== */
 
 /**
@@ -88,6 +98,18 @@ async function getAllTagsByType(type) {
 }
 
 /**
+ * Adds or updates the translation of a tag for a given language
+ * @param {*} index - Label index (client side ID)
+ * @param {*} lang - Language (two letters format)
+ * @param {*} translation - Translation to set
+ * @returns 
+ */
+async function setTranslationByIndex(index, lang, translation) {
+    const field = "translations." + lang;
+    return await setOne({index: index}, {[field]: translation});
+}
+
+/**
  * Tags model
  */
 const Tag = mongoose.model("Tag", tagsSchema);
@@ -96,5 +118,6 @@ module.exports = {
     TagType,
     insertNew,
     getReferenceByIndex,
-    getAllTagsByType
+    getAllTagsByType,
+    setTranslationByIndex
 };

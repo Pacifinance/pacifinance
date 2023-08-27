@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const utils = require("../../utils.js")
 
 const TagType = {
-    balance: 0,
-    expense: 1,
-    income: 2,
+    expense: 0,
+    income: 1,
+    payment: 2,
     job: 3
 }
 
@@ -53,8 +53,8 @@ async function getOne(where, select) {
 /**
  * Adds a new tag
  * @param {String} label - Label of the tag
- * @param {Number} index - Label index (client side ID)
- * @param {TagType} type - Type of the label (balance, expense, income, job)
+ * @param {Number} index - Tag index (client side ID)
+ * @param {TagType} type - Type of tag
  * @returns Tag document
  */
 async function insertNew(label, index, type) {
@@ -80,6 +80,7 @@ async function getReferenceByIndex(index) {
 
 /**
  * Gets all tags by type
+ * @param {TagType} type - Type of tag
  * @returns List of Tag documents
  */
 async function getAllTagsByType(type) {

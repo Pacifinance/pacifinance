@@ -22,6 +22,31 @@ function UserProvider({ children }) {
             //get the date of the previous month
             const preMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
 
+            // const minusTwoMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 2, currentDate.getDate());
+
+            // const minusThreeMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
+
+            // const minusFourMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 4, currentDate.getDate());
+
+            // const minusFiveMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 5, currentDate.getDate());
+
+            // const minusSixMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 6, currentDate.getDate());
+
+            // const minusSevenMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 7, currentDate.getDate());
+
+            const minusEightMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 8, currentDate.getDate());
+
+            const minusNineMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 9, currentDate.getDate());
+
+            // const minusTenMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, currentDate.getDate());
+
+            const minusElevenMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 11, currentDate.getDate());
+            console.log('minusEightMonthsDate', minusEightMonthsDate);
+            console.log('minusNineMonthsDate', minusNineMonthsDate);
+            console.log('minusElevenMonthsDate', minusElevenMonthsDate);
+
+
+
             //get the date of the current month of the previous year
             const preYearSameMonthDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
             
@@ -31,6 +56,7 @@ function UserProvider({ children }) {
             // const allExpensesIncomes = await axios.post('/expenses/get'); //maybe without a date parameter it returns all the data
             const expensesIncomesResponse = await axios.post('/expenses/get', {date: currentDate}); //this will be used also to display the expenses and incomes of the current month and i will add a button "load more per i mesi precedenti"
             const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
+
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
             console.log('Array completo di risposta: ', balancesResponse.data);
             //GET DATA FROM RESPONSES
@@ -89,9 +115,12 @@ function UserProvider({ children }) {
             const bitcoinRealPreYearSameMonth = (balancesPreYearSameMonth.bitcoin || 0).real || 0;
             const cryptoRealPreYearSameMonth = (balancesPreYearSameMonth.crypto || 0).real || 0;
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
+
+
             //Set the variable with all expense and one with all income to list them in the insert page (TODO)
             // var lastExpenses = [];
             // var lastIncomes = [];
+
             //The structure must be like this:
             // const newExpenseAdd = {
             //   categoryExpense,
@@ -101,7 +130,7 @@ function UserProvider({ children }) {
             // };
 
 
-            // allExpensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
+            // expensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
             //             if (data.isExpense) {
             //                 lastExpenses.push(data);
             //             }
@@ -109,6 +138,19 @@ function UserProvider({ children }) {
             //                 lastIncomes.push(data);
             //             }
             // });
+
+            const lastExpenses = expensesIncomes.filter(data => data.isExpense);
+            const lastIncomes = expensesIncomes.filter(data => !data.isExpense);
+
+            // Print to test the amount of the expenses
+            lastExpenses.forEach(expense => {
+              console.log(expense.amount);
+            });
+
+            // Print to test the amount of the incomes
+            lastIncomes.forEach(income => {
+              console.log(income.amount);
+            });
 
             //Set the variables for expenses and incomes of the current month, previous month and previous year same month
             var expensesMonth = 0;
@@ -178,7 +220,7 @@ function UserProvider({ children }) {
             }
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData});
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes});
             handleSetIsUpdated(true);
         }
       } catch (error) {

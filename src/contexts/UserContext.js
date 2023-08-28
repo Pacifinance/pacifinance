@@ -142,14 +142,18 @@ function UserProvider({ children }) {
             const lastExpenses = expensesIncomes.filter(data => data.isExpense);
             const lastIncomes = expensesIncomes.filter(data => !data.isExpense);
 
+            let count = 1;
             // Print to test the amount of the expenses
             lastExpenses.forEach(expense => {
-              console.log(expense.amount);
+              console.log("Spesa n-",count, expense.amount);
+              count ++;
             });
 
+            count = 1;
             // Print to test the amount of the incomes
             lastIncomes.forEach(income => {
-              console.log(income.amount);
+              console.log("Entrata n-",count,income.amount);
+              count ++;
             });
 
             //Set the variables for expenses and incomes of the current month, previous month and previous year same month

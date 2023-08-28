@@ -32,7 +32,7 @@ import {
 //   setTableDataExpenses(data);
 // };
 
-const handleChangeBalance = async (handleSetIsUpdated, fetchData, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+const handleChangeBalance = async (fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
   const balancesJson = { 
     balance : {
       date : balanceDate,
@@ -67,14 +67,15 @@ const handleChangeBalance = async (handleSetIsUpdated, fetchData, balanceDate, b
   }
 };
 
-const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, tableDataIncomes, categoryIncome, income, incomeDate) => {
+const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
+  console.log("IncomeDate: ", incomeDate);
   const newIncomeAdd = {
     categoryIncome,
     income,
     incomeDate,
   };
-  if (Array.isArray(tableDataIncomes)) {
-    setLastIncomesAdds([...tableDataIncomes, newIncomeAdd]);
+  if (Array.isArray(lastIncomesAdds)) {
+    setLastIncomesAdds([...lastIncomesAdds, newIncomeAdd]);
   } else {
     setLastIncomesAdds([newIncomeAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
   }  //.slice(0, 10));
@@ -100,25 +101,27 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
   if (incomeAdd.data.success) {
     console.log("Entrate aggiornate aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    alert("Bilancio aggiornato correttamente");
+    console.log("Sono quaaaaa3");
+    alert("Entrata inserita correttamente");
     fetchData();
+    console.log("Sono quaaaaa4");
   }
   else {
-    alert("Errore nell'aggiornamento del bilancio");
+    alert("Errore nell'inserimento dell'entrata");
   }
 
  
 };
 
-const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, handleSetIsUpdated, tableDataExpenses, typoExpense,  categoryExpense, expense, expenseDate) => {
+const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
   const newExpenseAdd = {
     categoryExpense,
     typoExpense,
     expense,
     expenseDate,
   };
-  if (Array.isArray(tableDataExpenses)) {
-    setLastExpensesAdds([...tableDataExpenses, newExpenseAdd]); //.slice(0, 20));
+  if (Array.isArray(lastExpensesAdds)) {
+    setLastExpensesAdds([...lastExpensesAdds, newExpenseAdd]); //.slice(0, 20));
   } else {
     setLastExpensesAdds([newExpenseAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
   }
@@ -144,11 +147,13 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
   if (expenseAdd.data.success) {
     console.log("Spese aggiornate, aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    alert("Bilancio aggiornato correttamente");
+    console.log("Sono quaaaaa");
+    alert("Spesa inserita correttamente");
     fetchData();
+    console.log("Sono quaaaaa2");
   }
   else {
-    alert("Errore nell'aggiornamento del bilancio");
+    alert("Errore nell'inserimento della spesa");
   }
 };
 
@@ -191,7 +196,7 @@ export default function InsertValue () {
   const [lastExpensesAdds, setLastExpensesAdds] = useState([]);
   const [tableDataIncomes, setTableDataIncomes] = useState([]);
   const [tableDataExpenses, setTableDataExpenses] = useState([]);
-  const [dateTime, setDateTime] = useState(null);
+  const [dateTime, setDateTime] = useState(new Date());
   const [incomeDate, setIncomeDate] = useState(new Date());
   const [expenseDate, setExpenseDate] = useState(new Date());
   const [balanceDate, setBalanceDate] = useState(new Date());
@@ -221,14 +226,19 @@ export default function InsertValue () {
             setIncomesMonth(userData ? userData.incomesMonth : 0);
             setSavedMonth(userData ? userData.savedMonth : 0);
 
-            setTableDataExpenses(userData ? userData.expenses : []); // da modificare
-            setTableDataIncomes(userData ? userData.incomes : []); // da modificare
+            setLastExpensesAdds(userData ? userData.lastExpenses : []); // da modificare
+            setLastIncomesAdds(userData ? userData.lastIncomes : []); // da modificare
 
             //set datas
             const now = new Date();
             setDateTime(now);
             setIncomeDate(now);
             setExpenseDate(now);
+
+            //print datas
+            console.log("Data e ora: ", dateTime);
+            console.log("Data entrata: ", incomeDate);
+            console.log("Data spesa: ", expenseDate);
             
             setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
         } catch (error) {
@@ -241,23 +251,23 @@ export default function InsertValue () {
     fetchData();
   }, [userData]);
 
-  function renderIncomeItems(lastIncomes) {
-    return lastIncomes.map((add, index) => (
+  function renderIncomeItems(lastIncomesAdds) {
+    return lastIncomesAdds.map((add, index) => (
         <tr key={index}>
           <td>{add.categoryIncome}</td>
           <td>{add.income}€</td>
-          <td>{add.incomeDate.getDate()}/{add.incomeDate.getMonth() + 1}/{add.incomeDate.getFullYear()}</td>
+          {/* <td>{add.incomeDate.getDate()}/{add.incomeDate.getMonth() + 1}/{add.incomeDate.getFullYear()}</td> */}
         </tr>
       ));
   }
 
-  function renderExpenseItems(lastExpenses) {
-    return lastExpenses.map((add, index) => (
+  function renderExpenseItems(lastExpensesAdds) {
+    return lastExpensesAdds.map((add, index) => (
         <tr key={index}>
           <td>{add.categoryExpense}</td>
           <td>{add.typoExpense}</td>
           <td>{add.expense}€</td>
-          <td>{add.expenseDate.getDate()}/{add.expenseDate.getMonth() + 1}/{add.expenseDate.getFullYear()}</td>
+          {/* <td>{add.expenseDate.getDate()}/{add.expenseDate.getMonth() + 1}/{add.expenseDate.getFullYear()}</td> */}
         </tr>
       ));
   }
@@ -504,7 +514,7 @@ export default function InsertValue () {
             />
           </StyledInputs>
           <StyledInputs theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(handleSetIsUpdated, fetchData, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)} >Aggiorna il tuo patrimonio</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)} >Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
         </>
       );
@@ -560,7 +570,7 @@ export default function InsertValue () {
               </div>
             </label>
             <div>
-              <h3>Entrata del {incomeDate.toLocaleDateString()}</h3>
+              {incomeDate && <h3>Entrata del {incomeDate.toLocaleDateString()}</h3>}
               <StyledCalendar
                 theme={theme}
                 onChange={(date) =>setIncomeDate(date)}
@@ -574,7 +584,7 @@ export default function InsertValue () {
             
             
           <StyledAddSection theme={theme}> 
-            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, tableDataIncomes, categoryIncome, income, incomeDate)}>Aggiungi entrata</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 10 entrate del mese</TitleLastAdds>
           <StyledTable theme={theme}>
@@ -678,7 +688,7 @@ export default function InsertValue () {
             </div>
           </StyledAddSection>
           <StyledAddSection theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, handleSetIsUpdated, tableDataExpenses, typoExpense,  categoryExpense, expense, expenseDate)}>Aggiungi spesa</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Aggiungi spesa</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 20 spese del mese</TitleLastAdds>
           <StyledTable theme={theme}>

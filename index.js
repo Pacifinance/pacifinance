@@ -373,10 +373,28 @@ app.post("/expenses/get", async (req, res) => {
     res.json(expenses);
 });
 
-app.post("/expenses/tags", async (req, res) => {
+app.post("/tags/get", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Get all the tags from the database
+    let tags = {}
+    for (let tag_type of Object.keys(db.tags.TagType))
+    {
+        const tag_type_name = db.tags.TagType[tag_type].name;
+        const tag_type_value = db.tags.TagType[tag_type].value;
+        const tags_of_type = await db.tags.getAllTagsByType(tag_type_value);
+        tags[tag_type_name] = tags_of_type;
+    }
     // Send the array of tags to the client with status code 200 (OK)
     res.status(200);
-    res.json(db.expenses.tags);
+    res.json(tags);
 });
 
 db.connect(process.env.DB_URI)

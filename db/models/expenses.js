@@ -1,12 +1,6 @@
 const mongoose = require("mongoose");
 const users = require("./users.js");
 
-let tags = [...[
-    "Digital services", "Gift", "Shopping", "Food", "House", "Social", "Travelling", "Investments", "Health", "Taxes", "Vehicle", "Transports"
-].sort(), "Other"];
-
-const payment_types = [0, 1, 2, 3];
-
 const expenseSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
@@ -88,8 +82,6 @@ async function getMonthlyExpensesByUserId(user_id, reference_date) {
 const Expense = mongoose.model("Expense", expenseSchema);
 
 module.exports = {
-    tags,
-    payment_types,
     insertNew,
     getMonthlyExpensesByUserId
 };

@@ -13,7 +13,8 @@ const tagsSchema = new mongoose.Schema({
     index: {type: Number, required: true},
     type: {type: Number, required: true},
     translations: {type: {
-        en: {type: String}
+        en: {type: String},
+        it: {type: String}
     }, required: true}
 });
 

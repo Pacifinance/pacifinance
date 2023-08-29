@@ -99,14 +99,14 @@ async function getAllTagsByType(type) {
 
 /**
  * Adds or updates the translation of a tag for a given language
- * @param {*} index - Label index (client side ID)
- * @param {*} lang - Language (two letters format)
- * @param {*} translation - Translation to set
+ * @param {Number} index - Label index (client side ID)
+ * @param {String} lang - Language (two letters format)
+ * @param {String} translation - Translation to set
  * @returns 
  */
-async function setTranslationByIndex(index, lang, translation) {
+async function setTranslationByIndexAndType(index, type, lang, translation) {
     const field = "translations." + lang;
-    return await setOne({index: index}, {[field]: translation});
+    return await setOne({index: index, type: type}, {[field]: translation});
 }
 
 /**
@@ -119,5 +119,5 @@ module.exports = {
     insertNew,
     getReferenceByIndex,
     getAllTagsByType,
-    setTranslationByIndex
+    setTranslationByIndexAndType
 };

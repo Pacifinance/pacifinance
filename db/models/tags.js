@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const utils = require("../../utils.js")
 
 const TagType = {
-    expense: 0,
-    income: 1,
-    payment: 2,
-    job: 3
+    expense: {label: "expense", index: 0},
+    income: {label: "income", index: 1},
+    payment: {label: "payment", index: 2},
+    job: {label: "job", index: 3}
 }
 
 const tagsSchema = new mongoose.Schema({

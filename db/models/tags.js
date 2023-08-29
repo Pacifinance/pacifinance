@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const utils = require("../../utils.js")
 
 const TagType = {
-    expense: {label: "expense", index: 0},
-    income: {label: "income", index: 1},
-    payment: {label: "payment", index: 2},
-    job: {label: "job", index: 3}
+    expense: {name: "expense", value: 0},
+    income: {name: "income", value: 1},
+    payment: {name: "payment", value: 2},
+    job: {name: "job", value: 3}
 }
 
 const tagsSchema = new mongoose.Schema({
@@ -91,7 +91,7 @@ async function getReferenceByIndex(index) {
 
 /**
  * Gets all tags by type
- * @param {TagType} type - Type of tag
+ * @param {Number} type - Type of tag
  * @returns List of Tag documents
  */
 async function getAllTagsByType(type) {

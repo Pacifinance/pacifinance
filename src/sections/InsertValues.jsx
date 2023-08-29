@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserContext, UserProvider } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
+// import Carousel from "react-multi-carousel";
+// import "react-multi-carousel/lib/styles.css";
 import { Title } from "@material-ui/icons";
 import axios from 'axios';
 import {
@@ -70,9 +72,9 @@ const handleChangeBalance = async (fetchData, handleSetIsUpdated, balanceDate, b
 const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
   console.log("IncomeDate: ", incomeDate);
   const newIncomeAdd = {
-    categoryIncome,
-    income,
-    incomeDate,
+    categoryTag: categoryIncome,
+    amount: income,
+    date: incomeDate,
   };
   if (Array.isArray(lastIncomesAdds)) {
     setLastIncomesAdds([...lastIncomesAdds, newIncomeAdd]);
@@ -80,7 +82,7 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
     setLastIncomesAdds([newIncomeAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
   }  //.slice(0, 10));
   
-
+  //To send data we have to use category_tag, payment_type, amount, date as name of the variables
   const incomeJson = { 
     expense : {
       date : incomeDate, 
@@ -97,8 +99,9 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
   setIncomeDate(new Date());
 
   const incomeAdd = await axios.post('/expenses/add', incomeJson);
+  console.log("Risposta incomeAdd: ", incomeAdd);
   
-  if (incomeAdd.data.success) {
+  if (incomeAdd.status === 200) {
     console.log("Entrate aggiornate aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
     console.log("Sono quaaaaa3");
@@ -115,10 +118,10 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
 
 const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
   const newExpenseAdd = {
-    categoryExpense,
-    typoExpense,
-    expense,
-    expenseDate,
+    categoryTag: categoryExpense,
+    paymentType: typoExpense,
+    amount: expense,
+    date: expenseDate,
   };
   if (Array.isArray(lastExpensesAdds)) {
     setLastExpensesAdds([...lastExpensesAdds, newExpenseAdd]); //.slice(0, 20));
@@ -126,7 +129,7 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
     setLastExpensesAdds([newExpenseAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
   }
   
-
+  //To send data we have to use category_tag, payment_type, amount, date as name of the variables 
   const expenseJson = { 
     expense : {
       date : expenseDate,
@@ -144,7 +147,7 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
   setExpenseDate(new Date());
 
   const expenseAdd = await axios.post('/expenses/add', expenseJson);
-  if (expenseAdd.data.success) {
+  if (expenseAdd.status === 200) {
     console.log("Spese aggiornate, aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
     console.log("Sono quaaaaa");
@@ -157,6 +160,7 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
   }
 };
 
+// this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
 const handleIncomesDelete = (setLastIncomesAdds, lastIncomesAdds, index) => {
   const newIncomeAdds = [...lastIncomesAdds];
   newIncomeAdds.splice(index, 1);
@@ -175,6 +179,8 @@ const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
 export default function InsertValue () {
   const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const [visibleItems, setVisibleItems] = useState(3); // Numero di elementi visibili nel carousel
+  const [showScrollbar, setShowScrollbar] = useState(false); // Mostra o nascondi la barra di scorrimento laterale
   const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
   const [etfReal, setETFReal] = useState(0);
@@ -252,24 +258,36 @@ export default function InsertValue () {
   }, [userData]);
 
   function renderIncomeItems(lastIncomesAdds) {
-    return lastIncomesAdds.map((add, index) => (
+    return lastIncomesAdds.map((add, index) => {
+      const incomeDate = new Date(add.date);
+      const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
+  
+      return (
         <tr key={index}>
-          <td>{add.categoryIncome}</td>
-          <td>{add.income}€</td>
-          {/* <td>{add.incomeDate.getDate()}/{add.incomeDate.getMonth() + 1}/{add.incomeDate.getFullYear()}</td> */}
+          <td>{add.categoryTag}</td>
+          <td>{add.amount}€</td>
+          <td>{formattedDate}</td>
         </tr>
-      ));
+      );
+    });
   }
-
+  
+  
+  
+  
   function renderExpenseItems(lastExpensesAdds) {
-    return lastExpensesAdds.map((add, index) => (
+    return lastExpensesAdds.map((add, index) => {
+      const expenseDate = new Date(add.date);
+      const formattedDate = `${expenseDate.getDate()}/${expenseDate.getMonth() + 1}/${expenseDate.getFullYear()}`;
+      return (
         <tr key={index}>
-          <td>{add.categoryExpense}</td>
-          <td>{add.typoExpense}</td>
-          <td>{add.expense}€</td>
-          {/* <td>{add.expenseDate.getDate()}/{add.expenseDate.getMonth() + 1}/{add.expenseDate.getFullYear()}</td> */}
+          <td>{add.categoryTag}</td>
+          <td>{add.paymentType}</td>
+          <td>{add.amount}€</td>
+          <td>{formattedDate}</td>
         </tr>
-      ));
+      );
+    });
   }
 
   
@@ -586,7 +604,7 @@ export default function InsertValue () {
           <StyledAddSection theme={theme}> 
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Ultime 10 entrate del mese</TitleLastAdds>
+          <TitleLastAdds theme={theme}>Ultime 10 entrate del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>
           
             <thead>
@@ -690,7 +708,7 @@ export default function InsertValue () {
           <StyledAddSection theme={theme}>
             <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Aggiungi spesa</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Ultime 20 spese del mese</TitleLastAdds>
+          <TitleLastAdds theme={theme}>Ultime 20 spese del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>
             <thead>
               <tr>

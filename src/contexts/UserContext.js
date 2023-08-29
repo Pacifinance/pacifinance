@@ -82,12 +82,14 @@ function UserProvider({ children }) {
             const expensesIncomesPreMonth = expensesIncomesPreMonthResponse.data || [];
             const expensesIncomesPreYearSameMonth = expensesIncomesPreYearSameMonthResponse.data || [];
 
-            console.log('balances', balances);
-            console.log('balancesPreMonth', balancesPreMonth);
-            console.log('balancesPreYearSameMonth', balancesPreYearSameMonth);
-            console.log('expenses', expensesIncomes);
-            console.log('expensesPreMonth', expensesIncomesPreMonth);
-            console.log('expensesPreYearSameMonth', expensesIncomesPreYearSameMonth);
+            console.log('balances:', balances);
+            console.log('balancesPreMonth:', balancesPreMonth);
+            console.log('balancesPreYearSameMonth:', balancesPreYearSameMonth);
+            console.log('expenses:', expensesIncomes);
+            console.log('expensesPreMonth:', expensesIncomesPreMonth);
+            console.log('expensesPreYearSameMonth:', expensesIncomesPreYearSameMonth);
+            console.log('expensesIncomesResponse:', expensesIncomesResponse);
+            console.log('expensesIncomes:', expensesIncomes);
 
             const cashReal = balances.cash || 0;
             const bankReal = balances.bank || 0;
@@ -152,7 +154,7 @@ function UserProvider({ children }) {
             count = 1;
             // Print to test the amount of the incomes
             lastIncomes.forEach(income => {
-              console.log("Entrata n-",count,income.amount);
+              console.log("Entrata n-",count, income.amount, " Categoria: ", income.categoryTag);
               count ++;
             });
 

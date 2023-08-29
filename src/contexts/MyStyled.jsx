@@ -294,7 +294,7 @@ export const SignUp = styled.div`
 
 export const MySecondaryButton = styled(MyButton)`
   font-size: 1.2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.01rem;
   max-height: 3rem;
 `;
 
@@ -310,8 +310,7 @@ export const TitleLastAdds = styled.h2`
   font-size: 1.5rem;
   font-weight: bold;
   color: ${(props) => (props.theme.textColor)};
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 0.5%;
   margin-left: 6vw;
 `;
 
@@ -332,7 +331,7 @@ export const StyledSection = styled.div`
   width: 100%;
   height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
-  overflow: hidden; // to hide the scroll bar
+  overflow-x: hidden; // to hide the scroll bar
   .grid{ 
     margin-top: 2rem;
     z-index: 2;
@@ -382,10 +381,11 @@ export const StyledTable = styled.table`
   color: ${(props) => (props.theme.textColor)};
   margin-bottom: 20px;
   margin-left: 6vw;
+  overflow-y: auto; /* Enable vertical scroll */
 
   td, th {
-    border: 1px solid black;
-    padding: 5px;
+    border: 0.5px solid black;
+    padding: 1px;
     text-align: center;
     background-color: ${(props) => (props.theme.backgroundColor)};
   }
@@ -399,8 +399,8 @@ export const StyledAddSection = styled.div`
   display: flex;
   justify-content: space-evenly;
   width: 100%;
-  margin-bottom: 20px;
-  margin-top: 40px;
+  margin-bottom: 1%;
+  margin-top: 2%;
   margin-left: 6vw;
   color: ${(props) => (props.theme.textColor)};
 

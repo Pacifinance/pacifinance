@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     creationDate: {type: Date, required: true},
     nickname: {type: String, default: ""},
     nation: {type: String, default: ""},
-    occupation: {type: String, default: ""},
+    occupation: {type: mongoose.Types.ObjectId, default: ""},
     roles: {type: [String], required: true},
     expenseCategories: [{
         name: {type: String, required: true},

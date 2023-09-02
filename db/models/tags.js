@@ -83,10 +83,11 @@ async function insertNew(label, index, type) {
 /**
  * Gets the object reference of a tag
  * @param {Number} index - Label index (client side ID)
+ * @param {Number} type - Type of tag
  * @returns Tag document
  */
-async function getReferenceByIndex(index) {
-    return await getOne({index: index}, "_id");
+async function getReferenceByIndexAndType(index, type) {
+    return await getOne({index: index, type: type}, "_id");
 }
 
 /**
@@ -101,6 +102,7 @@ async function getAllTagsByType(type) {
 /**
  * Adds or updates the translation of a tag for a given language
  * @param {Number} index - Label index (client side ID)
+ * @param {Number} type - Type of tag
  * @param {String} lang - Language (two letters format)
  * @param {String} translation - Translation to set
  * @returns 
@@ -118,7 +120,7 @@ const Tag = mongoose.model("Tag", tagsSchema);
 module.exports = {
     TagType,
     insertNew,
-    getReferenceByIndex,
+    getReferenceByIndexAndType,
     getAllTagsByType,
     setTranslationByIndexAndType
 };

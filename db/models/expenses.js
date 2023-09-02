@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 const users = require("./users.js");
+const tags = require("./tags.js");
 
 const expenseSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
     date: {type: Date, required: true, index: true},
     amount: {type: Number, required: true},
     isExpense: {type: Boolean, required: true},
-    paymentType: {type: Number, required: true}, // 0=None, 1=Single, 2=Subscription, 3=Installment
-    categoryTag: {type: String, required: true}
+    paymentType: {type: mongoose.Types.ObjectId, required: true},
+    categoryTag: {type: mongoose.Types.ObjectId, required: true}
 });
 
 /* ==================== Template queries ==================== */
@@ -40,21 +41,40 @@ async function getSorted(where, select, sort) {
  * @param {Date} date - date of the expense
  * @param {Number} amount - amount of the expense
  * @param {Boolean} is_expense - true if this is entry is an expense, false if it's an income
- * @param {Number} payment_type - type of payment (None, Single, Subscription or Installment) as an integer [0;3]
- * @param {String} category_tag - category tag of the expense
+ * @param {Number} payment_type - type of payment (None, Single, Subscription or Installment)
+ * @param {Number} category_tag - category tag of the expense
  * @returns Expense document
  */
 async function insertNew(user_id, date, amount, is_expense, payment_type, category_tag) {
+    // Get the user reference
     const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
+    // If this is an expense, get the payment type reference and the expense category reference
+    let payment_type_ref = null;
+    let category_tag_ref = null;
+    if (is_expense)
+    {
+        // For an expense the payment type cannot be zero
+        if (payment_type === 0) return null;
+        payment_type_ref = await tags.getReferenceByIndexAndType(payment_type, tags.TagType.payment.value);
+        category_tag_ref = await tags.getReferenceByIndexAndType(category_tag, tags.TagType.expense.value);
+    }
+    // Otherwise, if it's an income, get the income category reference only
+    else
+    {
+        payment_type_ref = await tags.getReferenceByIndexAndType(0, tags.TagType.payment.value);
+        category_tag_ref = await tags.getReferenceByIndexAndType(category_tag, tags.TagType.income.value);
+    }
+    // If any of the queries fail, return null
+    if (user === null || payment_type_ref === null || payment_type_ref === null)
         return null;
+    // Create and insert the new entry
     const data = {
         userRef: user._id,
         date: date,
         amount: amount,
         isExpense: is_expense,
-        paymentType: payment_type,
-        categoryTag: category_tag
+        paymentType: payment_type_ref._id,
+        categoryTag: category_tag_ref._id
     };
     return await addOne(data);
 }

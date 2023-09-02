@@ -100,6 +100,15 @@ async function getAllTagsByType(type) {
 }
 
 /**
+ * Gets a tag by reference
+ * @param {mongoose.Types.ObjectId} ref Reference to a tag
+ * @returns Tag document
+ */
+async function getTagByReference(ref) {
+    return await getOne({_id: ref}, "-_id -__v");
+}
+
+/**
  * Adds or updates the translation of a tag for a given language
  * @param {Number} index - Label index (client side ID)
  * @param {Number} type - Type of tag
@@ -122,5 +131,6 @@ module.exports = {
     insertNew,
     getReferenceByIndexAndType,
     getAllTagsByType,
+    getTagByReference,
     setTranslationByIndexAndType
 };

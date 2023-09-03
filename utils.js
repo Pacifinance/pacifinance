@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const expenses = require("./db/models/expenses.js");
 
 /**
  * Sanitizes user input by removing blank spaces and HTML tags
@@ -68,16 +67,20 @@ function isBalanceValid(data) {
  * @returns true if the expense is valid, false otherwise
  */
 function isExpenseValid(data) {
-    // Cast the amount to Number for type integrity
+    // Cast the amount to Number and the is_expense flag to Boolean for type integrity
     data.amount = roundCurrency(Number(data.amount));
+    data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
     if (data.date === undefined || data.date > now) data.date = now;
-    // Return true if all fields are valid and the category tag is recognized
+    /**
+     * Return true if:
+     * 1. it's an expense and all fields are valid
+     * 2. it's an income and all fields but payment_type are valid
+     */
     return (
-        !isNaN(data.amount) && (data.is_expense !== undefined) && [true, false].includes(data.is_expense) &&
-        (data.payment_type !== undefined) && expenses.payment_types.includes(data.payment_type) /* &&
-        expenses.tags.includes(data.category_tag) */ /* DISABLED FOR TEST */
+        (!isNaN(data.amount) && (data.category_tag !== undefined) && (data.payment_type !== undefined)) ||
+        ((!data.is_expense) && !isNaN(data.amount) && (data.category_tag !== undefined))
     );
 }
 

@@ -7,8 +7,8 @@ const expenseSchema = new mongoose.Schema({
     date: {type: Date, required: true, index: true},
     amount: {type: Number, required: true},
     isExpense: {type: Boolean, required: true},
-    paymentType: {type: mongoose.Types.ObjectId, required: true},
-    categoryTag: {type: mongoose.Types.ObjectId, required: true}
+    paymentType: {type: mongoose.Types.ObjectId, ref: "Tag", required: true},
+    categoryTag: {type: mongoose.Types.ObjectId, ref: "Tag", required: true}
 });
 
 /* ==================== Template queries ==================== */
@@ -30,7 +30,10 @@ async function addOne(data) {
  * @returns List of Expense documents
  */
 async function getSorted(where, select, sort) {
-    return await Expense.find(where, select).sort(sort).lean().exec();
+    return await Expense.find(where, select)
+    .populate({path: "paymentType", select: "-_id -__v -translations"}) // substitution of Tag references with Tag data for "paymentType"
+    .populate({path: "categoryTag", select: "-_id -__v -translations"}) // substitution of Tag references with Tag data for "categoryTag"
+    .sort(sort).lean().exec();
 }
 
 /* ==================== Specific queries ==================== */

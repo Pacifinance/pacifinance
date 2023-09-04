@@ -136,7 +136,7 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
       amount : expense,
       is_expense : true,
       payment_type : Number(typoExpense),
-      category_tag : categoryExpense,
+      category_tag : categoryExpense,  //now, after the rework i have to send the id of the category
 
     }
   }
@@ -207,6 +207,8 @@ export default function InsertValue () {
   const [expenseDate, setExpenseDate] = useState(new Date());
   const [balanceDate, setBalanceDate] = useState(new Date());
   const [activePage, setActivePage] = useState("bilancio");
+  const [expensesTags, setExpensesTags] = useState([]);
+  const [incomesTags, setIncomesTags] = useState([]);
   //TO set the calendar date format without the day of the week
   const formatShortWeekday = (locale, date) => "";
   
@@ -232,6 +234,8 @@ export default function InsertValue () {
             setIncomesMonth(userData ? userData.incomesMonth : 0);
             setSavedMonth(userData ? userData.savedMonth : 0);
 
+            setExpensesTags(userData ? userData.expensesTags : []);
+            setIncomesTags(userData ? userData.incomesTags : []);
             setLastExpensesAdds(userData ? userData.lastExpenses : []); // da modificare
             setLastIncomesAdds(userData ? userData.lastIncomes : []); // da modificare
 
@@ -240,6 +244,10 @@ export default function InsertValue () {
             setDateTime(now);
             setIncomeDate(now);
             setExpenseDate(now);
+
+            //print tags
+            console.log("Tag spese: ", expensesTags);
+            console.log("Tag entrate: ", incomesTags);
 
             //print datas
             console.log("Data e ora: ", dateTime);
@@ -536,13 +544,14 @@ export default function InsertValue () {
           </StyledInputs>
         </>
       );
+      // cambiare la generazione del menu a tendina delle categorie in automatico prelevando le opzioni dalla variabile tagExpensesIncomes
     } else if (activePage === "income") {
       return (
         <>
           <StyledAddSection theme={theme}>
             <label>
               Categoria
-              <Select value={categoryIncome} onChange={(event) =>setCategoryIncome(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={categoryIncome} onChange={(event) =>setCategoryIncome(event.target.id)} style={{ backgroundColor: 'white' }} displayEmpty
                   renderValue={(value) => {
                     if (value === "") {
                       return "Seleziona una categoria";
@@ -550,11 +559,12 @@ export default function InsertValue () {
                     return value;
                   }}
               >
-                <MenuItem id= "Stipendio" value="Stipendio">Stipendio</MenuItem>
-                <MenuItem id= "Lavoro-indipendente" value="Lavoro indipendente">Entrata da lavoro indipendente</MenuItem>
-                <MenuItem id= "Entrata-extra" value="Entrata extra">Entrata extra</MenuItem>
-                <MenuItem id= "Regalo" value="Regalo">Regalo</MenuItem>
-                <MenuItem id= "Pensione" value="Pensione">Pensione</MenuItem>
+                <MenuItem id= "1" value="Stipendio">Stipendio</MenuItem> 
+                <MenuItem id= "2" value="Lavoro indipendente">Entrata da lavoro indipendente</MenuItem>
+                <MenuItem id= "3" value="Entrata extra">Entrata extra</MenuItem>
+                <MenuItem id= "4" value="Regalo">Regalo</MenuItem>
+                <MenuItem id= "5" value="Pensione">Pensione</MenuItem>
+                <MenuItem id= "0" value="Altro">Altro</MenuItem>
               </Select>
             </label>
             <label>
@@ -651,7 +661,7 @@ export default function InsertValue () {
             </label>
             <label>
               Tipologia pagamento
-              <Select value={typoExpense} onChange={(event) =>setTypoExpense(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
+              <Select value={typoExpense} onChange={(event) =>setTypoExpense(event.target.id)} style={{ backgroundColor: 'white' }} displayEmpty
                       renderValue={(value) => {
                         if (value === "") {
                           return "Seleziona una tipologia";

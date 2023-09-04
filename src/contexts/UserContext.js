@@ -58,6 +58,10 @@ function UserProvider({ children }) {
             const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
 
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
+            const allTags  = await axios.post('/tags/get');
+            const expensesTags = allTags.expense;
+            const incomesTags = allTags.income;
+            const paymentTags = allTags.payment;
             console.log('Array completo di risposta: ', balancesResponse.data);
             //GET DATA FROM RESPONSES
             var balances = {};
@@ -81,6 +85,7 @@ function UserProvider({ children }) {
             const expensesIncomes = expensesIncomesResponse.data || [];
             const expensesIncomesPreMonth = expensesIncomesPreMonthResponse.data || [];
             const expensesIncomesPreYearSameMonth = expensesIncomesPreYearSameMonthResponse.data || [];
+
 
             console.log('balances:', balances);
             console.log('balancesPreMonth:', balancesPreMonth);
@@ -226,7 +231,7 @@ function UserProvider({ children }) {
             }
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes});
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes});
             handleSetIsUpdated(true);
         }
       } catch (error) {

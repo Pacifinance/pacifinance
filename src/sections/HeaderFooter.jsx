@@ -20,34 +20,19 @@ import {
   ModalSignUp,
 } from '../contexts/MyStyled';
 
-
-
-function Header() {
-  const { theme } = useContext(ThemeContext);
-  // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
-  const [isOpenSignIn, setIsOpenSignIn] = useState(false);
-  const [isOpenSignUp, setIsOpenSignUp] = useState(false);
-
-  // const {
-  //   MyGenericModalContent,
-  //   MyCloseButton,
-  //   MyButton,
-  //   ButtonContainer,
-  //   ButtonGroup,
-  //   ContainerHeader,
-  //   ModalSignIn,
-  //   ModalSignUp,
-  //   setIsOpenSignIn,
-  //   setIsOpenSignUp,
-  // } = MyStyled();
-
-  // const ModalSignIn = styled(MyGenericModal)`
+// const ModalSignIn = styled(MyGenericModal)`
   //   display: ${({ isOpenSignIn }) => isOpenSignIn ? 'flex' : 'none'};
   // `;
 
   // const ModalSignUp = styled(MyGenericModal)`
   //   display: ${({ isOpenSignUp }) => isOpenSignUp ? 'flex' : 'none'};
   // `;
+
+function Header() {
+  const { theme } = useContext(ThemeContext);
+  // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
+  const [isOpenSignIn, setIsOpenSignIn] = useState(false);
+  const [isOpenSignUp, setIsOpenSignUp] = useState(false);
 
   const handleOpenSignIn = () => {
     setIsOpenSignIn(true);
@@ -92,12 +77,8 @@ function Header() {
     );
   };
 
-  function Footer() {
-    const { theme } = useContext(ThemeContext);
-    // const {
-    //   ContainerFooter,
-    //   FooterText,
-    // } = MyStyled();
+function Footer() {
+  const { theme } = useContext(ThemeContext);
 
   return (
     <ContainerFooter theme={theme}>

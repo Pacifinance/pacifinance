@@ -4,6 +4,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
 import { ThemeContext } from '../contexts/ThemeContext';
+import CookieBanner from '../components/CookieBanner';
 import {
   MyButton,
   LandingPageContainer,
@@ -27,6 +28,7 @@ export default function LandingContent() {
 
   return (
       <LandingPageContainer theme={theme}>
+        <CookieBanner />
         <Title theme={theme}>
           <PaciText theme={theme}>Paci</PaciText>
           <FinanceText theme={theme}>Finance</FinanceText>

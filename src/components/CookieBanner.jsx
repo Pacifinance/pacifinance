@@ -24,7 +24,7 @@ function CookieBanner({ show }) {
     // Set the state to true to hide the banner after the animation ends
     setTimeout(() => {
         setAcceptedCookies(true);
-    }, 500); // Time of the animation
+    }, 250); // Time of the animation
   };
 
   if (acceptedCookies) return null;
@@ -34,9 +34,9 @@ function CookieBanner({ show }) {
       <h4>Questo sito utilizza solo cookie tecnici</h4>
       <br></br>
       <p>
-        Pacifinance utilizza solo cookie tecnici per facilitare 
-        l'accesso e rendere l'esperienza dell'utente 
-        più piacevole.
+        Pacifinance utilizza solo cookie tecnici <br></br> 
+        per facilitare l'accesso e rendere  <br></br>
+        l'esperienza dell'utente più piacevole. <br></br>
         <br></br> La tua privacy è la priorità.
         <br></br>
         <br></br>

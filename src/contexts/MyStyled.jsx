@@ -1237,25 +1237,39 @@ export const slideOut = keyframes`
   }
 `;
 
-export const CookieBannerContainer = styled.div` // Crea uno stile CSS per il tuo componente
+export const CookieBannerContainer = styled.div`
   position: fixed;
-  left: 6%;
-  height: 36%;
-  width: 15%;
-  bottom: 10%;
+  left: 6vw;
+  width: auto;
+  bottom: 10px;
   background-color: white;
   color: black;
-  text-align: center;
+  text-align: center; /* Centra orizzontalmente il testo */
   padding: 16px;
   box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.2);
   animation: ${slideIn} 1s ease forwards;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: auto; /* Imposta l'altezza su "auto" per adattarsi al contenuto */
+
+  // Aggiungi un margine inferiore al pulsante per separarlo dal testo
+  button {
+    margin-bottom: 40px; /* Aggiungi il margine inferiore desiderato */
+    padding: 8px 16px;
+    background-color: ${themes.dark.buttonBackgroundColor};
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
 
   &p {
     text-size: 1rem;
   }
 
   h4 {
-    color:  ${themes.dark.buttonBackgroundColor};
+    color: ${themes.dark.buttonBackgroundColor};
   }
 
   &.accepted {
@@ -1266,19 +1280,9 @@ export const CookieBannerContainer = styled.div` // Crea uno stile CSS per il tu
     bottom: 10%;
   }
 
-  button {
-    margin: 8px;
-    padding: 8px 16px;
-    background-color: ${themes.dark.buttonBackgroundColor};
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-
   button.reject {
     background-color: ${themes.dark.backgroundColor};
   }
-
 `;
   
 

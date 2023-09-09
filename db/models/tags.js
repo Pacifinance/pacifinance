@@ -33,10 +33,11 @@ async function addOne(data) {
  * Gets a list of tags that match a filter
  * @param {Object} where - filter to match
  * @param {String} select - fields to return
+ * @param {Object} sort - fields to sort by and their order
  * @returns List of Tags documents
  */
-async function get(where, select) {
-    return await Tag.find(where, select).lean().exec();
+async function getSorted(where, select, sort) {
+    return await Tag.find(where, select).sort(sort).lean().exec();
 }
 
 /**
@@ -96,7 +97,7 @@ async function getReferenceByIndexAndType(index, type) {
  * @returns List of Tag documents
  */
 async function getAllTagsByType(type) {
-    return await get({type: type}, "-_id -__v");
+    return await getSorted({type: type}, "-_id -__v", {index: 1});
 }
 
 /**

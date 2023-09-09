@@ -31,8 +31,8 @@ async function addOne(data) {
  */
 async function getSorted(where, select, sort) {
     return await Expense.find(where, select)
-    .populate({path: "paymentType", select: "-_id -__v -translations"}) // substitution of Tag references with Tag data for "paymentType"
-    .populate({path: "categoryTag", select: "-_id -__v -translations"}) // substitution of Tag references with Tag data for "categoryTag"
+    .populate({path: "paymentType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "paymentType"
+    .populate({path: "categoryTag", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "categoryTag"
     .sort(sort).lean().exec();
 }
 

@@ -67,20 +67,27 @@ function isBalanceValid(data) {
  * @returns true if the expense is valid, false otherwise
  */
 function isExpenseValid(data) {
+    const PAYMENT_NONE = 0; // database index of the 'none' payment type (hardcoded = bad, but it will never change...probably...)
     // Cast the amount to Number and the is_expense flag to Boolean for type integrity
     data.amount = roundCurrency(Number(data.amount));
     data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
     if (data.date === undefined || data.date > now) data.date = now;
+    // If it's an income, the payment type is forced to 'none'
+    if (!data.is_expense) data.payment_type = PAYMENT_NONE;
     /**
      * Return true if:
      * 1. it's an expense and all fields are valid
      * 2. it's an income and all fields but payment_type are valid
      */
+    const is_expense = data.is_expense;
+    const amount_valid = !isNaN(data.amount);
+    const category_valid = (data.category_tag !== undefined);
+    const payment_type_valid = (data.payment_type !== undefined && data.payment_type !== PAYMENT_NONE); // for expenses only
     return (
-        (!isNaN(data.amount) && (data.category_tag !== undefined) && (data.payment_type !== undefined)) ||
-        ((!data.is_expense) && !isNaN(data.amount) && (data.category_tag !== undefined))
+        (!is_expense && amount_valid && category_valid) ||          // condition for incomes
+        (amount_valid && category_valid && payment_type_valid)      // condition for expenses
     );
 }
 

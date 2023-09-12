@@ -18,6 +18,7 @@ import {
   TitleLastAdds,
   TitleSection,
   ModifiedTitleDashboard,
+  MyGenericModal,
 } from '../contexts/MyStyled';
 
 // const handleInputIncomeChange = (setTableDataIncomes, tableDataIncomes, index, e) => {
@@ -69,81 +70,106 @@ const handleChangeBalance = async (fetchData, handleSetIsUpdated, balanceDate, b
   }
 };
 
-const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
+const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate, incomesTags) => {
   console.log("IncomeDate: ", incomeDate);
-  const newIncomeAdd = {
-    categoryTag: categoryIncome,
-    amount: income,
-    date: incomeDate,
-  };
-  if (Array.isArray(lastIncomesAdds)) {
-    setLastIncomesAdds([...lastIncomesAdds, newIncomeAdd]);
-  } else {
-    setLastIncomesAdds([newIncomeAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
-  }  //.slice(0, 10));
-  
-  //To send data we have to use category_tag, payment_type, amount, date as name of the variables
-  const incomeJson = { 
-    expense : {
-      date : incomeDate, 
-      amount : income,
-      is_expense : false,
-      payment_type : 0,
-      category_tag : categoryIncome,
+  console.log("Tag entrate: ", incomesTags);
 
+  // Verify that the user has entered a value and selected a category
+  if (income === 0 && categoryIncome.value === "") {
+    alert("Inserisci un valore e seleziona una categoria.");
+    return; // Esci dalla funzione senza procedere oltre
+  } else if (income === 0) {
+    alert("Inserisci un valore valido.");
+    return;
+  } else if (categoryIncome.value === "") {
+    alert("Seleziona una categoria.");
+    return;
+  }
+
+  setIsModalOpen(true);
+  if(!isModalOpen){
+    //To send data we have to use category_tag, payment_type, amount, date as name of the variables
+    const incomeJson = { 
+      expense : {
+        date : incomeDate, 
+        amount : income,
+        is_expense : false,
+        payment_type : 0,
+        category_tag : categoryIncome.key,  //incomesTags.index
+      }
+    }
+
+    setIncome(0);
+    setCategoryIncome({ key: "", value: "" });
+    setIncomeDate(new Date());
+
+    const incomeAdd = await axios.post('/expenses/add', incomeJson);
+    console.log("Risposta incomeAdd: ", incomeAdd);
+    
+    if (incomeAdd.status === 200) {
+      console.log("Entrate aggiornate aggiorno lo user context");
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      console.log("Sono quaaaaa3");
+      alert("Entrata inserita correttamente");
+      fetchData();
+      console.log("Sono quaaaaa4");
+    }
+    else {
+      alert("Errore nell'inserimento dell'entrata");
     }
   }
-
-  setIncome(0);
-  setCategoryIncome("");
-  setIncomeDate(new Date());
-
-  const incomeAdd = await axios.post('/expenses/add', incomeJson);
-  console.log("Risposta incomeAdd: ", incomeAdd);
-  
-  if (incomeAdd.status === 200) {
-    console.log("Entrate aggiornate aggiorno lo user context");
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    console.log("Sono quaaaaa3");
-    alert("Entrata inserita correttamente");
-    fetchData();
-    console.log("Sono quaaaaa4");
-  }
-  else {
-    alert("Errore nell'inserimento dell'entrata");
+  else{
+    alert("Annullato correttamente inserimento dei dati")
   }
 
  
 };
 
-const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
-  const newExpenseAdd = {
-    categoryTag: categoryExpense,
-    paymentType: typoExpense,
-    amount: expense,
-    date: expenseDate,
-  };
-  if (Array.isArray(lastExpensesAdds)) {
-    setLastExpensesAdds([...lastExpensesAdds, newExpenseAdd]); //.slice(0, 20));
-  } else {
-    setLastExpensesAdds([newExpenseAdd]); // Se tableDataIncomes non è valido, crea un nuovo array con newIncomeAdd
+const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate, expensesTags, paymentTags) => {
+
+  console.log("Tag spese: ", expensesTags);
+  console.log("Tag pagamenti: ", paymentTags);
+
+  // Verifica se income è uguale a 0 e/o categoryIncome è vuoto
+  if (expense === 0 && categoryExpense.value === "" && typoExpense.value  === "") {
+    alert("Inserisci un valore, seleziona una categoria e una tipologia di pagamento.");
+    return; 
+  } else if ( expense === 0 && categoryExpense.value === "") {
+    alert("Inserisci un valore e seleziona una categoria.");
+    return; 
+  } else if (expense === 0 && typoExpense.value === "") {
+    alert("Inserisci un valore e seleziona una tipologia di pagamento.");
+    return; 
+  } else if (categoryExpense.value === "" && typoExpense.value === "") {
+    alert("Seleziona una categoria e una tipologia di pagamento.");
+    return; 
+  } else if (expense === 0) {
+    alert("Inserisci un valore valido.");
+    return;
+  } else if (categoryExpense.value === "") {
+    alert("Seleziona una categoria.");
+    return;
   }
-  
+  else if (typoExpense.value === "") {
+    alert("Seleziona una tipologia di pagamento");
+    return;
+  }
+ 
   //To send data we have to use category_tag, payment_type, amount, date as name of the variables 
   const expenseJson = { 
     expense : {
       date : expenseDate,
       amount : expense,
       is_expense : true,
-      payment_type : Number(typoExpense),
-      category_tag : categoryExpense,  //now, after the rework i have to send the id of the category
+      payment_type : typoExpense.key, //paymentTags.index
+      category_tag : categoryExpense.key,  //now, after the rework i have to send the id of the category expensesTag.index
 
     }
   }
 
   setExpense(0);
-  setCategoryExpense("");
-  setTypoExpense("");
+  setCategoryExpense({key: "", value: ""});
+  setTypoExpense({key: "", value: ""});
   setExpenseDate(new Date());
 
   const expenseAdd = await axios.post('/expenses/add', expenseJson);
@@ -179,6 +205,7 @@ const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
 export default function InsertValue () {
   const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleItems, setVisibleItems] = useState(3); // Numero di elementi visibili nel carousel
   const [showScrollbar, setShowScrollbar] = useState(false); // Mostra o nascondi la barra di scorrimento laterale
   const [isLoading, setIsLoading] = useState(true);
@@ -193,9 +220,9 @@ export default function InsertValue () {
   const [incomesMonth, setIncomesMonth] = useState(0);
   const [expensesMonth, setExpensesMonth] = useState(0);
   const [savedMonth, setSavedMonth] = useState(0);
-  const [categoryIncome, setCategoryIncome] = useState("");
-  const [categoryExpense, setCategoryExpense] = useState("");
-  const [typoExpense, setTypoExpense] = useState("");
+  const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
+  const [categoryExpense, setCategoryExpense] = useState({ key: "", value: "" });
+  const [typoExpense, setTypoExpense] = useState({ key: "", value: "" });
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
@@ -209,6 +236,7 @@ export default function InsertValue () {
   const [activePage, setActivePage] = useState("bilancio");
   const [expensesTags, setExpensesTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
+  const [paymentTags, setPaymentTags] = useState([]);
   //TO set the calendar date format without the day of the week
   const formatShortWeekday = (locale, date) => "";
   
@@ -236,6 +264,8 @@ export default function InsertValue () {
 
             setExpensesTags(userData ? userData.expensesTags : []);
             setIncomesTags(userData ? userData.incomesTags : []);
+            setPaymentTags(userData ? userData.paymentTags : []);
+
             setLastExpensesAdds(userData ? userData.lastExpenses : []); // da modificare
             setLastIncomesAdds(userData ? userData.lastIncomes : []); // da modificare
 
@@ -244,10 +274,6 @@ export default function InsertValue () {
             setDateTime(now);
             setIncomeDate(now);
             setExpenseDate(now);
-
-            //print tags
-            console.log("Tag spese: ", expensesTags);
-            console.log("Tag entrate: ", incomesTags);
 
             //print datas
             console.log("Data e ora: ", dateTime);
@@ -272,7 +298,7 @@ export default function InsertValue () {
   
       return (
         <tr key={index}>
-          <td>{add.categoryTag}</td>
+          <td>{add.categoryTag.translations.it}</td>
           <td>{add.amount}€</td>
           <td>{formattedDate}</td>
         </tr>
@@ -289,8 +315,8 @@ export default function InsertValue () {
       const formattedDate = `${expenseDate.getDate()}/${expenseDate.getMonth() + 1}/${expenseDate.getFullYear()}`;
       return (
         <tr key={index}>
-          <td>{add.categoryTag}</td>
-          <td>{add.paymentType}</td>
+          <td>{add.categoryTag.translations.it}</td>
+          <td>{add.paymentType.translations.it}</td>
           <td>{add.amount}€</td>
           <td>{formattedDate}</td>
         </tr>
@@ -311,13 +337,24 @@ export default function InsertValue () {
             <label>
               Depositati in Banca
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={bankReal}
-                  onChange={(e) => setBankReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setBankReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setBankReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -342,13 +379,24 @@ export default function InsertValue () {
             <label>
               Contanti e monete
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={cashReal}
-                  onChange={(e) => setCashReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setCashReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setCashReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -373,13 +421,24 @@ export default function InsertValue () {
             <label>
               Su servizi di pagam. digitali
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={digitalServicesReal}
-                  onChange={(e) => setDigitalServicesReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setDigitalServicesReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setDigitalServicesReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -408,13 +467,24 @@ export default function InsertValue () {
             <label>
               Azioni
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={stocksReal}
-                  onChange={(e) => setStocksReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setStocksReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setStocksReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -439,13 +509,24 @@ export default function InsertValue () {
             <label>
               ETF
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={etfReal}
-                  onChange={(e) => setETFReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setETFReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setETFReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -470,13 +551,24 @@ export default function InsertValue () {
             <label>
               Bitcoin
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={bitcoinReal}
-                  onChange={(e) => setBitcoinReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setBitcoinReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setBitcoinReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -501,13 +593,24 @@ export default function InsertValue () {
             <label>
               Criptovalute
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={cryptoReal}
-                  onChange={(e) => setCryptoReal(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setCryptoReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setCryptoReal(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -544,39 +647,63 @@ export default function InsertValue () {
           </StyledInputs>
         </>
       );
-      // cambiare la generazione del menu a tendina delle categorie in automatico prelevando le opzioni dalla variabile tagExpensesIncomes
     } else if (activePage === "income") {
+      console.log("Tag entrate pre .map: ", incomesTags);
       return (
         <>
           <StyledAddSection theme={theme}>
             <label>
               Categoria
-              <Select value={categoryIncome} onChange={(event) =>setCategoryIncome(event.target.id)} style={{ backgroundColor: 'white' }} displayEmpty
-                  renderValue={(value) => {
-                    if (value === "") {
-                      return "Seleziona una categoria";
-                    }
-                    return value;
-                  }}
+              <Select value={categoryIncome.value} 
+                onChange={(event) => {
+                      const selectedKey = event.target.value;
+                      const selectedItem = incomesTags.find((item) => item.index === selectedKey);
+
+                      if (selectedItem) {
+                        const selectedValue = selectedItem.translations.it;
+                        setCategoryIncome({ key: selectedKey, value: selectedValue });
+                      }
+                    }} 
+                style={{ backgroundColor: 'white' }} displayEmpty
+
+                renderValue={(value) => {
+                  if (value === "") {
+                    return "Seleziona una categoria";
+                  }
+                  return value;
+                }}
               >
-                <MenuItem id= "1" value="Stipendio">Stipendio</MenuItem> 
-                <MenuItem id= "2" value="Lavoro indipendente">Entrata da lavoro indipendente</MenuItem>
-                <MenuItem id= "3" value="Entrata extra">Entrata extra</MenuItem>
-                <MenuItem id= "4" value="Regalo">Regalo</MenuItem>
-                <MenuItem id= "5" value="Pensione">Pensione</MenuItem>
-                <MenuItem id= "0" value="Altro">Altro</MenuItem>
+                <MenuItem value="">
+                  <em>Seleziona una categoria</em>
+                </MenuItem>
+                {incomesTags.map((item) => (
+                  <MenuItem key={item.index} value={item.index}>
+                    {item.translations.it} 
+                  </MenuItem>
+                ))}
               </Select>
             </label>
             <label>
               Valore
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={income}
-                  onChange={(e) => setIncome(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setIncome(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setIncome(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -612,7 +739,7 @@ export default function InsertValue () {
             
             
           <StyledAddSection theme={theme}> 
-            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Aggiungi entrata</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate, incomesTags)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 10 entrate del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>
@@ -636,55 +763,94 @@ export default function InsertValue () {
           <StyledAddSection theme={theme}>
             <label>
               Categoria
-              <Select value={categoryExpense} onChange={(event) =>setCategoryExpense(event.target.value)} style={{ backgroundColor: 'white' }} displayEmpty
-                      renderValue={(value) => {
-                        if (value === "") {
-                          return "Seleziona una categoria";
-                        }
-                        return value;
-                      }}
+              <Select value={categoryExpense.value} 
+                  onChange={(event) => {
+                      const selectedKey = event.target.value;
+                      const selectedItem = expensesTags.find((item) => item.index === selectedKey);
+
+                      if (selectedItem) {
+                        const selectedValue = selectedItem.translations.it;
+                        setCategoryExpense({ key: selectedKey, value: selectedValue });
+                      }
+                    }}  
+                  
+                  style={{ backgroundColor: 'white' }} displayEmpty
+
+                  renderValue={(value) => {
+                    if (value === "") {
+                      return "Seleziona una categoria";
+                    }
+                    return value;
+                  }}
                   >
-                    <MenuItem id="Digital services" value="Servizio digitale">Servizio digitale</MenuItem>
-                    <MenuItem id="Gift" value="Regalo">Regalo</MenuItem>
-                    <MenuItem id="Shopping" value="Shopping">Shopping</MenuItem>
-                    <MenuItem id="Food" value="Cibo">Cibo</MenuItem>
-                    <MenuItem id="House" value="Casa">Casa</MenuItem>
-                    <MenuItem id="Social" value="Divertimento">Divertimento</MenuItem>
-                    <MenuItem id="Travelling" value="Viaggio">Viaggio</MenuItem>
-                    <MenuItem id="Investments" value="Investimento">Investimento</MenuItem>
-                    <MenuItem id="Health" value="Salute e benessere">Salute e benessere</MenuItem>
-                    <MenuItem id="Taxes" value="Tassa">Tassa</MenuItem>
-                    <MenuItem id="Vehicle" value="Veicolo">Veicolo</MenuItem>
-                    <MenuItem id="Transports" value="Trasporto">Trasporto</MenuItem>
-                    <MenuItem id="Other" value="Altro">Altro</MenuItem>
+
+                  <MenuItem value="">
+                    <em>Seleziona una categoria</em>
+                  </MenuItem>
+                  {expensesTags.map((item) => (
+                    <MenuItem key={item.index} value={item.index}>
+                      {item.translations.it} 
+                    </MenuItem>
+                  ))}
               </Select>
             </label>
             <label>
               Tipologia pagamento
-              <Select value={typoExpense} onChange={(event) =>setTypoExpense(event.target.id)} style={{ backgroundColor: 'white' }} displayEmpty
-                      renderValue={(value) => {
-                        if (value === "") {
-                          return "Seleziona una tipologia";
-                        }
-                        return value;
-                      }}
+              <Select value={typoExpense.value} 
+                  onChange={(event) => {
+                      const selectedKey = event.target.value;
+                      const selectedItem = paymentTags.find((item) => item.index === selectedKey);
+
+                      if (selectedItem) {
+                        const selectedValue = selectedItem.translations.it;
+                        setTypoExpense({ key: selectedKey, value: selectedValue });
+                      }
+                    }}  
+                  
+                  style={{ backgroundColor: 'white' }} displayEmpty
+
+                  renderValue={(value) => {
+                    if (value === "") {
+                      return "Seleziona una tipologia";
+                    }
+                    return value;
+                  }}
                   >
-                  <MenuItem id= "0" value="Pagamento univoco">Pagamento univoco</MenuItem>
-                  <MenuItem id= "1" value="Abbonamento">Abbonamento</MenuItem>
-                  <MenuItem id= "2" value="Rata">Rata</MenuItem>
+                  <MenuItem value="">
+                    <em>Seleziona una tipologia</em>
+                  </MenuItem>
+                  {paymentTags.map((item) => (
+                    // check if the item is not none because we don't want to show it
+                    item.label !== "none" && (
+                      <MenuItem key={item.index} value={item.index}>
+                        {item.translations.it}
+                      </MenuItem>
+                    )
+                  ))}
               </Select>
               
             </label>
             <label>
               Spesa
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="number"
+              <input
+                  type="text"
                   value={expense}
-                  onChange={(e) => setExpense(e.target.value)}
-                  onBlur={(e) => {
-                    const cleanedValue = parseInt(e.target.value, 10); // Convert to integer to remove leading zeros
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
                     setExpense(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setExpense(cleanedFinalValue);
                   }}
                   style={{
                     textAlign: "center",
@@ -716,7 +882,7 @@ export default function InsertValue () {
             </div>
           </StyledAddSection>
           <StyledAddSection theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Aggiungi spesa</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate, expensesTags, paymentTags)}>Aggiungi spesa</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 20 spese del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>

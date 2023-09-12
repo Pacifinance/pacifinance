@@ -16,6 +16,7 @@ import { PieChart, Pie, Cell } from "recharts";
 import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
 import { primaryColor } from '../contexts/Themes';
 import axios from 'axios';
+import { calculatePercentageChange } from '../utilities/calculations';
 
 
 
@@ -126,7 +127,7 @@ export default function BalancesStatsMonth() {
         <TitleDashboard theme={theme}>
             Il tuo patrimonio è variato del:{" "}
             <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
-                {(((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100).toFixed(2)} %
+                {calculatePercentageChange(totalReal, totalRealPreMonth)}
             </span>
         </TitleDashboard>
         <SectionAMonth theme={theme}>
@@ -143,11 +144,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {bankRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((bankReal - bankRealPreMonth) / bankRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((bankReal - bankRealPreMonth) / bankRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(bankReal, bankRealPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -164,11 +161,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {cashRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((cashReal - cashRealPreMonth) / cashRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((cashReal - cashRealPreMonth) / cashRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(cashReal, cashRealPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -185,11 +178,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {digitalServicesRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((digitalServicesReal - digitalServicesRealPreMonth) / digitalServicesRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((digitalServicesReal - digitalServicesRealPreMonth) / digitalServicesRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(digitalServicesReal, digitalServicesRealPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -206,11 +195,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {stocksRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((stocksReal - stocksRealPreMonth) / stocksRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((stocksReal - stocksRealPreMonth) / stocksRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(stocksReal, stocksRealPreMonth)}
                     </h5>
 
                 </div>
@@ -228,11 +213,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {etfRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((etfReal - etfRealPreMonth) / etfRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((etfReal - etfRealPreMonth) / etfRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(etfReal, etfRealPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -249,11 +230,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {bitcoinRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((bitcoinReal - bitcoinRealPreMonth) / bitcoinRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((bitcoinReal - bitcoinRealPreMonth) / bitcoinRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(bitcoinReal, bitcoinRealPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -270,11 +247,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {cryptoRealPreMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((cryptoReal - cryptoRealPreMonth) / cryptoRealPreMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((cryptoReal - cryptoRealPreMonth) / cryptoRealPreMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(cryptoReal, cryptoRealPreMonth)}
                     </h5>
                 </div>
             </div>

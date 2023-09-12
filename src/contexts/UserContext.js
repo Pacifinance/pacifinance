@@ -59,10 +59,14 @@ function UserProvider({ children }) {
 
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
             const allTags  = await axios.post('/tags/get');
-            const expensesTags = allTags.expense;
-            const incomesTags = allTags.income;
-            const paymentTags = allTags.payment;
+            const expensesTags = allTags.data.expense;
+            const incomesTags = allTags.data.income;
+            const paymentTags = allTags.data.payment;
             console.log('Array completo di risposta: ', balancesResponse.data);
+            console.log('Tutte le tags disponibili: ', allTags);
+            console.log('Tags spese: ', expensesTags);
+            console.log('Tags entrate: ', incomesTags);
+            console.log('Tags pagamenti: ', paymentTags);
             //GET DATA FROM RESPONSES
             var balances = {};
             //add a control to check if the user has data in this month and previous month

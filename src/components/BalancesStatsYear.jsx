@@ -14,6 +14,7 @@ import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
 import { primaryColor } from '../contexts/Themes';
+import { calculatePercentageChange } from '../utilities/calculations';
 // import { PieChart, Pie, Cell } from "recharts";
 
 // const [activeIndex, setActiveIndex] = useState(null);
@@ -146,7 +147,7 @@ function BalancesStatsYear() {
         <TitleDashboard theme={theme}>
             Il tuo patrimonio è variato del:{" "}
             <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
-                {(((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100).toFixed(2)} %
+                {calculatePercentageChange(totalReal, totalRealPreYearSameMonth)}
             </span>
         </TitleDashboard>
         <SectionAMonth theme={theme}>
@@ -162,11 +163,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {bankRealPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((bankReal - bankRealPreYearSameMonth) / bankRealPreYearSameMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((bankReal - bankRealPreYearSameMonth) / bankRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(bankReal, bankRealPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -183,11 +180,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {cashRealPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((cashReal - cashRealPreYearSameMonth) / cashRealPreYearSameMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((cashReal - cashRealPreYearSameMonth) / cashRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(cashReal, cashRealPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -205,11 +198,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {digitalServicesRealPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((digitalServicesReal - digitalServicesRealPreYearSameMonth) / digitalServicesRealPreYearSameMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((digitalServicesReal - digitalServicesRealPreYearSameMonth) / digitalServicesRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -226,11 +215,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                    {stocksRealPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((stocksReal - stocksRealPreYearSameMonth) / stocksRealPreYearSameMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((stocksReal - stocksRealPreYearSameMonth) / stocksRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(stocksReal, stocksRealPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -247,11 +232,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {etfRealPreYearSameMonth === 0
-                            ? 'N.A.' 
-                            :isNaN((((etfReal - etfRealPreYearSameMonth) / etfRealPreYearSameMonth) * 100).toFixed(2))
-                                ? 'N.A.'
-                                : `${(((etfReal - etfRealPreYearSameMonth) / etfRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(etfReal, etfRealPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -268,11 +249,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {bitcoinRealPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN((((bitcoinReal - bitcoinRealPreYearSameMonth) / bitcoinRealPreYearSameMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((bitcoinReal - bitcoinRealPreYearSameMonth) / bitcoinRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(bitcoinReal, bitcoinRealPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -289,11 +266,7 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                 <h5>
-                    {cryptoRealPreYearSameMonth === 0
-                        ? 'N.A.'
-                        : isNaN((((cryptoReal - cryptoRealPreYearSameMonth) / cryptoRealPreYearSameMonth) * 100).toFixed(2))
-                            ? 'N.A.'
-                            : `${(((cryptoReal - cryptoRealPreYearSameMonth) / cryptoRealPreYearSameMonth) * 100).toFixed(2)} %`}
+                    {calculatePercentageChange(cryptoReal, cryptoRealPreYearSameMonth)}
                 </h5>
                 </div>
             </div>

@@ -7,6 +7,7 @@ import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth, WrapperAMonth} from '../contexts/MyStyled';
 import { PieChart, Pie, Cell } from "recharts";
+import { calculatePercentageChange } from '../utilities/calculations';
 
 // const [activeIndex, setActiveIndex] = useState(null);
 
@@ -123,11 +124,7 @@ function InExStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {incomesPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN(((incomesMonth - incomesPreYearSameMonth) / incomesPreYearSameMonth) * 100)
-                            ? 'N.A.'
-                            : `${(((incomesMonth - incomesPreYearSameMonth) / incomesPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(incomesMonth, incomesPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -147,11 +144,7 @@ function InExStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {expensesPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN(((expensesMonth - expensesPreYearSameMonth) / expensesPreYearSameMonth) * 100)
-                            ? 'N.A.'
-                            : `${(((expensesMonth - expensesPreYearSameMonth) / expensesPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(expensesMonth, expensesPreYearSameMonth)}
                     </h5>
                 </div>
             </div>
@@ -171,11 +164,7 @@ function InExStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {savedPreYearSameMonth === 0
-                        ? 'N.A.' 
-                        :isNaN(((savedMonth - savedPreYearSameMonth) / savedPreYearSameMonth) * 100)
-                            ? 'N.A.'
-                            : `${(((savedMonth - savedPreYearSameMonth) / savedPreYearSameMonth) * 100).toFixed(2)} %`}
+                        {calculatePercentageChange(savedMonth, savedPreYearSameMonth)}
                     </h5>
                 </div>
             </div>

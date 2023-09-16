@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import Modal from 'react-modal';
-import { themes } from './Themes';
+import { primaryColor, themes } from './Themes';
 import styled, { keyframes, css } from 'styled-components';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -150,6 +150,10 @@ export const SignIn = styled.div`
 `;
 
 export const SignInButton = styled(MyButton)`
+  margin-right: 40%;
+`;
+
+export const ModalButton = styled(MyButton)`
   margin-right: 40%;
 `;
 
@@ -1299,23 +1303,23 @@ export const MuiCustomDialog = styled(Dialog)`
 
 export const MuiCustomButton = styled(Button)`
   && {
-    background-color: ${(props) => (props.theme.buttonBackgroundColor)};
-    color: ${(props) => (props.theme.textColor)};
-    hover: ${(props) => (props.theme.backgroundColor)};
+    background-color: ${primaryColor};
+    color: white;
+    hover: ${primaryColor};
   }
 `;
 
 export const MuiCustomDialogTitle = styled(DialogTitle)`
   && {
     font-family: Roboto, sans-serif;
-    color: ${(props) => (props.theme.buttonBackgroundColor)};
+    color: ${primaryColor};
   }
 `;
 
 export const MuiCustomDialogContent = styled(DialogContent)`
   && {
     // font-family: Roboto, sans-serif;
-    // color: ${(props) => (props.theme.textColor)};
+    // color: black;
     // // background-color: ${(props) => (props.theme.backgroundColor)};
   }
 `;
@@ -1323,7 +1327,7 @@ export const MuiCustomDialogContent = styled(DialogContent)`
 export const MuiCustomDialogContentText = styled(DialogContentText)`
   && {
     font-family: Roboto, sans-serif;
-    color: ${(props) => (props.theme.textColor)};
+    color: black;
   }
 `;
 

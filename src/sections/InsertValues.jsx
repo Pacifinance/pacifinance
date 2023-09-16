@@ -4,10 +4,9 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
 // import Carousel from "react-multi-carousel";
 // import "react-multi-carousel/lib/styles.css";
-import { Title } from "@material-ui/icons";
 import axios from 'axios';
 import {
-  MyButton,
+  ModalButton,
   MySectionButton,
   MySecondaryButton,
   StyledSection,
@@ -18,24 +17,20 @@ import {
   TitleLastAdds,
   TitleSection,
   ModifiedTitleDashboard,
-  MyGenericModal,
+  MuiCustomDialog,
+  MuiCustomButton,
+  MuiCustomDialogTitle,
+  MuiCustomDialogContent,
+  MuiCustomDialogContentText,
 } from '../contexts/MyStyled';
+import { set } from "mongoose";
 
-// const handleInputIncomeChange = (setTableDataIncomes, tableDataIncomes, index, e) => {
-//   const { name, value } = e.target;
-//   const data = [...tableDataIncomes];
-//   data[index][name] = value;
-//   setTableDataIncomes(data);
-// };
 
-// const handleInputExpenseChange = (setTableDataExpenses, tableDataExpenses, index, e) => {
-//   const { name, value } = e.target;
-//   const data = [...tableDataExpenses];
-//   data[index][name] = value;
-//   setTableDataExpenses(data);
-// };
+const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
+  setIsConfirmBalanceOpen(true);
+};
 
-const handleChangeBalance = async (fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+const handleConfirmBalance = async (fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
   const balancesJson = { 
     balance : {
       date : balanceDate,
@@ -70,24 +65,23 @@ const handleChangeBalance = async (fetchData, handleSetIsUpdated, balanceDate, b
   }
 };
 
-const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate, incomesTags) => {
-  console.log("IncomeDate: ", incomeDate);
-  console.log("Tag entrate: ", incomesTags);
+const handleAddIncome = async (setIsConfirmIncomeOpen, categoryIncome, income) => {
 
-  // Verify that the user has entered a value and selected a category
-  if (income === 0 && categoryIncome.value === "") {
-    alert("Inserisci un valore e seleziona una categoria.");
-    return; // Esci dalla funzione senza procedere oltre
-  } else if (income === 0) {
-    alert("Inserisci un valore valido.");
-    return;
-  } else if (categoryIncome.value === "") {
+  // Check if the user has entered a non-empty value and selected a category
+  if (categoryIncome.value === "") {
     alert("Seleziona una categoria.");
+    return; // Exit the function without further execution
+  } else if ((Number(income) === 0 || income === "" || income === undefined)) {
+    alert("Inserisci un valore valido e maggiore di 0.");
     return;
   }
 
-  setIsModalOpen(true);
-  if(!isModalOpen){
+  setIsConfirmIncomeOpen(true);
+};
+
+
+const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
+  setIsConfirmIncomeOpen(false);
     //To send data we have to use category_tag, payment_type, amount, date as name of the variables
     const incomeJson = { 
       expense : {
@@ -116,45 +110,30 @@ const handleAddIncome = async (fetchData, setLastIncomesAdds, setIncome, setInco
     }
     else {
       alert("Errore nell'inserimento dell'entrata");
-    }
-  }
-  else{
-    alert("Annullato correttamente inserimento dei dati")
-  }
-
- 
+    } 
 };
 
-const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate, expensesTags, paymentTags) => {
 
-  console.log("Tag spese: ", expensesTags);
-  console.log("Tag pagamenti: ", paymentTags);
+const handleAddExpenses = async (setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense) => {
 
   // Verifica se income è uguale a 0 e/o categoryIncome è vuoto
-  if (expense === 0 && categoryExpense.value === "" && typoExpense.value  === "") {
-    alert("Inserisci un valore, seleziona una categoria e una tipologia di pagamento.");
-    return; 
-  } else if ( expense === 0 && categoryExpense.value === "") {
-    alert("Inserisci un valore e seleziona una categoria.");
-    return; 
-  } else if (expense === 0 && typoExpense.value === "") {
-    alert("Inserisci un valore e seleziona una tipologia di pagamento.");
-    return; 
-  } else if (categoryExpense.value === "" && typoExpense.value === "") {
-    alert("Seleziona una categoria e una tipologia di pagamento.");
-    return; 
-  } else if (expense === 0) {
-    alert("Inserisci un valore valido.");
-    return;
-  } else if (categoryExpense.value === "") {
+  if (categoryExpense.value === "") {
     alert("Seleziona una categoria.");
+    return; 
+  } else if (typoExpense.value === "") {
+    alert("Seleziona una tipologia di pagamento.");
+    return; 
+  } else if ((Number(expense) === 0 || expense === "" || expense === undefined)) { 
+    alert("Inserisci un valore valido e maggiore di 0.");
     return;
   }
-  else if (typoExpense.value === "") {
-    alert("Seleziona una tipologia di pagamento");
-    return;
-  }
- 
+
+  setIsConfirmExpenseOpen(true);
+};
+
+const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
+  setIsConfirmExpenseOpen(false);
+
   //To send data we have to use category_tag, payment_type, amount, date as name of the variables 
   const expenseJson = { 
     expense : {
@@ -184,7 +163,26 @@ const handleAddExpenses = async (fetchData, setLastExpensesAdds, setExpense, set
   else {
     alert("Errore nell'inserimento della spesa");
   }
+
 };
+
+const handleExitConfirm = async (setModalState) => {
+  setModalState(false);
+  alert("Annullato correttamente inserimento dei dati")
+};
+
+// const handleExitIncome = async (setIsConfirmIncomeOpen) => {
+//   setIsConfirmIncomeOpen(false);
+//   alert("Annullato correttamente inserimento dei dati")
+// };
+
+// const handleExitExpense = async (setIsConfirmExpenseOpen) => {
+//   setIsConfirmExpenseOpen(false);
+//   alert("Annullato correttamente inserimento dei dati")
+// };
+
+
+
 
 // this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
 const handleIncomesDelete = (setLastIncomesAdds, lastIncomesAdds, index) => {
@@ -205,7 +203,10 @@ const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
 export default function InsertValue () {
   const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated } = useContext(UserContext);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
+  const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
+  const [isConfirmExpenseOpen, setIsConfirmExpenseOpen] = useState(false);
+  // const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [visibleItems, setVisibleItems] = useState(3); // Numero di elementi visibili nel carousel
   const [showScrollbar, setShowScrollbar] = useState(false); // Mostra o nascondi la barra di scorrimento laterale
   const [isLoading, setIsLoading] = useState(true);
@@ -643,7 +644,7 @@ export default function InsertValue () {
             />
           </StyledInputs>
           <StyledInputs theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)} >Aggiorna il tuo patrimonio</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
         </>
       );
@@ -739,7 +740,7 @@ export default function InsertValue () {
             
             
           <StyledAddSection theme={theme}> 
-            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(fetchData, setLastIncomesAdds, setIncome, setIncomeDate, setCategoryIncome, lastIncomesAdds, handleSetIsUpdated, categoryIncome, income, incomeDate, incomesTags)}>Aggiungi entrata</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 10 entrate del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>
@@ -882,7 +883,7 @@ export default function InsertValue () {
             </div>
           </StyledAddSection>
           <StyledAddSection theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(fetchData, setLastExpensesAdds, setExpense, setCategoryExpense, setTypoExpense, setExpenseDate, lastExpensesAdds, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate, expensesTags, paymentTags)}>Aggiungi spesa</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi spesa</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>Ultime 20 spese del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>
@@ -937,6 +938,72 @@ export default function InsertValue () {
           </MySectionButton>
         </ButtonGroup>
         {renderPage()}
+        {isConfirmBalanceOpen && (
+          <MuiCustomDialog
+            open={isConfirmBalanceOpen}
+            onClose={handleExitConfirm}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Conferma aggiornamento bilancio</MuiCustomDialogTitle>
+            <MuiCustomDialogContent>
+              <MuiCustomDialogContentText>Depositati in Banca: {bankReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Contanti e monete: {cashReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Su servizi di pagam. digitali: {digitalServicesReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Azioni: {stocksReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>ETF: {etfReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Bitcoin: {bitcoinReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Criptovalute: {cryptoReal}€</MuiCustomDialogContentText>
+              {/* <MuiCustomDialogContentText>Data: {balanceDate}</MuiCustomDialogContentText> */}{/* TO FIX */}  
+            </MuiCustomDialogContent>
+              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>Annulla</MuiCustomButton>
+          </MuiCustomDialog>
+        )}
+        {isConfirmIncomeOpen && ( 
+          <MuiCustomDialog
+            open={isConfirmIncomeOpen}
+            onClose={handleExitConfirm}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Conferma inserimento entrata</MuiCustomDialogTitle>
+            <MuiCustomDialogContent>
+              <MuiCustomDialogContentText>Categoria: {categoryIncome.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Valore: {income}€</MuiCustomDialogContentText>
+              {/* <MuiCustomDialogContentText>Data: {incomeDate}</MuiCustomDialogContentText> */}{/* TO FIX */}  
+            </MuiCustomDialogContent>
+            {/* <div style={{ display: "flex", justifyContent: "space-between" }}> */}
+              <MuiCustomButton onClick={() => handleConfirmIncome(fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Conferma</MuiCustomButton>
+            {/* </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}> */}
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>Annulla</MuiCustomButton>
+            {/* </div> */}
+          </MuiCustomDialog>
+        )}
+        {isConfirmExpenseOpen && ( 
+          <MuiCustomDialog
+            open={isConfirmExpenseOpen}
+            onClose={handleExitConfirm}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Conferma inserimento spesa</MuiCustomDialogTitle>
+            <MuiCustomDialogContent>
+              <MuiCustomDialogContentText>Categoria: {categoryExpense.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Valore: {expense}€</MuiCustomDialogContentText>
+              {/* <MuiCustomDialogContentText>Data: {expenseDate}</MuiCustomDialogContentText> */}{/* TO FIX */}  
+            </MuiCustomDialogContent>
+            {/* <div style={{ display: "flex", justifyContent: "space-between"}}> */}
+              <MuiCustomButton onClick={() => handleConfirmExpense(fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Conferma</MuiCustomButton>
+            {/* </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}> */}
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>Annulla</MuiCustomButton>
+            {/* </div> */}
+          </MuiCustomDialog>
+        )}
     </StyledSection>
+    
   );
 };

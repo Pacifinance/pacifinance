@@ -144,23 +144,23 @@ export default function SignInForm() {
                 </div>
             </div>
             {showErrorModal && (
-                <MuiCustomDialog theme={theme}
+                <MuiCustomDialog
                     open={showErrorModal}
                     onClose={handleCloseModal}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
+                    <MuiCustomDialogTitle id="alert-dialog-title">
                         {"Errore in fase di accesso"}
                     </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent theme={theme}>
-                        <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
+                    <MuiCustomDialogContent>
+                        <MuiCustomDialogContentText id="alert-dialog-description">
                             Si è verificato un errore nell'accesso con il tuo account. <br></br>
                             Controlla di digitare correttamente id e password.<br></br>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
-                    <MuiCustomDialogActions theme={theme}>
-                        <MuiCustomButton theme={theme} onClick={handleCloseModal} autoFocus>
+                    <MuiCustomDialogActions>
+                        <MuiCustomButton onClick={handleCloseModal} autoFocus>
                             Ok, va bene
                         </MuiCustomButton>
                     </MuiCustomDialogActions>

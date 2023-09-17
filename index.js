@@ -285,31 +285,6 @@ app.post("/balances/get", async (req, res) => {
     res.json(balances);
 });
 
-app.post("/balances/top", async (req, res) => {
-    // Check if the session is valid. Send status code 401
-    // (Unauthorized) if it's not valid
-    const valid_session = await checkUserSession(req.session);
-    if (!valid_session)
-    {
-        res.status(401);
-        res.send();
-        return;
-    }
-    // Get the list of all user IDs
-    const users = await db.users.getAllUsersIds();
-    // For each user get its latest balance
-    let balances = [];
-    for (let user of users)
-    {
-        const balance = await db.balances.getLatestByUserId(user.userId);
-        if (balance !== null)
-            balances.push(balance);
-    }
-    // Send the data to the client with status code 200 (OK)
-    res.status(200);
-    res.json(balances);
-});
-
 app.post("/expenses/add", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
@@ -395,6 +370,38 @@ app.post("/tags/get", async (req, res) => {
     // Send the array of tags to the client with status code 200 (OK)
     res.status(200);
     res.json(tags);
+});
+
+app.post("/rank/all", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Get the list of all user IDs
+    const users = await db.users.getAllUsersIds();
+    // For each user get its latest balance
+    let balances = [];
+    for (let user of users) {
+        const balance = await db.balances.getLatestByUserId(user.userId);
+        if (balance !== null)
+            balances.push({user: user, balance: balance});
+    }
+    // Sort the array of balances to get the position of the user
+    const target_user = req.session.userId;
+    balances.sort((a, b) => a.balance - b.balance);
+    let position = -1;
+    for (let i = 0; i < balances.length; i++) {
+        if (balances[i].user === target_user)
+            position = balances.length - i;
+    }
+    // Send the data to the client with status code 200 (OK)
+    res.status(200);
+    res.json({position: position});
 });
 
 db.connect(process.env.DB_URI)

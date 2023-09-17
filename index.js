@@ -401,7 +401,7 @@ app.post("/rank/all", async (req, res) => {
     }
     // Send the data to the client with status code 200 (OK)
     res.status(200);
-    res.json({position: position});
+    res.json({position: position, total: balances.length});
 });
 
 db.connect(process.env.DB_URI)

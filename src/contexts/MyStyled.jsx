@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import Modal from 'react-modal';
-import { primaryColor, themes } from './Themes';
+import { primaryColor, backgroundColor, themes } from './Themes';
 import styled, { keyframes, css } from 'styled-components';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -1305,7 +1305,7 @@ export const MuiCustomButton = styled(Button)`
   && {
     background-color: ${primaryColor};
     color: white;
-    hover: ${primaryColor};
+    hover: ${backgroundColor};
   }
 `;
 
@@ -1333,9 +1333,9 @@ export const MuiCustomDialogContentText = styled(DialogContentText)`
 
 export const MuiCustomDialogActions = styled(DialogActions)`
   && {
-    // font-family: Roboto, sans-serif;
-    // color: ${(props) => (props.theme.textColor)};
-    // background-color: ${(props) => (props.theme.backgroundColor)};
+    display: flex;
+    justify-content: center; /* Center-align the buttons horizontally */
+    align-items: center; /* Center-align the buttons vertically */
   }
 `;
 

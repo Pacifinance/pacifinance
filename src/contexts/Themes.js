@@ -23,6 +23,7 @@ export const themes = {
 };
 
 export const primaryColor = '#079164';
+export const backgroundColor = '#0d0f13';
 
 export const colorsBalances = {
   Azioni: '#FF6600',

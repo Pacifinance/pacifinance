@@ -22,6 +22,7 @@ import {
   MuiCustomDialogTitle,
   MuiCustomDialogContent,
   MuiCustomDialogContentText,
+  MuiCustomDialogActions,
 } from '../contexts/MyStyled';
 import { set } from "mongoose";
 
@@ -30,7 +31,8 @@ const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
   setIsConfirmBalanceOpen(true);
 };
 
-const handleConfirmBalance = async (fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+  setIsConfirmBalanceOpen(false);
   const balancesJson = { 
     balance : {
       date : balanceDate,
@@ -941,7 +943,7 @@ export default function InsertValue () {
         {isConfirmBalanceOpen && (
           <MuiCustomDialog
             open={isConfirmBalanceOpen}
-            onClose={handleExitConfirm}
+            onClose={() => handleExitConfirm(setIsConfirmBalanceOpen)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
@@ -954,16 +956,18 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>ETF: {etfReal}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Bitcoin: {bitcoinReal}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Criptovalute: {cryptoReal}€</MuiCustomDialogContentText>
-              {/* <MuiCustomDialogContentText>Data: {balanceDate}</MuiCustomDialogContentText> */}{/* TO FIX */}  
+              <MuiCustomDialogContentText>Data selezionata: {balanceDate.toLocaleDateString()}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
-              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
+            <MuiCustomDialogActions>
+              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>Annulla</MuiCustomButton>
+            </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
         {isConfirmIncomeOpen && ( 
           <MuiCustomDialog
             open={isConfirmIncomeOpen}
-            onClose={handleExitConfirm}
+            onClose={() => handleExitConfirm(setIsConfirmIncomeOpen)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
@@ -971,20 +975,18 @@ export default function InsertValue () {
             <MuiCustomDialogContent>
               <MuiCustomDialogContentText>Categoria: {categoryIncome.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {income}€</MuiCustomDialogContentText>
-              {/* <MuiCustomDialogContentText>Data: {incomeDate}</MuiCustomDialogContentText> */}{/* TO FIX */}  
+              <MuiCustomDialogContentText>Data selezionata: {incomeDate.toLocaleDateString()}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}> */}
+            <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleConfirmIncome(fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Conferma</MuiCustomButton>
-            {/* </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}> */}
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>Annulla</MuiCustomButton>
-            {/* </div> */}
+            </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
         {isConfirmExpenseOpen && ( 
           <MuiCustomDialog
             open={isConfirmExpenseOpen}
-            onClose={handleExitConfirm}
+            onClose={() => handleExitConfirm(setIsConfirmExpenseOpen)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
@@ -993,14 +995,12 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>Categoria: {categoryExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {expense}€</MuiCustomDialogContentText>
-              {/* <MuiCustomDialogContentText>Data: {expenseDate}</MuiCustomDialogContentText> */}{/* TO FIX */}  
+              <MuiCustomDialogContentText>Data selezionata: {expenseDate.toLocaleDateString()}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
-            {/* <div style={{ display: "flex", justifyContent: "space-between"}}> */}
+            <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleConfirmExpense(fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Conferma</MuiCustomButton>
-            {/* </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}> */}
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>Annulla</MuiCustomButton>
-            {/* </div> */}
+            </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
     </StyledSection>

@@ -372,7 +372,7 @@ app.post("/tags/get", async (req, res) => {
     res.json(tags);
 });
 
-app.post("/rank/all", async (req, res) => {
+app.post("/rank/balances/all", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);

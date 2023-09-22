@@ -120,6 +120,21 @@ async function getLatestByUserId(user_id) {
 }
 
 /**
+ * Gets the latest balance of a user and sums all its parts together
+ * @param {String} user_id - ID of the user
+ * @return Total balance of the user
+ */
+async function getTotalLatestByUserId(user_id) {
+    const balance = await getLatestByUserId(user_id);
+    if (balance === null)
+        return null;
+    return (
+        balance.bank + balance.cash + balance.digitalServices + balance.stocks.real +
+        balance.etf.real + balance.bitcoin.real + balance.crypto.real
+    );
+}
+
+/**
  * Gets the balances of a user for the last 24 months
  * @param {String} user_id - ID of the user
  * @returns List of Balance documents
@@ -160,5 +175,6 @@ const Balance = mongoose.model("Balance", balanceSchema);
 module.exports = {
     insertNew,
     getLatestByUserId,
+    getTotalLatestByUserId,
     getYearlyBalanceByUserId
 };

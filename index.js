@@ -387,9 +387,9 @@ app.post("/rank/all", async (req, res) => {
     // For each user get its latest balance
     let balances = [];
     for (let user of users) {
-        const balance = await db.balances.getLatestByUserId(user.userId);
+        const balance = await db.balances.getTotalLatestByUserId(user.userId);
         if (balance !== null)
-            balances.push({user: user, balance: balance});
+            balances.push({user: user.userId, balance: balance});
     }
     // Sort the array of balances to get the position of the user
     const target_user = req.session.userId;

@@ -161,9 +161,29 @@ function decrementDateByOneMonth(date) {
     return new_date;
 }
 
+/**
+ * Capitalizes the first character of a string
+ * @param {String} str - Target string
+ * @returns The same string but with the first character capitalized
+ */
 function capitalizeFirst(str) {
     str = str.toLowerCase()
     return str[0].toUpperCase() + str.slice(1)
+}
+
+/**
+ * Computes the rank of a user among other users
+ * @param {Objects[]} array - Sorted array of objects (must have a 'user' field)
+ * @param {String} target_user - Target user ID or ObjectID whose position must be found
+ * @returns Object containing the position (top=1, bottom=array.length) and the total number of users
+ */
+function computeRankOfUser(array, target_user) {
+    let position = -1;
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].user === target_user)
+            position = array.length - i;
+    }
+    return {position: position, total: array.length};
 }
 
 module.exports = {
@@ -176,5 +196,6 @@ module.exports = {
     generateRandomString,
     incrementDateByOneDay,
     decrementDateByOneMonth,
-    capitalizeFirst
+    capitalizeFirst,
+    computeRankOfUser
 }

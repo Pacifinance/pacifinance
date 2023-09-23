@@ -391,17 +391,42 @@ app.post("/rank/balances/all", async (req, res) => {
         if (balance !== null)
             balances.push({user: user.userId, balance: balance});
     }
-    // Sort the array of balances to get the position of the user
+    // Sort the array of balances to get the rank of the user
     const target_user = req.session.userId;
     balances.sort((a, b) => a.balance - b.balance);
-    let position = -1;
-    for (let i = 0; i < balances.length; i++) {
-        if (balances[i].user === target_user)
-            position = balances.length - i;
-    }
+    const rank = utils.computeRankOfUser(balances, target_user);
     // Send the data to the client with status code 200 (OK)
     res.status(200);
-    res.json({position: position, total: balances.length});
+    res.json(rank);
+});
+
+app.post("/rank/expenses/all", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Get the list of all user IDs
+    const users = await db.users.getAllUsersIds();
+    // For each user get the expenses/incomes of the month
+    let is_expense_filter = Boolean(req.body.expenses);
+    let expenses = [];
+    for (let user of users) {
+        const total_amount = await db.expenses.getTotalMonthlyExpensesByUserId(user.userId, new Date(Date.now()), is_expense_filter);
+        if (total_amount !== null)
+            expenses.push({user: user.userId, amount: total_amount});
+    }
+    // Sort the array of expenses to get the rank of the user
+    const target_user = req.session.userId;
+    expenses.sort((a, b) => a.amount - b.amount);
+    const rank = utils.computeRankOfUser(expenses, target_user);
+    // Send the data to the client with status code 200 (OK)
+    res.status(200);
+    res.json(rank);
 });
 
 db.connect(process.env.DB_URI)

@@ -83,20 +83,44 @@ async function insertNew(user_id, date, amount, is_expense, payment_type, catego
 }
 
 /**
- * Gets the most recent expenses of a user
+ * Gets the expenses of a user for the month
  * @param {String} user_id - ID of the user
  * @param {Date} reference_date - Date object containing the year and month to look for
+ * @param {Boolean | undefined} is_expense_filter - True to retrieve only expenses, false to retrieve only incomes, undefined for both
  * @returns List of Expense documents
  */
-async function getMonthlyExpensesByUserId(user_id, reference_date) {
+async function getMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter=undefined) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return [];
     // Get start and end of the current month
     const month_start = new Date(Date.UTC(reference_date.getUTCFullYear(), reference_date.getUTCMonth()));
     const month_end = new Date(Date.UTC(reference_date.getUTCFullYear(), reference_date.getUTCMonth()+1));
+    // Filter out expenses or incomes depending on input parameters
+    let expenses_filter = {
+        userRef: user._id,
+        date: {$gte: month_start, $lt: month_end}
+    };
+    if (is_expense_filter !== undefined)
+        expenses_filter.isExpense = is_expense_filter;
     // Get and return the monthly expenses in descending order of date
-    return await getSorted({userRef: user._id, date: {$gte: month_start, $lt: month_end}}, "-_id -__v -userRef", {date: -1});
+    return await getSorted(expenses_filter, "-_id -__v -userRef", {date: -1});
+}
+
+/**
+ * Gets the expenses of a user for the month and sums all the amounts
+ * @param {String} user_id - ID of the user
+ * @param {Date} reference_date - Date object containing the year and month to look for
+ * @param {Boolean | undefined} is_expense_filter - True to retrieve only expenses, false to retrieve only incomes, undefined for both
+ * @returns Total expenses/incomes of the user for the month
+ */
+async function getTotalMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter=undefined) {
+    // Get the expenses for the month
+    const expenses = await getMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter);
+    if (expenses.length === 0)
+        return null;
+    // Sum all the amounts
+    return expenses.reduce((accumulator, expense) => accumulator + expense.amount, 0);
 }
 
 /**
@@ -106,5 +130,6 @@ const Expense = mongoose.model("Expense", expenseSchema);
 
 module.exports = {
     insertNew,
-    getMonthlyExpensesByUserId
+    getMonthlyExpensesByUserId,
+    getTotalMonthlyExpensesByUserId
 };

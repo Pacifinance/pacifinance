@@ -234,8 +234,18 @@ function UserProvider({ children }) {
               last12MonthsData.push(monthData);
             }
 
+            const rankOnBalance = await axios.post('/rank/balances/all');
+            // const rankOnIncome = await axios.post('/rank/incomes/all');
+            // const rankOnExpense = await axios.post('/rank/expenses/all');
+            // const rankOnBalanceSimilar = await axios.post('/rank/balances/similar');
+            // const rankOnIncomeSimilar = await axios.post('/rank/incomes/similar');
+            // const rankOnExpenseSimilar = await axios.post('/rank/expenses/similar');
+            const percentageRankOnBalance = (rankOnBalance.data.position / rankOnBalance.data.total) * 100;
+            console.log('rankOnBalance:', rankOnBalance);
+            console.log('percentageRankOnBalance:', percentageRankOnBalance);
+
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes});
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes, percentageRankOnBalance});
             handleSetIsUpdated(true);
         }
       } catch (error) {

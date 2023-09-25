@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { StyledSelectContainer, StyledLabel, StyledSelect, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
 
@@ -36,33 +36,59 @@ function MonthYearSelector({ selectedMonth, selectedYear, onMonthChange, onYearC
     );
   }
 
-// Componente per la sezione delle classifiche
+// Component for the rankings section
 function RankingsSection({ title, rankings }) {
+  // Verify if there are rankings to show
+  // const showRankings = rankings && rankings.length > 0;
+  console.log("Rankings:", rankings);
+  const areNotEmpty = rankings.length > 0 || rankings > 0;
+
   return (
     <StyledRankingsSection>
       <h2>{title}</h2>
-      <ol>
-        {rankings.map((ranking, index) => (
-          <li key={ranking.userId}>
-            Posizione: {ranking.position} (Complimenti! Sei nella top {((ranking.position / rankings.length) * 100).toFixed(2)}% degli utenti!)
-          </li>
-        ))}
-      </ol>
+      {areNotEmpty ? (
+        <p>
+          Complimenti! Sei nella top {rankings}% degli utenti!
+        </p>
+      ) : (
+        <p>Coming Soon</p>
+      )}
     </StyledRankingsSection>
   );
 }
 
-// Componente per la pagina delle classifiche
+
+
 function RankingComponent() {
   const { userData, handleSetIsUpdated } = useContext(UserContext);
   const [selectedMonth, setSelectedMonth] = useState(1);
   const [selectedYear, setSelectedYear] = useState(2023);
-  const [generalRankings, setGeneralRankings] = useState([]);
-  const [similarUsersRankings, setSimilarUsersRankings] = useState([]);
-  const [incomeRankings, setIncomeRankings] = useState([]);
-  const [expenseRankings, setExpenseRankings] = useState([]);
-  const [incomeSimilarUsersRankings, setIncomeSimilarUsersRankings] = useState([]);
-  const [expenseSimilarUsersRankings, setExpenseSimilarUsersRankings] = useState([]);
+  const [balanceRank, setBalanceRank] = useState([]);
+  const [balanceSimilarUsersRank, setSimilarUsersRank] = useState([]);
+  const [incomeRank, setIncomeRank] = useState([]);
+  const [expenseRank, setExpenseRank] = useState([]);
+  const [incomesSimilarUsersRank, setIncomeSimilarUsersRank] = useState([]);
+  const [expensesSimilarUsersRank, setExpenseSimilarUsersRank] = useState([]);
+
+
+  const fetchData = async () => {
+      if (userData) {
+        try {
+            
+            setBalanceRank(userData ? userData.percentageRankOnBalance : []);
+            // console.log("balanceRank", balanceRank);
+
+        } catch (error) {
+          console.error('Errore durante le operazioni:', error);
+        }
+      }
+  };
+
+  useEffect(() => {
+    fetchData();
+    console.log("balanceRank", balanceRank);
+  }, [userData]);
+
 
   const handleMonthChange = (month) => {
     setSelectedMonth(month);
@@ -82,18 +108,29 @@ function RankingComponent() {
       />
       <RankingsTitle >Classifiche generali : </RankingsTitle>
       <CenteredRankings>
-        <RankingsSection title="Classifica Patrimonio" rankings={generalRankings} />
-        <RankingsSection title="Classifica Guadagni" rankings={incomeRankings} />
-        <RankingsSection title="Classifica Spese" rankings={expenseRankings} />
+        <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} />
+        <RankingsSection title="Classifica Guadagni" rankings={incomeRank} />
+        <RankingsSection title="Classifica Spese" rankings={expenseRank} />
       </CenteredRankings>
       <RankingsTitle  >Classifiche utenti simili : </RankingsTitle >
       <CenteredRankings>
-        <RankingsSection title="Classifica Patrimonio" rankings={similarUsersRankings} />
-        <RankingsSection title="Classifica Guadagni" rankings={incomeSimilarUsersRankings} />
-        <RankingsSection title="Classifica Spese" rankings={expenseSimilarUsersRankings} />
+        <RankingsSection title="Classifica Patrimonio" rankings={balanceSimilarUsersRank} />
+        <RankingsSection title="Classifica Guadagni" rankings={incomesSimilarUsersRank} />
+        <RankingsSection title="Classifica Spese" rankings={expensesSimilarUsersRank} />
 
       </CenteredRankings>
     </StyledRankingPage>
   );
 }
 export default RankingComponent;
+
+
+{/* <ol>
+        {rankings.map((ranking, index) => (
+          <li key={ranking.userId}>
+            Posizione: {ranking.position} (Complimenti! Sei nella top {((ranking.position / rankings.length) * 100).toFixed(2)}% degli utenti!)
+          </li>
+        ))}
+      </ol> */}
+
+// Component for the rankings page

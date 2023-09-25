@@ -1147,6 +1147,11 @@ export const SidebarSection = styled.section`
       margin: 0.5rem 0;
       font-size: 1.1rem;
     }
+    p {
+      color: #ffffff;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
   `;
 
 export const StyledRankingPage = styled.div`

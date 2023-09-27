@@ -1,5 +1,4 @@
 import React, {useState, useRef, useContext} from 'react';
-// import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";

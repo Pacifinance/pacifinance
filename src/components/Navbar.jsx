@@ -1,7 +1,6 @@
 import React, {useState, useContext} from 'react'
 import styled from 'styled-components'
 import { ThemeContext } from '../contexts/ThemeContext';
-//import {BiSearch} from 'react-icons/bi'
 
 function Navbar() {
     const { theme } = useContext(ThemeContext);

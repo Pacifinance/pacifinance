@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import Modal from 'react-modal';
+// import React, {useState, useContext} from 'react';
+// import Modal from 'react-modal';
 import { primaryColor, backgroundColor, themes } from './Themes';
 import styled, { keyframes, css } from 'styled-components';
 import Button from '@mui/material/Button';

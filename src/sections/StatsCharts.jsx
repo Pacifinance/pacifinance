@@ -1,15 +1,13 @@
-import React, {useState, useContext} from 'react'
-// import { Button, ButtonGroup, Select, MenuItem } from "@mui/material";
-import BalancesStatsMonth from '../components/BalancesStatsMonth'
-import BalancesStatsYear from '../components/BalancesStatsYear'
-import BalancesCharts from '../components/BalancesCharts'
-import InOutCharts from '../components/InOutChart'
-// import { TitleDashboard, Section, SecondaryTitle } from '../contexts/MyStyled';
+import React, {useState, useContext} from 'react';
+import BalancesStatsMonth from '../components/BalancesStatsMonth';
+import BalancesStatsYear from '../components/BalancesStatsYear';
+import BalancesCharts from '../components/BalancesCharts';
+import InOutCharts from '../components/InOutChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { ModifiedTitleDashboard, StyledSection, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
-import InExStatsMonth from '../components/InExStatsMonth'
-import InExStatsYear from '../components/InExStatsYear'
+import InExStatsMonth from '../components/InExStatsMonth';
+import InExStatsYear from '../components/InExStatsYear';
 
 
 

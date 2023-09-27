@@ -1,6 +1,5 @@
 import React, {useState, useContext}from 'react'
 import styled from 'styled-components'
-//import { AiOutlineCalendar } from "react-icons/ai";
 import { AiOutlineBell } from "react-icons/ai";
 import { AiOutlineCaretDown } from "react-icons/ai";
 import avatarImage from "../assets/account-logo.png"

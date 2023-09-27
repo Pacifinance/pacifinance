@@ -1,55 +1,82 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
-import { StyledSelectContainer, StyledLabel, StyledSelect, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
+import { StyledSelectContainer, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
+import InfoIcon from '@mui/icons-material/Info';
+import Tooltip from '@mui/material/Tooltip';
 
 // Componente per il selettore di mese e anno
-function MonthYearSelector({ selectedMonth, selectedYear, onMonthChange, onYearChange }) {
-  const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
-  const years = [2022, 2023, 2024, 2025]; // Modifica gli anni disponibili se necessario
+// function MonthYearSelector({ selectedMonth, selectedYear, onMonthChange, onYearChange }) {
+//   const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+//   const years = [2022, 2023, 2024, 2025]; // Modifica gli anni disponibili se necessario
 
-  const handleMonthChange = (event) => {
-    const month = parseInt(event.target.value);
-    onMonthChange(month);
-  };
+//   const handleMonthChange = (event) => {
+//     const month = parseInt(event.target.value);
+//     onMonthChange(month);
+//   };
 
-  const handleYearChange = (event) => {
-    const year = parseInt(event.target.value);
-    onYearChange(year);
-  };
+//   const handleYearChange = (event) => {
+//     const year = parseInt(event.target.value);
+//     onYearChange(year);
+//   };
 
-  return (
-      <StyledSelectContainer>
-        <StyledLabel>Mese:</StyledLabel>
-        <StyledSelect value={selectedMonth} onChange={handleMonthChange}>
-          {months.map((month, index) => (
-            <option key={index} value={index + 1}>{month}</option>
-          ))}
-        </StyledSelect>
+//   return (
+//       <StyledSelectContainer>
+//         <StyledLabel>Mese:</StyledLabel>
+//         <StyledSelect value={selectedMonth} onChange={handleMonthChange}>
+//           {months.map((month, index) => (
+//             <option key={index} value={index + 1}>{month}</option>
+//           ))}
+//         </StyledSelect>
   
-        <StyledLabel>Anno:</StyledLabel>
-        <StyledSelect value={selectedYear} onChange={handleYearChange}>
-          {years.map((year) => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </StyledSelect>
-      </StyledSelectContainer>
-    );
-  }
+//         <StyledLabel>Anno:</StyledLabel>
+//         <StyledSelect value={selectedYear} onChange={handleYearChange}>
+//           {years.map((year) => (
+//             <option key={year} value={year}>{year}</option>
+//           ))}
+//         </StyledSelect>
+//       </StyledSelectContainer>
+//     );
+//   }
+
 
 // Component for the rankings section
 function RankingsSection({ title, rankings }) {
-  // Verify if there are rankings to show
-  // const showRankings = rankings && rankings.length > 0;
-  console.log("Rankings:", rankings);
+  // Verify if there is a title for expenses
+  const isExpenseTitle = title.toLowerCase().includes("spese");
+
+  // Verify if there are rankings > 50 (top 50%)
+  const isRankingsAbove50 = rankings > 50;
+
+  // Calculate the text to display
+  let textToDisplay = "";
+  if (isExpenseTitle) {
+    if (isRankingsAbove50) {
+      textToDisplay = `Sei nella top ${rankings}% degli utenti che spendono di più!`;
+    } else {
+      textToDisplay = `Complimenti! Sei nella top ${rankings}%. Sei tra gli utenti che spendono di meno!`;
+    }
+  } else {
+    if (isRankingsAbove50) {
+      textToDisplay = `Complimenti! Sei nella top ${rankings}% degli utenti!`;
+    } else {
+      textToDisplay = `Sei nella top ${rankings}% degli utenti!`;
+    }
+  }
+
   const areNotEmpty = rankings.length > 0 || rankings > 0;
 
   return (
     <StyledRankingsSection>
-      <h2>{title}</h2>
+      <h2>
+        {title}
+        {isExpenseTitle && (
+          <Tooltip title="Questo rank mostra nelle posizioni alte chi spende di più." arrow>
+            <InfoIcon style={{ color: 'white' }} />
+          </Tooltip>
+        )}
+      </h2>
       {areNotEmpty ? (
-        <p>
-          Complimenti! Sei nella top {rankings}% degli utenti!
-        </p>
+        <p>{textToDisplay}</p>
       ) : (
         <p>Coming Soon</p>
       )}
@@ -59,14 +86,15 @@ function RankingsSection({ title, rankings }) {
 
 
 
+
 function RankingComponent() {
   const { userData, handleSetIsUpdated } = useContext(UserContext);
   const [selectedMonth, setSelectedMonth] = useState(1);
   const [selectedYear, setSelectedYear] = useState(2023);
   const [balanceRank, setBalanceRank] = useState([]);
-  const [balanceSimilarUsersRank, setSimilarUsersRank] = useState([]);
   const [incomeRank, setIncomeRank] = useState([]);
   const [expenseRank, setExpenseRank] = useState([]);
+  const [balanceSimilarUsersRank, setSimilarUsersRank] = useState([]);
   const [incomesSimilarUsersRank, setIncomeSimilarUsersRank] = useState([]);
   const [expensesSimilarUsersRank, setExpenseSimilarUsersRank] = useState([]);
 
@@ -76,6 +104,9 @@ function RankingComponent() {
         try {
             
             setBalanceRank(userData ? userData.percentageRankOnBalance : []);
+            setIncomeRank(userData ? userData.percentageRankOnIncomes : []);
+            setExpenseRank(userData ? userData.percentageRankOnExpenses : []);
+
             // console.log("balanceRank", balanceRank);
 
         } catch (error) {
@@ -89,23 +120,28 @@ function RankingComponent() {
     console.log("balanceRank", balanceRank);
   }, [userData]);
 
+  const formattedPreMonthDate = userData?.preMonthDate
+      ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
+      : "";
 
-  const handleMonthChange = (month) => {
-    setSelectedMonth(month);
-  };
 
-  const handleYearChange = (year) => {
-    setSelectedYear(year);
-  };
+  // const handleMonthChange = (month) => {
+  //   setSelectedMonth(month);
+  // };
+
+  // const handleYearChange = (year) => {
+  //   setSelectedYear(year);
+  // };
 
   return (
     <StyledRankingPage>
-      <MonthYearSelector
+      {/* <MonthYearSelector
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
         onMonthChange={handleMonthChange}
         onYearChange={handleYearChange}
-      />
+      /> */}
+      <StyledLabel>Classifiche relative a {formattedPreMonthDate}</StyledLabel>
       <RankingsTitle >Classifiche generali : </RankingsTitle>
       <CenteredRankings>
         <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} />

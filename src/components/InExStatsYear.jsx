@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
-//import { BsCreditCard } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
-import {SectionAMonth, WrapperAMonth} from '../contexts/MyStyled';
-import { PieChart, Pie, Cell } from "recharts";
+import {SectionAMonth} from '../contexts/MyStyled';
 import { calculatePercentageChange } from '../utilities/calculations';
 
 // const [activeIndex, setActiveIndex] = useState(null);

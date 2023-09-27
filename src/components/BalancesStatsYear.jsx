@@ -1,18 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-//import { BsCreditCard } from "react-icons/bs";
-import { AiOutlineMore } from "react-icons/ai";
-//import { BiTransfer } from "react-icons/bi";
 import { BsBank } from "react-icons/bs";
-//import { GiTakeMyMoney } from "react-icons/gi";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
 import { SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import {SectionAMonth, TitleDashboard, WrapperAMonth}from '../contexts/MyStyled';
+import {SectionAMonth, TitleDashboard}from '../contexts/MyStyled';
 import { primaryColor } from '../contexts/Themes';
 import { calculatePercentageChange } from '../utilities/calculations';
 // import { PieChart, Pie, Cell } from "recharts";

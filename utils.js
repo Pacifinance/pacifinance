@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 /**
  * Sanitizes user input by removing blank spaces and HTML tags
@@ -171,6 +172,10 @@ function capitalizeFirst(str) {
     return str[0].toUpperCase() + str.slice(1)
 }
 
+function newNullObjectId() {
+    return new mongoose.Types.ObjectId(NaN);
+}
+
 /**
  * Computes the rank of a user among other users
  * @param {Objects[]} array - Sorted array of objects (must have a 'user' field)
@@ -197,5 +202,6 @@ module.exports = {
     incrementDateByOneDay,
     decrementDateByOneMonth,
     capitalizeFirst,
-    computeRankOfUser
+    computeRankOfUser,
+    newNullObjectId
 }

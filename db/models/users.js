@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const utils = require("../../utils.js");
 
 const userIdLength = 6;
 const sessionIdLength = 32;
@@ -8,9 +9,11 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     creationDate: {type: Date, required: true},
     nickname: {type: String, default: ""},
-    nation: {type: String, default: ""},
-    occupation: {type: mongoose.Types.ObjectId, default: ""},
-    roles: {type: [String], required: true},
+    country: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    job: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    jobType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    workTime: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    remoteType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     expenseCategories: [{
         name: {type: String, required: true},
         tag: {type: String, required: true}
@@ -75,9 +78,11 @@ async function insertNew(user_id, password) {
         password: password,
         creationDate: new Date(Date.now()),
         nickname: "",
-        nation: "",
-        occupation: "",
-        roles: ["user"],
+        country: utils.newNullObjectId(),
+        job: utils.newNullObjectId(),
+        jobType: utils.newNullObjectId(),
+        workTime: utils.newNullObjectId(),
+        remoteType: utils.newNullObjectId(),
         expenseCategories: [],
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique

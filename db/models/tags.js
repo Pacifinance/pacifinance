@@ -5,7 +5,11 @@ const TagType = {
     expense: {name: "expense", value: 0},
     income: {name: "income", value: 1},
     payment: {name: "payment", value: 2},
-    job: {name: "job", value: 3}
+    country: {name: "country", value: 3},
+    job: {name: "job", value: 4},
+    jobType: {name: "jobType", value: 5},
+    workTime: {name: "workTime", value: 6},
+    remoteType: {name: "remoteType", value: 7}
 }
 
 const tagsSchema = new mongoose.Schema({

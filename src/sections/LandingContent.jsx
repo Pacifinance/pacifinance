@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
-import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.png';
+import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.webp';
 import { ThemeContext } from '../contexts/ThemeContext';
 import CookieBanner from '../components/CookieBanner';
 import {

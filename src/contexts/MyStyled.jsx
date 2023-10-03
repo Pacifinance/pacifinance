@@ -149,14 +149,11 @@ export const SignIn = styled.div`
   }
 `;
 
-export const SignInButton = styled(MyButton)`
-  margin-right: 40%;
-`;
-
 export const ModalButton = styled(MyButton)`
   margin-right: 40%;
 `;
 
+/****************************** LANDING PAGE **************************************/
 export const ContainerHeader = styled.header`
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
@@ -164,12 +161,124 @@ export const ContainerHeader = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    padding: 0px;
+  }
+
+  /* For screens with a minimum width of 769px */
+  @media (min-width: 769px) {
+
+  }
+`;
+
+export const LandingPageContainer = styled.div`
+  font-family: Roboto, sans-serif;
+  height: auto;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  color: ${(props) => (props.theme.textColor)};
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    
+  
+    height: auto;
+  }
+
+  /* For screens with a minimum width of 769px */
+  @media (min-width: 769px) {
+
+  }
+`;
+
+export const ContainerFooter = styled.footer`
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  color: ${(props) => (props.theme.textColor)};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+`;
+
+export const SignInButton = styled(MyButton)`
+  margin-right: 40%;
 `;
 
 export const LogoStyled = styled.h1`
   font-size: 0px;
   img {
     width: 90px;
+  }
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    
+  }
+
+  /* For screens with a minimum width of 769px */
+  @media (min-width: 769px) {
+    
+    
+  }
+`;
+
+export const CentralImage = styled.img`
+  max-width: 390px;
+  margin-right: 3%;
+  draggable="false"
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    max-width: 100px;
+    // width: 100%;
+  }
+
+  @media (min-width: 769px) {
+    
+  }
+`;
+
+export const Title = styled.h1`
+  font-size: 60px;
+  margin-bottom: 5px; 
+  text-align: center;
+
+`;
+
+export const Subtitle = styled.h2`
+  font-size: 14px;
+  text-align: center;
+  color: ${(props) => (props.theme.buttonBackgroundColor)};
+`;
+
+export const PaciText = styled.span`
+  color: ${(props) => (props.theme.buttonBackgroundColor)};
+`;
+
+export const FinanceText = styled.span`
+  color: ${(props) => (props.theme.textColor)};
+`;
+
+export const CentralSection = styled.section`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 5%;
+  margin-bottom: 0.5%;
+`;
+
+export const CentralText = styled.div`
+  max-width: 800px;
+  // text-align: center;
+  p {
+    margin-bottom: 20px; 
+  }
+  h1 {
+    margin-bottom: 20px;
   }
 `;
 
@@ -190,19 +299,6 @@ export const ModalSignIn = styled(MyGenericModal)`
 
 export const ModalSignUp = styled(MyGenericModal)`
     display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
-`;
-
-export const ContainerFooter = styled.footer`
-  background-color: ${(props) => (props.theme.backgroundColor)};
-  color: ${(props) => (props.theme.textColor)};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
 `;
 
 export const FooterText = styled.p`
@@ -477,64 +573,10 @@ export const Container = styled.div`
   padding-bottom: 105px;
 `;
 
-export const LandingPageContainer = styled.div`
-  font-family: Roboto, sans-serif;
-  height: 100vh;
-  background-color: ${(props) => (props.theme.backgroundColor)};
-  color: ${(props) => (props.theme.textColor)};
-`;
-
-export const Title = styled.h1`
-  font-size: 60px;
-  margin-bottom: 5px; /* Aggiungi qui il valore di spaziatura desiderato */
-  text-align: center;
-
-`;
-
-export const Subtitle = styled.h2`
-  font-size: 14px;
-  text-align: center;
-  color: ${(props) => (props.theme.buttonBackgroundColor)};
-`;
-
-export const PaciText = styled.span`
-  color: ${(props) => (props.theme.buttonBackgroundColor)};
-`;
-
-export const FinanceText = styled.span`
-  color: ${(props) => (props.theme.textColor)};
-`;
-
-export const CentralSection = styled.section`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-left: 5%;
-  margin-bottom: 0.5%;
-`;
-
-export const CentralText = styled.div`
-  max-width: 800px;
-  // text-align: center;
-  p {
-    margin-bottom: 20px; 
-  }
-  h1 {
-    margin-bottom: 20px;
-  }
-`;
-
 export const SectionADashboard = styled.section `
     font-family: Roboto, sans-serif;
     background-color: ${(props) => (props.theme.backgroundColor)};
     
-`;
-
-export const CentralImage = styled.img`
-  max-width: 600px;
-  height: auto;
-  margin-right: 3%;
-  draggable="false"
 `;
 
 export const FeaturesSection = styled.section`

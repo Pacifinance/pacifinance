@@ -4,11 +4,11 @@ import LandingContent from './sections/LandingContent';
 
 export default function LandingPage() {
   return (
-    <div>
+    <>
       <Header />
       <LandingContent />
       <Footer />
-    </div>
+    </>
     
   );
 }

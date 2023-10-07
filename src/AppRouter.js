@@ -10,7 +10,6 @@ import Info from './InfoPage';
 import SignIn from './SignInPage';
 import LandingPage from './LandingPage';
 import SignUp from './SignUpPage';
-//import NotFound from './NotFound';
 
 function AppRouter() {
   return (
@@ -31,22 +30,5 @@ function AppRouter() {
     </>
   );
 }
-
-// function AppRouter() {
-//     return (
-//       <>
-//           <Routes>
-//               <Route path="/" exact component={Dashboard} />
-//               <Route path="/your-charts" component={YourCharts} />
-//               <Route path="/insert-values" component={InsertValues} />
-//               <Route path="/check-prices" component={CheckPrices} />
-//               <Route path="/leaderboard" component={Leaderboard} />
-//               <Route path="/knowledge" component={Knowledge} />
-//               <Route path="/info" component={Info} />
-//               <Route path="*" element={<NotFound />} />
-//           </Routes>
-//       </>
-//     );
-//   }
 
 export default AppRouter;

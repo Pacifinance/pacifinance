@@ -1,6 +1,6 @@
 import React, {useContext} from 'react'
 import RankingComponent from '../components/RankingComponent'
-import { UserContext, UserProvider } from '../contexts/UserContext';
+import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { TitleDashboard, Section } from '../contexts/MyStyled';
 

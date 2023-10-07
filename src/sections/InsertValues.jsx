@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
-import { UserContext, UserProvider } from '../contexts/UserContext';
+import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
-// import Carousel from "react-multi-carousel";
-// import "react-multi-carousel/lib/styles.css";
 import axios from 'axios';
 import {
   ModalButton,

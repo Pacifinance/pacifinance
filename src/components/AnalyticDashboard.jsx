@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext, PureComponent } from 'react';
 import { PieChart, Pie, Sector, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-// import { AiOutlineMore } from "react-icons/ai"; NOT USED NOW 
 import { BsBank } from "react-icons/bs";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";

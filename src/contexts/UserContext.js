@@ -234,8 +234,37 @@ function UserProvider({ children }) {
               last12MonthsData.push(monthData);
             }
 
+            
+            const expensesFlag = true;
+            const incomesFlag = false; 
+
+            // Objecty JSon to send to the API if true it will return the rank of the expenses, if false the rank of the incomes
+            const requestExpensesData = {
+              expenses: expensesFlag
+            };
+
+            const requestIncomesData = {
+              expenses: incomesFlag
+            };
+
+            const rankOnBalance = await axios.post('/rank/balances/all');
+            const rankOnIncome = await axios.post('/rank/expenses/all', requestIncomesData);
+            const rankOnExpense = await axios.post('/rank/expenses/all', requestExpensesData);
+            // const rankOnBalanceSimilar = await axios.post('/rank/balances/similar');
+            // const rankOnIncomeSimilar = await axios.post('/rank/incomes/similar');
+            // const rankOnExpenseSimilar = await axios.post('/rank/expenses/similar');
+            const percentageRankOnBalance = (rankOnBalance.data.position / rankOnBalance.data.total) * 100;
+            const percentageRankOnIncomes = (rankOnIncome.data.position / rankOnIncome.data.total) * 100;
+            const percentageRankOnExpenses = (rankOnExpense.data.position / rankOnExpense.data.total) * 100;
+            console.log('rankOnBalance:', rankOnBalance);
+            console.log('percentageRankOnBalance:', percentageRankOnBalance);
+            console.log('rankOnIncome:', rankOnIncome);
+            console.log('percentageRankOnIncome:', percentageRankOnIncomes);
+            console.log('rankOnExpense:', rankOnExpense);
+            console.log('percentageRankOnExpense:', percentageRankOnExpenses);
+
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes});
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes, percentageRankOnBalance, percentageRankOnIncomes, percentageRankOnExpenses});
             handleSetIsUpdated(true);
         }
       } catch (error) {

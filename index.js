@@ -206,7 +206,25 @@ app.post("/user/set-password", async (req, res) => {
         res.send();
         return;
     }
-    // The new passwords are equal: hash the new password and store it in the db
+    // Check if the user exists in the db. Send status code 401
+    // (Unauthorized) if the user does not exist
+    const user = await db.users.getPasswordByUserId(req.session.userId);
+    if (user === null)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Check if the password is correct. Send status code 401
+    // (Unauthorized) if the password is wrong
+    if (!utils.checkPassword(old_pwd, user.password))
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // The old password is correct and the new passwords are equal:
+    // hash the new password and store it in the db
     // Then, force the logout (redirect to /logout route)
     let hashed_new_pwd = utils.hashPassword(new_pwd, process.env.SALT_ROUNDS);
     await db.users.setPasswordOfUserId(req.session.userId, hashed_new_pwd);

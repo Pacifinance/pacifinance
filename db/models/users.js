@@ -12,12 +12,9 @@ const userSchema = new mongoose.Schema({
     country: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     job: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     jobType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    jobCountry: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     workTime: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     remoteType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    expenseCategories: [{
-        name: {type: String, required: true},
-        tag: {type: String, required: true}
-    }],
     session: {type: {
         sessionId: {type: String, required: true, unique: true, dropDups: true},
         expirationDate: {type: Date, required: true}
@@ -53,6 +50,23 @@ async function get(where, select) {
  */
 async function getOne(where, select) {
     return await User.findOne(where, select).lean().exec();
+}
+
+/**
+ * Gets a user that match a filter, substituting all Tag references with Tag data
+ * @param {Object} where - filter to match
+ * @param {String} select - fields to return
+ * @returns User document
+ */
+async function getOneAndPopulate(where, select) {
+    return await User.findOne(where, select)
+    .populate({path: "country", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "country"
+    .populate({path: "job", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "job"
+    .populate({path: "jobType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "jobType"
+    .populate({path: "jobCountry", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "jobCountry"
+    .populate({path: "workTime", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "workTime"
+    .populate({path: "remoteType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "remoteType"
+    .lean().exec();
 }
 
 /**
@@ -197,7 +211,7 @@ async function setSessionOfUserId(user_id, session_id, expiration_date) {
  * @returns User document
  */
 async function getPublicInfoByUserId(user_id) {
-    return await getOne({userId: user_id}, "-_id -__v -password -roles -session");
+    return await getOneAndPopulate({userId: user_id}, "-_id -__v -password -session");
 }
 
 /**

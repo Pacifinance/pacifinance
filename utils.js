@@ -172,6 +172,10 @@ function capitalizeFirst(str) {
     return str[0].toUpperCase() + str.slice(1)
 }
 
+/**
+ * Creates a new invalid ObjectID for mongoDB
+ * @returns A new mongoDB ObjectID
+ */
 function newNullObjectId() {
     return new mongoose.Types.ObjectId(NaN);
 }

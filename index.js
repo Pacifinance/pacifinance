@@ -160,6 +160,32 @@ app.post("/user/set-id", async (req, res) => {
         res.send();
         return;
     }
+    // Sanitize user input. Send status code 400 (Bad Request)
+    // in case of invalid data (empty strings after sanitization)
+    let password = utils.sanitizeInput(req.body.password);
+    if (password === "")
+    {
+        res.status(400);
+        res.send();
+        return;
+    }
+    // Check if the user exists in the db. Send status code 401
+    // (Unauthorized) if the user does not exist
+    const user = await db.users.getPasswordByUserId(req.session.userId);
+    if (user === null)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Check if the password is correct. Send status code 401
+    // (Unauthorized) if the password is wrong
+    if (!utils.checkPassword(password, user.password))
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
     // Invalidate the session in the database by setting the
     // expiration date to 01/01/1970 and an invalid ID
     const curr_user_id = req.session.userId;

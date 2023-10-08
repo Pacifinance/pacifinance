@@ -95,9 +95,9 @@ async function insertNew(user_id, password) {
         country: utils.newNullObjectId(),
         job: utils.newNullObjectId(),
         jobType: utils.newNullObjectId(),
+        jobCountry: utils.newNullObjectId(),
         workTime: utils.newNullObjectId(),
         remoteType: utils.newNullObjectId(),
-        expenseCategories: [],
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
             expirationDate: new Date(0)

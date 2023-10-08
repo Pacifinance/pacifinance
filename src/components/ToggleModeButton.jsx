@@ -20,16 +20,22 @@ const ToggleModeButton = () => {
 };
 
 const ButtonToggle = styled.button`
-    background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
-    color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
-    padding: 3px 3px; /* this for change the height and the width of the button */
-    border-radius: 4px;
-    // border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#000')};
+  background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
+  color: ${(props) => (props.mode === 'dark' ? '#fff' : '#222')};
+  padding: 3px 3px; /* this for change the height and the width of the button */
+  border-radius: 4px;
+  // border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#000')};
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    padding: 3px 3px;
     font-size: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    border-radius: 4px;
+  }
   `;
 
 export default ToggleModeButton;

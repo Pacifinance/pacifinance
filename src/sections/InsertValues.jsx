@@ -333,7 +333,8 @@ export default function InsertValue () {
       return (
         
         <>
-          <TitleSection theme={theme}>Bilancio</TitleSection>
+          {/* TitleSection used to create a distance TO UPGRADE */}
+          <TitleSection theme={theme}></TitleSection>
           <StyledInputs theme={theme}>
             <label>
               Depositati in Banca

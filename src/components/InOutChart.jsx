@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useEffect, useContext} from "react";
+import { UserContext } from '../contexts/UserContext';
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/lib/component/Tooltip";
 import { XAxis } from "recharts/lib/cartesian/XAxis";
@@ -85,24 +86,24 @@ const data = [
 ];
 
 export default function Incomes() {
-
-// impostare i dati presi dell'utente per le spese e le entrate TODO
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       if (userData) {
-//         try {
-//             console.log(userData);
-//             console.log(userData.expensesIncomes);
+  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  //impostare i dati presi dell'utente per le spese e le entrate TODO
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userData) {
+        try {
+            console.log(userData);
+            console.log(userData.expensesIncomes);
             
             
-//         } catch (error) {
-//           console.error('Errore durante le operazioni:', error);
-//         }
-//       }
-//     };
+        } catch (error) {
+          console.error('Errore durante le operazioni:', error);
+        }
+      }
+    };
 
-// fetchData();
-// }, [userData]);
+  fetchData();
+  }, [userData]);
 
   return (
     <SectionInOut>

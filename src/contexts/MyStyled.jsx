@@ -23,11 +23,11 @@ export const PageWrapper = styled.div`
 `;
 
 export const Section = styled.section `
-      font-family: Roboto, sans-serif; 
-      margin-left: 6vw;
-      padding-top: 4rem;
-      height: 100vh;
-      background-color: ${(props) => (props.theme.backgroundColor)};
+  font-family: Roboto, sans-serif; 
+  margin-left: 6vw;
+  padding-top: 4rem;
+  height: 100vh;
+  background-color: ${(props) => (props.theme.backgroundColor)};
 `;
 
 export const MyGenericModal = styled.div`
@@ -42,8 +42,8 @@ export const MyGenericModal = styled.div`
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 4px;
-  border: 4px solid ${(props) => (props.theme.jollyColor)};
+  border-radius: 0.2em;
+  border: 0.2em solid ${(props) => (props.theme.jollyColor)};
 `;
 
 export const MyGenericModalContent = styled.div`
@@ -51,31 +51,39 @@ export const MyGenericModalContent = styled.div`
   margin: auto;
   max-width: 80%;
   max-height: 80%;
-  padding: 20px;
+  padding: 1em;
   overflow: auto;
 `;
 
 export const MyButton = styled.button`
   background-color: ${(props) => (props.theme.buttonBackgroundColor)};
   color: white;  
-  padding: 10px 20px;
+  padding: 0.5em 1em;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.2em;
   align-items: center;
-  font-size: 16px;
+  font-size: 1em;
   cursor: pointer;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    padding: 0.5em 1em;
+    border-radius: 0.2em;
+    font-size: 1.5rem;
+  }
+  
 `;
 
 export const MyCloseButton = styled.span`
   background-color: ${(props) => (props.theme.buttonBackgroundColor)};
   color: white;
   border: none;
-  border-radius: 4px;
-  width: 20px; 
-  height: 20px; 
+  border-radius: 0.2em;
+  width: 1em; 
+  height: 1em; 
   text-align: center;
   display: inline-block;
-  line-height: 20px;
+  line-height: 1em;
   &:hover {
     color: #000;
   }
@@ -83,11 +91,11 @@ export const MyCloseButton = styled.span`
 `;
 
 export const TitleDashboard = styled.h1 `
-      color: ${(props) => (props.theme.textColor)};
-      font-size: 2rem;
-      font-weight: 400;
-      margin-bottom: 2rem;
-      margin-left: 6%;
+    color: ${(props) => (props.theme.textColor)};
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    margin-left: 6%;
   `;
 
 export const SignIn = styled.div`
@@ -109,32 +117,32 @@ export const SignIn = styled.div`
 
   .sign-in-form h1 {
     color: ${(props) => (props.theme.textColor)};
-    margin-bottom: 20px;
+    margin-bottom: 1em;
   }
 
   .icon-with-text {
     display: flex;
     color: ${(props) => (props.theme.buttonBackgroundColor)};
     align-items: center; /* Allinea verticalmente gli elementi */
-    margin-bottom: 50px;
+    margin-bottom: 2.5em;
   }
   
   .icon-with-text h4 {
     color: ${(props) => (props.theme.buttonBackgroundColor)};
-    margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
+    margin-left: 0.5em; /* Aggiungi uno spazio tra l'icona e il testo */
   }
 
   .sign-in-form label {
     color: ${(props) => (props.theme.textColor)};
-    margin-bottom: 8px;
+    margin-bottom: 0.4em;
   }
 
   .sign-in-form input {
-    padding: 8px;
+    padding: 0.4em;
     border: none;
     background-color: transparent;
     color: ${(props) => (props.theme.textColor)};
-    margin-bottom: 16px;
+    margin-bottom: 0.8em;
   }
 
   .sign-in-form input::placeholder {
@@ -145,7 +153,7 @@ export const SignIn = styled.div`
     display: flex;
     justify-content: flex-end;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 1em;
   }
 `;
 
@@ -157,52 +165,52 @@ export const ModalButton = styled(MyButton)`
 export const ContainerHeader = styled.header`
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
-  padding: 20px;
+  height: 10vh;
+  width: 100vw;
+  padding: 1em;
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    padding: 0px;
-  }
-
-  /* For screens with a minimum width of 769px */
-  @media (min-width: 769px) {
-
+    height: 20vh;
+    width: 190vw;
   }
 `;
 
 export const LandingPageContainer = styled.div`
   font-family: Roboto, sans-serif;
-  height: auto;
+  height: 80vh;
+  width: 100vw;
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    
-  
-    height: auto;
-  }
-
-  /* For screens with a minimum width of 769px */
-  @media (min-width: 769px) {
-
+    height: 155vh;
+    width: 190vw;
   }
 `;
 
 export const ContainerFooter = styled.footer`
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
+  height: 10vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  padding: 1em;
+  bottom: 0em;
+  left: 0em;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    height: 15vh;
+    width: 190vw;
+    bottom: 0em;
+  }
 `;
 
 export const SignInButton = styled(MyButton)`
@@ -210,49 +218,55 @@ export const SignInButton = styled(MyButton)`
 `;
 
 export const LogoStyled = styled.h1`
-  font-size: 0px;
+  font-size: 0em;
   img {
     width: 90px;
   }
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    
-  }
-
-  /* For screens with a minimum width of 769px */
-  @media (min-width: 769px) {
-    
-    
+    img {
+      width: 40px;
+    }
+    margin-left: -1%;
+    margin-top: -1%;
   }
 `;
 
 export const CentralImage = styled.img`
-  max-width: 390px;
+  max-width: 25em;
   margin-right: 3%;
   draggable="false"
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    max-width: 100px;
-    // width: 100%;
-  }
-
-  @media (min-width: 769px) {
-    
+    max-width: 4em;
+    margin-right: 10%;
   }
 `;
 
 export const Title = styled.h1`
-  font-size: 60px;
-  margin-bottom: 5px; 
+  font-size: 3.5em;
+  margin-bottom: 0.25em; 
   text-align: center;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    font-size: 3.5em;
+    margin-bottom: 0.25em;
+  }
 
 `;
 
 export const Subtitle = styled.h2`
-  font-size: 14px;
+  font-size: 0.9em;
   text-align: center;
   color: ${(props) => (props.theme.buttonBackgroundColor)};
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+   margin-bottom: 10%;
+   font-size: 0.9em; 
+  }
 `;
 
 export const PaciText = styled.span`
@@ -269,28 +283,51 @@ export const CentralSection = styled.section`
   justify-content: space-between;
   margin-left: 5%;
   margin-bottom: 0.5%;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    // flex-direction: column;
+    margin-left: 5%;
+    
+  }
 `;
 
 export const CentralText = styled.div`
-  max-width: 800px;
+  max-width: 40em;
   // text-align: center;
   p {
-    margin-bottom: 20px; 
+    margin-bottom: 1em; 
   }
   h1 {
-    margin-bottom: 20px;
+    margin-bottom: 1em;
+  }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    max-width: 12.5em;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 5%;
+      margin-top: 20%;
+    }
+    p {
+      font-size: 1rem;
+      margin-bottom: 5%; 
+    }
+    
+    
   }
 `;
 
 export const ButtonGroup = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 0.5em;
 `;
 
 export const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.5em;
 `;
 
 export const ModalSignIn = styled(MyGenericModal)`
@@ -302,7 +339,7 @@ export const ModalSignUp = styled(MyGenericModal)`
 `;
 
 export const FooterText = styled.p`
-  font-size: 14px;
+  font-size: 0.9em;
 `;
 
 export const SignUp = styled.div`
@@ -324,19 +361,19 @@ export const SignUp = styled.div`
 
       .signUp-form h1 {
           color: ${(props) => (props.theme.textColor)};
-          margin-bottom: 20px;
+          margin-bottom: 1em;
       }
 
       .icon-with-text {
           display: flex;
           color: ${(props) => (props.theme.buttonBackgroundColor)};
           align-items: center; /* Allinea verticalmente gli elementi */
-          margin-bottom: 50px;
+          margin-bottom: 2.5em;
         }
         
       .icon-with-text h4 {
           color: ${(props) => (props.theme.buttonBackgroundColor)};
-          margin-left: 10px; /* Aggiungi uno spazio tra l'icona e il testo */
+          margin-left: 0.5em; /* Aggiungi uno spazio tra l'icona e il testo */
       }
 
       .input-wrapper {
@@ -346,15 +383,15 @@ export const SignUp = styled.div`
   
       .signUp-form label {
           color: ${(props) => (props.theme.textColor)};
-          margin-bottom: 8px;
+          margin-bottom: 0.4em;
       }
   
       .signUp-form input {
-          padding: 8px;
+          padding: 0.4em;
           border: none;
           background-color: transparent;
           color: ${(props) => (props.theme.textColor)};
-          margin-bottom: 16px;
+          margin-bottom: 0.8em;
       }
   
       .signUp-form input::placeholder {
@@ -362,7 +399,7 @@ export const SignUp = styled.div`
       }
   
       // .signUp-form button {
-      //     // padding: 8px 16px;
+      //     // padding: o.4em 0.8em;
       //     background-color: ${(props) => (props.theme.buttonBackgroundColor)};
       //     color: ${(props) => (props.theme.textColor)};
       //     // border: none;
@@ -373,7 +410,7 @@ export const SignUp = styled.div`
           display: flex;
           justify-content: flex-end;
           width: 100%;
-          margin-top: 20px;
+          margin-top: 1em;
         }
 
       
@@ -381,15 +418,15 @@ export const SignUp = styled.div`
   `;
 
   export const SignUpButton = styled(MyButton)`
-          margin-right: 40%;
+    margin-right: 40%;
   <`;
 
   export const ModifiedTitleDashboard = styled(TitleDashboard)`
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: left; 
-  margin-top: 70px; 
-  margin-left: 6vw;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: left; 
+    margin-top: 3.5em; 
+    margin-left: 6vw;
 `;
 
 export const MySecondaryButton = styled(MyButton)`
@@ -418,8 +455,8 @@ export const TitleSection = styled.h2`
   font-size: 1.5rem;
   font-weight: bold;
   color: ${(props) => (props.theme.textColor)};
-  margin-top: 40px;
-  margin-bottom: 20px;
+  margin-top: 2em;
+  margin-bottom: 1em;
   margin-left: 6vw;
 `;
 
@@ -457,20 +494,20 @@ export const StyledInputs = styled.div`
     align-items: center;
     font-weight: bold;
     font-size: 1.2rem;
-    margin-right: 20px;
-    margin-left: 20px;
+    margin-right: 1em;
+    margin-left: 1em;
   }
 
   input {
-    margin-top: 10px;
+    margin-top: 0.5em;
     font-size: 1.2rem;
-    padding: 5px;
+    padding: 0.5em;
   }
 
   button {
-    margin-top: 10px;
+    margin-top: 0.5em;
     font-size: 1.2rem;
-    padding: 5px;
+    padding: 0.5em;
   }
 `;
 
@@ -479,13 +516,13 @@ export const StyledTable = styled.table`
   width: 50%;
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
-  margin-bottom: 20px;
+  margin-bottom: 1em;
   margin-left: 6vw;
   overflow-y: auto; /* Enable vertical scroll */
 
   td, th {
-    border: 0.5px solid black;
-    padding: 1px;
+    border: 0.025em solid black;
+    padding: 0.01em;
     text-align: center;
     background-color: ${(props) => (props.theme.backgroundColor)};
   }
@@ -510,19 +547,19 @@ export const StyledAddSection = styled.div`
     align-items: center;
     font-weight: bold;
     font-size: 1.2rem;
-    margin-right: 20px;
+    margin-right: 1em;
   }
 
   input {
-    margin-top: 10px;
+    margin-top: 0.5em;
     font-size: 1.2rem;
-    padding: 5px;
+    padding: 0.4em;
   }
 
   button {
-    margin-top: 10px;
+    margin-top: 0.5em;
     font-size: 1.2rem;
-    padding: 5px;
+    padding: 0.5em;
   }
 `;
 
@@ -531,7 +568,7 @@ export const StyledLastAdds = styled.div`
   flex-direction: column;
   align-items: center;
   color: ${(props) => (props.theme.textColor)};
-  margin-bottom: 20px;
+  margin-bottom: 1em;
   margin-left: 6vw;
   width: 100%;
 
@@ -547,12 +584,12 @@ export const StyledLastAdds = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 0.5em;
   }
 
   button {
     font-size: 1.2rem;
-    padding: 5px;
+    padding: 0.5em;
     background-color: ${(props) => (props.theme.backgroundColor)};
   }
 `;
@@ -570,7 +607,7 @@ export const Container = styled.div`
   height: 100%; 
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
-  padding-bottom: 105px;
+  padding-bottom: 5.25em;
 `;
 
 export const SectionADashboard = styled.section `
@@ -582,12 +619,21 @@ export const SectionADashboard = styled.section `
 export const FeaturesSection = styled.section`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  align-items: center;
-  bottom: 0;
-  gap: 60px;
-  // padding: 60px;
-  max-width: 1400px; /* Aggiungi una larghezza massima desiderata */
-  margin: 0 auto; /* Centra orizzontalmente il contenitore */
+  justify-content: center;
+  // align-items: center;
+  margin-left: 6vw;
+  gap: 3em;
+  max-width: 100vw; /* Aggiungi una larghezza massima desiderata */
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    margin-left: 50vw;
+    margin-top: 15vh;
+    gap: 4em; 
+    max-width: 100vw;
+  }
 `;
 
 export const Feature = styled.div`
@@ -598,16 +644,16 @@ export const Feature = styled.div`
 export const FeatureIcon = styled.div`
   background-color: ${(props) => (props.theme.iconBackgroundColor)};
   color: white;
-  padding: 20px;
+  padding: 1em;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 1.2em;
 `;
 
 export const FeatureText = styled.div`
-  margin-left: 20px;
+  margin-left: 1em;
 `;
 
 export const Icon = styled.div`
@@ -617,197 +663,290 @@ export const Icon = styled.div`
 `;
 
 export const SidebarToggleModeButton = styled(ToggleModeButton)`
-      padding: 6px 10px;
-      font-size: 16px;
-      gap: 2px;
+      padding: 0.3em 0.5em;
+      font-size: 0.8em;
+      gap: 0.1em;
+
+      /* For screens with a maximum width of 768px (e.g. mobile devices) */
+      @media (max-width: 768px) {
+        margin-right: 0.5em;
+      }
+`;
+export const DropdownContainer = styled.div`
+  position: relative;
+
+  .dropdown-header {
+    cursor: pointer;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 10em;
+    background-color: #fff;
+    border: 0.1em solid #ccc;
+    border-radius: 0.2em;
+    padding: 0.4em;
+    box-shadow: 0em 0.1em 0.2em rgba(0, 0, 0, 0.1);
+  }
+
+  .dropdown-option {
+    padding: 0.3em;
+    cursor: pointer;
+  }
+
+  .dropdown-option:hover {
+    background-color: #f5f5f5;
+  }
+
+  .dropdown-option.selected {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .dropdown-option.logout {
+    margin-top: 0.4em;
+    color: #dc3545;
+  }
+
 `;
 
-export const SidebarSection = styled.section`
-    font-family: Roboto, sans-serif;
-    position: fixed;
-    left: 0;
-    background-color: ${(props) => (props.theme.backgroundColor)};
-    height: 100vh;
-    width: 6vw;
+export const Notification = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  .font_icon{
+      font-size: 1.5rem;
+  }
+
+  svg{
+      color: ${(props) => (props.theme.textColor)};
+  }
+
+  .image {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      img{
+          height: 2.5rem;
+          width: 2.5rem;
+          border-radius: 3rem;
+      }
+  }
+
+  .account-image {
+      height: 2rem;
+      width: 2rem;
+      border-radius: 3rem;
+      background-color: white; /* Imposta il colore di sfondo dell'immagine */
+  }
+
+  .bell-icon {
+      font-size: 2rem; /* Imposta la grandezza desiderata */
+  }
+  
+  .popup-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  .popup-window {
+      width: 20em;
+      padding: 1em;
+      background-color: white;
+      border: 0.1em solid orange;
+      border-radius: 0.5em;
+      box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+  }
+  
+  .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  @media (max-width: 768px) {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 2rem 0;
-    gap: 2rem;
-    .top{
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        width: 100%;
-        .links {
-        
-            ul {
-            
-                margin-bottom: 0.5rem;
+    justify-content: center;
+    gap: 0.1rem;
 
-                .active {
-                    border-right: 0.2rem solid black;
-                }
-                
-                .active a {
-                    color: ${(props) => (props.theme.buttonBackgroundColor)};
-                }
-                
-                .active svg {
-                    color: ${(props) => (props.theme.buttonBackgroundColor)};
-                }
-                  
-                
-                li{
-                    display: flex;
-                    justify-content: center;
-                    border-right: 0.2rem solid transparent;
-                    margin: 1rem 0;
-                    list-style-type: none;
-                    a {   
-                        text-decoration: none;
-                        color: ${(props) => (props.theme.textColor)};
-                        font-size: 1.6rem;
-                        gap: 0 0.4rem;;
-                    }
-                    .noti{
-                        display: flex;
-                        margin-left: 21px;
-                        span {
-                            background-color: red;
-                            font-size: 0.5rem;
-                            border-radius: 50%;
-                            padding: 2px 5px 2px 5px;
-                            color: ${(props) => (props.theme.textColor)};
-                            margin-bottom: 19px;
-                            margin-top: -10px;
-                        }
-                    }
-                    transition: 0.3s ease-in-out;
-                    &:hover{
-                        a {
-                            color: ${(props) => (props.theme.buttonBackgroundColor)};
-                        }
-                    }
-                
-                }
-            
-            }
-        }
-    }
-    //i wanna set the toogle-button at the vertical center of the sidebar
-    .toggle-button {
-        display: flex;
-        justify-content: center;
+    .account-image {
+        height: 1.2rem;
+        width: 1.2rem;
+        background-color: white; /* Imposta il colore di sfondo dell'immagine */
     }
 
-    .notification{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.2rem;
-        .font_icon{
-            font-size: 1.5rem;
-        }
-
-        svg{
-            color: ${(props) => (props.theme.textColor)};
-        }
-
-        .image {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            img{
-                height: 2.5rem;
-                width: 2.5rem;
-                border-radius: 3rem;
-            }
-        }
-
-        .account-image {
-            height: 2rem;
-            width: 2rem;
-            border-radius: 3rem;
-            background-color: white; /* Imposta il colore di sfondo dell'immagine */
-        }
-
-        .bell-icon {
-            font-size: 2rem; /* Imposta la grandezza desiderata */
-        }
-
-        
-        .dropdown-container {
-            position: relative;
-        }
-        
-        .dropdown-header {
-            cursor: pointer;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 200px;
-            background-color: #fff;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            padding: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dropdown-option {
-            padding: 6px;
-            cursor: pointer;
-        }
-        
-        .dropdown-option:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .dropdown-option.selected {
-            background-color: #007bff;
-            color: #fff;
-        }
-        
-        .dropdown-option.logout {
-            margin-top: 8px;
-            color: #dc3545;
-        }
-
-        .popup-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .popup-window {
-            width: 400px;
-            padding: 20px;
-            background-color: white;
-            border: 2px solid orange;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-        }
+    .bell-icon {
+        font-size: 1.5rem; /* Imposta la grandezza desiderata */
     }
+    
+    .popup-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .popup-window {
+      width: 10em;
+      padding: 0.5em;
+      background-color: white;
+      border: 0.1em solid orange;
+      border-radius: 0.5em;
+      box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+    }
+    
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 50%;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+`;
 
-    `
+export const Top = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    gap: 0.01rem;
+  }
+
+`;
+
+export const Links = styled.div`
+  ul {
+      margin-bottom: 0.5rem;
+
+      .active {
+          border-right: 0.2rem solid black;
+      }
+      
+      .active a {
+          color: ${(props) => (props.theme.buttonBackgroundColor)};
+      }
+      
+      .active svg {
+          color: ${(props) => (props.theme.buttonBackgroundColor)};
+
+      }
+        
+      
+      li{
+          display: flex;
+          justify-content: center;
+          border-right: 0.2rem solid transparent;
+          margin: 1rem 0;
+          list-style-type: none;
+          a {   
+              text-decoration: none;
+              color: ${(props) => (props.theme.textColor)};
+              font-size: 1.6rem;
+              gap: 0 0.4rem;;
+          }
+          .noti{
+              display: flex;
+              margin-left: 1.10em;
+              span {
+                  background-color: red;
+                  font-size: 0.5rem;
+                  border-radius: 50%;
+                  padding: 0.1em 0.25em 0.1em 0.25em;
+                  color: ${(props) => (props.theme.textColor)};
+                  margin-bottom: 0.95em;
+                  margin-top: -0.5em;
+              }
+          }
+          transition: 0.3s ease-in-out;
+          &:hover{
+              a {
+                  color: ${(props) => (props.theme.buttonBackgroundColor)};
+              }
+          }
+      
+      }
+  
+  }
+
+  @media (max-width: 768px) {
+    /* Modifica la disposizione dei link nel menu superiore */
+    display: flex;
+    gap: 1rem;
+    width: auto;
+      ul {
+        margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
+        display: flex;
+        list-style: none;
+        padding: 0;
+        li{
+            margin: 0;
+            a {
+              font-size: 1.2rem; /* Riduci la dimensione del testo */
+            }         
+        }
+    
+      }
+  }
+`;
+
+export const ToggleButton = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    display: ;
+  }
+`;
+
+
+
+export const SidebarSection = styled.section`
+  font-family: Roboto, sans-serif;
+  position: fixed;
+  left: 0;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  height: 100vh;
+  width: 6vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 0;
+  gap: 2rem;
+    
+  @media (max-width: 768px) {
+    /* Stili da applicare solo su dispositivi mobili */
+    position: fixed;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    padding: 0.8rem 0.5rem; /* Aggiungi spaziatura inferiore solo su dispositivi mobili */
+    gap: 0.8rem; /* Aggiungi spaziatura tra gli elementi solo su dispositivi mobili */
+  }  
+  `
   ;
 
   export const UpperSection = styled.section `
@@ -827,8 +966,8 @@ export const SidebarSection = styled.section`
           margin-left: 10%;
           background-color: white;
           transition: 0.5s ease-in-out;
-          width: 170px;
-          border: 3px solid ${(props) => (props.theme.buttonBackgroundColor)};
+          width: 8.5em;
+          border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
               align-items: center;
@@ -844,7 +983,7 @@ export const SidebarSection = styled.section`
                   }
               }
               .action {
-                  margin-left: 80px;
+                  margin-left: 4em;
               svg{
                   font-size: 1.5rem;
               }
@@ -852,11 +991,11 @@ export const SidebarSection = styled.section`
 
           }
           .transfer {
-              margin-top: 20px;
+              margin-top: 1em;
               color: grey
           }
           .money {
-              margin-top: 20px;  
+              margin-top: 1em;  
           }
       }
 
@@ -884,8 +1023,8 @@ export const SidebarSection = styled.section`
           justify-content: space-evenly;
           align-items: center;
           transition: 0.5s ease-in-out;
-          width: 170px;
-          border: 3px solid ${(props) => (props.theme.buttonBackgroundColor)};
+          width: 8.5em;
+          border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
               display: flex;
@@ -902,7 +1041,7 @@ export const SidebarSection = styled.section`
                   }
               }
               .action {
-                  margin-left: 80px;
+                  margin-left: 4em;
               svg{
                   font-size: 1.5rem;
               }
@@ -910,11 +1049,11 @@ export const SidebarSection = styled.section`
 
           }
           .transfer {
-              margin-top: 20px;
+              margin-top: 1em;
               color: grey
           }
           .money {
-              margin-top: 20px;  
+              margin-top: 1em;  
           }
       }
 
@@ -985,11 +1124,11 @@ export const SidebarSection = styled.section`
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      margin: 0 60px;
+      margin: 0 3em;
 
       .pie-chart-section {
-          margin-top: 50px;
-          margin-right: 50px;
+          margin-top: 2.5em;
+          margin-right: 2.5em;
       }
   `;
 
@@ -1012,8 +1151,8 @@ export const SidebarSection = styled.section`
         color: black;
         background-color: white;
         transition: 0.5s ease-in-out;
-        width: 170px;
-        border: 3px solid ${(props) => (props.theme.buttonBackgroundColor)};
+        width: 8.5em;
+        border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
       
           .design{
@@ -1030,7 +1169,7 @@ export const SidebarSection = styled.section`
                   }
               }
               .action {
-                  margin-left: 80px;
+                  margin-left: 4em;
               svg{
                   font-size: 1.5rem;
               }
@@ -1038,11 +1177,11 @@ export const SidebarSection = styled.section`
 
           }
           .transfer {
-              margin-top: 20px;
+              margin-top: 1em;
               color: grey
           }
           .money {
-              margin-top: 20px;  
+              margin-top: 1em;  
           }
       }
 
@@ -1082,8 +1221,8 @@ export const SidebarSection = styled.section`
     }
     h3{
       color: black;
-      border-top: 1px solid grey;
-      margin top: 10px;
+      border-top: 0.05em solid grey;
+      margin top: 0.5em;
     }
 
     .incomes {
@@ -1110,7 +1249,7 @@ export const SidebarSection = styled.section`
                 width: 100%;
                 td {
                     text-align: center;
-                    padding: 5px;
+                    padding: 0.25em;
                     justify-content: space-evenly;
                   
                     img{
@@ -1129,20 +1268,20 @@ export const SidebarSection = styled.section`
   export const MySectionButton = styled.button`
     background-color: ${(props) => (props.theme.buttonBackgroundColor)};
     color: white;  
-    padding: 10px 20px;
+    padding: 0.5em 1em;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.2em;
     align-items: center;
-    font-size: 16px;
+    font-size: 1em;
     cursor: pointer;
   `;
 
   export const StyledCalendar = styled(Calendar)`
-      max-width: 350px;
-      max-height: 300px;
+      max-width: 17.5em;
+      max-height: 15em;
       margin: 0 auto;
-      border: 2px solid white;
-      border-radius: 4px;
+      border: 0.1em solid white;
+      border-radius: 0.2em;
   
       background-color: ${(props) => (props.theme.backgroundColor)};
       font-family: Arial, sans-serif;
@@ -1172,7 +1311,7 @@ export const SidebarSection = styled.section`
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 2px 0;
+        padding: 0.1em 0;
       }
     `;
 
@@ -1211,10 +1350,10 @@ export const CenteredRankings = styled.div`
 
 export const RankingsTitle = styled.h1`
   color: ${themes.dark.buttonBackgroundColor};
-  font-size: 24px;
+  font-size: 1.2em;
   font-weight: bold;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
 `;
 
 export const StyledSelectContainer = styled.div`
@@ -1223,24 +1362,26 @@ export const StyledSelectContainer = styled.div`
 `;
 
 export const StyledLabel = styled.label`
+  text-align: left;
   color: white;
-  margin-right: 10px;
+  margin-right: 0.5em;
 `;
 
 export const StyledSelect = styled.select`
   color: white;
   background-color: transparent;
-  border: 1px solid white;
-  padding: 5px;
-  border-radius: 5px;
-  margin-right: 10px;
+  border: 0.05em solid white;
+  padding: 0.25em;
+  border-radius: 0.25em;
+  margin-right: 0.5em;
 
   option {
     background-color: ${themes.dark.backgroundColor}; /* Cambia lo sfondo dell'opzione */
     color: ${themes.dark.textColor}; /* Cambia il colore del testo dell'opzione */
   }
+
   option:hover {
-    box-shadow: 0 0 10px 100px ${themes.dark.buttonBackgroundColor} inset;
+    box-shadow: 0 0 0.5em 5em ${themes.dark.buttonBackgroundColor} inset;
   }
 
 `;
@@ -1292,12 +1433,12 @@ export const CookieBannerContainer = styled.div`
   position: fixed;
   left: 6vw;
   width: auto;
-  bottom: 10px;
+  bottom: 0.5em;
   background-color: white;
   color: black;
   text-align: center; /* Centra orizzontalmente il testo */
-  padding: 16px;
-  box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.2);
+  padding: 0.8em;
+  box-shadow: 0em -0.1em 0.5em rgba(0, 0, 0, 0.2);
   animation: ${slideIn} 1s ease forwards;
   display: flex;
   flex-direction: column;
@@ -1307,8 +1448,8 @@ export const CookieBannerContainer = styled.div`
 
   // Aggiungi un margine inferiore al pulsante per separarlo dal testo
   button {
-    margin-bottom: 40px; /* Aggiungi il margine inferiore desiderato */
-    padding: 8px 16px;
+    margin-bottom: 2em; /* Aggiungi il margine inferiore desiderato */
+    padding: 0.4em 0.8em;
     background-color: ${themes.dark.buttonBackgroundColor};
     color: white;
     border: none;
@@ -1324,7 +1465,7 @@ export const CookieBannerContainer = styled.div`
   }
 
   &.accepted {
-    bottom: -100px;
+    bottom: -5em;
   }
 
   &.show {
@@ -1333,6 +1474,11 @@ export const CookieBannerContainer = styled.div`
 
   button.reject {
     background-color: ${themes.dark.backgroundColor};
+  }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    
   }
 `;
   
@@ -1344,7 +1490,7 @@ export const MuiCustomDialog = styled(Dialog)`
   && {
     // background-color: ${(props) => (props.theme.backgroundColor)};
     // color: ${(props) => (props.theme.textColor)};
-    // border: 4px solid ${(props) => (props.theme.buttonBackgroundColor)};
+    // border: 0.2em solid ${(props) => (props.theme.buttonBackgroundColor)};
   }
 `;
 

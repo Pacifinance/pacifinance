@@ -58,6 +58,7 @@ function UserProvider({ children }) {
             const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
 
             const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
+
             const allTags  = await axios.post('/tags/get');
             const expensesTags = allTags.data.expense;
             const incomesTags = allTags.data.income;
@@ -67,6 +68,18 @@ function UserProvider({ children }) {
             console.log('Tags spese: ', expensesTags);
             console.log('Tags entrate: ', incomesTags);
             console.log('Tags pagamenti: ', paymentTags);
+
+            const infoUser = await axios.post('/user/get');
+            const userId = infoUser.data.userId;
+            const nickname = infoUser.data.nickname ?? 'Nickname non impostato';
+            const userNationality = infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata';
+            const userWhereWorks = infoUser.data.jobCountry?.translations?.it ?? 'Dove lavora non impostato';
+            const userJob = infoUser.data.job?.translations?.it ?? 'Lavoro non impostato';
+            const userJobType = infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato';
+            const userWorkTime = infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato';
+            const userRemoteType = infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata';
+            
+            console.log('Info utente: ', infoUser);
             //GET DATA FROM RESPONSES
             var balances = {};
             //add a control to check if the user has data in this month and previous month
@@ -264,7 +277,15 @@ function UserProvider({ children }) {
             console.log('percentageRankOnExpense:', percentageRankOnExpenses);
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes, percentageRankOnBalance, percentageRankOnIncomes, percentageRankOnExpenses});
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, 
+              expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, 
+              bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, 
+              cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
+              bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, 
+              incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, 
+              preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes, percentageRankOnBalance, percentageRankOnIncomes, percentageRankOnExpenses,
+              userId, nickname, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
+            });
             handleSetIsUpdated(true);
         }
       } catch (error) {

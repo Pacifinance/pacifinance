@@ -228,7 +228,7 @@ app.post("/user/set-password", async (req, res) => {
     // Then, force the logout (redirect to /logout route)
     let hashed_new_pwd = utils.hashPassword(new_pwd, process.env.SALT_ROUNDS);
     await db.users.setPasswordOfUserId(req.session.userId, hashed_new_pwd);
-    res.redirect("logout");
+    res.redirect(307, "../logout");
 });
 
 app.post("/user/get", async (req, res) => {

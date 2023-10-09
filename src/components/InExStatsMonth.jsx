@@ -67,14 +67,14 @@ export default function InExStatsMonth() {
                 console.log(userData.expenses);
                 
                 //CURRENT MONTH
-                setIncomesMonth(userData ? userData.incomesMonth : 0);
-                setExpensesMonth(userData ? userData.expensesMonth : 0);
-                setSavedMonth(userData ? userData.savedMonth : 0);
+                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setIncomesMonth(userData ? userData.incomesArray[0] : 0);
+                setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
 
                 //PREVIOUS MONTH
-                setIncomesPreMonth(userData ? userData.incomesPreMonth : 0);
-                setSavedPreMonth(userData ? userData.savedPreMonth : 0);
-                setExpensesPreMonth(userData ? userData.expensesPreMonth : 0);
+                setIncomesPreMonth(userData ? userData.incomesArray[0] : 0);
+                setSavedPreMonth(userData ? (userData.incomesArray[1] - userData.expensesArray[1]) : 0);
+                setExpensesPreMonth(userData ? userData.expensesArray[1] : 0);
                 
         
             } catch (error) {

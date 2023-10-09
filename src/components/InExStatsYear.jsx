@@ -77,14 +77,14 @@ function InExStatsYear() {
                 // Set the state with the data from the database
 
                 //CURRENT MONTH
-                setExpensesMonth(userData ? userData.expensesMonth : 0);
-                setIncomesMonth(userData ? userData.incomesMonth : 0);
-                setSavedMonth(userData ? userData.savedMonth : 0);
+                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setIncomesMonth(userData ? userData.incomesArray[0] : 0);
+                setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
 
                 //PREVIOUS YEAR SAME MONTH
-                setExpensesPreYearSameMonth(userData ? userData.expensesPreYearSameMonth : 0);
-                setIncomesPreYearSameMonth(userData ? userData.incomesPreYearSameMonth : 0);
-                setSavedPreYearSameMonth(userData ? userData.savedPreYearSameMonth : 0);
+                setExpensesPreYearSameMonth(userData ? userData.expensesArray[12]: 0);
+                setIncomesPreYearSameMonth(userData ? userData.incomesArray[12] : 0);
+                setSavedPreYearSameMonth(userData ? (userData.incomesArray[12] - userData.expensesArray[12]) : 0);
 
             } catch (error) {
               console.error('Errore durante le operazioni:', error);

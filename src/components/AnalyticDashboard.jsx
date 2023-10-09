@@ -42,7 +42,6 @@ function AnalyticDashboard() {
             try {
                 console.log(userData);
                 console.log(userData.balances);
-                console.log(userData.expensesIncomes);
                 
                 // Set the state with the data from the database
                 setStocksReal(userData ? userData.stocksReal : 0);
@@ -53,9 +52,9 @@ function AnalyticDashboard() {
                 setCashReal(userData ? userData.cashReal : 0);
                 setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
                 setTotalReal(userData ? userData.totalReal : 0);
-                setExpensesMonth(userData ? userData.expensesMonth : 0);
-                setIncomesMonth(userData ? userData.incomesMonth : 0);
-                setSavedMonth(userData ? userData.savedMonth : 0);
+                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setIncomesMonth(userData ? userData.incomesArray[0] : 0);
+                setSavedMonth(userData ? (userData.incomesArray[0] - userData.incomesArray[0]) : 0);
 
                 
                 

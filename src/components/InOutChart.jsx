@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { UserContext } from '../contexts/UserContext';
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/lib/component/Tooltip";
@@ -10,91 +10,22 @@ import { Legend } from "recharts/lib/component/Legend";
 import { SectionInOut } from '../contexts/MyStyled';
 
 
-const data = [
-  {
-    name: "January",
-    Uscite: 4000,
-    Entrate: 2400,
-    amt: 2400
-  },
-  {
-    name: "February",
-    Uscite: 3000,
-    Entrate: 1398,
-    amt: 2210
-  },
-  {
-    name: "March",
-    Uscite: 2000,
-    Entrate: 9800,
-    amt: 2290
-  },
-  {
-    name: "April",
-    Uscite: 2780,
-    Entrate: 3908,
-    amt: 2000
-  },
-  {
-    name: "May",
-    Uscite: 1890,
-    Entrate: 4800,
-    amt: 2181
-  },
-  {
-    name: "June",
-    Uscite: 2390,
-    Entrate: 3800,
-    amt: 2500
-  },
-  {
-    name: "July",
-    Uscite: 3490,
-    Entrate: 4300,
-    amt: 2100
-  },
-  {
-    name: "August",
-    Uscite: 3490,
-    Entrate: 4300,
-    amt: 2100
-  },
-  {
-    name: "September",
-    Uscite: 3490,
-    Entrate: 4300,
-    amt: 2100
-  },
-  {
-    name: "October",
-    Uscite: 3490,
-    Entrate: 4300,
-    amt: 2100
-  },
-  {
-    name: "November",
-    Uscite: 3490,
-    Entrate: 4300,
-    amt: 2100
-  },
-  {
-    name: "December",
-    Uscite: 3490,
-    Entrate: 4300,
-    amt: 2100
-  },
-];
+
 
 export default function Incomes() {
   const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const [incomesArray, setIncomesArray] = useState([]);
+  const [expensesArray, setExpensesArray] = useState([]);
   //impostare i dati presi dell'utente per le spese e le entrate TODO
   useEffect(() => {
     const fetchData = async () => {
       if (userData) {
         try {
             console.log(userData);
-            console.log(userData.expensesIncomes);
-            
+            console.log(userData.incomesArray);
+            console.log(userData.expensesArray);
+            setIncomesArray(userData.incomesArray);
+            setExpensesArray(userData.expensesArray);  
             
         } catch (error) {
           console.error('Errore durante le operazioni:', error);
@@ -104,6 +35,26 @@ export default function Incomes() {
 
   fetchData();
   }, [userData]);
+
+  const today = new Date();
+  const lastTwelveMonths = [];
+
+  for (let i = 0; i < 12; i++) {
+    const month = today.getMonth() - i;
+    const year = today.getFullYear();
+    const date = new Date(year, month, 1);
+
+    const monthName = date.toLocaleDateString('it-IT', { month: 'long' });
+
+    lastTwelveMonths.push({
+      name: monthName,
+      Uscite: expensesArray[i] || 0, // Usa 0 se non ci sono dati
+      Entrate: incomesArray[i] || 0, // Usa 0 se non ci sono dati
+      amt: 0, // Aggiungi eventuali dati aggiuntivi
+    });
+  }
+
+  const data = lastTwelveMonths.reverse(); // Inverti l'ordine
 
   return (
     <SectionInOut>

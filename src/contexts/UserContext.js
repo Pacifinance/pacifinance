@@ -16,54 +16,24 @@ function UserProvider({ children }) {
         if (isAuthenticated && !isUpdated) { // && !isUpdated
             console.log('Sono loggato e ora faccio le chiamate API in UserContext.js')
 
-            //GET DATES
+            //***********************************GET DATES********************************************/
             const currentDate = new Date(Date.now()); //current date in UTC format
 
             //get the date of the previous month
             const preMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
-
-            // const minusTwoMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 2, currentDate.getDate());
-
-            // const minusThreeMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
-
-            // const minusFourMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 4, currentDate.getDate());
-
-            // const minusFiveMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 5, currentDate.getDate());
-
-            // const minusSixMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 6, currentDate.getDate());
-
-            // const minusSevenMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 7, currentDate.getDate());
-
-            const minusEightMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 8, currentDate.getDate());
-
-            const minusNineMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 9, currentDate.getDate());
-
-            // const minusTenMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, currentDate.getDate());
-
-            const minusElevenMonthsDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 11, currentDate.getDate());
-            console.log('minusEightMonthsDate', minusEightMonthsDate);
-            console.log('minusNineMonthsDate', minusNineMonthsDate);
-            console.log('minusElevenMonthsDate', minusElevenMonthsDate);
-
-
-
+          
             //get the date of the current month of the previous year
             const preYearSameMonthDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
-            
 
             //CALL API TO GET DATA
-            const balancesResponse = await axios.post('/balances/get');
-            // const allExpensesIncomes = await axios.post('/expenses/get'); //maybe without a date parameter it returns all the data
-            const expensesIncomesResponse = await axios.post('/expenses/get', {date: currentDate}); //this will be used also to display the expenses and incomes of the current month and i will add a button "load more per i mesi precedenti"
-            const expensesIncomesPreMonthResponse = await axios.post('/expenses/get', {date: preMonthDate});
-
-            const expensesIncomesPreYearSameMonthResponse = await axios.post('/expenses/get', {date: preYearSameMonthDate});
+            
+            /***************************** TAGS ********************************/
 
             const allTags  = await axios.post('/tags/get');
             const expensesTags = allTags.data.expense;
             const incomesTags = allTags.data.income;
             const paymentTags = allTags.data.payment;
-            console.log('Array completo di risposta: ', balancesResponse.data);
+            
             console.log('Tutte le tags disponibili: ', allTags);
             console.log('Tags spese: ', expensesTags);
             console.log('Tags entrate: ', incomesTags);
@@ -80,6 +50,12 @@ function UserProvider({ children }) {
             const userRemoteType = infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata';
             
             console.log('Info utente: ', infoUser);
+            
+            //************************************* BALANCES **********************************************/
+
+            const balancesResponse = await axios.post('/balances/get');
+            console.log('Array completo di risposta BALANCE: ', balancesResponse.data);
+
             //GET DATA FROM RESPONSES
             var balances = {};
             //add a control to check if the user has data in this month and previous month
@@ -98,20 +74,13 @@ function UserProvider({ children }) {
             } 
             
             const balancesPreMonth = (balancesResponse.data[1] || 0).balance || 0;  //Using ?? 0, if the value is undefined or empty, set it to 0
-            const balancesPreYearSameMonth = (balancesResponse.data[12] || 0).balance || 0;         
-            const expensesIncomes = expensesIncomesResponse.data || [];
-            const expensesIncomesPreMonth = expensesIncomesPreMonthResponse.data || [];
-            const expensesIncomesPreYearSameMonth = expensesIncomesPreYearSameMonthResponse.data || [];
-
+            const balancesPreYearSameMonth = (balancesResponse.data[12] || 0).balance || 0;      
 
             console.log('balances:', balances);
             console.log('balancesPreMonth:', balancesPreMonth);
             console.log('balancesPreYearSameMonth:', balancesPreYearSameMonth);
-            console.log('expenses:', expensesIncomes);
-            console.log('expensesPreMonth:', expensesIncomesPreMonth);
-            console.log('expensesPreYearSameMonth:', expensesIncomesPreYearSameMonth);
-            console.log('expensesIncomesResponse:', expensesIncomesResponse);
-            console.log('expensesIncomes:', expensesIncomes);
+
+            //************************************* CASH **********************************************/
 
             const cashReal = balances.cash || 0;
             const bankReal = balances.bank || 0;
@@ -140,31 +109,38 @@ function UserProvider({ children }) {
             const cryptoRealPreYearSameMonth = (balancesPreYearSameMonth.crypto || 0).real || 0;
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
 
+            //************************************* LAST EXPENSES AND INCOMES **********************************************/
 
-            //Set the variable with all expense and one with all income to list them in the insert page (TODO)
-            // var lastExpenses = [];
-            // var lastIncomes = [];
+            const allExpensesIncomesResponse = await axios.post('/expenses/get'); //get all expenses and incomes
+            console.log('Response completa  SPESE e GUADAGNI: ', allExpensesIncomesResponse);
 
-            //The structure must be like this:
-            // const newExpenseAdd = {
-            //   categoryExpense,
-            //   typoExpense,
-            //   expense,
-            //   expenseDate,
-            // };
+            const allExpensesIncomesArray = allExpensesIncomesResponse.data;
 
+            console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray);
 
-            // expensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
-            //             if (data.isExpense) {
-            //                 lastExpenses.push(data);
-            //             }
-            //             else {
-            //                 lastIncomes.push(data);
-            //             }
-            // });
+            // Crea un array di oggetti per le entrate e un array di oggetti per le spese, inizializzati con valori iniziali a 0
+            const incomesArray = Array(13).fill(0);
+            const expensesArray = Array(13).fill(0);
 
-            const lastExpenses = expensesIncomes.filter(data => data.isExpense);
-            const lastIncomes = expensesIncomes.filter(data => !data.isExpense);
+            // Itera su ciascun elemento dell'array allExpensesIncomesArray
+            allExpensesIncomesArray.forEach((outerItem, index) => {
+              // Cicla sugli elementi interni di outerItem
+              outerItem.forEach((innerItem) => {
+                // Aggiungi l'importo all'array corrispondente, a seconda se è un'entrata o una spesa
+                if (innerItem.isExpense) {
+                  expensesArray[index] += innerItem.amount;
+                } else {
+                  incomesArray[index] += innerItem.amount;
+                }
+              });
+            });
+
+            console.log('Somma delle entrate per ciascun mese:', incomesArray);
+            console.log('Somma delle spese per ciascun mese:', expensesArray);
+
+            // qua potrei aggiungere un controllo che se non ci sono spese ed entrate del mese corrente, allora prendo i dati del mese precedente
+            const lastExpenses = allExpensesIncomesArray[0].filter(data => data.isExpense);
+            const lastIncomes = allExpensesIncomesArray[0].filter(data => !data.isExpense);
 
             let count = 1;
             // Print to test the amount of the expenses
@@ -180,45 +156,8 @@ function UserProvider({ children }) {
               count ++;
             });
 
-            //Set the variables for expenses and incomes of the current month, previous month and previous year same month
-            var expensesMonth = 0;
-            var incomesMonth = 0;
-            var expensesPreMonth = 0;
-            var incomesPreMonth = 0;
-            var expensesPreYearSameMonth = 0;
-            var incomesPreYearSameMonth = 0;
 
-            //EXPENSES AND INCOMES OF THE CURRENT MONTH
-            expensesIncomes.forEach((data) => { //.data is an array of objects, so we can use forEach
-                        if (data.isExpense) {
-                            expensesMonth += data.amount;
-                        } else {
-                            incomesMonth += data.amount;
-                        }
-            });
-            const savedMonth = incomesMonth - expensesMonth;
-            
-            //EXPENSES AND INCOMES OF THE PREVIOUS MONTH
-            expensesIncomesPreMonth.forEach((data) => { 
-                        if (data.isExpense) {
-                            expensesPreMonth += data.amount;
-                        } else {
-                            incomesPreMonth += data.amount;
-                        }
-            });
-            const savedPreMonth = incomesPreMonth - expensesPreMonth;
-
-            //EXPENSES AND INCOMES OF THE PREVIOUS YEAR SAME MONTH
-            expensesIncomesPreYearSameMonth.forEach((data) => { 
-                        if (data.isExpense) {
-                            expensesPreYearSameMonth += data.amount;
-                        } else {
-                            incomesPreYearSameMonth += data.amount;
-                        }
-            });
-            const savedPreYearSameMonth = incomesPreYearSameMonth - expensesPreYearSameMonth;
-
-
+            //************************************* CHARTS **********************************************/
             //DATAS FOR THE CHARTS
 
             const last12MonthsData = [];
@@ -247,7 +186,7 @@ function UserProvider({ children }) {
               last12MonthsData.push(monthData);
             }
 
-            
+            //************************************* RANKING **********************************************/
             const expensesFlag = true;
             const incomesFlag = false; 
 
@@ -277,13 +216,12 @@ function UserProvider({ children }) {
             console.log('percentageRankOnExpense:', percentageRankOnExpenses);
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesIncomes, expensesTags, incomesTags, paymentTags, expensesIncomesPreMonth, 
-              expensesIncomesPreYearSameMonth, cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, 
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesTags, incomesTags, paymentTags, 
+              cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, 
               bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, 
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
-              bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, 
-              incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, 
-              preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes, percentageRankOnBalance, percentageRankOnIncomes, percentageRankOnExpenses,
+              bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
+              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, lastExpenses, lastIncomes, percentageRankOnIncomes, percentageRankOnExpenses,
               userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
             });
             handleSetIsUpdated(true);

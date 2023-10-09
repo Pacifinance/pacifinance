@@ -1,4 +1,4 @@
-import React, {useState, useRef, useContext} from 'react';
+import React, {useState, useRef, useContext, useEffect} from 'react';
 import { BiHomeAlt } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineBell, AiOutlineCaretDown } from "react-icons/ai";
 import { BsBook, BsInfoCircle } from "react-icons/bs";
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import LogoPaci from '../components/Logo';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { UserContext } from '../contexts/UserContext';
 import { IconContext } from '../contexts/PageContext';
 import {
     SidebarToggleModeButton,
@@ -37,9 +38,18 @@ import {
 
 function Sidebar() {
     const { theme } = useContext(ThemeContext);
+    const { userData, handleSetIsUpdated } = useContext(UserContext);
     const inputRef = useRef(null);
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
+    const [userId, setUserId] = useState(''); // Stato per l'id dell'utente
+    const [username, setUsername] = useState(''); // Stato per l'username dell'utente
+    const [userNationality, setUserNationality] = useState(''); // Stato per la nazionalità dell'utente
+    const [userWhereWorks, setUserWhereWorks] = useState(''); // Stato per il luogo di lavoro dell'utente
+    const [userJob, setUserJob] = useState(''); // Stato per il lavoro dell'utente
+    const [userJobType, setUserJobType] = useState(''); // Stato per il tipo di lavoro dell'utente
+    const [userWorkTime, setUserWorkTime] = useState(''); // Stato per il tempo di lavoro dell'utente
+    const [userRemoteType, setUserRemoteType] = useState(''); // Stato per il tipo di lavoro remoto dell'utente
     const [selectedOption, setSelectedOption] = useState(null);
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showChangeIDModal, setShowChangeIDModal] = useState(false);
@@ -63,6 +73,30 @@ function Sidebar() {
     const navigate = useNavigate();
 
     const classes = MuiUseStyles();
+
+    const fetchData = async () => {
+    
+        if (userData) {
+          try {
+              setUserId(userData.userId);
+              // to it the same with those variables: nickname, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
+            setUsername(userData.username);
+            setUserNationality(userData.userNationality);
+            setUserWhereWorks(userData.userWhereWorks);
+            setUserJob(userData.userJob);
+            setUserJobType(userData.userJobType);
+            setUserWorkTime(userData.userWorkTime);
+            setUserRemoteType(userData.userRemoteType);
+              
+          } catch (error) {
+            console.error('Errore durante le operazioni:', error);
+          }
+        }
+    };
+  
+    useEffect(() => {
+      fetchData();
+    }, [userData]);
 
     const options = [
         { value: 'account', label: 'Account' },
@@ -350,13 +384,13 @@ function Sidebar() {
                                         key={option.value}
                                         className={`dropdown-option ${selectedOption === option ? 'selected' : ''}`}
                                         onClick={() => {
-                                            if (option.value !== 'changeUsername' && option.value !== 'profile') {
+                                            if (option.value !== 'changeUsername') {
                                                 handleOptionSelect(option);
                                             }
                                         }}
                                         style={{
-                                            cursor: option.value === 'changeUsername' || option.value === 'account' ? 'not-allowed' : 'pointer',
-                                            opacity: option.value === 'changeUsername' || option.value === 'account' ? 0.5 : 1
+                                            cursor: option.value === 'changeUsername' ? 'not-allowed' : 'pointer',
+                                            opacity: option.value === 'changeUsername' ? 0.5 : 1
                                         }}
                                     >
                                         {option.label}
@@ -389,7 +423,7 @@ function Sidebar() {
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                    Si è verificato un errore nell'accesso con il tuo account. <br></br>
+                                    ID: {userId} <br></br>
                                     Controlla di digitare correttamente id e password.<br></br>
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>

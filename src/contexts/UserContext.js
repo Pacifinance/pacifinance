@@ -71,7 +71,7 @@ function UserProvider({ children }) {
 
             const infoUser = await axios.post('/user/get');
             const userId = infoUser.data.userId;
-            const nickname = infoUser.data.nickname ?? 'Nickname non impostato';
+            const username = infoUser.data.nickname ?? 'Username non impostato';
             const userNationality = infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata';
             const userWhereWorks = infoUser.data.jobCountry?.translations?.it ?? 'Dove lavora non impostato';
             const userJob = infoUser.data.job?.translations?.it ?? 'Lavoro non impostato';
@@ -284,7 +284,7 @@ function UserProvider({ children }) {
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, expensesMonth, incomesMonth, savedMonth,  expensesPreMonth, 
               incomesPreMonth, savedPreMonth, expensesPreYearSameMonth, incomesPreYearSameMonth, savedPreYearSameMonth, currentDate, preMonthDate, 
               preYearSameMonthDate, last12MonthsData, lastExpenses, lastIncomes, percentageRankOnBalance, percentageRankOnIncomes, percentageRankOnExpenses,
-              userId, nickname, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
+              userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
             });
             handleSetIsUpdated(true);
         }

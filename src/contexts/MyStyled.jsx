@@ -1431,13 +1431,14 @@ export const slideOut = keyframes`
 
 export const CookieBannerContainer = styled.div`
   position: fixed;
-  left: 6vw;
+  left: 5.1vw;
   width: auto;
-  bottom: 0.5em;
+  bottom: 1em;
+  border-radius: 0.5em;
   background-color: white;
   color: black;
   text-align: center; /* Centra orizzontalmente il testo */
-  padding: 0.8em;
+  padding: 0.4em;
   box-shadow: 0em -0.1em 0.5em rgba(0, 0, 0, 0.2);
   animation: ${slideIn} 1s ease forwards;
   display: flex;
@@ -1448,7 +1449,7 @@ export const CookieBannerContainer = styled.div`
 
   // Aggiungi un margine inferiore al pulsante per separarlo dal testo
   button {
-    margin-bottom: 2em; /* Aggiungi il margine inferiore desiderato */
+    margin-bottom: 1.5em; /* Aggiungi il margine inferiore desiderato */
     padding: 0.4em 0.8em;
     background-color: ${themes.dark.buttonBackgroundColor};
     color: white;
@@ -1462,6 +1463,8 @@ export const CookieBannerContainer = styled.div`
 
   h4 {
     color: ${themes.dark.buttonBackgroundColor};
+    margin-top: 1em;
+    padding: 0.4em;
   }
 
   &.accepted {

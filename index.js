@@ -376,20 +376,19 @@ app.post("/expenses/get", async (req, res) => {
         res.send();
         return;
     }
-    // Check if the body contains a reference date. Send
-    // status code 400 (Bad Request) in case of missing or invalid date
-    const reference_date = new Date(req.body.date); // Cast for type integrity
-    if (req.body.date === undefined || reference_date === undefined)
-    {
-        res.status(400);
-        res.send();
-        return;
+    // Retrieve the expenses for a full year
+    let year = [];
+    let reference_date = new Date(Date.now());
+    for (let i = 0; i <= 12; i++) {
+        // Get the expenses from the database for the desired month and add them to the year array
+        const expenses = await db.expenses.getMonthlyExpensesByUserId(req.session.userId, reference_date);
+        year.push(expenses);
+        // Go to the next month
+        reference_date = utils.decrementDateByOneMonth(reference_date);
     }
-    // Get the expenses from the database for the desired month
-    const expenses = await db.expenses.getMonthlyExpensesByUserId(req.session.userId, reference_date);
     // Send the data to the client with status code 200 (OK)
     res.status(200);
-    res.json(expenses);
+    res.json(year);
 });
 
 app.post("/tags/get", async (req, res) => {

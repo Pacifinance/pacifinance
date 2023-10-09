@@ -1,4 +1,4 @@
-import React, {useState, useRef, useContext} from 'react';
+import React, {useState, useRef, useContext, useEffect} from 'react';
 import { BiHomeAlt } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineBell, AiOutlineCaretDown } from "react-icons/ai";
 import { BsBook, BsInfoCircle } from "react-icons/bs";
@@ -10,11 +10,17 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import LogoPaci from '../components/Logo';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { UserContext } from '../contexts/UserContext';
 import { IconContext } from '../contexts/PageContext';
 import {
     SidebarToggleModeButton,
     SidebarSection,
     MyButton,
+    Notification,
+    DropdownContainer,
+    Top,
+    Links,
+    ToggleButton,
     MuiCustomDialog,
     MuiCustomButton,
     MuiCustomDialogTitle,
@@ -32,9 +38,18 @@ import {
 
 function Sidebar() {
     const { theme } = useContext(ThemeContext);
+    const { userData, handleSetIsUpdated } = useContext(UserContext);
     const inputRef = useRef(null);
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
+    const [userId, setUserId] = useState(''); // Stato per l'id dell'utente
+    const [username, setUsername] = useState(''); // Stato per l'username dell'utente
+    const [userNationality, setUserNationality] = useState(''); // Stato per la nazionalità dell'utente
+    const [userWhereWorks, setUserWhereWorks] = useState(''); // Stato per il luogo di lavoro dell'utente
+    const [userJob, setUserJob] = useState(''); // Stato per il lavoro dell'utente
+    const [userJobType, setUserJobType] = useState(''); // Stato per il tipo di lavoro dell'utente
+    const [userWorkTime, setUserWorkTime] = useState(''); // Stato per il tempo di lavoro dell'utente
+    const [userRemoteType, setUserRemoteType] = useState(''); // Stato per il tipo di lavoro remoto dell'utente
     const [selectedOption, setSelectedOption] = useState(null);
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showChangeIDModal, setShowChangeIDModal] = useState(false);
@@ -45,9 +60,11 @@ function Sidebar() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
-    const [ShowChangePWDSuccess,setShowChangePWDSuccess]= useState(false);
+    const [showChangePWDSuccess, setShowChangePWDSuccess]= useState(false);
+    const [showChangePWDError, setShowChangePWDError] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [OldId, setOldId] = useState('');
     const [newID, setNewID] = useState('');
     const [newUsername, setNewUsername] = useState('');
     const [OldPassword, setOldPassword] = useState('');
@@ -56,6 +73,30 @@ function Sidebar() {
     const navigate = useNavigate();
 
     const classes = MuiUseStyles();
+
+    const fetchData = async () => {
+    
+        if (userData) {
+          try {
+              setUserId(userData.userId);
+              // to it the same with those variables: nickname, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
+            setUsername(userData.username);
+            setUserNationality(userData.userNationality);
+            setUserWhereWorks(userData.userWhereWorks);
+            setUserJob(userData.userJob);
+            setUserJobType(userData.userJobType);
+            setUserWorkTime(userData.userWorkTime);
+            setUserRemoteType(userData.userRemoteType);
+              
+          } catch (error) {
+            console.error('Errore durante le operazioni:', error);
+          }
+        }
+    };
+  
+    useEffect(() => {
+      fetchData();
+    }, [userData]);
 
     const options = [
         { value: 'account', label: 'Account' },
@@ -68,15 +109,21 @@ function Sidebar() {
         setActiveIcon(iconIndex);
         // setCurrentPage(pageLink);
     };
-    
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-        inputRef.current.focus();
+
+    const handleOldPasswordInput = (event) => {
+        setOldPassword(event.target.value);
     };
 
-    const handleConfirmPasswordChange = (event) => {
+    const handleOldIdInput = (event) => {
+        setOldId(event.target.value);
+    };
+    
+    const handlePasswordInput = (event) => {
+        setPassword(event.target.value);
+    };
+
+    const handleConfirmPasswordInput = (event) => {
         setConfirmPassword(event.target.value);
-        inputRef.current.focus();
     };
 
     const handleTogglePasswordVisibility = () => {
@@ -90,6 +137,20 @@ function Sidebar() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+
+    const handleCopyToClipboard = (newID) => (event) => {
+        event.preventDefault();
+        navigator.clipboard.writeText(newID)
+          .then(() => {
+            // Copiato negli appunti con successo
+            alert("ID copiato negli appunti: " + newID);
+            console.log("Testo copiato negli appunti: " + newID);
+          })
+          .catch((error) => {
+            console.error("Errore durante la copia negli appunti: " + error);
+          });
+        handleCloseModalAndLogout();
+    }
 
 
     const handleOptionSelect = (option) => {
@@ -113,10 +174,14 @@ function Sidebar() {
     };
 
     const handleGenerateID = async (event) => {
+        event.preventDefault();
         try{
             handleCloseModal();
             console.log("Genero id");
-            const response = await axios.post('/user/set-id'); //only the first element of the array is needed (the last one)
+            const data = {
+                password: password
+            }
+            const response = await axios.post('/user/set-id', data); //only the first element of the array is needed (the last one)
             console.log(response);
             console.log(response.data);
             console.log(response.data.new_id)
@@ -124,10 +189,7 @@ function Sidebar() {
             const newID = response.data.new_id;
             setNewID(newID);
             setShowID(true);
-            event.preventDefault();
-            
-            // handleLogout(event);
-            
+            event.preventDefault();     
         }
         catch(error){
             console.log(error);
@@ -136,6 +198,7 @@ function Sidebar() {
     };
 
     const handleGenerateUsername = async (event) => {
+        event.preventDefault();
         try{
             console.log("Genero username");
             const response = await axios.post('/user/set-username'); //only the first element of the array is needed (the last one)
@@ -152,23 +215,27 @@ function Sidebar() {
     };
 
     const handleChangePassword = async (event) => {
+        event.preventDefault();
         try{
-            if(password === confirmPassword){ //forse inutile
-                //richiesta al server per controllare che la vecchia password sia corretta
-                //se è corretta, richiesta al server per cambiare la password
-                //DA FARE
-                
+            if(password === confirmPassword){ 
+                const data = {
+                    old_pwd: OldPassword,
+                    new_pwd: password,
+                    repeated_pwd: confirmPassword
+                }
                 console.log("Cambio password");
-                const response = await axios.post('/user/set-password'); //only the first element of the array is needed (the last one)
+                const response = await axios.post('/user/set-password', data); //only the first element of the array is needed (the last one)
                 console.log(response);
                 console.log(response.data);
                 handleCloseModal();
                 setShowChangePWDSuccess(true);
-                handleLogout();
             }
         }
         catch(error){
             console.log(error);
+            handleCloseModal();
+            setShowChangePWDError(true);
+            // alert("Errore nel cambio password: le password non coincidono");
         }
     };
 
@@ -181,19 +248,18 @@ function Sidebar() {
     };
 
     const handleCloseSecondaryModal = () => {
-        setShowChangePWDSuccess(false);
-        // setShowID(false);
+        
+        setShowChangePWDError(false);
         setShowUsername(false);
     };
 
     const handleCloseModalAndLogout = () => {
         setShowID(false);
+        setShowChangePWDSuccess(false);
         navigate('/');
     };
 
     const handleLogout = async (event) => {
-        // Perform logout logic here
-        // Redirect the user to the login page
         event.preventDefault();
         try {
             const response = await axios.post('/logout');
@@ -214,399 +280,447 @@ function Sidebar() {
 
     return (
         <SidebarSection theme={theme}>
-            <div className="top">
-                    <LogoPaci />
-                    <div className="links">
-                        <ul>
-                            <Tooltip title="Dashboard" placement="right">
-                                <li
-                                    className={activeIcon === 0 ? "active" : ""}
-                                >   
-                                    <div onClick={() => handleIconClick(0, 'dashboard')}>
-                                        <Link to="/dashboard">
-                                            <BiHomeAlt />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title="I tuoi grafici" placement="right">
-                                <li
-                                    className={activeIcon === 1 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(1, 'your-charts')}>
-                                        <Link to="/your-charts">
-                                            <AiOutlineDotChart />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title="Inserimento dati" placement="right">
-                                <li
-                                    className={activeIcon === 2 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(2, 'insert-values')}>
-                                        <Link to="/insert-values">
-                                            <HiOutlinePencilAlt />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title="Controlla i mercati" placement="right">
-                                <li
-                                    className={activeIcon === 3 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(3, 'check-prices')}>
-                                        <Link to="/check-prices">
-                                            <AiOutlineFundProjectionScreen />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title="Classifica" placement="right">
-                                <li
-                                    className={activeIcon === 4 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(4, 'leaderboard')}>
-                                        <Link to="/leaderboard">
-                                            <AiOutlineTrophy />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            
-                            <Tooltip title="Conoscenze" placement="right">
-                                <li
-                                    className={activeIcon === 5 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(5, 'knowledge')}>
-                                        <Link to="/knowledge">
-                                            <BsBook />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title="Info" placement="right">
-                                <li
-                                    className={activeIcon === 6 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(6, 'info')}>
-                                        <Link to="/info">
-                                                <BsInfoCircle/>
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                          
-                        </ul>
-                    </div>
+            <Top>
+                <LogoPaci />
+                <Links theme={theme}>
+                    <ul>
+                        <Tooltip title="Dashboard" placement="right">
+                            <li
+                                className={activeIcon === 0 ? "active" : ""}
+                            >   
+                                <div onClick={() => handleIconClick(0, 'dashboard')}>
+                                    <Link to="/dashboard">
+                                        <BiHomeAlt />
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
+                        <Tooltip title="I tuoi grafici" placement="right">
+                            <li
+                                className={activeIcon === 1 ? "active" : ""}
+                            >
+                                <div onClick={() => handleIconClick(1, 'your-charts')}>
+                                    <Link to="/your-charts">
+                                        <AiOutlineDotChart />
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
+                        <Tooltip title="Inserimento dati" placement="right">
+                            <li
+                                className={activeIcon === 2 ? "active" : ""}
+                            >
+                                <div onClick={() => handleIconClick(2, 'insert-values')}>
+                                    <Link to="/insert-values">
+                                        <HiOutlinePencilAlt />
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
+                        <Tooltip title="Controlla i mercati" placement="right">
+                            <li
+                                className={activeIcon === 3 ? "active" : ""}
+                            >
+                                <div onClick={() => handleIconClick(3, 'check-prices')}>
+                                    <Link to="/check-prices">
+                                        <AiOutlineFundProjectionScreen />
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
+                        <Tooltip title="Classifica" placement="right">
+                            <li
+                                className={activeIcon === 4 ? "active" : ""}
+                            >
+                                <div onClick={() => handleIconClick(4, 'leaderboard')}>
+                                    <Link to="/leaderboard">
+                                        <AiOutlineTrophy />
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
                         
-                    <div className="notification">
-                        <AiOutlineBell />
-                        <div className="account-container">
-                            <div className="account-image-wrapper">
-                                <img src={avatarImage} alt="Account" className="account-image" onContextMenu={(e) => e.preventDefault()}/>
-                            </div>
+                        <Tooltip title="Conoscenze" placement="right">
+                            <li
+                                className={activeIcon === 5 ? "active" : ""}
+                            >
+                                <div onClick={() => handleIconClick(5, 'knowledge')}>
+                                    <Link to="/knowledge">
+                                        <BsBook />
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
+                        <Tooltip title="Info" placement="right">
+                            <li
+                                className={activeIcon === 6 ? "active" : ""}
+                            >
+                                <div onClick={() => handleIconClick(6, 'info')}>
+                                    <Link to="/info">
+                                            <BsInfoCircle/>
+                                    </Link>
+                                </div>
+                            </li>
+                        </Tooltip>
+                        
+                    </ul>
+                </Links>
+                        
+                <Notification theme={theme}>
+                    <AiOutlineBell />
+                    <div className="account-container">
+                        <div className="account-image-wrapper">
+                            <img src={avatarImage} alt="Account" className="account-image" onContextMenu={(e) => e.preventDefault()}/>
                         </div>
-                        <div className="dropdown-container">
-                            <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
-                                <AiOutlineCaretDown />
-                            </div>
-                            {showDropdown && (
-                                <div className="dropdown-menu">
-                                    {options.map((option) => (
-                                        <div
-                                            key={option.value}
-                                            className={`dropdown-option ${selectedOption === option ? 'selected' : ''}`}
-                                            onClick={() => {
-                                                if (option.value !== 'changeUsername' && option.value !== 'profile') {
-                                                    handleOptionSelect(option);
-                                                }
-                                            }}
-                                            style={{
-                                                cursor: option.value === 'changeUsername' || option.value === 'account' ? 'not-allowed' : 'pointer',
-                                                opacity: option.value === 'changeUsername' || option.value === 'account' ? 0.5 : 1
-                                            }}
-                                        >
-                                            {option.label}
-                                        </div>
-                                    ))}
-                                    <div className="dropdown-option logout" onClick={handleLogout}>
-                                        Logout
+                    </div>
+                    <DropdownContainer>
+                        <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
+                            <AiOutlineCaretDown />
+                        </div>
+                        {showDropdown && (
+                            <div className="dropdown-menu">
+                                {options.map((option) => (
+                                    <div
+                                        key={option.value}
+                                        className={`dropdown-option ${selectedOption === option ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            if (option.value !== 'changeUsername') {
+                                                handleOptionSelect(option);
+                                            }
+                                        }}
+                                        style={{
+                                            cursor: option.value === 'changeUsername' ? 'not-allowed' : 'pointer',
+                                            opacity: option.value === 'changeUsername' ? 0.5 : 1
+                                        }}
+                                    >
+                                        {option.label}
                                     </div>
+                                ))}
+                                <div className="dropdown-option logout" onClick={handleLogout}>
+                                    Logout
                                 </div>
-                            )}
-                        </div>
-                        {showPopup && (
-                            <div className="popup-container">
-                                <div className="popup-window">
-                                <h3>{selectedOption.label}</h3>
-                                {/* Add content for the popup here */}
-                                </div>
-                                <div className="overlay" onClick={() => setShowPopup(false)}></div>
                             </div>
                         )}
-                        {showAccountModal && (
-                            <MuiCustomDialog theme={theme}
-                                open={showAccountModal}
-                                onClose={handleCloseModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"Profilo"}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Si è verificato un errore nell'accesso con il tuo account. <br></br>
-                                        Controlla di digitare correttamente id e password.<br></br>
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleCloseModal} autoFocus>
-                                        Ok, va bene
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
+                    </DropdownContainer>
+                    {showPopup && (
+                        <div className="popup-container">
+                            <div className="popup-window">
+                            <h3>{selectedOption.label}</h3>
+                            {/* Add content for the popup here */}
+                            </div>
+                            <div className="overlay" onClick={() => setShowPopup(false)}></div>
+                        </div>
+                    )}
+                    {showAccountModal && (
+                        <MuiCustomDialog theme={theme}
+                            open={showAccountModal}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"Profilo"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    ID: {userId} <br></br>
+                                    Controlla di digitare correttamente id e password.<br></br>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                    Ok, va bene
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                        {showChangeUsernameModal && (
-                            <MuiCustomDialog
-                                theme={theme}
-                                open={showChangeUsernameModal}
-                                onClose={handleCloseModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"GeneraUsername"}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Per aumentare la tua privacy e il tuo coinvolgimento <br></br>
-                                        abbiamo pensato di creare un generatore di Username casuali e univoci.<br></br>
-                                        La generazione sarà guidata da alcuni tuoi input. Se sarà necessario potrai cambiarlo in futuro.<br></br>
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleGenerateUsername} autoFocus>
-                                        Genera Username
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
+                    {showChangeUsernameModal && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showChangeUsernameModal}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"GeneraUsername"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    Per aumentare la tua privacy e il tuo coinvolgimento <br></br>
+                                    abbiamo pensato di creare un generatore di Username casuali e univoci.<br></br>
+                                    La generazione sarà guidata da alcuni tuoi input. Se sarà necessario potrai cambiarlo in futuro.<br></br>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleGenerateUsername} autoFocus>
+                                    Genera Username
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                        {showChangeIDModal && (
-                            <MuiCustomDialog
-                                theme={theme}
-                                open={showChangeIDModal}
-                                onClose={handleCloseModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"Cambio ID"}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Per mantenere la tua privacy ti diamo la possibilità di <br></br>
-                                        cambiare il tuo id, quando ne hai bisogno.<br></br>
-                                        Il sistema genererà un nuovo id casuale e univoco.<br></br>
-                                        Inserisci il tuo vecchio id e la tua password per confermare il cambio.<br></br>
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleGenerateID} autoFocus>
-                                        Voglio cambiare id
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
+                    {showChangeIDModal && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showChangeIDModal}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"Cambio ID"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText  id="alert-dialog-description">
+                                    Per mantenere la tua privacy ti diamo la possibilità di <br></br>
+                                    cambiare il tuo id.<br></br>
+                                    Il sistema genererà un nuovo id casuale e univoco.<br></br>
+                                    Inserisci la tua password per confermare il cambio.<br></br>
+                                    <form onSubmit={handleGenerateID}>
+                                        <MuiCustomTextField
+                                            theme={theme}
+                                            label="Password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={password}
+                                            onChange={handlePasswordInput}
+                                            required
+                                            fullWidth
+                                            className={classes.root}
+                                            InputProps={{
+                                                endAdornment: (
+                                                <MuiCustomInputAdornment position="end">
+                                                    <MuiCustomIconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleTogglePasswordVisibility}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    className={classes.icon}
+                                                    >
+                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    </MuiCustomIconButton>
+                                                </MuiCustomInputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    </form>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleGenerateID} autoFocus>
+                                    Voglio cambiare id
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                        {showChangePWDModal && (
-                            <MuiCustomDialog
-                                theme={theme}
-                                open={showChangePWDModal}
-                                onClose={handleCloseModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"Cambio Password"}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Per cambiare la tua password ti chiediamo di inserire <br></br> 
-                                        la tua password <br></br>
-                                        TI invieremo un'email con un link per il cambio password.<br></br>
-                                        <form onSubmit={handleChangePassword}>
-                                            <MuiCustomTextField
-                                                theme={theme}
-                                                label="OldPassword"
-                                                type={showPassword ? 'text' : 'password'}
-                                                value={OldPassword}
-                                                onChange={handlePasswordChange}
-                                                required
-                                                fullWidth
-                                                className={classes.root}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                    <MuiCustomInputAdornment theme={theme} position="end">
-                                                        <MuiCustomIconButton
-                                                            theme={theme}
-                                                            aria-label="toggle password visibility"
-                                                            onClick={handleTogglePasswordVisibility}
-                                                            onMouseDown={handleMouseDownPassword}
-                                                            className={classes.icon}
-                                                        >
-                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
-                                                        </MuiCustomIconButton>
-                                                    </MuiCustomInputAdornment>
-                                                    ),
-                                                }}
-                                            />
-                                            <MuiCustomTextField
-                                                theme={theme}
-                                                label="Password"
-                                                type={showPassword ? 'text' : 'password'}
-                                                value={password}
-                                                onChange={handlePasswordChange}
-                                                required
-                                                fullWidth
-                                                className={classes.root}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                    <MuiCustomInputAdornment position="end">
-                                                        <MuiCustomIconButton
+                    {showChangePWDModal && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showChangePWDModal}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
+                                {"Cambio Password"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
+                                    Per cambiare la tua password ti chiediamo di inserire <br></br> 
+                                    la tua password attuale <br></br>
+                                    Ti invieremo un'email con un link per il cambio password.<br></br>
+                                    <form onSubmit={handleChangePassword}>
+                                        <MuiCustomTextField
+                                            theme={theme}
+                                            label="OldPassword"
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={OldPassword}
+                                            onChange={handleOldPasswordInput}
+                                            required
+                                            fullWidth
+                                            className={classes.root}
+                                            InputProps={{
+                                                endAdornment: (
+                                                <MuiCustomInputAdornment theme={theme} position="end">
+                                                    <MuiCustomIconButton
+                                                        theme={theme}
                                                         aria-label="toggle password visibility"
                                                         onClick={handleTogglePasswordVisibility}
                                                         onMouseDown={handleMouseDownPassword}
                                                         className={classes.icon}
-                                                        >
-                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
-                                                        </MuiCustomIconButton>
-                                                    </MuiCustomInputAdornment>
-                                                    ),
-                                                }}
-                                            />
-                                            <MuiCustomTextField
-                                                theme={theme}
-                                                label="Conferma Password"
-                                                type={showPassword ? 'text' : 'password'}
-                                                value={confirmPassword}
-                                                onChange={handleConfirmPasswordChange}
-                                                required
-                                                fullWidth
-                                                className={classes.root}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                    <MuiCustomInputAdornment position="end">
-                                                        <MuiCustomIconButton
-                                                        aria-label="toggle password visibility"
-                                                        onClick={handleToggleConfirmPasswordVisibility}
-                                                        onMouseDown={handleMouseDownPassword}
-                                                        className={classes.icon}
-                                                        >
-                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
-                                                        </MuiCustomIconButton>
-                                                    </MuiCustomInputAdornment>
-                                                    ),
-                                                }}
-                                            />
+                                                    >
+                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    </MuiCustomIconButton>
+                                                </MuiCustomInputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                        <MuiCustomTextField
+                                            theme={theme}
+                                            label="Password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={password}
+                                            onChange={handlePasswordInput}
+                                            required
+                                            fullWidth
+                                            className={classes.root}
+                                            InputProps={{
+                                                endAdornment: (
+                                                <MuiCustomInputAdornment position="end">
+                                                    <MuiCustomIconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleTogglePasswordVisibility}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    className={classes.icon}
+                                                    >
+                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    </MuiCustomIconButton>
+                                                </MuiCustomInputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                        <MuiCustomTextField
+                                            theme={theme}
+                                            label="Conferma Password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={confirmPassword}
+                                            onChange={handleConfirmPasswordInput}
+                                            required
+                                            fullWidth
+                                            className={classes.root}
+                                            InputProps={{
+                                                endAdornment: (
+                                                <MuiCustomInputAdornment position="end">
+                                                    <MuiCustomIconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleToggleConfirmPasswordVisibility}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    className={classes.icon}
+                                                    >
+                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    </MuiCustomIconButton>
+                                                </MuiCustomInputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    </form>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleChangePassword} autoFocus>
+                                    Cambia Password
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
+                    {showID && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showID}
+                            onClose={handleCopyToClipboard(newID)}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"Il tuo nuovo ID è: " + newID}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br>
+                                    Cliccando sul pulsante "Copia il tuo id", verrai reinderizzato <br></br>
+                                    alla pagina di accesso  e l'id verrà salvato nei tuoi appunti. <br></br>
+                                    Per poterlo incollare nella pagina d'accesso. <br></br>   
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleCopyToClipboard(newID)} autoFocus>
+                                    Copia il tuo id
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                                            <MyButton theme={theme} type="submit">Cambia password</MyButton>
+                    {showUsername && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showUsername}
+                            onClose={handleCloseSecondaryModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"Il tuo nuovo Username è: " + newUsername}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    Salvalo per poter accedere tramite username <br></br> 
+                                    Verrai reinderizzato alla pagina di sign-in. <br></br>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                    Ok, va bene
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                                        </form>
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleChangePassword} autoFocus>
-                                        Ok, va bene
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
+                    {showChangePWDSuccess && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showChangePWDSuccess}
+                            onClose={handleCloseModalAndLogout}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"La tua password è stata reimpostata correttamente"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    Verrai renderizzato alla pagina di accesso. <br></br> 
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleCloseModalAndLogout} autoFocus>
+                                    Ok, va bene
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                        {showID && (
-                            <MuiCustomDialog
-                                theme={theme}
-                                open={showID}
-                                onClose={handleCloseSecondaryModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"Il tuo nuovo ID è: " + newID}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Salvalo per poterlo utilizzare per il login <br></br> 
-                                        Verrai reinderizzato alla pagina di signin. <br></br>
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleCloseModalAndLogout} autoFocus>
-                                        Ok, va bene
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
+                    {showChangePWDError && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showChangePWDModal}
+                            onClose={handleCloseSecondaryModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"Errore nel reimpostare la tua password"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br> 
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions >
+                                <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                    Ok, va bene
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
-                        {showUsername && (
-                            <MuiCustomDialog
-                                theme={theme}
-                                open={showUsername}
-                                onClose={handleCloseSecondaryModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"Il tuo nuovo Username è: " + newUsername}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Salvalo per poter accedere tramite username <br></br> 
-                                        Verrai reinderizzato alla pagina di sign-in. <br></br>
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleCloseSecondaryModal} autoFocus>
-                                        Ok, va bene
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
+                </Notification>
 
-                        {ShowChangePWDSuccess && (
-                            <MuiCustomDialog
-                                theme={theme}
-                                open={showChangePWDModal}
-                                onClose={handleCloseSecondaryModal}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                    {"La tua password è stata reimpostata correttamente"}
-                                </MuiCustomDialogTitle>
-                                <MuiCustomDialogContent theme={theme}>
-                                    <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                        Verrai renderizzato alla pagina di sign-in. <br></br> 
-                                    </MuiCustomDialogContentText>
-                                </MuiCustomDialogContent>
-                                <MuiCustomDialogActions theme={theme}>
-                                    <MuiCustomButton theme={theme} onClick={handleCloseSecondaryModal} autoFocus>
-                                        Ok, va bene
-                                    </MuiCustomButton>
-                                </MuiCustomDialogActions>
-                            </MuiCustomDialog>
-                        )}
-
-                    </div>
-
-                    <div className="toggle-button" >
-                        <SidebarToggleModeButton theme={theme} />
-                    </div>
-            </div>
+                <ToggleButton>
+                    <SidebarToggleModeButton theme={theme} />
+                </ToggleButton>
+            </Top>
         </SidebarSection>
   );
 }

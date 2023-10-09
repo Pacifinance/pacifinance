@@ -37,7 +37,7 @@ function CookieBanner({ show }) {
         Pacifinance utilizza solo cookie tecnici <br></br> 
         per facilitare l'accesso e rendere  <br></br>
         l'esperienza dell'utente più piacevole. <br></br>
-        <br></br> La tua privacy è la priorità.
+        <br></br> La tua privacy è la nostra priorità.
         <br></br>
         <br></br>
       </p>

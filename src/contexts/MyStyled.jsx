@@ -628,7 +628,8 @@ export const SectionADashboard = styled.section `
     font-family: Roboto, sans-serif;
     background-color: ${(props) => (props.theme.backgroundColor)};
     width: 100%;
-    height: 130vh;
+    height: 100;
+
   
     
 `;
@@ -1085,26 +1086,52 @@ export const SidebarSection = styled.section`
   `;
 
   export const GraphsSection = styled.div`
-      display: flex;
-      margin-left: 3%;
-      margin-right: 6%;
-      .bar-chart-section {
-          margin-top: 4%;
-          margin-right: 6%;
-          h2{
-              color: ${(props) => (props.theme.textColor)};
-              text-align: center;
-          }
+    display: flex;
+    flex-direction: row;
+    margin-top: 4rem;
+    margin-left: 3%;
+
+    .bar-chart-section {
+      flex: 1; /*all the graphs will have the same width*/
+      align-items: center;
+      h2 {
+        color: ${(props) => props.theme.textColor};
+        text-align: center;
+        
+        margin-right: 6rem;
       }
-      
+    }
+
+    .pie-chart-section {
+      flex: 1; /* Fai in modo che la pie chart occupi la stessa larghezza disponibile */
+      align-items: center;
+      margin-left: 6rem;
+      h2 {
+        color: ${(props) => props.theme.textColor};
+        text-align: center;
+        margin-left: -8rem;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      p {
+        text-align: center;
+      }
+      .noDataMessage {
+        margin-left: 8rem;
+      }
+    }
+
+    /* Mobile view */
+    @media (max-width: 768px) {
+      flex-direction: column;
+      .bar-chart-section,
       .pie-chart-section {
-          margin-top: 4%;
-          margin-left: 4%;
-          h2{
-              color: ${(props) => (props.theme.textColor)};
-          }
+        flex: none; /* Remove the flexible width */
       }
-  `;
+    }
+`;
 
   export const SectionBalancesCharts = styled.section`
     h3 {

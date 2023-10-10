@@ -33,11 +33,23 @@ function UserProvider({ children }) {
             const expensesTags = allTags.data.expense;
             const incomesTags = allTags.data.income;
             const paymentTags = allTags.data.payment;
+            const nationalityTags = allTags.data.country;
+            const jobTags = allTags.data.job;
+            const jobTypeTags = allTags.data.jobType;
+            const workTimeTags = allTags.data.workTime;
+            const remoteTypeTags = allTags.data.remoteType;
             
             console.log('Tutte le tags disponibili: ', allTags);
             console.log('Tags spese: ', expensesTags);
             console.log('Tags entrate: ', incomesTags);
             console.log('Tags pagamenti: ', paymentTags);
+            console.log('Tags nazioni: ', nationalityTags);
+            console.log('Tags lavoro: ', jobTags);
+            console.log('Tags tipo di lavoro: ', jobTypeTags);
+            console.log('Tags FullTime - PartTime: ', workTimeTags);
+            console.log('Tags tipologia remote: ', remoteTypeTags);
+
+
 
             const infoUser = await axios.post('/user/get');
             const userId = infoUser.data.userId;
@@ -222,7 +234,7 @@ function UserProvider({ children }) {
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
               preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, lastExpenses, lastIncomes, percentageRankOnIncomes, percentageRankOnExpenses,
-              userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
+              userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });
             handleSetIsUpdated(true);
         }

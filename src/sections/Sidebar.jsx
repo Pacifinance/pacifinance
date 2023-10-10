@@ -1,4 +1,5 @@
 import React, {useState, useRef, useContext, useEffect} from 'react';
+import { ButtonGroup, Select, MenuItem } from "@mui/material";
 import { BiHomeAlt } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineBell, AiOutlineCaretDown } from "react-icons/ai";
 import { BsBook, BsInfoCircle } from "react-icons/bs";
@@ -42,14 +43,19 @@ function Sidebar() {
     const inputRef = useRef(null);
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
-    const [userId, setUserId] = useState(''); // Stato per l'id dell'utente
-    const [username, setUsername] = useState(''); // Stato per l'username dell'utente
-    const [userNationality, setUserNationality] = useState(''); // Stato per la nazionalità dell'utente
-    const [userWhereWorks, setUserWhereWorks] = useState(''); // Stato per il luogo di lavoro dell'utente
-    const [userJob, setUserJob] = useState(''); // Stato per il lavoro dell'utente
-    const [userJobType, setUserJobType] = useState(''); // Stato per il tipo di lavoro dell'utente
-    const [userWorkTime, setUserWorkTime] = useState(''); // Stato per il tempo di lavoro dell'utente
-    const [userRemoteType, setUserRemoteType] = useState(''); // Stato per il tipo di lavoro remoto dell'utente
+    const [userId, setUserId] = useState(''); 
+    const [username, setUsername] = useState(''); 
+    const [userNationality, setUserNationality] = useState(''); 
+    const [userWhereWorks, setUserWhereWorks] = useState(''); 
+    const [userJob, setUserJob] = useState(''); 
+    const [userJobType, setUserJobType] = useState(''); 
+    const [userWorkTime, setUserWorkTime] = useState(''); 
+    const [userRemoteType, setUserRemoteType] = useState(''); 
+    const [nationalityTags, setNationalityTags] = useState([]);
+    const [jobTags, setJobTags] = useState([]);
+    const [jobTypeTags, setJobTypeTags] = useState([]);
+    const [workTimeTags, setWorkTimeTags] = useState([]);
+    const [remoteTypeTags, setRemoteTypeTags] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showChangeIDModal, setShowChangeIDModal] = useState(false);
@@ -78,15 +84,19 @@ function Sidebar() {
     
         if (userData) {
           try {
-              setUserId(userData.userId);
-              // to it the same with those variables: nickname, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType
-            setUsername(userData.username);
-            setUserNationality(userData.userNationality);
-            setUserWhereWorks(userData.userWhereWorks);
-            setUserJob(userData.userJob);
-            setUserJobType(userData.userJobType);
-            setUserWorkTime(userData.userWorkTime);
-            setUserRemoteType(userData.userRemoteType);
+                setUserId(userData.userId);
+                setUsername(userData.username);
+                setUserNationality(userData.userNationality);
+                setUserWhereWorks(userData.userWhereWorks);
+                setUserJob(userData.userJob);
+                setUserJobType(userData.userJobType);
+                setUserWorkTime(userData.userWorkTime);
+                setUserRemoteType(userData.userRemoteType);
+                setNationalityTags(userData.nationalityTags);
+                setJobTags(userData.jobTags);
+                setJobTypeTags(userData.jobTypeTags);
+                setWorkTimeTags(userData.workTimeTags);
+                setRemoteTypeTags(userData.remoteTypeTags);
               
           } catch (error) {
             console.error('Errore durante le operazioni:', error);
@@ -372,8 +382,8 @@ function Sidebar() {
                         <div className="account-image-wrapper">
                             <img src={avatarImage} alt="Account" className="account-image" onContextMenu={(e) => e.preventDefault()}/>
                         </div>
-                    </div>
-                    <DropdownContainer>
+                    </div> 
+                    <DropdownContainer > {/* style={{ zIndex: 999 }}> */}
                         <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
                             <AiOutlineCaretDown />
                         </div>
@@ -424,11 +434,150 @@ function Sidebar() {
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
                                     ID: {userId} <br></br>
-                                    Controlla di digitare correttamente id e password.<br></br>
+                                    Username: {username} <br></br>
+                                    Nazionalità: <Select
+                                                    value={userNationality}
+                                                    onChange={(event) => {
+                                                        setUserNationality(event.target.value);
+                                                    }}
+                                                    style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
+                                                    displayEmpty
+                                                    renderValue={(value) => {
+                                                        if (value === "") {
+                                                        return "Seleziona una nazionalità";
+                                                        }
+                                                        return value;
+                                                    }}
+                                                    >
+                                                    <MenuItem value="">
+                                                        <em>Seleziona una nazionalità</em>
+                                                    </MenuItem>
+                                                    {nationalityTags.map((tag) => (
+                                                        <MenuItem key={tag} value={tag}>
+                                                        {tag}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select> <br></br>
+                                    Dove lavori: <Select
+                                                    value={userWhereWorks}
+                                                    onChange={(event) => {
+                                                        setUserWhereWorks(event.target.value);
+                                                    }}
+                                                    style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
+                                                    displayEmpty
+                                                    renderValue={(value) => {
+                                                        if (value === "") {
+                                                        return "Seleziona un luogo di lavoro";
+                                                        }
+                                                        return value;
+                                                    }}
+                                                    >
+                                                    <MenuItem value="">
+                                                        <em>Seleziona un luogo di lavoro</em>
+                                                    </MenuItem>
+                                                    {nationalityTags.map((tag) => (
+                                                        <MenuItem key={tag} value={tag}>
+                                                        {tag}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select> <br></br>
+                                    Lavoro: <Select
+                                                value={userJob}
+                                                onChange={(event) => {
+                                                    setUserJob(event.target.value);
+                                                }}
+                                                style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
+                                                displayEmpty
+                                                renderValue={(value) => {
+                                                    if (value === "") {
+                                                    return "Seleziona il tuo lavoro";
+                                                    }
+                                                    return value;
+                                                }}
+                                                >
+                                                <MenuItem value="">
+                                                    <em>Seleziona il tuo lavoro</em>
+                                                </MenuItem>
+                                                {jobTags.map((tag) => (
+                                                    <MenuItem key={tag} value={tag}>
+                                                    {tag}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select> <br></br>
+                                    Tipo di lavoro: <Select
+                                                        value={userJobType}
+                                                        onChange={(event) => {
+                                                            setUserJobType(event.target.value);
+                                                        }}
+                                                        style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
+                                                        displayEmpty
+                                                        renderValue={(value) => {
+                                                            if (value === "") {
+                                                            return "Seleziona il tipo di lavoro";
+                                                            }
+                                                            return value;
+                                                        }}
+                                                        >
+                                                        <MenuItem value="">
+                                                            <em>Seleziona il tipo di lavoro</em>
+                                                        </MenuItem>
+                                                        {jobTypeTags.map((tag) => (
+                                                            <MenuItem key={tag} value={tag}>
+                                                            {tag}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select> <br></br>
+                                    Part-time | Full-time: <Select
+                                                                value={userWorkTime}
+                                                                onChange={(event) => {
+                                                                    setUserWorkTime(event.target.value);
+                                                                }}
+                                                                style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
+                                                                displayEmpty
+                                                                renderValue={(value) => {
+                                                                    if (value === "") {
+                                                                    return "Seleziona il tuo orario di lavoro";
+                                                                    }
+                                                                    return value;
+                                                                }}
+                                                                >
+                                                                <MenuItem value="">
+                                                                    <em>Seleziona il tuo orario di lavoro</em>
+                                                                </MenuItem>
+                                                                {workTimeTags.map((tag) => (
+                                                                    <MenuItem key={tag} value={tag}>
+                                                                    {tag}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select> <br></br>
+                                    Lavoro remoto: <Select
+                                                        value={userRemoteType}
+                                                        onChange={(event) => {
+                                                            setUserRemoteType(event.target.value);
+                                                        }}
+                                                        style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
+                                                        displayEmpty
+                                                        renderValue={(value) => {
+                                                            if (value === "") {
+                                                            return "Seleziona la modalità di lavoro remoto";
+                                                            }
+                                                            return value;
+                                                        }}
+                                                        >
+                                                        <MenuItem value="">
+                                                            <em>Seleziona la modalità di lavoro remoto</em>
+                                                        </MenuItem>
+                                                        {remoteTypeTags.map((tag) => (
+                                                            <MenuItem key={tag} value={tag}>
+                                                            {tag}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select> <br></br>
+                                    
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
-                                <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                <MuiCustomButton onClick={handleCloseModal} autoFocus> {/* Va fatta una chiamata per aggiornare i dati nel db */}
                                     Ok, va bene
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>

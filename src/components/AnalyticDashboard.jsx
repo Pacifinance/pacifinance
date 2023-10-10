@@ -336,7 +336,9 @@ function AnalyticDashboard() {
                                 backgroundColor: 'transparent', // Imposta il colore di sfondo trasparente
                                 fontSize: '18px', // Imposta la dimensione del carattere desiderata
                             }}>
-                               <h1 style={{color: '#079164'}}>Assenza di dati:</h1> Inserire i valori nella pagina con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} />
+                                <div className="noDataMessage">
+                                    <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
+                                </div>
                             </div>
                         ) : (
                                 <PieChart width={500} height={500} margin={{
@@ -394,7 +396,7 @@ function AnalyticDashboard() {
 
                 <div className="bar-chart-section">
                     <h2>Entrate | Spese</h2>
-                    <div style={{ width: 350, height: 300 }}>
+                    <div style={{ width: 350, height: 300 }}> 
                         <ResponsiveContainer width="100%" height="100%">
                                 <BarChart width={500} height={300} data={incExpData} margin={{
                                             top: 20,

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const tags = require("./tags.js");
 const utils = require("../../utils.js");
 
 const userIdLength = 6;
@@ -163,26 +164,6 @@ async function setNicknameOfUserId(user_id, nickname) {
 }
 
 /**
- * Updates the nation of a user
- * @param {String} user_id - ID of the user
- * @param {String} nickname - nation to set
- * @returns User document
- */
-async function setNationOfUserId(user_id, nation) {
-    return await setOne({userId: user_id}, {nation: nation});
-}
-
-/**
- * Updates the occupation of a user
- * @param {*} user_id - ID of the user
- * @param {*} occupation - occupation to set
- * @returns User document
- */
-async function setOccupationOfUserId(user_id, occupation) {
-    return await setOne({userId: user_id}, {occupation: occupation});
-}
-
-/**
  * Gets the session of a user
  * @param {String} user_id - ID of the user
  * @returns User document
@@ -215,6 +196,34 @@ async function getPublicInfoByUserId(user_id) {
 }
 
 /**
+ * Sets all public information of a user
+ * @param {String} user_id - ID of the user
+ * @param {Number} country - Index of the country tag to set
+ * @param {Number} job - Index of the job tag to set
+ * @param {Number} job_type - Index of the jobType tag to set
+ * @param {Number} job_country - Index of the jobCountry tag to set
+ * @param {Number} work_time - Index of the workTime tag to set
+ * @param {Number} remote_type - Index of the remoteType tag to set
+ * @returns User document
+ */
+async function setPublicInfoOfUserId(user_id, country, job, job_type, job_country, work_time, remote_type) {
+    // Get the tags references by their index and type
+    // If a reference is found, add it to the object that will be used to update the User document
+    let tags_indeces = [country, job, job_type, job_country, work_time, remote_type];
+    let tags_types = Object.keys(tags.TagType).map(t => tags.TagType[t].value);
+    let user_fields = ["country", "job", "jobType", "jobCountry", "workTime", "remoteType"];
+    let update_object = {};
+    for (let i = 0; i < tags_indeces.length; i++) {
+        const tag_ref = tags.getReferenceByIndexAndType(tags_indeces[i], tags_types[i]);
+        if (tag_ref !== null) {
+            update_object[user_fields[i]] = tag_ref._id;
+        }
+    }
+    // Update the User document
+    return await setOne({userId: user_id}, update_object);
+}
+
+/**
  * User model
  */
 const User = mongoose.model("User", userSchema);
@@ -229,9 +238,8 @@ module.exports = {
     getPasswordByUserId,
     setPasswordOfUserId,
     setNicknameOfUserId,
-    setNationOfUserId,
-    setOccupationOfUserId,
     getSessionByUserId,
     setSessionOfUserId,
-    getPublicInfoByUserId
+    getPublicInfoByUserId,
+    setPublicInfoOfUserId
 };

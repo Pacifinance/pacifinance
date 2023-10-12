@@ -274,6 +274,34 @@ app.post("/user/get", async (req, res) => {
     res.json(user);
 });
 
+app.post("/user/set", async(req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Set the user's new public data
+    const doc = await db.users.setPublicInfoOfUserId(
+        req.session.userId, req.body.country, req.body.job, req.body.job_type,
+        req.body.job_country, req.body.work_time, req.body.remote_type
+    );
+    // Check if the document was inserted successfully. Send
+    // status code 500 (Internal Server Error) if it failed
+    if (doc === null)
+    {
+        res.status(500);
+        res.send();
+        return;
+    }
+    // Send status code 200 (OK)
+    res.status(200);
+    res.send();
+});
+
 app.post("/balances/add", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid

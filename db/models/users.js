@@ -210,7 +210,7 @@ async function setPublicInfoOfUserId(user_id, country, job, job_type, job_countr
     // Get the tags references by their index and type
     // If a reference is found, add it to the object that will be used to update the User document
     let tags_indeces = [country, job, job_type, job_country, work_time, remote_type];
-    let tags_types = Object.keys(tags.TagType).map(t => tags.TagType[t].value);
+    let tags_types = [tags.TagType.country, tags.TagType.job, tags.TagType.jobType, tags.TagType.country, tags.TagType.workTime, tags.TagType.remoteType];
     let user_fields = ["country", "job", "jobType", "jobCountry", "workTime", "remoteType"];
     let update_object = {};
     for (let i = 0; i < tags_indeces.length; i++) {

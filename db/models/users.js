@@ -214,7 +214,7 @@ async function setPublicInfoOfUserId(user_id, country, job, job_type, job_countr
     let user_fields = ["country", "job", "jobType", "jobCountry", "workTime", "remoteType"];
     let update_object = {};
     for (let i = 0; i < tags_indeces.length; i++) {
-        const tag_ref = tags.getReferenceByIndexAndType(tags_indeces[i], tags_types[i]);
+        const tag_ref = tags.getReferenceByIndexAndType(tags_indeces[i], tags_types[i].value);
         if (tag_ref !== null) {
             update_object[user_fields[i]] = tag_ref._id;
         }

@@ -48,9 +48,10 @@ export const MyGenericModal = styled.div`
 
 export const MyGenericModalContent = styled.div`
   background-color: ${(props) => (props.theme.backgroundColor)};
+  border-radius: 1em;
   margin: auto;
-  max-width: 80%;
-  max-height: 80%;
+  max-width: auto;
+  max-height: auto;
   padding: 1em;
   overflow: auto;
 `;
@@ -95,8 +96,16 @@ export const TitleDashboard = styled.h1 `
     font-size: 2rem;
     font-weight: 400;
     margin-bottom: 2rem;
+    margin-left: 3%;
+`;
+
+export const TitleStatsCharts = styled.h1 `
+    color: ${(props) => (props.theme.textColor)};
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
     margin-left: 6%;
-  `;
+`;
 
 export const SignIn = styled.div`
   font-family: Roboto, sans-serif;
@@ -214,7 +223,9 @@ export const ContainerFooter = styled.footer`
 `;
 
 export const SignInButton = styled(MyButton)`
-  margin-right: 40%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 1.5em;
 `;
 
 export const LogoStyled = styled.h1`
@@ -418,8 +429,10 @@ export const SignUp = styled.div`
   `;
 
   export const SignUpButton = styled(MyButton)`
-    margin-right: 40%;
-  <`;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 1.5em;
+  `;
 
   export const ModifiedTitleDashboard = styled(TitleDashboard)`
     font-size: 2rem;
@@ -469,6 +482,7 @@ export const StyledSection = styled.div`
   height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
   overflow-x: hidden; // to hide the scroll bar
+  overflow-y: hidden; // to hide the scroll bar
   .grid{ 
     margin-top: 2rem;
     z-index: 2;
@@ -598,7 +612,7 @@ export const StyledLastAdds = styled.div`
       font-size: 2rem;
       color: ${(props) => (props.theme.textColor)};
       margin-top: 1rem;
-      margin-left: 2rem;
+      margin-left: 3%;
       margin-bottom: 1rem;
   `;
 
@@ -613,6 +627,10 @@ export const Container = styled.div`
 export const SectionADashboard = styled.section `
     font-family: Roboto, sans-serif;
     background-color: ${(props) => (props.theme.backgroundColor)};
+    width: 100%;
+    height: 100;
+
+  
     
 `;
 
@@ -952,7 +970,8 @@ export const SidebarSection = styled.section`
   export const UpperSection = styled.section `
       display: flex;
       margin-top: 2rem;
-      margin-left: 2rem;
+      margin-left: 3%;
+      margin-right: 6%;
       justify-content: space-between;
       .analytic {
           display: flex;
@@ -966,8 +985,8 @@ export const SidebarSection = styled.section`
           margin-left: 10%;
           background-color: white;
           transition: 0.5s ease-in-out;
-          width: 8.5em;
-          border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
+          width: 10em;
+          border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
               align-items: center;
@@ -1009,7 +1028,8 @@ export const SidebarSection = styled.section`
   export const LowerSection = styled.div`
       display : flex;
       margin-top: 2rem;
-      margin-left: 2rem;
+      margin-left: 3%;
+      margin-right: 6%;
       justify-content: space-between;
       .analytic {
           display: flex;
@@ -1023,8 +1043,9 @@ export const SidebarSection = styled.section`
           justify-content: space-evenly;
           align-items: center;
           transition: 0.5s ease-in-out;
-          width: 8.5em;
-          border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
+          width: 10em;
+          height: 10em;
+          border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
               display: flex;
@@ -1065,24 +1086,52 @@ export const SidebarSection = styled.section`
   `;
 
   export const GraphsSection = styled.div`
-      display: flex;
-      justify-content: space-between;
-      .bar-chart-section {
-          margin-top: 4%;
-          margin-left: 6%;
-          margin-right: 6%;
-          h2{
-              color: ${(props) => (props.theme.textColor)};
-          }
+    display: flex;
+    flex-direction: row;
+    margin-top: 4rem;
+    margin-left: 3%;
+
+    .bar-chart-section {
+      flex: 1; /*all the graphs will have the same width*/
+      align-items: center;
+      h2 {
+        color: ${(props) => props.theme.textColor};
+        text-align: center;
+        
+        margin-right: 6rem;
       }
-      
+    }
+
+    .pie-chart-section {
+      flex: 1; /* Fai in modo che la pie chart occupi la stessa larghezza disponibile */
+      align-items: center;
+      margin-left: 6rem;
+      h2 {
+        color: ${(props) => props.theme.textColor};
+        text-align: center;
+        margin-left: -8rem;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      p {
+        text-align: center;
+      }
+      .noDataMessage {
+        margin-left: 8rem;
+      }
+    }
+
+    /* Mobile view */
+    @media (max-width: 768px) {
+      flex-direction: column;
+      .bar-chart-section,
       .pie-chart-section {
-          margin-top: 4%;
-          h2{
-              color: ${(props) => (props.theme.textColor)};
-          }
+        flex: none; /* Remove the flexible width */
       }
-  `;
+    }
+`;
 
   export const SectionBalancesCharts = styled.section`
     h3 {
@@ -1151,7 +1200,7 @@ export const SidebarSection = styled.section`
         color: black;
         background-color: white;
         transition: 0.5s ease-in-out;
-        width: 8.5em;
+        width: 10em;
         border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
       
@@ -1336,12 +1385,13 @@ export const SidebarSection = styled.section`
   `;
 
 export const StyledRankingPage = styled.div`
-  text-align: center;
+  // text-align: center;
   padding: 2rem;
   background-color: #1a1a1a; /* Sfondo scuro */
 `;
 
 export const CenteredRankings = styled.div`
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1349,6 +1399,7 @@ export const CenteredRankings = styled.div`
 `;
 
 export const RankingsTitle = styled.h1`
+  text-align: center;
   color: ${themes.dark.buttonBackgroundColor};
   font-size: 1.2em;
   font-weight: bold;
@@ -1363,8 +1414,16 @@ export const StyledSelectContainer = styled.div`
 
 export const StyledLabel = styled.label`
   text-align: left;
+  font-size: 1em;
   color: white;
   margin-right: 0.5em;
+  display: inline-block; /* Aggiungi display inline-block */
+  vertical-align: middle; /* Facoltativo: per allineare verticalmente */
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    text-align: center;
+  }
 `;
 
 export const StyledSelect = styled.select`

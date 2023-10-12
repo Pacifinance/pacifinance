@@ -49,18 +49,23 @@ function RankingsSection({ title, rankings }) {
 
   // Calculate the text to display
   let textToDisplay = "";
-  if (isExpenseTitle) {
-    if (isRankingsAbove50) {
-      textToDisplay = `Sei nella top ${rankings}% degli utenti che spendono di più!`;
+  if (!isNaN(parseFloat(rankings))) {
+    if (isExpenseTitle) {
+        if (isRankingsAbove50) {
+            textToDisplay = `Sei nella top ${rankings.toFixed(2)}% degli utenti che spendono di più!`;
+        } else {
+            textToDisplay = `Complimenti! Sei nella top ${rankings.toFixed(2)}%. Sei tra gli utenti che spendono di meno!`;
+        }
     } else {
-      textToDisplay = `Complimenti! Sei nella top ${rankings}%. Sei tra gli utenti che spendono di meno!`;
+        if (isRankingsAbove50) {
+            textToDisplay = `Complimenti! Sei nella top ${rankings.toFixed(2)}% degli utenti!`;
+        } else {
+            textToDisplay = `Sei nella top ${rankings.toFixed(2)}% degli utenti!`;
+        }
     }
   } else {
-    if (isRankingsAbove50) {
-      textToDisplay = `Complimenti! Sei nella top ${rankings}% degli utenti!`;
-    } else {
-      textToDisplay = `Sei nella top ${rankings}% degli utenti!`;
-    }
+      // Set the text to display if rankings is not a number
+      textToDisplay = "Rankings non disponibili";
   }
 
   const areNotEmpty = rankings.length > 0 || rankings > 0;

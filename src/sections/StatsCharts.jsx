@@ -33,11 +33,11 @@ export default function StatsCharts() {
           return (
             
             <>
-                <SecondaryTitle theme={theme}>- Il tuo patrimonio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>Il tuo patrimonio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <BalancesStatsMonth />
-                <SecondaryTitle theme={theme}>- Il tuo patrimonio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>Il tuo patrimonio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <BalancesStatsYear />
-                <SecondaryTitle theme={theme}>- check del bilancio negli ultimi 12 mesi</SecondaryTitle>
+                <SecondaryTitle theme={theme}>Check del bilancio negli ultimi 12 mesi</SecondaryTitle>
                 <BalancesCharts />
 
             </>
@@ -45,11 +45,11 @@ export default function StatsCharts() {
         } else if (activePage === "statsIncomesExpenses") {
           return (
             <>
-                <SecondaryTitle theme={theme}>- le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <InExStatsMonth />
-                <SecondaryTitle theme={theme}>- le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <InExStatsYear />
-                <SecondaryTitle theme={theme}>- check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
+                <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
                 <InOutCharts />
             </>
           );

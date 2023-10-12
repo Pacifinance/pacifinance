@@ -7,6 +7,7 @@ import { AiOutlineStock } from "react-icons/ai";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
+import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { UserContext } from '../contexts/UserContext';
 import { primaryColor } from '../contexts/Themes';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -42,7 +43,6 @@ function AnalyticDashboard() {
             try {
                 console.log(userData);
                 console.log(userData.balances);
-                console.log(userData.expensesIncomes);
                 
                 // Set the state with the data from the database
                 setStocksReal(userData ? userData.stocksReal : 0);
@@ -53,9 +53,9 @@ function AnalyticDashboard() {
                 setCashReal(userData ? userData.cashReal : 0);
                 setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
                 setTotalReal(userData ? userData.totalReal : 0);
-                setExpensesMonth(userData ? userData.expensesMonth : 0);
-                setIncomesMonth(userData ? userData.incomesMonth : 0);
-                setSavedMonth(userData ? userData.savedMonth : 0);
+                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setIncomesMonth(userData ? userData.incomesArray[0] : 0);
+                setSavedMonth(userData ? (userData.incomesArray[0] - userData.incomesArray[0]) : 0);
 
                 
                 
@@ -84,14 +84,25 @@ function AnalyticDashboard() {
         { name: 'ServiziDigitali', value: digitalServicesReal >= 0 ? digitalServicesReal : 0 },
     ];
 
+    const totalCapitalData = capitalData.reduce((acc, entry) => acc + entry.value, 0);
+
+    // const fakeCapitalData = [
+    //     { name: 'Azioni', value: 1000 },
+    //     { name: 'ETF', value: 1000 },
+    //     { name: 'Banca', value: 0 },
+    //     { name: 'Banconote', value: 1000 },
+    //     { name: 'Criptovalute', value: 1000 },
+    //     { name: 'Bitcoin', value:1000 },
+    //     { name: 'ServiziDigitali', value: 1000 },
+    // ];
+
+    // const totalFakeCapitalData = fakeCapitalData.reduce((acc, entry) => acc + entry.value, 0);
+
     const incExpData = [
         { name: 'Entrate', value: incomesMonth >= 0 ? incomesMonth : 0 },
         { name: 'Spese', value: expensesMonth >= 0 ? expensesMonth : 0 },
         { name: 'Risparmiato', value: savedMonth >= 0 ? savedMonth : 0 },
     ];
-
-    console.log(capitalData);
-    console.log(incExpData);
 
     //used for render the label in the pie chart as a percentage inside the pie
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -100,13 +111,20 @@ function AnalyticDashboard() {
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
         const y = cy + radius * Math.sin(-midAngle * RADIAN);
         const labelValue = `${(percent * 100).toFixed(0)}%`;
-    
-        return (
-            <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
-                {labelValue}
-            </text>
-        );
+        
+        //if is 0 don't render the label
+        if (percent !== 0) {
+            return (
+                <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
+                    {labelValue}
+                </text>
+            );
+        } else {
+            return null; //don't render the label
+        }
     };
+
+    const isAllZero = capitalData.every(entry => entry.value === 0); //fakeCapitalData to test some change on the pie chart (main data is capitalData)
       
     return (
         
@@ -271,19 +289,19 @@ function AnalyticDashboard() {
                                     ))}
                                 </Bar>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                <XAxis dataKey="name" interval={0} angle={45} textAnchor="start" tick={{ fill: 'white' }} />
+                                <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: 'white', fontSize: 12 }} />
                                 <YAxis tick={{ fill: 'white' }} />
                                 <Tooltip
                                     content={({ payload, label, active }) => {
                                         if (active) {
-                                            const data = payload[0].payload; // Dati relativi all'elemento selezionato
+                                            const value = payload[0].payload.value; // Dati relativi all'elemento selezionato
 
                                             // Formatta il valore con migliaia e simbolo dell'euro
                                             const formattedValue = new Intl.NumberFormat('it-IT', {
                                                 style: 'currency',
                                                 currency: 'EUR',
                                                 maximumFractionDigits: 0,
-                                            }).format(data.value);
+                                            }).format(value);
 
                                             return (
                                                 <div style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
@@ -306,53 +324,83 @@ function AnalyticDashboard() {
                     <h2>% Distribuzione Capitale</h2>
                     <div style={{ width: 400, height: 400 }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <PieChart width={500} height={500} margin={{
-                                top: 20,
-                                left: 60,
+                        {isAllZero ? (
+                            <div style={{
+                                // display: 'flex',
+                                justifyContent: 'center',
+                                marginTop: '5em',
+                                alignItems: 'center',
+                                width: '100%',
+                                height: '100%',
+                                color: 'white',
+                                backgroundColor: 'transparent', // Imposta il colore di sfondo trasparente
+                                fontSize: '18px', // Imposta la dimensione del carattere desiderata
                             }}>
-                                <Pie
-                                    data={capitalData}
-                                    cx="35%"
-                                    cy="35%"
-                                    label={renderCustomizedLabel}
-                                    labelLine={false}
-                                    outerRadius={130}
-                                    fill="#8884d8"
-                                    dataKey="value"
-                                >
-                                    {capitalData.map(entry => (
-                                        <Cell key={entry.name} fill={colorsBalances[entry.name]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-                                    labelStyle={{ color: '#079164', fontWeight: 'bold' }}
-                                    formatter={(value, name, entry) => {
-                                        const total = capitalData.reduce((acc, entry) => acc + entry.value, 0);
-                                        const percentage = (entry.value / total) * 100;
+                                <div className="noDataMessage">
+                                    <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
+                                </div>
+                            </div>
+                        ) : (
+                                <PieChart width={500} height={500} margin={{
+                                    top: 20,
+                                    left: 60,
+                                }}>
+                                    <Pie
+                                        data={capitalData}  //fakeCapitalData to test some change on the pie chart (main data is capitalData)
+                                        cx="25%"
+                                        cy="35%"
+                                        label={renderCustomizedLabel}
+                                        labelLine={false}
+                                        outerRadius={130}
+                                        fill="#8884d8"
+                                        dataKey="value"
+                                    >
+                                        {capitalData.map(entry => {   //fakeCapitalData to test some change on the pie chart (main data is capitalData)
+                                            if(entry.value === 0) {
+                                                return <Cell key={entry.name} fill="transparent" />;
+                                            }
+                                            return <Cell key={entry.name} fill={colorsBalances[entry.name]} />
+                                        })}
+                                    </Pie>
+                                    <Tooltip
+                                        content={({ payload, active }) => {
+                                            if (active) {
+                                                const data = payload[0].payload;
+                                                const value = data.value; // Datas relative to the selected element
+                                                const percentage = (value / totalCapitalData) * 100;
 
-                                        // Formatta il valore con migliaia e simbolo dell'euro
-                                        const formattedValue = new Intl.NumberFormat('it-IT', {
-                                            style: 'currency',
-                                            currency: 'EUR',
-                                            maximumFractionDigits: 0,
-                                        }).format(value);
+                                                // Format the value with thousands and euro symbol
+                                                const formattedValue = new Intl.NumberFormat('it-IT', {
+                                                    style: 'currency',
+                                                    currency: 'EUR',
+                                                    maximumFractionDigits: 0,
+                                                }).format(value);
 
-                                        return [`${name}: ${formattedValue} (${percentage.toFixed(0)}%)`];
-                                    }}
-                                />
-                            </PieChart>
+                                                return (
+                                                    <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                                        <p>{data.name}</p>
+                                                        <p style={{ color: 'black' }}>{formattedValue}({percentage.toFixed(0)}%)</p>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        }}
+                                        contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+                                    />
+                                </PieChart>
+                            )}
+                            
                         </ResponsiveContainer>
                     </div>
                 </div>
 
                 <div className="bar-chart-section">
                     <h2>Entrate | Spese</h2>
-                    <div style={{ width: 350, height: 300 }}>
+                    <div style={{ width: 350, height: 300 }}> 
                         <ResponsiveContainer width="100%" height="100%">
                                 <BarChart width={500} height={300} data={incExpData} margin={{
                                             top: 20,
-                                            right: 15,
+                                            right: 40,
                                         }}>
                                     <Bar dataKey="value">
                                         {incExpData.map(entry => (
@@ -360,20 +408,20 @@ function AnalyticDashboard() {
                                         ))}
                                     </Bar>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                    <XAxis dataKey="name" interval={0} angle={45} textAnchor="start" tick={{ fill: 'white' }} />
+                                    <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: 'white', fontSize: 14 }} />
                                     <YAxis tick={{ fill: 'white' }} />
 
                                     <Tooltip
                                         content={({ payload, label, active }) => {
                                             if (active) {
-                                                const data = payload[0].payload; // Dati relativi all'elemento selezionato
+                                                const value = payload[0].payload.value; // Dati relativi all'elemento selezionato
 
                                                 // Formatta il valore con migliaia e simbolo dell'euro
                                                 const formattedValue = new Intl.NumberFormat('it-IT', {
                                                     style: 'currency',
                                                     currency: 'EUR',
                                                     maximumFractionDigits: 0,
-                                                }).format(data.value);
+                                                }).format(value);
 
                                                 return (
                                                     <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>

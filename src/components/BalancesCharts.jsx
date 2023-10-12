@@ -38,8 +38,7 @@ export default function BalancesCharts() {
   fetchData();
   }, [userData]);
 
-  //HERE I HAVE TO SET DATA TAKEN FROM THE DATABASE FOR ALL THE YEAR FROM NOW (Last 12 months) or from the beginning of the year (IDK) TODO
-  // Modifica la variabile data con i dati degli ultimi 12 mesi
+
   const data = last12MonthsData.map((monthData) => ({
     name: monthData.month,
     SoldiFisici: monthData.cashReal,
@@ -49,8 +48,8 @@ export default function BalancesCharts() {
     Crypto: monthData.cryptoReal,
     ETF: monthData.etfReal,
     Bitcoin: monthData.bitcoinReal,
-    amt: 2400, // <-- Questo valore amt può essere impostato come vuoi, non sembra essere utilizzato
-  }));
+    amt: 2400, 
+  })).reverse(); //reverse() to have the last month on the right
 
   return (
     <SectionBalancesCharts theme={theme}>

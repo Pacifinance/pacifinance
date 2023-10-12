@@ -8,7 +8,7 @@ import { SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import {SectionAMonth, TitleDashboard}from '../contexts/MyStyled';
+import {SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
 import { primaryColor } from '../contexts/Themes';
 import { calculatePercentageChange } from '../utilities/calculations';
 // import { PieChart, Pie, Cell } from "recharts";
@@ -140,12 +140,12 @@ function BalancesStatsYear() {
     return (
         
         <div className="wrapper">
-        <TitleDashboard theme={theme}>
+        <TitleStatsCharts theme={theme}>
             Il tuo patrimonio è variato del:{" "}
             <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
                 {calculatePercentageChange(totalReal, totalRealPreYearSameMonth)}
             </span>
-        </TitleDashboard>
+        </TitleStatsCharts>
         <SectionAMonth theme={theme}>
             <div className="analytic ">
                 <div className="design">

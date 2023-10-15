@@ -7,6 +7,7 @@ import {
   ModalButton,
   MySectionButton,
   MySecondaryButton,
+  StyledDateInput,
   StyledSection,
   StyledAddSection,
   StyledTable,
@@ -23,6 +24,18 @@ import {
   MuiCustomDialogActions,
 } from '../contexts/MyStyled';
 import { set } from "mongoose";
+
+const handleBalanceDateChange = (setBalanceDate, event) => {
+  setBalanceDate(event.target.value);
+};
+
+const handleIncomeDateChange = (setIncomeDate, event) => {
+  setIncomeDate(event.target.value);
+};
+
+const handleExpenseDateChange = (setExpenseDate, event) => {
+  setExpenseDate(event.target.value);
+};
 
 
 const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
@@ -207,9 +220,9 @@ export default function InsertValue () {
   const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
   const [isConfirmExpenseOpen, setIsConfirmExpenseOpen] = useState(false);
   // const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const [visibleItems, setVisibleItems] = useState(3); // Numero di elementi visibili nel carousel
-  const [showScrollbar, setShowScrollbar] = useState(false); // Mostra o nascondi la barra di scorrimento laterale
-  const [isLoading, setIsLoading] = useState(true);
+  // const [visibleItems, setVisibleItems] = useState(3); // Numero di elementi visibili nel carousel
+  // const [showScrollbar, setShowScrollbar] = useState(false); // Mostra o nascondi la barra di scorrimento laterale
+  // const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
   const [etfReal, setETFReal] = useState(0);
   const [bankReal, setBankReal] = useState(0);
@@ -217,10 +230,10 @@ export default function InsertValue () {
   const [cryptoReal, setCryptoReal] = useState(0);
   const [bitcoinReal, setBitcoinReal] = useState(0);
   const [digitalServicesReal, setDigitalServicesReal] = useState(0);
-  const [totalReal, setTotalReal] = useState(0);
-  const [incomesMonth, setIncomesMonth] = useState(0);
-  const [expensesMonth, setExpensesMonth] = useState(0);
-  const [savedMonth, setSavedMonth] = useState(0);
+  // const [totalReal, setTotalReal] = useState(0);
+  // const [incomesMonth, setIncomesMonth] = useState(0);
+  // const [expensesMonth, setExpensesMonth] = useState(0);
+  // const [savedMonth, setSavedMonth] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryExpense, setCategoryExpense] = useState({ key: "", value: "" });
   const [typoExpense, setTypoExpense] = useState({ key: "", value: "" });
@@ -258,10 +271,10 @@ export default function InsertValue () {
             setBankReal(userData? userData.bankReal : 0);
             setCashReal(userData ? userData.cashReal : 0);
             setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-            setTotalReal(userData ? userData.totalReal : 0);
-            setExpensesMonth(userData ? userData.expensesMonth : 0);
-            setIncomesMonth(userData ? userData.incomesMonth : 0);
-            setSavedMonth(userData ? userData.savedMonth : 0);
+            // setTotalReal(userData ? userData.totalReal : 0);
+            // setExpensesMonth(userData ? userData.expensesMonth : 0);
+            // setIncomesMonth(userData ? userData.incomesMonth : 0);
+            // setSavedMonth(userData ? userData.savedMonth : 0);
 
             setExpensesTags(userData ? userData.expensesTags : []);
             setIncomesTags(userData ? userData.incomesTags : []);
@@ -281,7 +294,7 @@ export default function InsertValue () {
             console.log("Data entrata: ", incomeDate);
             console.log("Data spesa: ", expenseDate);
             
-            setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
+            // setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
         } catch (error) {
           console.error('Errore durante le operazioni:', error);
         }
@@ -291,6 +304,18 @@ export default function InsertValue () {
   useEffect(() => {
     fetchData();
   }, [userData]);
+
+  const handleBalanceDateChange = (event) => {
+    setBalanceDate(event.target.value);
+  };
+  
+  const handleIncomeDateChange = (event) => {
+    setIncomeDate(event.target.value);
+  };
+  
+  const handleExpenseDateChange = (event) => {
+    setExpenseDate(event.target.value);
+  };
 
   function renderIncomeItems(lastIncomesAdds) {
     return lastIncomesAdds.map((add, index) => {
@@ -636,14 +661,16 @@ export default function InsertValue () {
             
           </StyledInputs>
           <StyledInputs theme={theme}>
-          <StyledCalendar
-              theme={theme}
+            <StyledDateInput
+              type="date"
               value={balanceDate}
-              onChange={(date) =>setBalanceDate(date)}
-              calendarType="gregory"
-              formatShortWeekday={formatShortWeekday}
+              onChange={handleBalanceDateChange}
             />
           </StyledInputs>
+          
+            
+          
+          {/* onChange={(date) =>setBalanceDate(date)} */}
           <StyledInputs theme={theme}>
             <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
@@ -665,7 +692,8 @@ export default function InsertValue () {
                         const selectedValue = selectedItem.translations.it;
                         setCategoryIncome({ key: selectedKey, value: selectedValue });
                       }
-                    }} 
+                }} 
+                
                 style={{ backgroundColor: 'white' }} displayEmpty
 
                 renderValue={(value) => {
@@ -727,14 +755,11 @@ export default function InsertValue () {
               </div>
             </label>
             <div>
-              {incomeDate && <h3>Entrata del {incomeDate.toLocaleDateString()}</h3>}
-              <StyledCalendar
-                theme={theme}
-                onChange={(date) =>setIncomeDate(date)}
-                value={incomeDate}
-                calendarType="gregory"
-                formatShortWeekday={formatShortWeekday}
-              />
+              <StyledDateInput
+              type="date"
+              value={incomeDate}
+              onChange={handleIncomeDateChange}
+            />
             </div>
           
           </StyledAddSection>
@@ -874,12 +899,10 @@ export default function InsertValue () {
               </div>
             </label>
             <div>
-              <StyledCalendar
-                theme={theme}
-                onChange={(date) =>setExpenseDate(date)}
+              <StyledDateInput
+                type="date"
                 value={expenseDate}
-                calendarType="gregory"
-                formatShortWeekday={formatShortWeekday}
+                onChange={handleExpenseDateChange}
               />
             </div>
           </StyledAddSection>

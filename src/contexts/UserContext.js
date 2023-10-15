@@ -33,7 +33,7 @@ function UserProvider({ children }) {
             const expensesTags = allTags.data.expense;
             const incomesTags = allTags.data.income;
             const paymentTags = allTags.data.payment;
-            const nationalityTags = allTags.data.country;
+            const nationalityTags = allTags.data.country; //used also for the country where the user works
             const jobTags = allTags.data.job;
             const jobTypeTags = allTags.data.jobType;
             const workTimeTags = allTags.data.workTime;
@@ -54,12 +54,12 @@ function UserProvider({ children }) {
             const infoUser = await axios.post('/user/get');
             const userId = infoUser.data.userId;
             const username = infoUser.data.nickname ?? 'Username non impostato';
-            const userNationality = infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata';
-            const userWhereWorks = infoUser.data.jobCountry?.translations?.it ?? 'Dove lavora non impostato';
-            const userJob = infoUser.data.job?.translations?.it ?? 'Lavoro non impostato';
-            const userJobType = infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato';
-            const userWorkTime = infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato';
-            const userRemoteType = infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata';
+            const userNationality = {key: infoUser.data.country?.index ?? -1, value: infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata'};
+            const userWhereWorks = {key: infoUser.data.jobCountry?.index ?? -1 ,value: infoUser.data.jobCountry?.translations?.it ?? 'Dove lavora non impostato'};
+            const userJob = {key: infoUser.data.job?.index ?? -1, value: infoUser.data.job?.translations?.it ?? 'Lavoro non impostato'};
+            const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato'};
+            const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato'};
+            const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
             
             console.log('Info utente: ', infoUser);
             
@@ -217,9 +217,9 @@ function UserProvider({ children }) {
             // const rankOnBalanceSimilar = await axios.post('/rank/balances/similar');
             // const rankOnIncomeSimilar = await axios.post('/rank/incomes/similar');
             // const rankOnExpenseSimilar = await axios.post('/rank/expenses/similar');
-            const percentageRankOnBalance = (rankOnBalance.data.position / rankOnBalance.data.total) * 100;
-            const percentageRankOnIncomes = (rankOnIncome.data.position / rankOnIncome.data.total) * 100;
-            const percentageRankOnExpenses = (rankOnExpense.data.position / rankOnExpense.data.total) * 100;
+            const percentageRankOnBalance = parseInt((rankOnBalance.data.position / rankOnBalance.data.total) * 100);
+            const percentageRankOnIncomes = parseInt((rankOnIncome.data.position / rankOnIncome.data.total) * 100);
+            const percentageRankOnExpenses = parseInt((rankOnExpense.data.position / rankOnExpense.data.total) * 100);
             console.log('rankOnBalance:', rankOnBalance);
             console.log('percentageRankOnBalance:', percentageRankOnBalance);
             console.log('rankOnIncome:', rankOnIncome);

@@ -52,15 +52,15 @@ function RankingsSection({ title, rankings }) {
   if (!isNaN(parseFloat(rankings))) {
     if (isExpenseTitle) {
         if (isRankingsAbove50) {
-            textToDisplay = `Sei nella top ${rankings.toFixed(2)}% degli utenti che spendono di più!`;
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}% degli utenti che spendono di più!`;
         } else {
-            textToDisplay = `Complimenti! Sei nella top ${rankings.toFixed(2)}%. Sei tra gli utenti che spendono di meno!`;
+            textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che spendono di meno!`;
         }
     } else {
         if (isRankingsAbove50) {
-            textToDisplay = `Complimenti! Sei nella top ${rankings.toFixed(2)}% degli utenti!`;
+            textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
         } else {
-            textToDisplay = `Sei nella top ${rankings.toFixed(2)}% degli utenti!`;
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
         }
     }
   } else {
@@ -146,7 +146,7 @@ function RankingComponent() {
         onMonthChange={handleMonthChange}
         onYearChange={handleYearChange}
       /> */}
-      <StyledLabel>Classifiche relative a {formattedPreMonthDate}</StyledLabel>
+      <StyledLabel>Classifiche relative al mese {formattedPreMonthDate}</StyledLabel>
       <RankingsTitle >Classifiche generali : </RankingsTitle>
       <CenteredRankings>
         <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} />

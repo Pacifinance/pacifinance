@@ -45,12 +45,12 @@ function Sidebar() {
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
     const [userId, setUserId] = useState(''); 
     const [username, setUsername] = useState(''); 
-    const [userNationality, setUserNationality] = useState(''); 
-    const [userWhereWorks, setUserWhereWorks] = useState(''); 
-    const [userJob, setUserJob] = useState(''); 
-    const [userJobType, setUserJobType] = useState(''); 
-    const [userWorkTime, setUserWorkTime] = useState(''); 
-    const [userRemoteType, setUserRemoteType] = useState(''); 
+    const [userNationality, setUserNationality] = useState({ key: "", value: "" }); 
+    const [userWhereWorks, setUserWhereWorks] = useState({ key: "", value: "" }); 
+    const [userJob, setUserJob] = useState({ key: "", value: "" }); 
+    const [userJobType, setUserJobType] = useState({ key: "", value: "" }); 
+    const [userWorkTime, setUserWorkTime] = useState({ key: "", value: "" }); 
+    const [userRemoteType, setUserRemoteType] = useState({ key: "", value: "" }); 
     const [nationalityTags, setNationalityTags] = useState([]);
     const [jobTags, setJobTags] = useState([]);
     const [jobTypeTags, setJobTypeTags] = useState([]);
@@ -287,6 +287,33 @@ function Sidebar() {
             console.error(error);
         }
     };
+    //we could update the modal with an x button to close it and avoid the automate close
+    const handleUpdateProfile = async (event) => {
+        event.preventDefault();
+        try {
+            const data = {
+                country: userNationality.key,
+                job: userJob.key,
+                job_type: userJobType.key,
+                job_country: userWhereWorks.key,
+                work_time: userWorkTime.key,
+                remote_type: userRemoteType.key
+            }
+            const response = await axios.post('/user/set', data);
+            console.log("Dati della risposta: ", response.data);
+            if(response.status === 200) {
+                console.log("Update successfull");
+                handleSetIsUpdated(true);
+                setShowAccountModal(false);
+            }
+            else {
+                console.log("Update failed");
+            }
+            
+        } catch(error) {
+            console.error(error);
+        }
+    };
 
     return (
         <SidebarSection theme={theme}>
@@ -436,9 +463,18 @@ function Sidebar() {
                                     ID: {userId} <br></br>
                                     Username: {username} <br></br>
                                     Nazionalità: <Select
-                                                    value={userNationality}
+                                                    value={userNationality.value}
                                                     onChange={(event) => {
-                                                        setUserNationality(event.target.value);
+                                                        
+                                                            // const selectedKey = event.target.value;
+                                                            // const selectedItem = incomesTags.find((item) => item.index === selectedKey);
+                                      
+                                                            // if (selectedItem) {
+                                                            //   const selectedValue = selectedItem.translations.it;
+                                                            //   setCategoryIncome({ key: selectedKey, value: selectedValue });
+                                                            // }
+                                                       
+                                                        setUserNationality({key: event.target.value.key, value: event.target.value.label});
                                                     }}
                                                     style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
                                                     displayEmpty
@@ -453,15 +489,15 @@ function Sidebar() {
                                                         <em>Seleziona una nazionalità</em>
                                                     </MenuItem>
                                                     {nationalityTags.map((tag) => (
-                                                        <MenuItem key={tag} value={tag}>
-                                                        {tag}
+                                                        <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
+                                                        {tag.translations.it}
                                                         </MenuItem>
                                                     ))}
                                                 </Select> <br></br>
                                     Dove lavori: <Select
-                                                    value={userWhereWorks}
+                                                    value={userWhereWorks.value}
                                                     onChange={(event) => {
-                                                        setUserWhereWorks(event.target.value);
+                                                        setUserWhereWorks({key: event.target.value.key, value: event.target.value.label});
                                                     }}
                                                     style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
                                                     displayEmpty
@@ -476,15 +512,15 @@ function Sidebar() {
                                                         <em>Seleziona un luogo di lavoro</em>
                                                     </MenuItem>
                                                     {nationalityTags.map((tag) => (
-                                                        <MenuItem key={tag} value={tag}>
-                                                        {tag}
+                                                        <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
+                                                        {tag.translations.it}
                                                         </MenuItem>
                                                     ))}
                                                 </Select> <br></br>
                                     Lavoro: <Select
-                                                value={userJob}
+                                                value={userJob.value}
                                                 onChange={(event) => {
-                                                    setUserJob(event.target.value);
+                                                    setUserJob({key: event.target.value.key, value: event.target.value.label});
                                                 }}
                                                 style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
                                                 displayEmpty
@@ -499,15 +535,15 @@ function Sidebar() {
                                                     <em>Seleziona il tuo lavoro</em>
                                                 </MenuItem>
                                                 {jobTags.map((tag) => (
-                                                    <MenuItem key={tag} value={tag}>
-                                                    {tag}
+                                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
+                                                    {tag.translations.it}
                                                     </MenuItem>
                                                 ))}
                                             </Select> <br></br>
                                     Tipo di lavoro: <Select
-                                                        value={userJobType}
+                                                        value={userJobType.value}
                                                         onChange={(event) => {
-                                                            setUserJobType(event.target.value);
+                                                            setUserJobType({key: event.target.value.key, value: event.target.value.label});
                                                         }}
                                                         style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
                                                         displayEmpty
@@ -522,15 +558,15 @@ function Sidebar() {
                                                             <em>Seleziona il tipo di lavoro</em>
                                                         </MenuItem>
                                                         {jobTypeTags.map((tag) => (
-                                                            <MenuItem key={tag} value={tag}>
-                                                            {tag}
+                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
+                                                            {tag.translations.it}
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>
                                     Part-time | Full-time: <Select
-                                                                value={userWorkTime}
+                                                                value={userWorkTime.value}
                                                                 onChange={(event) => {
-                                                                    setUserWorkTime(event.target.value);
+                                                                    setUserWorkTime({key: event.target.value.key, value: event.target.value.label});
                                                                 }}
                                                                 style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
                                                                 displayEmpty
@@ -545,15 +581,15 @@ function Sidebar() {
                                                                     <em>Seleziona il tuo orario di lavoro</em>
                                                                 </MenuItem>
                                                                 {workTimeTags.map((tag) => (
-                                                                    <MenuItem key={tag} value={tag}>
-                                                                    {tag}
+                                                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
+                                                                    {tag.translations.it}
                                                                     </MenuItem>
                                                                 ))}
                                                             </Select> <br></br>
                                     Lavoro remoto: <Select
-                                                        value={userRemoteType}
+                                                        value={userRemoteType.value}
                                                         onChange={(event) => {
-                                                            setUserRemoteType(event.target.value);
+                                                            setUserRemoteType({key: event.target.value.key, value: event.target.value.label});
                                                         }}
                                                         style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
                                                         displayEmpty
@@ -568,8 +604,8 @@ function Sidebar() {
                                                             <em>Seleziona la modalità di lavoro remoto</em>
                                                         </MenuItem>
                                                         {remoteTypeTags.map((tag) => (
-                                                            <MenuItem key={tag} value={tag}>
-                                                            {tag}
+                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
+                                                            {tag.translations.it}
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>
@@ -577,8 +613,8 @@ function Sidebar() {
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
-                                <MuiCustomButton onClick={handleCloseModal} autoFocus> {/* Va fatta una chiamata per aggiornare i dati nel db */}
-                                    Ok, va bene
+                                <MuiCustomButton onClick={handleUpdateProfile} autoFocus> 
+                                    Salva
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>

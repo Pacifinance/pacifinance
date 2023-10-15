@@ -5,9 +5,9 @@ export const themes = {
   light: {
     mode: 'light',
     jollyColor: '#6fca3a',
-    primaryColor: '#fff',
+    primaryColor: '#f5f5f5',
     textColor: 'black',//#222629
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     buttonBackgroundColor: '#079164',
     iconBackgroundColor: '#079164',
   },

@@ -1543,6 +1543,14 @@ export const CookieBannerContainer = styled.div`
     
   }
 `;
+
+export const StyledDateInput = styled.input`
+  width: 200px; /* Adjust the width to your liking */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+`;
   
 
   //****************************************************** MUI CUSTOM STYLED ******************************************************************* *//

@@ -9,9 +9,12 @@ import {
   MySecondaryButton,
   StyledDateInput,
   StyledSection,
+  StyledCalendarInput,
   StyledAddSection,
   StyledTable,
   StyledInputs,
+  inputStyle,
+  Column,
   StyledCalendar,
   TitleLastAdds,
   TitleSection,
@@ -25,21 +28,39 @@ import {
 } from '../contexts/MyStyled';
 import { set } from "mongoose";
 
-const handleBalanceDateChange = (setBalanceDate, event) => {
-  setBalanceDate(event.target.value);
-};
+// const handleBalanceDateChange = (setBalanceDate, event) => {
+//   setBalanceDate(event.target.value);
+// };
 
-const handleIncomeDateChange = (setIncomeDate, event) => {
-  setIncomeDate(event.target.value);
-};
+// const handleIncomeDateChange = (setIncomeDate, event) => {
+//   setIncomeDate(event.target.value);
+// };
 
-const handleExpenseDateChange = (setExpenseDate, event) => {
-  setExpenseDate(event.target.value);
-};
+// const handleExpenseDateChange = (setExpenseDate, event) => {
+//   setExpenseDate(event.target.value);
+// };
 
 
 const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
   setIsConfirmBalanceOpen(true);
+};
+
+
+const handleInputChange = (e, setterFunction) => {
+  const cleanedValue = e.target.value
+    .replace(/,/g, '.') // Substitute commas with dots
+    .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+    .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+  setterFunction(cleanedValue);
+};
+
+const handleInputBlur = (e, setterFunction) => {
+  const cleanedValue = e.target.value
+    .replace(/,/g, '.') // Substitute commas with dots
+    .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+    .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+  const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+  if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
 
 const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
@@ -198,20 +219,20 @@ const handleExitConfirm = async (setModalState) => {
 
 
 // this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
-const handleIncomesDelete = (setLastIncomesAdds, lastIncomesAdds, index) => {
-  const newIncomeAdds = [...lastIncomesAdds];
-  newIncomeAdds.splice(index, 1);
-  setLastIncomesAdds(newIncomeAdds);
-};
+// const handleIncomesDelete = (setLastIncomesAdds, lastIncomesAdds, index) => {
+//   const newIncomeAdds = [...lastIncomesAdds];
+//   newIncomeAdds.splice(index, 1);
+//   setLastIncomesAdds(newIncomeAdds);
+// };
 
-const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
-  const newExpenseAdds = [...lastExpensesAdds];
-  newExpenseAdds.splice(index, 1);
-  setLastExpensesAdds(newExpenseAdds);
-};
+// const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
+//   const newExpenseAdds = [...lastExpensesAdds];
+//   newExpenseAdds.splice(index, 1);
+//   setLastExpensesAdds(newExpenseAdds);
+// };
 
-
-
+//
+const currentDate = new Date().toISOString().split('T')[0];
 
 export default function InsertValue () {
   const { theme } = useContext(ThemeContext);
@@ -244,15 +265,13 @@ export default function InsertValue () {
   const [tableDataIncomes, setTableDataIncomes] = useState([]);
   const [tableDataExpenses, setTableDataExpenses] = useState([]);
   const [dateTime, setDateTime] = useState(new Date());
-  const [incomeDate, setIncomeDate] = useState(new Date());
-  const [expenseDate, setExpenseDate] = useState(new Date());
-  const [balanceDate, setBalanceDate] = useState(new Date());
+  const [incomeDate, setIncomeDate] = useState(currentDate);
+  const [expenseDate, setExpenseDate] = useState(currentDate);
+  const [balanceDate, setBalanceDate] = useState(currentDate);
   const [activePage, setActivePage] = useState("bilancio");
   const [expensesTags, setExpensesTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
-  //TO set the calendar date format without the day of the week
-  const formatShortWeekday = (locale, date) => "";
   
   
   const fetchData = async () => {
@@ -354,327 +373,77 @@ export default function InsertValue () {
 
 
   const renderPage = () => {
-    if (activePage === "bilancio") {
+    if (activePage === 'bilancio') {
       return (
-        
         <>
-          {/* TitleSection used to create a distance TO UPGRADE */}
-          <TitleSection theme={theme}></TitleSection>
+          {/*TitleSection used to create a distance TO UPGRADE */}
+          <TitleSection theme={theme}> Liquidità </TitleSection>
           <StyledInputs theme={theme}>
-            <label>
-              Depositati in Banca
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={bankReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setBankReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setBankReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
+            <Column>
+              {/* <label>Soldi Fermi</label> */}
+              <label>Depositati in Banca</label>
+              <label>Contanti e Monete</label>
+              <label>Su servizi di pagam. digitali</label>
+            </Column>
+            <Column>
+              <div>
+                <input type="text" value={bankReal} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
+                <span>€</span>
               </div>
-  
-            </label>
-            <label>
-              Contanti e monete
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={cashReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setCashReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setCashReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
+              <div>
+                <input type="text" value={cashReal} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
+                <span>€</span>
               </div>
-            </label>
-  
-            <label>
-              Su servizi di pagam. digitali
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={digitalServicesReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setDigitalServicesReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setDigitalServicesReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
+              <div>
+                <input type="text" value={digitalServicesReal} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
+                <span>€</span>
               </div>
-            </label>
-            
+            </Column>
           </StyledInputs>
-  
+          <TitleSection theme={theme}> Investimenti </TitleSection>
           <StyledInputs theme={theme}>
-  
-            <label>
-              Azioni
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={stocksReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setStocksReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setStocksReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
-              </div>          
-            </label>
-  
-            <label>
-              ETF
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={etfReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setETFReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setETFReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
+            <Column>
+              {/* <label>Investimenti</label> */}
+              <label>Azioni</label>
+              <label>ETF</label>
+              <label>Bitcoin</label>
+              <label>Criptovalute</label>
+            </Column>
+            <Column>
+              <div>
+                <input type="text" value={stocksReal} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
+                <span>€</span>
               </div>
-            </label>
-  
-            <label>
-              Bitcoin
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={bitcoinReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setBitcoinReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setBitcoinReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
+              <div>
+                <input type="text" value={etfReal} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
+                <span>€</span>
               </div>
-  
-            </label>
-            <label>
-              Criptovalute
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                  type="text"
-                  value={cryptoReal}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setCryptoReal(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setCryptoReal(cleanedFinalValue);
-                  }}
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
-                />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
+              <div>
+                <input type="text" value={bitcoinReal} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
+                <span>€</span>
               </div>
-            </label>
-            
+              <div>
+                <input type="text" value={cryptoReal} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
+                <span>€</span>
+              </div>
+            </Column>
           </StyledInputs>
-          <StyledInputs theme={theme}>
+
+          <StyledCalendarInput theme={theme}>
             <StyledDateInput
               type="date"
               value={balanceDate}
               onChange={handleBalanceDateChange}
             />
-          </StyledInputs>
+          </StyledCalendarInput>
           
-            
           
-          {/* onChange={(date) =>setBalanceDate(date)} */}
           <StyledInputs theme={theme}>
             <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo patrimonio</MySecondaryButton>
           </StyledInputs>
         </>
+          
+        
       );
     } else if (activePage === "income") {
       console.log("Tag entrate pre .map: ", incomesTags);
@@ -1029,3 +798,325 @@ export default function InsertValue () {
     
   );
 };
+
+
+
+{/* TitleSection used to create a distance TO UPGRADE
+          <TitleSection theme={theme}></TitleSection>
+          {/* <StyledInputs theme={theme}>
+            <label>
+              Depositati in Banca
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={bankReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setBankReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setBankReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>
+  
+            </label>
+            <label>
+              Contanti e monete
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={cashReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setCashReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setCashReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>
+            </label>
+  
+            <label>
+              Su servizi di pagam. digitali
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={digitalServicesReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setDigitalServicesReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setDigitalServicesReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>
+            </label>
+            
+          </StyledInputs>
+  
+          <StyledInputs theme={theme}>
+  
+            <label>
+              Azioni
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={stocksReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setStocksReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setStocksReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>          
+            </label>
+  
+            <label>
+              ETF
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={etfReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setETFReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setETFReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>
+            </label>
+  
+            <label>
+              Bitcoin
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={bitcoinReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setBitcoinReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setBitcoinReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>
+  
+            </label>
+            <label>
+              Criptovalute
+              <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                  type="text"
+                  value={cryptoReal}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.') // Substitute commas with dots
+                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    setCryptoReal(cleanedValue);
+                  }}
+                  onBlur={(e) => {
+                    const cleanedValue = e.target.value
+                      .replace(/,/g, '.')
+                      .replace(/[^\d.]/g, '')
+                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+                    //i wanna cut the number to 2 decimal numbers with numeric function
+                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+                    if (!isNaN(cleanedFinalValue)) setCryptoReal(cleanedFinalValue);
+                  }}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    color: "#333",
+                    outline: "none",
+                    width: "120px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: "4px",
+                  }}
+                >
+                  €
+                </span>
+              </div>
+            </label>
+            
+          </StyledInputs>
+          <StyledInputs theme={theme}>
+            <StyledDateInput
+              type="date"
+              value={balanceDate}
+              onChange={handleBalanceDateChange}
+            />
+          </StyledInputs>
+          
+            
+          
+          {/* onChange={(date) =>setBalanceDate(date)} */}
+          {/*}
+          <StyledInputs theme={theme}>
+            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo patrimonio</MySecondaryButton>
+          </StyledInputs>
+        </>
+      ); */}

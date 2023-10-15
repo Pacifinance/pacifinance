@@ -493,37 +493,75 @@ export const StyledSection = styled.div`
 
 }`;
 
+export const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 1em;
+  margin-left: 1em;
+`;
+
 export const StyledInputs = styled.div`
   display: flex;
   justify-content: space-evenly;
-  width: 100%;
+  width: 50%;
   height: 100%;
   margin-top: 1vw;
-  margin-left: 12vw;
-  color: ${(props) => (props.theme.textColor)};
-
-  label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-right: 1em;
-    margin-left: 1em;
-  }
-
-  input {
-    margin-top: 0.5em;
-    font-size: 1.2rem;
-    padding: 0.5em;
-  }
-
-  button {
-    margin-top: 0.5em;
-    font-size: 1.2rem;
-    padding: 0.5em;
-  }
+  margin-left: 5vw;
+  color: ${(props) => props.theme.textColor};
 `;
+
+export const StyledCalendarInput = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  height: 50%;
+  margin-top: 1vw;
+  margin-left: 5vw;
+  color: ${(props) => props.theme.textColor};
+`;
+
+export const inputStyle = {
+  textAlign: "center",
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  color: "#333",
+  outline: "none",
+  width: "120px",
+};
+
+// export const StyledInputs = styled.div`
+//   display: flex;
+//   justify-content: space-evenly;
+//   width: 100%;
+//   height: 100%;
+//   margin-top: 1vw;
+//   margin-left: 12vw;
+//   color: ${(props) => (props.theme.textColor)};
+
+//   label {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     font-weight: bold;
+//     font-size: 1.2rem;
+//     margin-right: 1em;
+//     margin-left: 1em;
+//   }
+
+//   input {
+//     margin-top: 0.5em;
+//     font-size: 1.2rem;
+//     padding: 0.5em;
+//   }
+
+//   button {
+//     margin-top: 0.5em;
+//     font-size: 1.2rem;
+//     padding: 0.5em;
+//   }
+// `;
 
 export const StyledTable = styled.table`
   border-collapse: collapse;

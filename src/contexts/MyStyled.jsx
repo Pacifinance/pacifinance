@@ -503,7 +503,8 @@ export const Column = styled.div`
 
 export const StyledInputs = styled.div`
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
+  align-items: center;
   width: 50%;
   height: 100%;
   margin-top: 1vw;
@@ -515,7 +516,7 @@ export const StyledCalendarInput = styled.div`
   display: flex;
   justify-content: space-evenly;
   width: 100%;
-  height: 50%;
+  height: 35%;
   margin-top: 1vw;
   margin-left: 5vw;
   color: ${(props) => props.theme.textColor};
@@ -529,7 +530,28 @@ export const inputStyle = {
   color: "#333",
   outline: "none",
   width: "120px",
+  marginBottom: "0.7em",
 };
+
+export const LabelContainer = styled.div`
+  text-align: center;
+  padding: 0.2em;
+  background-color: white;
+  border: 0.13em solid ${(props) => props.theme.buttonBackgroundColor};
+  border-radius: 0.5em;
+  outline: none;
+  width: 15em;
+  margin-bottom: 0.8em;
+`;
+
+export const LabelStyle = styled.label`{
+  display: 'flex';
+  alignItems: 'center';
+  color: ${backgroundColor};
+  height: '100%';
+  fontWeight: 'bold';
+  
+`;
 
 // export const StyledInputs = styled.div`
 //   display: flex;
@@ -564,25 +586,50 @@ export const inputStyle = {
 // `;
 
 export const StyledTable = styled.table`
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 50%;
-  background-color: ${(props) => (props.theme.backgroundColor)};
-  color: ${(props) => (props.theme.textColor)};
+  color: ${(props) => props.theme.textColor};
   margin-bottom: 1em;
   margin-left: 6vw;
-  overflow-y: auto; /* Enable vertical scroll */
-
-  td, th {
-    border: 0.025em solid black;
-    padding: 0.01em;
-    text-align: center;
-    background-color: ${(props) => (props.theme.backgroundColor)};
-  }
 
   th {
-    background-color: ${(props) => (props.theme.backgroundColor)};
+    background-color: ${(props) => props.theme.buttonBackgroundColor};
+    color: white;
+    padding: 0.5em;
+  }
+
+  td, th {
+    border: 1px solid ${(props) => props.theme.borderColor};
+    text-align: center;
+    padding: 12px;
+  }
+
+  tbody tr:hover {
+    background-color: ${(props) => props.theme.jollyColor};
   }
 `;
+
+// export const StyledTable = styled.table`
+//   border-collapse: collapse;
+//   width: 50%;
+//   background-color: ${(props) => (props.theme.backgroundColor)};
+//   color: ${(props) => (props.theme.textColor)};
+//   margin-bottom: 1em;
+//   margin-left: 6vw;
+//   overflow-y: auto; /* Enable vertical scroll */
+
+//   td, th {
+//     border: 0.025em solid black;
+//     padding: 0.01em;
+//     text-align: center;
+//     background-color: ${(props) => (props.theme.backgroundColor)};
+//   }
+
+//   th {
+//     background-color: ${(props) => (props.theme.backgroundColor)};
+//   }
+// `;
 
 export const StyledAddSection = styled.div`
   display: flex;
@@ -646,13 +693,13 @@ export const StyledLastAdds = styled.div`
   }
 `;
 
-  export const CapitalValue = styled.h1 `
-      font-size: 2rem;
-      color: ${(props) => (props.theme.textColor)};
-      margin-top: 1rem;
-      margin-left: 3%;
-      margin-bottom: 1rem;
-  `;
+export const CapitalValue = styled.h1 `
+    font-size: 2rem;
+    color: ${(props) => (props.theme.textColor)};
+    margin-top: 1rem;
+    margin-left: 3%;
+    margin-bottom: 1rem;
+`;
 
 export const Container = styled.div`
   font-family: Roboto, sans-serif;

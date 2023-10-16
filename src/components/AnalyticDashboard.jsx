@@ -321,8 +321,9 @@ function AnalyticDashboard() {
                 </div>
 
                 <div className="pie-chart-section">
-                    <h2>% Distribuzione Capitale</h2>
+                    
                     <div style={{ width: 400, height: 400 }}>
+                        <h2>% Distribuzione Capitale</h2>
                         <ResponsiveContainer width="100%" height="100%">
                         {isAllZero ? (
                             <div style={{
@@ -330,15 +331,12 @@ function AnalyticDashboard() {
                                 justifyContent: 'center',
                                 marginTop: '5em',
                                 alignItems: 'center',
-                                width: '100%',
+                                width: '80%',
                                 height: '100%',
-                                color: 'white',
                                 backgroundColor: 'transparent', // Imposta il colore di sfondo trasparente
                                 fontSize: '18px', // Imposta la dimensione del carattere desiderata
                             }}>
-                                <div className="noDataMessage">
-                                    <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
-                                </div>
+                                <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
                             </div>
                         ) : (
                                 <PieChart width={500} height={500} margin={{

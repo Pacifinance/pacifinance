@@ -14,6 +14,8 @@ import {
   StyledTable,
   StyledInputs,
   inputStyle,
+  LabelStyle,
+  LabelContainer,
   Column,
   StyledCalendar,
   TitleLastAdds,
@@ -301,17 +303,6 @@ export default function InsertValue () {
 
             setLastExpensesAdds(userData ? userData.lastExpenses : []); // da modificare
             setLastIncomesAdds(userData ? userData.lastIncomes : []); // da modificare
-
-            //set datas
-            const now = new Date();
-            setDateTime(now);
-            setIncomeDate(now);
-            setExpenseDate(now);
-
-            //print datas
-            console.log("Data e ora: ", dateTime);
-            console.log("Data entrata: ", incomeDate);
-            console.log("Data spesa: ", expenseDate);
             
             // setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
         } catch (error) {
@@ -380,51 +371,77 @@ export default function InsertValue () {
           <TitleSection theme={theme}> Liquidità </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
-              {/* <label>Soldi Fermi</label> */}
-              <label>Depositati in Banca</label>
-              <label>Contanti e Monete</label>
-              <label>Su servizi di pagam. digitali</label>
+            <LabelContainer theme={theme}>
+              <LabelStyle theme={theme}>
+                Depositati in Banca
+              </LabelStyle>
+            </LabelContainer>
+            <LabelContainer theme={theme}>
+              <LabelStyle theme={theme}>
+                Contanti e monete
+              </LabelStyle>
+            </LabelContainer>
+            <LabelContainer theme={theme}>
+              <LabelStyle theme={theme}>
+                Su servizi di pagam. digitali
+              </LabelStyle>
+            </LabelContainer>
             </Column>
             <Column>
               <div>
                 <input type="text" value={bankReal} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
-                <span>€</span>
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
                 <input type="text" value={cashReal} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
-                <span>€</span>
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
                 <input type="text" value={digitalServicesReal} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
-                <span>€</span>
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
             </Column>
           </StyledInputs>
           <TitleSection theme={theme}> Investimenti </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
-              {/* <label>Investimenti</label> */}
-              <label>Azioni</label>
-              <label>ETF</label>
-              <label>Bitcoin</label>
-              <label>Criptovalute</label>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  Azioni
+                </LabelStyle>
+              </LabelContainer>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  ETF
+                </LabelStyle>
+              </LabelContainer>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  Bitcoin
+                </LabelStyle>
+              </LabelContainer>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  Criptovalute
+                </LabelStyle>
+              </LabelContainer>
             </Column>
             <Column>
               <div>
-                <input type="text" value={stocksReal} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
-                <span>€</span>
+                <input type="text" value={stocksReal} onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} style={inputStyle} />
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
                 <input type="text" value={etfReal} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
-                <span>€</span>
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
                 <input type="text" value={bitcoinReal} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
-                <span>€</span>
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
                 <input type="text" value={cryptoReal} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
-                <span>€</span>
+                <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
             </Column>
           </StyledInputs>
@@ -451,7 +468,6 @@ export default function InsertValue () {
         <>
           <StyledAddSection theme={theme}>
             <label>
-              Categoria
               <Select value={categoryIncome.value} 
                 onChange={(event) => {
                       const selectedKey = event.target.value;
@@ -483,7 +499,6 @@ export default function InsertValue () {
               </Select>
             </label>
             <label>
-              Valore
               <div style={{ display: "flex", alignItems: "center" }}>
               <input
                   type="text"
@@ -558,7 +573,6 @@ export default function InsertValue () {
         <>
           <StyledAddSection theme={theme}>
             <label>
-              Categoria
               <Select value={categoryExpense.value} 
                   onChange={(event) => {
                       const selectedKey = event.target.value;
@@ -591,7 +605,6 @@ export default function InsertValue () {
               </Select>
             </label>
             <label>
-              Tipologia pagamento
               <Select value={typoExpense.value} 
                   onChange={(event) => {
                       const selectedKey = event.target.value;
@@ -627,7 +640,6 @@ export default function InsertValue () {
               
             </label>
             <label>
-              Spesa
               <div style={{ display: "flex", alignItems: "center" }}>
               <input
                   type="text"
@@ -707,6 +719,7 @@ export default function InsertValue () {
               backgroundColor:
                 activePage === "bilancio" ? "" : "#222831",
               marginLeft: "6vw",
+              marginRight: "1vw",
             }}
           >
             Aggiorna Bilancio
@@ -716,6 +729,7 @@ export default function InsertValue () {
             style={{
               backgroundColor:
                 activePage === "income" ? "" : "#222831",
+              marginRight: "1vw",
             }}
           >
             Aggiungi Entrate

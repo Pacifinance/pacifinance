@@ -4,18 +4,22 @@ import { createGlobalStyle } from 'styled-components';
 export const themes = {
   light: {
     mode: 'light',
-    jollyColor: '#6fca3a',
+    jollyColor: '#b5ded1',
     primaryColor: '#f5f5f5',
+    secondaryColor: '#079164',
     textColor: 'black',//#222629
+    borderColor: '#079164',
     backgroundColor: '#f5f5f5',
     buttonBackgroundColor: '#079164',
     iconBackgroundColor: '#079164',
   },
   dark: {
     mode: 'dark',
-    jollyColor: 'white',
+    jollyColor: '#b5ded1', //maybe better white
     primaryColor: '#0d0f13', //black
+    secondaryColor: '#079164',
     textColor: '#fff',
+    borderColor: 'white',
     backgroundColor: '#222831', //#222831 o #3d3d3d 
     buttonBackgroundColor: '#079164 ',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
     iconBackgroundColor: '#079164 ',

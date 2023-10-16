@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './DashboardPage';
 import StatsCharts from './StatsChartsPage';
 import InsertValues from './InsertPage';
@@ -13,7 +13,6 @@ import SignUp from './SignUpPage';
 
 function AppRouter() {
   return (
-    <>
         <Routes>
             <Route path="/" exact element={<LandingPage />} />
             <Route path="/sign-up" exact element={<SignUp />} />
@@ -27,7 +26,6 @@ function AppRouter() {
             <Route path="/info" element={<Info/>} />
             {/* <Route path="*" element={<NotFound />} /> */}
         </Routes>
-    </>
   );
 }
 

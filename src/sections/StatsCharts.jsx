@@ -5,7 +5,7 @@ import BalancesCharts from '../components/BalancesCharts';
 import InOutCharts from '../components/InOutChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { ModifiedTitleDashboard, StyledSection, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
+import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
 import InExStatsMonth from '../components/InExStatsMonth';
 import InExStatsYear from '../components/InExStatsYear';
 
@@ -57,7 +57,7 @@ export default function StatsCharts() {
       };
 
     return (
-        <StyledSection theme={theme}>
+        <StyledSectionStats theme={theme}>
             <ModifiedTitleDashboard theme={theme} >Le tue Statistiche</ModifiedTitleDashboard>
             <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
               <MySectionButton
@@ -83,7 +83,7 @@ export default function StatsCharts() {
               </MySectionButton>
             </ButtonGroup>
             {renderPage()}
-        </StyledSection>
+        </StyledSectionStats>
       );
 }
 

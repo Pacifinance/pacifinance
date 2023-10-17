@@ -482,6 +482,25 @@ export const StyledSection = styled.div`
   height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
   overflow-x: hidden; // to hide the scroll bar
+  // overflow-y: hidden; // to hide the scroll bar
+  .grid{ 
+    margin-top: 2rem;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}`;
+
+export const StyledSectionStats = styled.div`
+  font-family: Roboto, sans-serif; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  overflow-x: hidden; // to hide the scroll bar
   overflow-y: hidden; // to hide the scroll bar
   .grid{ 
     margin-top: 2rem;
@@ -490,7 +509,6 @@ export const StyledSection = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-
 }`;
 
 export const Column = styled.div`
@@ -709,14 +727,11 @@ export const Container = styled.div`
   padding-bottom: 5.25em;
 `;
 
-export const SectionADashboard = styled.section `
+export const SectionADashboard = styled.section`
     font-family: Roboto, sans-serif;
     background-color: ${(props) => (props.theme.backgroundColor)};
     width: 100%;
-    height: 100;
-
-  
-    
+    height: 55vw; 
 `;
 
 export const FeaturesSection = styled.section`

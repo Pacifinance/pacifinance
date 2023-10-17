@@ -761,7 +761,7 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>ETF: {etfReal}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Bitcoin: {bitcoinReal}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Criptovalute: {cryptoReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Data selezionata: {balanceDate.toLocaleDateString()}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <MuiCustomDialogContentText>Data selezionata: {balanceDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
@@ -780,7 +780,7 @@ export default function InsertValue () {
             <MuiCustomDialogContent>
               <MuiCustomDialogContentText>Categoria: {categoryIncome.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {income}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Data selezionata: {incomeDate.toLocaleDateString()}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <MuiCustomDialogContentText>Data selezionata: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleConfirmIncome(fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Conferma</MuiCustomButton>
@@ -800,7 +800,7 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>Categoria: {categoryExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {expense}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Data selezionata: {expenseDate.toLocaleDateString()}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <MuiCustomDialogContentText>Data selezionata: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleConfirmExpense(fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Conferma</MuiCustomButton>

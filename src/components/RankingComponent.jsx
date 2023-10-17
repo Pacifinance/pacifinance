@@ -46,19 +46,27 @@ function RankingsSection({ title, rankings }) {
 
   // Verify if there are rankings > 50 (top 50%)
   const isRankingsAbove50 = rankings > 50;
+  const isRankingBelow20 = rankings < 20;
 
   // Calculate the text to display
   let textToDisplay = "";
   if (!isNaN(parseFloat(rankings))) {
+    //Se è tra gli ultimi 50% degli utenti (ovvero se è come rankings sopra a 50) (vuol dire che spende meno)
     if (isExpenseTitle) {
         if (isRankingsAbove50) {
-            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}% degli utenti che spendono di più!`;
-        } else {
             textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che spendono di meno!`;
+        } else if (isRankingBelow20) {
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}%. Attenzione! Sei tra gli utenti che spendono di più!`;
+        } else {
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}%. Sei nella media degli utenti!`;
+            
         }
     } else {
-        if (isRankingsAbove50) {
+        //Se è tra i primi 50% degli utenti (ovvero se non è come rankings sopra a 50)
+        if (!isRankingsAbove50) {
             textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
+        } else if (isRankingBelow20) {
+            textToDisplay = ` Incredibile!! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che guadagnano di più!`;
         } else {
             textToDisplay = `Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
         }

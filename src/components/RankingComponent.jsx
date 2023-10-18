@@ -120,8 +120,6 @@ function RankingComponent() {
             setIncomeRank(userData ? userData.percentageRankOnIncomes : []);
             setExpenseRank(userData ? userData.percentageRankOnExpenses : []);
 
-            // console.log("balanceRank", balanceRank);
-
         } catch (error) {
           console.error('Errore durante le operazioni:', error);
         }
@@ -130,7 +128,6 @@ function RankingComponent() {
 
   useEffect(() => {
     fetchData();
-    console.log("balanceRank", balanceRank);
   }, [userData]);
 
   const formattedPreMonthDate = userData?.preMonthDate

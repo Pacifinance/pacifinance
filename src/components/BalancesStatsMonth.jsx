@@ -72,9 +72,6 @@ export default function BalancesStatsMonth() {
         const fetchData = async () => {
           if (userData) {
             try {
-                console.log(userData);
-                console.log(userData.balances);
-                console.log(userData.expenses);
                 
                 //CURRENT MONTH
                 setStocksReal(userData ? userData.stocksReal : 0);

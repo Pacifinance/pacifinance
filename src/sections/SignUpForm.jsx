@@ -92,9 +92,7 @@ export default function SignUpForm() {
         
         try {
           const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword });
-          console.log(response.data);
           if(response.status === 200) {
-            console.log("Sign up successfull");
             generated_user_id = response.data.user_id;
 
             openSuccessModal();

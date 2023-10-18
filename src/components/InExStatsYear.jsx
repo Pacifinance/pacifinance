@@ -70,10 +70,7 @@ function InExStatsYear() {
     useEffect(() => {
         const fetchData = async () => {
           if (userData) {
-            try {
-                console.log(userData);
-                console.log(userData.expenses);
-                
+            try {   
                 // Set the state with the data from the database
 
                 //CURRENT MONTH

@@ -21,9 +21,6 @@ export default function Incomes() {
     const fetchData = async () => {
       if (userData) {
         try {
-            console.log(userData);
-            console.log(userData.incomesArray);
-            console.log(userData.expensesArray);
             setIncomesArray(userData.incomesArray);
             setExpensesArray(userData.expensesArray);  
             

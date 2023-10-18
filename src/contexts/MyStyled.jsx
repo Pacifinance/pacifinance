@@ -57,14 +57,14 @@ export const MyGenericModalContent = styled.div`
 `;
 
 export const MyButton = styled.button`
-  background-color: ${(props) => (props.theme.buttonBackgroundColor)};
-  color: white;  
+  background-color: ${(props) => (props.disabled ? 'lightgray' : props.theme.buttonBackgroundColor)};
+  color: ${(props) => (props.disabled ? 'darkgray' : 'white')};  
   padding: 0.5em 1em;
   border: none;
   border-radius: 0.2em;
   align-items: center;
   font-size: 1em;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
@@ -72,7 +72,6 @@ export const MyButton = styled.button`
     border-radius: 0.2em;
     font-size: 1.5rem;
   }
-  
 `;
 
 export const MyCloseButton = styled.span`

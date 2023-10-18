@@ -63,8 +63,6 @@ export default function InExStatsMonth() {
         const fetchData = async () => {
           if (userData) {
             try {
-                console.log(userData);
-                console.log(userData.expenses);
                 
                 //CURRENT MONTH
                 setExpensesMonth(userData ? userData.expensesArray[0] : 0);

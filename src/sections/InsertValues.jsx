@@ -91,7 +91,7 @@ const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, handleSe
 
   const balancesChange = await axios.post('/balances/add', balancesJson);
   if (balancesChange.status === 200) {
-    console.log("Bilancio aggiornato aggiorno lo user context");
+    // console.log("Bilancio aggiornato aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
     alert("Bilancio aggiornato correttamente");
     fetchData();
@@ -134,15 +134,12 @@ const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome,
     setIncomeDate(new Date());
 
     const incomeAdd = await axios.post('/expenses/add', incomeJson);
-    console.log("Risposta incomeAdd: ", incomeAdd);
     
     if (incomeAdd.status === 200) {
-      console.log("Entrate aggiornate aggiorno lo user context");
+      // console.log("Entrate aggiornate aggiorno lo user context");
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
-      console.log("Sono quaaaaa3");
       alert("Entrata inserita correttamente");
       fetchData();
-      console.log("Sono quaaaaa4");
     }
     else {
       alert("Errore nell'inserimento dell'entrata");
@@ -189,12 +186,10 @@ const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpen
 
   const expenseAdd = await axios.post('/expenses/add', expenseJson);
   if (expenseAdd.status === 200) {
-    console.log("Spese aggiornate, aggiorno lo user context");
+    // console.log("Spese aggiornate, aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    console.log("Sono quaaaaa");
     alert("Spesa inserita correttamente");
     fetchData();
-    console.log("Sono quaaaaa2");
   }
   else {
     alert("Errore nell'inserimento della spesa");
@@ -280,9 +275,6 @@ export default function InsertValue () {
     
       if (userData) {
         try {
-            console.log(userData);
-            console.log(userData.balances);
-            console.log(userData.expenses);
             
             // Set the state with the data from the database
             setStocksReal(userData ? userData.stocksReal : 0);
@@ -463,7 +455,6 @@ export default function InsertValue () {
         
       );
     } else if (activePage === "income") {
-      console.log("Tag entrate pre .map: ", incomesTags);
       return (
         <>
           <StyledAddSection theme={theme}>

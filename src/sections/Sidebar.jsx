@@ -154,7 +154,6 @@ function Sidebar() {
           .then(() => {
             // Copiato negli appunti con successo
             alert("ID copiato negli appunti: " + newID);
-            console.log("Testo copiato negli appunti: " + newID);
           })
           .catch((error) => {
             console.error("Errore durante la copia negli appunti: " + error);
@@ -164,12 +163,10 @@ function Sidebar() {
 
 
     const handleOptionSelect = (option) => {
-        console.log(`Option selected:`, option);
-        console.log(`Option selected:`, option.value);
+        // console.log(`Option selected:`, option);
+        // console.log(`Option selected:`, option.value);
         if (option && option.value) {
             setSelectedOption(option);
-            console.log(`Option selected:`, option);
-            console.log(`Option selected:`, option.value);
             if(option.value === 'account') setShowAccountModal(true);
             else if(option.value === 'changeUsername') setShowChangeUsernameModal(true);
             else if(option.value === 'changeid') setShowChangeIDModal(true);
@@ -187,15 +184,10 @@ function Sidebar() {
         event.preventDefault();
         try{
             handleCloseModal();
-            console.log("Genero id");
             const data = {
                 password: password
             }
             const response = await axios.post('/user/set-id', data); //only the first element of the array is needed (the last one)
-            console.log(response);
-            console.log(response.data);
-            console.log(response.data.new_id)
-            console.log("ID generato correttamente");
             const newID = response.data.new_id;
             setNewID(newID);
             setShowID(true);
@@ -210,11 +202,7 @@ function Sidebar() {
     const handleGenerateUsername = async (event) => {
         event.preventDefault();
         try{
-            console.log("Genero username");
             const response = await axios.post('/user/set-username'); //only the first element of the array is needed (the last one)
-            console.log(response);
-            console.log(response.data);
-            console.log("Username generato correttamente");
             const newUsername = response.data;
             setNewUsername(newUsername);
             setShowUsername(true);
@@ -233,10 +221,7 @@ function Sidebar() {
                     new_pwd: password,
                     repeated_pwd: confirmPassword
                 }
-                console.log("Cambio password");
                 const response = await axios.post('/user/set-password', data); //only the first element of the array is needed (the last one)
-                console.log(response);
-                console.log(response.data);
                 handleCloseModal();
                 setShowChangePWDSuccess(true);
             }
@@ -273,9 +258,7 @@ function Sidebar() {
         event.preventDefault();
         try {
             const response = await axios.post('/logout');
-            console.log(response.data);
             if(response.status === 200) {
-                console.log("Logout successfull");
                 navigate('/'); //direct redirect 
         
             }
@@ -300,9 +283,7 @@ function Sidebar() {
                 remote_type: userRemoteType.key
             }
             const response = await axios.post('/user/set', data);
-            console.log("Dati della risposta: ", response.data);
             if(response.status === 200) {
-                console.log("Update successfull");
                 handleSetIsUpdated(true);
                 setShowAccountModal(false);
             }
@@ -662,7 +643,7 @@ function Sidebar() {
                                     Per mantenere la tua privacy ti diamo la possibilità di <br></br>
                                     cambiare il tuo id.<br></br>
                                     Il sistema genererà un nuovo id casuale e univoco.<br></br>
-                                    Inserisci la tua password per confermare il cambio.<br></br>
+                                    Inserisci la tua password per confermare.<br></br>
                                     <form onSubmit={handleGenerateID}>
                                         <MuiCustomTextField
                                             theme={theme}

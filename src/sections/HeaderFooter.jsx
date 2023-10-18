@@ -64,7 +64,7 @@ function Header() {
                     <SignInForm theme={theme} />
                 </MyGenericModalContent>
               </ModalSignIn>
-              <MyButton theme={theme} id="openSignUpModalButton"onClick={handleOpenSignUp}>Registrati</MyButton>
+              <MyButton theme={theme} id="openSignUpModalButton" disabled>Registrati</MyButton> {/*Put this before "disabled" onClick={handleOpenSignUp} and eliminate disabled*/}
               <ModalSignUp theme={theme} isOpen={isOpenSignUp}> 
                 <MyGenericModalContent theme={theme}>
                     <MyCloseButton theme={theme} className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>

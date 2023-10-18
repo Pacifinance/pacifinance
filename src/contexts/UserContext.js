@@ -14,7 +14,7 @@ function UserProvider({ children }) {
       try {
         //check if user is authenticated
         if (isAuthenticated && !isUpdated) { // && !isUpdated
-            console.log('Sono loggato e ora faccio le chiamate API in UserContext.js')
+            // console.log('Sono loggato e ora faccio le chiamate API in UserContext.js')
 
             //***********************************GET DATES********************************************/
             const currentDate = new Date(Date.now()); //current date in UTC format
@@ -38,16 +38,6 @@ function UserProvider({ children }) {
             const jobTypeTags = allTags.data.jobType;
             const workTimeTags = allTags.data.workTime;
             const remoteTypeTags = allTags.data.remoteType;
-            
-            console.log('Tutte le tags disponibili: ', allTags);
-            console.log('Tags spese: ', expensesTags);
-            console.log('Tags entrate: ', incomesTags);
-            console.log('Tags pagamenti: ', paymentTags);
-            console.log('Tags nazioni: ', nationalityTags);
-            console.log('Tags lavoro: ', jobTags);
-            console.log('Tags tipo di lavoro: ', jobTypeTags);
-            console.log('Tags FullTime - PartTime: ', workTimeTags);
-            console.log('Tags tipologia remote: ', remoteTypeTags);
 
 
 
@@ -60,13 +50,12 @@ function UserProvider({ children }) {
             const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato'};
             const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato'};
             const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
-            
-            console.log('Info utente: ', infoUser);
+          
             
             //************************************* BALANCES **********************************************/
 
             const balancesResponse = await axios.post('/balances/get');
-            console.log('Array completo di risposta BALANCE: ', balancesResponse.data);
+            // console.log('Array completo di risposta BALANCE: ', balancesResponse.data);
 
             //GET DATA FROM RESPONSES
             var balances = {};
@@ -87,10 +76,6 @@ function UserProvider({ children }) {
             
             const balancesPreMonth = (balancesResponse.data[1] || 0).balance || 0;  //Using ?? 0, if the value is undefined or empty, set it to 0
             const balancesPreYearSameMonth = (balancesResponse.data[12] || 0).balance || 0;      
-
-            console.log('balances:', balances);
-            console.log('balancesPreMonth:', balancesPreMonth);
-            console.log('balancesPreYearSameMonth:', balancesPreYearSameMonth);
 
             //************************************* CASH **********************************************/
 
@@ -124,11 +109,11 @@ function UserProvider({ children }) {
             //************************************* LAST EXPENSES AND INCOMES **********************************************/
 
             const allExpensesIncomesResponse = await axios.post('/expenses/get'); //get all expenses and incomes
-            console.log('Response completa  SPESE e GUADAGNI: ', allExpensesIncomesResponse);
+            // console.log('Response completa  SPESE e GUADAGNI: ', allExpensesIncomesResponse);
 
             const allExpensesIncomesArray = allExpensesIncomesResponse.data;
 
-            console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray);
+            // console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray);
 
             // Crea un array di oggetti per le entrate e un array di oggetti per le spese, inizializzati con valori iniziali a 0
             const incomesArray = Array(13).fill(0);
@@ -147,8 +132,8 @@ function UserProvider({ children }) {
               });
             });
 
-            console.log('Somma delle entrate per ciascun mese:', incomesArray);
-            console.log('Somma delle spese per ciascun mese:', expensesArray);
+            // console.log('Somma delle entrate per ciascun mese:', incomesArray);
+            // console.log('Somma delle spese per ciascun mese:', expensesArray);
 
             // qua potrei aggiungere un controllo che se non ci sono spese ed entrate del mese corrente, allora prendo i dati del mese precedente
             const lastExpenses = allExpensesIncomesArray[0].filter(data => data.isExpense);
@@ -157,14 +142,14 @@ function UserProvider({ children }) {
             let count = 1;
             // Print to test the amount of the expenses
             lastExpenses.forEach(expense => {
-              console.log("Spesa n-",count, expense.amount);
+              // console.log("Spesa n-",count, expense.amount);
               count ++;
             });
 
             count = 1;
             // Print to test the amount of the incomes
             lastIncomes.forEach(income => {
-              console.log("Entrata n-",count, income.amount, " Categoria: ", income.categoryTag);
+              // console.log("Entrata n-",count, income.amount, " Categoria: ", income.categoryTag);
               count ++;
             });
 
@@ -220,12 +205,12 @@ function UserProvider({ children }) {
             const percentageRankOnBalance = parseInt((rankOnBalance.data.position / rankOnBalance.data.total) * 100);
             const percentageRankOnIncomes = parseInt((rankOnIncome.data.position / rankOnIncome.data.total) * 100);
             const percentageRankOnExpenses = parseInt((rankOnExpense.data.position / rankOnExpense.data.total) * 100);
-            console.log('rankOnBalance:', rankOnBalance);
-            console.log('percentageRankOnBalance:', percentageRankOnBalance);
-            console.log('rankOnIncome:', rankOnIncome);
-            console.log('percentageRankOnIncome:', percentageRankOnIncomes);
-            console.log('rankOnExpense:', rankOnExpense);
-            console.log('percentageRankOnExpense:', percentageRankOnExpenses);
+            // console.log('rankOnBalance:', rankOnBalance);
+            // console.log('percentageRankOnBalance:', percentageRankOnBalance);
+            // console.log('rankOnIncome:', rankOnIncome);
+            // console.log('percentageRankOnIncome:', percentageRankOnIncomes);
+            // console.log('rankOnExpense:', rankOnExpense);
+            // console.log('percentageRankOnExpense:', percentageRankOnExpenses);
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
             setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesTags, incomesTags, paymentTags, 

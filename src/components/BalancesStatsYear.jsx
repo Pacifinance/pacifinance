@@ -95,9 +95,6 @@ function BalancesStatsYear() {
         const fetchData = async () => {
           if (userData) {
             try {
-                console.log(userData);
-                console.log(userData.balances);
-                console.log(userData.expenses);
                 
                 // Set the state with the data from the database
 
@@ -126,7 +123,6 @@ function BalancesStatsYear() {
                 setExpensesPreYearSameMonth(userData ? userData.expensesPreYearSameMonth : 0);
                 setIncomesPreYearSameMonth(userData ? userData.incomesPreYearSameMonth : 0);
                 setSavedPreYearSameMonth(userData ? userData.savedPreYearSameMonth : 0);
-                console.log("Bilancio anno precedente: ",totalRealPreYearSameMonth);
 
             } catch (error) {
               console.error('Errore durante le operazioni:', error);

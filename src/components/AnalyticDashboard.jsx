@@ -41,8 +41,6 @@ function AnalyticDashboard() {
         const fetchData = async () => {
           if (userData) {
             try {
-                console.log(userData);
-                console.log(userData.balances);
                 
                 // Set the state with the data from the database
                 setStocksReal(userData ? userData.stocksReal : 0);

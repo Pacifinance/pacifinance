@@ -1489,7 +1489,7 @@ export const SidebarSection = styled.section`
 
 export const StyledRankingPage = styled.div`
   // text-align: center;
-  padding: 2rem;
+  padding: 3.8rem;
   background-color: #1a1a1a; /* Sfondo scuro */
 `;
 

@@ -30,6 +30,8 @@ import {
 } from '../contexts/MyStyled';
 import { set } from "mongoose";
 
+const currentDate = new Date().toISOString().split('T')[0];
+
 // const handleBalanceDateChange = (setBalanceDate, event) => {
 //   setBalanceDate(event.target.value);
 // };
@@ -65,7 +67,7 @@ const handleInputBlur = (e, setterFunction) => {
   if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
 
-const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
   setIsConfirmBalanceOpen(false);
   const balancesJson = { 
     balance : {
@@ -95,6 +97,7 @@ const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, handleSe
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
     alert("Bilancio aggiornato correttamente");
     fetchData();
+    setBalanceDate(currentDate);
   }
   else {
     alert("Errore nell'aggiornamento del bilancio");
@@ -131,7 +134,7 @@ const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome,
 
     setIncome(0);
     setCategoryIncome({ key: "", value: "" });
-    setIncomeDate(new Date());
+    setIncomeDate(currentDate);
 
     const incomeAdd = await axios.post('/expenses/add', incomeJson);
     
@@ -182,7 +185,7 @@ const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpen
   setExpense(0);
   setCategoryExpense({key: "", value: ""});
   setTypoExpense({key: "", value: ""});
-  setExpenseDate(new Date());
+  setExpenseDate(currentDate);
 
   const expenseAdd = await axios.post('/expenses/add', expenseJson);
   if (expenseAdd.status === 200) {
@@ -229,7 +232,7 @@ const handleExitConfirm = async (setModalState) => {
 // };
 
 //
-const currentDate = new Date().toISOString().split('T')[0];
+
 
 export default function InsertValue () {
   const { theme } = useContext(ThemeContext);
@@ -308,21 +311,24 @@ export default function InsertValue () {
   }, [userData]);
 
   const handleBalanceDateChange = (event) => {
-    const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
-    const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-    setBalanceDate(formattedDate);
+    // const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
+    // const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+    // setExpenseDate(formattedDate);
+    setBalanceDate(event.target.value);
   };
   
   const handleIncomeDateChange = (event) => {
-    const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
-    const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-    setIncomeDate(formattedDate);
+    // const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
+    // const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+    // setExpenseDate(formattedDate);
+    setIncomeDate(event.target.value);
   };
   
   const handleExpenseDateChange = (event) => {
-    const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
-    const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-    setExpenseDate(formattedDate);
+    // const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
+    // const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+    // setExpenseDate(formattedDate);
+    setExpenseDate(event.target.value);
   };
 
   function renderIncomeItems(lastIncomesAdds) {
@@ -764,7 +770,7 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>Data selezionata: {balanceDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
 import { AiOutlineMore } from "react-icons/ai";
-
+import { ThemeContext } from '../contexts/ThemeContext';
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
@@ -45,6 +45,7 @@ const renderCustomizedLabel = ({
 };
 
 export default function InExStatsMonth() {
+    const { theme } = useContext(ThemeContext);
     const { userData } = useContext(UserContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
@@ -96,7 +97,7 @@ export default function InExStatsMonth() {
     return (
         
         <div className="wrapper">
-        <SectionAMonth>
+        <SectionAMonth theme={theme}>
             {/* <h1>Le tue entrate sono variate del: {((incomesMonth - incomesPreMonth) / incomesPreMonth) * 100} % </h1>
             <h1>Le tue uscite sono variate del: {((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100} % </h1> */}
             

@@ -448,7 +448,7 @@ export default function InsertValue () {
           
           
           <StyledInputs theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo patrimonio</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo bilancio</MySecondaryButton>
           </StyledInputs>
         </>
           

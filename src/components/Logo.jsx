@@ -11,7 +11,7 @@ function Logo() {
 
     return (
         <LogoStyled>
-            <img src={LogoPaci} alt="Pacifinance Logo" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
+            <img src={LogoPaci} width="100%" height="100%" alt="Pacifinance Logo" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
         </LogoStyled>
     )
 }

@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import StatsCharts from './sections/StatsCharts';
-function App() {
+
+function StatsChartsPage() {
   return (
     <Div>
       <Sidebar />
@@ -11,7 +12,7 @@ function App() {
   );
 }
 
-export default App;
+export default StatsChartsPage;
 const Div = styled.div `
-position: relative;
+  position: relative;
 `;

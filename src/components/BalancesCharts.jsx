@@ -54,14 +54,13 @@ export default function BalancesCharts() {
   return (
     <SectionBalancesCharts theme={theme}>
       <BarChart
-        width={500}
-        height={300}
+        width={600}
+        height={400}
         data={data}
         margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 5
+          top: 5,
+          left: 35,
+          bottom: 40
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />

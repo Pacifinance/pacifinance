@@ -43,7 +43,7 @@ export default function LandingContent() {
             <p>Check del portafoglio, delle entrate e delle spese nel tempo.</p>
             <MyButton theme={theme}>Scopri di più</MyButton>
           </CentralText>
-          <CentralImage src={LandingPageImage} alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
+          <CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
           
         </CentralSection>
         <FeaturesSection theme={theme}>

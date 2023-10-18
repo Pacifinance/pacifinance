@@ -6,6 +6,7 @@ import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../contexts/MyStyled';
 import { calculatePercentageChange } from '../utilities/calculations';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 // const [activeIndex, setActiveIndex] = useState(null);
 
@@ -54,6 +55,7 @@ const renderCustomizedLabel = ({
 
 function InExStatsYear() {
     const { userData } = useContext(UserContext);
+    const { theme } = useContext(ThemeContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
@@ -103,7 +105,7 @@ function InExStatsYear() {
         
         <div className="wrapper">
         {/* <h1>Il tuo patrimonio è cresciuto di: {((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100} % </h1> */}
-        <SectionAMonth>
+        <SectionAMonth theme={theme}>
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#079164' }}>

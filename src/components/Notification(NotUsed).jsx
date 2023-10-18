@@ -39,7 +39,7 @@ function Notification() {
             <div className="notification">
                 <AiOutlineBell />
                 <div className="image" >
-                    <img src={avatarImage} alt="Account"  onContextMenu={(e) => e.preventDefault()}/>
+                    <img src={avatarImage} with="100%" height="auto" alt="Account"  onContextMenu={(e) => e.preventDefault()}/>
                 </div>
                 <AiOutlineCaretDown />
             </div>

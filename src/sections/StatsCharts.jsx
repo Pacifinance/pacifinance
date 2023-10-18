@@ -39,7 +39,6 @@ export default function StatsCharts() {
                 <BalancesStatsYear />
                 <SecondaryTitle theme={theme}>Check del bilancio negli ultimi 12 mesi</SecondaryTitle>
                 <BalancesCharts />
-
             </>
           );
         } else if (activePage === "statsIncomesExpenses") {

@@ -12,7 +12,7 @@ import { SectionInOut } from '../contexts/MyStyled';
 
 
 
-export default function Incomes() {
+export default function InOutChart() {
   const { userData, handleSetIsUpdated } = useContext(UserContext);
   const [incomesArray, setIncomesArray] = useState([]);
   const [expensesArray, setExpensesArray] = useState([]);
@@ -56,14 +56,13 @@ export default function Incomes() {
   return (
     <SectionInOut>
       <LineChart
-        width={500}
-        height={300}
+        width={600}
+        height={400}
         data={data}
         margin={{
           top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5
+          left: 35,
+          bottom: 40
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />

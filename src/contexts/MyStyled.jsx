@@ -23,10 +23,10 @@ export const PageWrapper = styled.div`
 `;
 
 export const Section = styled.section `
-  font-family: Roboto, sans-serif; 
+  font-family: Roboto, sans-serif;
   margin-left: 6vw;
-  padding-top: 4rem;
-  height: 100vh;
+  padding-top: 2em;
+  height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
 `;
 
@@ -437,13 +437,13 @@ export const SignUp = styled.div`
     font-size: 2rem;
     font-weight: bold;
     text-align: left; 
-    margin-top: 3.5em; 
+    margin-top: 1em; 
     margin-left: 6vw;
 `;
 
 export const MySecondaryButton = styled(MyButton)`
   font-size: 1.2rem;
-  margin-bottom: 0.01rem;
+  margin-bottom: 1em;
   max-height: 3rem;
 `;
 
@@ -613,13 +613,13 @@ export const StyledTable = styled.table`
   th {
     background-color: ${(props) => props.theme.buttonBackgroundColor};
     color: white;
-    padding: 0.5em;
+    padding: 0.3em;
   }
 
   td, th {
     border: 1px solid ${(props) => props.theme.borderColor};
     text-align: center;
-    padding: 12px;
+    padding: 0.3em;
   }
 
   tbody tr:hover {
@@ -728,9 +728,9 @@ export const Container = styled.div`
 
 export const SectionADashboard = styled.section`
     font-family: Roboto, sans-serif;
+    // display: flex; // questo risolve il problema del bianco ma bisogna incolonnare bene i contenuti
     background-color: ${(props) => (props.theme.backgroundColor)};
     width: 100%;
-    height: 55vw; 
 `;
 
 export const FeaturesSection = styled.section`
@@ -1187,8 +1187,9 @@ export const SidebarSection = styled.section`
   export const GraphsSection = styled.div`
     display: flex;
     flex-direction: row;
-    margin-top: 4rem;
+    margin-top: 8rem;
     margin-left: 3%;
+    height: 70vh;
 
     .bar-chart-section {
       flex: 1; /*all the graphs will have the same width*/
@@ -1283,7 +1284,9 @@ export const SidebarSection = styled.section`
   export const SectionAMonth = styled.section `
       display: flex;
       justify-content: space-between;
-      margin-left: 6%;
+      align-items: center;
+      
+      margin-left: 6vw;
       .section-break {
           display: block;
           margin-bottom: 1rem; /* Adjust the margin as needed */
@@ -1363,6 +1366,7 @@ export const SidebarSection = styled.section`
   `;
 
   export const SectionInOut = styled.section`
+    padding-bot: 2em;
     h5{
       color: grey;
       

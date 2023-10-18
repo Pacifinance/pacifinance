@@ -29,6 +29,7 @@ const ButtonToggle = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
+  aria-label="toggle mode";
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {

@@ -308,15 +308,21 @@ export default function InsertValue () {
   }, [userData]);
 
   const handleBalanceDateChange = (event) => {
-    setBalanceDate(event.target.value);
+    const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
+    const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+    setBalanceDate(formattedDate);
   };
   
   const handleIncomeDateChange = (event) => {
-    setIncomeDate(event.target.value);
+    const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
+    const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+    setIncomeDate(formattedDate);
   };
   
   const handleExpenseDateChange = (event) => {
-    setExpenseDate(event.target.value);
+    const selectedDate = parse(event.target.value, 'yyyy-MM-dd', new Date());
+    const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+    setExpenseDate(formattedDate);
   };
 
   function renderIncomeItems(lastIncomesAdds) {
@@ -443,6 +449,7 @@ export default function InsertValue () {
               type="date"
               value={balanceDate}
               onChange={handleBalanceDateChange}
+              max={currentDate}
             />
           </StyledCalendarInput>
           
@@ -531,10 +538,11 @@ export default function InsertValue () {
             </label>
             <div>
               <StyledDateInput
-              type="date"
-              value={incomeDate}
-              onChange={handleIncomeDateChange}
-            />
+                type="date"
+                value={incomeDate}
+                onChange={handleIncomeDateChange}
+                max={currentDate}
+              />
             </div>
           
           </StyledAddSection>
@@ -675,6 +683,7 @@ export default function InsertValue () {
                 type="date"
                 value={expenseDate}
                 onChange={handleExpenseDateChange}
+                max={currentDate}
               />
             </div>
           </StyledAddSection>

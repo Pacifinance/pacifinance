@@ -141,17 +141,17 @@ function UserProvider({ children }) {
 
             let count = 1;
             // Print to test the amount of the expenses
-            lastExpenses.forEach(expense => {
-              // console.log("Spesa n-",count, expense.amount);
-              count ++;
-            });
+            // lastExpenses.forEach(expense => {
+            //   console.log("Spesa n-",count, expense.amount);
+            //   count ++;
+            // });
 
-            count = 1;
-            // Print to test the amount of the incomes
-            lastIncomes.forEach(income => {
-              // console.log("Entrata n-",count, income.amount, " Categoria: ", income.categoryTag);
-              count ++;
-            });
+            // count = 1;
+            // // Print to test the amount of the incomes
+            // lastIncomes.forEach(income => {
+            //   console.log("Entrata n-",count, income.amount, " Categoria: ", income.categoryTag);
+            //   count ++;
+            // });
 
 
             //************************************* CHARTS **********************************************/

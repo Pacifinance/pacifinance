@@ -644,8 +644,9 @@ function Sidebar() {
                                     cambiare il tuo id.<br></br>
                                     Il sistema genererà un nuovo id casuale e univoco.<br></br>
                                     Inserisci la tua password per confermare.<br></br>
-                                    <form onSubmit={handleGenerateID}>
+                                    <form id="changeID" onSubmit={handleGenerateID}>
                                         <MuiCustomTextField
+                                            id="passwordChangeID"
                                             theme={theme}
                                             label="Password"
                                             type={showPassword ? 'text' : 'password'}
@@ -696,8 +697,9 @@ function Sidebar() {
                                     Per cambiare la tua password ti chiediamo di inserire <br></br> 
                                     la tua password attuale <br></br>
                                     Ti invieremo un'email con un link per il cambio password.<br></br>
-                                    <form onSubmit={handleChangePassword}>
+                                    <form id="changePWD" onSubmit={handleChangePassword}>
                                         <MuiCustomTextField
+                                            id="oldPasswordChangePWD"
                                             theme={theme}
                                             label="OldPassword"
                                             type={showPassword ? 'text' : 'password'}
@@ -723,6 +725,7 @@ function Sidebar() {
                                             }}
                                         />
                                         <MuiCustomTextField
+                                            id="passwordChangePWD"
                                             theme={theme}
                                             label="Password"
                                             type={showPassword ? 'text' : 'password'}
@@ -747,6 +750,7 @@ function Sidebar() {
                                             }}
                                         />
                                         <MuiCustomTextField
+                                            id="confirmPasswordChangePWD"
                                             theme={theme}
                                             label="Conferma Password"
                                             type={showPassword ? 'text' : 'password'}

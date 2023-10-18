@@ -64,7 +64,7 @@ const handleInputBlur = (e, setterFunction) => {
   if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
 
-const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
   setIsConfirmBalanceOpen(false);
   const balancesJson = { 
     balance : {
@@ -116,7 +116,7 @@ const handleAddIncome = async (setIsConfirmIncomeOpen, categoryIncome, income) =
 };
 
 
-const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
+const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, setUpdateIncomesSuccess, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
   setIsConfirmIncomeOpen(false);
     //To send data we have to use category_tag, payment_type, amount, date as name of the variables
     const incomeJson = { 
@@ -164,7 +164,7 @@ const handleAddExpenses = async (setIsConfirmExpenseOpen, typoExpense,  category
   setIsConfirmExpenseOpen(true);
 };
 
-const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
+const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, setUpdateExpensesSuccess, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
   setIsConfirmExpenseOpen(false);
 
   //To send data we have to use category_tag, payment_type, amount, date as name of the variables 
@@ -735,7 +735,7 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>Data selezionata: {balanceDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
@@ -754,7 +754,7 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>Data selezionata: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmIncome(fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmIncome(fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, setUpdateIncomesSuccess, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
@@ -774,7 +774,7 @@ export default function InsertValue () {
               <MuiCustomDialogContentText>Data selezionata: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmExpense(fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmExpense(fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, setUpdateExpensesSuccess, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>

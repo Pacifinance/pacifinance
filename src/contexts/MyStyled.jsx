@@ -1489,6 +1489,7 @@ export const SidebarSection = styled.section`
 
 export const StyledRankingPage = styled.div`
   // text-align: center;
+  height: 100%;
   padding: 3.8rem;
   background-color: #1a1a1a; /* Sfondo scuro */
 `;
@@ -1671,7 +1672,9 @@ export const MuiCustomButton = styled(Button)`
   && {
     background-color: ${primaryColor};
     color: white;
-    hover: ${backgroundColor};
+    &:hover {
+      background-color: ${backgroundColor}; 
+    }
   }
 `;
 

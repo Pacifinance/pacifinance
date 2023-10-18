@@ -64,6 +64,7 @@ function Sidebar() {
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showUpdateProfileSuccess, setShowUpdateProfileSuccess] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
     const [showChangePWDSuccess, setShowChangePWDSuccess]= useState(false);
@@ -240,6 +241,7 @@ function Sidebar() {
         setShowChangeIDModal(false);
         setShowChangeUsernameModal(false);
         setShowChangePWDModal(false);
+        setShowUpdateProfileSuccess(false);
     };
 
     const handleCloseSecondaryModal = () => {
@@ -284,11 +286,14 @@ function Sidebar() {
             }
             const response = await axios.post('/user/set', data);
             if(response.status === 200) {
-                handleSetIsUpdated(true);
+                handleSetIsUpdated(false); // Forza il re-render di UserProvider
+                fetchData();
                 setShowAccountModal(false);
+                setShowUpdateProfileSuccess(true);
             }
             else {
                 console.log("Update failed");
+                alert("Errore nell'aggiornamento del profilo")
             }
             
         } catch(error) {
@@ -831,6 +836,30 @@ function Sidebar() {
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
+                                    Ok, va bene
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
+
+                    {showUpdateProfileSuccess && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showUpdateProfileSuccess}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {"Profilo aggiornato"}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                Le informazioni del tuo profilo sono state aggiornate e salvate correttamente. <br></br> 
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleCloseModal} autoFocus>
                                     Ok, va bene
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>

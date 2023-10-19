@@ -21,8 +21,8 @@ app.use(cookieParser());
 app.use(session({
     name: '__session',
     secret: process.env.SESSION_SECRET,
-    saveUninitialized: true,
-    resave: true,
+    saveUninitialized: false,
+    resave: false,
     cookie: {maxAge: day_ms}
 }));
 app.use(express.static("build"));

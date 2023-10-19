@@ -111,7 +111,8 @@ export default function InExStatsMonth() {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione entrate</h6>
+                    <h6>Variazione</h6>
+                    <h6>Entrate</h6>
                     <h6>in percentuale</h6>
                 </div>
                 <div className="money">
@@ -131,7 +132,8 @@ export default function InExStatsMonth() {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione Uscite</h6>
+                    <h6>Variazione</h6>
+                    <h6>Uscite</h6>
                     <h6>in percentuale</h6>
                 </div>
                 <div className="money">
@@ -151,7 +153,8 @@ export default function InExStatsMonth() {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione Rismarmi</h6>
+                    <h6>Variazione</h6>
+                    <h6>Risparmi</h6>
                     <h6>in percentuale</h6>
                 </div>
                 <div className="money">

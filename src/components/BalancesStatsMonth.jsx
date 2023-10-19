@@ -131,7 +131,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>deposito in Banca in %</h6>
+                    <h6>in Banca <br></br> in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -148,7 +148,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>soldi fisici in %</h6>
+                    <h6>soldi fisici <br></br> in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -165,7 +165,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>Servizi digitali in %</h6>
+                    <h6>Servizi digitali <br></br> in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -182,7 +182,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione </h6>
-                    <h6>Stocks in %</h6>
+                    <h6>Stocks<br></br>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -200,7 +200,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>ETF in %</h6>
+                    <h6>ETF <br></br> in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -217,7 +217,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>Bitcoin in %</h6>
+                    <h6>Bitcoin <br></br> in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -234,7 +234,7 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>Crypto in %</h6>
+                    <h6>Crypto <br></br> in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>

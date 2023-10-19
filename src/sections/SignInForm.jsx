@@ -64,7 +64,7 @@ export default function SignInForm() {
         try {
           //navigate('/dashboard'); //da commentare, utile solo per test in locale
           //username could be user_id o username
-          const response = await axios.post('/login', { user_id: username, password: password }); //the path in the db is called login
+          const response = await axios.post('/login', { user_id: username, password: password }, { withCredentials: true }); //the path in the db is called login
           if(response.status === 200) {
             handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
             navigate('/dashboard'); //direct redirect

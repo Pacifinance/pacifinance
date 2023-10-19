@@ -98,21 +98,21 @@ export default function InExStatsMonth() {
         
         <div className="wrapper">
         <SectionAMonth theme={theme}>
-            {/* <h1>Le tue entrate sono variate del: {((incomesMonth - incomesPreMonth) / incomesPreMonth) * 100} % </h1>
-            <h1>Le tue uscite sono variate del: {((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100} % </h1> */}
+            {/* <h1>Le tue entrate sono variate del: {((incomesMonth - incomesPreMonth) / incomesPreMonth) * 100} percentuale </h1>
+            <h1>Le tue uscite sono variate del: {((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100} percentuale </h1> */}
             
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#079164 ' }}>
                         <GiReceiveMoney />
                     </div>
-                    <div className="action">
+                    {/* <div className="action">
                     <AiOutlineMore />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>entrate in %</h6>
+                    <h6>Variazione entrate</h6>
+                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -126,13 +126,13 @@ export default function InExStatsMonth() {
                     <div className="logo" style={{ color: '#ff3838' }}>
                         <GiExpense />
                     </div>
-                    <div className="action">
+                    {/* <div className="action">
                     <AiOutlineMore />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Uscite in %</h6>
+                    <h6>Variazione Uscite</h6>
+                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -146,13 +146,13 @@ export default function InExStatsMonth() {
                     <div className="logo" style={{ color: '#33d9b2' }}>
                         <MdOutlineSavings />
                     </div>
-                    <div className="action">
+                    {/* <div className="action">
                     <AiOutlineMore />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Rismarmi in %</h6>
+                    <h6>Variazione Rismarmi</h6>
+                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>

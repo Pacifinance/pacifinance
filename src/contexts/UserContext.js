@@ -29,7 +29,7 @@ function UserProvider({ children }) {
             
             /***************************** TAGS ********************************/
 
-            const allTags  = await axios.post('/tags/get');
+            const allTags  = await axios.post('/tags/get', null, { withCredentials: true });
             const expensesTags = allTags.data.expense;
             const incomesTags = allTags.data.income;
             const paymentTags = allTags.data.payment;
@@ -41,7 +41,7 @@ function UserProvider({ children }) {
 
 
 
-            const infoUser = await axios.post('/user/get');
+            const infoUser = await axios.post('/user/get', null, { withCredentials: true });
             const userId = infoUser.data.userId;
             const username = infoUser.data.nickname ?? 'Username non impostato';
             const userNationality = {key: infoUser.data.country?.index ?? -1, value: infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata'};
@@ -54,7 +54,7 @@ function UserProvider({ children }) {
             
             //************************************* BALANCES **********************************************/
 
-            const balancesResponse = await axios.post('/balances/get');
+            const balancesResponse = await axios.post('/balances/get', null, { withCredentials: true });
             // console.log('Array completo di risposta BALANCE: ', balancesResponse.data);
 
             //GET DATA FROM RESPONSES
@@ -108,7 +108,7 @@ function UserProvider({ children }) {
 
             //************************************* LAST EXPENSES AND INCOMES **********************************************/
 
-            const allExpensesIncomesResponse = await axios.post('/expenses/get'); //get all expenses and incomes
+            const allExpensesIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all expenses and incomes
             // console.log('Response completa  SPESE e GUADAGNI: ', allExpensesIncomesResponse);
 
             const allExpensesIncomesArray = allExpensesIncomesResponse.data;
@@ -196,9 +196,9 @@ function UserProvider({ children }) {
               expenses: incomesFlag
             };
 
-            const rankOnBalance = await axios.post('/rank/balances/all');
-            const rankOnIncome = await axios.post('/rank/expenses/all', requestIncomesData);
-            const rankOnExpense = await axios.post('/rank/expenses/all', requestExpensesData);
+            const rankOnBalance = await axios.post('/rank/balances/all', null, { withCredentials: true });
+            const rankOnIncome = await axios.post('/rank/expenses/all', requestIncomesData, { withCredentials: true });
+            const rankOnExpense = await axios.post('/rank/expenses/all', requestExpensesData, { withCredentials: true });
             // const rankOnBalanceSimilar = await axios.post('/rank/balances/similar');
             // const rankOnIncomeSimilar = await axios.post('/rank/incomes/similar');
             // const rankOnExpenseSimilar = await axios.post('/rank/expenses/similar');

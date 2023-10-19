@@ -137,6 +137,10 @@ function Sidebar() {
         setConfirmPassword(event.target.value);
     };
 
+    const handleToggleOldPasswordVisibility = () => {
+        setShowOldPassword(!showOldPassword);
+    };
+
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -188,7 +192,7 @@ function Sidebar() {
             const data = {
                 password: password
             }
-            const response = await axios.post('/user/set-id', data); //only the first element of the array is needed (the last one)
+            const response = await axios.post('/user/set-id', data, { withCredentials: true }); //only the first element of the array is needed (the last one)
             const newID = response.data.new_id;
             setNewID(newID);
             setShowID(true);
@@ -203,7 +207,7 @@ function Sidebar() {
     const handleGenerateUsername = async (event) => {
         event.preventDefault();
         try{
-            const response = await axios.post('/user/set-username'); //only the first element of the array is needed (the last one)
+            const response = await axios.post('/user/set-username', null, { withCredentials: true }); //only the first element of the array is needed (the last one)
             const newUsername = response.data;
             setNewUsername(newUsername);
             setShowUsername(true);
@@ -222,7 +226,7 @@ function Sidebar() {
                     new_pwd: password,
                     repeated_pwd: confirmPassword
                 }
-                const response = await axios.post('/user/set-password', data); //only the first element of the array is needed (the last one)
+                const response = await axios.post('/user/set-password', data, { withCredentials: true }); //only the first element of the array is needed (the last one)
                 handleCloseModal();
                 setShowChangePWDSuccess(true);
             }
@@ -259,7 +263,7 @@ function Sidebar() {
     const handleLogout = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('/logout');
+            const response = await axios.post('/logout', null, { withCredentials: true });
             if(response.status === 200) {
                 navigate('/'); //direct redirect 
         
@@ -284,7 +288,7 @@ function Sidebar() {
                 work_time: userWorkTime.key,
                 remote_type: userRemoteType.key
             }
-            const response = await axios.post('/user/set', data);
+            const response = await axios.post('/user/set', data, { withCredentials: true });
             if(response.status === 200) {
                 handleSetIsUpdated(false); // Forza il re-render di UserProvider
                 fetchData();
@@ -442,7 +446,7 @@ function Sidebar() {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Profilo"}
+                                {"Il tuo account"}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
@@ -645,7 +649,7 @@ function Sidebar() {
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText  id="alert-dialog-description">
-                                    Per mantenere la tua privacy ti diamo la possibilità di <br></br>
+                                    Per mantenere la tua privacy ti diamo la <br></br> possibilità di 
                                     cambiare il tuo id.<br></br>
                                     Il sistema genererà un nuovo id casuale e univoco.<br></br>
                                     Inserisci la tua password per confermare.<br></br>
@@ -699,14 +703,14 @@ function Sidebar() {
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                    Per cambiare la tua password ti chiediamo di inserire <br></br> 
-                                    la tua password attuale <br></br>
-                                    Ti invieremo un'email con un link per il cambio password.<br></br>
+                                    Per procedere serve che tu inserisca <br></br> 
+                                    la tua password attuale e la nuova da te scelta:<br></br>
+                                    {/* Ti invieremo un'email con un link per il cambio password.<br></br> */}
                                     <form id="changePWD" onSubmit={handleChangePassword}>
                                         <MuiCustomTextField
                                             id="oldPasswordChangePWD"
                                             theme={theme}
-                                            label="OldPassword"
+                                            label="Password attuale"
                                             type={showPassword ? 'text' : 'password'}
                                             value={OldPassword}
                                             onChange={handleOldPasswordInput}
@@ -719,7 +723,7 @@ function Sidebar() {
                                                     <MuiCustomIconButton
                                                         theme={theme}
                                                         aria-label="toggle password visibility"
-                                                        onClick={handleTogglePasswordVisibility}
+                                                        onClick={handleToggleOldPasswordVisibility}
                                                         onMouseDown={handleMouseDownPassword}
                                                         className={classes.icon}
                                                     >
@@ -729,10 +733,11 @@ function Sidebar() {
                                                 ),
                                             }}
                                         />
+                                        <br></br>
                                         <MuiCustomTextField
                                             id="passwordChangePWD"
                                             theme={theme}
-                                            label="Password"
+                                            label="Nuova Password"
                                             type={showPassword ? 'text' : 'password'}
                                             value={password}
                                             onChange={handlePasswordInput}
@@ -754,6 +759,7 @@ function Sidebar() {
                                                 ),
                                             }}
                                         />
+                                        <br></br>
                                         <MuiCustomTextField
                                             id="confirmPasswordChangePWD"
                                             theme={theme}

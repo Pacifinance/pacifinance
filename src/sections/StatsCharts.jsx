@@ -78,7 +78,7 @@ export default function StatsCharts() {
                     activePage === "statsIncomesExpenses" ? "" : "#222831",
                 }}
               >
-                Statistiche Entrate e Spese
+                Statistiche Entrate e Uscite
               </MySectionButton>
             </ButtonGroup>
             {renderPage()}

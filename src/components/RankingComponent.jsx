@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
-import { StyledSelectContainer, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
+import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -42,7 +42,7 @@ import Tooltip from '@mui/material/Tooltip';
 // Component for the rankings section
 function RankingsSection({ title, rankings }) {
   // Verify if there is a title for expenses
-  const isExpenseTitle = title.toLowerCase().includes("spese");
+  const isExpenseTitle = title.toLowerCase().includes("uscite");
 
   // Verify if there are rankings > 50 (top 50%)
   const isRankingsAbove50 = rankings > 50;
@@ -151,18 +151,18 @@ function RankingComponent() {
         onMonthChange={handleMonthChange}
         onYearChange={handleYearChange}
       /> */}
-      <StyledLabel>Classifiche relative al mese {formattedPreMonthDate}</StyledLabel>
+      <StyledLabel>Classifiche relative al mese: <StyledMonth>{formattedPreMonthDate}</StyledMonth></StyledLabel>
       <RankingsTitle >Classifiche generali : </RankingsTitle>
       <CenteredRankings>
         <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} />
-        <RankingsSection title="Classifica Guadagni" rankings={incomeRank} />
-        <RankingsSection title="Classifica Spese" rankings={expenseRank} />
+        <RankingsSection title="Classifica Entrate" rankings={incomeRank} />
+        <RankingsSection title="Classifica Uscite" rankings={expenseRank} />
       </CenteredRankings>
       <RankingsTitle  >Classifiche utenti simili : </RankingsTitle >
       <CenteredRankings>
         <RankingsSection title="Classifica Patrimonio" rankings={balanceSimilarUsersRank} />
-        <RankingsSection title="Classifica Guadagni" rankings={incomesSimilarUsersRank} />
-        <RankingsSection title="Classifica Spese" rankings={expensesSimilarUsersRank} />
+        <RankingsSection title="Classifica Entrate" rankings={incomesSimilarUsersRank} />
+        <RankingsSection title="Classifica Uscite" rankings={expensesSimilarUsersRank} />
 
       </CenteredRankings>
     </StyledRankingPage>

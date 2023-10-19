@@ -1521,13 +1521,18 @@ export const StyledLabel = styled.label`
   font-size: 1em;
   color: white;
   margin-right: 0.5em;
-  display: inline-block; /* Aggiungi display inline-block */
+  display: inline-block; 
   vertical-align: middle; /* Facoltativo: per allineare verticalmente */
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     text-align: center;
   }
+`;
+
+export const StyledMonth = styled.span`
+  font-size: 1.2em; /* Imposta la dimensione del mese come desideri */
+  color: /* Inserisci il colore desiderato */;
 `;
 
 export const StyledSelect = styled.select`
@@ -1679,6 +1684,7 @@ export const MuiCustomButton = styled(Button)`
 `;
 
 export const MuiCustomDialogTitle = styled(DialogTitle)`
+  text-align: center;
   && {
     font-family: Roboto, sans-serif;
     color: ${primaryColor};
@@ -1686,6 +1692,7 @@ export const MuiCustomDialogTitle = styled(DialogTitle)`
 `;
 
 export const MuiCustomDialogContent = styled(DialogContent)`
+  text-align: center;
   && {
     // font-family: Roboto, sans-serif;
     // color: black;
@@ -1694,6 +1701,7 @@ export const MuiCustomDialogContent = styled(DialogContent)`
 `;
 
 export const MuiCustomDialogContentText = styled(DialogContentText)`
+  align-items: left !important;
   && {
     font-family: Roboto, sans-serif;
     color: black;
@@ -1723,6 +1731,8 @@ export const MuiCustomTextField = styled(TextField)`
   `;
 
 export const MuiCustomIconButton = styled(IconButton)`
+  color: ${props => props.theme.buttonBackgroundColor};
+  margin-left: 2em;
 `;
 
 export const MuiCustomInputAdornment = styled(InputAdornment)`

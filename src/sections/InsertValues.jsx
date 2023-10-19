@@ -88,7 +88,7 @@ const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalan
     }
   }
 
-  const balancesChange = await axios.post('/balances/add', balancesJson);
+  const balancesChange = await axios.post('/balances/add', balancesJson, { withCredentials: true });
   if (balancesChange.status === 200) {
     // console.log("Bilancio aggiornato aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -133,7 +133,7 @@ const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome,
     setCategoryIncome({ key: "", value: "" });
     setIncomeDate(currentDate);
 
-    const incomeAdd = await axios.post('/expenses/add', incomeJson);
+    const incomeAdd = await axios.post('/expenses/add', incomeJson, { withCredentials: true });
     
     if (incomeAdd.status === 200) {
       // console.log("Entrate aggiornate aggiorno lo user context");
@@ -184,7 +184,7 @@ const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpen
   setTypoExpense({key: "", value: ""});
   setExpenseDate(currentDate);
 
-  const expenseAdd = await axios.post('/expenses/add', expenseJson);
+  const expenseAdd = await axios.post('/expenses/add', expenseJson, { withCredentials: true });
   if (expenseAdd.status === 200) {
     // console.log("Spese aggiornate, aggiorno lo user context");
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -192,7 +192,7 @@ const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpen
     fetchData();
   }
   else {
-    alert("Errore nell'inserimento della spesa");
+    alert("Errore nell'inserimento dell'uscita");
   }
 
 };
@@ -659,16 +659,16 @@ export default function InsertValue () {
             </div>
           </StyledAddSection>
           <StyledAddSection theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi spesa</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi uscita</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Ultime 20 spese del mese corrente</TitleLastAdds>
+          <TitleLastAdds theme={theme}>Ultime 20 uscite del mese corrente</TitleLastAdds>
           <StyledTable theme={theme}>
             <thead>
               <tr>
                 <th>Categoria</th>
                 <th>Tipologia</th>
                 <th>Valore</th>
-                <th>Data Spesa</th>
+                <th>Data Uscita</th>
               </tr>
             </thead>
             <tbody>
@@ -712,7 +712,7 @@ export default function InsertValue () {
                 activePage === "expenses" ? "" : "#222831",
             }}
           >
-            Aggiungi Spese
+            Aggiungi Uscite
           </MySectionButton>
         </ButtonGroup>
         {renderPage()}
@@ -766,7 +766,7 @@ export default function InsertValue () {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Conferma inserimento spesa</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>Conferma inserimento uscita</MuiCustomDialogTitle>
             <MuiCustomDialogContent>
               <MuiCustomDialogContentText>Categoria: {categoryExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
@@ -815,7 +815,7 @@ export default function InsertValue () {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Inserimento spesa avvenuto con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>Inserimento uscita avvenuto con successo</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleExitConfirm(setUpdateExpensesSuccess)}>Ok</MuiCustomButton>
             </MuiCustomDialogActions>

@@ -91,7 +91,7 @@ export default function SignUpForm() {
         event.preventDefault();
         
         try {
-          const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword });
+          const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword }, { withCredentials: true });
           if(response.status === 200) {
             generated_user_id = response.data.user_id;
 

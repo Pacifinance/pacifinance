@@ -111,13 +111,13 @@ function InExStatsYear() {
                     <div className="logo" style={{ color: '#079164' }}>
                         <GiReceiveMoney />
                     </div>
-                    <div className="action">
+                    {/* <div className="action">
                         <AiOutlineMore />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>entrate in %</h6>
+                    <h6>Variazione entrate</h6>
+                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -131,13 +131,13 @@ function InExStatsYear() {
                     <div className="logo" style={{ color: '#ff3838' }}>
                         <GiExpense />
                     </div>
-                    <div className="action">
+                    {/* <div className="action">
                         <AiOutlineMore />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Uscite in %</h6>
+                    <h6>Variazione Uscite</h6>
+                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -151,13 +151,13 @@ function InExStatsYear() {
                     <div className="logo" style={{ color: '#33d9b2' }}>
                         < MdOutlineSavings />
                     </div>
-                    <div className="action">
+                    {/* <div className="action">
                         <AiOutlineMore />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Rismarmi in %</h6>
+                    <h6>Variazione Rismarmi</h6>
+                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>

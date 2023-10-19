@@ -419,6 +419,32 @@ app.post("/expenses/get", async (req, res) => {
     res.json(year);
 });
 
+app.post("/expenses/delete", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Delete the requested expense
+    const expense = req.body.expense;
+    const del_res = await db.expenses.deleteExpenseByData(req.session.userId, expense.date, expense.amount, expense.is_expense);
+    // Check if the document was deleted successfully. Send
+    // status code 500 (Internal Server Error) if it failed
+    if (del_res.deletedCount !== 1)
+    {
+        res.status(500);
+        res.send();
+        return;
+    }
+    // Send status code 200 (OK)
+    res.status(200);
+    res.send();
+});
+
 app.post("/tags/get", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid

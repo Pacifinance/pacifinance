@@ -36,6 +36,15 @@ async function getSorted(where, select, sort) {
     .sort(sort).lean().exec();
 }
 
+/**
+ * Deletes an expense
+ * @param {Object} where - filter to match
+ * @returns DeleteResult object
+ */
+async function deleteOne(where) {
+    return await Expense.deleteOne(where).lean().exec();
+}
+
 /* ==================== Specific queries ==================== */
 
 /**
@@ -124,6 +133,21 @@ async function getTotalMonthlyExpensesByUserId(user_id, reference_date, is_expen
 }
 
 /**
+ * Deletes an expense/income of a user, given the entry date, amount and direction
+ * @param {String} user_id 
+ * @param {Date} date 
+ * @param {Number} amount 
+ * @param {Boolean} is_expense 
+ * @returns DeleteResult object
+ */
+async function deleteExpenseByData(user_id, date, amount, is_expense) {
+    // Get the user reference from its ID
+    const user = await users.getReferenceByUserId(user_id);
+    // Delete the expense, filtering by user reference, date, amount and expense/income flag
+    return await deleteOne({userRef: user._id, date: date, amount: amount, isExpense: is_expense});
+}
+
+/**
  * Expense model
  */
 const Expense = mongoose.model("Expense", expenseSchema);
@@ -131,5 +155,6 @@ const Expense = mongoose.model("Expense", expenseSchema);
 module.exports = {
     insertNew,
     getMonthlyExpensesByUserId,
-    getTotalMonthlyExpensesByUserId
+    getTotalMonthlyExpensesByUserId,
+    deleteExpenseByData
 };

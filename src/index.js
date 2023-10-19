@@ -14,9 +14,6 @@ ReactDOM.render(
           <React.StrictMode>
             <Router>
               <AppRouter />
-              {/* <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              </head> */}
             </Router>
           </React.StrictMode>
         </PageProvider>

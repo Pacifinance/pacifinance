@@ -1700,8 +1700,11 @@ export const MuiCustomDialogContent = styled(DialogContent)`
   }
 `;
 
+export const MuiCustomDialogProfileContent = styled(DialogContent)`
+`;
+
 export const MuiCustomDialogContentText = styled(DialogContentText)`
-  align-items: left !important;
+  // align-items: left !important;
   && {
     font-family: Roboto, sans-serif;
     color: black;

@@ -205,19 +205,46 @@ const handleExitConfirm = async (setModalState) => {
 
 
 // this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
-// const handleIncomesDelete = (setLastIncomesAdds, lastIncomesAdds, index) => {
-//   const newIncomeAdds = [...lastIncomesAdds];
-//   newIncomeAdds.splice(index, 1);
-//   setLastIncomesAdds(newIncomeAdds);
-// };
+const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, date, amount, is_expense) => { //data, 
+  const data = {
+    expense : {
+      date : "", //must be an object date
+      amount : 100,
+      is_expense : false,
+    }
+  }
+  const incomesDelete = axios.post('/expenses/delete', data, { withCredentials: true });
 
-// const handleExpensesDelete = (setLastExpensesAdds, lastExpensesAdds, index) => {
-//   const newExpenseAdds = [...lastExpensesAdds];
-//   newExpenseAdds.splice(index, 1);
-//   setLastExpensesAdds(newExpenseAdds);
-// };
+  if (incomesDelete.status === 200) {
+    handleSetIsUpdated(false); // Forza il re-render di UserProvider
+    setDeleteIncomesSuccess(true);
+    fetchData();
+  }
+  else {
+    alert("Errore nell'eliminazione dell'entrata");
+  }
 
-//
+};
+
+const handleExpensesDelete = (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, date, amount, is_expense) => {
+  const data = {
+    expense : {
+      date : "", //must be an object date
+      amount : 100,
+      is_expense : true,
+    }
+  }
+  const incomesDelete = axios.post('/expenses/delete', data, { withCredentials: true });
+
+  if (incomesDelete.status === 200) {
+    handleSetIsUpdated(false); // Forza il re-render di UserProvider
+    setDeleteExpensesSuccess(true);
+    fetchData();
+  }
+  else {
+    alert("Errore nell'eliminazione dell'uscita");
+  }
+};
 
 
 export default function InsertValue () {

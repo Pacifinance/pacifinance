@@ -26,6 +26,7 @@ import {
     MuiCustomButton,
     MuiCustomDialogTitle,
     MuiCustomDialogContent,
+    MuiCustomDialogProfileContent,
     MuiCustomDialogContentText,
     MuiCustomDialogActions,
     MuiCustomTextField,
@@ -39,7 +40,7 @@ import {
 
 function Sidebar() {
     const { theme } = useContext(ThemeContext);
-    const { userData, handleSetIsUpdated } = useContext(UserContext);
+    const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
     const inputRef = useRef(null);
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
@@ -265,6 +266,7 @@ function Sidebar() {
         try {
             const response = await axios.post('/logout', null, { withCredentials: true });
             if(response.status === 200) {
+                handleSetIsAuthenticated(false); // Set the user authentication to false
                 navigate('/'); //direct redirect 
         
             }
@@ -448,7 +450,7 @@ function Sidebar() {
                             <MuiCustomDialogTitle id="alert-dialog-title">
                                 {"Il tuo account"}
                             </MuiCustomDialogTitle>
-                            <MuiCustomDialogContent theme={theme}>
+                            <MuiCustomDialogProfileContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
                                     ID: {userId} <br></br>
                                     Username: {username} <br></br>
@@ -601,7 +603,7 @@ function Sidebar() {
                                                     </Select> <br></br>
                                     
                                 </MuiCustomDialogContentText>
-                            </MuiCustomDialogContent>
+                            </MuiCustomDialogProfileContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleUpdateProfile} autoFocus> 
                                     Salva

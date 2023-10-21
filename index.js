@@ -3,6 +3,7 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const https = require("https");
 const fs = require("fs");
+const path = require("path");
 require("dotenv").config();
 const db = require("./db/mongo.js");
 const utils = require("./utils.js");
@@ -524,6 +525,10 @@ app.post("/rank/expenses/all", async (req, res) => {
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(rank);
+});
+
+app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "build/index.html"));
 });
 
 db.connect(process.env.DB_URI)

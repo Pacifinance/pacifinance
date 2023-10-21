@@ -7,6 +7,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
 import { PageProvider } from './contexts/PageContext'; // Importa il contesto della pagina attiva
 
+
 ReactDOM.render(
     <ThemeProvider>
       <UserProvider>

@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import {
   MySectionButton,
@@ -205,11 +207,11 @@ const handleExitConfirm = async (setModalState) => {
 
 
 // this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
-const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, date, amount, is_expense) => { //data, 
+const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, dateIncome, amountIncome) => { //data, 
   const data = {
     expense : {
-      date : "", //must be an object date
-      amount : 100,
+      date : dateIncome, //must be an object date
+      amount : amountIncome,
       is_expense : false,
     }
   }
@@ -226,11 +228,11 @@ const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpda
 
 };
 
-const handleExpensesDelete = (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, date, amount, is_expense) => {
+const handleExpensesDelete = (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, dateExpense, amountExpense) => {
   const data = {
     expense : {
-      date : "", //must be an object date
-      amount : 100,
+      date : dateExpense, //must be an object date
+      amount : amountExpense,
       is_expense : true,
     }
   }
@@ -256,6 +258,8 @@ export default function InsertValue () {
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
   const [updateIncomesSuccess, setUpdateIncomesSuccess] = useState(false);
   const [updateExpensesSuccess, setUpdateExpensesSuccess] = useState(false);
+  const [deleteIncomesSuccess, setDeleteIncomesSuccess] = useState(false);
+  const [deleteExpensesSuccess, setDeleteExpensesSuccess] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
   const [etfReal, setETFReal] = useState(0);
@@ -327,12 +331,24 @@ export default function InsertValue () {
     return lastIncomesAdds.map((add, index) => {
       const incomeDate = new Date(add.date);
       const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
+
+      const handleDelete = () => {
+        const isConfirmed = window.confirm('Sei sicuro di voler eliminare questa entrata?');
+        if (isConfirmed) {
+            handleIncomesDelete(fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, add.date, add.amount);
+        }
+      };
   
       return (
         <tr key={index}>
           <td>{add.categoryTag.translations.it}</td>
           <td>{add.amount}€</td>
           <td>{formattedDate}</td>
+          <td>
+            <button onClick={handleDelete}>
+                <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </td>
         </tr>
       );
     });
@@ -345,12 +361,25 @@ export default function InsertValue () {
     return lastExpensesAdds.map((add, index) => {
       const expenseDate = new Date(add.date);
       const formattedDate = `${expenseDate.getDate()}/${expenseDate.getMonth() + 1}/${expenseDate.getFullYear()}`;
+
+      const handleDelete = () => {
+        const isConfirmed = window.confirm('Sei sicuro di voler eliminare questa uscita?');
+        if (isConfirmed) {
+            handleExpensesDelete(fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, add.date, add.amount);
+        }
+      };
+
       return (
         <tr key={index}>
           <td>{add.categoryTag.translations.it}</td>
           <td>{add.paymentType.translations.it}</td>
           <td>{add.amount}€</td>
           <td>{formattedDate}</td>
+          <td>
+            <button onClick={handleDelete}>
+                <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </td>
         </tr>
       );
     });

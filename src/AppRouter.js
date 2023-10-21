@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserContext } from './contexts/UserContext';
 import Dashboard from './DashboardPage';
 import StatsCharts from './StatsChartsPage';
 import InsertValues from './InsertPage';
@@ -11,19 +12,19 @@ import Info from './InfoPage';
 import LandingPage from './LandingPage';
 // import SignUp from './SignUpPage';
 
-// <!-- Matomo Tag Manager -->
-// <script>
-//   var _mtm = window._mtm = window._mtm || [];
-//   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-//   (function() {
-//     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-//     g.async=true; g.src='https://cdn.matomo.cloud/pacifinance.matomo.cloud/container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-//   })();
-// </script>
-// <!-- End Matomo Tag Manager -->
-
 
 function AppRouter() {
+
+  const { userData, handleSetIsUpdated } = useContext(UserContext);
+
+  // Chiamata per caricare i dati dell'utente
+  const loadUserData = () => {
+    handleSetIsUpdated(false); // Forza il re-render di UserProvider
+  };
+
+  useEffect(() => {
+    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+  }, []);
 
   // Matomo Tag Manager
   React.useEffect(() => {
@@ -31,7 +32,7 @@ function AppRouter() {
     _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.async=true; g.src='{container_geUS8Fsk.js}'; s.parentNode.insertBefore(g,s);
-}, []);
+  }, []);
 
   return (
         <Routes>
@@ -51,3 +52,15 @@ function AppRouter() {
 }
 
 export default AppRouter;
+
+
+// <!-- Matomo Tag Manager -->
+// <script>
+//   var _mtm = window._mtm = window._mtm || [];
+//   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+//   (function() {
+//     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+//     g.async=true; g.src='https://cdn.matomo.cloud/pacifinance.matomo.cloud/container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
+//   })();
+// </script>
+// <!-- End Matomo Tag Manager -->

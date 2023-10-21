@@ -28,6 +28,7 @@ import {
   MuiCustomDialogContentText,
   MuiCustomDialogActions,
 } from '../contexts/MyStyled';
+import { set } from "mongoose";
 
 const currentDate = new Date().toISOString().split('T')[0];
 
@@ -204,10 +205,9 @@ const handleExitConfirm = async (setModalState) => {
 };
 
 
-
-
 // this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
-const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, dateIncome, amountIncome) => { //data, 
+const handleIncomesDelete = async (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, dateIncome, amountIncome) => { //data, 
+
   const data = {
     expense : {
       date : dateIncome, //must be an object date
@@ -215,7 +215,7 @@ const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpda
       is_expense : false,
     }
   }
-  const incomesDelete = axios.post('/expenses/delete', data, { withCredentials: true });
+  const incomesDelete = await axios.post('/expenses/delete', data, { withCredentials: true });
 
   if (incomesDelete.status === 200) {
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -228,7 +228,7 @@ const handleIncomesDelete = (fetchData, setDeleteIncomesSuccess, handleSetIsUpda
 
 };
 
-const handleExpensesDelete = (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, dateExpense, amountExpense) => {
+const handleExpensesDelete = async (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, dateExpense, amountExpense) => {
   const data = {
     expense : {
       date : dateExpense, //must be an object date
@@ -236,7 +236,7 @@ const handleExpensesDelete = (fetchData, setDeleteExpensesSuccess, handleSetIsUp
       is_expense : true,
     }
   }
-  const incomesDelete = axios.post('/expenses/delete', data, { withCredentials: true });
+  const incomesDelete = await axios.post('/expenses/delete', data, { withCredentials: true });
 
   if (incomesDelete.status === 200) {
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -260,6 +260,12 @@ export default function InsertValue () {
   const [updateExpensesSuccess, setUpdateExpensesSuccess] = useState(false);
   const [deleteIncomesSuccess, setDeleteIncomesSuccess] = useState(false);
   const [deleteExpensesSuccess, setDeleteExpensesSuccess] = useState(false);
+  const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
+  const [showConfirmationDeleteExpense, setShowConfirmationDeleteExpense] = useState(false);
+  const [deleteIncomeDate, setDeleteIncomeDate] = useState("");
+  const [deleteIncomeAmount, setDeleteIncomeAmount] = useState("");
+  const [deleteExpenseDate, setDeleteExpenseDate] = useState("");
+  const [deleteExpenseAmount, setDeleteExpenseAmount] = useState("");
   // const [isLoading, setIsLoading] = useState(true);
   const [stocksReal, setStocksReal] = useState(0);
   const [etfReal, setETFReal] = useState(0);
@@ -333,10 +339,9 @@ export default function InsertValue () {
       const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
 
       const handleDelete = () => {
-        const isConfirmed = window.confirm('Sei sicuro di voler eliminare questa entrata?');
-        if (isConfirmed) {
-            handleIncomesDelete(fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, add.date, add.amount);
-        }
+        setDeleteIncomeAmount(add.amount);
+        setDeleteIncomeDate(add.date);
+        setShowConfirmationDeleteIncome(true);
       };
   
       return (
@@ -363,10 +368,9 @@ export default function InsertValue () {
       const formattedDate = `${expenseDate.getDate()}/${expenseDate.getMonth() + 1}/${expenseDate.getFullYear()}`;
 
       const handleDelete = () => {
-        const isConfirmed = window.confirm('Sei sicuro di voler eliminare questa uscita?');
-        if (isConfirmed) {
-            handleExpensesDelete(fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, add.date, add.amount);
-        }
+        setDeleteExpenseDate(add.date);
+        setDeleteExpenseAmount(add.amount);
+        setShowConfirmationDeleteExpense(true);
       };
 
       return (
@@ -874,6 +878,66 @@ export default function InsertValue () {
             <MuiCustomDialogTitle>Inserimento uscita avvenuto con successo</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleExitConfirm(setUpdateExpensesSuccess)}>Ok</MuiCustomButton>
+            </MuiCustomDialogActions>
+          </MuiCustomDialog>
+        )}
+        {deleteIncomesSuccess && (
+          <MuiCustomDialog
+            open={deleteIncomesSuccess}
+            onClose={() => handleExitConfirm(setDeleteIncomesSuccess)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Eliminazione entrata avvenuta con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogActions>
+              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteIncomesSuccess)}>Ok</MuiCustomButton>
+            </MuiCustomDialogActions>
+          </MuiCustomDialog>
+        )}
+        {deleteExpensesSuccess && (
+          <MuiCustomDialog
+            open={deleteExpensesSuccess}
+            onClose={() => handleExitConfirm(setDeleteExpensesSuccess)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Eliminazione uscita avvenuta con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogActions>
+              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteExpensesSuccess)}>Ok</MuiCustomButton>
+            </MuiCustomDialogActions>
+          </MuiCustomDialog>
+        )}
+        {showConfirmationDeleteIncome && (
+          <MuiCustomDialog
+            open={showConfirmationDeleteIncome}
+            onClose={() => setShowConfirmationDeleteIncome(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Sei sicuro di voler eliminare questa entrata?</MuiCustomDialogTitle>
+            <MuiCustomDialogActions>
+              <MuiCustomButton onClick={() => {
+                handleIncomesDelete(fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, deleteIncomeDate, deleteIncomeAmount);
+                setShowConfirmationDeleteIncome(false);
+              }}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => setShowConfirmationDeleteIncome(false)}>Annulla</MuiCustomButton>
+            </MuiCustomDialogActions>
+          </MuiCustomDialog>
+        )}
+        {showConfirmationDeleteExpense && (
+          <MuiCustomDialog
+            open={showConfirmationDeleteExpense}
+            onClose={() => setShowConfirmationDeleteExpense(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Sei sicuro di voler eliminare questa uscita?</MuiCustomDialogTitle>
+            <MuiCustomDialogActions>
+              <MuiCustomButton onClick={() => {
+                handleExpensesDelete(fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, deleteExpenseDate, deleteExpenseAmount);
+                setShowConfirmationDeleteExpense(false);
+              }}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => setShowConfirmationDeleteExpense(false)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}

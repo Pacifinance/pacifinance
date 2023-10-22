@@ -14,7 +14,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { colorsBalances, colorsIncExp } from '../contexts/Themes';
 import {
         TitleDashboard,
-        Section,
+        SectionDashboard,
         SectionADashboard,
         CapitalValue,
         UpperSection,
@@ -128,7 +128,7 @@ function Dashboard() {
 
     
     return (
-        <Section theme={theme}>
+        <SectionDashboard theme={theme}>
             <TitleDashboard theme={theme}>Dashboard</TitleDashboard>
             <CapitalValue theme={theme}>
                 Il tuo patrimonio totale è:{" "}
@@ -439,7 +439,7 @@ function Dashboard() {
                 </div>
 
             </GraphsSection>
-        </Section>
+        </SectionDashboard>
     )
 }
   

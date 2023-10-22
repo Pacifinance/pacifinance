@@ -396,7 +396,7 @@ function Sidebar() {
                 </Links>
                         
                 <Notification theme={theme}>
-                    <AiOutlineBell />
+                    {/* <AiOutlineBell /> */}
                     <div className="account-container">
                         <div className="account-image-wrapper">
                             <img src={avatarImage} width="100%" height="100%" alt="Account" className="account-image" onContextMenu={(e) => e.preventDefault()}/>

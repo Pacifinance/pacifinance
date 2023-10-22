@@ -26,16 +26,24 @@ const ButtonToggle = styled.button`
   border-radius: 4px;
   // border-color: ${(props) => (props.mode === 'dark' ? '#fff' : '#000')};
   font-size: 8px;
+  margin-right: 0.5em;
   cursor: pointer;
   display: flex;
   align-items: center;
   aria-label="toggle mode";
 
+  svg {
+    font-size: 3em; 
+  }
+
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    padding: 3px 3px;
-    font-size: 8px;
-    border-radius: 4px;
+    padding: 0.5px 0.5px;
+    font-size: 2px;
+
+    svg {
+      font-size: 7em; 
+    }
   }
   `;
 

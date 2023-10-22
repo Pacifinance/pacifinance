@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router}  from "react-router-dom";
 import './index.css';
@@ -7,6 +7,18 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
 import { PageProvider } from './contexts/PageContext'; // Importa il contesto della pagina attiva
 
+// const MatomoTagManager = () => {
+//   // useEffect(() => {
+//   //   var _mtm = window._mtm = window._mtm || [];
+//   //   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+//   //   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+//   //   g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
+//   // }, []);
+
+  
+
+//   return null;
+// };
 
 ReactDOM.render(
     <ThemeProvider>
@@ -24,8 +36,17 @@ ReactDOM.render(
 );
 
 {/* <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              </head> */}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head> */}
+
+{/* <script>
+      {`
+        var _mtm = window._mtm = window._mtm || [];
+        _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
+      `}
+</script> */}
 
 
 //SPUNTO DI RIFLESSIONE:

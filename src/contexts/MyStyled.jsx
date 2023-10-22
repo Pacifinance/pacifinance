@@ -28,6 +28,25 @@ export const Section = styled.section `
   padding-top: 2em;
   height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    margin-left: 0vw;
+  }
+`;
+
+export const SectionDashboard = styled.section `
+  font-family: Roboto, sans-serif;
+  margin-left: 6vw;
+  padding-top: 2em;
+  height: 100%;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    margin-left: 0vw;
+    height: 300vh;
+  }
 `;
 
 export const MyGenericModal = styled.div`
@@ -68,9 +87,9 @@ export const MyButton = styled.button`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    padding: 0.5em 1em;
+    padding: 0.2em 0.2em;
     border-radius: 0.2em;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
   }
 `;
 
@@ -96,6 +115,11 @@ export const TitleDashboard = styled.h1 `
     font-weight: 400;
     margin-bottom: 2rem;
     margin-left: 3%;
+
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
 `;
 
 export const TitleStatsCharts = styled.h1 `
@@ -163,6 +187,33 @@ export const SignIn = styled.div`
     width: 100%;
     margin-top: 1em;
   }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    width: 100vw;
+    .sign-in-page {
+      height: 40vh;
+      width: 75vw;
+      display: block;
+      align-items: left;
+    }
+
+    .sign-in-form h1 {
+      font-size: 1.2em; 
+    }
+
+    .icon-with-text h4 {
+      font-size: 0.8em;
+    }
+
+    .sign-in-form label {
+      font-size: 0.6em; 
+    }
+
+    .sign-in-form input {
+      font-size: 0.6em; 
+    }
+  }
 `;
 
 export const ModalButton = styled(MyButton)`
@@ -182,8 +233,8 @@ export const ContainerHeader = styled.header`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    height: 20vh;
-    width: 190vw;
+    height: 10vh;
+    width: 100vw;
   }
 `;
 
@@ -196,8 +247,8 @@ export const LandingPageContainer = styled.div`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    height: 155vh;
-    width: 190vw;
+    height: 200vh;
+    width: 100vw;
   }
 `;
 
@@ -215,9 +266,9 @@ export const ContainerFooter = styled.footer`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    height: 15vh;
-    width: 190vw;
-    bottom: 0em;
+    height: 10vh;
+    width: 100vw;
+    bottom: 20em;
   }
 `;
 
@@ -237,9 +288,11 @@ export const LogoStyled = styled.h1`
     img {
       width: 40px;
     }
-    margin-left: -1%;
+    margin-left: -5%;
+    margin-right: 5%;
     margin-top: -1%;
   }
+  
 `;
 
 export const CentralImage = styled.img`
@@ -249,7 +302,7 @@ export const CentralImage = styled.img`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    max-width: 4em;
+    max-width: 10em;
     margin-right: 10%;
   }
 `;
@@ -261,7 +314,8 @@ export const Title = styled.h1`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    font-size: 3.5em;
+    font-size: 2em;
+    padding-top: 10%;
     margin-bottom: 0.25em;
   }
 
@@ -274,8 +328,8 @@ export const Subtitle = styled.h2`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-   margin-bottom: 10%;
-   font-size: 0.9em; 
+   margin-bottom: 5%;
+   font-size: 0.6em; 
   }
 `;
 
@@ -332,6 +386,11 @@ export const CentralText = styled.div`
 export const ButtonGroup = styled.div`
   display: flex;
   gap: 0.5em;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    gap: 0.2em;
+  }
 `;
 
 export const ButtonContainer = styled.div`
@@ -489,7 +548,25 @@ export const StyledSection = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}`;
+  }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    margin-top: 5em;
+    left: 0em;
+
+    .grid{ 
+      margin-top: 2rem;
+      // z-index: 2;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+
+`;
 
 export const StyledSectionStats = styled.div`
   font-family: Roboto, sans-serif; 
@@ -716,6 +793,11 @@ export const CapitalValue = styled.h1 `
     margin-top: 1rem;
     margin-left: 3%;
     margin-bottom: 1rem;
+
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
 `;
 
 export const Container = styled.div`
@@ -746,8 +828,8 @@ export const FeaturesSection = styled.section`
   @media (max-width: 768px) {
     display: flex;
     flex-direction: column;
-    margin-left: 50vw;
-    margin-top: 15vh;
+    margin-left: 5vw;
+    margin-top: 25vh;
     gap: 4em; 
     max-width: 100vw;
   }
@@ -827,12 +909,32 @@ export const DropdownContainer = styled.div`
     color: #dc3545;
   }
 
+  @media (min-width: 768px) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .dropdown-menu {
+      top: 100%;
+      margin-right: 10vw;
+      background-color: #fff;
+      border: 0.1em solid #ccc;
+      border-radius: 0.2em;
+      padding: 0.4em;
+      box-shadow: 0em 0.1em 0.2em rgba(0, 0, 0, 0.1);
+    }
+
+  }
+
 `;
 
 export const Notification = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -1em;
+  margin-left: 1em;
   gap: 0.2rem;
   .font_icon{
       font-size: 1.5rem;
@@ -894,6 +996,7 @@ export const Notification = styled.div`
   }
 
   @media (max-width: 768px) {
+    margin-left: 1em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -903,6 +1006,8 @@ export const Notification = styled.div`
         height: 1.2rem;
         width: 1.2rem;
         background-color: white; /* Imposta il colore di sfondo dell'immagine */
+        margin-top: 1em;
+        // margin-left: 1em;
     }
 
     .bell-icon {
@@ -1053,15 +1158,22 @@ export const SidebarSection = styled.section`
   justify-content: space-between;
   padding: 2rem 0;
   gap: 2rem;
-    
+  
+  /* Style for mobile */
   @media (max-width: 768px) {
-    /* Stili da applicare solo su dispositivi mobili */
-    position: fixed;
-    width: 100%;
-    height: auto;
+    position: sticky;
+    // bottom: 0; 
+    margin-right: 2em;
+    width: 100vw;
+    height: 8vh;
     flex-direction: row;
-    padding: 0.8rem 0.5rem; /* Aggiungi spaziatura inferiore solo su dispositivi mobili */
-    gap: 0.8rem; /* Aggiungi spaziatura tra gli elementi solo su dispositivi mobili */
+    padding: 1em 1.5em; 
+    gap: 1em;
+    justify-content: space-between;
+    
+    .active {
+        margin-right: 1em; /* Personalizza il margine inferiore per aumentare lo spazio tra le icone nei tooltip */
+    }
   }  
   `
   ;
@@ -1122,6 +1234,20 @@ export const SidebarSection = styled.section`
               color: ${(props) => (props.theme.textColor)};
           }
       }
+
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      flex-direction: row;
+      margin-right: 2;
+      margin-left: 0;
+      align-items: center;
+      flex-wrap: nowrap;
+      .analytic {
+        width: 30%;
+        height: 8em;
+        margin: 0.5em;
+      }
+    }
   `;
 
   export const LowerSection = styled.div`
@@ -1182,6 +1308,18 @@ export const SidebarSection = styled.section`
               color: ${(props) => (props.theme.textColor)};
           }
       }
+
+      @media (max-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        .analytic {
+          width: 40%; /* Imposta la larghezza in percentuale per mostrare 2 elementi per riga */
+          height: 8em;
+          margin: 0.5em;
+          margin-left: 1.3em;
+        }
+      }
   `;
 
   export const GraphsSection = styled.div`
@@ -1225,11 +1363,18 @@ export const SidebarSection = styled.section`
 
     /* Mobile view */
     @media (max-width: 768px) {
+      margin-top: 2em;
+      margin-left: 0;
       flex-direction: column;
       .bar-chart-section,
       .pie-chart-section {
         flex: none; /* Remove the flexible width */
-      }
+        left: 0;
+
+        h2 {
+          margin: 0;
+        }
+      } 
     }
 `;
 
@@ -1572,6 +1717,20 @@ export const StyledComingSoon = styled.div`
     font-size: 1.5rem;
     font-weight: normal;
     text-align: center; /* centra il testo orizzontalmente */
+  }
+
+  @media (max-width: 768px) {
+    .coming-soon-title {
+      font-size: 4rem;
+      font-weight: bold;
+      text-align: center; /* centra il testo orizzontalmente */
+    }
+  
+    .coming-soon-subtitle {
+      font-size: 1rem;
+      font-weight: normal;
+      text-align: center; /* centra il testo orizzontalmente */
+    }
   }
 `;
 

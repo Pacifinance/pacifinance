@@ -958,7 +958,13 @@ export const SidebarToggleModeButton = styled(ToggleModeButton)`
 
       /* For screens with a maximum width of 768px (e.g. mobile devices) */
       @media (max-width: 768px) {
-        margin-right: 0.5em;
+        margin-top: 0.5em;
+        padding: 1px 1px;
+        font-size: 2px;
+
+        svg {
+          font-size: 2em; 
+        }
       }
 `;
 export const DropdownContainer = styled.div`
@@ -1086,18 +1092,18 @@ export const Notification = styled.div`
   }
 
   @media (max-width: 768px) {
-    margin-left: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute;
+    margin-top: 0.01em;
+    margin-bottom: 0em;
+    margin-left: 0em;
     gap: 0.1rem;
 
     .account-image {
         height: 1.2rem;
         width: 1.2rem;
         background-color: white; /* Imposta il colore di sfondo dell'immagine */
-        margin-top: 1em;
-        // margin-left: 1em;
+        margin-top: 0.7em;
+        margin-left: 2em;
     }
 
     .bell-icon {
@@ -1153,7 +1159,7 @@ export const Links = styled.div`
       margin-bottom: 0.5rem;
 
       .active {
-          border-right: 0.2rem solid black;
+          border-right: 0.2rem solid ${(props) => (props.theme.textColor)};
       }
       
       .active a {
@@ -1205,6 +1211,7 @@ export const Links = styled.div`
   @media (max-width: 768px) {
     /* Modifica la disposizione dei link nel menu superiore */
     display: flex;
+    margin-left: 4em;
     gap: 1rem;
     width: auto;
       ul {
@@ -1213,10 +1220,13 @@ export const Links = styled.div`
         display: flex;
         list-style: none;
         padding: 0;
+        .active {
+            border-right: none;
+        }
         li{
             margin: 0;
             a {
-              font-size: 1.2rem; /* Riduci la dimensione del testo */
+              font-size: 1.5rem; /* Riduci la dimensione del testo */
             }         
         }
     
@@ -1229,7 +1239,14 @@ export const ToggleButton = styled.div`
   justify-content: center;
 
   @media (max-width: 768px) {
-    display: ;
+    display: block;
+    margin-top: 4em;
+        padding: 3px 3px;
+        font-size: 2px;
+
+        svg {
+          font-size: em; 
+        }
   }
 `;
 
@@ -1336,6 +1353,14 @@ export const SidebarSection = styled.section`
         width: 30%;
         height: 8em;
         margin: 0.5em;
+
+        .design {
+          .logo {
+            svg {
+              font-size: 1.5rem;
+            }
+          }
+      }
       }
     }
   `;
@@ -1408,6 +1433,14 @@ export const SidebarSection = styled.section`
           height: 8em;
           margin: 0.5em;
           margin-left: 1.3em;
+
+          .design {
+            .logo {
+              svg {
+                font-size: 1.7rem;
+              }
+            }
+          }
         }
       }
   `;
@@ -1456,13 +1489,24 @@ export const SidebarSection = styled.section`
       margin-top: 2em;
       margin-left: 0;
       flex-direction: column;
-      .bar-chart-section,
+
+      .bar-chart-section {
+        flex: none; /* Remove the flexible width */
+        h2 {
+          margin-left: 2.2rem;
+          margin-right: 2rem;
+        }
+      }
+
       .pie-chart-section {
         flex: none; /* Remove the flexible width */
-        left: 0;
+        margin-left: 0;
 
         h2 {
-          margin: 0;
+          margin-left: 0;
+          margin-right: 5rem;
+          font-size: 1.2rem;
+          margin-top: 3rem;
         }
       } 
     }
@@ -1502,6 +1546,13 @@ export const SidebarSection = styled.section`
         }
       }
     }
+
+    @media (max-width: 768px) {
+      h5{
+        margin-bottom: 2rem;
+      }
+    }
+
   `;
 
   export const WrapperAMonth = styled.div`

@@ -400,22 +400,22 @@ export default function InsertValue () {
           <TitleSection theme={theme}> Liquidità </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
-            <LabelContainer theme={theme}>
-              <LabelStyle theme={theme}>
-                Depositati in Banca
-              </LabelStyle>
-            </LabelContainer>
-            <LabelContainer theme={theme}>
-              <LabelStyle theme={theme}>
-                Contanti e monete
-              </LabelStyle>
-            </LabelContainer>
-            <LabelContainer theme={theme}>
-              <LabelStyle theme={theme}>
-                Su servizi di pagam. digitali
-              </LabelStyle>
-            </LabelContainer>
-            </Column>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  Depositati in Banca
+                </LabelStyle>
+              </LabelContainer>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  Contanti e monete
+                </LabelStyle>
+              </LabelContainer>
+              <LabelContainer theme={theme}>
+                <LabelStyle theme={theme}>
+                  Su servizi di pagam. digitali
+                </LabelStyle>
+              </LabelContainer>
+              </Column>
             <Column>
               <div>
                 <input type="text" value={bankReal} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />

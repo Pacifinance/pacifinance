@@ -20,6 +20,13 @@ export const PageWrapper = styled.div`
   width: 100vw;
   height: 100vh; // Imposta l'altezza della pagina al 100% della viewport
   display: flex;
+
+  @media (max-width: 768px) {
+    width: auto;
+    height: auto;
+    display: block;
+    
+  }
 `;
 
 export const Section = styled.section `
@@ -123,11 +130,17 @@ export const TitleDashboard = styled.h1 `
 `;
 
 export const TitleStatsCharts = styled.h1 `
-    color: ${(props) => (props.theme.textColor)};
-    font-size: 2rem;
-    font-weight: 400;
-    margin-bottom: 2rem;
-    margin-left: 6%;
+  color: ${(props) => (props.theme.textColor)};
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  margin-left: 6%;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-left: 15%;
+  }
 `;
 
 export const SignIn = styled.div`
@@ -498,20 +511,40 @@ export const SignUp = styled.div`
     text-align: left; 
     margin-top: 1em; 
     margin-left: 6vw;
+
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
 `;
 
 export const MySecondaryButton = styled(MyButton)`
   font-size: 1.2rem;
   margin-bottom: 1em;
   max-height: 3rem;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    margin-bottom: 1em;
+    margin-left: 0.2em;
+    margin-top: 1em;
+    max-height: 3rem;
+  }
 `;
 
 export const SecondaryTitle = styled.h2 `
-        font-size: 1.5rem;
-        color: ${(props) => (props.theme.textColor)};
-        margin-left: 5rem;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: ${(props) => (props.theme.textColor)};
+    margin-left: 5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+      margin-left: 0rem;
+    }
 `;
 
 export const TitleLastAdds = styled.h2`
@@ -520,6 +553,13 @@ export const TitleLastAdds = styled.h2`
   color: ${(props) => (props.theme.textColor)};
   margin-bottom: 0.5%;
   margin-left: 6vw;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-bottom: 1.5em;
+    margin-top: 1em;
+  }
 `;
 
 export const TitleSection = styled.h2`
@@ -529,6 +569,12 @@ export const TitleSection = styled.h2`
   margin-top: 2em;
   margin-bottom: 1em;
   margin-left: 6vw;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    
+  }
+
 `;
 
 export const StyledSection = styled.div`
@@ -548,24 +594,14 @@ export const StyledSection = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-
-  /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  @media (max-width: 768px) {
-    margin-top: 5em;
-    left: 0em;
-
-    .grid{ 
-      margin-top: 2rem;
-      // z-index: 2;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    @media (max-width: 768px) {
+        margin-top: 3em;
     }
   }
 
-
+  @media (max-width: 768px) {
+    margin-top: 0em;
+  }
 `;
 
 export const StyledSectionStats = styled.div`
@@ -585,7 +621,14 @@ export const StyledSectionStats = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}`;
+  }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    
+    
+  }
+`;
 
 export const Column = styled.div`
   display: flex;
@@ -593,6 +636,17 @@ export const Column = styled.div`
   align-items: center;
   margin-right: 1em;
   margin-left: 1em;
+
+  @media (max-width: 768px) {
+    margin-right: 0.5em;
+    margin-left: 0.5em;
+
+    input {
+      width: 10em; // Modifica la larghezza degli input per la visualizzazione mobile
+      height: 3em; // Modifica l'altezza degli input per la visualizzazione mobile
+      fontSize: 10px; // Modifica la dimensione del testo per la visualizzazione mobile
+    }
+  }
 `;
 
 export const StyledInputs = styled.div`
@@ -604,6 +658,12 @@ export const StyledInputs = styled.div`
   margin-top: 1vw;
   margin-left: 5vw;
   color: ${(props) => props.theme.textColor};
+
+  @media (max-width: 768px) {
+    width: 40%; // Larghezza ridotta per adattarsi ai dispositivi mobili
+    margin-top: 0.5em;
+    margin-left: 0;
+  }
 `;
 
 export const StyledCalendarInput = styled.div`
@@ -625,6 +685,7 @@ export const inputStyle = {
   outline: "none",
   width: "120px",
   marginBottom: "0.7em",
+
 };
 
 export const LabelContainer = styled.div`
@@ -636,6 +697,12 @@ export const LabelContainer = styled.div`
   outline: none;
   width: 15em;
   margin-bottom: 0.8em;
+
+  @media (max-width: 768px) {
+    width: 8em;
+    margin-bottom: 0.5em;
+    
+  }
 `;
 
 export const LabelStyle = styled.label`{
@@ -644,6 +711,10 @@ export const LabelStyle = styled.label`{
   color: ${backgroundColor};
   height: '100%';
   fontWeight: 'bold';
+
+  @media (max-width: 768px) {
+    font-size: 1em;
+  }
   
 `;
 
@@ -753,6 +824,25 @@ export const StyledAddSection = styled.div`
     margin-top: 0.5em;
     font-size: 1.2rem;
     padding: 0.5em;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0;
+    margin-top: 3em;
+
+    label {
+      margin-bottom: 0.5em;
+    }
+
+    input {
+      width: 100%;
+    }
+
+    button {
+      width: 50%;
+    }
   }
 `;
 
@@ -1426,89 +1516,119 @@ export const SidebarSection = styled.section`
       }
   `;
 
-  export const SectionAMonth = styled.section `
-      display: flex;
-      justify-content: space-between;
+  export const SectionAMonth = styled.section`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-left: 6vw;
+  .section-break {
+    display: block;
+    margin-bottom: 1rem; /* Adjust the margin as needed */
+  }
+  .analytic {
+    display: flex;
+    flex-direction: column; /* Imposta la direzione dei figli come colonna */
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2rem 1rem 2rem;
+    border-radius: 1rem;
+    margin-right: 1rem;
+    color: black;
+    background-color: white;
+    transition: 0.5s ease-in-out;
+    width: 10em;
+    border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
+
+    .design {
       align-items: center;
-      
-      margin-left: 6vw;
-      .section-break {
-          display: block;
-          margin-bottom: 1rem; /* Adjust the margin as needed */
-      }
-      .analytic {
+
+      .logo {
+        background-color: white;
         display: flex;
-        flex-direction: column; /* Imposta la direzione dei figli come colonna */
         justify-content: center;
         align-items: center;
-        padding: 1rem 2rem 1rem 2rem;
-        border-radius: 1rem;
-        margin-right: 1rem;
-        color: black;
-        background-color: white;
-        transition: 0.5s ease-in-out;
-        width: 10em;
-        border: 0.15em solid ${(props) => (props.theme.buttonBackgroundColor)};
-      
-      
-          .design{
-              align-items: center;
-              
-              .logo {
-                  background-color: white;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-              
-                  svg {
-                      font-size: 2rem;
-                  }
-              }
-              .action {
-                  margin-left: 4em;
-              svg{
-                  font-size: 1.5rem;
-              }
-              }
 
-          }
-          .transfer {
-              margin-top: 1em;
-              color: grey
-          }
-          .money {
-              margin-top: 1em;  
-          }
+        svg {
+          font-size: 2rem;
+        }
+      }
+      .action {
+        margin-left: 4em;
+        svg {
+          font-size: 1.5rem;
+        }
+      }
+    }
+    .transfer {
+      margin-top: 1em;
+      color: grey;
+    }
+    .money {
+      margin-top: 1em;
+    }
+  }
+
+  .title {
+    h5 {
+      color: ${(props) => props.theme.textColor};
+    }
+  }
+  .search {
+    background-color: ${(props) => props.theme.backgroundColor};
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 8rem 1rem 1rem;
+    border-radius: 1.5rem;
+    svg {
+      color: ${(props) => props.theme.textColor};
+    }
+    input {
+      background-color: transparent;
+      border: none;
+      color: ${(props) => props.theme.textColor};
+      &:focus {
+        outline: none;
+      }
+      &::placeholder {
+        color: ${(props) => props.theme.textColor};
+      }
+    }
+  }
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    .analytic {
+      flex-direction: column;
+      height: 8em;
+      margin: 0.5em;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      color: black;
+      background-color: white;
+      transition: 0.5s ease-in-out;
+      width: 45%; /* Aggiungi la larghezza appropriata per avere due componenti per riga */
+      max-width: 20em; /* Aggiungi la larghezza massima per evitare che i componenti siano troppo grandi */
+      border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
+
+      &:last-child {
+        margin-left: 28%; 
       }
 
-      .title{
-          h5{
-              color: ${(props) => (props.theme.textColor)};
+      .design {
+        .logo {
+          svg {
+            font-size: 1.5rem;
           }
+        }
       }
-      .search {
-          background-color: ${(props) => (props.theme.backgroundColor)};
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1rem 8rem 1rem 1rem;
-          border-radius: 1.5rem;
-          svg{
-              color: ${(props) => (props.theme.textColor)};
-          }
-          input{
-              background-color: transparent;
-              border: none;
-              color: ${(props) => (props.theme.textColor)};
-              &:focus{
-                  outline: none;
-              }
-              &::placeholder {
-                  color: ${(props) => (props.theme.textColor)};
-              }
-          }
-      }
-  `;
+    }
+  }
+`;
+
+
 
   export const SectionInOut = styled.section`
     padding-bot: 2em;
@@ -1571,6 +1691,11 @@ export const SidebarSection = styled.section`
     align-items: center;
     font-size: 1em;
     cursor: pointer;
+
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      font-size: 0.8em;
+    }
   `;
 
   export const StyledCalendar = styled(Calendar)`

@@ -117,11 +117,25 @@ async function getReferenceByUserId(user_id) {
 }
 
 /**
- * Gets all user IDs
+ * Gets all user IDs, filtering by "similar" users if a reference user is provided
+ * @param {String} reference_user_id - ID of the user to use as a reference for filtering
  * @returns List of User documents
  */
-async function getAllUsersIds() {
-    return await get({}, "-_id userId");
+async function getAllUsersIds(reference_user_id=undefined) {
+    let filter = {};
+    if (reference_user_id !== undefined) {
+        // Get the data of the reference user
+        const reference_user = await getOne({userId: reference_user_id}, "");
+        // Create a filter to only retrieve data of "similar" users
+        if (reference_user !== null) {
+            filter = {
+                jobType: reference_user.jobType,
+                jobCountry: reference_user.jobCountry,
+                workTime: reference_user.workTime
+            };
+        }
+    }
+    return await get(filter, "-_id userId");
 }
 
 /**

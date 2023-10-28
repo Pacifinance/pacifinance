@@ -137,7 +137,7 @@ export default function SignUpForm() {
                             onChange={handlePasswordChange}
                             required
                             fullWidth
-                            className={classes.root}
+                            className={classes.signIn}
                             InputProps={{
                                 endAdornment: (
                                 <MuiCustomInputAdornment theme={theme} position="end">
@@ -162,7 +162,7 @@ export default function SignUpForm() {
                                 onChange={handleConfirmPasswordChange}
                                 required
                                 fullWidth
-                                className={classes.root}
+                                className={classes.signIn}
                                 InputProps={{
                                     endAdornment: (
                                     <MuiCustomInputAdornment theme={theme} position="end">

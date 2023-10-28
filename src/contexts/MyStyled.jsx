@@ -144,6 +144,7 @@ export const TitleStatsCharts = styled.h1 `
 `;
 
 export const SignIn = styled.div`
+  
   font-family: Roboto, sans-serif;
   
   .sign-in-page {
@@ -2055,22 +2056,26 @@ export const MuiCustomDialogActions = styled(DialogActions)`
 `;
 
 export const MuiCustomTextField = styled(TextField)`
-    && {
-        label.Mui-focused {
-          color: white;
-        }
-        .MuiInput-underline:after {
-          border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
-        }
-        .Mui-focused .MuiInput-underline:after {
-          border-bottom-color: blue;
-        }
-    }
-  `;
+  && {
+      
+      label.Mui-focused {
+        color: ${(props) => (props.theme.buttonBackgroundColor)};
+      }
+      .MuiInput-underline:after {
+        border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
+      }
+      .Mui-focused .MuiInput-underline:after {
+        border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
+      }
+  }
+`;
 
 export const MuiCustomIconButton = styled(IconButton)`
-  color: ${props => props.theme.buttonBackgroundColor};
-  margin-left: 2em;
+  && {
+    color: ${props => props.theme.buttonBackgroundColor};
+    margin-left: 0.5em;
+  }
+  
 `;
 
 export const MuiCustomInputAdornment = styled(InputAdornment)`
@@ -2086,10 +2091,13 @@ export const MuiCustomGrid = styled(Grid)`
 `;
 
 export const MuiUseStyles = makeStyles((theme) => ({
-  root: {
+  signIn: {
     width: '50%',
   },
+  root: {
+    width: '60%',
+  },
   icon: {
-    color: 'white',
+    color: '#079164',
   },
 }));

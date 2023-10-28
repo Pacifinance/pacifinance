@@ -321,17 +321,45 @@ export default function InsertValue () {
     fetchData();
   }, [userData]);
 
+  const validateDate = (date) => {
+    const pattern = /^\d{4}-\d{2}-\d{2}$/; // Verifica il formato AAAA-MM-GG
+    return pattern.test(date);
+  };
+
   const handleBalanceDateChange = (event) => {
-    setBalanceDate(event.target.value);
+    const inputDate = event.target.value;
+    const isValidDate = validateDate(inputDate);
+  
+    if (isValidDate) {
+      setBalanceDate(inputDate);
+    } else {
+      alert("Attenzione! Selezionare la data tramite il calendario.");
+    }
   };
   
+  
   const handleIncomeDateChange = (event) => {
-    setIncomeDate(event.target.value);
+    const inputDate = event.target.value;
+    const isValidDate = validateDate(inputDate);
+
+    if (isValidDate) {
+      setIncomeDate(inputDate);
+    } else {
+      alert("Attenzione! Selezionare la data tramite il calendario.");
+    }
   };
   
   const handleExpenseDateChange = (event) => {
-    setExpenseDate(event.target.value);
+    const inputDate = event.target.value;
+    const isValidDate = validateDate(inputDate);
+  
+    if (isValidDate) {
+      setExpenseDate(inputDate);
+    } else {
+      alert("Attenzione! Selezionare la data tramite il calendario.");
+    }
   };
+  
 
   function renderIncomeItems(lastIncomesAdds) {
     return lastIncomesAdds.map((add, index) => {

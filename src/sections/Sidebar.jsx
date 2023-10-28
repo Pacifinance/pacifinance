@@ -713,7 +713,7 @@ function Sidebar() {
                                             id="oldPasswordChangePWD"
                                             theme={theme}
                                             label="Password attuale"
-                                            type={showPassword ? 'text' : 'password'}
+                                            type={showOldPassword ? 'text' : 'password'}
                                             value={OldPassword}
                                             onChange={handleOldPasswordInput}
                                             required
@@ -729,7 +729,7 @@ function Sidebar() {
                                                         onMouseDown={handleMouseDownPassword}
                                                         className={classes.icon}
                                                     >
-                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    {showOldPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),
@@ -750,12 +750,12 @@ function Sidebar() {
                                                 endAdornment: (
                                                 <MuiCustomInputAdornment position="end">
                                                     <MuiCustomIconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleTogglePasswordVisibility}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    className={classes.icon}
-                                                    >
-                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleTogglePasswordVisibility}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        className={classes.icon}
+                                                        >
+                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),
@@ -766,7 +766,7 @@ function Sidebar() {
                                             id="confirmPasswordChangePWD"
                                             theme={theme}
                                             label="Conferma Password"
-                                            type={showPassword ? 'text' : 'password'}
+                                            type={showConfirmPassword ? 'text' : 'password'}
                                             value={confirmPassword}
                                             onChange={handleConfirmPasswordInput}
                                             required
@@ -776,12 +776,12 @@ function Sidebar() {
                                                 endAdornment: (
                                                 <MuiCustomInputAdornment position="end">
                                                     <MuiCustomIconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleToggleConfirmPasswordVisibility}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    className={classes.icon}
-                                                    >
-                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleToggleConfirmPasswordVisibility}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        className={classes.icon}
+                                                        >
+                                                        {showConfirmPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),

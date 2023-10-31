@@ -470,7 +470,7 @@ app.post("/tags/get", async (req, res) => {
     res.json(tags);
 });
 
-app.post("/rank/balances/all", async (req, res) => {
+app.post("/rank/balances", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);
@@ -480,8 +480,13 @@ app.post("/rank/balances/all", async (req, res) => {
         res.send();
         return;
     }
-    // Get the list of all user IDs
-    const users = await db.users.getAllUsersIds();
+    // Check if the ranking is requested among all users or only similar users
+    const target_user = req.session.userId;
+    let reference_user = undefined;
+    if (req.body.similar)
+        reference_user = target_user;
+    // Get the list of all/similar users IDs
+    const users = await db.users.getAllUsersIds(reference_user);
     // For each user get its latest balance
     let balances = [];
     for (let user of users) {
@@ -490,7 +495,6 @@ app.post("/rank/balances/all", async (req, res) => {
             balances.push({user: user.userId, balance: balance});
     }
     // Sort the array of balances to get the rank of the user
-    const target_user = req.session.userId;
     balances.sort((a, b) => a.balance - b.balance);
     const rank = utils.computeRankOfUser(balances, target_user);
     // Send the data to the client with status code 200 (OK)
@@ -498,7 +502,7 @@ app.post("/rank/balances/all", async (req, res) => {
     res.json(rank);
 });
 
-app.post("/rank/expenses/all", async (req, res) => {
+app.post("/rank/expenses", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
     const valid_session = await checkUserSession(req.session);
@@ -508,8 +512,13 @@ app.post("/rank/expenses/all", async (req, res) => {
         res.send();
         return;
     }
-    // Get the list of all user IDs
-    const users = await db.users.getAllUsersIds();
+    // Check if the ranking is requested among all users or only similar users
+    const target_user = req.session.userId;
+    let reference_user = undefined;
+    if (req.body.similar)
+        reference_user = target_user;
+    // Get the list of all/similar users IDs
+    const users = await db.users.getAllUsersIds(reference_user);
     // For each user get the expenses/incomes of the month
     let is_expense_filter = Boolean(req.body.expenses);
     let expenses = [];
@@ -519,7 +528,6 @@ app.post("/rank/expenses/all", async (req, res) => {
             expenses.push({user: user.userId, amount: total_amount});
     }
     // Sort the array of expenses to get the rank of the user
-    const target_user = req.session.userId;
     expenses.sort((a, b) => a.amount - b.amount);
     const rank = utils.computeRankOfUser(expenses, target_user);
     // Send the data to the client with status code 200 (OK)

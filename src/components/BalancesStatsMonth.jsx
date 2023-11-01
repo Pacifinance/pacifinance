@@ -8,7 +8,7 @@ import { SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import {SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
+import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
 import { primaryColor } from '../contexts/Themes';
 import { calculatePercentageChange } from '../utilities/calculations';
 
@@ -66,6 +66,10 @@ export default function BalancesStatsMonth() {
     const [bitcoinRealPreMonth, setBitcoinRealPreMonth] = useState(0);
     const [digitalServicesRealPreMonth, setDigitalServicesRealPreMonth] = useState(0);
     const [totalRealPreMonth, setTotalRealPreMonth] = useState(0);
+
+    const formattedPreMonthDate = userData?.preMonthDate
+      ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
+      : "";
     
 
     useEffect(() => {
@@ -115,12 +119,12 @@ export default function BalancesStatsMonth() {
     return (
         
         <div className="wrapper">
-        <TitleStatsCharts theme={theme}>
-            Il tuo patrimonio è variato del:{" "}
+        <SecondaryTitle theme={theme}>
+            Il tuo patrimonio rispetto al mese scorso ({formattedPreMonthDate}) è variato del:{" "}
             <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
                 {calculatePercentageChange(totalReal, totalRealPreMonth)}
             </span>
-        </TitleStatsCharts>
+        </SecondaryTitle>
         <SectionAMonth theme={theme}>
             
             <div className="analytic ">

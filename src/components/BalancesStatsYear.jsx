@@ -8,7 +8,7 @@ import { SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import {SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
+import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
 import { primaryColor } from '../contexts/Themes';
 import { calculatePercentageChange } from '../utilities/calculations';
 // import { PieChart, Pie, Cell } from "recharts";
@@ -84,6 +84,10 @@ function BalancesStatsYear() {
     const [expensesPreYearSameMonth, setExpensesPreYearSameMonth] = useState(0);
     const [savedPreYearSameMonth, setSavedPreYearSameMonth] = useState(0);
 
+    const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate
+      ? new Date(userData.preYearSameMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
+      : "";
+
     // const {
     //     SectionAMonth,
     //     TitleDashboard,
@@ -136,12 +140,12 @@ function BalancesStatsYear() {
     return (
         
         <div className="wrapper">
-        <TitleStatsCharts theme={theme}>
-            Il tuo patrimonio è variato del:{" "}
+        <SecondaryTitle theme={theme}>
+            Il tuo patrimonio rispetto ad un anno fa ({formattedPreYearSameMonthDate}) è variato del:{" "}
             <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
                 {calculatePercentageChange(totalReal, totalRealPreYearSameMonth)}
             </span>
-        </TitleStatsCharts>
+        </SecondaryTitle>
         <SectionAMonth theme={theme}>
             <div className="analytic ">
                 <div className="design">

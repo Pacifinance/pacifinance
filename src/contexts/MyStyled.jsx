@@ -970,6 +970,7 @@ export const SidebarToggleModeButton = styled(ToggleModeButton)`
 `;
 export const DropdownContainer = styled.div`
   position: relative;
+  margin-bottom: 2em;
 
   .dropdown-header {
     cursor: pointer;
@@ -977,8 +978,8 @@ export const DropdownContainer = styled.div`
 
   .dropdown-menu {
     position: absolute;
-    top: 100%;
-    left: 0;
+    top: 80%;
+    left: 2em;
     width: 10em;
     background-color: #fff;
     border: 0.1em solid #ccc;
@@ -1077,6 +1078,7 @@ export const Notification = styled.div`
   .popup-window {
       width: 20em;
       padding: 1em;
+      margin-left: 1em;
       background-color: white;
       border: 0.1em solid orange;
       border-radius: 0.5em;
@@ -1291,7 +1293,7 @@ export const SidebarSection = styled.section`
       margin-top: 2rem;
       margin-left: 3%;
       margin-right: 6%;
-      justify-content: space-between;
+      justify-content: center;
       .analytic {
           display: flex;
           flex-direction: column; /* Imposta la direzione dei figli come colonna */
@@ -1300,11 +1302,12 @@ export const SidebarSection = styled.section`
           align-items: center;
           padding: 1rem 2rem 1rem 2rem;
           color: black;
-          margin-right: 10%;
-          margin-left: 10%;
+          margin-right: 0%;
+          margin-left: 3%;
           background-color: white;
           transition: 0.5s ease-in-out;
-          width: 10em;
+          height: 8em;
+          width: 8em;
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
@@ -1317,7 +1320,7 @@ export const SidebarSection = styled.section`
                   align-items: center;
               
                   svg {
-                      font-size: 2rem;
+                      font-size: 1.5rem;
                   }
               }
               .action {
@@ -1368,24 +1371,24 @@ export const SidebarSection = styled.section`
 
   export const LowerSection = styled.div`
       display : flex;
-      margin-top: 2rem;
-      margin-left: 3%;
-      margin-right: 6%;
-      justify-content: space-between;
+      margin-top: 1rem;
+      // margin-left: 0%;
+      // margin-right: 0%;
+      justify-content: center;
       .analytic {
           display: flex;
           flex-direction: column; /* Imposta la direzione dei figli come colonna */
           padding: 1rem 2rem 1rem 2rem;
           border-radius: 1rem;
-          margin-right: 6%;
-          margin-left: 6%;
+          margin-right: 3%;
+          margin-left: 3%;
           color: black;
           background-color: white;
           justify-content: space-evenly;
           align-items: center;
           transition: 0.5s ease-in-out;
-          width: 10em;
-          height: 10em;
+          width: 8em;
+          height: 8em;
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
@@ -1569,115 +1572,117 @@ export const SidebarSection = styled.section`
   `;
 
   export const SectionAMonth = styled.section`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-left: 6vw;
-  .section-break {
-    display: block;
-    margin-bottom: 1rem; /* Adjust the margin as needed */
-  }
-  .analytic {
     display: flex;
-    flex-direction: column; /* Imposta la direzione dei figli come colonna */
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem 1rem 2rem;
-    border-radius: 1rem;
-    margin-right: 1rem;
-    color: black;
-    background-color: white;
-    transition: 0.5s ease-in-out;
-    width: 10em;
-    border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
 
-    .design {
-      align-items: center;
-
-      .logo {
-        background-color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        svg {
-          font-size: 2rem;
-        }
-      }
-      .action {
-        margin-left: 4em;
-        svg {
-          font-size: 1.5rem;
-        }
-      }
+    margin-left: 6vw;
+    margin-bottom: 1em;
+    .section-break {
+      display: block;
+      margin-bottom: 1rem; /* Adjust the margin as needed */
     }
-    .transfer {
-      margin-top: 1em;
-      color: grey;
-    }
-    .money {
-      margin-top: 1em;
-    }
-  }
-
-  .title {
-    h5 {
-      color: ${(props) => props.theme.textColor};
-    }
-  }
-  .search {
-    background-color: ${(props) => props.theme.backgroundColor};
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 8rem 1rem 1rem;
-    border-radius: 1.5rem;
-    svg {
-      color: ${(props) => props.theme.textColor};
-    }
-    input {
-      background-color: transparent;
-      border: none;
-      color: ${(props) => props.theme.textColor};
-      &:focus {
-        outline: none;
-      }
-      &::placeholder {
-        color: ${(props) => props.theme.textColor};
-      }
-    }
-  }
-  /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  @media (max-width: 768px) {
-    flex-direction: row;
-    flex-wrap: wrap;
     .analytic {
-      flex-direction: column;
-      height: 8em;
-      margin: 0.5em;
-      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column; /* Imposta la direzione dei figli come colonna */
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 1rem 0.5rem 1rem;
       border-radius: 1rem;
+      margin-right: 1rem;
       color: black;
       background-color: white;
       transition: 0.5s ease-in-out;
-      width: 45%; /* Aggiungi la larghezza appropriata per avere due componenti per riga */
-      max-width: 20em; /* Aggiungi la larghezza massima per evitare che i componenti siano troppo grandi */
+      height: em;
+      width: 7em;
       border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
 
-      &:last-child {
-        margin-left: 28%; 
-      }
-
       .design {
+        align-items: center;
+
         .logo {
+          background-color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
           svg {
             font-size: 1.5rem;
           }
         }
+        .action {
+          margin-left: 4em;
+          svg {
+            font-size: 1rem;
+          }
+        }
+      }
+      .transfer {
+        margin-top: 1em;
+        color: grey;
+      }
+      .money {
+        margin-top: 1em;
       }
     }
-  }
+
+    .title {
+      h5 {
+        color: ${(props) => props.theme.textColor};
+      }
+    }
+    .search {
+      background-color: ${(props) => props.theme.backgroundColor};
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 8rem 1rem 1rem;
+      border-radius: 1.5rem;
+      svg {
+        color: ${(props) => props.theme.textColor};
+      }
+      input {
+        background-color: transparent;
+        border: none;
+        color: ${(props) => props.theme.textColor};
+        &:focus {
+          outline: none;
+        }
+        &::placeholder {
+          color: ${(props) => props.theme.textColor};
+        }
+      }
+    }
+    /* For screens with a maximum width of 768px (e.g. mobile devices) */
+    @media (max-width: 768px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      .analytic {
+        flex-direction: column;
+        height: 8em;
+        margin: 0.5em;
+        padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        color: black;
+        background-color: white;
+        transition: 0.5s ease-in-out;
+        width: 45%; /* Aggiungi la larghezza appropriata per avere due componenti per riga */
+        max-width: 20em; /* Aggiungi la larghezza massima per evitare che i componenti siano troppo grandi */
+        border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
+
+        &:last-child {
+          margin-left: 28%; 
+        }
+
+        .design {
+          .logo {
+            svg {
+              font-size: 1.5rem;
+            }
+          }
+        }
+      }
+    }
 `;
 
 
@@ -1738,8 +1743,9 @@ export const SidebarSection = styled.section`
     background-color: ${(props) => (props.theme.buttonBackgroundColor)};
     color: white;  
     padding: 0.5em 1em;
-    border: none;
+    border: 2px solid #079164;
     border-radius: 0.2em;
+    boxShadow: 0px 0px 10px 3px rgba(0,0,0,0.75),
     align-items: center;
     font-size: 1em;
     cursor: pointer;

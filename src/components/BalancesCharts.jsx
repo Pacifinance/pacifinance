@@ -69,15 +69,24 @@ export default function BalancesCharts() {
         <Tooltip
             contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
             labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
-            formatter={(value, name, entry) => {
-                
+            formatter={(value, name, entry, index) => {
+                // Calculate the total sum of all values
+                const totalSum = entry.payload.reduce((sum, item) => sum + item.value, 0);
+
                 const formattedValue = new Intl.NumberFormat('it-IT', {
                     style: 'currency',
                     currency: 'EUR',
                     maximumFractionDigits: 0,
                 }).format(value);
 
-                return [`${name}: ${formattedValue}`];
+                const formattedTotalSum = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    maximumFractionDigits: 0,
+                }).format(totalSum);
+
+                // Include the total sum in the legend
+                return [`${name}: ${formattedValue}`, `Total: ${formattedTotalSum}`];
             }}
         />
         <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>

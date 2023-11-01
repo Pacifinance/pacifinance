@@ -2,6 +2,7 @@ import React, {useState, useContext} from 'react';
 import BalancesStatsMonth from '../components/BalancesStatsMonth';
 import BalancesStatsYear from '../components/BalancesStatsYear';
 import BalancesCharts from '../components/BalancesCharts';
+import BalancesLinesCharts from '../components/BalancesLinesChart';
 import InOutCharts from '../components/InOutChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -33,23 +34,27 @@ export default function StatsCharts() {
           return (
             
             <>
-                <SecondaryTitle theme={theme}>Il tuo patrimonio rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
-                <BalancesStatsMonth />
-                <SecondaryTitle theme={theme}>Il tuo patrimonio rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
-                <BalancesStatsYear />
-                <SecondaryTitle theme={theme}>Check del bilancio negli ultimi 12 mesi</SecondaryTitle>
+                <SecondaryTitle theme={theme}>Andamento del tuo bilancio negli ultimi 12 mesi</SecondaryTitle>
+                <BalancesLinesCharts />
+                <SecondaryTitle theme={theme}>Distribuzione del tuo bilancio negli ultimi 12 mesi</SecondaryTitle>
                 <BalancesCharts />
+                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
+                <BalancesStatsMonth />
+                <BalancesStatsYear />
+                
             </>
           );
         } else if (activePage === "statsIncomesExpenses") {
           return (
             <>
+                <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
+                <InOutCharts />
+                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <InExStatsMonth />
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
                 <InExStatsYear />
-                <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
-                <InOutCharts />
+                
             </>
           );
         }

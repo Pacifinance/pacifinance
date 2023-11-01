@@ -203,8 +203,7 @@ function Dashboard() {
                         </div> */}
                     </div>
                     <div className="transfer">
-                        <h6>Investiti</h6>
-                        <h6>in Azioni</h6>
+                        <h6>Azioni</h6>
                     </div>
                     <div className="money">
                         <h5>{stocksReal.toLocaleString('it-IT')}€</h5>
@@ -221,8 +220,7 @@ function Dashboard() {
                         </div> */}
                     </div>
                     <div className="transfer">
-                        <h6>Investiti</h6>
-                        <h6>in ETF</h6>
+                        <h6>ETF</h6>
                     </div>
                     <div className="money">
                         <h5>{etfReal.toLocaleString('it-IT')}€</h5>
@@ -239,8 +237,7 @@ function Dashboard() {
                         </div> */}
                     </div>
                     <div className="transfer">
-                        <h6>Investiti</h6>
-                        <h6>in Bitcoin</h6>
+                        <h6>Bitcoin</h6>
                     </div>
                     <div className="money">
                         <h5>{bitcoinReal.toLocaleString('it-IT')}€</h5>
@@ -266,8 +263,7 @@ function Dashboard() {
                         </div> */}
                     </div>
                     <div className="transfer">
-                        <h6>Investiti</h6>
-                        <h6>in Criptovalute</h6>
+                        <h6>Criptovalute</h6>
                     </div>
                     <div className="money">
                         <h5>{cryptoReal.toLocaleString('it-IT')}€</h5>
@@ -290,8 +286,8 @@ function Dashboard() {
                                     ))}
                                 </Bar>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: 'white', fontSize: 12 }} />
-                                <YAxis tick={{ fill: 'white' }} />
+                                <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: '#079164', fontSize: 12 }} />
+                                <YAxis tick={{ fill: '#079164' }} />
                                 <Tooltip
                                     content={({ payload, label, active }) => {
                                         if (active) {
@@ -407,8 +403,8 @@ function Dashboard() {
                                         ))}
                                     </Bar>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                    <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: 'white', fontSize: 14 }} />
-                                    <YAxis tick={{ fill: 'white' }} />
+                                    <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: '#079164', fontSize: 14 }} />
+                                    <YAxis tick={{ fill: '#079164' }} />
 
                                     <Tooltip
                                         content={({ payload, label, active }) => {

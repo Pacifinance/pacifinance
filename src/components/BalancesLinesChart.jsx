@@ -1,0 +1,109 @@
+import React, {useState, useEffect, useContext} from "react";
+import { UserContext } from '../contexts/UserContext';
+import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
+import { Tooltip } from "recharts/lib/component/Tooltip"; 
+import { XAxis } from "recharts/lib/cartesian/XAxis";
+import { YAxis } from "recharts/lib/cartesian/YAxis";
+import { BarChart } from "recharts/lib/chart/BarChart";
+import { LineChart } from "recharts/lib/chart/LineChart";
+import { Line } from "recharts/lib/cartesian/Line";
+import { Bar } from "recharts/lib/cartesian/Bar";
+import { Legend } from "recharts/lib/component/Legend";
+import { SectionBalancesCharts } from '../contexts/MyStyled';
+import { ThemeContext } from '../contexts/ThemeContext';
+
+
+
+
+export default function BalancesLinesChart() {
+
+  const { userData } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
+  const [last12MonthsData, setLast12MonthsData] = useState([]);
+
+  // const { SectionBalancesCharts } = MyStyled();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userData) {
+        try {
+
+          setLast12MonthsData(userData ? userData.last12MonthsData : []);
+            
+    
+        } catch (error) {
+          console.error('Errore durante le operazioni:', error);
+        }
+      }
+    };
+
+  fetchData();
+  }, [userData]);
+
+
+  const data = last12MonthsData.map((monthData) => ({
+    name: monthData.month,
+    SoldiFisici: monthData.cashReal,
+    ServiziDigitali: monthData.digitalServicesReal,
+    Azioni: monthData.stocksReal,
+    Banca: monthData.bankReal,
+    Crypto: monthData.cryptoReal,
+    ETF: monthData.etfReal,
+    Bitcoin: monthData.bitcoinReal,
+    amt: 2400, 
+  })).reverse(); //reverse() to have the last month on the right
+
+  return (
+    <SectionBalancesCharts theme={theme}>
+        <LineChart
+            width={600}
+            height={400}
+            data={data}
+            margin={{
+            top: 5,
+            left: 35,
+            bottom: 40
+            }}
+        >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis tick={{fontSize: 9}} interval={1} dataKey="name" />
+            <YAxis tick={{fontSize: 12}} />
+            <Tooltip
+                contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+                labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
+                formatter={(value, name, entry, index) => {
+                    // Calculate the total sum of all values
+                    const totalSum = entry.payload.reduce((sum, item) => sum + item.value, 0);
+
+                    const formattedValue = new Intl.NumberFormat('it-IT', {
+                        style: 'currency',
+                        currency: 'EUR',
+                        maximumFractionDigits: 0,
+                    }).format(value);
+
+                    const formattedTotalSum = new Intl.NumberFormat('it-IT', {
+                        style: 'currency',
+                        currency: 'EUR',
+                        maximumFractionDigits: 0,
+                    }).format(totalSum);
+
+                    // Include the total sum in the legend
+                    return [`${name}: ${formattedValue}`, `Total: ${formattedTotalSum}`];
+                }}
+            />
+            <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>
+            
+            <Line type="monotone" dataKey="Banca" stroke="#0D579B" />
+            <Line type="monotone" dataKey="SoldiFisici" stroke="#329239" />
+            <Line type="monotone" dataKey="ServiziDigitali" stroke="#74b9ff" />
+            <Line type="monotone" dataKey="Azioni" stroke="#FF6600" />
+            <Line type="monotone" dataKey="ETF" stroke="#a29bfe" />
+            <Line type="monotone" dataKey="Bitcoin" stroke="#F7B510" />
+            <Line type="monotone" dataKey="Crypto" stroke="#d63031" />
+            
+        </LineChart>
+    </SectionBalancesCharts>
+  );
+}
+
+

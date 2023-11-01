@@ -115,6 +115,7 @@ function Sidebar() {
         { value: 'changeUsername', label: 'Genera username' },
         { value: 'changeid', label: 'Cambio id' },
         { value: 'changePassword', label: 'Cambio password' },
+        { value: 'settings', label: 'Impostazioni' },
     ];
 
     const handleIconClick = (iconIndex, pageLink) => {
@@ -453,7 +454,7 @@ function Sidebar() {
                             <MuiCustomDialogProfileContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
                                     ID: {userId} <br></br>
-                                    Username: {username} <br></br>
+                                    {/* Username: {username} <br></br> */}
                                     Nazionalità: <Select
                                                     value={userNationality.value}
                                                     onChange={(event) => {

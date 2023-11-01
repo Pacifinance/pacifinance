@@ -39,17 +39,22 @@ export default function BalancesCharts() {
   }, [userData]);
 
 
-  const data = last12MonthsData.map((monthData) => ({
-    name: monthData.month,
-    SoldiFisici: monthData.cashReal,
-    ServiziDigitali: monthData.digitalServicesReal,
-    Azioni: monthData.stocksReal,
-    Banca: monthData.bankReal,
-    Crypto: monthData.cryptoReal,
-    ETF: monthData.etfReal,
-    Bitcoin: monthData.bitcoinReal,
-    amt: 2400, 
-  })).reverse(); //reverse() to have the last month on the right
+  const data = last12MonthsData.map((monthData) => {
+    const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal;
+
+    return {
+      name: monthData.month,
+      SoldiFisici: monthData.cashReal,
+      ServiziDigitali: monthData.digitalServicesReal,
+      Azioni: monthData.stocksReal,
+      Banca: monthData.bankReal,
+      Crypto: monthData.cryptoReal,
+      ETF: monthData.etfReal,
+      Bitcoin: monthData.bitcoinReal,
+      Totale: total,
+      amt: 2400, 
+    };
+  }).reverse(); //reverse() to have the last month on the right
 
   return (
     <SectionBalancesCharts theme={theme}>
@@ -70,23 +75,14 @@ export default function BalancesCharts() {
             contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
             labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
             formatter={(value, name, entry, index) => {
-                // Calculate the total sum of all values
-                const totalSum = entry.payload.reduce((sum, item) => sum + item.value, 0);
-
                 const formattedValue = new Intl.NumberFormat('it-IT', {
                     style: 'currency',
                     currency: 'EUR',
                     maximumFractionDigits: 0,
                 }).format(value);
 
-                const formattedTotalSum = new Intl.NumberFormat('it-IT', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    maximumFractionDigits: 0,
-                }).format(totalSum);
-
                 // Include the total sum in the legend
-                return [`${name}: ${formattedValue}`, `Total: ${formattedTotalSum}`];
+                return [`${name}: ${formattedValue}`];
             }}
         />
         <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>

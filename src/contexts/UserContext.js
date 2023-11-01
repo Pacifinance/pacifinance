@@ -196,9 +196,9 @@ function UserProvider({ children }) {
               expenses: incomesFlag
             };
 
-            const rankOnBalance = await axios.post('/rank/balances/all', null, { withCredentials: true });
-            const rankOnIncome = await axios.post('/rank/expenses/all', requestIncomesData, { withCredentials: true });
-            const rankOnExpense = await axios.post('/rank/expenses/all', requestExpensesData, { withCredentials: true });
+            const rankOnBalance = await axios.post('/rank/balances', null, { withCredentials: true });
+            const rankOnIncome = await axios.post('/rank/expenses', requestIncomesData, { withCredentials: true });
+            const rankOnExpense = await axios.post('/rank/expenses', requestExpensesData, { withCredentials: true });
             // const rankOnBalanceSimilar = await axios.post('/rank/balances/similar');
             // const rankOnIncomeSimilar = await axios.post('/rank/incomes/similar');
             // const rankOnExpenseSimilar = await axios.post('/rank/expenses/similar');

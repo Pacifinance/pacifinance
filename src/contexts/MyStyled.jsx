@@ -1301,13 +1301,15 @@ export const SidebarSection = styled.section`
           justify-content: center;
           align-items: center;
           padding: 1rem 2rem 1rem 2rem;
+          text-align: center;
+          font-size: 1.1rem;
           color: black;
           margin-right: 0%;
           margin-left: 3%;
           background-color: white;
           transition: 0.5s ease-in-out;
-          height: 8em;
-          width: 8em;
+          height: 8.5em;
+          width: 15em;
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
@@ -1387,7 +1389,7 @@ export const SidebarSection = styled.section`
           justify-content: space-evenly;
           align-items: center;
           transition: 0.5s ease-in-out;
-          width: 8em;
+          width: 15em;
           height: 8em;
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
@@ -1593,8 +1595,8 @@ export const SidebarSection = styled.section`
       color: black;
       background-color: white;
       transition: 0.5s ease-in-out;
-      height: em;
-      width: 7em;
+      height: 7.5em;
+      width: 7.5em;
       border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
 
       .design {

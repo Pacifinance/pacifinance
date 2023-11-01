@@ -286,8 +286,8 @@ function Dashboard() {
                                     ))}
                                 </Bar>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: '#079164', fontSize: 12 }} />
-                                <YAxis tick={{ fill: '#079164' }} />
+                                <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 12 }} />
+                                <YAxis tick={{ fill: theme.textColor }} />
                                 <Tooltip
                                     content={({ payload, label, active }) => {
                                         if (active) {
@@ -403,8 +403,8 @@ function Dashboard() {
                                         ))}
                                     </Bar>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                    <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: '#079164', fontSize: 14 }} />
-                                    <YAxis tick={{ fill: '#079164' }} />
+                                    <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 14 }} />
+                                    <YAxis tick={{ fill: theme.textColor }} />
 
                                     <Tooltip
                                         content={({ payload, label, active }) => {

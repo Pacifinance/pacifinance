@@ -107,7 +107,7 @@ function RankingComponent() {
   const [balanceRank, setBalanceRank] = useState([]);
   const [incomeRank, setIncomeRank] = useState([]);
   const [expenseRank, setExpenseRank] = useState([]);
-  const [balanceSimilarUsersRank, setSimilarUsersRank] = useState([]);
+  const [balanceSimilarUsersRank, setBalanceSimilarUsersRank] = useState([]);
   const [incomesSimilarUsersRank, setIncomeSimilarUsersRank] = useState([]);
   const [expensesSimilarUsersRank, setExpenseSimilarUsersRank] = useState([]);
 
@@ -119,6 +119,9 @@ function RankingComponent() {
             setBalanceRank(userData ? userData.percentageRankOnBalance : []);
             setIncomeRank(userData ? userData.percentageRankOnIncomes : []);
             setExpenseRank(userData ? userData.percentageRankOnExpenses : []);
+            setBalanceSimilarUsersRank(userData ? userData.percentageRankOnBalanceSimilar : []);
+            setIncomeSimilarUsersRank(userData ? userData.percentageRankOnIncomesSimilar : []);
+            setExpenseSimilarUsersRank(userData ? userData.percentageRankOnExpensesSimilar : []);
 
         } catch (error) {
           console.error('Errore durante le operazioni:', error);

@@ -8,12 +8,12 @@ import { UserProvider } from './contexts/UserContext';
 import { PageProvider } from './contexts/PageContext'; // Importa il contesto della pagina attiva
 
 // const MatomoTagManager = () => {
-//   // useEffect(() => {
-//   //   var _mtm = window._mtm = window._mtm || [];
-//   //   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-//   //   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-//   //   g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-//   // }, []);
+//   useEffect(() => {
+//     var _mtm = window._mtm = window._mtm || [];
+//     _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+//     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+//     g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
+//   }, []);
 
   
 

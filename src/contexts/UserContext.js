@@ -184,27 +184,24 @@ function UserProvider({ children }) {
             }
 
             //************************************* RANKING **********************************************/
-            const expensesFlag = true;
-            const incomesFlag = false; 
-
-            // Objecty JSon to send to the API if true it will return the rank of the expenses, if false the rank of the incomes
-            const requestExpensesData = {
-              expenses: expensesFlag
-            };
-
-            const requestIncomesData = {
-              expenses: incomesFlag
-            };
 
             const rankOnBalance = await axios.post('/rank/balances', null, { withCredentials: true });
-            const rankOnIncome = await axios.post('/rank/expenses', requestIncomesData, { withCredentials: true });
-            const rankOnExpense = await axios.post('/rank/expenses', requestExpensesData, { withCredentials: true });
-            // const rankOnBalanceSimilar = await axios.post('/rank/balances/similar');
-            // const rankOnIncomeSimilar = await axios.post('/rank/incomes/similar');
-            // const rankOnExpenseSimilar = await axios.post('/rank/expenses/similar');
+            const rankOnIncome = await axios.post('/rank/expenses', {expenses: false}, { withCredentials: true });
+            const rankOnExpense = await axios.post('/rank/expenses', {expenses: true}, { withCredentials: true });
+
+            const rankOnBalanceSimilar = await axios.post('/rank/balances', {similar: true}, { withCredentials: true } );
+            const rankOnIncomeSimilar = await axios.post('/rank/incomes', {expenses: false, similar: true}, { withCredentials: true } );
+            const rankOnExpenseSimilar = await axios.post('/rank/expenses', {expenses: true, similar: true}, { withCredentials: true });
+
             const percentageRankOnBalance = parseInt((rankOnBalance.data.position / rankOnBalance.data.total) * 100);
             const percentageRankOnIncomes = parseInt((rankOnIncome.data.position / rankOnIncome.data.total) * 100);
             const percentageRankOnExpenses = parseInt((rankOnExpense.data.position / rankOnExpense.data.total) * 100);
+
+            const percentageRankOnBalanceSimilar = parseInt((rankOnBalanceSimilar.data.position / rankOnBalanceSimilar.data.total) * 100);
+            const percentageRankOnIncomesSimilar = parseInt((rankOnIncomeSimilar.data.position / rankOnIncomeSimilar.data.total) * 100);
+            const percentageRankOnExpensesSimilar = parseInt((rankOnExpenseSimilar.data.position / rankOnExpenseSimilar.data.total) * 100);
+
+
             // console.log('rankOnBalance:', rankOnBalance);
             // console.log('percentageRankOnBalance:', percentageRankOnBalance);
             // console.log('rankOnIncome:', rankOnIncome);
@@ -218,7 +215,8 @@ function UserProvider({ children }) {
               bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, 
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
-              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, lastExpenses, lastIncomes, percentageRankOnIncomes, percentageRankOnExpenses,
+              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, lastExpenses, lastIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
+              percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar,
               userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });
             handleSetIsUpdated(true);

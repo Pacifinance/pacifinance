@@ -1,4 +1,5 @@
 import React, {useState, useRef, useContext, useEffect} from 'react';
+// import ReactSelect from 'react-select';
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
 import { BiHomeAlt } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineBell, AiOutlineCaretDown } from "react-icons/ai";
@@ -458,14 +459,6 @@ function Sidebar() {
                                     Nazionalità: <Select
                                                     value={userNationality.value}
                                                     onChange={(event) => {
-                                                        
-                                                            // const selectedKey = event.target.value;
-                                                            // const selectedItem = incomesTags.find((item) => item.index === selectedKey);
-                                      
-                                                            // if (selectedItem) {
-                                                            //   const selectedValue = selectedItem.translations.it;
-                                                            //   setCategoryIncome({ key: selectedKey, value: selectedValue });
-                                                            // }
                                                        
                                                         setUserNationality({key: event.target.value.key, value: event.target.value.label});
                                                     }}

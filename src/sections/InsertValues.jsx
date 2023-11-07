@@ -51,10 +51,23 @@ const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
 
 
 const handleInputChange = (e, setterFunction) => {
-  const cleanedValue = e.target.value
-    .replace(/,/g, '.') // Substitute commas with dots
-    .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-    .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+  let cleanedValue = e.target.value
+      .replace(/,/g, '.') // Substitute commas with dots
+      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
+
+  // Remove extra dots
+  const dotIndex = cleanedValue.indexOf('.');
+  if (dotIndex !== -1) {
+      cleanedValue = cleanedValue.substring(0, dotIndex + 1) + cleanedValue.substring(dotIndex + 1).replace(/\./g, '');
+  }
+
+  // Add leading zero if starts with a dot
+  if (cleanedValue.startsWith('.')) {
+      cleanedValue = '0' + cleanedValue;
+  }
+
+  cleanedValue = cleanedValue.toLocaleString('it-IT', { minimumFractionDigits: 2 }); //doesn't work 
+
   setterFunction(cleanedValue);
 };
 
@@ -63,7 +76,7 @@ const handleInputBlur = (e, setterFunction) => {
     .replace(/,/g, '.') // Substitute commas with dots
     .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
     .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-  const cleanedFinalValue = Number(cleanedValue).toFixed(2);
+  const cleanedFinalValue = Number(cleanedValue).toLocaleString('it-IT', { minimumFractionDigits: 2 });
   if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
 
@@ -375,7 +388,7 @@ export default function InsertValue () {
       return (
         <tr key={index}>
           <td>{add.categoryTag.translations.it}</td>
-          <td>{add.amount}€</td>
+          <td>{add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
           <td>{formattedDate}</td>
           <td>
             <button onClick={handleDelete}>
@@ -405,7 +418,7 @@ export default function InsertValue () {
         <tr key={index}>
           <td>{add.categoryTag.translations.it}</td>
           <td>{add.paymentType.translations.it}</td>
-          <td>{add.amount}€</td>
+          <td>{add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
           <td>{formattedDate}</td>
           <td>
             <button onClick={handleDelete}>
@@ -446,16 +459,16 @@ export default function InsertValue () {
               </Column>
             <Column>
               <div>
-                <input type="text" value={bankReal} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+                <input type="text" value={bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
+                <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
               <div>
-                <input type="text" value={cashReal} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+                <input type="text" value={cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
+                <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
               <div>
-                <input type="text" value={digitalServicesReal} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+                <input type="text" value={digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
+                <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
             </Column>
           </StyledInputs>
@@ -485,19 +498,19 @@ export default function InsertValue () {
             </Column>
             <Column>
               <div>
-                <input type="text" value={stocksReal} onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} style={inputStyle} />
+                <input type="text" value={stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={etfReal} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
+                <input type="text" value={etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={bitcoinReal} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
+                <input type="text" value={bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={cryptoReal} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
+                <input type="text" value={cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
             </Column>
@@ -560,22 +573,8 @@ export default function InsertValue () {
               <input
                   type="text"
                   value={income}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setIncome(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setIncome(cleanedFinalValue);
-                  }}
+                  onChange={(e) => handleInputChange(e, setIncome)} 
+                  onBlur={(e) => handleInputBlur(e, setIncome)}
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -702,22 +701,8 @@ export default function InsertValue () {
               <input
                   type="text"
                   value={expense}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.') // Substitute commas with dots
-                      .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    setExpense(cleanedValue);
-                  }}
-                  onBlur={(e) => {
-                    const cleanedValue = e.target.value
-                      .replace(/,/g, '.')
-                      .replace(/[^\d.]/g, '')
-                      .replace(/^0+(\d)/, '$1'); // Remove leading zeros
-                    //i wanna cut the number to 2 decimal numbers with numeric function
-                    const cleanedFinalValue = Number(cleanedValue).toFixed(2);
-                    if (!isNaN(cleanedFinalValue)) setExpense(cleanedFinalValue);
-                  }}
+                  onChange={(e) => handleInputChange(e, setExpense)} 
+                  onBlur={(e) => handleInputBlur(e, setExpense)}
                   style={{
                     textAlign: "center",
                     padding: "8px",

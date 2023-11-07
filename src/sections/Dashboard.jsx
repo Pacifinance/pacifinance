@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useContext, PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { PieChart, Pie, Sector, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { BsBank } from "react-icons/bs";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
-import { AiOutlineStock } from "react-icons/ai";
+import { AiOutlineStock, AiOutlinePlusCircle } from "react-icons/ai";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { UserContext } from '../contexts/UserContext';
-import { primaryColor } from '../contexts/Themes';
+import { primaryColor, secondaryColor } from '../contexts/Themes';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { colorsBalances, colorsIncExp } from '../contexts/Themes';
 import {
@@ -133,116 +134,133 @@ function Dashboard() {
             <CapitalValue theme={theme}>
                 Il tuo patrimonio totale è:{" "}
                 <span style={{ color: primaryColor }}>
-                    {totalReal.toLocaleString('it-IT')}€
+                    {totalReal.toLocaleString('it-IT')} €
                 </span>
             </CapitalValue>
             <UpperSection theme={theme}>
-                <div className="analytic ">
+                <div className="analytic" style={{ position: 'relative' }}>
                     <div className="design">
                         <div className="logo" style={{ color: '#0D579B'}}>
                             <BsBank />
                         </div>
-                        {/* <div className="action">
-                        <AiOutlineMore />
-                        </div> */}
+                        <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <Link to="/insert-values">
+                                <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                            </Link>
+                        </div>
                     </div>
                     <div className="transfer">
                         <h6>Depositati</h6>
                         <h6>in Banca</h6>
                     </div>
                     <div className="money">
-                        <h5>{bankReal.toLocaleString('it-IT')}€</h5>
+                        <h5>{bankReal.toLocaleString('it-IT')} €</h5>
                     </div>
                 </div>
 
-                <div className="analytic ">
+                <div className="analytic" style={{ position: 'relative' }}>
                     <div className="design">
                         <div className="logo" style={{ color: '#329239' }}>
                             <BsCashCoin />
                         </div>
-                        {/* <div className="action">
-                            <AiOutlineMore />
-                        </div> */}
+                        <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <Link to="/insert-values">
+                                <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                            </Link>
+                        </div>
                     </div>
                     <div className="transfer">
                         <h6>Contante</h6>
                         <h6>e monete</h6>
                     </div>
                     <div className="money">
-                        <h5>{cashReal.toLocaleString('it-IT')}€</h5>
+                        <h5>{cashReal.toLocaleString('it-IT')} €</h5>
                     </div>
                 </div>
 
-                <div className="analytic ">
+                <div className="analytic" style={{ position: 'relative' }}>
                     <div className="design">
                         <div className="logo" style={{ color: '#74b9ff' }}>
                             <SiMoneygram />
                         </div>
-                        {/* <div className="action">
-                            <AiOutlineMore />
-                        </div> */}
+                        <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <Link to="/insert-values">
+                                <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                            </Link>
+                        </div>
                     </div>
                     <div className="transfer">
                         <h6>Servizi</h6>
                         <h6>Pagamenti digitali</h6>
                     </div>
                     <div className="money">
-                        <h5>{digitalServicesReal.toLocaleString('it-IT')}€</h5>
+                        <h5>{digitalServicesReal.toLocaleString('it-IT')} €</h5>
                     </div>
                 </div>
 
             </UpperSection>
             <LowerSection theme={theme}>
-                <div className="analytic ">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#FF6600' }}>
-                            <MdOutlineAutoGraph />
+                {stocksReal !== 0 && (
+                    <div className="analytic" style={{ position: 'relative' }}>
+                        <div className="design">
+                            <div className="logo" style={{ color: '#FF6600' }}>
+                                <MdOutlineAutoGraph />
+                            </div>
+                            <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                                <Link to="/insert-values">
+                                    <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                                </Link>
+                            </div>
                         </div>
-                        {/* <div className="action">
-                        <AiOutlineMore />
-                        </div> */}
+                        <div className="transfer">
+                            <h6>Azioni</h6>
+                        </div>
+                        <div className="money">
+                            <h5>{stocksReal.toLocaleString('it-IT')} €</h5>
+                        </div>
                     </div>
-                    <div className="transfer">
-                        <h6>Azioni</h6>
+                )}
+                {etfReal !== 0 && (
+                    <div className="analytic" style={{ position: 'relative' }}>
+                        <div className="design">
+                            <div className="logo" style={{ color: '#a29bfe' }}>
+                                <AiOutlineStock />
+                            </div>
+                            <div className="action"style={{ position: 'absolute', top: 10, right: 10 }}>
+                                <Link to="/insert-values">
+                                    <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="transfer">
+                            <h6>ETF</h6>
+                        </div>
+                        <div className="money">
+                            <h5>{etfReal.toLocaleString('it-IT')} €</h5>
+                        </div>
                     </div>
-                    <div className="money">
-                        <h5>{stocksReal.toLocaleString('it-IT')}€</h5>
-                    </div>
-                </div>
+                )}
 
-                <div className="analytic ">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#a29bfe' }}>
-                            <AiOutlineStock />
+                {bitcoinReal !== 0 && (
+                    <div className="analytic" style={{ position: 'relative' }}>
+                        <div className="design">
+                            <div className="logo" style={{ color: '#F7B510' }}>
+                                <FaBitcoin />
+                            </div>
+                            <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                                <Link to="/insert-values">
+                                    <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                                </Link>
+                            </div>
                         </div>
-                        {/* <div className="action">
-                        <AiOutlineMore />
-                        </div> */}
-                    </div>
-                    <div className="transfer">
-                        <h6>ETF</h6>
-                    </div>
-                    <div className="money">
-                        <h5>{etfReal.toLocaleString('it-IT')}€</h5>
-                    </div>
-                </div>
-                
-                <div className="analytic ">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#F7B510' }}>
-                            <FaBitcoin />
+                        <div className="transfer">
+                            <h6>Bitcoin</h6>
                         </div>
-                        {/* <div className="action">
-                            <AiOutlineMore />
-                        </div> */}
+                        <div className="money">
+                            <h5>{bitcoinReal.toLocaleString('it-IT')} €</h5>
+                        </div>
                     </div>
-                    <div className="transfer">
-                        <h6>Bitcoin</h6>
-                    </div>
-                    <div className="money">
-                        <h5>{bitcoinReal.toLocaleString('it-IT')}€</h5>
-                    </div>
-                </div>
+                )}
                 {/* <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#F7B510' }}>
@@ -253,22 +271,26 @@ function Dashboard() {
                     <h6>Variazione</h6>
                     <h6>Bitcoin in %</h6>
                 </div>             */}
-                <div className="analytic ">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#d63031' }}>
-                            <BsCoin />
+                {cryptoReal !== 0 && (
+                    <div className="analytic" style={{ position: 'relative' }}>
+                        <div className="design">
+                            <div className="logo" style={{ color: '#d63031' }}>
+                                <BsCoin />
+                            </div>
+                            <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                                <Link to="/insert-values">
+                                    <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
+                                </Link>
+                            </div>
                         </div>
-                        {/* <div className="action">
-                            <AiOutlineMore />
-                        </div> */}
+                        <div className="transfer">
+                            <h6>Criptovalute</h6>
+                        </div>
+                        <div className="money">
+                            <h5>{cryptoReal.toLocaleString('it-IT')} €</h5>
+                        </div>
                     </div>
-                    <div className="transfer">
-                        <h6>Criptovalute</h6>
-                    </div>
-                    <div className="money">
-                        <h5>{cryptoReal.toLocaleString('it-IT')}€</h5>
-                    </div>
-                </div>
+                )}
             </LowerSection> 
             <GraphsSection theme={theme}>
             

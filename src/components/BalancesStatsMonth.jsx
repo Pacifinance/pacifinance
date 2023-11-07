@@ -4,13 +4,13 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { BsBank } from "react-icons/bs";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
-import { SiMoneygram } from "react-icons/si";
+import { SiHtml5, SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
-import { primaryColor } from '../contexts/Themes';
-import { calculatePercentageChange } from '../utilities/calculations';
+import { primaryColor, secondaryColor } from '../contexts/Themes';
+import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
 
 
 
@@ -120,10 +120,11 @@ export default function BalancesStatsMonth() {
         
         <div className="wrapper">
         <SecondaryTitle theme={theme}>
-            Il tuo patrimonio rispetto al mese scorso ({formattedPreMonthDate}) è variato del:{" "}
+            Il tuo patrimonio rispetto al mese scorso è variato di:{" "} 
             <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
-                {calculatePercentageChange(totalReal, totalRealPreMonth)}
+                {calculateDifference(totalReal - totalRealPreMonth)} {calculatePercentageChange(totalReal, totalRealPreMonth)}
             </span>
+            {" - "}({formattedPreMonthDate})
         </SecondaryTitle>
         <SectionAMonth theme={theme}>
             
@@ -135,12 +136,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>in Banca <br></br> in percentuale</h6>
+                    <h6>in Banca </h6>
                 </div>
                 <div className="money">
-                    <h5>
-                        {calculatePercentageChange(bankReal, bankRealPreMonth)}
+                    <h5 style={{ color: secondaryColor}}>
+                        {calculateDifference(bankReal, bankRealPreMonth)}
                     </h5>
+                    <h6 style={{ color: secondaryColor}}>
+                        {calculatePercentageChange(bankReal, bankRealPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -152,12 +156,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>soldi fisici <br></br> in percentuale</h6>
+                    <h6>soldi fisici</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(cashReal, cashRealPreMonth)}
+                        {calculateDifference(cashReal, cashRealPreMonth)}
                     </h5>
+                    <h6>
+                        {calculatePercentageChange(cashReal, cashRealPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -169,12 +176,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>Servizi digitali <br></br> in percentuale</h6>
+                    <h6>Servizi digitali</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(digitalServicesReal, digitalServicesRealPreMonth)}
+                        {calculateDifference(digitalServicesReal, digitalServicesRealPreMonth)}
                     </h5>
+                    <h6>
+                        {calculatePercentageChange(digitalServicesReal, digitalServicesRealPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -186,12 +196,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione </h6>
-                    <h6>Stocks<br></br>in percentuale</h6>
+                    <h6>Stocks</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(stocksReal, stocksRealPreMonth)}
+                        {calculateDifference(stocksReal, stocksRealPreMonth)}
                     </h5>
+                    <h6>
+                        {calculatePercentageChange(stocksReal, stocksRealPreMonth)}
+                    </h6>
 
                 </div>
             </div>
@@ -204,12 +217,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>ETF <br></br> in percentuale</h6>
+                    <h6>ETF</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(etfReal, etfRealPreMonth)}
+                        {calculateDifference(etfReal, etfRealPreMonth)}
                     </h5>
+                    <h6>
+                        {calculatePercentageChange(etfReal, etfRealPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -221,12 +237,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>Bitcoin <br></br> in percentuale</h6>
+                    <h6>Bitcoin</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(bitcoinReal, bitcoinRealPreMonth)}
+                        {calculateDifference(bitcoinReal, bitcoinRealPreMonth)}
                     </h5>
+                    <h6>
+                        {calculatePercentageChange(bitcoinReal, bitcoinRealPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -238,12 +257,15 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="transfer">
                     <h6>Variazione</h6>
-                    <h6>Crypto <br></br> in percentuale</h6>
+                    <h6>Crypto</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(cryptoReal, cryptoRealPreMonth)}
+                        {calculateDifference(cryptoReal, cryptoRealPreMonth)}
                     </h5>
+                    <h6>
+                        {calculatePercentageChange(cryptoReal, cryptoRealPreMonth)}
+                    </h6>
                 </div>
             </div>
         </SectionAMonth>

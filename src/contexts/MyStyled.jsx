@@ -1,6 +1,6 @@
 // import React, {useState, useContext} from 'react';
 // import Modal from 'react-modal';
-import { primaryColor, backgroundColor, themes } from './Themes';
+import { primaryColor, secondaryColor, backgroundColor, themes } from './Themes';
 import styled, { keyframes, css } from 'styled-components';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -1296,6 +1296,7 @@ export const SidebarSection = styled.section`
       justify-content: center;
       .analytic {
           display: flex;
+          position: relative;
           flex-direction: column; /* Imposta la direzione dei figli come colonna */
           border-radius: 1rem;
           justify-content: center;
@@ -1313,32 +1314,36 @@ export const SidebarSection = styled.section`
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
       
           .design{
-              align-items: center;
               
               .logo {
                   background-color: white;
                   display: flex;
                   justify-content: center;
-                  align-items: center;
+                  
               
                   svg {
                       font-size: 1.5rem;
                   }
               }
               .action {
-                  margin-left: 4em;
-              svg{
-                  font-size: 1.5rem;
-              }
-              }
+                position: absolute;
+                top: 10;
+                right: 10;
+                svg {
+                    font-size: 1.4rem;
+                    color: inherit; /* Inherit color from parent .action */
+                }
+            }
 
           }
           .transfer {
               margin-top: 1em;
-              color: grey
+              color: ${secondaryColor};
+              font-size: 1.4rem;
           }
           .money {
-              margin-top: 1em;  
+              margin-top: 1em; 
+              font-size: 1.2rem;
           }
       }
 
@@ -1409,18 +1414,20 @@ export const SidebarSection = styled.section`
               }
               .action {
                   margin-left: 4em;
-              svg{
-                  font-size: 1.5rem;
-              }
+                svg{
+                    font-size: 1.5rem;
+                }
               }
 
           }
           .transfer {
               margin-top: 1em;
-              color: grey
+              color: ${secondaryColor};
+              font-size: 1.2rem;
           }
           .money {
-              margin-top: 1em;  
+              margin-top: 1em;
+              font-size: 1rem;
           }
       }
 
@@ -1621,11 +1628,16 @@ export const SidebarSection = styled.section`
       }
       .transfer {
         margin-top: 1em;
-        color: grey;
+        color: ${secondaryColor};
       }
       .money {
         margin-top: 1em;
+
+        h5, h6 {
+          color: ${secondaryColor};
+        }
       }
+
     }
 
     .title {

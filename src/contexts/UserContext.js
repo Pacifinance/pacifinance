@@ -190,7 +190,7 @@ function UserProvider({ children }) {
             const rankOnExpense = await axios.post('/rank/expenses', {expenses: true}, { withCredentials: true });
 
             const rankOnBalanceSimilar = await axios.post('/rank/balances', {similar: true}, { withCredentials: true } );
-            const rankOnIncomeSimilar = await axios.post('/rank/incomes', {expenses: false, similar: true}, { withCredentials: true } );
+            const rankOnIncomeSimilar = await axios.post('/rank/expenses', {expenses: false, similar: true}, { withCredentials: true } );
             const rankOnExpenseSimilar = await axios.post('/rank/expenses', {expenses: true, similar: true}, { withCredentials: true });
 
             const percentageRankOnBalance = parseInt((rankOnBalance.data.position / rankOnBalance.data.total) * 100);

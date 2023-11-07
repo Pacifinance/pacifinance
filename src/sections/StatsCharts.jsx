@@ -4,6 +4,7 @@ import BalancesStatsYear from '../components/BalancesStatsYear';
 import BalancesCharts from '../components/BalancesCharts';
 import BalancesLinesCharts from '../components/BalancesLinesChart';
 import InOutCharts from '../components/InOutChart';
+import PercentageExpensesChart from '../components/PercentageExpensesChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
@@ -49,7 +50,9 @@ export default function StatsCharts() {
             <>
                 <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
                 <InOutCharts />
-                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
+                {/* <SecondaryTitle theme={theme}> Distribuzione delle tue spese per categoria </SecondaryTitle>
+                <PercentageExpensesChart />
+                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle> */}
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <InExStatsMonth />
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>

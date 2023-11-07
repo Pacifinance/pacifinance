@@ -91,7 +91,7 @@ function RankingsSection({ title, rankings }) {
       {areNotEmpty ? (
         <p>{textToDisplay}</p>
       ) : (
-        <p>Coming Soon</p>
+        <p> Mancanza di dati </p>
       )}
     </StyledRankingsSection>
   );

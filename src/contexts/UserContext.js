@@ -106,12 +106,44 @@ function UserProvider({ children }) {
             const cryptoRealPreYearSameMonth = (balancesPreYearSameMonth.crypto || 0).real || 0;
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
 
-            //************************************* LAST EXPENSES AND INCOMES **********************************************/
+            //************************************* EXPENSES AND INCOMES **********************************************/
 
             const allExpensesIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all expenses and incomes
             // console.log('Response completa  SPESE e GUADAGNI: ', allExpensesIncomesResponse);
 
             const allExpensesIncomesArray = allExpensesIncomesResponse.data;
+
+            // Assuming you have access to allExpensesIncomesArray as described in your code
+
+            // Initialize an empty object to hold the total expenses per category for each month
+            let totalExpensesPerCategoryPerMonth = {};
+
+            // Iterate through each month in allExpensesIncomesArray
+            allExpensesIncomesArray.forEach((month, index) => {
+              // Initialize an empty object to hold the total expenses per category for the current month
+              let totalExpensesPerCategory = {};
+
+              // Iterate through each entry in the current month
+              month.forEach((entry) => {
+                // Check if the entry is an expense
+                if (entry.isExpense) {
+                  // If the category exists, add the current value
+                  if (totalExpensesPerCategory[entry.categoryTag]) {
+                    totalExpensesPerCategory[entry.categoryTag] += entry.amount;
+                  } else {
+                    // Otherwise, initialize the category with the current value
+                    totalExpensesPerCategory[entry.categoryTag] = entry.amount;
+                  }
+                }
+              });
+
+              // Save the total expenses per category for the current month
+              totalExpensesPerCategoryPerMonth[index] = totalExpensesPerCategory;
+            });
+
+            // Now totalExpensesPerCategoryPerMonth contains the total expenses for each category for each month
+            console.log(totalExpensesPerCategoryPerMonth);
+
 
             // console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray);
 
@@ -216,7 +248,7 @@ function UserProvider({ children }) {
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
               preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, lastExpenses, lastIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
-              percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar,
+              percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalExpensesPerCategoryPerMonth,
               userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });
             handleSetIsUpdated(true);

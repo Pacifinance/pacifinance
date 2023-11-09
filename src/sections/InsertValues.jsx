@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
-import { UserContext } from '../contexts/UserContext';
-import { ThemeContext } from '../contexts/ThemeContext';
+import React, { useEffect, useState } from "react";
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -28,7 +26,7 @@ import {
   MuiCustomDialogContentText,
   MuiCustomDialogActions,
 } from '../contexts/MyStyled';
-import { set } from "mongoose";
+// import { set } from "mongoose";
 
 const currentDate = new Date().toISOString().split('T')[0];
 
@@ -262,9 +260,7 @@ const handleExpensesDelete = async (fetchData, setDeleteExpensesSuccess, handleS
 };
 
 
-export default function InsertValue () {
-  const { theme } = useContext(ThemeContext);
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHidden}) {
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
   const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
   const [isConfirmExpenseOpen, setIsConfirmExpenseOpen] = useState(false);
@@ -387,9 +383,9 @@ export default function InsertValue () {
   
       return (
         <tr key={index}>
-          <td>{add.categoryTag.translations.it}</td>
-          <td>{add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
-          <td>{formattedDate}</td>
+          <td>{isHidden ? '****' : add.categoryTag.translations.it}</td>
+          <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+          <td>{isHidden ? '****' : formattedDate}</td>
           <td>
             <button onClick={handleDelete}>
                 <FontAwesomeIcon icon={faTimes} />
@@ -416,10 +412,10 @@ export default function InsertValue () {
 
       return (
         <tr key={index}>
-          <td>{add.categoryTag.translations.it}</td>
-          <td>{add.paymentType.translations.it}</td>
-          <td>{add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
-          <td>{formattedDate}</td>
+          <td>{isHidden ? '****' : add.categoryTag.translations.it}</td>
+          <td>{isHidden ? '****' : add.paymentType.translations.it}</td>
+          <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+          <td>{isHidden ? '****' : formattedDate}</td>
           <td>
             <button onClick={handleDelete}>
                 <FontAwesomeIcon icon={faTimes} />
@@ -459,15 +455,15 @@ export default function InsertValue () {
               </Column>
             <Column>
               <div>
-                <input type="text" value={bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
               <div>
-                <input type="text" value={cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
               <div>
-                <input type="text" value={digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
             </Column>
@@ -498,19 +494,19 @@ export default function InsertValue () {
             </Column>
             <Column>
               <div>
-                <input type="text" value={stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
+                <input type="text" value={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
             </Column>

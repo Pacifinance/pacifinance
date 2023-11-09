@@ -1,5 +1,4 @@
-import React, {useState, useEffect, useContext} from "react";
-import { UserContext } from '../contexts/UserContext';
+import React, {useState, useEffect} from "react";
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/lib/component/Tooltip";
 import { XAxis } from "recharts/lib/cartesian/XAxis";
@@ -12,8 +11,7 @@ import { SectionInOut } from '../contexts/MyStyled';
 
 
 
-export default function InOutChart() {
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const [incomesArray, setIncomesArray] = useState([]);
   const [expensesArray, setExpensesArray] = useState([]);
   //impostare i dati presi dell'utente per le spese e le entrate TODO
@@ -66,25 +64,24 @@ export default function InOutChart() {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis tick={{fontSize: 9}} interval={1} dataKey="name" />
-        <YAxis tick={{fontSize: 12}} />
+        <XAxis tick={{fontSize: 9, fill: theme.textColor}} interval={1} dataKey="name" />
+        <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={11} dx={-10}/>} />
         <Tooltip
-            contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-            labelStyle={{ color: 'black', fontWeight: 'bold' }}
-            formatter={(value, name, entry) => {
-                
-                const formattedValue = new Intl.NumberFormat('it-IT', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    maximumFractionDigits: 0,
-                }).format(value);
-
-                return [`${name}: ${formattedValue}`];
-            }}
+          contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+          labelStyle={{ color: 'black', fontWeight: 'bold' }}
+          formatter={(value, name, entry) => {
+            return isHidden ? ['****'] : [`${name}: ${new Intl.NumberFormat('it-IT', {
+              style: 'currency',
+              currency: 'EUR',
+              maximumFractionDigits: 0,
+            }).format(value)}`];
+          }}
         />
         <Legend />
         <Line type="monotone" dataKey="Entrate" stroke="#079164" activeDot={{ r: 8 }} />
         <Line type="monotone" dataKey="Uscite" stroke="#ff3838" />
+        {/* <Line type="monotone" dataKey={isHidden ? '****' : "Entrate"} stroke={isHidden ? theme.textColor : "#079164"} activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey={isHidden ? '****' : "Uscite"} stroke={isHidden ? theme.textColor : "#ff3838"} /> */}
       </LineChart>
     </SectionInOut>
   );

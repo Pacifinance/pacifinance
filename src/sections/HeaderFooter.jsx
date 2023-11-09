@@ -3,7 +3,6 @@ import ToggleModeButton from '../components/ToggleModeButton';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import LogoPaci from '../components/Logo';
-import { ThemeContext } from '../contexts/ThemeContext';
 // import MyStyled from '../contexts/MyStyled';
 import {
   // useTheme,
@@ -28,8 +27,7 @@ import {
   //   display: ${({ isOpenSignUp }) => isOpenSignUp ? 'flex' : 'none'};
   // `;
 
-function Header() {
-  const { theme } = useContext(ThemeContext);
+function Header({theme, mode, toggleMode}) {
   // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
   const [isOpenSignIn, setIsOpenSignIn] = useState(false);
   const [isOpenSignUp, setIsOpenSignUp] = useState(false);
@@ -55,7 +53,7 @@ function Header() {
         <ContainerHeader theme={theme}>
           <LogoPaci />
           <ButtonContainer >
-            <ToggleModeButton />
+            <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
             <ButtonGroup theme={theme}>
               <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>Accedi</MyButton>
               <ModalSignIn theme={theme} isOpen={isOpenSignIn}> 
@@ -77,8 +75,7 @@ function Header() {
     );
   };
 
-function Footer() {
-  const { theme } = useContext(ThemeContext);
+function Footer({theme}) {
 
   return (
     <ContainerFooter theme={theme}>

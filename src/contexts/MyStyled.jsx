@@ -9,6 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import ToggleModeButton from '../components/ToggleModeButton';
+import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton'; 
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -169,13 +170,13 @@ export const SignIn = styled.div`
   .icon-with-text {
     display: flex;
     color: ${(props) => (props.theme.buttonBackgroundColor)};
-    align-items: center; /* Allinea verticalmente gli elementi */
+    align-items: center; 
     margin-bottom: 2.5em;
   }
   
   .icon-with-text h4 {
     color: ${(props) => (props.theme.buttonBackgroundColor)};
-    margin-left: 0.5em; /* Aggiungi uno spazio tra l'icona e il testo */
+    margin-left: 0.5em; 
   }
 
   .sign-in-form label {
@@ -235,6 +236,12 @@ export const ModalButton = styled(MyButton)`
 `;
 
 /****************************** LANDING PAGE **************************************/
+export const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+`;
+
 export const ContainerHeader = styled.header`
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
@@ -254,15 +261,20 @@ export const ContainerHeader = styled.header`
 
 export const LandingPageContainer = styled.div`
   font-family: Roboto, sans-serif;
-  height: 80vh;
+  top: 10vh;
+  min-height: 80vh;
+  bottom: 10vh;
   width: 100vw;
   background-color: ${(props) => (props.theme.backgroundColor)};
   color: ${(props) => (props.theme.textColor)};
+  position: fixed;
+  flex-grow: 1;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     height: 200vh;
     width: 100vw;
+    position: absolute;
   }
 `;
 
@@ -275,14 +287,15 @@ export const ContainerFooter = styled.footer`
   align-items: center;
   justify-content: center;
   padding: 1em;
-  bottom: 0em;
-  left: 0em;
+  bottom: 0;
+  position: absolute;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     height: 10vh;
     width: 100vw;
     bottom: 20em;
+    position: relative;
   }
 `;
 
@@ -913,7 +926,7 @@ export const FeaturesSection = styled.section`
   // align-items: center;
   margin-left: 6vw;
   gap: 3em;
-  max-width: 100vw; /* Aggiungi una larghezza massima desiderata */
+  max-width: 100vw;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
@@ -968,9 +981,30 @@ export const SidebarToggleModeButton = styled(ToggleModeButton)`
         }
       }
 `;
+
+export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
+      padding: 0.3em 0.5em;
+      font-size: 0.8em;
+      gap: 0.1em;
+
+      /* For screens with a maximum width of 768px (e.g. mobile devices) */
+      @media (max-width: 768px) {
+        margin-top: 0.5em;
+        padding: 1px 1px;
+        font-size: 2px;
+
+        svg {
+          font-size: 2em; 
+        }
+      }
+`;
+
+
+
 export const DropdownContainer = styled.div`
   position: relative;
   margin-bottom: 2em;
+  z-index: 9999;
 
   .dropdown-header {
     cursor: pointer;
@@ -986,6 +1020,8 @@ export const DropdownContainer = styled.div`
     border-radius: 0.2em;
     padding: 0.4em;
     box-shadow: 0em 0.1em 0.2em rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+
   }
 
   .dropdown-option {
@@ -1632,7 +1668,10 @@ export const SidebarSection = styled.section`
       }
       .money {
         margin-top: 1em;
-
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         h5, h6 {
           color: ${secondaryColor};
         }
@@ -1903,6 +1942,7 @@ export const StyledComingSoon = styled.div`
   justify-content: center;
   align-items: center; /* centra gli elementi orizzontalmente */
   min-height: 100vh;
+  background-color: ${themes.light.backgroundColor};
 
   .coming-soon-title {
     font-size: 4rem;
@@ -1954,7 +1994,7 @@ export const slideOut = keyframes`
 `;
 
 export const CookieBannerContainer = styled.div`
-  position: fixed;
+  position: sticky;
   left: 5.1vw;
   width: auto;
   bottom: 1em;
@@ -1969,6 +2009,7 @@ export const CookieBannerContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
   height: auto; /* Imposta l'altezza su "auto" per adattarsi al contenuto */
 
   // Aggiungi un margine inferiore al pulsante per separarlo dal testo

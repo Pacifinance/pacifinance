@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { UserContext } from '../contexts/UserContext';
-import { ThemeContext } from '../contexts/ThemeContext';
+import React, { useEffect, useState, useContext } from 'react';
 import { BsBank } from "react-icons/bs";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
@@ -47,9 +45,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-export default function BalancesStatsMonth() {
-    const { theme } = useContext(ThemeContext);
-    const { userData } = useContext(UserContext);
+export default function BalancesStatsMonth({theme, userData, isHidden}) {
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
@@ -122,7 +118,7 @@ export default function BalancesStatsMonth() {
         <SecondaryTitle theme={theme}>
             Il tuo patrimonio rispetto al mese scorso è variato di:{" "} 
             <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
-                {calculateDifference(totalReal - totalRealPreMonth)} {calculatePercentageChange(totalReal, totalRealPreMonth)}
+                {isHidden ? '****' : calculateDifference(totalReal - totalRealPreMonth)} {isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreMonth)}
             </span>
             {" - "}({formattedPreMonthDate})
         </SecondaryTitle>
@@ -140,10 +136,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5 style={{ color: secondaryColor}}>
-                        {calculateDifference(bankReal, bankRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(bankReal, bankRealPreMonth)}
                     </h5>
                     <h6 style={{ color: secondaryColor}}>
-                        {calculatePercentageChange(bankReal, bankRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -160,10 +156,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(cashReal, cashRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(cashReal, cashRealPreMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(cashReal, cashRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(cashReal, cashRealPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -180,10 +176,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(digitalServicesReal, digitalServicesRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(digitalServicesReal, digitalServicesRealPreMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(digitalServicesReal, digitalServicesRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -200,10 +196,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(stocksReal, stocksRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(stocksReal, stocksRealPreMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(stocksReal, stocksRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(stocksReal, stocksRealPreMonth)}
                     </h6>
 
                 </div>
@@ -221,10 +217,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(etfReal, etfRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(etfReal, etfRealPreMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(etfReal, etfRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(etfReal, etfRealPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -241,10 +237,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(bitcoinReal, bitcoinRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(bitcoinReal, bitcoinRealPreMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(bitcoinReal, bitcoinRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(bitcoinReal, bitcoinRealPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -261,10 +257,10 @@ export default function BalancesStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(cryptoReal, cryptoRealPreMonth)}
+                        {isHidden ? '****' : calculateDifference(cryptoReal, cryptoRealPreMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(cryptoReal, cryptoRealPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(cryptoReal, cryptoRealPreMonth)}
                     </h6>
                 </div>
             </div>

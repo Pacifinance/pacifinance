@@ -1,13 +1,17 @@
 import React, {useEffect, useContext} from 'react';
 import { UserContext } from './contexts/UserContext';
+import { ThemeContext } from './contexts/ThemeContext';
+import { PrivacyContext } from './contexts/PrivacyContext';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import Leaderboard from './sections/Leaderbord';
 import ComingSoon from './components/ComingSoon';
 
 function LeaderboardPage() {
-
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -28,8 +32,8 @@ function LeaderboardPage() {
 
   return (
     <Div>
-      <Sidebar />
-      <Leaderboard />
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+      <Leaderboard theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
       {/* <ComingSoon /> */}
     </Div>
   );

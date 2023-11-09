@@ -1,12 +1,17 @@
 import React, {useEffect, useContext} from 'react';
 import { UserContext } from './contexts/UserContext';
+import { ThemeContext } from './contexts/ThemeContext';
+import { PrivacyContext } from './contexts/PrivacyContext';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import ComingSoon from './components/ComingSoon';
 
 function KnowledgePage() {
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
 
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -27,7 +32,7 @@ function KnowledgePage() {
 
   return (
     <Div>
-      <Sidebar />
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       {/* <Knowledge /> */}
       <ComingSoon />
     </Div>

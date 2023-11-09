@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { UserContext } from '../contexts/UserContext';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { BsBank } from "react-icons/bs";
 import { FaBitcoin } from "react-icons/fa";
 import { BsCashCoin } from "react-icons/bs";
@@ -58,9 +56,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 //   );
 // };
 
-function BalancesStatsYear() {
-    const { theme } = useContext(ThemeContext);
-    const { userData } = useContext(UserContext);
+function BalancesStatsYear({theme, userData, isHidden}) {
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
@@ -143,7 +139,7 @@ function BalancesStatsYear() {
         <SecondaryTitle theme={theme}>
             Il tuo patrimonio rispetto ad un anno fa è variato di:{" "}
             <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
-                {calculateDifference(totalReal, totalRealPreYearSameMonth)} {(calculatePercentageChange(totalReal, totalRealPreYearSameMonth))}
+                {isHidden ? '****' : calculateDifference(totalReal, totalRealPreYearSameMonth)} {(isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreYearSameMonth))}
             </span>
             {" - "}({formattedPreYearSameMonthDate})
         </SecondaryTitle>
@@ -160,10 +156,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(bankReal, bankRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(bankReal, bankRealPreYearSameMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(bankReal, bankRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -180,10 +176,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(cashReal, cashRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(cashReal, cashRealPreYearSameMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(cashReal, cashRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(cashReal, cashRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -201,10 +197,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5 style={{ color: secondaryColor}}>
-                        {calculateDifference(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h5>
                     <h6 style={{ color: secondaryColor}}>
-                        {calculatePercentageChange(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -221,10 +217,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(stocksReal, stocksRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(stocksReal, stocksRealPreYearSameMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(stocksReal, stocksRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(stocksReal, stocksRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -241,10 +237,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(etfReal, etfRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(etfReal, etfRealPreYearSameMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(etfReal, etfRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(etfReal, etfRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -261,10 +257,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(bitcoinReal, bitcoinRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(bitcoinReal, bitcoinRealPreYearSameMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(bitcoinReal, bitcoinRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(bitcoinReal, bitcoinRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -281,10 +277,10 @@ function BalancesStatsYear() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculateDifference(cryptoReal, cryptoRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(cryptoReal, cryptoRealPreYearSameMonth)}
                     </h5>
                     <h6>
-                        {calculatePercentageChange(cryptoReal, cryptoRealPreYearSameMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(cryptoReal, cryptoRealPreYearSameMonth)}
                     </h6>
                 </div>
             </div>

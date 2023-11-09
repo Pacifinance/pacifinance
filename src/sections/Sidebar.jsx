@@ -1,8 +1,8 @@
 import React, {useState, useRef, useContext, useEffect} from 'react';
 // import ReactSelect from 'react-select';
-import { ButtonGroup, Select, MenuItem } from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
 import { BiHomeAlt } from "react-icons/bi";
-import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineBell, AiOutlineCaretDown } from "react-icons/ai";
+import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineCaretDown } from "react-icons/ai";
 import { BsBook, BsInfoCircle } from "react-icons/bs";
 import Tooltip from '@material-ui/core/Tooltip';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
@@ -12,12 +12,12 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import LogoPaci from '../components/Logo';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { UserContext } from '../contexts/UserContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
 import { IconContext } from '../contexts/PageContext';
 import {
     SidebarToggleModeButton,
+    SidebarPrivacyToggleModeButton,
     SidebarSection,
-    MyButton,
     Notification,
     DropdownContainer,
     Top,
@@ -37,12 +37,15 @@ import {
     MuiCustomVisibilityOff,
     MuiUseStyles,
 } from '../contexts/MyStyled';
+// import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton';
 
 
-function Sidebar() {
-    const { theme } = useContext(ThemeContext);
-    const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const inputRef = useRef(null);
+    const { theme, toggleMode } = useContext(ThemeContext);
+    const { mode } = theme;
+    const { isHidden, toggleHidden } = useContext(PrivacyContext);
+
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
     const [userId, setUserId] = useState(''); 
@@ -454,10 +457,10 @@ function Sidebar() {
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogProfileContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                    ID: {userId} <br></br>
+                                    ID: {isHidden ? '****' : userId} <br></br>
                                     {/* Username: {username} <br></br> */}
                                     Nazionalità: <Select
-                                                    value={userNationality.value}
+                                                    value={isHidden ? '****' : userNationality.value}
                                                     onChange={(event) => {
                                                        
                                                         setUserNationality({key: event.target.value.key, value: event.target.value.label});
@@ -481,7 +484,7 @@ function Sidebar() {
                                                     ))}
                                                 </Select> <br></br>
                                     Dove lavori: <Select
-                                                    value={userWhereWorks.value}
+                                                    value={isHidden ? '****' : userWhereWorks.value}
                                                     onChange={(event) => {
                                                         setUserWhereWorks({key: event.target.value.key, value: event.target.value.label});
                                                     }}
@@ -504,7 +507,7 @@ function Sidebar() {
                                                     ))}
                                                 </Select> <br></br>
                                     Lavoro: <Select
-                                                value={userJob.value}
+                                                value={isHidden ? '****' : userJob.value}
                                                 onChange={(event) => {
                                                     setUserJob({key: event.target.value.key, value: event.target.value.label});
                                                 }}
@@ -527,7 +530,7 @@ function Sidebar() {
                                                 ))}
                                             </Select> <br></br>
                                     Tipo di lavoro: <Select
-                                                        value={userJobType.value}
+                                                        value={isHidden ? '****' : userJobType.value}
                                                         onChange={(event) => {
                                                             setUserJobType({key: event.target.value.key, value: event.target.value.label});
                                                         }}
@@ -550,7 +553,7 @@ function Sidebar() {
                                                         ))}
                                                     </Select> <br></br>
                                     Part-time | Full-time: <Select
-                                                                value={userWorkTime.value}
+                                                                value={isHidden ? '****' : userWorkTime.value}
                                                                 onChange={(event) => {
                                                                     setUserWorkTime({key: event.target.value.key, value: event.target.value.label});
                                                                 }}
@@ -573,7 +576,7 @@ function Sidebar() {
                                                                 ))}
                                                             </Select> <br></br>
                                     Lavoro remoto: <Select
-                                                        value={userRemoteType.value}
+                                                        value={isHidden ? '****' : userRemoteType.value}
                                                         onChange={(event) => {
                                                             setUserRemoteType({key: event.target.value.key, value: event.target.value.label});
                                                         }}
@@ -919,7 +922,11 @@ function Sidebar() {
                 </Notification>
 
                 <ToggleButton>
-                    <SidebarToggleModeButton theme={theme} />
+                    <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
+                </ToggleButton>
+
+                <ToggleButton>
+                    <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                 </ToggleButton>
             </Top>
         </SidebarSection>

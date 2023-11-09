@@ -1,12 +1,17 @@
 import React, {useEffect, useContext} from 'react';
 import { UserContext } from './contexts/UserContext';
+import { ThemeContext } from './contexts/ThemeContext';
+import { PrivacyContext } from './contexts/PrivacyContext';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import Dashboard from './sections/Dashboard';
+import { CustomTick } from './utilities/customGraphsInfo';
 
 function DashboardPage() {
-
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -27,8 +32,8 @@ function DashboardPage() {
 
   return (
     <Div>
-      <Sidebar />
-      <Dashboard />
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+      <Dashboard theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
     </Div>
   );
 }

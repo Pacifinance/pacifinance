@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useContext} from "react";
-import { UserContext } from '../contexts/UserContext';
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/lib/component/Tooltip"; 
 import { XAxis } from "recharts/lib/cartesian/XAxis";
@@ -15,10 +14,8 @@ import { ThemeContext } from '../contexts/ThemeContext';
 
 
 
-export default function BalancesLinesChart() {
+export default function BalancesLinesChart({theme, userData, isHidden, CustomTick}) {
 
-  const { userData } = useContext(UserContext);
-  const { theme } = useContext(ThemeContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
 
   // const { SectionBalancesCharts } = MyStyled();
@@ -70,8 +67,8 @@ export default function BalancesLinesChart() {
             }}
         >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis tick={{fontSize: 9}} interval={1} dataKey="name" />
-            <YAxis tick={{fontSize: 12}} />
+            <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9}/>} />
+            <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
             <Tooltip
                 contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
                 labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
@@ -89,14 +86,13 @@ export default function BalancesLinesChart() {
             />
             <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>
             
-            <Line type="monotone" dataKey="Banca" stroke="#0D579B" />
-            <Line type="monotone" dataKey="SoldiFisici" stroke="#329239" />
-            <Line type="monotone" dataKey="ServiziDigitali" stroke="#74b9ff" />
-            <Line type="monotone" dataKey="Azioni" stroke="#FF6600" />
-            <Line type="monotone" dataKey="ETF" stroke="#a29bfe" />
-            <Line type="monotone" dataKey="Bitcoin" stroke="#F7B510" />
-            <Line type="monotone" dataKey="Crypto" stroke="#d63031" />
-            <Line type="monotone" dataKey="Total" stroke="#079164" />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Banca"} stroke={isHidden ? theme.textColor : "#0D579B"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "ServiziDigitali"} stroke={isHidden ? theme.textColor : "#74b9ff"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Azioni"} stroke={isHidden ? theme.textColor : "#FF6600"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} />
             
         </LineChart>
     </SectionBalancesCharts>

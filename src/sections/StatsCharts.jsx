@@ -10,12 +10,15 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
 import InExStatsMonth from '../components/InExStatsMonth';
 import InExStatsYear from '../components/InExStatsYear';
+import { PrivacyContext } from '../contexts/PrivacyContext';
+import { CustomTick } from '../utilities/customGraphsInfo';
 
 
 
 export default function StatsCharts() {
     const { userData } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
+    const { isHidden } = useContext(PrivacyContext);
     const [activePage, setActivePage] = useState("statsBilancio");
     const formattedPreMonthDate = userData?.preMonthDate
       ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
@@ -36,12 +39,12 @@ export default function StatsCharts() {
             
             <>
                 <SecondaryTitle theme={theme}>Andamento del tuo bilancio negli ultimi 12 mesi</SecondaryTitle>
-                <BalancesLinesCharts />
+                <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 <SecondaryTitle theme={theme}>Distribuzione del tuo bilancio negli ultimi 12 mesi</SecondaryTitle>
-                <BalancesCharts />
+                <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
-                <BalancesStatsMonth />
-                <BalancesStatsYear />
+                <BalancesStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
+                <BalancesStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
                 
             </>
           );
@@ -49,14 +52,14 @@ export default function StatsCharts() {
           return (
             <>
                 <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
-                <InOutCharts />
+                <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 {/* <SecondaryTitle theme={theme}> Distribuzione delle tue spese per categoria </SecondaryTitle>
-                <PercentageExpensesChart />
+                <PercentageExpensesChart theme={theme} isHidden={isHidden}/>
                 <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle> */}
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
-                <InExStatsMonth />
+                <InExStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
-                <InExStatsYear />
+                <InExStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
                 
             </>
           );

@@ -1,20 +1,21 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
+import { ThemeContext } from './contexts/ThemeContext';
 import { Header, Footer } from './sections/HeaderFooter';
 import LandingContent from './sections/LandingContent';
+import { PageContainer } from './contexts/MyStyled';
 
 export default function LandingPage() {
-
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
+  // const loadUserData = () => {
+  //   handleSetIsUpdated(false); // Forza il re-render di UserProvider
+  // };
 
-  useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
-  }, []);
+  // useEffect(() => {
+  //   loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+  // }, []);
 
   // Matomo Tag Manager
   // React.useEffect(() => {
@@ -26,9 +27,11 @@ export default function LandingPage() {
 
   return (
     <>
-      <Header />
-      <LandingContent />
-      <Footer />
+      <PageContainer>
+        <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
+        <LandingContent theme={theme}/>
+        <Footer theme={theme}/>
+      </PageContainer>
     </>
     
   );

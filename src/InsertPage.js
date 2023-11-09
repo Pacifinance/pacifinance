@@ -1,12 +1,16 @@
 import React, {useEffect, useContext} from 'react';
 import { UserContext } from './contexts/UserContext';
+import { ThemeContext } from './contexts/ThemeContext';
+import { PageWrapper } from './contexts/MyStyled';
+import { PrivacyContext } from './contexts/PrivacyContext';
 import Sidebar from './sections/Sidebar';
 import InsertValues from './sections/InsertValues';
-import { PageWrapper } from './contexts/MyStyled';
 
 function InsertPage() {
-
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -27,8 +31,8 @@ function InsertPage() {
 
   return (
     <PageWrapper>
-      <Sidebar />
-      <InsertValues />
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+      <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
     </PageWrapper>
   );
 }

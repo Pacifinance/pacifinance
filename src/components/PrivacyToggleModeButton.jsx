@@ -1,16 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import Brightness4Icon from '@material-ui/icons/Brightness3';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import { MuiCustomVisibility, MuiCustomVisibilityOff } from '../contexts/MyStyled';
 
-const ToggleModeButton = ({ mode, toggleMode }) => {
+const PrivacyToggleModeButton = ({ mode, toggleHidden, isHidden }) => {
 
   return (
-    <ButtonToggle onClick={toggleMode} mode={mode}>
-      {mode === 'dark' ? <LightModeIcon /> : <Brightness4Icon />}
+    <ButtonToggle onClick={toggleHidden} mode={mode}>
+      {isHidden ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
     </ButtonToggle>
   );
 };
+
+export default PrivacyToggleModeButton;
+
 
 const ButtonToggle = styled.button`
   background-color: ${(props) => (props.mode === 'dark' ? '#222' : '#fff')};
@@ -39,8 +41,3 @@ const ButtonToggle = styled.button`
     }
   }
 `;
-
-export default ToggleModeButton;
-
-
-

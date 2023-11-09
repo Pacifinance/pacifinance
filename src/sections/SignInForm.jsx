@@ -35,6 +35,7 @@ export default function SignInForm() {
     const { theme } = useContext(ThemeContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showUsername, setShowUsername] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
@@ -54,7 +55,11 @@ export default function SignInForm() {
       setShowPassword(!showPassword);
     };
 
-    const handleMouseDownPassword = (event) => {
+    const handleClickShowUsername = () => {
+      setShowUsername(!showUsername);
+    };
+
+    const handleMouseDown = (event) => {
       event.preventDefault();
     };
 
@@ -63,7 +68,7 @@ export default function SignInForm() {
         event.preventDefault();
         try {
           handleSetIsAuthenticated(false); //to be sure that the user will se his data
-          //navigate('/dashboard'); //da commentare, utile solo per test in locale
+          navigate('/dashboard'); //da commentare, utile solo per test in locale
           //username could be user_id o username
           const response = await axios.post('/login', { user_id: username, password: password }, { withCredentials: true }); //the path in the db is called login
           if(response.status === 200) {
@@ -100,12 +105,26 @@ export default function SignInForm() {
                         <MuiCustomTextField theme={theme}
                           id = "username"
                           label="Id o Username"
-                          type="text"
+                          type={showUsername ? 'text' : 'password'}
                           value={username}
                           onChange={(event) => setUsername(event.target.value)}
                           fullWidth
                           required
                           className={classes.signIn}
+                          InputProps={{
+                            endAdornment: (
+                              <MuiCustomInputAdornment theme={theme} position="end">
+                                <MuiCustomIconButton theme={theme}
+                                  aria-label="toggle username visibility"
+                                  onClick={handleClickShowUsername}
+                                  onMouseDown={handleMouseDown}
+                                  className={classes.icon}
+                                >
+                                  {showUsername ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                </MuiCustomIconButton>
+                              </MuiCustomInputAdornment>
+                            ),
+                          }}
                         />
                         <MuiCustomTextField theme={theme}
                           id = "passwordSignIn"
@@ -122,7 +141,7 @@ export default function SignInForm() {
                                 <MuiCustomIconButton theme={theme}
                                   aria-label="toggle password visibility"
                                   onClick={handleClickShowPassword}
-                                  onMouseDown={handleMouseDownPassword}
+                                  onMouseDown={handleMouseDown}
                                   className={classes.icon}
                                 >
                                   {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}

@@ -1,9 +1,8 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.webp';
-import { ThemeContext } from '../contexts/ThemeContext';
 import CookieBanner from '../components/CookieBanner';
 import {
   MyButton,
@@ -21,9 +20,7 @@ import {
   FeatureText,
 } from '../contexts/MyStyled';
 
-export default function LandingContent() {
-
-  const { theme } = useContext(ThemeContext);
+export default function LandingContent({theme}) {
   
 
   return (

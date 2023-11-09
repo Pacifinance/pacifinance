@@ -1,12 +1,16 @@
 import React, {useEffect, useContext} from 'react';
 import { UserContext } from './contexts/UserContext';
+import { ThemeContext } from './contexts/ThemeContext';
+import { PrivacyContext } from './contexts/PrivacyContext';
 import styled from 'styled-components';
 import Sidebar from './sections/Sidebar';
 import ComingSoon from './components/ComingSoon';
 
 function InfoPage() {
-
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -27,7 +31,7 @@ function InfoPage() {
 
   return (
     <Div>
-      <Sidebar />
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
       {/* <Info /> */}
       <ComingSoon />
     </Div>

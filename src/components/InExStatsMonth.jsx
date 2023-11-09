@@ -1,13 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { UserContext } from '../contexts/UserContext';
-import { AiOutlineMore } from "react-icons/ai";
-import { ThemeContext } from '../contexts/ThemeContext';
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../contexts/MyStyled';
 import { calculatePercentageChange } from '../utilities/calculations';
-import axios from 'axios';
 
 
 
@@ -44,9 +40,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-export default function InExStatsMonth() {
-    const { theme } = useContext(ThemeContext);
-    const { userData } = useContext(UserContext);
+export default function InExStatsMonth({ theme, userData, isHidden}) {
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
@@ -117,7 +111,7 @@ export default function InExStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(incomesMonth, incomesPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -138,7 +132,7 @@ export default function InExStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(expensesMonth, expensesPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreMonth)}
                     </h5>
                 </div>
             </div>
@@ -159,7 +153,7 @@ export default function InExStatsMonth() {
                 </div>
                 <div className="money">
                     <h5>
-                        {calculatePercentageChange(savedMonth, savedPreMonth)}
+                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreMonth)}
                     </h5>
                 </div>
             </div>

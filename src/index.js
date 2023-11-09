@@ -5,7 +5,25 @@ import './index.css';
 import AppRouter from './AppRouter';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
-import { PageProvider } from './contexts/PageContext'; // Importa il contesto della pagina attiva
+import { PageProvider } from './contexts/PageContext';
+import { PrivacyProvider } from './contexts/PrivacyContext';
+
+ReactDOM.render(
+    <ThemeProvider>
+      <UserProvider>
+        <PageProvider>
+          <PrivacyProvider>
+            <React.StrictMode>
+              <Router>
+                <AppRouter />
+              </Router>
+            </React.StrictMode>
+          </PrivacyProvider>
+        </PageProvider>
+      </UserProvider>
+    </ThemeProvider>,
+    document.getElementById('root')
+);
 
 // const MatomoTagManager = () => {
 //   useEffect(() => {
@@ -19,21 +37,6 @@ import { PageProvider } from './contexts/PageContext'; // Importa il contesto de
 
 //   return null;
 // };
-
-ReactDOM.render(
-    <ThemeProvider>
-      <UserProvider>
-        <PageProvider>
-          <React.StrictMode>
-            <Router>
-              <AppRouter />
-            </Router>
-          </React.StrictMode>
-        </PageProvider>
-      </UserProvider>
-    </ThemeProvider>,
-    document.getElementById('root')
-);
 
 {/* <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -12,11 +12,11 @@ export function calculatePercentageChange(currentValue, previousValue) {
 
 
 export function calculateDifference(currentValue, previousValue) {
-    if (isNaN(currentValue) || isNaN(previousValue)) {
-      return '0.00 €';
-    }
+    // if (isNaN(currentValue) || isNaN(previousValue)) {
+    //   return '0.00 €';
+    // }
   
-    return `${(currentValue - previousValue).toFixed(2)} €`;
+    return `${(currentValue - previousValue).toLocaleString('it-IT')} €`;
 }
  
   

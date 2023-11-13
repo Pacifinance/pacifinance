@@ -53,9 +53,9 @@ export default function StatsCharts() {
             <>
                 <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
                 <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
-                {/* <SecondaryTitle theme={theme}> Distribuzione delle tue spese per categoria </SecondaryTitle>
-                <PercentageExpensesChart theme={theme} isHidden={isHidden}/>
-                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle> */}
+                <SecondaryTitle theme={theme}> Distribuzione delle tue spese per categoria </SecondaryTitle>
+                <PercentageExpensesChart theme={theme} userData={userData} isHidden={isHidden}/>
+                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
                 <InExStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
                 <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>

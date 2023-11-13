@@ -192,7 +192,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                 </div>
                 <div className="transfer">
                     <h6>Variazione </h6>
-                    <h6>Stocks</h6>
+                    <h6>Azioni</h6>
                 </div>
                 <div className="money">
                     <h5>

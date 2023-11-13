@@ -14,6 +14,12 @@ import { SectionInOut } from '../contexts/MyStyled';
 export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const [incomesArray, setIncomesArray] = useState([]);
   const [expensesArray, setExpensesArray] = useState([]);
+
+  const greyScale1 = Math.floor(Math.random() * 256);
+  const greyColor1 = `rgb(${greyScale1}, ${greyScale1}, ${greyScale1})`;
+  const greyScale2 = Math.floor(Math.random() * 256);
+  const greyColor2 = `rgb(${greyScale2}, ${greyScale2}, ${greyScale2})`;
+
   //impostare i dati presi dell'utente per le spese e le entrate TODO
   useEffect(() => {
     const fetchData = async () => {
@@ -78,8 +84,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
           }}
         />
         <Legend />
-        <Line type="monotone" dataKey="Entrate" stroke="#079164" activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey="Uscite" stroke="#ff3838" />
+        <Line type="monotone" dataKey="Entrate" stroke={isHidden ? greyColor1 : "#079164"} activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey="Uscite" stroke={isHidden ? greyColor2 : "#ff3838"} />
         {/* <Line type="monotone" dataKey={isHidden ? '****' : "Entrate"} stroke={isHidden ? theme.textColor : "#079164"} activeDot={{ r: 8 }} />
         <Line type="monotone" dataKey={isHidden ? '****' : "Uscite"} stroke={isHidden ? theme.textColor : "#ff3838"} /> */}
       </LineChart>

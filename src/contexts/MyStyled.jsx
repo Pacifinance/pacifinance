@@ -1792,6 +1792,15 @@ export const SidebarSection = styled.section`
     }
   `;
 
+  export const PercentageExpensesChartContainer = styled.div`
+    padding-bot: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+  `;
+
   export const MySectionButton = styled.button`
     background-color: ${(props) => (props.theme.buttonBackgroundColor)};
     color: white;  
@@ -1994,10 +2003,10 @@ export const slideOut = keyframes`
 `;
 
 export const CookieBannerContainer = styled.div`
-  position: sticky;
+  position: fixed;
   left: 5.1vw;
   width: auto;
-  bottom: 1em;
+  bottom: 10vh;
   border-radius: 0.5em;
   background-color: white;
   color: black;
@@ -2128,6 +2137,10 @@ export const MuiCustomTextField = styled(TextField)`
       .Mui-focused .MuiInput-underline:after {
         border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
       }
+  }
+  & input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset;
+    -webkit-text-fill-color: black;
   }
 `;
 

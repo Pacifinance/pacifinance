@@ -17,24 +17,30 @@ function RankingsSection({ title, rankings, isHidden }) {
     let textToDisplay = "";
     if (!isNaN(parseFloat(rankings))) {
       //Se è tra gli ultimi 50% degli utenti (ovvero se è come rankings sopra a 50) (vuol dire che spende meno)
-      if (isExpenseTitle) {
-          if (isRankingsAbove50) {
-              textToDisplay = `Complimenti! Sei nella top ${isHidden ? '****' : Math.min(rankings, 99)}%. Sei tra gli utenti che spendono di meno!`;
-          } else if (isRankingBelow20) {
-              textToDisplay = `Sei nella top ${isHidden ? '****' : Math.min(rankings, 99)}%. Attenzione! Sei tra gli utenti che spendono di più!`;
-          } else {
-              textToDisplay = `Sei nella top ${isHidden ? '****' : Math.min(rankings, 99)}%. Sei nella media degli utenti!`;
-              
-          }
+      if (isHidden) {
+        textToDisplay = '****';
       } else {
-          //Se è tra i primi 50% degli utenti (ovvero se non è come rankings sopra a 50)
-          if (!isRankingsAbove50) {
-              textToDisplay = `Complimenti! Sei nella top ${isHidden ? '****' : Math.min(rankings, 99)}% degli utenti!`;
+        if (isExpenseTitle) {
+
+          if (isRankingsAbove50) {
+            textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che spendono di meno!`;
           } else if (isRankingBelow20) {
-              textToDisplay = ` Incredibile!! Sei nella top ${isHidden ? '****' : Math.min(rankings, 99)}%. Sei tra gli utenti che guadagnano di più!`;
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}%. Attenzione! Sei tra gli utenti che spendono di più!`;
           } else {
-              textToDisplay = `Sei nella top ${isHidden ? '****' : Math.min(rankings, 99)}% degli utenti!`;
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}%. Sei nella media degli utenti!`;
           }
+
+        } else {
+
+          if (!isRankingsAbove50) {
+            textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
+          } else if (isRankingBelow20) {
+            textToDisplay = ` Incredibile!! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che guadagnano di più!`;
+          } else {
+            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
+          }
+          
+        }
       }
     } else {
         // Set the text to display if rankings is not a number
@@ -113,16 +119,15 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                         <StyledLabel>Classifiche relative al mese: <StyledMonth>{formattedPreMonthDate}</StyledMonth></StyledLabel>
                         <RankingsTitle >Classifiche generali : </RankingsTitle>
                         <CenteredRankings>
-                            <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} />
-                            <RankingsSection title="Classifica Entrate" rankings={incomeRank} />
-                            <RankingsSection title="Classifica Uscite" rankings={expenseRank} />
+                            <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} isHidden={isHidden} />
+                            <RankingsSection title="Classifica Entrate" rankings={incomeRank} isHidden={isHidden} />
+                            <RankingsSection title="Classifica Uscite" rankings={expenseRank} isHidden={isHidden} />
                         </CenteredRankings>
                         <RankingsTitle  >Classifiche utenti simili : </RankingsTitle >
                         <CenteredRankings>
-                            <RankingsSection title="Classifica Patrimonio" rankings={balanceSimilarUsersRank} />
-                            <RankingsSection title="Classifica Entrate" rankings={incomesSimilarUsersRank} />
-                            <RankingsSection title="Classifica Uscite" rankings={expensesSimilarUsersRank} />
-
+                            <RankingsSection title="Classifica Patrimonio" rankings={balanceSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection title="Classifica Entrate" rankings={incomesSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection title="Classifica Uscite" rankings={expensesSimilarUsersRank} isHidden={isHidden} />
                         </CenteredRankings>
                     </StyledRankingPage>
             </div>

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../contexts/MyStyled';
-import { calculatePercentageChange } from '../utilities/calculations';
+import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
 
 
 // const [activeIndex, setActiveIndex] = useState(null);
@@ -15,9 +15,6 @@ import { calculatePercentageChange } from '../utilities/calculations';
 // const handleMouseLeave = () => {
 //   setActiveIndex(null);
 // };
-
-
-
 
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -114,12 +111,14 @@ function InExStatsYear({ theme, userData, isHidden}) {
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Entrate</h6>
-                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreYearSameMonth)}
                     </h5>
+                    <h6>
+                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreYearSameMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -135,12 +134,14 @@ function InExStatsYear({ theme, userData, isHidden}) {
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Uscite</h6>
-                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreYearSameMonth)}
                     </h5>
+                    <h6>
+                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreYearSameMonth)}
+                    </h6>
                 </div>
             </div>
             
@@ -156,12 +157,14 @@ function InExStatsYear({ theme, userData, isHidden}) {
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Rismarmi</h6>
-                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(savedMonth, savedPreYearSameMonth)}
                     </h5>
+                    <h6>
+                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreYearSameMonth)}
+                    </h6>
                 </div>
             </div>
         </SectionAMonth>

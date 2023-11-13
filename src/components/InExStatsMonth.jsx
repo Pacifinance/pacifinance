@@ -3,7 +3,7 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../contexts/MyStyled';
-import { calculatePercentageChange } from '../utilities/calculations';
+import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
 
 
 
@@ -107,12 +107,14 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Entrate</h6>
-                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreMonth)}
+                        {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreMonth)}
                     </h5>
+                    <h6>
+                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -128,12 +130,14 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Uscite</h6>
-                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreMonth)}
+                        {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreMonth)}
                     </h5>
+                    <h6>
+                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreMonth)}
+                    </h6>
                 </div>
             </div>
 
@@ -149,12 +153,14 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                 <div className="transfer">
                     <h6>Variazione</h6>
                     <h6>Risparmi</h6>
-                    <h6>in percentuale</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreMonth)}
+                        {isHidden ? '****' : calculateDifference(savedMonth, savedPreMonth)}
                     </h5>
+                    <h6>
+                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreMonth)}
+                    </h6>
                 </div>
             </div>
         </SectionAMonth>

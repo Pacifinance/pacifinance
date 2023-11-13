@@ -312,6 +312,29 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         }
     };
 
+    // Filter out the "Other" option
+    const otherNationalityOption = nationalityTags.find(tag => tag.index === 9999); // option "Altro" ("Other")
+    const otherNationalityTags = nationalityTags.filter(tag => tag.index !== 9999); // Remove the "Other" option from the array
+
+    // Sort the other tags alphabetically
+    const sortedNationalityTags = otherNationalityTags.sort((a, b) => a.translations.it.localeCompare(b.translations.it));
+
+    // Add the "Other" option back to the end of the array
+    if (otherNationalityOption ) {
+        sortedNationalityTags.push(otherNationalityOption);
+    }
+
+    const otherJobOption = jobTags.find(tag => tag.index === 9999); // option "Altro" ("Other")
+    const otherJobTags = jobTags.filter(tag => tag.index !== 9999); // Remove the "Other" option from the array
+
+    // Sort the other tags alphabetically
+    const sortedJobTags = otherJobTags.sort((a, b) => a.translations.it.localeCompare(b.translations.it));
+
+    // Add the "Other" option back to the end of the array
+    if (otherJobOption ) {
+        sortedJobTags.push(otherJobOption);
+    }
+
     return (
         <SidebarSection theme={theme}>
             <Top>
@@ -477,7 +500,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                     <MenuItem value="">
                                                         <em>Seleziona una nazionalità</em>
                                                     </MenuItem>
-                                                    {nationalityTags.map((tag) => (
+                                                    {sortedNationalityTags.map((tag) => (
                                                         <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
                                                         {tag.translations.it}
                                                         </MenuItem>
@@ -500,7 +523,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                     <MenuItem value="">
                                                         <em>Seleziona un luogo di lavoro</em>
                                                     </MenuItem>
-                                                    {nationalityTags.map((tag) => (
+                                                    {sortedNationalityTags.map((tag) => (
                                                         <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
                                                         {tag.translations.it}
                                                         </MenuItem>
@@ -523,7 +546,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                 <MenuItem value="">
                                                     <em>Seleziona il tuo lavoro</em>
                                                 </MenuItem>
-                                                {jobTags.map((tag) => (
+                                                {sortedJobTags.map((tag) => (
                                                     <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
                                                     {tag.translations.it}
                                                     </MenuItem>

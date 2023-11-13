@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 import {
   MySectionButton,
@@ -42,7 +44,6 @@ const currentDate = new Date().toISOString().split('T')[0];
 //   setExpenseDate(event.target.value);
 // };
 
-
 const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
   setIsConfirmBalanceOpen(true);
 };
@@ -78,43 +79,6 @@ const handleInputBlur = (e, setterFunction) => {
   if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
 
-const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
-  setIsConfirmBalanceOpen(false);
-  const balancesJson = { 
-    balance : {
-      date : balanceDate,
-      bank : bankReal,
-      cash : cashReal,
-      digital_services : digitalServicesReal,
-      stocks : {
-        real : stocksReal
-      },
-      etf : {
-        real : etfReal
-      },
-      bitcoin : {
-        real : bitcoinReal
-      },
-      crypto : {
-        real : cryptoReal
-      },
-
-    }
-  }
-
-  const balancesChange = await axios.post('/balances/add', balancesJson, { withCredentials: true });
-  if (balancesChange.status === 200) {
-    // console.log("Bilancio aggiornato aggiorno lo user context");
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    setUpdateBalanceSuccess(true);
-    fetchData();
-    setBalanceDate(currentDate);
-  }
-  else {
-    alert("Errore nell'aggiornamento del bilancio");
-  }
-};
-
 const handleAddIncome = async (setIsConfirmIncomeOpen, categoryIncome, income) => {
 
   // Check if the user has entered a non-empty value and selected a category
@@ -129,134 +93,8 @@ const handleAddIncome = async (setIsConfirmIncomeOpen, categoryIncome, income) =
   setIsConfirmIncomeOpen(true);
 };
 
-
-const handleConfirmIncome = async (fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, setUpdateIncomesSuccess, handleSetIsUpdated, categoryIncome, income, incomeDate) => {
-  setIsConfirmIncomeOpen(false);
-    //To send data we have to use category_tag, payment_type, amount, date as name of the variables
-    const incomeJson = { 
-      expense : {
-        date : incomeDate, 
-        amount : income,
-        is_expense : false,
-        payment_type : 0,
-        category_tag : categoryIncome.key,  //incomesTags.index
-      }
-    }
-
-    setIncome(0);
-    setCategoryIncome({ key: "", value: "" });
-    setIncomeDate(currentDate);
-
-    const incomeAdd = await axios.post('/expenses/add', incomeJson, { withCredentials: true });
-    
-    if (incomeAdd.status === 200) {
-      // console.log("Entrate aggiornate aggiorno lo user context");
-      handleSetIsUpdated(false); // Forza il re-render di UserProvider
-      setUpdateIncomesSuccess(true);
-      fetchData();
-    }
-    else {
-      alert("Errore nell'inserimento dell'entrata");
-    } 
-};
-
-
-const handleAddExpenses = async (setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense) => {
-
-  // Verifica se income è uguale a 0 e/o categoryIncome è vuoto
-  if (categoryExpense.value === "") {
-    alert("Seleziona una categoria.");
-    return; 
-  } else if (typoExpense.value === "") {
-    alert("Seleziona una tipologia di pagamento.");
-    return; 
-  } else if ((Number(expense) === 0 || expense === "" || expense === undefined)) { 
-    alert("Inserisci un valore valido e maggiore di 0.");
-    return;
-  }
-
-  setIsConfirmExpenseOpen(true);
-};
-
-const handleConfirmExpense = async (fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, setUpdateExpensesSuccess, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate) => {
-  setIsConfirmExpenseOpen(false);
-
-  //To send data we have to use category_tag, payment_type, amount, date as name of the variables 
-  const expenseJson = { 
-    expense : {
-      date : expenseDate,
-      amount : expense,
-      is_expense : true,
-      payment_type : typoExpense.key, //paymentTags.index
-      category_tag : categoryExpense.key,  //now, after the rework i have to send the id of the category expensesTag.index
-
-    }
-  }
-
-  setExpense(0);
-  setCategoryExpense({key: "", value: ""});
-  setTypoExpense({key: "", value: ""});
-  setExpenseDate(currentDate);
-
-  const expenseAdd = await axios.post('/expenses/add', expenseJson, { withCredentials: true });
-  if (expenseAdd.status === 200) {
-    // console.log("Spese aggiornate, aggiorno lo user context");
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    setUpdateExpensesSuccess(true);
-    fetchData();
-  }
-  else {
-    alert("Errore nell'inserimento dell'uscita");
-  }
-
-};
-
 const handleExitConfirm = async (setModalState) => {
   setModalState(false);
-};
-
-
-// this functions must be used and upgrated as the x button when we'll have the paath to database to delete an income and/or an expense
-const handleIncomesDelete = async (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, dateIncome, amountIncome) => { //data, 
-
-  const data = {
-    expense : {
-      date : dateIncome, //must be an object date
-      amount : amountIncome,
-      is_expense : false,
-    }
-  }
-  const incomesDelete = await axios.post('/expenses/delete', data, { withCredentials: true });
-
-  if (incomesDelete.status === 200) {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    setDeleteIncomesSuccess(true);
-    fetchData();
-  }
-  else {
-    alert("Errore nell'eliminazione dell'entrata");
-  }
-
-};
-
-const handleExpensesDelete = async (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, dateExpense, amountExpense) => {
-  const data = {
-    expense : {
-      date : dateExpense, //must be an object date
-      amount : amountExpense,
-      is_expense : true,
-    }
-  }
-  const incomesDelete = await axios.post('/expenses/delete', data, { withCredentials: true });
-
-  if (incomesDelete.status === 200) {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-    setDeleteExpensesSuccess(true);
-    fetchData();
-  }
-  else {
-    alert("Errore nell'eliminazione dell'uscita");
-  }
 };
 
 
@@ -264,7 +102,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
   const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
   const [isConfirmExpenseOpen, setIsConfirmExpenseOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
+  const [updateInExBalanceSuccess, setUpdateInExBalanceSuccess] = useState(false);
   const [updateIncomesSuccess, setUpdateIncomesSuccess] = useState(false);
   const [updateExpensesSuccess, setUpdateExpensesSuccess] = useState(false);
   const [deleteIncomesSuccess, setDeleteIncomesSuccess] = useState(false);
@@ -276,10 +116,10 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [deleteExpenseDate, setDeleteExpenseDate] = useState("");
   const [deleteExpenseAmount, setDeleteExpenseAmount] = useState("");
   // const [isLoading, setIsLoading] = useState(true);
-  const [stocksReal, setStocksReal] = useState(0);
-  const [etfReal, setETFReal] = useState(0);
   const [bankReal, setBankReal] = useState(0);
   const [cashReal, setCashReal] = useState(0);
+  const [stocksReal, setStocksReal] = useState(0);
+  const [etfReal, setETFReal] = useState(0);
   const [cryptoReal, setCryptoReal] = useState(0);
   const [bitcoinReal, setBitcoinReal] = useState(0);
   const [digitalServicesReal, setDigitalServicesReal] = useState(0);
@@ -298,6 +138,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
   
+
+  const options = {
+    Banca: [bankReal, setBankReal],
+    Contanti: [cashReal, setCashReal],
+    'Servizi digitali': [digitalServicesReal, setDigitalServicesReal],
+    Azioni: [stocksReal, setStocksReal],
+    ETF: [etfReal, setETFReal],
+    Bitcoin: [bitcoinReal, setBitcoinReal],
+    Criptovalute: [cryptoReal, setCryptoReal],
+  };
   
   const fetchData = async () => {
     
@@ -366,6 +216,208 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       setExpenseDate(inputDate);
     } else {
       alert("Attenzione! Selezionare la data tramite il calendario.");
+    }
+  };
+
+  const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
+    setIsConfirmBalanceOpen(false);
+    const balancesJson = { 
+      balance : {
+        date : balanceDate,
+        bank : bankReal,
+        cash : cashReal,
+        digital_services : digitalServicesReal,
+        stocks : {
+          real : stocksReal
+        },
+        etf : {
+          real : etfReal
+        },
+        bitcoin : {
+          real : bitcoinReal
+        },
+        crypto : {
+          real : cryptoReal
+        },
+  
+      }
+    }
+  
+    const balancesChange = await axios.post('/balances/add', balancesJson, { withCredentials: true });
+    if (balancesChange.status === 200) {
+      // console.log("Bilancio aggiornato aggiorno lo user context");
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      setUpdateBalanceSuccess(true);
+      fetchData();
+      setBalanceDate(currentDate);
+    }
+    else {
+      alert("Errore nell'aggiornamento del bilancio");
+    }
+  };
+
+
+  const createInExJson = (isExpense, date, amount, payment_type, category_tag) => {
+    return {
+      expense: {
+        date: date,
+        amount: amount,
+        is_expense: isExpense,
+        payment_type: payment_type,
+        category_tag: category_tag,
+      },
+    };
+  };
+
+
+  const handleConfirmInEx = async (isExpense) => {
+    let inExJson = {};
+    if (isExpense) {
+      setIsConfirmExpenseOpen(false);
+      inExJson = createInExJson(true, expenseDate, expense, typoExpense.key, categoryExpense.key);
+      setCategoryExpense({ key: "", value: "" });
+      setTypoExpense({ key: "", value: "" });
+      setExpenseDate(currentDate);
+    } else {
+      setIsConfirmIncomeOpen(false);
+      inExJson = createInExJson(false, incomeDate, income, 0, categoryIncome.key);
+      setCategoryIncome({ key: "", value: "" });
+      setIncomeDate(currentDate);
+    }
+    try {
+
+      const inExAdd = await axios.post('/expenses/add', inExJson, { withCredentials: true });
+
+      if (inExAdd.status === 200) {
+        if (selectedOption !== "") {
+          console.log(selectedOption);
+          console.log(options[selectedOption]);
+          const [value, setValue] = options[selectedOption];
+          
+          console.log('SelectedOptionValue(before set): ', value);
+          console.log('BO: ', setValue());
+          console.log('WhichSetValue: ', setValue);
+
+          if (isExpense) {
+            setValue(value - expense);
+            setExpense(0);
+          }
+          else {
+            setValue(value + income);
+            setIncome(0);
+          }
+          console.log('SelectedOptionValue(after set): ', value);
+
+          const balancesJson = { 
+            balance : {
+              date : balanceDate,
+              bank : bankReal,
+              cash : cashReal,
+              digital_services : digitalServicesReal,
+              stocks : {
+                real : stocksReal
+              },
+              etf : {
+                real : etfReal
+              },
+              bitcoin : {
+                real : bitcoinReal
+              },
+              crypto : {
+                real : cryptoReal
+              },
+        
+            }
+          }
+
+          console.log(balancesJson);
+        
+          const balancesChange = await axios.post('/balances/add', balancesJson, { withCredentials: true });
+
+          if (balancesChange.status === 200) {
+            handleSetIsUpdated(false); // Forza il re-render di UserProvider
+            setBalanceDate(currentDate);
+            setUpdateInExBalanceSuccess(true);
+            fetchData();
+          }
+          else {
+            alert("Errore nell'aggiornamento del bilancio");
+          }
+
+        } 
+        else {
+          handleSetIsUpdated(false); 
+          if (isExpense) setUpdateExpensesSuccess(true);
+          else setUpdateIncomesSuccess(true);
+          fetchData();
+        }
+          
+      } else{
+        alert("Errore nell'inserimento dell'entrata");
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  
+  
+  const handleAddExpenses = async () => {
+  
+    // Verifica se income è uguale a 0 e/o categoryIncome è vuoto
+    if (categoryExpense.value === "") {
+      alert("Seleziona una categoria.");
+      return; 
+    } else if (typoExpense.value === "") {
+      alert("Seleziona una tipologia di pagamento.");
+      return; 
+    } else if ((Number(expense) === 0 || expense === "" || expense === undefined)) { 
+      alert("Inserisci un valore valido e maggiore di 0.");
+      return;
+    }
+  
+    setIsConfirmExpenseOpen(true);
+  };
+
+  const handleIncomesDelete = async (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, dateIncome, amountIncome) => { //data, 
+
+    const data = {
+      expense : {
+        date : dateIncome, //must be an object date
+        amount : amountIncome,
+        is_expense : false,
+      }
+    }
+    const incomesDelete = await axios.post('/expenses/delete', data, { withCredentials: true });
+  
+    if (incomesDelete.status === 200) {
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      setDeleteIncomesSuccess(true);
+      fetchData();
+    }
+    else {
+      alert("Errore nell'eliminazione dell'entrata");
+    }
+  
+  };
+  
+  const handleExpensesDelete = async (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, dateExpense, amountExpense) => {
+    const data = {
+      expense : {
+        date : dateExpense, //must be an object date
+        amount : amountExpense,
+        is_expense : true,
+      }
+    }
+    const incomesDelete = await axios.post('/expenses/delete', data, { withCredentials: true });
+  
+    if (incomesDelete.status === 200) {
+      handleSetIsUpdated(false); // Forza il re-render di UserProvider
+      setDeleteExpensesSuccess(true);
+      fetchData();
+    }
+    else {
+      alert("Errore nell'eliminazione dell'uscita");
     }
   };
   
@@ -821,9 +873,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <MuiCustomDialogContentText>Categoria: {categoryIncome.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {income}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Data selezionata: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <Typography variant="body1" style={{ marginTop: '1em' }}>Seleziona dove depositare l'entrata:</Typography>
+              <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
+                <MenuItem value="">Seleziona un opzione</MenuItem>
+                {Object.keys(options).map((option) => (
+                  <MenuItem key={option} value={option}>{option}</MenuItem>
+                ))}
+              </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmIncome(fetchData, setIsConfirmIncomeOpen, setIncome, setIncomeDate, setCategoryIncome, setUpdateIncomesSuccess, handleSetIsUpdated, categoryIncome, income, incomeDate)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmInEx(false)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
@@ -841,9 +900,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {expense}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Data selezionata: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <Typography variant="body2" style={{ marginTop: '1em' }}>Seleziona da dove sottrarre l'uscita:</Typography>
+              <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
+                <MenuItem value="">Seleziona un opzione</MenuItem>
+                {Object.keys(options).map((option) => (
+                  <MenuItem key={option} value={option}>{option}</MenuItem>
+                ))}
+              </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmExpense(fetchData, setIsConfirmExpenseOpen, setExpense, setExpenseDate, setCategoryExpense, setTypoExpense, setUpdateExpensesSuccess, handleSetIsUpdated, typoExpense,  categoryExpense, expense, expenseDate)}>Conferma</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmInEx(true)}>Conferma</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>Annulla</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
@@ -859,6 +925,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             <MuiCustomDialogTitle>Aggiornamento bilancio avvenuto con successo</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => handleExitConfirm(setUpdateBalanceSuccess)}>Ok</MuiCustomButton>
+            </MuiCustomDialogActions>
+          </MuiCustomDialog>
+        )}
+
+        {updateInExBalanceSuccess && (
+          <MuiCustomDialog
+            open={updateInExBalanceSuccess}
+            onClose={() => handleExitConfirm(setUpdateInExBalanceSuccess)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <MuiCustomDialogTitle>Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogActions>
+              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateInExBalanceSuccess)}>Ok</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}

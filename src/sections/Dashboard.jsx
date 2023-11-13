@@ -11,6 +11,7 @@ import { BsCoin } from "react-icons/bs";
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { primaryColor, secondaryColor } from '../contexts/Themes';
 import { colorsBalances, colorsIncExp } from '../contexts/Themes';
+import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
 
 import {
         TitleDashboard,
@@ -54,7 +55,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 setTotalReal(userData ? userData.totalReal : 0);
                 setExpensesMonth(userData ? userData.expensesArray[0] : 0);
                 setIncomesMonth(userData ? userData.incomesArray[0] : 0);
-                setSavedMonth(userData ? (userData.incomesArray[0] - userData.incomesArray[0]) : 0);
+                setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
 
                 
                 
@@ -100,28 +101,10 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
     const incExpData = [
         { name: 'Entrate', value: incomesMonth >= 0 ? incomesMonth : 0 },
         { name: 'Spese', value: expensesMonth >= 0 ? expensesMonth : 0 },
-        { name: 'Risparmiato', value: savedMonth >= 0 ? savedMonth : 0 },
+        { name: 'Risparmiato', value: savedMonth > 0 ? savedMonth : 0 },
     ];
 
-    //used for render the label in the pie chart as a percentage inside the pie
-    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-        const RADIAN = Math.PI / 180;
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-        const labelValue = `${(percent * 100).toFixed(0)}%`;
-        
-        //if is 0 don't render the label
-        if (percent !== 0) {
-            return (
-                <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
-                    {labelValue}
-                </text>
-            );
-        } else {
-            return null; //don't render the label
-        }
-    };
+    
     // { fill: theme.textColor, formatter: (value) => isHidden ? '****' : value }
 
     const isAllZero = capitalData.every(entry => entry.value === 0); //fakeCapitalData to test some change on the pie chart (main data is capitalData)
@@ -292,179 +275,174 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 )}
             </LowerSection> 
             <GraphsSection theme={theme}>
-                {/* {isHidden ? (
-                    <div style={{ 
-                        color: 'white', 
-                        fontWeight: 'bold', 
-                        // display: 'flex', 
-                        justifyContent: 'center', 
-                        alignItems: 'center', 
-                        height: '10vh' // Adjust this value as needed
-                      }}>
-                        I grafici sono nascosti perché la modalità privacy è attiva
-                      </div>
-                ) : (
-                    <> */}
-                        <div className="bar-chart-section">
-                            <h2>Distribuzione capitale</h2>
-                            <div style={{ width: 400, height: 300 }}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart width={500} height={300} data={capitalData} margin={{
-                                                top: 20,
-                                                right: 15,
-                                            }}>
-                                        <Bar dataKey="value">
-                                            {capitalData.map(entry => (
-                                                <Cell key={entry.name} fill={colorsBalances[entry.name]} />
-                                            ))}
-                                        </Bar>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                        {/* <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 12 }} />
-                                        <YAxis tick={{ fill: theme.textColor }} /> */}
-                                        <Tooltip
-                                            content={({ payload, label, active }) => {
-                                                if (active) {
-                                                const value = isHidden ? '****' : payload[0].payload.value;
+                <div className="bar-chart-section">
+                    <h2>Distribuzione capitale</h2>
+                    <div style={{ width: 400, height: 300 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart width={500} height={300} data={capitalData} margin={{
+                                        top: 20,
+                                        right: 15,
+                                    }}>
+                                <Bar dataKey="value">
+                                    {capitalData.map(entry => {
+                                        const greyScale = Math.floor(Math.random() * 256);
+                                        const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
+                                        return <Cell key={entry.name} fill={isHidden ? greyColor : colorsBalances[entry.name]} />
+                                    })}
+                                </Bar>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
+                                {/* <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 12 }} />
+                                <YAxis tick={{ fill: theme.textColor }} /> */}
+                                <Tooltip
+                                    content={({ payload, label, active }) => {
+                                        if (active) {
+                                        const value = isHidden ? '****' : payload[0].payload.value;
+
+                                        const formattedValue = new Intl.NumberFormat('it-IT', {
+                                            style: 'currency',
+                                            currency: 'EUR',
+                                            maximumFractionDigits: 0,
+                                        }).format(value);
+
+                                        return (
+                                            <div style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                            <p>{isHidden ? '****' : label}</p>
+                                            <p style={{ color: 'black' }}>{isHidden ? '****' : formattedValue}</p>
+                                            </div>
+                                        );
+                                        }
+                                        return null;
+                                    }}
+                                    />
+                                <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor}  angle={15} fontSize='12' dy='10'/>} />
+                                <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill= {theme.textColor} dx='-10'/>} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                </div>
+
+                <div className="pie-chart-section">
+                    
+                    <div style={{ width: 400, height: 400 }}>
+                        <h2>% Distribuzione Capitale</h2>
+                        <ResponsiveContainer width="100%" height="100%">
+                        {isAllZero ? (
+                            <div style={{
+                                // display: 'flex',
+                                justifyContent: 'center',
+                                marginTop: '5em',
+                                alignItems: 'center',
+                                width: '80%',
+                                height: '100%',
+                                backgroundColor: 'transparent', // Imposta il colore di sfondo trasparente
+                                fontSize: '18px', // Imposta la dimensione del carattere desiderata
+                            }}>
+                                <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
+                            </div>
+                        ) : (
+                                <PieChart width={500} height={500} margin={{
+                                    top: 20,
+                                    left: 60,
+                                }}>
+                                    <Pie
+                                        data={capitalData}  //fakeCapitalData to test some change on the pie chart (main data is capitalData)
+                                        cx="25%"
+                                        cy="35%"
+                                        label={renderCustomizedLabel}
+                                        labelLine={false}
+                                        outerRadius={130}
+                                        fill="#8884d8"
+                                        dataKey="value"
+                                    >
+                                        {capitalData.map(entry => {   //fakeCapitalData to test some change on the pie chart (main data is capitalData)
+                                            if(entry.value === 0) {
+                                                return <Cell key={entry.name} fill="transparent" />;
+                                            }
+                                            const greyScale = Math.floor(Math.random() * 256);
+                                            const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
+                                            return <Cell key={entry.name} fill={isHidden ? greyColor : colorsBalances[entry.name]} />
+                                        })}
+                                    </Pie>
+                                    <Tooltip
+                                        content={({ payload, active }) => {
+                                            if (active) {
+                                            const data = payload[0].payload;
+                                            const value = isHidden ? '****' : data.value;
+                                            const percentage = isHidden ? '****' : ((value / totalCapitalData) * 100).toFixed(0);
+
+                                                // Format the value with thousands and euro symbol
+                                                const formattedValue = new Intl.NumberFormat('it-IT', {
+                                                    style: 'currency',
+                                                    currency: 'EUR',
+                                                    maximumFractionDigits: 0,
+                                                }).format(value);
+
                                                 return (
-                                                    <div style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
-                                                    <p>{label}</p>
-                                                    <p style={{ color: 'black' }}>{isHidden ? '****' : value}</p>
+                                                    <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                                        <p>{isHidden ? '****' : data.name}</p>
+                                                        <p style={{ color: 'black' }}>{formattedValue}({percentage}%)</p>
                                                     </div>
                                                 );
-                                                }
-                                                return null;
-                                            }}
-                                            />
-                                        <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor}  angle={15} fontSize='12' dy='10'/>} />
-                                        <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill= {theme.textColor} dx='-10'/>} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-
-                        </div>
-
-                        <div className="pie-chart-section">
+                                            }
+                                            return null;
+                                        }}
+                                        contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+                                    />
+                                </PieChart>
+                            )}
                             
-                            <div style={{ width: 400, height: 400 }}>
-                                <h2>% Distribuzione Capitale</h2>
-                                <ResponsiveContainer width="100%" height="100%">
-                                {isAllZero ? (
-                                    <div style={{
-                                        // display: 'flex',
-                                        justifyContent: 'center',
-                                        marginTop: '5em',
-                                        alignItems: 'center',
-                                        width: '80%',
-                                        height: '100%',
-                                        backgroundColor: 'transparent', // Imposta il colore di sfondo trasparente
-                                        fontSize: '18px', // Imposta la dimensione del carattere desiderata
-                                    }}>
-                                        <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
-                                    </div>
-                                ) : (
-                                        <PieChart width={500} height={500} margin={{
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="bar-chart-section">
+                    <h2>Entrate | Spese</h2>
+                    <div style={{ width: 350, height: 300 }}> 
+                        <ResponsiveContainer width="100%" height="100%">
+                                <BarChart width={500} height={300} data={incExpData} margin={{
                                             top: 20,
-                                            left: 60,
+                                            right: 40,
                                         }}>
-                                            <Pie
-                                                data={capitalData}  //fakeCapitalData to test some change on the pie chart (main data is capitalData)
-                                                cx="25%"
-                                                cy="35%"
-                                                label={renderCustomizedLabel}
-                                                labelLine={false}
-                                                outerRadius={130}
-                                                fill="#8884d8"
-                                                dataKey="value"
-                                            >
-                                                {capitalData.map(entry => {   //fakeCapitalData to test some change on the pie chart (main data is capitalData)
-                                                    if(entry.value === 0) {
-                                                        return <Cell key={entry.name} fill="transparent" />;
-                                                    }
-                                                    const greyScale = Math.floor(Math.random() * 256);
-                                                    const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
-                                                    return <Cell key={entry.name} fill={isHidden ? greyColor : colorsBalances[entry.name]} />
-                                                })}
-                                            </Pie>
-                                            <Tooltip
-                                                content={({ payload, active }) => {
-                                                    if (active) {
-                                                    const data = payload[0].payload;
-                                                    const value = isHidden ? '****' : data.value;
-                                                    const percentage = isHidden ? '****' : ((value / totalCapitalData) * 100).toFixed(0);
+                                    <Bar dataKey="value">             
+                                        {incExpData.map(entry => {
+                                            const greyScale = Math.floor(Math.random() * 256);
+                                            const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
+                                            return <Cell key={entry.name} fill={isHidden ? greyColor : colorsIncExp[entry.name]} />
+                                        })}
+                                    </Bar>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
+                                    {/* <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 14 }} />
+                                    <YAxis tick={{ fill: theme.textColor }} /> */}
+                                    <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} dy='16' />} />
+                                    <YAxis tick={(props) => <CustomTick {...props} fill={theme.textColor} />} />
 
-                                                        // Format the value with thousands and euro symbol
-                                                        const formattedValue = new Intl.NumberFormat('it-IT', {
-                                                            style: 'currency',
-                                                            currency: 'EUR',
-                                                            maximumFractionDigits: 0,
-                                                        }).format(value);
+                                    <Tooltip
+                                        content={({ payload, label, active }) => {
+                                            if (active) {
+                                                const value = isHidden ? '****' : payload[0].payload.value;
 
-                                                        return (
-                                                            <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
-                                                                <p>{isHidden ? '****' : data.name}</p>
-                                                                <p style={{ color: 'black' }}>{formattedValue}({percentage}%)</p>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return null;
-                                                }}
-                                                contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-                                            />
-                                        </PieChart>
-                                    )}
-                                    
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
+                                                const formattedValue = new Intl.NumberFormat('it-IT', {
+                                                    style: 'currency',
+                                                    currency: 'EUR',
+                                                    maximumFractionDigits: 0,
+                                                }).format(value);
 
-                        <div className="bar-chart-section">
-                            <h2>Entrate | Spese</h2>
-                            <div style={{ width: 350, height: 300 }}> 
-                                <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart width={500} height={300} data={incExpData} margin={{
-                                                    top: 20,
-                                                    right: 40,
-                                                }}>
-                                            <Bar dataKey="value">
-                                                {incExpData.map(entry => (
-                                                    <Cell key={entry.name} fill={colorsIncExp[entry.name]} />
-                                                ))}
-                                            </Bar>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
-                                            {/* <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 14 }} />
-                                            <YAxis tick={{ fill: theme.textColor }} /> */}
-                                            <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} dy='16' />} />
-                                            <YAxis tick={(props) => <CustomTick {...props} fill={theme.textColor} />} />
-
-                                            <Tooltip
-                                                content={({ payload, label, active }) => {
-                                                    if (active) {
-                                                        const value = isHidden ? '****' : payload[0].payload.value;
-
-                                                        // Formatta il valore con migliaia e simbolo dell'euro
-                                                        const formattedValue = new Intl.NumberFormat('it-IT', {
-                                                            style: 'currency',
-                                                            currency: 'EUR',
-                                                            maximumFractionDigits: 0,
-                                                        }).format(value);
-
-                                                        return (
-                                                            <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
-                                                                <p>{label}</p>
-                                                                <p style={{ color: 'black' }}>{isHidden ? '****' : formattedValue}</p>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return null;
-                                                }}
-                                                contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                            </div>      
-                        </div>
-                    {/* </> */}
-                {/* )} */}
+                                                return (
+                                                    <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                                        <p>{isHidden ? '****' : label}</p>
+                                                        <p style={{ color: 'black' }}>{isHidden ? '****' : formattedValue}</p>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        }}
+                                        contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                    </div>      
+                </div>
             </GraphsSection>
         </SectionDashboard>
     )

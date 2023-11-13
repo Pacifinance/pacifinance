@@ -35,7 +35,7 @@ export default function SignInForm() {
     const { theme } = useContext(ThemeContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [showUsername, setShowUsername] = useState(false);
+    const [showUsername, setShowUsername] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
@@ -68,7 +68,7 @@ export default function SignInForm() {
         event.preventDefault();
         try {
           handleSetIsAuthenticated(false); //to be sure that the user will se his data
-          navigate('/dashboard'); //da commentare, utile solo per test in locale
+          //navigate('/dashboard'); //da commentare, utile solo per test in locale
           //username could be user_id o username
           const response = await axios.post('/login', { user_id: username, password: password }, { withCredentials: true }); //the path in the db is called login
           if(response.status === 200) {

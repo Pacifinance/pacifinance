@@ -113,6 +113,8 @@ function UserProvider({ children }) {
 
             const allExpensesIncomesArray = allExpensesIncomesResponse.data;
 
+            // console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray[0]);
+
             // Assuming you have access to allExpensesIncomesArray as described in your code
 
             // Initialize an empty object to hold the total expenses per category for each month
@@ -128,11 +130,11 @@ function UserProvider({ children }) {
                 // Check if the entry is an expense
                 if (entry.isExpense) {
                   // If the category exists, add the current value
-                  if (totalExpensesPerCategory[entry.categoryTag]) {
-                    totalExpensesPerCategory[entry.categoryTag] += entry.amount;
+                  if (totalExpensesPerCategory[entry.categoryTag.translations.it]) {
+                    totalExpensesPerCategory[entry.categoryTag.translations.it] += entry.amount;
                   } else {
                     // Otherwise, initialize the category with the current value
-                    totalExpensesPerCategory[entry.categoryTag] = entry.amount;
+                    totalExpensesPerCategory[entry.categoryTag.translations.it] = entry.amount;
                   }
                 }
               });
@@ -142,10 +144,8 @@ function UserProvider({ children }) {
             });
 
             // Now totalExpensesPerCategoryPerMonth contains the total expenses for each category for each month
-            console.log(totalExpensesPerCategoryPerMonth);
+            // console.log(totalExpensesPerCategoryPerMonth);
 
-
-            // console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray);
 
             // Crea un array di oggetti per le entrate e un array di oggetti per le spese, inizializzati con valori iniziali a 0
             const incomesArray = Array(13).fill(0);

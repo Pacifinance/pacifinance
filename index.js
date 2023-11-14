@@ -487,10 +487,12 @@ app.post("/rank/balances", async (req, res) => {
         reference_user = target_user;
     // Get the list of all/similar users IDs
     const users = await db.users.getAllUsersIds(reference_user);
-    // For each user get its latest balance
+    // For each user get its latest balance up to the last day of the last month
+    let now = new Date(Date.now());
+    let limit_date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
     let balances = [];
     for (let user of users) {
-        const balance = await db.balances.getTotalLatestByUserId(user.userId);
+        const balance = await db.balances.getTotalLatestByUserId(user.userId, limit_date);
         if (balance !== null)
             balances.push({user: user.userId, balance: balance});
     }
@@ -519,11 +521,12 @@ app.post("/rank/expenses", async (req, res) => {
         reference_user = target_user;
     // Get the list of all/similar users IDs
     const users = await db.users.getAllUsersIds(reference_user);
-    // For each user get the expenses/incomes of the month
+    // For each user get the expenses/incomes of the last month
+    let reference_date = new Date(Date.now()); reference_date.setUTCMonth(reference_date.getUTCMonth()-1);
     let is_expense_filter = Boolean(req.body.expenses);
     let expenses = [];
     for (let user of users) {
-        const total_amount = await db.expenses.getTotalMonthlyExpensesByUserId(user.userId, new Date(Date.now()), is_expense_filter);
+        const total_amount = await db.expenses.getTotalMonthlyExpensesByUserId(user.userId, reference_date, is_expense_filter);
         if (total_amount !== null)
             expenses.push({user: user.userId, amount: total_amount});
     }

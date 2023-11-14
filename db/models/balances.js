@@ -108,24 +108,29 @@ async function insertNew(
 /**
  * Gets the latest balance of a user
  * @param {String} user_id - ID of the user
+ * @param {Date} limit_date - Date after which balances are ignored
  * @returns Balance document
  */
-async function getLatestByUserId(user_id) {
+async function getLatestByUserId(user_id, limit_date=undefined) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
     // Get the balances with the most recent user-inserted date. Among these balances, the latest one
     // is that with the most recent insertion date (the one that overwrites all the others)
-    return await getOneSorted({userRef: user._id}, "-_id -__v -userRef", {userDate: -1, date: -1});
+    let filter = {userRef: user._id};
+    if (limit_date !== undefined)
+        filter.userDate = {$lt: limit_date};
+    return await getOneSorted(filter, "-_id -__v -userRef", {userDate: -1, date: -1});
 }
 
 /**
  * Gets the latest balance of a user and sums all its parts together
  * @param {String} user_id - ID of the user
+ * @param {Date} limit_date - Date after which balances are ignored
  * @return Total balance of the user
  */
-async function getTotalLatestByUserId(user_id) {
-    const balance = await getLatestByUserId(user_id);
+async function getTotalLatestByUserId(user_id, limit_date=undefined) {
+    const balance = await getLatestByUserId(user_id, limit_date);
     if (balance === null)
         return null;
     return (

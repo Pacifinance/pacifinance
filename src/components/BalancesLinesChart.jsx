@@ -93,6 +93,7 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
             <Line type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} />
             
         </LineChart>
     </SectionBalancesCharts>

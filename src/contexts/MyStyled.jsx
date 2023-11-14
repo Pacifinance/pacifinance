@@ -34,7 +34,7 @@ export const Section = styled.section `
   font-family: Roboto, sans-serif;
   margin-left: 6vw;
   padding-top: 2em;
-  height: 100%;
+  height: 100vh;
   background-color: ${(props) => (props.theme.backgroundColor)};
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
@@ -1068,7 +1068,7 @@ export const Notification = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: -1em;
-  margin-left: 1em;
+  // margin-left: 1em;
   gap: 0.2rem;
   .font_icon{
       font-size: 1.5rem;
@@ -1094,10 +1094,8 @@ export const Notification = styled.div`
       width: 2rem;
       border-radius: 3rem;
       background-color: white; /* Imposta il colore di sfondo dell'immagine */
-  }
-
-  .bell-icon {
-      font-size: 2rem; /* Imposta la grandezza desiderata */
+      cursor: pointer;
+      
   }
   
   .popup-container {
@@ -1293,6 +1291,7 @@ export const ToggleButton = styled.div`
 
 export const SidebarSection = styled.section`
   font-family: Roboto, sans-serif;
+  // overflow: auto;
   position: fixed;
   left: 0;
   background-color: ${(props) => (props.theme.backgroundColor)};

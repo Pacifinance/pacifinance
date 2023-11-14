@@ -84,6 +84,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
         { name: 'ServiziDigitali', value: digitalServicesReal >= 0 ? digitalServicesReal : 0 },
     ];
 
+    const capitalShuffleData = [...capitalData].sort(() => Math.random() - 0.5);
     const totalCapitalData = capitalData.reduce((acc, entry) => acc + entry.value, 0);
 
     // const fakeCapitalData = [
@@ -103,6 +104,9 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
         { name: 'Spese', value: expensesMonth >= 0 ? expensesMonth : 0 },
         { name: 'Risparmiato', value: savedMonth > 0 ? savedMonth : 0 },
     ];
+
+    const incExpShuffleData = [...incExpData].sort(() => Math.random() - 0.5);
+
 
     
     // { fill: theme.textColor, formatter: (value) => isHidden ? '****' : value }
@@ -279,7 +283,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                     <h2>Distribuzione capitale</h2>
                     <div style={{ width: 400, height: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart width={500} height={300} data={capitalData} margin={{
+                            <BarChart width={500} height={300} data={isHidden ? capitalShuffleData: capitalData} margin={{
                                         top: 20,
                                         right: 15,
                                     }}>
@@ -346,7 +350,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                     left: 60,
                                 }}>
                                     <Pie
-                                        data={capitalData}  //fakeCapitalData to test some change on the pie chart (main data is capitalData)
+                                        data={isHidden ? capitalShuffleData : capitalData}  //fakeCapitalData to test some change on the pie chart (main data is capitalData)
                                         cx="25%"
                                         cy="35%"
                                         label={renderCustomizedLabel}
@@ -400,7 +404,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                     <h2>Entrate | Spese</h2>
                     <div style={{ width: 350, height: 300 }}> 
                         <ResponsiveContainer width="100%" height="100%">
-                                <BarChart width={500} height={300} data={incExpData} margin={{
+                                <BarChart width={500} height={300} data={isHidden ? incExpShuffleData : incExpData} margin={{
                                             top: 20,
                                             right: 40,
                                         }}>

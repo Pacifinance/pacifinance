@@ -427,13 +427,14 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     {/* <AiOutlineBell /> */}
                     <div className="account-container">
                         <div className="account-image-wrapper">
-                            <img src={avatarImage} width="100%" height="100%" alt="Account" className="account-image" onContextMenu={(e) => e.preventDefault()}/>
+                            <img src={avatarImage} width="100%" height="100%" alt="Account" className="account-image" onClick={() => setShowDropdown(!showDropdown)} onContextMenu={(e) => e.preventDefault()}/>
                         </div>
-                    </div> 
-                    <DropdownContainer > {/* style={{ zIndex: 999 }}> */}
-                        <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
+                    </div>
+                    {/* <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
                             <AiOutlineCaretDown />
-                        </div>
+                        </div> */}
+                    <DropdownContainer > {/* style={{ zIndex: 999 }}> */}
+                        
                         {showDropdown && (
                             <div className="dropdown-menu">
                                 {options.map((option) => (

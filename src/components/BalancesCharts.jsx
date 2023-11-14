@@ -92,6 +92,12 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
               currency: 'EUR',
               maximumFractionDigits: 0,
             }).format(isHidden ? '****' : value);
+
+            // Include the total sum in the legend
+            if (name === 'Totale') {
+              return [`${name}: ${formattedValue}`];
+            }
+
             return [`${name}: ${formattedValue}`];
           }}
         />

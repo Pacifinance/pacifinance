@@ -6,6 +6,7 @@ import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { BarChart } from "recharts/lib/chart/BarChart";
 import { LineChart } from "recharts/lib/chart/LineChart";
 import { Line } from "recharts/lib/cartesian/Line";
+import { Area } from "recharts/lib/cartesian/Area";
 import { Bar } from "recharts/lib/cartesian/Bar";
 import { Legend } from "recharts/lib/component/Legend";
 import { SectionBalancesCharts } from '../contexts/MyStyled';
@@ -66,14 +67,16 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
             bottom: 40
             }}
         >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" strokeWidth={0.5} />
             <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9}/>} />
             <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
             <Tooltip
                 contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
                 labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
                 formatter={(value, name) => {
-
+                    if (value === 0) {
+                        return null;
+                    }
                     const formattedValue = new Intl.NumberFormat('it-IT', {
                         style: 'currency',
                         currency: 'EUR',
@@ -86,14 +89,31 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
             />
             <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>
             
-            <Line type="monotone" dataKey={isHidden ? '****' : "Banca"} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "Banca"} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "ServiziDigitali"} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "Azioni"} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />
+            <Area type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />
+            
+            {/* {data.every(item => item.Banca === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "Banca"} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />}
+            {data.every(item => item.SoldiFisici === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />}
+            {data.every(item => item.ServiziDigitali === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "ServiziDigitali"} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />}
+            {data.every(item => item.Azioni === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "Azioni"} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />}
+            {data.every(item => item.ETF === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />}
+            {data.every(item => item.Bitcoin === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />}
+            {data.every(item => item.Crypto === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />}
+            {data.every(item => item.Totale === 0) || <Area type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />} */}
+
+            {/* <Line type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "ServiziDigitali"} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "Azioni"} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />
             <Line type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} /> */}
             
         </LineChart>
     </SectionBalancesCharts>

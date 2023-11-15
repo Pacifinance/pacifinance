@@ -93,7 +93,6 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                 setDigitalServicesRealPreMonth(userData ? userData.digitalServicesRealPreMonth : 0);
                 setTotalRealPreMonth(userData ? userData.totalRealPreMonth : 0);
                 
-        
             } catch (error) {
               console.error('Errore durante le operazioni:', error);
             }
@@ -113,12 +112,16 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
     
       
     return (
-        
+        // Il tuo patrimonio rispetto ad un anno fa è variato di:{" "}
+        //     <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
+        //         {isHidden ? '****' : calculateDifference(totalReal, totalRealPreYearSameMonth)} {(isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreYearSameMonth))}
+        //     </span>
+        //     {" - "}({formattedPreYearSameMonthDate})
         <div className="wrapper">
         <SecondaryTitle theme={theme}>
             Il tuo patrimonio rispetto al mese scorso è variato di:{" "} 
             <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
-                {isHidden ? '****' : calculateDifference(totalReal - totalRealPreMonth)} {isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreMonth)}
+                {isHidden ? '****' : calculateDifference(totalReal, totalRealPreMonth)} {isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreMonth)}
             </span>
             {" - "}({formattedPreMonthDate})
         </SecondaryTitle>

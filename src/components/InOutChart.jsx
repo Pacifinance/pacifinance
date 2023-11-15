@@ -7,6 +7,11 @@ import { LineChart } from "recharts/lib/chart/LineChart";
 import { Line } from "recharts/lib/cartesian/Line";
 import { Legend } from "recharts/lib/component/Legend";
 import { SectionInOut } from '../contexts/MyStyled';
+import { Brush } from "recharts/lib/cartesian/Brush";
+import { CSVLink } from 'react-csv';
+import { BsFiletypeCsv } from "react-icons/bs";
+import domtoimage from 'dom-to-image';
+
 
 
 
@@ -37,6 +42,24 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   fetchData();
   }, [userData]);
 
+  const downloadPNG = () => {
+    const node = document.getElementById('myChart');
+    domtoimage.toPng(node)
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = 'my-image-name.png';
+        link.href = dataUrl;
+        link.click();
+      });
+  };
+
+  const headers = [
+    { label: 'Mese', key: 'name' },
+    { label: 'Uscite', key: 'Uscite' },
+    { label: 'Entrate', key: 'Entrate' },
+    // Aggiungi qui eventuali altre colonne
+  ];
+
   const today = new Date();
   const lastTwelveMonths = [];
 
@@ -59,6 +82,10 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
 
   return (
     <SectionInOut>
+      {/* <button onClick={downloadPNG}>Download PNG</button> */}
+      <CSVLink data={data} headers={headers} style={{ position: 'absolute', top: 0, right: 0 }}>
+        <BsFiletypeCsv />
+      </CSVLink>
       <LineChart
         width={600}
         height={400}
@@ -69,7 +96,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
           bottom: 40
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" />
+        <CartesianGrid strokeDasharray="3 3" strokeWidth={0.3}/>
         <XAxis tick={{fontSize: 9, fill: theme.textColor}} interval={1} dataKey="name" />
         <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={11} dx={-10}/>} />
         <Tooltip
@@ -84,10 +111,10 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
           }}
         />
         <Legend />
-        <Line type="monotone" dataKey="Entrate" stroke={isHidden ? greyColor1 : "#079164"} activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey="Entrate" stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
         <Line type="monotone" dataKey="Uscite" stroke={isHidden ? greyColor2 : "#ff3838"} />
-        {/* <Line type="monotone" dataKey={isHidden ? '****' : "Entrate"} stroke={isHidden ? theme.textColor : "#079164"} activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey={isHidden ? '****' : "Uscite"} stroke={isHidden ? theme.textColor : "#ff3838"} /> */}
+        
+        <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
       </LineChart>
     </SectionInOut>
   );

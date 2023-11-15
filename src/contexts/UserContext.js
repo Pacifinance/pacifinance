@@ -105,7 +105,6 @@ function UserProvider({ children }) {
             const bitcoinRealPreYearSameMonth = (balancesPreYearSameMonth.bitcoin || 0).real || 0;
             const cryptoRealPreYearSameMonth = (balancesPreYearSameMonth.crypto || 0).real || 0;
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
-
             //************************************* EXPENSES AND INCOMES **********************************************/
 
             const allExpensesIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all expenses and incomes

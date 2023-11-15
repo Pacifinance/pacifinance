@@ -218,60 +218,40 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     fetchData();
   }, [userData]);
 
-  const validateDate = (date) => {
-    const pattern = /^\d{4}-\d{2}-\d{2}$/; // Verifica il formato AAAA-MM-GG
-    return pattern.test(date);
-  };
+  // const validateDate = (date) => {
+  //   const pattern = /^\d{4}-\d{2}-\d{2}$/; // Verifica il formato AAAA-MM-GG
+  //   return pattern.test(date);
+  // };
 
   const handleBalanceDateChange = (event) => {
-    const inputDate = event.target.value;
+    let inputDate = event.target.value;
+    setBalanceDate(inputDate);
   
-    // Check if inputDate is a string that can be converted to a date
-    // if (isNaN(Date.parse(inputDate))) {
-    //   alert("Attenzione! Inserire una data valida.");
-    //   return;
-    // }
-
     // Convert inputDate to a date if it's a string
     // if (typeof inputDate === 'string') {
     //   inputDate = new Date(inputDate);
     // }
   
-    const isValidDate = validateDate(inputDate);
+    // Get current date and set time to midnight
+    // const currentDateAtMidnight = new Date();
+    // currentDate.setHours(0, 0, 0, 0);
   
-    if (isValidDate && inputDate <= currentDate) {
-      setBalanceDate(inputDate);
-    } else {
-      alert("Attenzione! Selezionare una data valida.");
-    }
+    // if (inputDate.getTime() <= currentDateAtMidnight.getTime()) {
+    //   setBalanceDate(inputDate);
+    // } else {
+    //   alert("Attenzione! Selezionare una data valida.");
+    // }
   };
   
   
   const handleIncomeDateChange = (event) => {
-    const inputDate = event.target.value;
-  
-    // Check if inputDate is a string that can be converted to a date
-    // if (isNaN(Date.parse(inputDate))) {
-    //   alert("Attenzione! Inserire una data valida.");
-    //   return;
-    // }
-
-    // // Convert inputDate to a date if it's a string
-    // if (typeof inputDate === 'string') {
-    //   inputDate = new Date(inputDate);
-    // }
-  
-    const isValidDate = validateDate(inputDate);
-  
-    if (isValidDate && inputDate <= currentDate) {
-      setIncomeDate(inputDate);
-    } else {
-      alert("Attenzione! Selezionare una data valida.");
-    }
+    let inputDate = event.target.value;
+    setIncomeDate(inputDate);
   };
   
   const handleExpenseDateChange = (event) => {
-    const inputDate = event.target.value;
+    let inputDate = event.target.value;
+    setExpenseDate(inputDate);
   
     // Check if inputDate is a string that can be converted to a date
     // if (isNaN(Date.parse(inputDate))) {
@@ -284,13 +264,15 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     //   inputDate = new Date(inputDate);
     // }
   
-    const isValidDate = validateDate(inputDate);
+    // Get current date and set time to midnight
+    // const currentDateAtMidnight = new Date();
+    // currentDate.setHours(0, 0, 0, 0);
   
-    if (isValidDate && inputDate <= currentDate) {
-      setExpenseDate(inputDate);
-    } else {
-      alert("Attenzione! Selezionare una data valida.");
-    }
+    // if (inputDate.getTime() <= currentDateAtMidnight.getTime()) {
+    //   setExpenseDate(inputDate);
+    // } else {
+    //   alert("Attenzione! Selezionare una data valida.");
+    // }
   };
 
   const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {

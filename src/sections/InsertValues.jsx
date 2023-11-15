@@ -148,6 +148,44 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     Bitcoin: [bitcoinReal, setBitcoinReal],
     Criptovalute: [cryptoReal, setCryptoReal],
   };
+
+  function updateValue(selectedOption, isExpense) {
+    let newValue;
+    switch (selectedOption) {
+      case 'Banca':
+        newValue = isExpense ? bankReal - expense : bankReal + income;
+        setBankReal(newValue);
+        break;
+      case 'Contanti':
+        newValue = isExpense ? cashReal - expense : cashReal + income;
+        setCashReal(newValue);
+        break;
+      case 'Servizi digitali':
+        newValue = isExpense ? digitalServicesReal - expense : digitalServicesReal + income;
+        setDigitalServicesReal(newValue);
+        break;
+      case 'Azioni':
+        newValue = isExpense ? stocksReal - expense : stocksReal + income;
+        setStocksReal(newValue);
+        break;
+      case 'ETF':
+        newValue = isExpense ? etfReal - expense : etfReal + income;
+        setETFReal(newValue);
+        break;
+      case 'Bitcoin':
+        newValue = isExpense ? bitcoinReal - expense : bitcoinReal + income;
+        setBitcoinReal(newValue);
+        break;
+      case 'Criptovalute':
+        newValue = isExpense ? cryptoReal - expense : cryptoReal + income;
+        setCryptoReal(newValue);
+        break;
+      default:
+        console.error(`Invalid selectedOption: ${selectedOption}`);
+    }
+    if(isExpense) setExpense(0);
+    else setIncome(0);
+  }
   
   const fetchData = async () => {
     
@@ -187,35 +225,71 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
   const handleBalanceDateChange = (event) => {
     const inputDate = event.target.value;
+  
+    // Check if inputDate is a string that can be converted to a date
+    // if (isNaN(Date.parse(inputDate))) {
+    //   alert("Attenzione! Inserire una data valida.");
+    //   return;
+    // }
+
+    // Convert inputDate to a date if it's a string
+    // if (typeof inputDate === 'string') {
+    //   inputDate = new Date(inputDate);
+    // }
+  
     const isValidDate = validateDate(inputDate);
   
-    if (isValidDate) {
+    if (isValidDate && inputDate <= currentDate) {
       setBalanceDate(inputDate);
     } else {
-      alert("Attenzione! Selezionare la data tramite il calendario.");
+      alert("Attenzione! Selezionare una data valida.");
     }
   };
   
   
   const handleIncomeDateChange = (event) => {
     const inputDate = event.target.value;
-    const isValidDate = validateDate(inputDate);
+  
+    // Check if inputDate is a string that can be converted to a date
+    // if (isNaN(Date.parse(inputDate))) {
+    //   alert("Attenzione! Inserire una data valida.");
+    //   return;
+    // }
 
-    if (isValidDate) {
+    // // Convert inputDate to a date if it's a string
+    // if (typeof inputDate === 'string') {
+    //   inputDate = new Date(inputDate);
+    // }
+  
+    const isValidDate = validateDate(inputDate);
+  
+    if (isValidDate && inputDate <= currentDate) {
       setIncomeDate(inputDate);
     } else {
-      alert("Attenzione! Selezionare la data tramite il calendario.");
+      alert("Attenzione! Selezionare una data valida.");
     }
   };
   
   const handleExpenseDateChange = (event) => {
     const inputDate = event.target.value;
+  
+    // Check if inputDate is a string that can be converted to a date
+    // if (isNaN(Date.parse(inputDate))) {
+    //   alert("Attenzione! Inserire una data valida.");
+    //   return;
+    // }
+
+    // Convert inputDate to a date if it's a string
+    // if (typeof inputDate === 'string') {
+    //   inputDate = new Date(inputDate);
+    // }
+  
     const isValidDate = validateDate(inputDate);
   
-    if (isValidDate) {
+    if (isValidDate && inputDate <= currentDate) {
       setExpenseDate(inputDate);
     } else {
-      alert("Attenzione! Selezionare la data tramite il calendario.");
+      alert("Attenzione! Selezionare una data valida.");
     }
   };
 
@@ -287,26 +361,29 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     try {
 
       const inExAdd = await axios.post('/expenses/add', inExJson, { withCredentials: true });
-
+      // const options = {
+      //   Banca: [bankReal, setBankReal],
+      //   Contanti: [cashReal, setCashReal],
+      //   'Servizi digitali': [digitalServicesReal, setDigitalServicesReal],
+      //   Azioni: [stocksReal, setStocksReal],
+      //   ETF: [etfReal, setETFReal],
+      //   Bitcoin: [bitcoinReal, setBitcoinReal],
+      //   Criptovalute: [cryptoReal, setCryptoReal],
+      // };
       if (inExAdd.status === 200) {
         if (selectedOption !== "") {
           console.log(selectedOption);
-          console.log(options[selectedOption]);
-          const [value, setValue] = options[selectedOption];
-          
-          console.log('SelectedOptionValue(before set): ', value);
-          console.log('BO: ', setValue());
-          console.log('WhichSetValue: ', setValue);
+          // console.log(options[selectedOption]);
 
-          if (isExpense) {
-            setValue(value - expense);
-            setExpense(0);
-          }
-          else {
-            setValue(value + income);
-            setIncome(0);
-          }
-          console.log('SelectedOptionValue(after set): ', value);
+          // const [value, setValue] = options[selectedOption];
+          
+          // console.log('SelectedOptionValue(before set): ', value);
+          // console.log('BO: ', setValue);
+          // console.log('WhichSetValue: ', setValue);
+
+          // let newValue;
+          updateValue(selectedOption, isExpense);
+        
 
           const balancesJson = { 
             balance : {

@@ -66,7 +66,7 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
             bottom: 40
             }}
         >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
             <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9}/>} />
             <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
             <Tooltip
@@ -86,14 +86,14 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
             />
             <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '8%' }}/>
             
-            <Line type="monotone" dataKey={isHidden ? '****' : "Banca"} stroke={isHidden ? theme.textColor : "#0D579B"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "ServiziDigitali"} stroke={isHidden ? theme.textColor : "#74b9ff"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "Azioni"} stroke={isHidden ? theme.textColor : "#FF6600"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} />
-            <Line type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Banca"} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "SoldiFisici"} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "ServiziDigitali"} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Azioni"} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "ETF"} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Bitcoin"} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Crypto"} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />
+            <Line type="monotone" dataKey={isHidden ? '****' : "Totale"} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />
             
         </LineChart>
     </SectionBalancesCharts>

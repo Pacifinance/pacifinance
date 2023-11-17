@@ -32,6 +32,29 @@ function roundCurrency(n) {
 }
 
 /**
+ * Converts any date to a Date object
+ * @param {Date | String} date - date to convert
+ * @returns A Date object, or undefined if the provided date is invalid
+ */
+function toDateObject(date) {
+    // If the date is of type Date, return it
+    if (date instanceof Date)
+        return date;
+    // If the date is of type string
+    else if (typeof date === "string") {
+        // If its format is "yyyy-mm-dd", parse it as Date and return it
+        const regex = /\d{4}-\d{2}-\d{2}/;
+        let match = date.match(regex);
+        if (match === null)
+            return undefined;
+        return new Date(date);
+    }
+    // Otherwise, the date is invalid
+    else
+        return undefined;
+}
+
+/**
  * Checks if a balance is valid
  * @param {Object} data - Balance to check (sanitized and modified by this function)
  * @returns true if the balance is valid, false otherwise
@@ -51,7 +74,8 @@ function isBalanceValid(data) {
     data.crypto.invested = roundCurrency(Number(data.crypto.invested));
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
-    if (data.date === undefined || !(data.date instanceof Date) || data.date > now) data.date = now;
+    data.date = toDateObject(data.date);
+    if (data.date === undefined || isNaN(data.date) || data.date > now) data.date = now;
     // Return true if all fields exist and they are valid numbers
     return (
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
@@ -74,7 +98,8 @@ function isExpenseValid(data) {
     data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
-    if (data.date === undefined || !(data.date instanceof Date) || data.date > now) data.date = now;
+    data.date = toDateObject(data.date);
+    if (data.date === undefined || isNaN(data.date) || data.date > now) data.date = now;
     // If it's an income, the payment type is forced to 'none'
     if (!data.is_expense) data.payment_type = PAYMENT_NONE;
     /**
@@ -198,6 +223,7 @@ function computeRankOfUser(array, target_user) {
 module.exports = {
     sanitizeInput,
     roundCurrency,
+    toDateObject,
     isBalanceValid,
     isExpenseValid,
     hashPassword,

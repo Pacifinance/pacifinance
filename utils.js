@@ -51,7 +51,7 @@ function isBalanceValid(data) {
     data.crypto.invested = roundCurrency(Number(data.crypto.invested));
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
-    if (data.date === undefined || data.date > now) data.date = now;
+    if (data.date === undefined || !(data.date instanceof Date) || data.date > now) data.date = now;
     // Return true if all fields exist and they are valid numbers
     return (
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
@@ -74,7 +74,7 @@ function isExpenseValid(data) {
     data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
-    if (data.date === undefined || data.date > now) data.date = now;
+    if (data.date === undefined || !(data.date instanceof Date) || data.date > now) data.date = now;
     // If it's an income, the payment type is forced to 'none'
     if (!data.is_expense) data.payment_type = PAYMENT_NONE;
     /**

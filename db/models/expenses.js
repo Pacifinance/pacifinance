@@ -7,6 +7,7 @@ const expenseSchema = new mongoose.Schema({
     date: {type: Date, required: true, index: true},
     amount: {type: Number, required: true},
     isExpense: {type: Boolean, required: true},
+    notes: {type: String},
     paymentType: {type: mongoose.Types.ObjectId, ref: "Tag", required: true},
     categoryTag: {type: mongoose.Types.ObjectId, ref: "Tag", required: true}
 });
@@ -53,11 +54,12 @@ async function deleteOne(where) {
  * @param {Date} date - date of the expense
  * @param {Number} amount - amount of the expense
  * @param {Boolean} is_expense - true if this is entry is an expense, false if it's an income
+ * @param {String} notes - user notes or description associated to the expense
  * @param {Number} payment_type - type of payment (None, Single, Subscription or Installment)
  * @param {Number} category_tag - category tag of the expense
  * @returns Expense document
  */
-async function insertNew(user_id, date, amount, is_expense, payment_type, category_tag) {
+async function insertNew(user_id, date, amount, is_expense, notes, payment_type, category_tag) {
     // Get the user reference
     const user = await users.getReferenceByUserId(user_id);
     // If this is an expense, get the payment type reference and the expense category reference
@@ -85,6 +87,7 @@ async function insertNew(user_id, date, amount, is_expense, payment_type, catego
         date: date,
         amount: amount,
         isExpense: is_expense,
+        notes: notes,
         paymentType: payment_type_ref._id,
         categoryTag: category_tag_ref._id
     };

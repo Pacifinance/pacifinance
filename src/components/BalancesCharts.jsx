@@ -99,9 +99,6 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
         
         <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9} />} />
         <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
-  
-        
-        
         
 
       </BarChart>

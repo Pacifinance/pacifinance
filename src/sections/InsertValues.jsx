@@ -148,44 +148,6 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     Bitcoin: [bitcoinReal, setBitcoinReal],
     Criptovalute: [cryptoReal, setCryptoReal],
   };
-
-  function updateValue(selectedOption, isExpense) {
-    let newValue;
-    switch (selectedOption) {
-      case 'Banca':
-        newValue = isExpense ? bankReal - expense : bankReal + income;
-        setBankReal(newValue);
-        break;
-      case 'Contanti':
-        newValue = isExpense ? cashReal - expense : cashReal + income;
-        setCashReal(newValue);
-        break;
-      case 'Servizi digitali':
-        newValue = isExpense ? digitalServicesReal - expense : digitalServicesReal + income;
-        setDigitalServicesReal(newValue);
-        break;
-      case 'Azioni':
-        newValue = isExpense ? stocksReal - expense : stocksReal + income;
-        setStocksReal(newValue);
-        break;
-      case 'ETF':
-        newValue = isExpense ? etfReal - expense : etfReal + income;
-        setETFReal(newValue);
-        break;
-      case 'Bitcoin':
-        newValue = isExpense ? bitcoinReal - expense : bitcoinReal + income;
-        setBitcoinReal(newValue);
-        break;
-      case 'Criptovalute':
-        newValue = isExpense ? cryptoReal - expense : cryptoReal + income;
-        setCryptoReal(newValue);
-        break;
-      default:
-        console.error(`Invalid selectedOption: ${selectedOption}`);
-    }
-    if(isExpense) setExpense(0);
-    else setIncome(0);
-  }
   
   const fetchData = async () => {
     
@@ -343,49 +305,47 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     try {
 
       const inExAdd = await axios.post('/expenses/add', inExJson, { withCredentials: true });
-      // const options = {
-      //   Banca: [bankReal, setBankReal],
-      //   Contanti: [cashReal, setCashReal],
-      //   'Servizi digitali': [digitalServicesReal, setDigitalServicesReal],
-      //   Azioni: [stocksReal, setStocksReal],
-      //   ETF: [etfReal, setETFReal],
-      //   Bitcoin: [bitcoinReal, setBitcoinReal],
-      //   Criptovalute: [cryptoReal, setCryptoReal],
-      // };
+      const options = {
+        Banca: bankReal,
+        Contanti: cashReal,
+        'Servizi digitali': digitalServicesReal,
+        Azioni: stocksReal,
+        ETF: etfReal,
+        Bitcoin: bitcoinReal,
+        Criptovalute: cryptoReal,
+      };
       if (inExAdd.status === 200) {
         if (selectedOption !== "") {
           console.log(selectedOption);
-          // console.log(options[selectedOption]);
 
-          // const [value, setValue] = options[selectedOption];
-          
-          // console.log('SelectedOptionValue(before set): ', value);
-          // console.log('BO: ', setValue);
-          // console.log('WhichSetValue: ', setValue);
+          const valueBalanceSelected = parseFloat(options[selectedOption]);
 
-          // let newValue;
-          updateValue(selectedOption, isExpense);
+          const expenseNumber = parseFloat(expense);
+          const incomeNumber = parseFloat(income);
+
+          let newValue = 0;
+          if(isExpense) newValue = valueBalanceSelected - expenseNumber;
+          else newValue = valueBalanceSelected + incomeNumber;
         
 
           const balancesJson = { 
             balance : {
               date : balanceDate,
-              bank : bankReal,
-              cash : cashReal,
-              digital_services : digitalServicesReal,
+              bank : selectedOption.includes('Banca') ? newValue : bankReal,
+              cash : selectedOption.includes('Contanti') ? newValue : cashReal,
+              digital_services : selectedOption.includes('Servizi digitali') ? newValue : digitalServicesReal,
               stocks : {
-                real : stocksReal
+                real : selectedOption.includes('Azioni') ? newValue : stocksReal
               },
               etf : {
-                real : etfReal
+                real : selectedOption.includes('ETF') ? newValue : etfReal
               },
               bitcoin : {
-                real : bitcoinReal
+                real : selectedOption.includes('Bitcoin') ? newValue : bitcoinReal
               },
               crypto : {
-                real : cryptoReal
+                real : selectedOption.includes('Criptovalute') ? newValue : cryptoReal
               },
-        
             }
           }
 

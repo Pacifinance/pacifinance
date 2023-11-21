@@ -102,6 +102,9 @@ function isExpenseValid(data) {
     if (data.date === undefined || isNaN(data.date) || data.date > now) data.date = now;
     // If it's an income, the payment type is forced to 'none'
     if (!data.is_expense) data.payment_type = PAYMENT_NONE;
+    // If there are no notes associated to the expense, set the notes to an empty string. Also, cast it to String for type integrity
+    if (!data.notes) data.notes = "";
+    data.notes = String(data.notes);
     /**
      * Return true if:
      * 1. it's an expense and all fields are valid

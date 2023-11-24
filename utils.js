@@ -92,6 +92,7 @@ function isBalanceValid(data) {
  * @returns true if the expense is valid, false otherwise
  */
 function isExpenseValid(data) {
+    const NOTES_MAX_LENGTH = 64;
     const PAYMENT_NONE = 0; // database index of the 'none' payment type (hardcoded = bad, but it will never change...probably...)
     // Cast the amount to Number and the is_expense flag to Boolean for type integrity
     data.amount = roundCurrency(Number(data.amount));
@@ -104,7 +105,7 @@ function isExpenseValid(data) {
     if (!data.is_expense) data.payment_type = PAYMENT_NONE;
     // If there are no notes associated to the expense, set the notes to an empty string. Also, cast it to String for type integrity
     if (!data.notes) data.notes = "";
-    data.notes = String(data.notes);
+    data.notes = String(data.notes).substring(0, NOTES_MAX_LENGTH);
     /**
      * Return true if:
      * 1. it's an expense and all fields are valid

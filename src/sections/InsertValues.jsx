@@ -115,6 +115,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [deleteIncomeAmount, setDeleteIncomeAmount] = useState("");
   const [deleteExpenseDate, setDeleteExpenseDate] = useState("");
   const [deleteExpenseAmount, setDeleteExpenseAmount] = useState("");
+  const [noteIncomeAreaValue, setNoteIncomeAreaValue] = useState("");
+  const [noteExpenseAreaValue, setNoteExpenseAreaValue] = useState("");
   // const [isLoading, setIsLoading] = useState(true);
   const [bankReal, setBankReal] = useState(0);
   const [cashReal, setCashReal] = useState(0);
@@ -126,8 +128,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryExpense, setCategoryExpense] = useState({ key: "", value: "" });
   const [typoExpense, setTypoExpense] = useState({ key: "", value: "" });
-  const [income, setIncome] = useState(0);
-  const [expense, setExpense] = useState(0);
+  const [income, setIncome] = useState("");
+  const [expense, setExpense] = useState("");
   const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
   const [lastExpensesAdds, setLastExpensesAdds] = useState([]);
   const [incomeDate, setIncomeDate] = useState(currentDate);
@@ -275,7 +277,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   };
 
 
-  const createInExJson = (isExpense, date, amount, payment_type, category_tag) => {
+  const createInExJson = (isExpense, date, amount, notes, payment_type, category_tag) => {
     return {
       expense: {
         date: date,
@@ -283,6 +285,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
         is_expense: isExpense,
         payment_type: payment_type,
         category_tag: category_tag,
+        notes: notes
       },
     };
   };
@@ -292,13 +295,15 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     let inExJson = {};
     if (isExpense) {
       setIsConfirmExpenseOpen(false);
-      inExJson = createInExJson(true, expenseDate, expense, typoExpense.key, categoryExpense.key);
+      inExJson = createInExJson(true, expenseDate, expense, noteExpenseAreaValue, typoExpense.key, categoryExpense.key);
+      setNoteExpenseAreaValue("");
       setCategoryExpense({ key: "", value: "" });
       setTypoExpense({ key: "", value: "" });
       setExpenseDate(currentDate);
     } else {
       setIsConfirmIncomeOpen(false);
-      inExJson = createInExJson(false, incomeDate, income, 0, categoryIncome.key);
+      inExJson = createInExJson(false, incomeDate, income, noteIncomeAreaValue, 0, categoryIncome.key);
+      setNoteIncomeAreaValue("");
       setCategoryIncome({ key: "", value: "" });
       setIncomeDate(currentDate);
     }
@@ -456,6 +461,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
         <tr key={index}>
           <td>{isHidden ? '****' : add.categoryTag.translations.it}</td>
           <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+          <td>{isHidden ? '****' : add.notes}</td>
           <td>{isHidden ? '****' : formattedDate}</td>
           <td>
             <button onClick={handleDelete}>
@@ -486,6 +492,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <td>{isHidden ? '****' : add.categoryTag.translations.it}</td>
           <td>{isHidden ? '****' : add.paymentType.translations.it}</td>
           <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+          <td>{isHidden ? '****' : add.notes}</td>
           <td>{isHidden ? '****' : formattedDate}</td>
           <td>
             <button onClick={handleDelete}>
@@ -642,6 +649,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                   value={income}
                   onChange={(e) => handleInputChange(e, setIncome)} 
                   onBlur={(e) => handleInputBlur(e, setIncome)}
+                  placeholder="0"
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -669,9 +677,26 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                 max={currentDate}
               />
             </div>
-          
           </StyledAddSection>
-            
+
+          <StyledAddSection theme={theme}>
+            <label>
+              <textarea
+                value={noteIncomeAreaValue}
+                onChange={(e) => setNoteIncomeAreaValue(e.target.value)}
+                maxLength={64}
+                placeholder="Inserisci una nota (facoltativo)"
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  color: "#333",
+                  outline: "none",
+                }}
+              />
+            </label>
+          </StyledAddSection>
             
           <StyledAddSection theme={theme}> 
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>Aggiungi entrata</MySecondaryButton>
@@ -683,6 +708,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <tr>
                 <th>Categoria</th>
                 <th>Valore</th>
+                <th>Note</th>
                 <th>Data Entrata</th>
               </tr>
             </thead>
@@ -770,6 +796,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                   value={expense}
                   onChange={(e) => handleInputChange(e, setExpense)} 
                   onBlur={(e) => handleInputBlur(e, setExpense)}
+                  placeholder="0"
                   style={{
                     textAlign: "center",
                     padding: "8px",
@@ -798,6 +825,26 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               />
             </div>
           </StyledAddSection>
+
+          <StyledAddSection theme={theme}>
+            <label>
+              <textarea
+                value={noteExpenseAreaValue}
+                onChange={(e) => setNoteExpenseAreaValue(e.target.value)}
+                maxLength={64}
+                placeholder="Inserisci una nota (facoltativo)"
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  color: "#333",
+                  outline: "none",
+                }}
+              />
+            </label>
+          </StyledAddSection>
+
           <StyledAddSection theme={theme}>
             <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi uscita</MySecondaryButton>
           </StyledAddSection>
@@ -808,6 +855,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                 <th>Categoria</th>
                 <th>Tipologia</th>
                 <th>Valore</th>
+                <th>Note</th>
                 <th>Data Uscita</th>
               </tr>
             </thead>
@@ -891,6 +939,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             <MuiCustomDialogContent>
               <MuiCustomDialogContentText>Categoria: {categoryIncome.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {income}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Note: {noteIncomeAreaValue}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Data selezionata: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
               <Typography variant="body1" style={{ marginTop: '1em' }}>Seleziona dove depositare l'entrata:</Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
@@ -918,6 +967,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <MuiCustomDialogContentText>Categoria: {categoryExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Valore: {expense}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>Note: {noteExpenseAreaValue}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>Data selezionata: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
               <Typography variant="body2" style={{ marginTop: '1em' }}>Seleziona da dove sottrarre l'uscita:</Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>

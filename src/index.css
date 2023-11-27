@@ -3,13 +3,17 @@
   padding: 0;
   box-sizing: border-box;
 }
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
+body *{
+  font-family:  -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  background-color: #FFFFFF;
 }
+body {
+  margin: 0;
+  background-color: #F7F5FF;
+}
+
+/* Arizona,ArizonaFallback,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji */
 /* ::-webkit-scrollbar{
   background-color: #EBECF1;
   width: 0.4vw;

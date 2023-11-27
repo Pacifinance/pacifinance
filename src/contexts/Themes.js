@@ -5,7 +5,7 @@ export const themes = {
   light: {
     mode: 'light',
     jollyColor: '#b5ded1',
-    primaryColor: '#f5f5f5',
+    primaryColor: '#F7F5FF', //#f5f5f5
     secondaryColor: '#079164',
     textColor: 'black',//#222629
     borderColor: '#079164',

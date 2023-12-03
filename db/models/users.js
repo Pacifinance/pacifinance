@@ -5,10 +5,18 @@ const utils = require("../../utils.js");
 const userIdLength = 6;
 const sessionIdLength = 32;
 
+const UserType = {
+    regular: {name: "regular", value: 0},
+    premium: {name: "premium", value: 1},
+    test: {name: "test", value: 2},
+    demo: {name: "demo", value: 3}
+};
+
 const userSchema = new mongoose.Schema({
     userId: {type: String, required: true, unique: true, dropDups: true},
     password: {type: String, required: true},
     creationDate: {type: Date, required: true},
+    type: {type: Number, required: true},
     nickname: {type: String, default: ""},
     country: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     job: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
@@ -86,12 +94,14 @@ async function setOne(where, update) {
  * Adds a new user
  * @param {String} user_id - ID of the user
  * @param {String} password - hashed password
+ * @param {Number} type - account type (regular, premium, test, ...)
  */
-async function insertNew(user_id, password) {
+async function insertNew(user_id, password, type=UserType.regular.value) {
     const data = {
         userId: user_id,
         password: password,
         creationDate: new Date(Date.now()),
+        type: type,
         nickname: "",
         country: utils.newNullObjectId(),
         job: utils.newNullObjectId(),

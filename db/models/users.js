@@ -179,12 +179,31 @@ async function setPasswordOfUserId(user_id, hashed_new_pwd) {
 
 /**
  * Updates the nickname of a user
- * @param {*} user_id - ID of the user
- * @param {*} nickname - nickname to set
+ * @param {String} user_id - ID of the user
+ * @param {String} nickname - nickname to set
  * @returns User document
  */
 async function setNicknameOfUserId(user_id, nickname) {
     return await setOne({userId: user_id}, {nickname: nickname});
+}
+
+/**
+ * Gets the type of a user
+ * @param {String} user_id - ID of the user
+ * @returns User document
+ */
+async function getTypeOfUserId(user_id) {
+    return await getOne({userId: user_id}, "-_id type");
+}
+
+/**
+ * Updates the type of a user
+ * @param {String} user_id - ID of the user
+ * @param {Number} new_type - Index of the type to set
+ * @returns User document
+ */
+async function setTypeOfUserId(user_id, new_type) {
+    return await setOne({userId: user_id}, {type: new_type});
 }
 
 /**
@@ -262,6 +281,8 @@ module.exports = {
     getPasswordByUserId,
     setPasswordOfUserId,
     setNicknameOfUserId,
+    getTypeOfUserId,
+    setTypeOfUserId,
     getSessionByUserId,
     setSessionOfUserId,
     getPublicInfoByUserId,

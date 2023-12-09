@@ -274,6 +274,7 @@ const User = mongoose.model("User", userSchema);
 module.exports = {
     userIdLength,
     sessionIdLength,
+    UserType,
     insertNew,
     getReferenceByUserId,
     getAllUsersIds,

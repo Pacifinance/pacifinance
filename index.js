@@ -161,6 +161,15 @@ app.post("/user/set-id", async (req, res) => {
         res.send();
         return;
     }
+    // Check if the user has the right to change ID.
+    // Send status code 403 (Forbidden) if it doesn't
+    const type = await db.users.getTypeOfUserId(req.session.userId);
+    if (type.type === db.users.UserType.demo.value)
+    {
+        res.status(403);
+        res.send();
+        return;
+    }
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (empty strings after sanitization)
     let password = utils.sanitizeInput(req.body.password);
@@ -208,6 +217,15 @@ app.post("/user/set-password", async (req, res) => {
     if (!valid_session)
     {
         res.status(401);
+        res.send();
+        return;
+    }
+    // Check if the user has the right to change password.
+    // Send status code 403 (Forbidden) if it doesn't
+    const type = await db.users.getTypeOfUserId(req.session.userId);
+    if (type.type === db.users.UserType.demo.value)
+    {
+        res.status(403);
         res.send();
         return;
     }

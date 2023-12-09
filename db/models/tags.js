@@ -101,7 +101,7 @@ async function getReferenceByIndexAndType(index, type) {
  * @returns List of Tag documents
  */
 async function getAllTagsByType(type) {
-    return await getSorted({type: type}, "-_id -__v", {index: 1});
+    return await getSorted({type: type}, "-_id -__v -translations._id", {index: 1});
 }
 
 /**

@@ -160,7 +160,8 @@ async function getYearlyBalanceByUserId(user_id) {
         const res = await getOneSorted({
                 userRef: user._id, userDate: {$gte: month_start, $lt: month_end}
             }, 
-            "-_id -__v -userRef", {userDate: -1, date: -1}
+            "-_id -__v -userRef -stocks._id -etf._id -bitcoin._id -crypto._id",
+            {userDate: -1, date: -1}
         );
         // If a balance was found for this month, then add it to the array; otherwise, add an empty object
         const balance = (res !== null) ? res : {};

@@ -129,9 +129,10 @@ async function getReferenceByUserId(user_id) {
 /**
  * Gets all user IDs, filtering by "similar" users if a reference user is provided
  * @param {String} reference_user_id - ID of the user to use as a reference for filtering
+ * @param {Boolean} ignore_test_users - true if test and demo users must be ignored, false otherwise
  * @returns List of User documents
  */
-async function getAllUsersIds(reference_user_id=undefined) {
+async function getAllUsersIds(reference_user_id=undefined, ignore_test_users=false) {
     let filter = {};
     if (reference_user_id !== undefined) {
         // Get the data of the reference user
@@ -144,6 +145,10 @@ async function getAllUsersIds(reference_user_id=undefined) {
                 workTime: reference_user.workTime
             };
         }
+    }
+    // If test/demo users must be ignored, add the corresponding filter
+    if (ignore_test_users) {
+        filter.type = {$gte: UserType.test.value}
     }
     return await get(filter, "-_id userId");
 }

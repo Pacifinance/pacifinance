@@ -498,13 +498,24 @@ app.post("/rank/balances", async (req, res) => {
         res.send();
         return;
     }
-    // Check if the ranking is requested among all users or only similar users
+    // If the user is of test/demo type, assign some random values
     const target_user = req.session.userId;
+    const user_type = await db.users.getTypeOfUserId(target_user);
+    if (user_type.type >= db.users.UserType.test.value)
+    {
+        const fake_balances = [
+            {user: "0"}, {user: "1"}, {user: target_user}, {user: "2"}
+        ];
+        const fake_rank = utils.computeRankOfUser(fake_balances, target_user);
+        res.status(200);
+        res.json(fake_rank);
+    }
+    // Check if the ranking is requested among all users or only similar users
     let reference_user = undefined;
     if (req.body.similar)
         reference_user = target_user;
     // Get the list of all/similar users IDs
-    const users = await db.users.getAllUsersIds(reference_user);
+    const users = await db.users.getAllUsersIds(reference_user, true);
     // For each user get its latest balance up to the last day of the last month
     let now = new Date(Date.now());
     let limit_date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
@@ -532,13 +543,24 @@ app.post("/rank/expenses", async (req, res) => {
         res.send();
         return;
     }
-    // Check if the ranking is requested among all users or only similar users
+    // If the user is of test/demo type, assign some random values
     const target_user = req.session.userId;
+    const user_type = await db.users.getTypeOfUserId(target_user);
+    if (user_type.type >= db.users.UserType.test.value)
+    {
+        const fake_expenses = [
+            {user: "0"}, {user: target_user}, {user: "1"}, {user: "2"}
+        ];
+        const fake_rank = utils.computeRankOfUser(fake_expenses, target_user);
+        res.status(200);
+        res.json(fake_rank);
+    }
+    // Check if the ranking is requested among all users or only similar users
     let reference_user = undefined;
     if (req.body.similar)
         reference_user = target_user;
     // Get the list of all/similar users IDs
-    const users = await db.users.getAllUsersIds(reference_user);
+    const users = await db.users.getAllUsersIds(reference_user, true);
     // For each user get the expenses/incomes of the last month
     let reference_date = new Date(Date.now()); reference_date.setUTCMonth(reference_date.getUTCMonth()-1);
     let is_expense_filter = Boolean(req.body.expenses);

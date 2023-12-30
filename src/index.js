@@ -7,8 +7,10 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
 import { PageProvider } from './contexts/PageContext';
 import { PrivacyProvider } from './contexts/PrivacyContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 ReactDOM.render(
+  <LanguageProvider>
     <ThemeProvider>
       <UserProvider>
         <PageProvider>
@@ -21,8 +23,9 @@ ReactDOM.render(
           </PrivacyProvider>
         </PageProvider>
       </UserProvider>
-    </ThemeProvider>,
-    document.getElementById('root')
+    </ThemeProvider>
+  </LanguageProvider>,
+  document.getElementById('root')
 );
 
 // const MatomoTagManager = () => {

@@ -1,0 +1,541 @@
+{
+    "it": {
+        "assets": {
+            "bank": "Banca",
+            "cash": "Contanti",
+            "digitalServices": "Servizi <br> pagamenti digitali",
+            "stocks": "Azioni",
+            "etf": "ETF",
+            "bitcoin": "Bitcoin",
+            "crypto": "Criptovalute",
+            "bond": "Obbligazioni"
+        },
+        "general": {
+            "incomes": "Entrate",
+            "expenses": "Uscite",
+            "saved": "Risparmiato",
+            "balance": "Bilancio",
+            "total": "Totale",
+            "date": "Data",
+            "category": "Categoria",
+            "typology": "Tipologia",
+            "invested": "Investito",
+            "investments": "Investimenti",
+            "deposited": "Depositati",
+            "in": "in",
+            "selectA": "Seleziona un ",
+            "selecetAn": "Seleziona una ",
+            "selectYour": "Seleziona il tuo ",
+            "selectYour2": "Seleziona la tua ",
+            "selectType": "Seleziona il tipo di ",
+            "selectTime": "Seleziona il tuo orario di "
+        },
+        "landing": {
+            "title": "PaciFinance",
+            "subtitle": "Personale, Privacy, Pacify",
+            "sectionTitle": "Privacy, Sicurezza e Confronto",
+            "descriptionRow1": "La piattaforma sicura e privacy oriented per la finanza personale.",
+            "descriptionRow2": "Potrai confrontarti con altri utenti sia nel tuo settore <br><br> che non, nel tuo paese o all'estero.", 
+            "descriptionRow3": "Check del portafoglio, delle entrate e delle spese nel tempo.",
+            "discoverButton": "Scopri di più",
+            "point1": {
+                "title": "Facile da usare",
+                "description": "Controlla i tuoi risparmi e i tuoi investimenti<br></br> in modo semplice e intuitivo."
+            },
+            "point2": {
+                "title": "Sicurezza garantita",
+                "description": "Dati sicuri, anonimi e non sensibili.<br></br> La privacy dell'utente è la nostra priorità. "
+            },
+            "point3": {
+                "title": "Professionale e affidabile",
+                "description": "Servizi di confronto personale e con altri<br></br> utenti, mantenendo la tua privacy."
+            }
+        },
+        "header": {
+            "login": {
+                "title": "Accedi",
+                "titleButton": "Accedi",
+                "info": "Inserisci il tuo ID e la tua password per continuare",
+                "username": "ID o Username",
+                "password": "Password",
+                "errorPopup": {
+                    "title": "Errore in fase di accesso",
+                    "message": "Si è verificato un errore nell'accesso con il tuo account. <br><br> Controlla di digitare correttamente id e password. <br><br>",
+                    "okButton": "ok va bene"
+                }
+            },
+            "register": {
+                "title": "Registrazione",
+                "titleButton": "Registrati",
+                "info": "Il sistema genererà per te un id univoco e casuale",
+                "username": "ID o Username",
+                "password": "Password",
+                "confirmPassword": "Conferma Password",
+                "errorPopup": {
+                    "title": "Errore in fase di registrazione",
+                    "message": "Si è verificato un errore nella registrazione del tuo account.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Registrazione avvenuta con successo",
+                    "message": "Il tuo id utente è: ",
+                    "securityMessage": "Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.",
+                    "copied": "Copiato negli appunti!",
+                    "toCopy": "Copia il tuo ID",
+                    "okButton": "ok va bene"
+                }
+            },
+            "logout": "Esci"
+        },
+        "footer": {
+            "rights": "Pacifinance © 2023. Tutti i diritti riservati."
+        },
+        "sidebar": {
+            "dashboard": "Dashboard",
+            "graphs": "I tuoi grafici",
+            "insert": "Inserimento dati",
+            "check": "Controlla i mercati",
+            "leaderboard": "Classifica",
+            "learn": "Conoscenze",
+            "info": "Info",
+            "account": {
+                "title": "Il tuo Profilo",
+                "id": "ID utente: ",
+                "nationality": "Nazionalità: ",
+                "selectNationality": "Seleziona una nazionalità",
+                "whereWork": "Dove lavori: ",
+                "work": "Lavoro: ",
+                "workType": "Tipo di lavoro: ",
+                "selectWork": "Seleziona il tuo lavoro",
+                "selectWhereWork": "Seleziona dove lavori",
+                "selectWorkType": "Seleziona il tipo di lavoro",
+                "hoursContract": "Part-time | Full-time",
+                "selectHoursContract": "Seleziona il tuo orario di lavoro",
+                "remoteWork": "Lavoro da remoto",
+                "selectRemoteWork": "Seleziona se lavori da remoto",
+                "saveButton": "Salva profilo",
+                "errorPopup": {
+                    "title": "Errore in fase di salvataggio profilo",
+                    "message": "Si è verificato un errore nel salvataggio del tuo profilo.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Profilo aggiornato con successo",
+                    "message": "Le informazioni del tuo profilo sono state aggiornate e salvate correttamente.",
+                    "okButton": "ok va bene"
+                }
+
+            },
+            "changeUsername": {
+                "title": "Genera username",
+                "info": "Il sistema genererà per te un username univoco e casuale",
+                "username": "Username",
+                "confirmButton": "Voglio cambiare il mio username",
+                "errorPopup": {
+                    "title": "Errore in fase di generazione username",
+                    "message": "Si è verificato un errore nella generazione del tuo username.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Generazione avvenuta con successo",
+                    "message": "Il tuo username è: ",
+                    "securityMessage": "Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.",
+                    "redirectMessage": "Verrai reindirizzato alla pagina di accesso.",
+                    "copied": "Copiato negli appunti!",
+                    "toCopy": "Copia il tuo username",
+                    "okButton": "ok va bene"
+                }
+            },
+            "changeID": {
+                "title": "Cambia ID",
+                "info": "Il sistema genererà per te un id univoco e casuale",
+                "username": "ID",
+                "confirmButton": "Voglio cambiare il mio ID",
+                "errorPopup": {
+                    "title": "Errore in fase di generazione ID",
+                    "message": "Si è verificato un errore nella generazione del tuo ID.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Generazione avvenuta con successo",
+                    "message": "Il tuo nuovo ID è: ",
+                    "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso  e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>" ,
+                    "copied": "Copiato negli appunti!",
+                    "toCopy": "Copia il tuo ID",
+                    "okButton": "ok va bene"
+                }
+            },
+            "changePassword": {
+                "title": "Cambio password",
+                "info": "Inserisci la tua vecchia password e la nuova password",
+                "oldPassword": "Vecchia password",
+                "newPassword": "Nuova password",
+                "confirmPassword": "Conferma password",
+                "confirmButton": "Cambia password",
+                "errorPopup": {
+                    "title": "Errore in fase di cambio password",
+                    "message": "Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br>" ,
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "La tua password è stata reimpostata correttamente",
+                    "message": "Verrai renderizzato alla pagina di accesso.",
+                    "okButton": "ok va bene"
+                }
+            },
+            "settings": {
+                "title": "Impostazioni",
+                "light": "Modalità chiara/scura",
+                "privacy": "Modalità privacy",
+                "language": "Cambia Lingua"
+            },
+            "logout": "Esci"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "totalBalance": "Il tuo patrimonio totale è: ",
+            "titleGraph": "Distribuzione Capitale",
+            "titleGraph2": "% Distribuzione Capitale",
+            "titleGraph3": "Entrate | Uscite",
+            "updateValue": "Aggiorna valore",
+            "noData": "Assenza di dati:",
+            "noData2": "Inserire i valori nella pagina <br></br>con la seguente icona: "
+        },
+        "graphs": {
+            "Title": "Le tue statistiche",
+            "statsBalance": {
+                "title": "Statistiche bilancio",
+                "titleGraph": "Andamento del tuo bilancio negli ultimi 12 mesi",
+                "titleGraph2": "Distribuzione del tuo bilancio negli ultimi 12 mesi",
+                "detailedVision": "Visione dettagliata",
+                "titleDetailsMonth": "Il tuo patrimonio rispetto al mese scorso è variato di: ",
+                "variation": "Variazione ",
+                "titleDetailsYear": "Il tuo patrimonio rispetto ad un anno fa è variato di: "
+            },
+            "statsExpenses": {
+                "title": "Statistiche Entrate e Uscite",
+                "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
+                "titleGraph2": "Distribuzione delle tue spese per categoria",
+                "detailedVision": "Visione dettagliata",
+                "titleDetailsMonth": "Le tue entrate rispetto al mese scorso sono variate di: ",
+                "variation": "Variazione ",
+                "titleDetailsYear": "Le tue entrate rispetto ad un anno fa sono variate di: "
+            }
+
+        },
+        "insert": {
+            "title": "Inserimento Dati",
+            "buttonBalance": "Aggiorna Bilancio",
+            "buttonIncome": "Aggiungi Entrate",
+            "buttonExpense": "Aggiungi Uscite",
+            "balanceSection": {
+                "titleLiquidity": "Liquidità",
+                "titleInvestments": "Investimenti",
+                "updateButton": "Aggiorna il tuo bilancio"           
+            },
+            "incomeSection": {
+                "placeholderCategory": "Seleziona una categoria",
+                "placeholderNote": "Inserisci una nota (opzionale)",
+                "updateButton": "Aggiungi entrata",
+                "titleListing": "Le entrate del mese selezionato",
+                "tableColumns": {
+                    "category": "Categoria",
+                    "value": "Valore",
+                    "note": "Nota",
+                    "date": "Data Entrata"
+                }
+            },
+            "expenseSection": {
+                "placeholderCategory": "Seleziona una categoria",
+                "placeholderTypology": "Seleziona una tipologia",
+                "placeholderNote": "Inserisci una nota (opzionale)",
+                "updateButton": "Aggiungi uscita",
+                "titleListing": "Le uscite del mese selezionato",
+                "tableColumns": {
+                    "category": "Categoria",
+                    "typology": "Tipologia",
+                    "value": "Valore",
+                    "note": "Nota",
+                    "date": "Data Uscita"
+                }
+            }
+        }
+
+    },
+    "en": {
+        "assets": {
+            "bank": "Bank",
+            "cash": "Cash",
+            "digitalServices": "Digital <br> payment services",
+            "stocks": "Stocks",
+            "etf": "ETF",
+            "bitcoin": "Bitcoin",
+            "crypto": "Crypto",
+            "bond": "Bond"
+        },
+
+        "general": {
+            "incomes": "Incomes",
+            "expenses": "Expenses",
+            "saved": "Saved",
+            "balance": "Balance",
+            "total": "Total",
+            "date": "Date",
+            "category": "Category",
+            "typology": "Typology",
+            "invested": "Invested",
+            "investments": "Investments",
+            "deposited": "Deposited",
+            "in": "in the",
+            "selectA": "Select a",
+            "selecetAn": "Select an"
+        },
+
+        "landing": {
+            "title": "PaciFinance",
+            "subtitle": "Personal, Privacy, Pacify",
+            "sectionTitle": "Privacy, Security and Comparison",
+            "descriptionRow1": "The secure and privacy oriented platform for personal finance.",
+            "descriptionRow2": "You can compare yourself with other users both in your sector <br><br> that not, in your country or abroad.",
+            "descriptionRow3": "Check the portfolio, income and expenses over time.",
+            "discoverButton": "Discover more",
+            "point1": {
+                "title": "Easy to use",
+                "description": "Check your savings and investments<br></br> in a simple and intuitive way."
+            },
+            "point2": {
+                "title": "Guaranteed security",
+                "description": "Secure, anonymous and non-sensitive data.<br></br> User privacy is our priority."
+            },
+            "point3": {
+                "title": "Professional and reliable",
+                "description": "Personal and with other users comparison<br></br> services, maintaining your privacy."
+            }
+        },
+        "header": {
+            "login": {
+                "title": "Login",
+                "titleButton": "Login",
+                "info": "Enter your ID and password to continue",
+                "username": "ID or Username",
+                "password": "Password",
+                "errorPopup": {
+                    "title": "Error during login",
+                    "message": "An error occurred while logging in with your account. <br><br> Check that you type id and password correctly. <br><br>",
+                    "okButton": "ok fine"
+                }
+            },
+            "register": {
+                "title": "Registration",
+                "titleButton": "Register",
+                "info": "The system will generate a unique and random id for you",
+                "username": "ID or Username",
+                "password": "Password",
+                "confirmPassword": "Confirm Password",
+                "errorPopup": {
+                    "title": "Error during registration",
+                    "message": "An error occurred while registering your account.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Registration successful",
+                    "message": "Your user id is: ",
+                    "securityMessage": "We recommend that you save it in a safe place for future access.",
+                    "copied": "Copied to clipboard!",
+                    "toCopy": "Copy your ID",
+                    "okButton": "ok fine"
+                }
+            },
+            "logout": "Logout"
+        },
+        "footer": {
+            "rights": "Pacifinance © 2023. All rights reserved."
+        },
+        "sidebar": {
+            "dashboard": "Dashboard",
+            "graphs": "Your graphs",
+            "insert": "Insert data",
+            "check": "Check markets",
+            "leaderboard": "Leaderboard",
+            "learn": "Learn",
+            "info": "Info",
+            "account": {
+                "title": "Your Account",
+                "id": "User ID: ",
+                "nationality": "Nationality: ",
+                "selectNationality": "Select a nationality",
+                "whereWork": "Where do you work: ",
+                "work": "Work: ",
+                "workType": "Work type: ",
+                "selectWork": "Select your work",
+                "selectWhereWork": "Select where you work",
+                "selectWorkType": "Select the type of work",
+                "hoursContract": "Part-time | Full-time",
+                "selectHoursContract": "Select your working hours",
+                "remoteWork": "Remote work",
+                "selectRemoteWork": "Select if you work remotely",
+                "saveButton": "Save profile",
+                "errorPopup": {
+                    "title": "Error during profile saving",
+                    "message": "An error occurred while saving your profile.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Profile updated successfully",
+                    "message": "Your profile information has been updated and saved correctly.",
+                    "okButton": "ok fine"
+                }
+            },
+            "changeUsername": {
+                "title": "Change username",
+                "info": "The system will generate a unique and random username for you",
+                "username": "Username",
+                "confirmButton": "I want to change my username",
+                "errorPopup": {
+                    "title": "Error during username generation",
+                    "message": "An error occurred while generating your username.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Generation successful",
+                    "message": "Your username is: ",
+                    "securityMessage": "We recommend that you save it in a safe place for future access.",
+                    "redirectMessage": "You will be redirected to the login page.",
+                    "copied": "Copied to clipboard!",
+                    "toCopy": "Copy your username",
+                    "okButton": "ok fine"
+                }
+            },
+            "changeID": {
+                "title": "Change ID",
+                "info": "The system will generate a unique and random id for you",
+                "username": "ID",
+                "confirmButton": "I want to change my ID",
+                "errorPopup": {
+                    "title": "Error during ID generation",
+                    "message": "An error occurred while generating your ID.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Generation successful",
+                    "message": "Your new ID is: ",
+                    "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>" ,
+                    "copied": "Copied to clipboard!",
+                    "toCopy": "Copy your ID",
+                    "okButton": "ok fine"
+                },
+                "errorCopy": "Error during copy to clipboard: "
+            },
+            "changePassword": {
+                "title": "Change password",
+                "info": "Enter your old password and new password",
+                "oldPassword": "Old password",
+                "newPassword": "New password",
+                "confirmPassword": "Confirm password",
+                "confirmButton": "Change password",
+                "errorPopup": {
+                    "title": "Error during password change",
+                    "message": "An error occurred while changing your password.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Your password has been changed successfully.",
+                    "message": "You will be redirected to the login page.",
+                    "okButton": "ok fine"
+                }
+            },
+            "settings": {
+                "title": "Settings",
+                "light": "Light/Dark mode",
+                "privacy": "Privacy mode",
+                "language": "Change Language"
+            },
+            "logout": "Logout"
+        },
+
+        "dashboard": {
+            "title": "Dashboard",
+            "totalBalance": "Your total balance is: ",
+            "titleGraph": "Capital Distribution",
+            "titleGraph2": "% Capital Distribution",
+            "titleGraph3": "Income | Expenses",
+            "updateValue": "Update value",
+            "noData": "No data:",
+            "noData2": "Enter the values on the page <br></br> with the following icon: "
+        },
+
+        "graphs": {
+            "Title": "Your statistics",
+            "statsBalance": {
+                "title": "Balance statistics",
+                "titleGraph": "Trend of your balance in the last 12 months",
+                "titleGraph2": "Distribution of your balance in the last 12 months",
+                "detailedVision": "Detailed vision",
+                "titleDetailsMonth": "Your balance compared to last month has changed by: ",
+                "variation": "Variation ",
+                "titleDetailsYear": "Your balance compared to a year ago has changed by: "
+            },
+            "statsExpenses": {
+                "title": "Income and Expenses statistics",
+                "titleGraph": "Trend of your income in the last 12 months",
+                "titleGraph2": "Distribution of your expenses by category",
+                "detailedVision": "Detailed vision",
+                "titleDetailsMonth": "Your income compared to last month has changed by: ",
+                "variation": "Variation ",
+                "titleDetailsYear": "Your income compared to a year ago has changed by: "
+            }
+
+        },
+
+        "insert": {
+            "title": "Insert Data",
+            "buttonBalance": "Update Balance",
+            "buttonIncome": "Add Income",
+            "buttonExpense": "Add Expense",
+            "balanceSection": {
+                "titleLiquidity": "Liquidity",
+                "titleInvestments": "Investments",
+                "updateButton": "Update your balance"           
+            },
+            "incomeSection": {
+                "placeholderCategory": "Select a category",
+                "placeholderNote": "Insert a note (optional)",
+                "updateButton": "Add income",
+                "titleListing": "The income of the selected month",
+                "tableColumns": {
+                    "category": "Category",
+                    "value": "Value",
+                    "note": "Note",
+                    "date": "Income Date"
+                }
+            },
+            "expenseSection": {
+                "placeholderCategory": "Select a category",
+                "placeholderTypology": "Select a typology",
+                "placeholderNote": "Insert a note (optional)",
+                "updateButton": "Add expense",
+                "titleListing": "The expenses of the selected month",
+                "tableColumns": {
+                    "category": "Category",
+                    "typology": "Typology",
+                    "value": "Value",
+                    "note": "Note",
+                    "date": "Expense Date"
+                }
+            }
+        }
+
+
+        
+    }
+  }

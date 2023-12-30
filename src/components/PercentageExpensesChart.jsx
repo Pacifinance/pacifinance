@@ -163,7 +163,7 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
   }
 
   // Now monthOptions contains the month names and years for the indices in totalExpensesPerCategoryPerMonth
-  console.log(monthOptions);
+  // console.log(monthOptions);
 
   return (
     <PercentageExpensesChartContainer>

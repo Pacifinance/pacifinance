@@ -167,10 +167,12 @@ function UserProvider({ children }) {
             // console.log('Somma delle spese per ciascun mese:', expensesArray);
 
             // qua potrei aggiungere un controllo che se non ci sono spese ed entrate del mese corrente, allora prendo i dati del mese precedente
-            const lastExpenses = allExpensesIncomesArray[0].filter(data => data.isExpense);
-            const lastIncomes = allExpensesIncomesArray[0].filter(data => !data.isExpense);
+            // const lastExpenses = allExpensesIncomesArray[0].filter(data => data.isExpense);
+            // const lastIncomes = allExpensesIncomesArray[0].filter(data => !data.isExpense);
+            const allExpenses = allExpensesIncomesArray.map(monthData => monthData.filter(data => data.isExpense));
+            const allIncomes = allExpensesIncomesArray.map(monthData => monthData.filter(data => !data.isExpense));
 
-            let count = 1;
+            // let count = 1;
             // Print to test the amount of the expenses
             // lastExpenses.forEach(expense => {
             //   console.log("Spesa n-",count, expense.amount);
@@ -246,7 +248,7 @@ function UserProvider({ children }) {
               bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, 
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
-              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, lastExpenses, lastIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
+              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, allExpenses, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
               percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalExpensesPerCategoryPerMonth,
               userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });

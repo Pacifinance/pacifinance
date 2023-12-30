@@ -130,8 +130,10 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [typoExpense, setTypoExpense] = useState({ key: "", value: "" });
   const [income, setIncome] = useState("");
   const [expense, setExpense] = useState("");
-  const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
-  const [lastExpensesAdds, setLastExpensesAdds] = useState([]);
+  // const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
+  // const [lastExpensesAdds, setLastExpensesAdds] = useState([]);
+  const [allIncomesAdds, setAllIncomesAdds] = useState([]);
+  const [allExpensesAdds, setAllExpensesAdds] = useState([]);
   const [incomeDate, setIncomeDate] = useState(currentDate);
   const [expenseDate, setExpenseDate] = useState(currentDate);
   const [balanceDate, setBalanceDate] = useState(currentDate);
@@ -139,6 +141,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [expensesTags, setExpensesTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
+  const [selectedIncomesMonth, setSelectedIncomesMonth] = useState(0); // Set default selected month as the first month
+  const [selectedExpensesMonth, setSelectedExpensesMonth] = useState(0); 
   
 
   const options = {
@@ -168,8 +172,11 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             setIncomesTags(userData ? userData.incomesTags : []);
             setPaymentTags(userData ? userData.paymentTags : []);
 
-            setLastExpensesAdds(userData ? userData.lastExpenses : []);
-            setLastIncomesAdds(userData ? userData.lastIncomes : []); 
+            // setLastExpensesAdds(userData ? userData.lastExpenses : []);
+            // setLastIncomesAdds(userData ? userData.lastIncomes : []); 
+
+            setAllExpensesAdds(userData ? userData.allExpenses : []);
+            setAllIncomesAdds(userData ? userData.allIncomes : []); 
             
             // setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
         } catch (error) {
@@ -182,29 +189,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     fetchData();
   }, [userData]);
 
-  // const validateDate = (date) => {
-  //   const pattern = /^\d{4}-\d{2}-\d{2}$/; // Verifica il formato AAAA-MM-GG
-  //   return pattern.test(date);
-  // };
-
   const handleBalanceDateChange = (event) => {
     let inputDate = event.target.value;
     setBalanceDate(inputDate);
-  
-    // Convert inputDate to a date if it's a string
-    // if (typeof inputDate === 'string') {
-    //   inputDate = new Date(inputDate);
-    // }
-  
-    // Get current date and set time to midnight
-    // const currentDateAtMidnight = new Date();
-    // currentDate.setHours(0, 0, 0, 0);
-  
-    // if (inputDate.getTime() <= currentDateAtMidnight.getTime()) {
-    //   setBalanceDate(inputDate);
-    // } else {
-    //   alert("Attenzione! Selezionare una data valida.");
-    // }
   };
   
   
@@ -216,28 +203,53 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const handleExpenseDateChange = (event) => {
     let inputDate = event.target.value;
     setExpenseDate(inputDate);
-  
-    // Check if inputDate is a string that can be converted to a date
-    // if (isNaN(Date.parse(inputDate))) {
-    //   alert("Attenzione! Inserire una data valida.");
-    //   return;
-    // }
-
-    // Convert inputDate to a date if it's a string
-    // if (typeof inputDate === 'string') {
-    //   inputDate = new Date(inputDate);
-    // }
-  
-    // Get current date and set time to midnight
-    // const currentDateAtMidnight = new Date();
-    // currentDate.setHours(0, 0, 0, 0);
-  
-    // if (inputDate.getTime() <= currentDateAtMidnight.getTime()) {
-    //   setExpenseDate(inputDate);
-    // } else {
-    //   alert("Attenzione! Selezionare una data valida.");
-    // }
   };
+
+  const handleIncomesMonthChange = (event) => {
+    setSelectedIncomesMonth(event.target.value); // Update the selected month
+  };
+
+  const handleExpensesMonthChange = (event) => {
+    setSelectedExpensesMonth(event.target.value); 
+  };
+
+  // Array of month names in Italian
+  const monthNames = {
+    1: "Gennaio",
+    2: "Febbraio",
+    3: "Marzo",
+    4: "Aprile",
+    5: "Maggio",
+    6: "Giugno",
+    7: "Luglio",
+    8: "Agosto",
+    9: "Settembre",
+    10: "Ottobre",
+    11: "Novembre",
+    12: "Dicembre"
+  };
+  
+  // Get the current month and year
+  const currentMonth = new Date().getMonth() + 1; // JavaScript months are 0-based, so add 1
+  const currentYear = new Date().getFullYear();
+
+  // Initialize monthOptions as an empty array
+  let monthOptions = [];
+  let year = currentYear;
+  
+  // Iterate over allExpensesAdds (could be used also allIncomesAdds, they have the same length)
+  for (let i = 0; i < Object.keys(allExpensesAdds).length; i++) {
+    // Calculate the month and year for the current index
+    let month = ((currentMonth - i - 1 + 12) % 12) + 1; // Subtract 1 before the modulo operation and add 1 after
+    
+
+    if (month === 12 && i !== 0) {
+      year--;
+    }
+  
+    // Add an object with value and label properties to monthOptions
+    monthOptions.push({ value: i, label: `${monthNames[month]} ${year}` });
+  }
 
   const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
     setIsConfirmBalanceOpen(false);
@@ -446,8 +458,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   };
   
 
-  function renderIncomeItems(lastIncomesAdds) {
-    return lastIncomesAdds.map((add, index) => {
+  function renderIncomeItems(chosenExpensesToShow) {
+    return chosenExpensesToShow.map((add, index) => {
       const incomeDate = new Date(add.date);
       const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
 
@@ -476,8 +488,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
   
   
-  function renderExpenseItems(lastExpensesAdds) {
-    return lastExpensesAdds.map((add, index) => {
+  function renderExpenseItems(chosenExpensesToShow) {
+    return chosenExpensesToShow.map((add, index) => {
       const expenseDate = new Date(add.date);
       const formattedDate = `${expenseDate.getDate()}/${expenseDate.getMonth() + 1}/${expenseDate.getFullYear()}`;
 
@@ -701,7 +713,17 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledAddSection theme={theme}> 
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Ultime 10 entrate del mese corrente</TitleLastAdds>
+          <TitleLastAdds theme={theme}>Le entrate del mese selezionato
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <select value={selectedIncomesMonth} onChange={handleIncomesMonthChange} style={{ padding: '1em' }}>
+                {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </TitleLastAdds>
           <StyledTable theme={theme}>
           
             <thead>
@@ -713,7 +735,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </tr>
             </thead>
             <tbody>
-              {renderIncomeItems(lastIncomesAdds)}
+              {allIncomesAdds && allIncomesAdds.length > 0 && renderIncomeItems(allIncomesAdds[selectedIncomesMonth])}
             </tbody>
           </StyledTable>
         </>
@@ -848,7 +870,17 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledAddSection theme={theme}>
             <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi uscita</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Ultime 20 uscite del mese corrente</TitleLastAdds>
+          <TitleLastAdds theme={theme}>Le uscite del mese selezionato
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <select value={selectedExpensesMonth} onChange={handleExpensesMonthChange} style={{ padding: '1em' }}>
+                {monthOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </TitleLastAdds>
           <StyledTable theme={theme}>
             <thead>
               <tr>
@@ -860,7 +892,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </tr>
             </thead>
             <tbody>
-              {renderExpenseItems(lastExpensesAdds)}
+              {allExpensesAdds && allExpensesAdds.length > 0 && renderExpenseItems(allExpensesAdds[selectedExpensesMonth])}
             </tbody>
           </StyledTable>
         </>

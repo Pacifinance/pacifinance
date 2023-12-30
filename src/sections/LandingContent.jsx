@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.webp';
 import CookieBanner from '../components/CookieBanner';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages from '../contexts/languages.json';
 import {
   MyButton,
   LandingPageContainer,
@@ -21,6 +23,7 @@ import {
 } from '../contexts/MyStyled';
 
 export default function LandingContent({theme}) {
+  const { language } = useContext(LanguageContext);
   
 
   return (
@@ -34,11 +37,11 @@ export default function LandingContent({theme}) {
         
         <CentralSection theme={theme}>
           <CentralText theme={theme}>
-            <h1>Privacy, Sicurezza e Confronto</h1>
-            <p>La piattaforma sicura e privacy oriented per la finanza personale.</p>
-            <p>Potrai confrontarti con altri utenti sia nel tuo settore <br></br> che non, nel tuo paese o all'estero.</p>
-            <p>Check del portafoglio, delle entrate e delle spese nel tempo.</p>
-            <MyButton theme={theme}>Scopri di più</MyButton>
+            <h1>{languages[language].landing.sectionTitle}</h1>
+            <p>{languages[language].landing.descriptionRow1}</p>
+            <p dangerouslySetInnerHTML={{ __html: languages[language].landing.descriptionRow2 }}></p>
+            <p>{languages[language].landing.descriptionRow3}</p>
+            <MyButton theme={theme}>{languages[language].landing.discoverButton}</MyButton>
           </CentralText>
           <CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
           
@@ -49,8 +52,8 @@ export default function LandingContent({theme}) {
               <CheckCircleIcon />
             </FeatureIcon>
             <FeatureText theme={theme}>
-              <h3>Facile da usare</h3>
-              <p>Controlla i tuoi risparmi e i tuoi investimenti<br></br> in modo semplice e intuitivo.</p>
+              <h3>{languages[language].landing.point1.title}</h3>
+              <p dangerouslySetInnerHTML={{ __html: languages[language].landing.point1.description }}></p>
             </FeatureText>
           </Feature>
           <Feature theme={theme}>
@@ -58,8 +61,8 @@ export default function LandingContent({theme}) {
               <ShieldIcon />
             </FeatureIcon>
             <FeatureText theme={theme}>
-              <h3>Sicurezza garantita</h3>
-              <p>Dati sicuri, anonimi e non sensibili<br></br> La privacy dell'utente è la nostra priorità. </p>
+              <h3>{languages[language].landing.point2.title}</h3>
+              <p dangerouslySetInnerHTML={{ __html: languages[language].landing.point2.description }}></p>
             </FeatureText>
           </Feature>
           <Feature theme={theme}>
@@ -67,8 +70,8 @@ export default function LandingContent({theme}) {
               <LockIcon/>
             </FeatureIcon>
             <FeatureText theme={theme}>
-              <h3>Professionale e affidabile</h3>
-              <p>Servizi di confronto personale e con altri<br></br> utenti, mantenendo la tua privacy.</p>
+              <h3>{languages[language].landing.point3.title}</h3>
+              <p dangerouslySetInnerHTML={{ __html: languages[language].landing.point3.description }}></p>
             </FeatureText>
           </Feature>
         </FeaturesSection>

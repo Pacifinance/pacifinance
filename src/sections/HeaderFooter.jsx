@@ -3,6 +3,8 @@ import ToggleModeButton from '../components/ToggleModeButton';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import LogoPaci from '../components/Logo';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages from '../contexts/languages.json';
 // import MyStyled from '../contexts/MyStyled';
 import {
   // useTheme,
@@ -31,6 +33,7 @@ function Header({theme, mode, toggleMode}) {
   // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
   const [isOpenSignIn, setIsOpenSignIn] = useState(false);
   const [isOpenSignUp, setIsOpenSignUp] = useState(false);
+  const { language, toggleLanguage } = useContext(LanguageContext);
 
   const handleOpenSignIn = () => {
     setIsOpenSignIn(true);
@@ -54,15 +57,18 @@ function Header({theme, mode, toggleMode}) {
           <LogoPaci />
           <ButtonContainer >
             <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
+            <MyButton theme={theme} onClick={toggleLanguage}>
+              {language === 'it' ? 'IT' : 'EN'} 
+            </MyButton>
             <ButtonGroup theme={theme}>
-              <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>Accedi</MyButton>
+              <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>{languages[language].header.login.titleButton}</MyButton>
               <ModalSignIn theme={theme} isOpen={isOpenSignIn}> 
                 <MyGenericModalContent theme={theme}>
                     <MyCloseButton theme={theme} className="close" onClick={handleCloseSignIn}>&times;</MyCloseButton>
                     <SignInForm theme={theme} />
                 </MyGenericModalContent>
               </ModalSignIn>
-              <MyButton theme={theme} id="openSignUpModalButton" disabled>Registrati</MyButton> {/*Put this before "disabled" onClick={handleOpenSignUp} and eliminate disabled*/}
+              <MyButton theme={theme} id="openSignUpModalButton" disabled>{languages[language].header.register.titleButton}</MyButton> {/*Put this before "disabled" onClick={handleOpenSignUp} and eliminate disabled*/}
               <ModalSignUp theme={theme} isOpen={isOpenSignUp}> 
                 <MyGenericModalContent theme={theme}>
                     <MyCloseButton theme={theme} className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>
@@ -76,10 +82,11 @@ function Header({theme, mode, toggleMode}) {
   };
 
 function Footer({theme}) {
+  const { language } = useContext(LanguageContext);
 
   return (
     <ContainerFooter theme={theme}>
-      <FooterText theme={theme}>Pacifinance &copy; 2023. All rights reserved.</FooterText>
+      <FooterText theme={theme}>{languages[language].footer.rights}</FooterText>
     </ContainerFooter>
   );
 };

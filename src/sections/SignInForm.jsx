@@ -1,9 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { LanguageContext } from '../contexts/LanguageContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
 import InfoIcon from '@mui/icons-material/Info';
+import languages from '../contexts/languages.json';
 import {
   MuiCustomDialog,
   MuiCustomButton,
@@ -33,6 +35,7 @@ import {
 
 export default function SignInForm() {
     const { theme } = useContext(ThemeContext);
+    const { language } = useContext(LanguageContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showUsername, setShowUsername] = useState(true);
@@ -68,7 +71,7 @@ export default function SignInForm() {
         event.preventDefault();
         try {
           handleSetIsAuthenticated(false); //to be sure that the user will se his data
-          //navigate('/dashboard'); //da commentare, utile solo per test in locale
+          navigate('/dashboard'); //da commentare, utile solo per test in locale
           //username could be user_id o username
           const response = await axios.post('/login', { user_id: username, password: password }, { withCredentials: true }); //the path in the db is called login
           if(response.status === 200) {
@@ -96,10 +99,10 @@ export default function SignInForm() {
         <SignIn theme={theme}>
             <div className="sign-in-page">
                 <div className="sign-in-form" >
-                    <h1>Accedi</h1>
+                    <h1>{languages[language].header.login.titleButton}</h1>
                     <div className="icon-with-text">
                         <InfoIcon theme={theme}/>
-                        <h4>Inserisci il tuo id e la tua password per continuare</h4>
+                        <h4>{languages[language].header.login.info}</h4>
                     </div>
                     <form id = "signIn-IdPassword" onSubmit={handleSubmit}>
                         <MuiCustomTextField theme={theme}
@@ -152,7 +155,7 @@ export default function SignInForm() {
                         />
                         <div className="button-wrapper">
                           <SignInButton theme={theme} type="submit" fullWidth>
-                            Accedi
+                            {languages[language].header.login.titleButton}
                           </SignInButton>
                         </div>
 
@@ -167,17 +170,16 @@ export default function SignInForm() {
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
-                        {"Errore in fase di accesso"}
+                      {languages[language].header.login.errorPopup.title}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent>
-                        <MuiCustomDialogContentText id="alert-dialog-description">
-                            Si è verificato un errore nell'accesso con il tuo account. <br></br>
-                            Controlla di digitare correttamente id e password.<br></br>
+                        <MuiCustomDialogContentText id="alert-dialog-description" 
+                          dangerouslySetInnerHTML={{ __html: languages[language].header.login.errorPopup.message}}>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
                     <MuiCustomDialogActions>
                         <MuiCustomButton onClick={handleCloseModal} autoFocus>
-                            Ok, va bene
+                          {languages[language].header.login.errorPopup.okButton}
                         </MuiCustomButton>
                     </MuiCustomDialogActions>
                 </MuiCustomDialog>

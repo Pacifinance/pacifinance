@@ -12,6 +12,8 @@ import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { primaryColor, secondaryColor } from '../contexts/Themes';
 import { colorsBalances, colorsIncExp } from '../contexts/Themes';
 import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages from '../contexts/languages.json';
 
 import {
         TitleDashboard,
@@ -26,6 +28,7 @@ import {
 
 function Dashboard({ theme, userData, isHidden, CustomTick}) {
     const [isLoading, setIsLoading] = useState(true);
+    const { language } = useContext(LanguageContext);
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
@@ -61,7 +64,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 
                 setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
             } catch (error) {
-              console.error('Errore durante le operazioni:', error);
+              console.error('Error set balances:', error);
             }
           }
         };
@@ -75,13 +78,13 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
     // }
 
     const capitalData = [
-        { name: 'Azioni', value: stocksReal >= 0 ? stocksReal : 0 },
-        { name: 'ETF', value: etfReal >= 0 ? etfReal : 0 },
-        { name: 'Banca', value: bankReal >= 0 ? bankReal : 0 },
-        { name: 'Banconote', value: cashReal >= 0 ? cashReal : 0 },
-        { name: 'Criptovalute', value: cryptoReal >= 0 ? cryptoReal : 0 },
-        { name: 'Bitcoin', value: bitcoinReal >= 0 ? bitcoinReal : 0 },
-        { name: 'ServiziDigitali', value: digitalServicesReal >= 0 ? digitalServicesReal : 0 },
+        { name: languages[language].assets.stocks, value: stocksReal >= 0 ? stocksReal : 0 },
+        { name: languages[language].assets.etf, value: etfReal >= 0 ? etfReal : 0 },
+        { name: languages[language].assets.bank, value: bankReal >= 0 ? bankReal : 0 },
+        { name: languages[language].assets.cash, value: cashReal >= 0 ? cashReal : 0 },
+        { name: languages[language].assets.crypto, value: cryptoReal >= 0 ? cryptoReal : 0 },
+        { name: languages[language].assets.bitcoin, value: bitcoinReal >= 0 ? bitcoinReal : 0 },
+        { name: languages[language].assets.digitalServices, value: digitalServicesReal >= 0 ? digitalServicesReal : 0 },
     ];
 
     const capitalShuffleData = [...capitalData].sort(() => Math.random() - 0.5);
@@ -100,9 +103,9 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
     // const totalFakeCapitalData = fakeCapitalData.reduce((acc, entry) => acc + entry.value, 0);
 
     const incExpData = [
-        { name: 'Entrate', value: incomesMonth >= 0 ? incomesMonth : 0 },
-        { name: 'Spese', value: expensesMonth >= 0 ? expensesMonth : 0 },
-        { name: 'Risparmiato', value: savedMonth > 0 ? savedMonth : 0 },
+        { name: languages[language].general.incomes, value: incomesMonth >= 0 ? incomesMonth : 0 },
+        { name: languages[language].general.expenses, value: expensesMonth >= 0 ? expensesMonth : 0 },
+        { name: languages[language].general.saved, value: savedMonth > 0 ? savedMonth : 0 },
     ];
 
     const incExpShuffleData = [...incExpData].sort(() => Math.random() - 0.5);
@@ -116,9 +119,9 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
     
     return (
         <SectionDashboard theme={theme}>
-            <TitleDashboard theme={theme}>Dashboard</TitleDashboard>
+            <TitleDashboard theme={theme}>{languages[language].dashboard.title}</TitleDashboard>
             <CapitalValue theme={theme}>
-                Il tuo patrimonio totale è:{" "}
+                {languages[language].dashboard.totalBalance}{" "}
                 <span style={{ color: primaryColor }}>
                     {isHidden ? '****' : totalReal.toLocaleString('it-IT')} €
                 </span>
@@ -130,14 +133,14 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                             <BsBank />
                         </div>
                         <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
-                            <Link to="/insert-values">
+                            <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                 <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                             </Link>
                         </div>
                     </div>
                     <div className="transfer">
-                        <h6>Depositati</h6>
-                        <h6>in Banca</h6>
+                        <h6>{languages[language].general.deposited}</h6>
+                        <h6>{languages[language].general.in} {languages[language].assets.bank}</h6>
                     </div>
                     <div className="money">
                         <h5>{isHidden ? '****' : bankReal.toLocaleString('it-IT')} €</h5>
@@ -150,14 +153,14 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                             <BsCashCoin />
                         </div>
                         <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
-                            <Link to="/insert-values">
+                            <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                 <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                             </Link>
                         </div>
                     </div>
                     <div className="transfer">
-                        <h6>Contante</h6>
-                        <h6>e monete</h6>
+                        <h6>{languages[language].assets.cash}</h6>
+                        {/* <h6>e monete</h6> */}
                     </div>
                     <div className="money">
                         <h5>{isHidden ? '****' : cashReal.toLocaleString('it-IT')} €</h5>
@@ -170,14 +173,14 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                             <SiMoneygram />
                         </div>
                         <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
-                            <Link to="/insert-values">
+                            <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                 <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                             </Link>
                         </div>
                     </div>
                     <div className="transfer">
-                        <h6>Servizi</h6>
-                        <h6>Pagamenti digitali</h6>
+                        <h6 dangerouslySetInnerHTML={{ __html: languages[language].assets.digitalServices }}></h6>
+                        {/* <h6>Pagamenti digitali</h6> */}
                     </div>
                     <div className="money">
                         <h5>{isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT')} €</h5>
@@ -193,13 +196,13 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                 <MdOutlineAutoGraph />
                             </div>
                             <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
-                                <Link to="/insert-values">
+                                <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
                         <div className="transfer">
-                            <h6>Azioni</h6>
+                            <h6>{languages[language].assets.stocks}</h6>
                         </div>
                         <div className="money">
                             <h5>{isHidden ? '****' : stocksReal.toLocaleString('it-IT')} €</h5>
@@ -213,13 +216,13 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                 <AiOutlineStock />
                             </div>
                             <div className="action"style={{ position: 'absolute', top: 10, right: 10 }}>
-                                <Link to="/insert-values">
+                                <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
                         <div className="transfer">
-                            <h6>ETF</h6>
+                            <h6>{languages[language].assets.etf}</h6>
                         </div>
                         <div className="money">
                             <h5>{isHidden ? '****' : etfReal.toLocaleString('it-IT')} €</h5>
@@ -234,13 +237,13 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                 <FaBitcoin />
                             </div>
                             <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
-                                <Link to="/insert-values">
+                                <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
                         <div className="transfer">
-                            <h6>Bitcoin</h6>
+                            <h6>{languages[language].assets.bitcoin}</h6>
                         </div>
                         <div className="money">
                             <h5>{isHidden ? '****' : bitcoinReal.toLocaleString('it-IT')} €</h5>
@@ -264,13 +267,13 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                 <BsCoin />
                             </div>
                             <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
-                                <Link to="/insert-values">
+                                <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
                         <div className="transfer">
-                            <h6>Criptovalute</h6>
+                            <h6>{languages[language].assets.crypto}</h6>
                         </div>
                         <div className="money">
                             <h5>{isHidden ? '****' : cryptoReal.toLocaleString('it-IT')} €</h5>
@@ -280,7 +283,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
             </LowerSection> 
             <GraphsSection theme={theme}>
                 <div className="bar-chart-section">
-                    <h2>Distribuzione capitale</h2>
+                    <h2>{languages[language].dashboard.titleGraph}</h2>
                     <div style={{ width: 400, height: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart width={500} height={300} data={isHidden ? capitalShuffleData: capitalData} margin={{
@@ -329,7 +332,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 <div className="pie-chart-section">
                     
                     <div style={{ width: 400, height: 400 }}>
-                        <h2>% Distribuzione Capitale</h2>
+                        <h2>{languages[language].dashboard.titleGraph2}</h2>
                         <ResponsiveContainer width="100%" height="100%">
                         {isAllZero ? (
                             <div style={{
@@ -342,7 +345,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                 backgroundColor: 'transparent', // Imposta il colore di sfondo trasparente
                                 fontSize: '18px', // Imposta la dimensione del carattere desiderata
                             }}>
-                                <h1 style={{color: '#079164'}}>Assenza di dati:</h1> <p>Inserire i valori nella pagina <br></br>con la seguente icona: <HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
+                                <h1 style={{color: '#079164'}}>{languages[language].dashboard.noData}</h1> <p dangerouslySetInnerHTML={{ __html: languages[language].dashboard.noData2}}></p> <p><HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
                             </div>
                         ) : (
                                 <PieChart width={500} height={500} margin={{
@@ -401,7 +404,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 </div>
 
                 <div className="bar-chart-section">
-                    <h2>Entrate | Spese</h2>
+                    <h2>{languages[language].dashboard.titleGraph3}</h2>
                     <div style={{ width: 350, height: 300 }}> 
                         <ResponsiveContainer width="100%" height="100%">
                                 <BarChart width={500} height={300} data={isHidden ? incExpShuffleData : incExpData} margin={{

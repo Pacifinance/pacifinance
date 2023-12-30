@@ -14,6 +14,8 @@ import LogoPaci from '../components/Logo';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { IconContext } from '../contexts/PageContext';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages from '../contexts/languages.json';
 import {
     SidebarToggleModeButton,
     SidebarPrivacyToggleModeButton,
@@ -45,6 +47,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
+    const { language } = useContext(LanguageContext);
 
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
@@ -115,11 +118,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     }, [userData]);
 
     const options = [
-        { value: 'account', label: 'Account' },
-        { value: 'changeUsername', label: 'Genera username' },
-        { value: 'changeid', label: 'Cambio id' },
-        { value: 'changePassword', label: 'Cambio password' },
-        { value: 'settings', label: 'Impostazioni' },
+        { value: 'account', label: languages[language].sidebar.account.title },
+        { value: 'changeUsername', label: languages[language].sidebar.changeUsername.title },
+        { value: 'changeid', label: languages[language].sidebar.changeID.title },
+        { value: 'changePassword', label: languages[language].sidebar.changePassword.title },
+        { value: 'settings', label: languages[language].sidebar.settings.title },
     ];
 
     const handleIconClick = (iconIndex, pageLink) => {
@@ -164,10 +167,10 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         navigator.clipboard.writeText(newID)
           .then(() => {
             // Copiato negli appunti con successo
-            alert("ID copiato negli appunti: " + newID);
+            alert(languages[language].sidebar.changeID.message + newID);
           })
           .catch((error) => {
-            console.error("Errore durante la copia negli appunti: " + error);
+            console.error(languages[language].sidebar.changeID.errorCopy + error);
           });
         handleCloseModalAndLogout();
     }
@@ -304,7 +307,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             }
             else {
                 console.log("Update failed");
-                alert("Errore nell'aggiornamento del profilo")
+                alert(languages[language].sidebar.account.errorUpdateProfile)
             }
             
         } catch(error) {
@@ -352,7 +355,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </div>
                             </li>
                         </Tooltip>
-                        <Tooltip title="I tuoi grafici" placement="right">
+                        <Tooltip title={languages[language].sidebar.graphs} placement="right">
                             <li
                                 className={activeIcon === 1 ? "active" : ""}
                             >
@@ -363,7 +366,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </div>
                             </li>
                         </Tooltip>
-                        <Tooltip title="Inserimento dati" placement="right">
+                        <Tooltip title={languages[language].sidebar.insert} placement="right">
                             <li
                                 className={activeIcon === 2 ? "active" : ""}
                             >
@@ -374,7 +377,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </div>
                             </li>
                         </Tooltip>
-                        <Tooltip title="Controlla i mercati" placement="right">
+                        <Tooltip title={languages[language].sidebar.check} placement="right">
                             <li
                                 className={activeIcon === 3 ? "active" : ""}
                             >
@@ -385,7 +388,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </div>
                             </li>
                         </Tooltip>
-                        <Tooltip title="Classifica" placement="right">
+                        <Tooltip title={languages[language].sidebar.leaderboard} placement="right">
                             <li
                                 className={activeIcon === 4 ? "active" : ""}
                             >
@@ -397,7 +400,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             </li>
                         </Tooltip>
                         
-                        <Tooltip title="Conoscenze" placement="right">
+                        <Tooltip title={languages[language].sidebar.learn} placement="right">
                             <li
                                 className={activeIcon === 5 ? "active" : ""}
                             >
@@ -408,7 +411,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </div>
                             </li>
                         </Tooltip>
-                        <Tooltip title="Info" placement="right">
+                        <Tooltip title={languages[language].sidebar.info} placement="right">
                             <li
                                 className={activeIcon === 6 ? "active" : ""}
                             >
@@ -427,7 +430,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     {/* <AiOutlineBell /> */}
                     <div className="account-container">
                         <div className="account-image-wrapper">
-                            <img src={avatarImage} width="100%" height="100%" alt="Account" className="account-image" onClick={() => setShowDropdown(!showDropdown)} onContextMenu={(e) => e.preventDefault()}/>
+                            <img src={avatarImage} title={languages[language].sidebar.account.title} width="100%" height="100%" alt="Account" className="account-image" onClick={() => setShowDropdown(!showDropdown)} onContextMenu={(e) => e.preventDefault()}/>
                         </div>
                     </div>
                     {/* <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
@@ -455,7 +458,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     </div>
                                 ))}
                                 <div className="dropdown-option logout" onClick={handleLogout}>
-                                    Logout
+                                    {languages[language].sidebar.logout}
                                 </div>
                             </div>
                         )}
@@ -477,13 +480,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Il tuo account"}
+                                {languages[language].sidebar.account.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogProfileContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                    ID: {isHidden ? '****' : userId} <br></br>
+                                    {languages[language].sidebar.account.id} {isHidden ? '****' : userId} <br></br>
                                     {/* Username: {username} <br></br> */}
-                                    Nazionalità: <Select
+                                    {languages[language].sidebar.account.nationality} <Select
                                                     value={isHidden ? '****' : userNationality.value}
                                                     onChange={(event) => {
                                                        
@@ -493,13 +496,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                     displayEmpty
                                                     renderValue={(value) => {
                                                         if (value === "") {
-                                                        return "Seleziona una nazionalità";
+                                                            return `${languages[language].sidebar.account.selectNationality}`;
                                                         }
                                                         return value;
                                                     }}
                                                     >
                                                     <MenuItem value="">
-                                                        <em>Seleziona una nazionalità</em>
+                                                        <em>{languages[language].sidebar.account.selectNationality}</em>
                                                     </MenuItem>
                                                     {sortedNationalityTags.map((tag) => (
                                                         <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
@@ -507,7 +510,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         </MenuItem>
                                                     ))}
                                                 </Select> <br></br>
-                                    Dove lavori: <Select
+                                    {languages[language].sidebar.account.whereWork} <Select
                                                     value={isHidden ? '****' : userWhereWorks.value}
                                                     onChange={(event) => {
                                                         setUserWhereWorks({key: event.target.value.key, value: event.target.value.label});
@@ -516,13 +519,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                     displayEmpty
                                                     renderValue={(value) => {
                                                         if (value === "") {
-                                                        return "Seleziona un luogo di lavoro";
+                                                        return `${languages[language].sidebar.account.selectWhereWork}`;
                                                         }
                                                         return value;
                                                     }}
                                                     >
                                                     <MenuItem value="">
-                                                        <em>Seleziona un luogo di lavoro</em>
+                                                        <em>{languages[language].sidebar.account.selectWhereWork}</em>
                                                     </MenuItem>
                                                     {sortedNationalityTags.map((tag) => (
                                                         <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
@@ -530,7 +533,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         </MenuItem>
                                                     ))}
                                                 </Select> <br></br>
-                                    Lavoro: <Select
+                                    {languages[language].sidebar.account.work} <Select
                                                 value={isHidden ? '****' : userJob.value}
                                                 onChange={(event) => {
                                                     setUserJob({key: event.target.value.key, value: event.target.value.label});
@@ -539,13 +542,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                 displayEmpty
                                                 renderValue={(value) => {
                                                     if (value === "") {
-                                                    return "Seleziona il tuo lavoro";
+                                                    return `${languages[language].sidebar.account.selectWhereWork}`;
                                                     }
                                                     return value;
                                                 }}
                                                 >
                                                 <MenuItem value="">
-                                                    <em>Seleziona il tuo lavoro</em>
+                                                    <em>{languages[language].sidebar.account.selectWhereWork}</em>
                                                 </MenuItem>
                                                 {sortedJobTags.map((tag) => (
                                                     <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
@@ -553,7 +556,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                     </MenuItem>
                                                 ))}
                                             </Select> <br></br>
-                                    Tipo di lavoro: <Select
+                                    {languages[language].sidebar.account.workType} <Select
                                                         value={isHidden ? '****' : userJobType.value}
                                                         onChange={(event) => {
                                                             setUserJobType({key: event.target.value.key, value: event.target.value.label});
@@ -562,13 +565,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         displayEmpty
                                                         renderValue={(value) => {
                                                             if (value === "") {
-                                                            return "Seleziona il tipo di lavoro";
+                                                            return `${languages[language].sidebar.account.selectWorkType}`;
                                                             }
                                                             return value;
                                                         }}
                                                         >
                                                         <MenuItem value="">
-                                                            <em>Seleziona il tipo di lavoro</em>
+                                                            <em>{languages[language].sidebar.account.selecttWorkType}</em>
                                                         </MenuItem>
                                                         {jobTypeTags.map((tag) => (
                                                             <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
@@ -576,7 +579,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>
-                                    Part-time | Full-time: <Select
+                                    {languages[language].sidebar.account.hoursContract} <Select
                                                                 value={isHidden ? '****' : userWorkTime.value}
                                                                 onChange={(event) => {
                                                                     setUserWorkTime({key: event.target.value.key, value: event.target.value.label});
@@ -585,13 +588,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                                 displayEmpty
                                                                 renderValue={(value) => {
                                                                     if (value === "") {
-                                                                    return "Seleziona il tuo orario di lavoro";
+                                                                    return `${languages[language].sidebar.account.selectHoursContract}`;
                                                                     }
                                                                     return value;
                                                                 }}
                                                                 >
                                                                 <MenuItem value="">
-                                                                    <em>Seleziona il tuo orario di lavoro</em>
+                                                                    <em>{languages[language].sidebar.account.selectHoursContract}</em>
                                                                 </MenuItem>
                                                                 {workTimeTags.map((tag) => (
                                                                     <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
@@ -599,7 +602,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                                     </MenuItem>
                                                                 ))}
                                                             </Select> <br></br>
-                                    Lavoro remoto: <Select
+                                    {languages[language].sidebar.account.remoteWork} <Select
                                                         value={isHidden ? '****' : userRemoteType.value}
                                                         onChange={(event) => {
                                                             setUserRemoteType({key: event.target.value.key, value: event.target.value.label});
@@ -608,17 +611,17 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         displayEmpty
                                                         renderValue={(value) => {
                                                             if (value === "") {
-                                                            return "Seleziona la modalità di lavoro remoto";
+                                                            return `${languages[language].sidebar.account.selectRemoteWork}`;
                                                             }
                                                             return value;
                                                         }}
                                                         >
                                                         <MenuItem value="">
-                                                            <em>Seleziona la modalità di lavoro remoto</em>
+                                                            <em>{languages[language].sidebar.account.selectRemoteWork}</em>
                                                         </MenuItem>
                                                         {remoteTypeTags.map((tag) => (
-                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
-                                                            {tag.translations.it}
+                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.languages[language] }}>
+                                                            {tag.translations.languages[language]}
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>
@@ -627,7 +630,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             </MuiCustomDialogProfileContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleUpdateProfile} autoFocus> 
-                                    Salva
+                                    {languages[language].sidebar.account.saveButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -642,18 +645,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"GeneraUsername"}
+                                {languages[language].sidebar.changeUsername.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                    Per aumentare la tua privacy e il tuo coinvolgimento <br></br>
-                                    abbiamo pensato di creare un generatore di Username casuali e univoci.<br></br>
-                                    La generazione sarà guidata da alcuni tuoi input. Se sarà necessario potrai cambiarlo in futuro.<br></br>
+                                    {languages[language].sidebar.changeID.info} <br></br>
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleGenerateUsername} autoFocus>
-                                    Genera Username
+                                    {languages[language].sidebar.changeID.confirmButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -668,14 +669,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Cambio ID"}
+                                {languages[language].sidebar.changeID.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText  id="alert-dialog-description">
-                                    Per mantenere la tua privacy ti diamo la <br></br> possibilità di 
-                                    cambiare il tuo id.<br></br>
-                                    Il sistema genererà un nuovo id casuale e univoco.<br></br>
-                                    Inserisci la tua password per confermare.<br></br>
+                                    {languages[language].sidebar.changeID.info} <br></br>
                                     <form id="changeID" onSubmit={handleGenerateID}>
                                         <MuiCustomTextField
                                             id="passwordChangeID"
@@ -707,7 +705,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleGenerateID} autoFocus>
-                                    Voglio cambiare id
+                                    {languages[language].sidebar.changeID.confirmButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -722,18 +720,17 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                                {"Cambio Password"}
+                                {languages[language].sidebar.changePassword.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                                    Per procedere serve che tu inserisca <br></br> 
-                                    la tua password attuale e la nuova da te scelta:<br></br>
+                                    {languages[language].sidebar.changePassword.info} <br></br>
                                     {/* Ti invieremo un'email con un link per il cambio password.<br></br> */}
                                     <form id="changePWD" onSubmit={handleChangePassword}>
                                         <MuiCustomTextField
                                             id="oldPasswordChangePWD"
                                             theme={theme}
-                                            label="Password attuale"
+                                            label={languages[language].sidebar.changePassword.oldPassword}
                                             type={showOldPassword ? 'text' : 'password'}
                                             value={OldPassword}
                                             onChange={handleOldPasswordInput}
@@ -760,7 +757,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         <MuiCustomTextField
                                             id="passwordChangePWD"
                                             theme={theme}
-                                            label="Nuova Password"
+                                            label={languages[language].sidebar.changePassword.newPassword}
                                             type={showPassword ? 'text' : 'password'}
                                             value={password}
                                             onChange={handlePasswordInput}
@@ -786,7 +783,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         <MuiCustomTextField
                                             id="confirmPasswordChangePWD"
                                             theme={theme}
-                                            label="Conferma Password"
+                                            label={languages[language].sidebar.changePassword.confirmPassword}
                                             type={showConfirmPassword ? 'text' : 'password'}
                                             value={confirmPassword}
                                             onChange={handleConfirmPasswordInput}
@@ -813,7 +810,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleChangePassword} autoFocus>
-                                    Cambia Password
+                                    {languages[language].sidebar.changePassword.confirmButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -828,19 +825,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Il tuo nuovo ID è: " + newID}
+                                {languages[language].sidebar.changeID.successPopup.message + newID}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
-                                <MuiCustomDialogContentText id="alert-dialog-description">
-                                    Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br>
-                                    Cliccando sul pulsante "Copia il tuo id", verrai reinderizzato <br></br>
-                                    alla pagina di accesso  e l'id verrà salvato nei tuoi appunti. <br></br>
-                                    Per poterlo incollare nella pagina d'accesso. <br></br>   
+                                <MuiCustomDialogContentText id="alert-dialog-description"
+                                    dangerouslySetInnerHTML={{ __html: languages[language].sidebar.changeID.successPopup.securityMessage}}>
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleCopyToClipboard(newID)} autoFocus>
-                                    Copia il tuo id
+                                    {languages[language].sidebar.changeID.successPopup.toCopy}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -855,17 +849,17 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Il tuo nuovo Username è: " + newUsername}
+                                {languages[language].sidebar.changeUsername.successPopup.message + newUsername}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                    Salvalo per poter accedere tramite username <br></br> 
-                                    Verrai reinderizzato alla pagina di sign-in. <br></br>
+                                    {languages[language].sidebar.changeUsername.successPopup.securityMessage}  <br></br> 
+                                    {languages[language].sidebar.changeUsername.successPopup.redirectMessage} <br></br>
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
-                                    Ok, va bene
+                                    {languages[language].sidebar.changeUsername.successPopup.okButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -880,16 +874,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Profilo aggiornato"}
+                                {languages[language].sidebar.account.successPopup.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                Le informazioni del tuo profilo sono state aggiornate e salvate correttamente. <br></br> 
+                                    {languages[language].sidebar.account.successPopup.message} <br></br> 
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleCloseModal} autoFocus>
-                                    Ok, va bene
+                                    {languages[language].sidebar.account.successPopup.okButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -904,16 +898,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"La tua password è stata reimpostata correttamente"}
+                                {languages[language].sidebar.changePassword.successPopup.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent theme={theme}>
                                 <MuiCustomDialogContentText id="alert-dialog-description">
-                                    Verrai renderizzato alla pagina di accesso. <br></br> 
+                                    {languages[language].sidebar.changePassword.successPopup.message} <br></br> 
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
                                 <MuiCustomButton onClick={handleCloseModalAndLogout} autoFocus>
-                                    Ok, va bene
+                                    {languages[language].sidebar.changePassword.successPopup.okButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -928,16 +922,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-describedby="alert-dialog-description"
                         >
                             <MuiCustomDialogTitle id="alert-dialog-title">
-                                {"Errore nel reimpostare la tua password"}
+                                {languages[language].sidebar.changePassword.errorPopup.title}
                             </MuiCustomDialogTitle>
                             <MuiCustomDialogContent>
-                                <MuiCustomDialogContentText id="alert-dialog-description">
-                                    Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br> 
+                                <MuiCustomDialogContentText id="alert-dialog-description" 
+                                    dangerouslySetInnerHTML={{ __html: languages[language].sidebar.changePassword.errorPopup.message}}>
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions >
                                 <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
-                                    Ok, va bene
+                                    {languages[language].sidebar.changePassword.errorPopup.okButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
@@ -945,11 +939,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                 </Notification>
 
-                <ToggleButton>
+                <ToggleButton title={languages[language].sidebar.settings.light}>
                     <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
                 </ToggleButton>
 
-                <ToggleButton>
+                <ToggleButton title={languages[language].sidebar.settings.privacy}>
                     <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                 </ToggleButton>
             </Top>

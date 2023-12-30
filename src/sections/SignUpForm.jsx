@@ -4,6 +4,8 @@ import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from '@mui/icons-material/Info';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages from '../contexts/languages.json';
 
 //for the modal and styled components
 import {
@@ -29,6 +31,7 @@ var generated_user_id = '';
 // export { generated_user_id };
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
+    const [language] = useState('it');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -122,10 +125,10 @@ export default function SignUpForm() {
         <SignUp theme={theme}>
             <div className="signUp-page">
                 <div className="signUp-form" style={{ display: 'flex' }}>
-                    <h1>Registrazione</h1>
+                    <h1>{languages[language].header.register.title}</h1>
                     <div className="icon-with-text">
                         <InfoIcon theme={theme}/>
-                        <h4>Il sistema genererà per te un id univoco e casuale</h4>
+                        <h4>{languages[language].header.register.info}</h4>
                     </div>
                     <form id="signUp-PasswordConfirm" onSubmit={handleSubmit}>
                         <MuiCustomTextField
@@ -180,7 +183,7 @@ export default function SignUpForm() {
                                 }}
                             />
                         <div className="button-wrapper">
-                            <SignUpButton theme={theme} type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Registrati</SignUpButton>
+                            <SignUpButton theme={theme} type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>{languages[language].header.register.titleButton}</SignUpButton>
                         </div>
 
                     </form>
@@ -196,11 +199,11 @@ export default function SignUpForm() {
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                        {" Registrazione avvenuta con successo"}
+                        {languages[language].header.register.successPopup.title}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                            Il tuo id utente è: {generated_user_id}.<br></br> Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.
+                            {languages[language].header.register.successPopup.message} {generated_user_id}.<br></br> {languages[language].header.register.successPopup.securityMessage}
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
                     <MuiCustomDialogActions theme={theme}>
@@ -215,7 +218,7 @@ export default function SignUpForm() {
                             }}
                         >
                             <MuiCustomButton theme={theme} onClick={closeSuccessModal} autofocus>
-                                <span>{isCopied ? 'Copiato!' : 'Copia il tuo ID'}</span>
+                            <span>{isCopied ? languages[language].header.register.successPopup.copied : languages[language].header.register.successPopup.toCopy}</span>
                             </MuiCustomButton>
                         </CopyToClipboard>
                     </MuiCustomDialogActions>
@@ -233,13 +236,13 @@ export default function SignUpForm() {
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                            Si è verificato un errore nella registrazione del tuo account. <br></br>
-                            Per favore riprova tra un istante.<br></br>
+                            {languages[language].header.register.errorPopup.message} <br></br>
+                            {languages[language].header.register.errorPopup.message2}<br></br>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
                     <MuiCustomDialogActions theme={theme}>
                         <MuiCustomButton theme={theme} onClick={closeErrorModal} autoFocus>
-                            Ok, va bene
+                            {languages[language].header.register.errorPopup.okButton}
                         </MuiCustomButton>
                     </MuiCustomDialogActions>
                 </MuiCustomDialog>

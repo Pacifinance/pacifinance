@@ -1,9 +1,10 @@
 {
     "it": {
         "assets": {
+            "total": "Totale",
             "bank": "Banca",
             "cash": "Contanti",
-            "digitalServices": "Servizi <br> pagamenti digitali",
+            "digitalServices": "Servizi pagamenti digitali",
             "stocks": "Azioni",
             "etf": "ETF",
             "bitcoin": "Bitcoin",
@@ -11,25 +12,53 @@
             "bond": "Obbligazioni"
         },
         "general": {
+            "ok": "ok",
+            "month": "Mese",
+            "year": "Anno",
             "incomes": "Entrate",
             "expenses": "Uscite",
             "saved": "Risparmiato",
             "balance": "Bilancio",
             "total": "Totale",
+            "value": "Valore",
+            "note": "Nota",
+            "noData": "Mancanza di dati",
             "date": "Data",
+            "selectedDate": "Data selezionata:",
+            "confirm": "Conferma",
+            "cancel": "Annulla",
             "category": "Categoria",
             "typology": "Tipologia",
             "invested": "Investito",
             "investments": "Investimenti",
             "deposited": "Depositati",
-            "in": "in",
-            "selectA": "Seleziona un ",
-            "selecetAn": "Seleziona una ",
-            "selectYour": "Seleziona il tuo ",
-            "selectYour2": "Seleziona la tua ",
-            "selectType": "Seleziona il tipo di ",
-            "selectTime": "Seleziona il tuo orario di "
+            "comingSoon": "Prossimamente",
+            "weAreWorking": "Stiamo lavorando a questa funzionalità",
+            "selectAnOption": "Seleziona un'opzione"
         },
+
+        "months": {
+            "january": "Gennaio",
+            "february": "Febbraio",
+            "march": "Marzo",
+            "april": "Aprile",
+            "may": "Maggio",
+            "june": "Giugno",
+            "july": "Luglio",
+            "august": "Agosto",
+            "september": "Settembre",
+            "october": "Ottobre",
+            "november": "Novembre",
+            "december": "Dicembre"
+        },
+
+        "cookie": {
+            "title": "Questo sito utilizza solo cookie tecnici",
+            "description": "Pacifinance utilizza solo cookie tecnici <br></br> per facilitare l'accesso e rendere  <br></br> l'esperienza dell'utente più piacevole. <br></br> <br></br> La tua privacy è la nostra priorità. <br></br> <br></br>",
+            "acceptButton": "Ok capito",
+            "declineButton": "Rifiuta"
+        },
+
         "landing": {
             "title": "PaciFinance",
             "subtitle": "Personale, Privacy, Pacify",
@@ -192,7 +221,9 @@
                 "title": "Impostazioni",
                 "light": "Modalità chiara/scura",
                 "privacy": "Modalità privacy",
-                "language": "Cambia Lingua"
+                "language": "Cambia Lingua",
+                "deleteAccount": "Elimina account (!)",
+                "saveSettings": "Salva impostazioni"
             },
             "logout": "Esci"
         },
@@ -236,7 +267,10 @@
             "balanceSection": {
                 "titleLiquidity": "Liquidità",
                 "titleInvestments": "Investimenti",
-                "updateButton": "Aggiorna il tuo bilancio"           
+                "updateButton": "Aggiorna il tuo bilancio",
+                "confirmUpdate": "Conferma aggiornamento bilancio",
+                "successUpdate": "Bilancio aggiornato con successo",
+                "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo"
             },
             "incomeSection": {
                 "placeholderCategory": "Seleziona una categoria",
@@ -248,7 +282,12 @@
                     "value": "Valore",
                     "note": "Nota",
                     "date": "Data Entrata"
-                }
+                },
+                "confirmUpdate": "Conferma inserimento entrata",
+                "successUpdate": "Entrata inserita con successo",
+                "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
+                "successDelete": "Entrata eliminata con successo",
+                "increseWichBalance": "Seleziona dove aggiungere l'entrata: "
             },
             "expenseSection": {
                 "placeholderCategory": "Seleziona una categoria",
@@ -256,22 +295,52 @@
                 "placeholderNote": "Inserisci una nota (opzionale)",
                 "updateButton": "Aggiungi uscita",
                 "titleListing": "Le uscite del mese selezionato",
+                "paymentType": "Tipologia pagamento",
                 "tableColumns": {
                     "category": "Categoria",
                     "typology": "Tipologia",
                     "value": "Valore",
                     "note": "Nota",
                     "date": "Data Uscita"
-                }
+                },
+                "confirmUpdate": "Conferma inserimento uscita",
+                "successUpdate": "Uscita inserita con successo",
+                "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
+                "successDelete": "Uscita eliminata con successo",
+                "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: " 
             }
+        },
+
+        "leaderboard": {
+            "title": "Classifica nel tempo",
+            "monthRanking": "Classifica relativa al mese: ",
+            "yearRanking": "Classifica relativa all'anno: ",
+            "generalRanking": "Classifiche generali : ",
+            "similarRanking": "Classifiche utenti simili: ",
+            "balanceRanking": "Classifica Patrimonio ",
+            "incomeRanking": "Classifica Entrate ",
+            "expenseRanking": "Classifica Uscite ",
+            "infoExpenseRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
+            "noRank": "Rankings non disponibili",
+            "compliments": "Complimenti! Sei nella top ",
+            "superCompliments": "Incredibile!! Sei nella top ", 
+            "top": "Sei nella top ",
+            "users": " degli utenti!",
+            "lowerExpense": " Sei tra gli utenti che spendono di meno!",
+            "higherExpense": " Attenzione! Sei tra gli utenti che spendono di più!",
+            "higherIncome": " Sei tra gli utenti che guadagnano di più!",
+            "mediumRank": "Sei nella media degli utenti!"
+
+            
         }
 
     },
     "en": {
         "assets": {
+            "total": "Total",
             "bank": "Bank",
             "cash": "Cash",
-            "digitalServices": "Digital <br> payment services",
+            "digitalServices": "Digital payment services",
             "stocks": "Stocks",
             "etf": "ETF",
             "bitcoin": "Bitcoin",
@@ -280,20 +349,51 @@
         },
 
         "general": {
+            "ok": "ok",
+            "month": "Month",
+            "year": "Year",
             "incomes": "Incomes",
             "expenses": "Expenses",
             "saved": "Saved",
             "balance": "Balance",
             "total": "Total",
+            "value": "Value",
+            "note": "Note",
+            "noData": "No data",
             "date": "Date",
+            "selectedDate": "Selected date:",
+            "confirm": "Confirm",
+            "cancel": "Cancel",
             "category": "Category",
             "typology": "Typology",
             "invested": "Invested",
             "investments": "Investments",
             "deposited": "Deposited",
-            "in": "in the",
-            "selectA": "Select a",
-            "selecetAn": "Select an"
+            "comingSoon": "Coming soon",
+            "weAreWorking": "We are working on this feature",
+            "selectAnOption": "Select an option"
+        },
+
+        "cookie": {
+            "title": "This site only uses technical cookies",
+            "description": "<br>Pacifinance only uses technical cookies <br> to facilitate access and make <br> the user experience more enjoyable. <br></br> Your privacy is our priority. <br></br>",
+            "acceptButton": "Ok got it",
+            "declineButton": "Decline"
+        },
+
+        "months": {
+            "january": "January",
+            "february": "February",
+            "march": "March",
+            "april": "April",
+            "may": "May",
+            "june": "June",
+            "july": "July",
+            "august": "August",
+            "september": "September",
+            "october": "October",
+            "november": "November",
+            "december": "December"
         },
 
         "landing": {
@@ -458,7 +558,10 @@
                 "title": "Settings",
                 "light": "Light/Dark mode",
                 "privacy": "Privacy mode",
-                "language": "Change Language"
+                "language": "Change Language",
+                "deleteAccount": "Delete account (!)",
+                "saveSettings": "Save settings"
+
             },
             "logout": "Logout"
         },
@@ -487,7 +590,7 @@
             },
             "statsExpenses": {
                 "title": "Income and Expenses statistics",
-                "titleGraph": "Trend of your income in the last 12 months",
+                "titleGraph": "Trend of your incomes and expenses in the last 12 months",
                 "titleGraph2": "Distribution of your expenses by category",
                 "detailedVision": "Detailed vision",
                 "titleDetailsMonth": "Your income compared to last month has changed by: ",
@@ -505,8 +608,12 @@
             "balanceSection": {
                 "titleLiquidity": "Liquidity",
                 "titleInvestments": "Investments",
-                "updateButton": "Update your balance"           
+                "updateButton": "Update your balance",
+                "confirmUpdate": "Confirm balance update",
+                "successUpdate": "Balance updated successfully",
+                "successFullUpdate": "Balance and income/expense update successful"        
             },
+
             "incomeSection": {
                 "placeholderCategory": "Select a category",
                 "placeholderNote": "Insert a note (optional)",
@@ -517,8 +624,15 @@
                     "value": "Value",
                     "note": "Note",
                     "date": "Income Date"
-                }
+                },
+                "confirmUpdate": "Confirm income insertion",
+                "successUpdate": "Income inserted successfully",
+                "confirmDelete": "Are you sure you want to delete this income?",
+                "successDelete": "Income deleted successfully",
+                "increseWichBalance": "Select where to add the income: "
+
             },
+
             "expenseSection": {
                 "placeholderCategory": "Select a category",
                 "placeholderTypology": "Select a typology",
@@ -531,8 +645,34 @@
                     "value": "Value",
                     "note": "Note",
                     "date": "Expense Date"
-                }
+                },
+                "confirmUpdate": "Confirm expense insertion",
+                "successUpdate": "Expense inserted successfully",
+                "confirmDelete": "Are you sure you want to delete this expense?",
+                "successDelete": "Expense deleted successfully",
+                "decreaseWhichBalance": "Select where to subtract the expense: "
             }
+        },
+
+        "leaderboard": {
+            "title": "Leaderboard over time",
+            "monthRanking": "Ranking related to the month: ",
+            "yearRanking": "Ranking related to the year: ",
+            "generalRanking": "General rankings: ",
+            "similarRanking": "Similar users rankings: ",
+            "balanceRanking": "Balance Ranking ",
+            "incomeRanking": "Income Ranking ",
+            "expenseRanking": "Expense Ranking ",
+            "infoExpenseRank": "This rank shows in the high positions who spends the most.",
+            "noRank": "Rankings not available",
+            "compliments": "Congratulations! You are in the top ",
+            "superCompliments": "Incredible!! You are in the top ", 
+            "top": "You are in the top ",
+            "users": " of users!",
+            "lowerExpense": " You are among the users who spend the least!",
+            "higherExpense": " Attention! You are among the users who spend the most!",
+            "higherIncome": " You are among the users who earn the most!",
+            "mediumRank": "You are in the average of users!"
         }
 
 

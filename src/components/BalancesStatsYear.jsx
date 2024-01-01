@@ -9,54 +9,14 @@ import { AiOutlineStock } from "react-icons/ai";
 import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
 import { primaryColor, secondaryColor } from '../contexts/Themes';
 import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
-// import { PieChart, Pie, Cell } from "recharts";
-
-// const [activeIndex, setActiveIndex] = useState(null);
-
-// const handleMouseEnter = (_, index) => {
-//   setActiveIndex(index);
-// };
-
-// const handleMouseLeave = () => {
-//   setActiveIndex(null);
-// };
-
-
-
-
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-// const RADIAN = Math.PI / 180;
-// const renderCustomizedLabel = ({
-//   cx,
-//   cy,
-//   midAngle,
-//   innerRadius,
-//   outerRadius,
-//   percent,
-//   index,
-//   dataEntry
-// }) => {
-//   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-//   const x = cx + radius * Math.cos(-midAngle * RADIAN);
-//   const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-//   return (
-//     <text
-//       x={x}
-//       y={y}
-//       fill="white"
-//       textAnchor={x > cx ? "start" : "end"}
-//       dominantBaseline="central"
-//     >
-//       {`${(percent * 100).toFixed(0)}%`}
-//     {/* {` (${dataEntry.name}: ${dataEntry.value})`} // aggiunto qui */}
-//     </text>
-//   );
-// };
 
 function BalancesStatsYear({theme, userData, isHidden}) {
+    const { language } = useContext(LanguageContext);
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
@@ -137,7 +97,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
         
         <div className="wrapper">
         <SecondaryTitle theme={theme}>
-            Il tuo patrimonio rispetto ad un anno fa è variato di:{" "}
+            {languages[language].graphs.statsBalance.titleDetailsYear}{" "}
             <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
                 {isHidden ? '****' : calculateDifference(totalReal, totalRealPreYearSameMonth)} {(isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreYearSameMonth))}
             </span>
@@ -151,8 +111,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>in Banca</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.bank}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -171,8 +131,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>soldi fisici</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.cash}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -192,8 +152,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                 </div>
                 
                 <div className="transfer">
-                    <h6 style={{ color: secondaryColor}}>Variazione</h6>
-                    <h6 style={{ color: secondaryColor}}>Servizi digitali</h6>
+                    <h6 style={{ color: secondaryColor}}>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6 style={{ color: secondaryColor}}>{languages[language].assets.digitalServices}</h6>
                 </div>
                 <div className="money">
                     <h5 style={{ color: secondaryColor}}>
@@ -212,8 +172,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione </h6>
-                    <h6>Azioni</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.stocks}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -232,8 +192,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>ETF</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.etf}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -252,8 +212,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Bitcoin</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.bitcoin}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -272,8 +232,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Crypto</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.crypto}</h6>
                 </div>
                 <div className="money">
                     <h5>

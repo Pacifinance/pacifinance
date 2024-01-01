@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { TitleDashboard, Section } from '../contexts/MyStyled';
 import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 // Component for the rankings section
-function RankingsSection({ title, rankings, isHidden }) {
+function RankingsSection({ language, title, rankings, isHidden }) {
     // Verify if there is a title for expenses
-    const isExpenseTitle = title.toLowerCase().includes("uscite");
+    const isExpenseTitle = title.toLowerCase().includes("uscite" || "expenses");
   
     // Verify if there are rankings > 50 (top 50%)
     const isRankingsAbove50 = rankings > 50;
@@ -16,35 +18,34 @@ function RankingsSection({ title, rankings, isHidden }) {
     // Calculate the text to display
     let textToDisplay = "";
     if (!isNaN(parseFloat(rankings))) {
-      //Se è tra gli ultimi 50% degli utenti (ovvero se è come rankings sopra a 50) (vuol dire che spende meno)
       if (isHidden) {
         textToDisplay = '****';
       } else {
         if (isExpenseTitle) {
 
           if (isRankingsAbove50) {
-            textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che spendono di meno!`;
+            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.lowerExpense}`;
           } else if (isRankingBelow20) {
-            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}%. Attenzione! Sei tra gli utenti che spendono di più!`;
+            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherExpense}`;
           } else {
-            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}%. Sei nella media degli utenti!`;
+            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.mediumRank}`;
           }
 
         } else {
 
           if (!isRankingsAbove50) {
-            textToDisplay = `Complimenti! Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
+            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
           } else if (isRankingBelow20) {
-            textToDisplay = ` Incredibile!! Sei nella top ${Math.min(rankings, 99)}%. Sei tra gli utenti che guadagnano di più!`;
+            textToDisplay = `${languages[language].leaderboard.superCompliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherIncome}`;
           } else {
-            textToDisplay = `Sei nella top ${Math.min(rankings, 99)}% degli utenti!`;
+            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
           }
           
         }
       }
     } else {
         // Set the text to display if rankings is not a number
-        textToDisplay = "Rankings non disponibili";
+        textToDisplay = languages[language].leaderboard.noRank;
     }
   
     const areNotEmpty = rankings.length > 0 || rankings > 0;
@@ -54,7 +55,7 @@ function RankingsSection({ title, rankings, isHidden }) {
         <h2>
           {title}
           {isExpenseTitle && (
-            <Tooltip title="Questo rank mostra nelle posizioni alte chi spende di più." arrow>
+            <Tooltip title={languages[language].leaderboard.infoExpenseRank} arrow>
               <InfoIcon style={{ color: 'white' }} />
             </Tooltip>
           )}
@@ -62,13 +63,14 @@ function RankingsSection({ title, rankings, isHidden }) {
         {areNotEmpty ? (
           <p>{textToDisplay}</p>
         ) : (
-          <p> Mancanza di dati </p>
+          <p> {languages[language].general.noData} </p>
         )}
       </StyledRankingsSection>
     );
   }
 
 function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
+    const { language } = useContext(LanguageContext);
     const [selectedMonth, setSelectedMonth] = useState(1);
     const [selectedYear, setSelectedYear] = useState(2023);
     const [balanceRank, setBalanceRank] = useState([]);
@@ -90,7 +92,7 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
               setExpenseSimilarUsersRank(userData ? userData.percentageRankOnExpensesSimilar : []);
   
           } catch (error) {
-            console.error('Errore durante le operazioni:', error);
+            console.error('Error:', error);
           }
         }
     };
@@ -107,7 +109,7 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
     return (
         <Section theme={theme}>
             <div className="grid"> 
-                    <TitleDashboard theme={theme}>Classifiche nel tempo</TitleDashboard>
+                    <TitleDashboard theme={theme}>{languages[language].leaderboard.title}</TitleDashboard>
                     {/* <RankingComponent /> */}
                     <StyledRankingPage>
                         {/* <MonthYearSelector
@@ -116,18 +118,18 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                             onMonthChange={handleMonthChange}
                             onYearChange={handleYearChange}
                         /> */}
-                        <StyledLabel>Classifiche relative al mese: <StyledMonth>{formattedPreMonthDate}</StyledMonth></StyledLabel>
-                        <RankingsTitle >Classifiche generali : </RankingsTitle>
+                        <StyledLabel>{languages[language].leaderboard.monthRanking} <StyledMonth>{formattedPreMonthDate}</StyledMonth></StyledLabel>
+                        <RankingsTitle >{languages[language].leaderboard.generalRanking} </RankingsTitle>
                         <CenteredRankings>
-                            <RankingsSection title="Classifica Patrimonio" rankings={balanceRank} isHidden={isHidden} />
-                            <RankingsSection title="Classifica Entrate" rankings={incomeRank} isHidden={isHidden} />
-                            <RankingsSection title="Classifica Uscite" rankings={expenseRank} isHidden={isHidden} />
+                            <RankingsSection language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
+                            <RankingsSection language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
+                            <RankingsSection language={language} title={languages[language].leaderboard.expenseRanking} rankings={expenseRank} isHidden={isHidden} />
                         </CenteredRankings>
-                        <RankingsTitle  >Classifiche utenti simili : </RankingsTitle >
+                        <RankingsTitle  >{languages[language].leaderboard.similarRanking} </RankingsTitle >
                         <CenteredRankings>
-                            <RankingsSection title="Classifica Patrimonio" rankings={balanceSimilarUsersRank} isHidden={isHidden} />
-                            <RankingsSection title="Classifica Entrate" rankings={incomesSimilarUsersRank} isHidden={isHidden} />
-                            <RankingsSection title="Classifica Uscite" rankings={expensesSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection language={language} title={languages[language].leaderboard.expenseRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} />
                         </CenteredRankings>
                     </StyledRankingPage>
             </div>
@@ -136,64 +138,3 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
 }
   
 export default Leaderboard;
-
-
-
-// Componente per il selettore di mese e anno
-// function MonthYearSelector({ selectedMonth, selectedYear, onMonthChange, onYearChange }) {
-//   const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
-//   const years = [2022, 2023, 2024, 2025]; // Modifica gli anni disponibili se necessario
-
-//   const handleMonthChange = (event) => {
-//     const month = parseInt(event.target.value);
-//     onMonthChange(month);
-//   };
-
-//   const handleYearChange = (event) => {
-//     const year = parseInt(event.target.value);
-//     onYearChange(year);
-//   };
-
-//   return (
-//       <StyledSelectContainer>
-//         <StyledLabel>Mese:</StyledLabel>
-//         <StyledSelect value={selectedMonth} onChange={handleMonthChange}>
-//           {months.map((month, index) => (
-//             <option key={index} value={index + 1}>{month}</option>
-//           ))}
-//         </StyledSelect>
-  
-//         <StyledLabel>Anno:</StyledLabel>
-//         <StyledSelect value={selectedYear} onChange={handleYearChange}>
-//           {years.map((year) => (
-//             <option key={year} value={year}>{year}</option>
-//           ))}
-//         </StyledSelect>
-//       </StyledSelectContainer>
-//     );
-//   }
-
-
-
-
-// const handleMonthChange = (month) => {
-  //   setSelectedMonth(month);
-  // };
-
-  // const handleYearChange = (year) => {
-  //   setSelectedYear(year);
-  // };
-
-
-
-
-
-  {/* <ol>
-        {rankings.map((ranking, index) => (
-          <li key={ranking.userId}>
-            Posizione: {ranking.position} (Complimenti! Sei nella top {((ranking.position / rankings.length) * 100).toFixed(2)}% degli utenti!)
-          </li>
-        ))}
-      </ol> */}
-
-// Component for the rankings page

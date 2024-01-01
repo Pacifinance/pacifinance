@@ -2,8 +2,11 @@ import React, { useState, useEffect} from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { PercentageExpensesChartContainer } from '../contexts/MyStyled';
 import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 export default function PercentageExpensesChart({theme, userData, isHidden}) {
+  const { language } = React.useContext(LanguageContext);
   const [totalExpensesPerCategoryPerMonth, setTotalExpensesPerCategoryPerMonth] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0); // Set default selected month as the first month
 
@@ -126,18 +129,18 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
 
   // Array of month names in Italian
   const monthNames = {
-    1: "Gennaio",
-    2: "Febbraio",
-    3: "Marzo",
-    4: "Aprile",
-    5: "Maggio",
-    6: "Giugno",
-    7: "Luglio",
-    8: "Agosto",
-    9: "Settembre",
-    10: "Ottobre",
-    11: "Novembre",
-    12: "Dicembre"
+    1: [languages[language].months.january],
+    2: [languages[language].months.february],
+    3: [languages[language].months.march],
+    4: [languages[language].months.april],
+    5: [languages[language].months.may],
+    6: [languages[language].months.june],
+    7: [languages[language].months.july],
+    8: [languages[language].months.august],
+    9: [languages[language].months.september],
+    10: [languages[language].months.october],
+    11: [languages[language].months.november],
+    12: [languages[language].months.december]
   };
   
   // Get the current month and year

@@ -8,13 +8,15 @@ import { Bar } from "recharts/lib/cartesian/Bar";
 import { Legend } from "recharts/lib/component/Legend";
 import { SectionBalancesCharts } from '../contexts/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 // import { }
 
 
 
 
 export default function BalancesCharts({  theme, userData, isHidden, CustomTick }) {
-
+  const { language } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
 
   // const { SectionBalancesCharts } = MyStyled();
@@ -28,7 +30,7 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
             
     
         } catch (error) {
-          console.error('Errore durante le operazioni:', error);
+          console.error('Error:', error);
         }
       }
     };
@@ -89,13 +91,13 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
         <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
         <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%' }}/>
 
-        <Bar dataKey={isHidden ? '****' : "Banca"} stackId="a" fill={isHidden ? theme.textColor : "#0D579B"} />
-        <Bar dataKey={isHidden ? '****' : "SoldiFisici"} stackId="a" fill={isHidden ? theme.textColor : "#329239"} />
-        <Bar dataKey={isHidden ? '****' : "ServiziDigitali"} stackId="a" fill={isHidden ? theme.textColor : "#74b9ff"} />
-        <Bar dataKey={isHidden ? '****' : "Azioni"} stackId="a" fill={isHidden ? theme.textColor : "#FF6600"} />
-        <Bar dataKey={isHidden ? '****' : "ETF"} stackId="a" fill={isHidden ? theme.textColor : "#a29bfe"} />
-        <Bar dataKey={isHidden ? '****' : "Bitcoin"} stackId="a" fill={isHidden ? theme.textColor : "#F7B510"} />
-        <Bar dataKey={isHidden ? '****' : "Crypto"} stackId="a" fill={isHidden ? theme.textColor : "#d63031"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.bank} stackId="a" fill={isHidden ? theme.textColor : "#0D579B"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.cash} stackId="a" fill={isHidden ? theme.textColor : "#329239"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.digitalServices} stackId="a" fill={isHidden ? theme.textColor : "#74b9ff"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.stocks} stackId="a" fill={isHidden ? theme.textColor : "#FF6600"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.etf} stackId="a" fill={isHidden ? theme.textColor : "#a29bfe"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.bitcoin} stackId="a" fill={isHidden ? theme.textColor : "#F7B510"} />
+        <Bar dataKey={isHidden ? '****' : languages[language].assets.crypto} stackId="a" fill={isHidden ? theme.textColor : "#d63031"} />
         
         <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9} />} />
         <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />

@@ -9,6 +9,8 @@ import { AiOutlineStock } from "react-icons/ai";
 import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
 import { primaryColor, secondaryColor } from '../contexts/Themes';
 import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 
 
@@ -46,6 +48,7 @@ const renderCustomizedLabel = ({
 };
 
 export default function BalancesStatsMonth({theme, userData, isHidden}) {
+    const { language } = useContext(LanguageContext);
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
@@ -119,7 +122,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
         //     {" - "}({formattedPreYearSameMonthDate})
         <div className="wrapper">
         <SecondaryTitle theme={theme}>
-            Il tuo patrimonio rispetto al mese scorso è variato di:{" "} 
+            {languages[language].graphs.statsBalance.titleDetailsMonth}{" "} 
             <span style={{ color: (((totalReal - totalRealPreMonth) / totalRealPreMonth) * 100) > 0 ? primaryColor : "inherit" }}>
                 {isHidden ? '****' : calculateDifference(totalReal, totalRealPreMonth)} {isHidden ? '****' : calculatePercentageChange(totalReal, totalRealPreMonth)}
             </span>
@@ -134,8 +137,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>in Banca </h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.bank}</h6>
                 </div>
                 <div className="money">
                     <h5 style={{ color: secondaryColor}}>
@@ -154,8 +157,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>soldi fisici</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.cash}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -174,8 +177,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Servizi digitali</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.digitalServices}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -194,8 +197,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione </h6>
-                    <h6>Azioni</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.stocks}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -215,8 +218,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>ETF</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.etf}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -235,8 +238,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Bitcoin</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.bitcoin}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -255,8 +258,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Crypto</h6>
+                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6>{languages[language].assets.crypto}</h6>
                 </div>
                 <div className="money">
                     <h5>

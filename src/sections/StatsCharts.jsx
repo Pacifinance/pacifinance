@@ -12,12 +12,15 @@ import InExStatsMonth from '../components/InExStatsMonth';
 import InExStatsYear from '../components/InExStatsYear';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utilities/customGraphsInfo';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 
 
 export default function StatsCharts() {
     const { userData } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
+    const { language } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);
     const [activePage, setActivePage] = useState("statsBilancio");
     const formattedPreMonthDate = userData?.preMonthDate
@@ -38,11 +41,11 @@ export default function StatsCharts() {
           return (
             
             <>
-                <SecondaryTitle theme={theme}>Andamento del tuo bilancio negli ultimi 12 mesi</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph}</SecondaryTitle>
                 <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
-                <SecondaryTitle theme={theme}>Distribuzione del tuo bilancio negli ultimi 12 mesi</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph2}</SecondaryTitle>
                 <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
-                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.detailedVision}</SecondaryTitle>
                 <BalancesStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
                 <BalancesStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
                 
@@ -51,14 +54,14 @@ export default function StatsCharts() {
         } else if (activePage === "statsIncomesExpenses") {
           return (
             <>
-                <SecondaryTitle theme={theme}>Check delle entrate e delle uscite negli ultimi 12 mesi </SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleGraph}</SecondaryTitle>
                 <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
-                <SecondaryTitle theme={theme}> Distribuzione delle tue spese per categoria </SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleGraph2}</SecondaryTitle>
                 <PercentageExpensesChart theme={theme} userData={userData} isHidden={isHidden}/>
-                <SecondaryTitle theme={theme}> Visione dettagliata </SecondaryTitle>
-                <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreMonthDate} (un mese fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.detailedVision}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsMonth}{formattedPreMonthDate}</SecondaryTitle>
                 <InExStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
-                <SecondaryTitle theme={theme}>Le tue entrate e uscite rispetto a {formattedPreYearSameMonthDate} (un anno fa)</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsYear} {formattedPreYearSameMonthDate}</SecondaryTitle>
                 <InExStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
                 
             </>
@@ -79,7 +82,7 @@ export default function StatsCharts() {
                   marginLeft: "6vw",
                 }}
               >
-                Statistiche Bilancio
+                {languages[language].graphs.statsBalance.title}
               </MySectionButton>
               <MySectionButton
                 theme={theme}
@@ -89,7 +92,7 @@ export default function StatsCharts() {
                     activePage === "statsIncomesExpenses" ? "" : "#222831",
                 }}
               >
-                Statistiche Entrate e Uscite
+                {languages[language].graphs.statsExpenses.title}
               </MySectionButton>
             </ButtonGroup>
             {renderPage()}

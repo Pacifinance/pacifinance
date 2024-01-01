@@ -5,6 +5,8 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from "../contexts/LanguageContext";
 import {
   MySectionButton,
   MySecondaryButton,
@@ -83,10 +85,10 @@ const handleAddIncome = async (setIsConfirmIncomeOpen, categoryIncome, income) =
 
   // Check if the user has entered a non-empty value and selected a category
   if (categoryIncome.value === "") {
-    alert("Seleziona una categoria.");
+    alert("Select a category");
     return; // Exit the function without further execution
   } else if ((Number(income) === 0 || income === "" || income === undefined)) {
-    alert("Inserisci un valore valido e maggiore di 0.");
+    alert("Insert a valid value greater than 0");
     return;
   }
 
@@ -99,6 +101,7 @@ const handleExitConfirm = async (setModalState) => {
 
 
 export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHidden}) {
+  const { language } = React.useContext(LanguageContext);
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
   const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
   const [isConfirmExpenseOpen, setIsConfirmExpenseOpen] = useState(false);
@@ -146,13 +149,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
 
   const options = {
-    Banca: [bankReal, setBankReal],
-    Contanti: [cashReal, setCashReal],
-    'Servizi digitali': [digitalServicesReal, setDigitalServicesReal],
-    Azioni: [stocksReal, setStocksReal],
-    ETF: [etfReal, setETFReal],
-    Bitcoin: [bitcoinReal, setBitcoinReal],
-    Criptovalute: [cryptoReal, setCryptoReal],
+    [languages[language].assets.bank]: [bankReal, setBankReal],
+    [languages[language].assets.cash]: [cashReal, setCashReal],
+    [languages[language].assets.digitalServices]: [digitalServicesReal, setDigitalServicesReal],
+    [languages[language].assets.stocks]: [stocksReal, setStocksReal],
+    [languages[language].assets.etf]: [etfReal, setETFReal],
+    [languages[language].assets.bitcoin]: [bitcoinReal, setBitcoinReal],
+    [languages[language].assets.crypto]: [cryptoReal, setCryptoReal],
   };
   
   const fetchData = async () => {
@@ -180,7 +183,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             
             // setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
         } catch (error) {
-          console.error('Errore durante le operazioni:', error);
+          console.error('Error: ', error);
         }
       }
   };
@@ -213,20 +216,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     setSelectedExpensesMonth(event.target.value); 
   };
 
-  // Array of month names in Italian
+  // Array of month names
   const monthNames = {
-    1: "Gennaio",
-    2: "Febbraio",
-    3: "Marzo",
-    4: "Aprile",
-    5: "Maggio",
-    6: "Giugno",
-    7: "Luglio",
-    8: "Agosto",
-    9: "Settembre",
-    10: "Ottobre",
-    11: "Novembre",
-    12: "Dicembre"
+    1: [languages[language].months.january],
+    2: [languages[language].months.february],
+    3: [languages[language].months.march],
+    4: [languages[language].months.april],
+    5: [languages[language].months.may],
+    6: [languages[language].months.june],
+    7: [languages[language].months.july],
+    8: [languages[language].months.august],
+    9: [languages[language].months.september],
+    10: [languages[language].months.october],
+    11: [languages[language].months.november],
+    12: [languages[language].months.december]
   };
   
   // Get the current month and year
@@ -284,7 +287,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       setBalanceDate(currentDate);
     }
     else {
-      alert("Errore nell'aggiornamento del bilancio");
+      alert("Errore in the update of the balance");
     }
   };
 
@@ -323,13 +326,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
       const inExAdd = await axios.post('/expenses/add', inExJson, { withCredentials: true });
       const options = {
-        Banca: bankReal,
-        Contanti: cashReal,
-        'Servizi digitali': digitalServicesReal,
-        Azioni: stocksReal,
-        ETF: etfReal,
-        Bitcoin: bitcoinReal,
-        Criptovalute: cryptoReal,
+        [languages[language].assets.bank]: bankReal,
+        [languages[language].assets.cash]: cashReal,
+        [languages[language].assets.digitalServices]: digitalServicesReal,
+        [languages[language].assets.stocks]: stocksReal,
+        [languages[language].assets.etf]: etfReal,
+        [languages[language].assets.bitcoin]: bitcoinReal,
+        [languages[language].assets.crypto]: cryptoReal,
       };
       if (inExAdd.status === 200) {
         if (selectedOption !== "") {
@@ -348,20 +351,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           const balancesJson = { 
             balance : {
               date : balanceDate,
-              bank : selectedOption.includes('Banca') ? newValue : bankReal,
-              cash : selectedOption.includes('Contanti') ? newValue : cashReal,
-              digital_services : selectedOption.includes('Servizi digitali') ? newValue : digitalServicesReal,
+              bank : selectedOption.includes(languages[language].assets.bank) ? newValue : bankReal,
+              cash : selectedOption.includes(languages[language].assets.cash) ? newValue : cashReal,
+              digital_services : selectedOption.includes(languages[language].assets.digitalServices) ? newValue : digitalServicesReal,
               stocks : {
-                real : selectedOption.includes('Azioni') ? newValue : stocksReal
+                real : selectedOption.includes(languages[language].assets.stocks) ? newValue : stocksReal
               },
               etf : {
-                real : selectedOption.includes('ETF') ? newValue : etfReal
+                real : selectedOption.includes(languages[language].assets.etf) ? newValue : etfReal
               },
               bitcoin : {
-                real : selectedOption.includes('Bitcoin') ? newValue : bitcoinReal
+                real : selectedOption.includes(languages[language].assets.bitcoin) ? newValue : bitcoinReal
               },
               crypto : {
-                real : selectedOption.includes('Criptovalute') ? newValue : cryptoReal
+                real : selectedOption.includes(languages[language].assets.crypto) ? newValue : cryptoReal
               },
             }
           }
@@ -377,7 +380,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             fetchData();
           }
           else {
-            alert("Errore nell'aggiornamento del bilancio");
+            alert("Error in the update of the balance");
           }
 
         } 
@@ -389,7 +392,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
         }
           
       } else{
-        alert("Errore nell'inserimento dell'entrata");
+        alert("Error in the update of the expense");
       }
 
     } catch (error) {
@@ -402,13 +405,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
     // Verifica se income è uguale a 0 e/o categoryIncome è vuoto
     if (categoryExpense.value === "") {
-      alert("Seleziona una categoria.");
+      alert("Select a category");
       return; 
     } else if (typoExpense.value === "") {
-      alert("Seleziona una tipologia di pagamento.");
+      alert("Select a payment type");
       return; 
     } else if ((Number(expense) === 0 || expense === "" || expense === undefined)) { 
-      alert("Inserisci un valore valido e maggiore di 0.");
+      alert("Insert a valid value greater than 0");
       return;
     }
   
@@ -432,7 +435,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       fetchData();
     }
     else {
-      alert("Errore nell'eliminazione dell'entrata");
+      alert("Error in the update of the income");
     }
   
   };
@@ -453,7 +456,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       fetchData();
     }
     else {
-      alert("Errore nell'eliminazione dell'uscita");
+      alert("Error in the update of the expense");
     }
   };
   
@@ -471,7 +474,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
       return (
         <tr key={index}>
-          <td>{isHidden ? '****' : add.categoryTag.translations.it}</td>
+          <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
           <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
           <td>{isHidden ? '****' : add.notes}</td>
           <td>{isHidden ? '****' : formattedDate}</td>
@@ -501,8 +504,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
       return (
         <tr key={index}>
-          <td>{isHidden ? '****' : add.categoryTag.translations.it}</td>
-          <td>{isHidden ? '****' : add.paymentType.translations.it}</td>
+          <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
+          <td>{isHidden ? '****' : add.paymentType.translations[language]}</td>
           <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
           <td>{isHidden ? '****' : add.notes}</td>
           <td>{isHidden ? '****' : formattedDate}</td>
@@ -524,22 +527,22 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       return (
         <>
           {/*TitleSection used to create a distance TO UPGRADE */}
-          <TitleSection theme={theme}> Liquidità </TitleSection>
+          <TitleSection theme={theme}> {languages[language].insert.balanceSection.titleLiquidity} </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  Depositati in Banca
+                  {languages[language].assets.bank}
                 </LabelStyle>
               </LabelContainer>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  Contanti e monete
+                  {languages[language].assets.cash}
                 </LabelStyle>
               </LabelContainer>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  Su servizi di pagam. digitali
+                  {languages[language].assets.digitalServices}
                 </LabelStyle>
               </LabelContainer>
               </Column>
@@ -558,27 +561,27 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </div>
             </Column>
           </StyledInputs>
-          <TitleSection theme={theme}> Investimenti </TitleSection>
+          <TitleSection theme={theme}> {languages[language].insert.balanceSection.titleInvestments} </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  Azioni
+                  {languages[language].assets.stocks}
                 </LabelStyle>
               </LabelContainer>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  ETF
+                  {languages[language].assets.etf}
                 </LabelStyle>
               </LabelContainer>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  Bitcoin
+                  {languages[language].assets.bitcoin}
                 </LabelStyle>
               </LabelContainer>
               <LabelContainer theme={theme}>
                 <LabelStyle theme={theme}>
-                  Criptovalute
+                  {languages[language].assets.crypto}
                 </LabelStyle>
               </LabelContainer>
             </Column>
@@ -613,7 +616,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           
           
           <StyledInputs theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >Aggiorna il tuo bilancio</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleChangeBalance(setIsConfirmBalanceOpen)} >{languages[language].insert.balanceSection.updateButton}</MySecondaryButton>
           </StyledInputs>
         </>
           
@@ -639,17 +642,17 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
                 renderValue={(value) => {
                   if (value === "") {
-                    return "Seleziona una categoria";
+                    return languages[language].insert.incomeSection.placeholderCategory;
                   }
                   return value;
                 }}
               >
                 <MenuItem value="">
-                  <em>Seleziona una categoria</em>
+                  <em>{languages[language].insert.incomeSection.placeholderCategory}</em>
                 </MenuItem>
                 {incomesTags.map((item) => (
                   <MenuItem key={item.index} value={item.index}>
-                    {item.translations.it} 
+                    {item.translations[language]} 
                   </MenuItem>
                 ))}
               </Select>
@@ -697,7 +700,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                 value={noteIncomeAreaValue}
                 onChange={(e) => setNoteIncomeAreaValue(e.target.value)}
                 maxLength={64}
-                placeholder="Inserisci una nota (facoltativo)"
+                placeholder={languages[language].insert.incomeSection.placeholderNote}
                 style={{
                   width: "100%",
                   padding: "8px",
@@ -713,7 +716,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledAddSection theme={theme}> 
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>Aggiungi entrata</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Le entrate del mese selezionato
+          <TitleLastAdds theme={theme}>{languages[language].insert.incomeSection.titleListing}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <select value={selectedIncomesMonth} onChange={handleIncomesMonthChange} style={{ padding: '1em' }}>
                 {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
@@ -728,10 +731,10 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           
             <thead>
               <tr>
-                <th>Categoria</th>
-                <th>Valore</th>
-                <th>Note</th>
-                <th>Data Entrata</th>
+                <th>{languages[language].insert.incomeSection.tableColumns.category}</th>
+                <th>{languages[language].insert.incomeSection.tableColumns.value}</th>
+                <th>{languages[language].insert.incomeSection.tableColumns.note}</th>
+                <th>{languages[language].insert.incomeSection.tableColumns.date}</th>
               </tr>
             </thead>
             <tbody>
@@ -760,18 +763,18 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
                   renderValue={(value) => {
                     if (value === "") {
-                      return "Seleziona una categoria";
+                      return languages[language].insert.expenseSection.placeholderCategory;
                     }
                     return value;
                   }}
                   >
 
                   <MenuItem value="">
-                    <em>Seleziona una categoria</em>
+                    <em>{languages[language].insert.expenseSection.placeholderCategory}</em>
                   </MenuItem>
                   {expensesTags.map((item) => (
                     <MenuItem key={item.index} value={item.index}>
-                      {item.translations.it} 
+                      {item.translations[language]} 
                     </MenuItem>
                   ))}
               </Select>
@@ -792,19 +795,19 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
                   renderValue={(value) => {
                     if (value === "") {
-                      return "Seleziona una tipologia";
+                      return languages[language].insert.expenseSection.placeholderTypology;
                     }
                     return value;
                   }}
                   >
                   <MenuItem value="">
-                    <em>Seleziona una tipologia</em>
+                    <em>{languages[language].insert.expenseSection.placeholderTypology}</em>
                   </MenuItem>
                   {paymentTags.map((item) => (
                     // check if the item is not none because we don't want to show it
                     item.label !== "none" && (
                       <MenuItem key={item.index} value={item.index}>
-                        {item.translations.it}
+                        {item.translations[language]}
                       </MenuItem>
                     )
                   ))}
@@ -854,7 +857,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                 value={noteExpenseAreaValue}
                 onChange={(e) => setNoteExpenseAreaValue(e.target.value)}
                 maxLength={64}
-                placeholder="Inserisci una nota (facoltativo)"
+                placeholder={languages[language].insert.expenseSection.placeholderNote}
                 style={{
                   width: "100%",
                   padding: "8px",
@@ -870,7 +873,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledAddSection theme={theme}>
             <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi uscita</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>Le uscite del mese selezionato
+          <TitleLastAdds theme={theme}>{languages[language].insert.expenseSection.titleListing}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <select value={selectedExpensesMonth} onChange={handleExpensesMonthChange} style={{ padding: '1em' }}>
                 {monthOptions.map((option) => (
@@ -884,11 +887,11 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledTable theme={theme}>
             <thead>
               <tr>
-                <th>Categoria</th>
-                <th>Tipologia</th>
-                <th>Valore</th>
-                <th>Note</th>
-                <th>Data Uscita</th>
+                <th>{languages[language].insert.expenseSection.tableColumns.category}</th>
+                <th>{languages[language].insert.expenseSection.tableColumns.typology}</th>
+                <th>{languages[language].insert.expenseSection.tableColumns.value}</th>
+                <th>{languages[language].insert.expenseSection.tableColumns.note}</th>
+                <th>{languages[language].insert.expenseSection.tableColumns.date}</th>
               </tr>
             </thead>
             <tbody>
@@ -902,7 +905,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
   return (
     <StyledSection theme={theme}>
-        <ModifiedTitleDashboard theme={theme}>Inserimento Dati</ModifiedTitleDashboard>
+        <ModifiedTitleDashboard theme={theme}>{languages[language].insert.title}</ModifiedTitleDashboard>
         <ButtonGroup aria-label="outlined primary button group">
           <MySectionButton theme={theme}
             onClick={() => setActivePage("bilancio")}
@@ -913,7 +916,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               marginRight: "1vw",
             }}
           >
-            Aggiorna Bilancio
+            {languages[language].insert.buttonBalance}
           </MySectionButton>
           <MySectionButton theme={theme}
             onClick={() => setActivePage("income")}
@@ -923,7 +926,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               marginRight: "1vw",
             }}
           >
-            Aggiungi Entrate
+            {languages[language].insert.buttonIncome}
           </MySectionButton>
           <MySectionButton theme={theme}
             onClick={() => setActivePage("expenses")}
@@ -932,7 +935,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                 activePage === "expenses" ? "" : "#222831",
             }}
           >
-            Aggiungi Uscite
+            {languages[language].insert.buttonExpense}
           </MySectionButton>
         </ButtonGroup>
         {renderPage()}
@@ -943,20 +946,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Conferma aggiornamento bilancio</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.balanceSection.confirmUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogContent>
-              <MuiCustomDialogContentText>Depositati in Banca: {bankReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Contanti e monete: {cashReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Su servizi di pagam. digitali: {digitalServicesReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Azioni: {stocksReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>ETF: {etfReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Bitcoin: {bitcoinReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Criptovalute: {cryptoReal}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Data selezionata: {balanceDate}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <MuiCustomDialogContentText>{languages[language].assets.bank}: {bankReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].assets.cash}: {cashReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].assets.digitalServices}: {digitalServicesReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].assets.stocks}: {stocksReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].assets.etf}: {etfReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].assets.bitcoin}: {bitcoinReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].assets.crypto}: {cryptoReal}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {balanceDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>Conferma</MuiCustomButton>
-              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>Annulla</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -967,23 +970,23 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Conferma inserimento entrata</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.incomeSection.confirmUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogContent>
-              <MuiCustomDialogContentText>Categoria: {categoryIncome.value}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Valore: {income}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Note: {noteIncomeAreaValue}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Data selezionata: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
-              <Typography variant="body1" style={{ marginTop: '1em' }}>Seleziona dove depositare l'entrata:</Typography>
+              <MuiCustomDialogContentText>{languages[language].general.category}: {categoryIncome.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.value}: {income}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.note}: {noteIncomeAreaValue}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <Typography variant="body1" style={{ marginTop: '1em' }}>{languages[language].insert.incomeSection.increaseWhichBalance}:</Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
-                <MenuItem value="">Seleziona un opzione</MenuItem>
+                <MenuItem value="">{languages[language].general.selectAnOption}</MenuItem>
                 {Object.keys(options).map((option) => (
                   <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
               </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmInEx(false)}>Conferma</MuiCustomButton>
-              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>Annulla</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmInEx(false)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -994,24 +997,24 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Conferma inserimento uscita</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.confirmUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogContent>
-              <MuiCustomDialogContentText>Categoria: {categoryExpense.value}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Tipologia pagamento: {typoExpense.value}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Valore: {expense}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Note: {noteExpenseAreaValue}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>Data selezionata: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
-              <Typography variant="body2" style={{ marginTop: '1em' }}>Seleziona da dove sottrarre l'uscita:</Typography>
+              <MuiCustomDialogContentText>{languages[language].general.category}: {categoryExpense.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].insert.expenseSection.paymentType}: {typoExpense.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.value}: {expense}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.note}: {noteExpenseAreaValue}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <Typography variant="body2" style={{ marginTop: '1em' }}>{languages[language].insert.expenseSection.decreaseWhichBalance}</Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
-                <MenuItem value="">Seleziona un opzione</MenuItem>
+                <MenuItem value="">{languages[language].general.selectAnOption}</MenuItem>
                 {Object.keys(options).map((option) => (
                   <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
               </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmInEx(true)}>Conferma</MuiCustomButton>
-              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>Annulla</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleConfirmInEx(true)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1023,9 +1026,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Aggiornamento bilancio avvenuto con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.balanceSection.successUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateBalanceSuccess)}>Ok</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateBalanceSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1037,9 +1040,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.balanceSection.successFullUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateInExBalanceSuccess)}>Ok</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateInExBalanceSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1051,9 +1054,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Inserimento entrata avvenuto con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.incomeSection.successUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateIncomesSuccess)}>Ok</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateIncomesSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1065,9 +1068,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Inserimento uscita avvenuto con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.successUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateExpensesSuccess)}>Ok</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateExpensesSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1078,9 +1081,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Eliminazione entrata avvenuta con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.incomeSection.successDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteIncomesSuccess)}>Ok</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteIncomesSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1091,9 +1094,9 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Eliminazione uscita avvenuta con successo</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.successDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteExpensesSuccess)}>Ok</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteExpensesSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1104,13 +1107,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Sei sicuro di voler eliminare questa entrata?</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.incomeSection.confimrDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => {
                 handleIncomesDelete(fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, deleteIncomeDate, deleteIncomeAmount);
                 setShowConfirmationDeleteIncome(false);
-              }}>Conferma</MuiCustomButton>
-              <MuiCustomButton onClick={() => setShowConfirmationDeleteIncome(false)}>Annulla</MuiCustomButton>
+              }}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton onClick={() => setShowConfirmationDeleteIncome(false)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1121,13 +1124,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>Sei sicuro di voler eliminare questa uscita?</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.confirmDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => {
                 handleExpensesDelete(fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, deleteExpenseDate, deleteExpenseAmount);
                 setShowConfirmationDeleteExpense(false);
-              }}>Conferma</MuiCustomButton>
-              <MuiCustomButton onClick={() => setShowConfirmationDeleteExpense(false)}>Annulla</MuiCustomButton>
+              }}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton onClick={() => setShowConfirmationDeleteExpense(false)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}

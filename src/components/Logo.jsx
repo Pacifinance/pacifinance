@@ -4,10 +4,6 @@ import LogoPaci from '../assets/Brand/PacifinanceLogoPNG3NoBg.webp';
 import {LogoStyled} from '../contexts/MyStyled';
 
 function Logo() {
-    
-  // const {
-  //   Logo,
-  // } = MyStyled()
 
     return (
         <LogoStyled>

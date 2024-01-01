@@ -24,6 +24,7 @@ import {
     DropdownContainer,
     Top,
     Links,
+    SettingsToggleButton,
     ToggleButton,
     MuiCustomDialog,
     MuiCustomButton,
@@ -47,7 +48,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language } = useContext(LanguageContext);
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
@@ -75,6 +76,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [showUpdateProfileSuccess, setShowUpdateProfileSuccess] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
+    const [showSettingsPopup, setShowSettingsPopup] = useState(false);
     const [showChangePWDSuccess, setShowChangePWDSuccess]= useState(false);
     const [showChangePWDError, setShowChangePWDError] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -185,6 +187,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             else if(option.value === 'changeUsername') setShowChangeUsernameModal(true);
             else if(option.value === 'changeid') setShowChangeIDModal(true);
             else if(option.value === 'changePassword') setShowChangePWDModal(true);
+            else if(option.value === 'settings') setShowSettingsPopup(true);
             // if(selectedOption.value === 'account') setShowAccountModal(true);
             // else if(selectedOption.value === 'changeUsername') setShowChangeUsernameModal(true);
             // else if(selectedOption.value === 'changeid') setShowChangeIDModal(true);
@@ -255,6 +258,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         setShowChangeUsernameModal(false);
         setShowChangePWDModal(false);
         setShowUpdateProfileSuccess(false);
+        setShowSettingsPopup(false);
     };
 
     const handleCloseSecondaryModal = () => {
@@ -436,7 +440,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     {/* <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
                             <AiOutlineCaretDown />
                         </div> */}
-                    <DropdownContainer > {/* style={{ zIndex: 999 }}> */}
+                    <DropdownContainer> 
                         
                         {showDropdown && (
                             <div className="dropdown-menu">
@@ -933,6 +937,59 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 <MuiCustomButton onClick={handleCloseSecondaryModal} autoFocus>
                                     {languages[language].sidebar.changePassword.errorPopup.okButton}
                                 </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
+
+                    {showSettingsPopup && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showSettingsPopup}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {languages[language].sidebar.settings.title}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                            {/* <MuiCustomDialogContentText id="alert-dialog-description">
+                                {languages[language].sidebar.settings.info} <br></br>
+                            </MuiCustomDialogContentText> */}
+
+                                <div>
+                                    <label>{languages[language].sidebar.settings.light}</label>
+                                    <SettingsToggleButton title={languages[language].sidebar.settings.light}>
+                                        <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
+                                    </SettingsToggleButton>
+                                </div>
+
+                                <div>
+                                    <label>{languages[language].sidebar.settings.privacy}</label>
+                                    <SettingsToggleButton title={languages[language].sidebar.settings.privacy}>
+                                        <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
+                                    </SettingsToggleButton>
+                                </div>
+
+                                <div>
+                                    <label>{languages[language].sidebar.settings.language}</label>
+                                    <SettingsToggleButton onClick={toggleLanguage}>
+                                        {language === 'it' ? 'IT' : 'EN'} 
+                                    </SettingsToggleButton>
+                                </div>
+
+                                <div style={{color: 'red', marginTop: '20px'}}>
+                                    <label> {languages[language].sidebar.settings.deleteAccount}</label>
+                                    <SettingsToggleButton title="ComingSoon" onClick={toggleLanguage} disabled>
+                                        {languages[language].general.comingSoon} 
+                                    </SettingsToggleButton>
+                                </div>
+
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                            <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                                {languages[language].sidebar.settings.saveSettings}
+                            </MuiCustomButton>
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
                     )}

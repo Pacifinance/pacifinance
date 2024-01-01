@@ -1278,12 +1278,36 @@ export const ToggleButton = styled.div`
   @media (max-width: 768px) {
     display: block;
     margin-top: 4em;
-        padding: 3px 3px;
-        font-size: 2px;
+    padding: 3px 3px;
+    font-size: 2px;
 
-        svg {
-          font-size: em; 
-        }
+    svg {
+      font-size: em; 
+    }
+  }
+`;
+
+export const SettingsToggleButton = styled.div`
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin: 0.5em;
+  display: flex;
+  padding: 0.5em 1em;
+  border: 0.1em solid ${(props) => (props.theme.buttonBackgroundColor)};
+  border-radius: 0.2em;
+  justify-content: center;
+  align-items: center;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    padding: 0.2em 0.2em;
+    border-radius: 0.2em;
+    font-size: 1.1rem;
+
+    svg {
+      font-size: em; 
+    }
   }
 `;
 
@@ -1499,6 +1523,7 @@ export const SidebarSection = styled.section`
     margin-top: 8rem;
     margin-left: 3%;
     height: 70vh;
+   
 
     .bar-chart-section {
       flex: 1; /*all the graphs will have the same width*/

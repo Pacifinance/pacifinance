@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { CookieBannerContainer } from '../contexts/MyStyled';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages  from '../contexts/languages.json';
 
 function CookieBanner({ show }) {
   const [acceptedCookies, setAcceptedCookies] = useState(false);
+  const { language } = useContext(LanguageContext);
   const bannerRef = useRef(null);
 
   const handleAcceptCookies = () => {
@@ -31,17 +34,11 @@ function CookieBanner({ show }) {
 
   return (
     <CookieBannerContainer show={show} ref={bannerRef}>
-      <h4>Questo sito utilizza solo cookie tecnici</h4>
+      <h4>{languages[language].cookie.title}</h4>
       <br></br>
-      <p>
-        Pacifinance utilizza solo cookie tecnici <br></br> 
-        per facilitare l'accesso e rendere  <br></br>
-        l'esperienza dell'utente più piacevole. <br></br>
-        <br></br> La tua privacy è la nostra priorità.
-        <br></br>
-        <br></br>
+      <p dangerouslySetInnerHTML={{ __html: languages[language].cookie.description}}>
       </p>
-      <button onClick={handleAcceptCookies}>Ok capito</button>
+      <button onClick={handleAcceptCookies}>{languages[language].cookie.acceptButton}</button>
     </CookieBannerContainer>
   );
 }

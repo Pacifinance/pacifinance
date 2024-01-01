@@ -4,6 +4,8 @@ import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../contexts/MyStyled';
 import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext'; 
 
 
 
@@ -41,6 +43,7 @@ const renderCustomizedLabel = ({
 };
 
 export default function InExStatsMonth({ theme, userData, isHidden}) {
+    const { language } = useContext(LanguageContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
@@ -71,7 +74,7 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                 
         
             } catch (error) {
-              console.error('Errore durante le operazioni:', error);
+              console.error('Error:', error);
             }
           }
         };
@@ -105,8 +108,8 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Entrate</h6>
+                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].general.incomes}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -128,8 +131,8 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Uscite</h6>
+                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].general.expenses}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -151,8 +154,8 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Risparmi</h6>
+                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].general.saved}</h6>
                 </div>
                 <div className="money">
                     <h5>

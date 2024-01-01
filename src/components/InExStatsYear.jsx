@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../contexts/MyStyled';
 import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
+import languages from '../contexts/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 
 // const [activeIndex, setActiveIndex] = useState(null);
@@ -49,6 +51,7 @@ const renderCustomizedLabel = ({
 };
 
 function InExStatsYear({ theme, userData, isHidden}) {
+    const { language } = useContext(LanguageContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
@@ -109,8 +112,8 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Entrate</h6>
+                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].general.incomes}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -132,8 +135,8 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Uscite</h6>
+                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].general.expenses}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -155,8 +158,8 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Rismarmi</h6>
+                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].general.saved}</h6>
                 </div>
                 <div className="money">
                     <h5>

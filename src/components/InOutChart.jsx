@@ -11,12 +11,15 @@ import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import domtoimage from 'dom-to-image';
+import { LanguageContext } from '../contexts/LanguageContext';
+import languages from '../contexts/languages.json';
 
 
 
 
 
 export default function InOutChart({theme, userData, isHidden, CustomTick}) {
+  const { language } = React.useContext(LanguageContext);
   const [incomesArray, setIncomesArray] = useState([]);
   const [expensesArray, setExpensesArray] = useState([]);
 
@@ -34,7 +37,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
             setExpensesArray(userData.expensesArray);  
             
         } catch (error) {
-          console.error('Errore durante le operazioni:', error);
+          console.error('Error', error);
         }
       }
     };
@@ -54,9 +57,9 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   };
 
   const headers = [
-    { label: 'Mese', key: 'name' },
-    { label: 'Uscite', key: 'Uscite' },
-    { label: 'Entrate', key: 'Entrate' },
+    { label: languages[language].general.month, key: 'name' },
+    { label: languages[language].general.expenses, key: languages[language].general.expenses },
+    { label: languages[language].general.incomes, key: languages[language].general.incomes },
     // Aggiungi qui eventuali altre colonne
   ];
 
@@ -72,8 +75,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
 
     lastTwelveMonths.push({
       name: monthName,
-      Uscite: expensesArray[i] || 0, // Usa 0 se non ci sono dati
-      Entrate: incomesArray[i] || 0, // Usa 0 se non ci sono dati
+      [languages[language].general.expenses]: expensesArray[i] || 0, // Usa 0 se non ci sono dati
+      [languages[language].general.incomes]: incomesArray[i] || 0, // Usa 0 se non ci sono dati
       amt: 0, // Aggiungi eventuali dati aggiuntivi
     });
   }
@@ -111,8 +114,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
           }}
         />
         <Legend />
-        <Line type="monotone" dataKey="Entrate" stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey="Uscite" stroke={isHidden ? greyColor2 : "#ff3838"} />
+        <Line type="monotone" dataKey={languages[language].general.incomes} stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey={languages[language].general.expenses} stroke={isHidden ? greyColor2 : "#ff3838"} />
         
         <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
       </LineChart>

@@ -509,8 +509,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         <em>{languages[language].sidebar.account.selectNationality}</em>
                                                     </MenuItem>
                                                     {sortedNationalityTags.map((tag) => (
-                                                        <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
-                                                        {tag.translations.it}
+                                                        <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                                                        {tag.translations[language]}
                                                         </MenuItem>
                                                     ))}
                                                 </Select> <br></br>
@@ -532,8 +532,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         <em>{languages[language].sidebar.account.selectWhereWork}</em>
                                                     </MenuItem>
                                                     {sortedNationalityTags.map((tag) => (
-                                                        <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
-                                                        {tag.translations.it}
+                                                        <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                                                        {tag.translations[language]}
                                                         </MenuItem>
                                                     ))}
                                                 </Select> <br></br>
@@ -546,17 +546,17 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                 displayEmpty
                                                 renderValue={(value) => {
                                                     if (value === "") {
-                                                    return `${languages[language].sidebar.account.selectWhereWork}`;
+                                                    return `${languages[language].sidebar.account.selectWork}`;
                                                     }
                                                     return value;
                                                 }}
                                                 >
                                                 <MenuItem value="">
-                                                    <em>{languages[language].sidebar.account.selectWhereWork}</em>
+                                                    <em>{languages[language].sidebar.account.selectWork}</em>
                                                 </MenuItem>
                                                 {sortedJobTags.map((tag) => (
-                                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
-                                                    {tag.translations.it}
+                                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                                                    {tag.translations[language]}
                                                     </MenuItem>
                                                 ))}
                                             </Select> <br></br>
@@ -578,8 +578,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                             <em>{languages[language].sidebar.account.selecttWorkType}</em>
                                                         </MenuItem>
                                                         {jobTypeTags.map((tag) => (
-                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
-                                                            {tag.translations.it}
+                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                                                            {tag.translations[language]}
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>
@@ -601,8 +601,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                                     <em>{languages[language].sidebar.account.selectHoursContract}</em>
                                                                 </MenuItem>
                                                                 {workTimeTags.map((tag) => (
-                                                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.it }}>
-                                                                    {tag.translations.it}
+                                                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                                                                    {tag.translations[language]}
                                                                     </MenuItem>
                                                                 ))}
                                                             </Select> <br></br>

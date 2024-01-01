@@ -629,7 +629,7 @@
                 "successUpdate": "Income inserted successfully",
                 "confirmDelete": "Are you sure you want to delete this income?",
                 "successDelete": "Income deleted successfully",
-                "increaseWhichBalance": "Select where to add the income: "
+                "increaseWhichBalance": "Select where to add the income"
 
             },
 
@@ -651,7 +651,7 @@
                 "successUpdate": "Expense inserted successfully",
                 "confirmDelete": "Are you sure you want to delete this expense?",
                 "successDelete": "Expense deleted successfully",
-                "decreaseWhichBalance": "Select where to subtract the expense: "
+                "decreaseWhichBalance": "Select where to subtract the expense"
             }
         },
 

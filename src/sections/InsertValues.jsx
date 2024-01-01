@@ -714,7 +714,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           </StyledAddSection>
             
           <StyledAddSection theme={theme}> 
-            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>Aggiungi entrata</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>{languages[language].insert.incomeSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>{languages[language].insert.incomeSection.titleListing}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -871,7 +871,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           </StyledAddSection>
 
           <StyledAddSection theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>Aggiungi uscita</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>{languages[language].insert.expenseSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
           <TitleLastAdds theme={theme}>{languages[language].insert.expenseSection.titleListing}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -976,7 +976,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <MuiCustomDialogContentText>{languages[language].general.value}: {income}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>{languages[language].general.note}: {noteIncomeAreaValue}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {incomeDate}</MuiCustomDialogContentText>{/* TO FIX */}  
-              <Typography variant="body1" style={{ marginTop: '1em' }}>{languages[language].insert.incomeSection.increaseWhichBalance}:</Typography>
+              <Typography variant="body1" style={{ marginTop: '1em' }}>{languages[language].insert.incomeSection.increaseWhichBalance}: </Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
                 <MenuItem value="">{languages[language].general.selectAnOption}</MenuItem>
                 {Object.keys(options).map((option) => (
@@ -1004,7 +1004,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <MuiCustomDialogContentText>{languages[language].general.value}: {expense}€</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>{languages[language].general.note}: {noteExpenseAreaValue}</MuiCustomDialogContentText>
               <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
-              <Typography variant="body2" style={{ marginTop: '1em' }}>{languages[language].insert.expenseSection.decreaseWhichBalance}</Typography>
+              <Typography variant="body2" style={{ marginTop: '1em' }}>{languages[language].insert.expenseSection.decreaseWhichBalance}: </Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
                 <MenuItem value="">{languages[language].general.selectAnOption}</MenuItem>
                 {Object.keys(options).map((option) => (

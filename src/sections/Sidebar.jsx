@@ -110,7 +110,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 setRemoteTypeTags(userData.remoteTypeTags);
               
           } catch (error) {
-            console.error('Errore durante le operazioni:', error);
+            console.error('Error:', error);
           }
         }
     };
@@ -575,7 +575,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         }}
                                                         >
                                                         <MenuItem value="">
-                                                            <em>{languages[language].sidebar.account.selecttWorkType}</em>
+                                                            <em>{languages[language].sidebar.account.selectWorkType}</em>
                                                         </MenuItem>
                                                         {jobTypeTags.map((tag) => (
                                                             <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
@@ -591,9 +591,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                                 style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
                                                                 displayEmpty
                                                                 renderValue={(value) => {
-                                                                    if (value === "") {
-                                                                    return `${languages[language].sidebar.account.selectHoursContract}`;
-                                                                    }
+                                                                    if (value === "") return `${languages[language].sidebar.account.selectHoursContract}`;
                                                                     return value;
                                                                 }}
                                                                 >
@@ -614,9 +612,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em'  }}
                                                         displayEmpty
                                                         renderValue={(value) => {
-                                                            if (value === "") {
-                                                            return `${languages[language].sidebar.account.selectRemoteWork}`;
-                                                            }
+                                                            if (value === "") return `${languages[language].sidebar.account.selectRemoteWork}`;
                                                             return value;
                                                         }}
                                                         >

@@ -10,7 +10,7 @@ import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { primaryColor, secondaryColor } from '../contexts/Themes';
-import { colorsBalances, colorsIncExp } from '../contexts/Themes';
+import { getColorsBalances, getColorsIncExp } from '../contexts/Themes';
 import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../contexts/languages.json';
@@ -29,6 +29,8 @@ import {
 function Dashboard({ theme, userData, isHidden, CustomTick}) {
     const [isLoading, setIsLoading] = useState(true);
     const { language } = useContext(LanguageContext);
+    const colorsBalances = getColorsBalances(language);
+    const colorsIncExp = getColorsIncExp(language);
     const [stocksReal, setStocksReal] = useState(0);
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);

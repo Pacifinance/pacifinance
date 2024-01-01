@@ -624,8 +624,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                             <em>{languages[language].sidebar.account.selectRemoteWork}</em>
                                                         </MenuItem>
                                                         {remoteTypeTags.map((tag) => (
-                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations.languages[language] }}>
-                                                            {tag.translations.languages[language]}
+                                                            <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                                                            {tag.translations[language]}
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>

@@ -633,7 +633,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                       const selectedItem = incomesTags.find((item) => item.index === selectedKey);
 
                       if (selectedItem) {
-                        const selectedValue = selectedItem.translations.it;
+                        const selectedValue = selectedItem.translations[language];
                         setCategoryIncome({ key: selectedKey, value: selectedValue });
                       }
                 }} 
@@ -754,7 +754,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                       const selectedItem = expensesTags.find((item) => item.index === selectedKey);
 
                       if (selectedItem) {
-                        const selectedValue = selectedItem.translations.it;
+                        const selectedValue = selectedItem.translations[language];
                         setCategoryExpense({ key: selectedKey, value: selectedValue });
                       }
                     }}  
@@ -786,7 +786,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                       const selectedItem = paymentTags.find((item) => item.index === selectedKey);
 
                       if (selectedItem) {
-                        const selectedValue = selectedItem.translations.it;
+                        const selectedValue = selectedItem.translations[language];
                         setTypoExpense({ key: selectedKey, value: selectedValue });
                       }
                     }}  

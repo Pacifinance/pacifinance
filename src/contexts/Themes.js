@@ -1,5 +1,11 @@
 // Theme.js
+import React, { useContext } from 'react';
 import { createGlobalStyle } from 'styled-components';
+
+import { languageContext } from './LanguageContext';
+import languages from '../contexts/languages.json';
+
+// const { language } = useContext(languageContext);
 
 export const themes = {
   light: {
@@ -30,21 +36,21 @@ export const primaryColor = '#079164';
 export const secondaryColor = '#0d0f13';
 export const backgroundColor = '#0d0f13';
 
-export const colorsBalances = {
-  Azioni: '#FF6600',
-  ETF: '#a29bfe',
-  Banca: '#0D579B',
-  Banconote: '#329239',
-  Criptovalute: '#d63031',
-  Bitcoin: '#F7B510',
-  ServiziDigitali: '#74b9ff',
-}
+export const getColorsBalances = (language) => ({
+  [languages[language].assets.stocks]: '#FF6600',
+  [languages[language].assets.etf]: '#a29bfe',
+  [languages[language].assets.bank]: '#0D579B',
+  [languages[language].assets.cash]: '#329239',
+  [languages[language].assets.crypto]: '#d63031',
+  [languages[language].assets.bitcoin]: '#F7B510',
+  [languages[language].assets.digitalServices]: '#74b9ff',
+});
 
-export const colorsIncExp = {
-  Entrate: '#079164',
-  Spese: '#FF0000',
-  Risparmiato: '#90EE90',
-}
+export const getColorsIncExp = (language) => ({
+  [languages[language].general.incomes]: '#079164',
+  [languages[language].general.expenses]: '#FF0000',
+  [languages[language].general.saved]: '#90EE90',
+});
 
 // export const GlobalStyle = createGlobalStyle`
 //   body {

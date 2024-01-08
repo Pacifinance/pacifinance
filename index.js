@@ -509,6 +509,7 @@ app.post("/rank/balances", async (req, res) => {
         const fake_rank = utils.computeRankOfUser(fake_balances, target_user);
         res.status(200);
         res.json(fake_rank);
+        return;
     }
     // Check if the ranking is requested among all users or only similar users
     let reference_user = undefined;
@@ -554,6 +555,7 @@ app.post("/rank/expenses", async (req, res) => {
         const fake_rank = utils.computeRankOfUser(fake_expenses, target_user);
         res.status(200);
         res.json(fake_rank);
+        return;
     }
     // Check if the ranking is requested among all users or only similar users
     let reference_user = undefined;

@@ -2103,6 +2103,10 @@ export const MuiCustomDialog = styled(Dialog)`
   }
 `;
 
+export const MuiFixedDimDialog = styled(Dialog)`
+  width: 50%;
+`;
+
 export const MuiCustomButton = styled(Button)`
   && {
     background-color: ${primaryColor};

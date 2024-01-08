@@ -27,6 +27,7 @@ import {
     SettingsToggleButton,
     ToggleButton,
     MuiCustomDialog,
+    MuiFixedDimDialog,
     MuiCustomButton,
     MuiCustomDialogTitle,
     MuiCustomDialogContent,
@@ -477,7 +478,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         </div>
                     )}
                     {showAccountModal && (
-                        <MuiCustomDialog theme={theme}
+                        <MuiFixedDimDialog theme={theme}
                             open={showAccountModal}
                             onClose={handleCloseModal}
                             aria-labelledby="alert-dialog-title"
@@ -633,7 +634,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     {languages[language].sidebar.account.saveButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
-                        </MuiCustomDialog>
+                        </MuiFixedDimDialog>
                     )}
 
                     {showChangeUsernameModal && (

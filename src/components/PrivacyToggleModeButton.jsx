@@ -6,7 +6,7 @@ const PrivacyToggleModeButton = ({ mode, toggleHidden, isHidden }) => {
 
   return (
     <ButtonToggle onClick={toggleHidden} mode={mode}>
-      {isHidden ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+      {isHidden ? <MuiCustomVisibilityOff /> : <MuiCustomVisibility />}
     </ButtonToggle>
   );
 };

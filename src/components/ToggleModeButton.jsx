@@ -7,7 +7,7 @@ const ToggleModeButton = ({ mode, toggleMode }) => {
 
   return (
     <ButtonToggle onClick={toggleMode} mode={mode}>
-      {mode === 'dark' ? <LightModeIcon /> : <Brightness4Icon />}
+      {mode === 'dark' ? <Brightness4Icon/> : <LightModeIcon /> }
     </ButtonToggle>
   );
 };

@@ -44,14 +44,14 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
 
     return {
       name: monthData.month,
-      SoldiFisici: monthData.cashReal,
-      ServiziDigitali: monthData.digitalServicesReal,
-      Azioni: monthData.stocksReal,
-      Banca: monthData.bankReal,
-      Crypto: monthData.cryptoReal,
-      ETF: monthData.etfReal,
-      Bitcoin: monthData.bitcoinReal,
-      Totale: total,
+      [languages[language].assets.cash]: monthData.cashReal,
+      [languages[language].assets.digitalServices]: monthData.digitalServicesReal,
+      [languages[language].assets.stocks]: monthData.stocksReal,
+      [languages[language].assets.bank]: monthData.bankReal,
+      [languages[language].assets.crypto]: monthData.cryptoReal,
+      [languages[language].assets.etf]: monthData.etfReal,
+      [languages[language].assets.bitcoin]: monthData.bitcoinReal,
+      [languages[language].assets.total]: total,
       amt: 2400, 
     };
   }).reverse(); //reverse() to have the last month on the right

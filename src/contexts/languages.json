@@ -253,9 +253,9 @@
                 "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
                 "titleGraph2": "Distribuzione delle tue spese per categoria",
                 "detailedVision": "Visione dettagliata",
-                "titleDetailsMonth": "Le tue entrate rispetto al mese scorso sono variate di: ",
+                "titleDetailsMonth": "Variazione entrate, spese e risparmi rispetto al mese scorso: ",
                 "variation": "Variazione ",
-                "titleDetailsYear": "Le tue entrate rispetto ad un anno fa sono variate di: "
+                "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: "
             }
 
         },
@@ -593,9 +593,9 @@
                 "titleGraph": "Trend of your incomes and expenses in the last 12 months",
                 "titleGraph2": "Distribution of your expenses by category",
                 "detailedVision": "Detailed vision",
-                "titleDetailsMonth": "Your income compared to last month has changed by: ",
+                "titleDetailsMonth": "Your income, expenses and savings compared to last month ",
                 "variation": "Variation ",
-                "titleDetailsYear": "Your income compared to a year ago has changed by: "
+                "titleDetailsYear": "Your income, expenses and savings compared to last year "
             }
 
         },

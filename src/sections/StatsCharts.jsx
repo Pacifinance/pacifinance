@@ -59,9 +59,9 @@ export default function StatsCharts() {
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleGraph2}</SecondaryTitle>
                 <PercentageExpensesChart theme={theme} userData={userData} isHidden={isHidden}/>
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.detailedVision}</SecondaryTitle>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsMonth}{formattedPreMonthDate}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsMonth} - {formattedPreMonthDate}</SecondaryTitle>
                 <InExStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsYear} {formattedPreYearSameMonthDate}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsYear} - {formattedPreYearSameMonthDate}</SecondaryTitle>
                 <InExStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
                 
             </>

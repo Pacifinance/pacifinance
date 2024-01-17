@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
 import { languageContext } from './LanguageContext';
-import languages from '../contexts/languages.json';
+import languages from './languages.json';
 
 // const { language } = useContext(languageContext);
 

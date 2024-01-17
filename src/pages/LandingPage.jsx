@@ -1,8 +1,8 @@
 import React, {useEffect, useContext} from 'react';
-import { ThemeContext } from './contexts/ThemeContext';
-import { Header, Footer } from './sections/HeaderFooter';
-import LandingContent from './sections/LandingContent';
-import { PageContainer } from './contexts/MyStyled';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { Header, Footer } from '../sections/HeaderFooter';
+import LandingContent from '../sections/LandingContent';
+import { PageContainer } from '../contexts/MyStyled';
 
 export default function LandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);

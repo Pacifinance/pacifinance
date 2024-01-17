@@ -1,11 +1,11 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { ThemeContext } from './contexts/ThemeContext';
-import { PrivacyContext } from './contexts/PrivacyContext';
+import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
-import Sidebar from './sections/Sidebar';
-import Leaderboard from './sections/Leaderbord';
-import ComingSoon from './components/ComingSoon';
+import Sidebar from '../sections/Sidebar';
+import Leaderboard from '../sections/Leaderbord';
+import ComingSoon from '../components/ComingSoon';
 
 function LeaderboardPage() {
   const { theme, toggleMode } = useContext(ThemeContext);

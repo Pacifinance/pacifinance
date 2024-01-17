@@ -1,17 +1,17 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { ThemeContext } from './contexts/ThemeContext';
-import { PrivacyContext } from './contexts/PrivacyContext';
+import { UserContext } from '../contexts/UserContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
+import { ThemeContext } from '../contexts/ThemeContext';
 import styled from 'styled-components';
-import Sidebar from './sections/Sidebar';
-import Dashboard from './sections/Dashboard';
-import { CustomTick } from './utilities/customGraphsInfo';
+import Sidebar from '../sections/Sidebar';
 
-function DashboardPage() {
-  const { theme, toggleMode } = useContext(ThemeContext);
+//import CheckPrice from './sections/CheckPrice';
+import ComingSoon from '../components/ComingSoon';
+
+function CheckPricesPage() {
+  // const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { mode } = theme;
+  // const { isHidden, toggleHidden } = useContext(PrivacyContext);
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -33,13 +33,13 @@ function DashboardPage() {
   return (
     <Div>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <Dashboard theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+      {/* <CheckPrice /> */}
+      <ComingSoon />
     </Div>
   );
 }
 
-export default DashboardPage;
-
+export default CheckPricesPage;
 const Div = styled.div `
-  position: relative;
+position: relative;
 `;

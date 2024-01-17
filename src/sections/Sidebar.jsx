@@ -993,9 +993,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                 </Notification>
 
-                <ToggleButton title={languages[language].sidebar.settings.light}>
+                {/* <ToggleButton title={languages[language].sidebar.settings.light}>
                     <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
-                </ToggleButton>
+                </ToggleButton> */}
 
                 <ToggleButton title={languages[language].sidebar.settings.privacy}>
                     <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>

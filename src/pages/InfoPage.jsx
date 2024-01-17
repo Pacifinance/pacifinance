@@ -1,16 +1,17 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { ThemeContext } from './contexts/ThemeContext';
-import { PrivacyContext } from './contexts/PrivacyContext';
+import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
-import Sidebar from './sections/Sidebar';
-import StatsCharts from './sections/StatsCharts';
+import Sidebar from '../sections/Sidebar';
+import ComingSoon from '../components/ComingSoon';
 
-function StatsChartsPage() {
+function InfoPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { mode } = theme;
+
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -30,13 +31,14 @@ function StatsChartsPage() {
 
   return (
     <Div>
-      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <StatsCharts />
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
+      {/* <Info /> */}
+      <ComingSoon />
     </Div>
   );
 }
 
-export default StatsChartsPage;
+export default InfoPage;
 const Div = styled.div `
   position: relative;
 `;

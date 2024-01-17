@@ -1,15 +1,16 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { ThemeContext } from './contexts/ThemeContext';
-import { PageWrapper } from './contexts/MyStyled';
-import { PrivacyContext } from './contexts/PrivacyContext';
-import Sidebar from './sections/Sidebar';
-import InsertValues from './sections/InsertValues';
+import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
+import styled from 'styled-components';
+import Sidebar from '../sections/Sidebar';
+import Dashboard from '../sections/Dashboard';
+import { CustomTick } from '../utilities/customGraphsInfo';
 
-function InsertPage() {
+function DashboardPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
@@ -30,11 +31,15 @@ function InsertPage() {
   // }, [])
 
   return (
-    <PageWrapper>
+    <Div>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
-    </PageWrapper>
+      <Dashboard theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+    </Div>
   );
 }
 
-export default InsertPage;
+export default DashboardPage;
+
+const Div = styled.div `
+  position: relative;
+`;

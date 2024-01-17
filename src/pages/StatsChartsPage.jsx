@@ -1,18 +1,16 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { PrivacyContext } from './contexts/PrivacyContext';
-import { ThemeContext } from './contexts/ThemeContext';
+import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
-import Sidebar from './sections/Sidebar';
+import Sidebar from '../sections/Sidebar';
+import StatsCharts from '../sections/StatsCharts';
 
-//import CheckPrice from './sections/CheckPrice';
-import ComingSoon from './components/ComingSoon';
-
-function CheckPricesPage() {
-  // const { theme } = useContext(ThemeContext);
+function StatsChartsPage() {
+  const { theme, toggleMode } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
-  // const { isHidden, toggleHidden } = useContext(PrivacyContext);
-
+  const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { mode } = theme;
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -33,13 +31,12 @@ function CheckPricesPage() {
   return (
     <Div>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      {/* <CheckPrice /> */}
-      <ComingSoon />
+      <StatsCharts />
     </Div>
   );
 }
 
-export default CheckPricesPage;
+export default StatsChartsPage;
 const Div = styled.div `
-position: relative;
+  position: relative;
 `;

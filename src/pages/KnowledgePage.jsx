@@ -1,15 +1,16 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { ThemeContext } from './contexts/ThemeContext';
-import { PrivacyContext } from './contexts/PrivacyContext';
+import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
-import Sidebar from './sections/Sidebar';
-import ComingSoon from './components/ComingSoon';
+import Sidebar from '../sections/Sidebar';
+import ComingSoon from '../components/ComingSoon';
 
-function InfoPage() {
+function KnowledgePage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
+
   const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
@@ -31,14 +32,14 @@ function InfoPage() {
 
   return (
     <Div>
-      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
-      {/* <Info /> */}
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+      {/* <Knowledge /> */}
       <ComingSoon />
     </Div>
   );
 }
 
-export default InfoPage;
+export default KnowledgePage;
 const Div = styled.div `
   position: relative;
 `;

@@ -1,6 +1,6 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import SignUpForm from './sections/SignUpForm';
+import { UserContext } from '../contexts/UserContext';
+import SignUpForm from '../sections/SignUpForm';
 
 function SignUpPage() {
 

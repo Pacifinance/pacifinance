@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserContext } from './contexts/UserContext';
-import Dashboard from './DashboardPage';
-import StatsCharts from './StatsChartsPage';
-import InsertValues from './InsertPage';
-import CheckPrices from './CheckPricesPage';
-import Leaderboard from './LeaderboardPage';
-import Knowledge from './KnowledgePage';
-import Info from './InfoPage';
+import Dashboard from './pages/DashboardPage';
+import StatsCharts from './pages/StatsChartsPage';
+import InsertValues from './pages/InsertPage';
+import CheckPrices from './pages/CheckPricesPage';
+import Leaderboard from './pages/LeaderboardPage';
+import Knowledge from './pages/KnowledgePage';
+import Info from './pages/InfoPage';
 // import SignIn from './SignInPage';
-import LandingPage from './LandingPage';
+import LandingPage from './pages/LandingPage';
 // import SignUp from './SignUpPage';
 
 

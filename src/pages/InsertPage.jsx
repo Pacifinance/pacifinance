@@ -1,16 +1,15 @@
 import React, {useEffect, useContext} from 'react';
-import { UserContext } from './contexts/UserContext';
-import { ThemeContext } from './contexts/ThemeContext';
-import { PrivacyContext } from './contexts/PrivacyContext';
-import styled from 'styled-components';
-import Sidebar from './sections/Sidebar';
-import ComingSoon from './components/ComingSoon';
+import { UserContext } from '../contexts/UserContext';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { PageWrapper } from '../contexts/MyStyled';
+import { PrivacyContext } from '../contexts/PrivacyContext';
+import Sidebar from '../sections/Sidebar';
+import InsertValues from '../sections/InsertValues';
 
-function KnowledgePage() {
+function InsertPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
-
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
@@ -31,15 +30,11 @@ function KnowledgePage() {
   // }, [])
 
   return (
-    <Div>
+    <PageWrapper>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      {/* <Knowledge /> */}
-      <ComingSoon />
-    </Div>
+      <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
+    </PageWrapper>
   );
 }
 
-export default KnowledgePage;
-const Div = styled.div `
-  position: relative;
-`;
+export default InsertPage;

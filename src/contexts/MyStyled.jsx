@@ -2104,7 +2104,9 @@ export const MuiCustomDialog = styled(Dialog)`
 `;
 
 export const MuiFixedDimDialog = styled(Dialog)`
-  width: 50%;
+  && {
+      width: 100%;
+  }
 `;
 
 export const MuiCustomButton = styled(Button)`

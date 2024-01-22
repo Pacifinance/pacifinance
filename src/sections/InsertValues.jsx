@@ -1107,7 +1107,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>{languages[language].insert.incomeSection.confimrDelete}</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.incomeSection.confirmDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => {
                 handleIncomesDelete(fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, deleteIncomeDate, deleteIncomeAmount);

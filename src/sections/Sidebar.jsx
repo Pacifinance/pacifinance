@@ -209,7 +209,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             const newID = response.data.new_id;
             setNewID(newID);
             setShowID(true);
-            event.preventDefault();     
+            event.preventDefault();    
+            window.umami.trackEvent('changedID', 'ID');
         }
         catch(error){
             console.log(error);
@@ -224,6 +225,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             const newUsername = response.data;
             setNewUsername(newUsername);
             setShowUsername(true);
+            window.umami.trackEvent('changedUsername', 'Username');
         }   
         catch(error){
             console.log(error);
@@ -240,8 +242,14 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     repeated_pwd: confirmPassword
                 }
                 const response = await axios.post('/user/set-password', data, { withCredentials: true }); //only the first element of the array is needed (the last one)
-                handleCloseModal();
-                setShowChangePWDSuccess(true);
+                if(response.status === 200) {
+                    handleCloseModal();
+                    setShowChangePWDSuccess(true);
+                    window.umami.trackEvent('changedPassword', 'Password');
+                }
+                else {
+                    console.log("Change password failed");
+                }
             }
         }
         catch(error){
@@ -281,7 +289,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             if(response.status === 200) {
                 handleSetIsAuthenticated(false); // Set the user authentication to false
                 navigate('/'); //direct redirect 
-        
+                window.umami.trackEvent('logout', 'Logut');
             }
             else {
                 console.log("Logout failed");
@@ -309,6 +317,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 fetchData();
                 setShowAccountModal(false);
                 setShowUpdateProfileSuccess(true);
+                window.umami.trackEvent('updateAccount', 'Account');
             }
             else {
                 console.log("Update failed");
@@ -353,7 +362,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             <li
                                 className={activeIcon === 0 ? "active" : ""}
                             >   
-                                <div onClick={() => handleIconClick(0, 'dashboard')}>
+                                <div onClick={() => handleIconClick(0, 'dashboard')} >
                                     <Link to="/dashboard">
                                         <BiHomeAlt />
                                     </Link>
@@ -956,28 +965,28 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                                 <div>
                                     <label>{languages[language].sidebar.settings.light}</label>
-                                    <SettingsToggleButton title={languages[language].sidebar.settings.light}>
+                                    <SettingsToggleButton data-umami-event="setThemeFromSettings" title={languages[language].sidebar.settings.light}>
                                         <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
                                     </SettingsToggleButton>
                                 </div>
 
                                 <div>
                                     <label>{languages[language].sidebar.settings.privacy}</label>
-                                    <SettingsToggleButton title={languages[language].sidebar.settings.privacy}>
+                                    <SettingsToggleButton data-umami-event="setPrivacyFromSettings" title={languages[language].sidebar.settings.privacy}>
                                         <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                                     </SettingsToggleButton>
                                 </div>
 
                                 <div>
                                     <label>{languages[language].sidebar.settings.language}</label>
-                                    <SettingsToggleButton onClick={toggleLanguage}>
+                                    <SettingsToggleButton data-umami-event="setLanguageFromSettings" onClick={toggleLanguage}>
                                         {language === 'it' ? 'IT' : 'EN'} 
                                     </SettingsToggleButton>
                                 </div>
 
                                 <div style={{color: 'red', marginTop: '20px'}}>
                                     <label> {languages[language].sidebar.settings.deleteAccount}</label>
-                                    <SettingsToggleButton title="ComingSoon" onClick={toggleLanguage} disabled>
+                                    <SettingsToggleButton data-umami-event="deleteAccountFromSettings" title="ComingSoon" onClick={toggleLanguage} disabled>
                                         {languages[language].general.comingSoon} 
                                     </SettingsToggleButton>
                                 </div>
@@ -997,7 +1006,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
                 </ToggleButton> */}
 
-                <ToggleButton title={languages[language].sidebar.settings.privacy}>
+                <ToggleButton title={languages[language].sidebar.settings.privacy} data-umami-event="setPrivacy">
                     <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                 </ToggleButton>
             </Top>

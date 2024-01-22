@@ -285,6 +285,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       setUpdateBalanceSuccess(true);
       fetchData();
       setBalanceDate(currentDate);
+      window.umami.trackEvent('balanceUpdate', 'Balance');
     }
     else {
       alert("Errore in the update of the balance");
@@ -378,6 +379,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             setBalanceDate(currentDate);
             setUpdateInExBalanceSuccess(true);
             fetchData();
+            window.umami.trackEvent('balanceFromInExUpdate', 'Balance');
           }
           else {
             alert("Error in the update of the balance");
@@ -390,6 +392,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           else setUpdateIncomesSuccess(true);
           fetchData();
         }
+        window.umami.trackEvent('InExUpdate', 'IncomeExpense');
           
       } else{
         alert("Error in the update of the expense");
@@ -433,6 +436,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setDeleteIncomesSuccess(true);
       fetchData();
+      window.umami.trackEvent('incomeDelete', 'IncomeExpense');
     }
     else {
       alert("Error in the update of the income");
@@ -454,6 +458,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setDeleteExpensesSuccess(true);
       fetchData();
+      window.umami.trackEvent('expenseDelete', 'IncomeExpense');
     }
     else {
       alert("Error in the update of the expense");

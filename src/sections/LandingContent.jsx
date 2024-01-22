@@ -41,7 +41,7 @@ export default function LandingContent({theme}) {
             <p>{languages[language].landing.descriptionRow1}</p>
             <p dangerouslySetInnerHTML={{ __html: languages[language].landing.descriptionRow2 }}></p>
             <p>{languages[language].landing.descriptionRow3}</p>
-            <MyButton theme={theme}>{languages[language].landing.discoverButton}</MyButton>
+            <MyButton theme={theme} data-umami-event="discoverMore">{languages[language].landing.discoverButton}</MyButton>
           </CentralText>
           <CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
           

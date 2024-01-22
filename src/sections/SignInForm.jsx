@@ -77,6 +77,7 @@ export default function SignInForm() {
           if(response.status === 200) {
             handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
             navigate('/dashboard'); //direct redirect
+            window.umami.trackEvent('signIn', 'SignIn');
     
           }
           else {

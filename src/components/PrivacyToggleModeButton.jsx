@@ -5,7 +5,7 @@ import { MuiCustomVisibility, MuiCustomVisibilityOff } from '../contexts/MyStyle
 const PrivacyToggleModeButton = ({ mode, toggleHidden, isHidden }) => {
 
   return (
-    <ButtonToggle onClick={toggleHidden} mode={mode}>
+    <ButtonToggle mode={mode} data-umami-event="setPrivacy" onClick={toggleHidden} >
       {isHidden ? <MuiCustomVisibilityOff /> : <MuiCustomVisibility />}
     </ButtonToggle>
   );

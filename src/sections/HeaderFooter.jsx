@@ -56,7 +56,7 @@ function Header({theme, mode, toggleMode}) {
         <ContainerHeader theme={theme}>
           <LogoPaci />
           <ButtonContainer >
-            <ToggleModeButton mode={mode} data-umami-event="setTheme" toggleMode={toggleMode}/>
+            <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
             <MyButton theme={theme} data-umami-event="setLanguage" onClick={toggleLanguage}>
               {language === 'it' ? 'IT' : 'EN'} 
             </MyButton>

@@ -965,28 +965,28 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                                 <div>
                                     <label>{languages[language].sidebar.settings.light}</label>
-                                    <SettingsToggleButton data-umami-event="setThemeFromSettings" title={languages[language].sidebar.settings.light}>
+                                    <SettingsToggleButton title={languages[language].sidebar.settings.light} data-umami-event="setTheme-settings">
                                         <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
                                     </SettingsToggleButton>
                                 </div>
 
                                 <div>
                                     <label>{languages[language].sidebar.settings.privacy}</label>
-                                    <SettingsToggleButton data-umami-event="setPrivacyFromSettings" title={languages[language].sidebar.settings.privacy}>
+                                    <SettingsToggleButton title={languages[language].sidebar.settings.privacy} data-umami-event="setPrivacy-settings">
                                         <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                                     </SettingsToggleButton>
                                 </div>
 
                                 <div>
                                     <label>{languages[language].sidebar.settings.language}</label>
-                                    <SettingsToggleButton data-umami-event="setLanguageFromSettings" onClick={toggleLanguage}>
+                                    <SettingsToggleButton data-umami-event="setLanguage-settings" onClick={toggleLanguage}>
                                         {language === 'it' ? 'IT' : 'EN'} 
                                     </SettingsToggleButton>
                                 </div>
 
                                 <div style={{color: 'red', marginTop: '20px'}}>
                                     <label> {languages[language].sidebar.settings.deleteAccount}</label>
-                                    <SettingsToggleButton data-umami-event="deleteAccountFromSettings" title="ComingSoon" onClick={toggleLanguage} disabled>
+                                    <SettingsToggleButton data-umami-event="deleteAccount-settings" title="ComingSoon" disabled>
                                         {languages[language].general.comingSoon} 
                                     </SettingsToggleButton>
                                 </div>
@@ -1006,7 +1006,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     <SidebarToggleModeButton theme={theme} mode={mode} toggleMode={toggleMode}/>
                 </ToggleButton> */}
 
-                <ToggleButton title={languages[language].sidebar.settings.privacy} data-umami-event="setPrivacy">
+                <ToggleButton title={languages[language].sidebar.settings.privacy} >
                     <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                 </ToggleButton>
             </Top>

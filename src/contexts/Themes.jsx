@@ -11,7 +11,7 @@ export const themes = {
   light: {
     mode: 'light',
     jollyColor: '#b5ded1',
-    primaryColor: '#F7F5FF', //#f5f5f5
+    primaryColor: '#e6f4f0', //#f5f5f5 //#fafafa (umami color) //#e6f4f0 (green light) #F7F5FF (old white)
     secondaryColor: '#079164',
     textColor: 'black',//#222629
     borderColor: '#079164',

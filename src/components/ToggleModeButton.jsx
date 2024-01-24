@@ -6,7 +6,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 const ToggleModeButton = ({ mode, toggleMode }) => {
 
   return (
-    <ButtonToggle onClick={toggleMode} mode={mode}>
+    <ButtonToggle mode={mode} data-umami-event="setTheme" onClick={toggleMode} >
       {mode === 'dark' ? <Brightness4Icon/> : <LightModeIcon /> }
     </ButtonToggle>
   );

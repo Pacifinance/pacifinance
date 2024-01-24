@@ -280,12 +280,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
     const balancesChange = await axios.post('/balances/add', balancesJson, { withCredentials: true });
     if (balancesChange.status === 200) {
+      window.umami.trackEvent('balanceUpdate', 'Balance');
       // console.log("Bilancio aggiornato aggiorno lo user context");
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setUpdateBalanceSuccess(true);
       fetchData();
       setBalanceDate(currentDate);
-      window.umami.trackEvent('balanceUpdate', 'Balance');
+      
     }
     else {
       alert("Errore in the update of the balance");

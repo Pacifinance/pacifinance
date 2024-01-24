@@ -299,7 +299,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                         return <Cell key={entry.name} fill={isHidden ? greyColor : colorsBalances[entry.name]} />
                                     })}
                                 </Bar>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.3)" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/> {/*stroke="rgba(255, 255, 255, 0.3)"*/}
                                 {/* <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 12 }} />
                                 <YAxis tick={{ fill: theme.textColor }} /> */}
                                 <Tooltip

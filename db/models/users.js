@@ -148,7 +148,7 @@ async function getAllUsersIds(reference_user_id=undefined, ignore_test_users=fal
     }
     // If test/demo users must be ignored, add the corresponding filter
     if (ignore_test_users) {
-        filter.type = {$gte: UserType.test.value}
+        filter.type = {$lt: UserType.test.value}
     }
     return await get(filter, "-_id userId");
 }

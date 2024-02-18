@@ -23,6 +23,7 @@
     "bcrypt": "^5.1.0",
     "chart.js": "^4.3.0",
     "cookie-parser": "^1.4.6",
+    "cron": "^3.1.6",
     "dom-to-image": "^2.6.0",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
@@ -50,7 +51,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build", 
+    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

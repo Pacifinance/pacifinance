@@ -581,8 +581,9 @@ app.post("/rank/expenses", async (req, res) => {
 });
 
 app.get("/*", (req, res) => {
-    // res.sendFile(path.join(__dirname, "build/index.html"));
-    res.redirect("/");
+    // Refresh handler
+    res.sendFile(path.join(__dirname, "build/index.html"));
+    // res.redirect("/");
 });
 
 db.connect(process.env.DB_URI)

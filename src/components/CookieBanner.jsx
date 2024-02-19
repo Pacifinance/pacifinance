@@ -38,7 +38,7 @@ function CookieBanner({ show }) {
       <br></br>
       <p dangerouslySetInnerHTML={{ __html: languages[language].cookie.description}}>
       </p>
-      <button onClick={handleAcceptCookies}>{languages[language].cookie.acceptButton}</button>
+      <button data-umami-event="cookieButton" onClick={handleAcceptCookies}>{languages[language].cookie.acceptButton}</button>
     </CookieBannerContainer>
   );
 }

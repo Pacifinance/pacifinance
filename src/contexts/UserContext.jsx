@@ -10,6 +10,24 @@ function UserProvider({ children }) {
 
 
   useEffect(() => {
+    //when the component mounts, check if the user is authenticated
+    const savedIsAuthenticated = localStorage.getItem('isAuthenticated');
+    if (savedIsAuthenticated) {
+      setIsAuthenticated(true); 
+    }
+  }, []);
+  
+  useEffect(() => {
+    // When the user logs in or out, save the value to localStorage
+    const expirationTimeInMilliseconds = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+    const expirationDate = new Date(new Date().getTime() + expirationTimeInMilliseconds);
+
+    localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated));
+    localStorage.setItem('expirationDate', expirationDate.toISOString());
+
+  }, [isAuthenticated]);
+
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         //check if user is authenticated
@@ -129,11 +147,11 @@ function UserProvider({ children }) {
                 // Check if the entry is an expense
                 if (entry.isExpense) {
                   // If the category exists, add the current value
-                  if (totalExpensesPerCategory[entry.categoryTag.translations.it]) {
-                    totalExpensesPerCategory[entry.categoryTag.translations.it] += entry.amount;
+                  if (totalExpensesPerCategory[entry.categoryTag.translations.en]) {
+                    totalExpensesPerCategory[entry.categoryTag.translations.en] += entry.amount;
                   } else {
                     // Otherwise, initialize the category with the current value
-                    totalExpensesPerCategory[entry.categoryTag.translations.it] = entry.amount;
+                    totalExpensesPerCategory[entry.categoryTag.translations.en] = entry.amount;
                   }
                 }
               });

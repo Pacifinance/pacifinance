@@ -13,7 +13,7 @@ export const CustomTick = ({x, y, payload, textAnchor, fill, angle, fontSize, dx
           textAnchor={textAnchor}
           fill={fill}
           fontSize={fontSize}
-          transform={`rotate(${angle})`}
+          transform={angle ? `rotate(${angle})` : ''}
         >
           {isHidden ? '****' : payload.value}
         </text>

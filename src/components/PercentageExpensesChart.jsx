@@ -1,12 +1,14 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { PercentageExpensesChartContainer } from '../contexts/MyStyled';
 import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
+import { UserContext } from '../contexts/UserContext';
 import languages from '../contexts/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 export default function PercentageExpensesChart({theme, userData, isHidden}) {
-  const { language } = React.useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
+  //const { expensesTags } = useContext(UserContext);
   const [totalExpensesPerCategoryPerMonth, setTotalExpensesPerCategoryPerMonth] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0); // Set default selected month as the first month
 
@@ -36,7 +38,7 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
     }
 
     const expensePerCategoryData = Object.keys(selectedData).map((category) => ({
-      name: category,
+      name: category, // language == 'it' ? expensesTags[category].translation.it :  (to adjust)
       value: selectedData[category],
     }));
 

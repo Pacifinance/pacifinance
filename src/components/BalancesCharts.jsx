@@ -68,7 +68,7 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
           bottom: 40
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" strokeWidth={0.3}/>
+        <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
       
         <Tooltip
           contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}

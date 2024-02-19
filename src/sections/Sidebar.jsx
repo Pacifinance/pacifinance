@@ -210,7 +210,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             setNewID(newID);
             setShowID(true);
             event.preventDefault();    
-            window.umami.trackEvent('changedID', 'ID');
+            //window.umami.trackEvent('changedID', 'ID');
         }
         catch(error){
             console.log(error);
@@ -225,7 +225,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             const newUsername = response.data;
             setNewUsername(newUsername);
             setShowUsername(true);
-            window.umami.trackEvent('changedUsername', 'Username');
+            //window.umami.trackEvent('changedUsername', 'Username');
         }   
         catch(error){
             console.log(error);
@@ -245,7 +245,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 if(response.status === 200) {
                     handleCloseModal();
                     setShowChangePWDSuccess(true);
-                    window.umami.trackEvent('changedPassword', 'Password');
+                    //window.umami.trackEvent('changedPassword', 'Password');
                 }
                 else {
                     console.log("Change password failed");
@@ -289,7 +289,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             if(response.status === 200) {
                 handleSetIsAuthenticated(false); // Set the user authentication to false
                 navigate('/'); //direct redirect 
-                window.umami.trackEvent('logout', 'Logut');
+                //window.umami.trackEvent('logout', 'Logut');
             }
             else {
                 console.log("Logout failed");
@@ -317,7 +317,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 fetchData();
                 setShowAccountModal(false);
                 setShowUpdateProfileSuccess(true);
-                window.umami.trackEvent('updateAccount', 'Account');
+                //window.umami.trackEvent('updateAccount', 'Account');
             }
             else {
                 console.log("Update failed");
@@ -471,7 +471,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         {option.label}
                                     </div>
                                 ))}
-                                <div className="dropdown-option logout" onClick={handleLogout}>
+                                <div data-umami-event="logoutButton" className="dropdown-option logout" onClick={handleLogout}>
                                     {languages[language].sidebar.logout}
                                 </div>
                             </div>
@@ -639,7 +639,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogProfileContent>
                             <MuiCustomDialogActions>
-                                <MuiCustomButton onClick={handleUpdateProfile} autoFocus> 
+                                <MuiCustomButton data-umami-event="profileUpdate" onClick={handleUpdateProfile} autoFocus> 
                                     {languages[language].sidebar.account.saveButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
@@ -663,7 +663,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
-                                <MuiCustomButton onClick={handleGenerateUsername} autoFocus>
+                                <MuiCustomButton data-umami-event="usernameChange" onClick={handleGenerateUsername} autoFocus>
                                     {languages[language].sidebar.changeID.confirmButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
@@ -714,7 +714,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
-                                <MuiCustomButton onClick={handleGenerateID} autoFocus>
+                                <MuiCustomButton data-umami-event="IDChange" onClick={handleGenerateID} autoFocus>
                                     {languages[language].sidebar.changeID.confirmButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
@@ -819,7 +819,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
-                                <MuiCustomButton onClick={handleChangePassword} autoFocus>
+                                <MuiCustomButton data-umami-event="changePassword" onClick={handleChangePassword} autoFocus>
                                     {languages[language].sidebar.changePassword.confirmButton}
                                 </MuiCustomButton>
                             </MuiCustomDialogActions>
@@ -993,7 +993,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                             </MuiCustomDialogContent>
                             <MuiCustomDialogActions>
-                            <MuiCustomButton onClick={handleCloseModal} autoFocus>
+                            <MuiCustomButton data-umami-event="saveSettings" onClick={handleCloseModal} autoFocus>
                                 {languages[language].sidebar.settings.saveSettings}
                             </MuiCustomButton>
                             </MuiCustomDialogActions>

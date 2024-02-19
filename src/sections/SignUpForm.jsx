@@ -97,7 +97,7 @@ export default function SignUpForm() {
           const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword }, { withCredentials: true });
           if(response.status === 200) {
             generated_user_id = response.data.user_id;
-            window.umami.trackEvent('SignUp');
+            //window.umami.trackEvent('SignUp');
             openSuccessModal();
             // alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: " + generated_user_id + ".\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
             // navigate('/sign-in');
@@ -183,7 +183,7 @@ export default function SignUpForm() {
                                 }}
                             />
                         <div className="button-wrapper">
-                            <SignUpButton theme={theme} type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>{languages[language].header.register.titleButton}</SignUpButton>
+                            <SignUpButton theme={theme} data-umami-event="newUser" type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>{languages[language].header.register.titleButton}</SignUpButton>
                         </div>
 
                     </form>

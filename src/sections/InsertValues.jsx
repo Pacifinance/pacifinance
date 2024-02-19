@@ -280,7 +280,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
     const balancesChange = await axios.post('/balances/add', balancesJson, { withCredentials: true });
     if (balancesChange.status === 200) {
-      window.umami.trackEvent('balanceUpdate', 'Balance');
+      //window.umami.trackEvent('balanceUpdate', 'Balance');
       // console.log("Bilancio aggiornato aggiorno lo user context");
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setUpdateBalanceSuccess(true);
@@ -380,7 +380,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             setBalanceDate(currentDate);
             setUpdateInExBalanceSuccess(true);
             fetchData();
-            window.umami.trackEvent('balanceFromInExUpdate', 'Balance');
+            //window.umami.trackEvent('balanceFromInExUpdate', 'Balance');
           }
           else {
             alert("Error in the update of the balance");
@@ -393,7 +393,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           else setUpdateIncomesSuccess(true);
           fetchData();
         }
-        window.umami.trackEvent('InExUpdate', 'IncomeExpense');
+        //window.umami.trackEvent('InExUpdate', 'IncomeExpense');
           
       } else{
         alert("Error in the update of the expense");
@@ -437,7 +437,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setDeleteIncomesSuccess(true);
       fetchData();
-      window.umami.trackEvent('incomeDelete', 'IncomeExpense');
+      //window.umami.trackEvent('incomeDelete', 'IncomeExpense');
     }
     else {
       alert("Error in the update of the income");
@@ -459,7 +459,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setDeleteExpensesSuccess(true);
       fetchData();
-      window.umami.trackEvent('expenseDelete', 'IncomeExpense');
+      //window.umami.trackEvent('expenseDelete', 'IncomeExpense');
     }
     else {
       alert("Error in the update of the expense");
@@ -485,7 +485,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <td>{isHidden ? '****' : add.notes}</td>
           <td>{isHidden ? '****' : formattedDate}</td>
           <td>
-            <button onClick={handleDelete}>
+            <button data-umami-event="deleteIncome" onClick={handleDelete}>
                 <FontAwesomeIcon icon={faTimes} />
             </button>
           </td>
@@ -516,7 +516,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <td>{isHidden ? '****' : add.notes}</td>
           <td>{isHidden ? '****' : formattedDate}</td>
           <td>
-            <button onClick={handleDelete}>
+            <button data-umami-event="deleteExpense" onClick={handleDelete}>
                 <FontAwesomeIcon icon={faTimes} />
             </button>
           </td>
@@ -964,7 +964,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {balanceDate}</MuiCustomDialogContentText>{/* TO FIX */}  
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton data-umami-event="balanceUpdate" onClick={() => handleConfirmBalance(fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal)}>{languages[language].general.confirm}</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
@@ -991,7 +991,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmInEx(false)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton data-umami-event="incomeUpdate" onClick={() => handleConfirmInEx(false)}>{languages[language].general.confirm}</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
@@ -1019,7 +1019,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleConfirmInEx(true)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton data-umami-event="expenseUpdate" onClick={() => handleConfirmInEx(true)}>{languages[language].general.confirm}</MuiCustomButton>
               <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>

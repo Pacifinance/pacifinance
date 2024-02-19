@@ -66,7 +66,7 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
               bottom: 40
             }}
         >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" strokeWidth={0.3} />
+            <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/> 
             <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9}/>} />
             <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
             <Tooltip

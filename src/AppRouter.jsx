@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { UserContext } from './contexts/UserContext';
 import Dashboard from './pages/DashboardPage';
 import StatsCharts from './pages/StatsChartsPage';
@@ -14,15 +14,15 @@ import LandingPage from './pages/LandingPage';
 
 
 function AppRouter() {
-
-  React.useEffect(() => {
+  const { handleSetIsUpdated, isAuthenticated, setIsAuthenticated, userData, setUserData } = useContext(UserContext);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
     var _mtm = window._mtm = window._mtm || [];
     _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.async=true; g.src='https://pacifinance.com:8000/js/container_fkJBXVc1.js'; s.parentNode.insertBefore(g,s);
   }, [])
-
-  const { userData, handleSetIsUpdated } = useContext(UserContext);
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -30,15 +30,45 @@ function AppRouter() {
   };
 
   useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+    loadUserData(); // Initial load of user data
   }, []);
 
-  
+  // Verify if the user is already authenticated
+  // useEffect(() => {
+  //   const savedIsAuthenticated = localStorage.getItem('isAuthenticated');
+  //   if (savedIsAuthenticated) {
+  //     // const savedUserData = JSON.parse(localStorage.getItem('userData'));
+  //     const savedExpirationDate = localStorage.getItem('expirationDate');
+  //     if (savedExpirationDate && new Date(savedExpirationDate) > new Date()) { //savedUserData &&
+  //       setIsAuthenticated(true);
+  //       // setUserData(savedUserData);
+  //     } else {
+  //       // if the token is expired, remove the data
+  //       setIsAuthenticated(false);
+  //       // setUserData(null);
+  //       localStorage.removeItem('isAuthenticated');
+  //       // localStorage.removeItem('userData');
+  //       localStorage.removeItem('expirationDate');
+  //     }
+  //   }
+  // }, []);
+
+  // // Reindirect the user to the landing page if not authenticated
+  // const AuthenticatedRoute = ({ element, ...rest }) => {
+  //   return isAuthenticated ? element : navigate("/", { replace: true }); 
+  // };
+
+  // // Reindirect the user to the dashboard if authenticated
+  // const UnauthenticatedRoute = ({ element, ...rest }) => {
+  //   return !isAuthenticated ? element : navigate("/dashboard", { replace: true }); 
+  // };
 
   return (
         <Routes>
             <Route path="/" exact element={<LandingPage />} />
             <Route path="/dashboard" exact element={<Dashboard />} />
+            {/* <UnauthenticatedRoute path="/" element={<LandingPage />} />
+            <AuthenticatedRoute path="/dashboard" element={<Dashboard />} /> */}
             <Route path="/your-charts" element={<StatsCharts />} />
             <Route path="/insert-values" element={<InsertValues />} />
             <Route path="/check-prices" element={<CheckPrices />} />
@@ -53,23 +83,3 @@ function AppRouter() {
 }
 
 export default AppRouter;
-
-
-// <!-- Matomo Tag Manager -->
-// <script>
-//   var _mtm = window._mtm = window._mtm || [];
-//   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-//   (function() {
-//     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-//     g.async=true; g.src='https://cdn.matomo.cloud/pacifinance.matomo.cloud/container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-//   })();
-// </script>
-// <!-- End Matomo Tag Manager -->
-
-// Matomo Tag Manager
-  // React.useEffect(() => {
-  //   var _mtm = window._mtm = window._mtm || [];
-  //   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  //   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  //   g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-  // }, []);

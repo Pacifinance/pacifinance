@@ -99,7 +99,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
           bottom: 40
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" strokeWidth={0.3}/>
+        <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
         <XAxis tick={{fontSize: 9, fill: theme.textColor}} interval={1} dataKey="name" />
         <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={11} dx={-10}/>} />
         <Tooltip

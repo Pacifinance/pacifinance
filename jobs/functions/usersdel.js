@@ -1,7 +1,7 @@
-const balances = require("../db/models/balances.js");
-const delqueue = require("../db/models/delqueue.js");
-const expenses = require("../db/models/expenses.js");
-const users = require("../db/models/users.js");
+const balances = require("../../db/models/balances.js");
+const delqueue = require("../../db/models/delqueue.js");
+const expenses = require("../../db/models/expenses.js");
+const users = require("../../db/models/users.js");
 
 /**
  * Checks if all user data has been deleted

@@ -179,7 +179,7 @@ app.post("/user/delete", async (req, res) => {
     // Check if the user has the right to delete the account.
     // Send status code 403 (Forbidden) if it doesn't
     const type = await db.users.getTypeOfUserId(req.session.userId);
-    if (type.type === db.users.UserType.demo.value)
+    if (type.type >= db.users.UserType.test.value)
     {
         res.status(403);
         res.send();
@@ -198,9 +198,8 @@ app.post("/user/delete", async (req, res) => {
         res.send();
         return;
     }
-    // Send status code 200 (OK)
-    res.status(200);
-    res.send();
+    // If the document is correctly added, force the logout (redirect to /logout route)
+    res.redirect(307, "../logout");
 });
 
 app.post("/user/set-id", async (req, res) => {

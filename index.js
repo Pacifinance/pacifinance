@@ -151,6 +151,43 @@ app.post("/logout", async (req, res) => {
     res.send();
 });
 
+app.post("/user/delete", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Check if the user has the right to delete the account.
+    // Send status code 403 (Forbidden) if it doesn't
+    const type = await db.users.getTypeOfUserId(req.session.userId);
+    if (type.type === db.users.UserType.demo.value)
+    {
+        res.status(403);
+        res.send();
+        return;
+    }
+    // Add the user to the deletion queue with a deletion delay
+    const deletion_delay_days = 30;
+    let deletion_date = new Date(Date.now());
+    deletion_date.setUTCDate(deletion_date.getUTCDate() + deletion_delay_days);
+    const doc = await db.delqueue.insertNew(req.session.userId, deletion_date);
+    // Check if the document was inserted successfully. Send
+    // status code 500 (Internal Server Error) if it failed
+    if (doc === null)
+    {
+        res.status(500);
+        res.send();
+        return;
+    }
+    // Send status code 200 (OK)
+    res.status(200);
+    res.send();
+});
+
 app.post("/user/set-id", async (req, res) => {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid

@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const users = require("./users.js");
 
 const deletionQueueSchema = new mongoose.Schema({
-    userRef: {type: mongoose.Types.ObjectId, ref: "User", required: true, index: true},
-    date: {type: Date, required: true, index: true}
+    userRef: {type: mongoose.Types.ObjectId, ref: "User", required: true, unique: true, dropDups: true},
+    date: {type: Date, required: true}
 });
 
 /**

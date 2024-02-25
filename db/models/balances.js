@@ -52,6 +52,15 @@ async function getOneSorted(where, select, sort) {
     return res[0];
 }
 
+/**
+ * Deletes all balances that match a filter
+ * @param {Object} where - filter to match
+ * @returns DeleteResult object
+ */
+async function deleteMany(where) {
+    return await Balance.deleteMany(where).lean().exec();
+}
+
 /* ==================== Specific queries ==================== */
 
 /**
@@ -103,6 +112,16 @@ async function insertNew(
         }
     };
     return await addOne(data);
+}
+
+/**
+ * Checks if there are balances associated to a user
+ * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @returns true if there are balances associated to the user, false otherwise
+ */
+async function balancesExistByUserRef(user_ref) {
+    const balance = await getOneSorted({userRef: user_ref});
+    return balance !== null;
 }
 
 /**
@@ -174,13 +193,24 @@ async function getYearlyBalanceByUserId(user_id) {
 }
 
 /**
+ * Deletes all balances of a user given the reference to that user
+ * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @returns DeleteResult object
+ */
+async function deleteBalancesByUserRef(user_ref) {
+    return await deleteMany({userRef: user_ref});
+}
+
+/**
  * Balance model
  */
 const Balance = mongoose.model("Balance", balanceSchema);
 
 module.exports = {
     insertNew,
+    balancesExistByUserRef,
     getLatestByUserId,
     getTotalLatestByUserId,
-    getYearlyBalanceByUserId
+    getYearlyBalanceByUserId,
+    deleteBalancesByUserRef
 };

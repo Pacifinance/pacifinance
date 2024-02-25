@@ -88,6 +88,15 @@ async function setOne(where, update) {
     return await User.findOneAndUpdate(where, {$set: update}).lean().exec();
 }
 
+/**
+ * Deletes a user that match a filter
+ * @param {Object} where - filter to match
+ * @returns DeleteResult object
+ */
+async function deleteOne(where) {
+    return await User.deleteOne(where).lean().exec();
+}
+
 /* ==================== Specific queries ==================== */
 
 /**
@@ -115,6 +124,16 @@ async function insertNew(user_id, password, type=UserType.regular.value) {
         }
     }
     return await addOne(data);
+}
+
+/**
+ * Checks if a user exists in the DB
+ * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @returns true if the user exists, false otherwise
+ */
+async function userExistsByRef(user_ref) {
+    const user = await getOne({_id: user_ref});
+    return user !== null;
 }
 
 /**
@@ -272,6 +291,15 @@ async function setPublicInfoOfUserId(user_id, country, job, job_type, job_countr
 }
 
 /**
+ * Deletes a user by its reference
+ * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @returns DeleteResult object
+ */
+async function deleteUserByRef(user_ref) {
+    return await deleteOne({_id: user_ref});
+}
+
+/**
  * User model
  */
 const User = mongoose.model("User", userSchema);
@@ -281,6 +309,7 @@ module.exports = {
     sessionIdLength,
     UserType,
     insertNew,
+    userExistsByRef,
     getReferenceByUserId,
     getAllUsersIds,
     setUserIdByUserId,
@@ -292,5 +321,6 @@ module.exports = {
     getSessionByUserId,
     setSessionOfUserId,
     getPublicInfoByUserId,
-    setPublicInfoOfUserId
+    setPublicInfoOfUserId,
+    deleteUserByRef
 };

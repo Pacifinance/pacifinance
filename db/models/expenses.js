@@ -38,7 +38,16 @@ async function getSorted(where, select, sort) {
 }
 
 /**
- * Deletes an expense
+ * Deletes all expenses that match a filter
+ * @param {Object} where - filter to match
+ * @returns DeleteResult object
+ */
+async function deleteMany(where) {
+    return await Expense.deleteMany(where).lean().exec();
+}
+
+/**
+ * Deletes an expense that match a filter
  * @param {Object} where - filter to match
  * @returns DeleteResult object
  */
@@ -95,6 +104,16 @@ async function insertNew(user_id, date, amount, is_expense, notes, payment_type,
 }
 
 /**
+ * Checks if there are expenses associated to a user
+ * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @returns true if there are expenses associated to the user, false otherwise
+ */
+async function expensesExistByUserRef(user_ref) {
+    const expense = await getSorted({userRef: user_ref});
+    return expense.length !== 0;
+}
+
+/**
  * Gets the expenses of a user for the month
  * @param {String} user_id - ID of the user
  * @param {Date} reference_date - Date object containing the year and month to look for
@@ -137,10 +156,10 @@ async function getTotalMonthlyExpensesByUserId(user_id, reference_date, is_expen
 
 /**
  * Deletes an expense/income of a user, given the entry date, amount and direction
- * @param {String} user_id 
- * @param {Date} date 
- * @param {Number} amount 
- * @param {Boolean} is_expense 
+ * @param {String} user_id - ID of the user
+ * @param {Date} date - date of the expense
+ * @param {Number} amount - amount of the expense
+ * @param {Boolean} is_expense - true if this is entry is an expense, false if it's an income
  * @returns DeleteResult object
  */
 async function deleteExpenseByData(user_id, date, amount, is_expense) {
@@ -151,13 +170,24 @@ async function deleteExpenseByData(user_id, date, amount, is_expense) {
 }
 
 /**
+ * Deletes all expenses/incomes of a user given the reference to that user
+ * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @returns DeleteResult object
+ */
+async function deleteExpensesByUserRef(user_ref) {
+    return await deleteMany({userRef: user_ref});
+}
+
+/**
  * Expense model
  */
 const Expense = mongoose.model("Expense", expenseSchema);
 
 module.exports = {
     insertNew,
+    expensesExistByUserRef,
     getMonthlyExpensesByUserId,
     getTotalMonthlyExpensesByUserId,
-    deleteExpenseByData
+    deleteExpenseByData,
+    deleteExpensesByUserRef
 };

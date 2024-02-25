@@ -126,6 +126,8 @@ app.post("/login", async (req, res) => {
     req.session.expirationDate = expiration_date;
     // Add the session information to the database
     await db.users.setSessionOfUserId(user_id, session_id, expiration_date);
+    // Remove the account from the deletion queue
+    await db.delqueue.removeFromQueueByUserRef(user._id);
     // Send status code 200 (OK)
     res.status(200);
     res.send();

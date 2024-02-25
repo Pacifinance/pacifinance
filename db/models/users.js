@@ -188,7 +188,7 @@ async function setUserIdByUserId(old_user_id, new_user_id) {
  * @returns User document
  */
 async function getPasswordByUserId(user_id) {
-    return await getOne({userId: user_id}, "-_id password");
+    return await getOne({userId: user_id}, "_id password");
 }
 
 /**

@@ -8,23 +8,27 @@ import { UserProvider } from './contexts/UserContext';
 import { PageProvider } from './contexts/PageContext';
 import { PrivacyProvider } from './contexts/PrivacyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { MediaQueryProvider } from './contexts/MediaQueryContext';
+
 
 ReactDOM.render(
-  <LanguageProvider>
-    <ThemeProvider>
-      <UserProvider>
-        <PageProvider>
-          <PrivacyProvider>
-            <React.StrictMode>
-              <Router>
-                <AppRouter />
-              </Router>
-            </React.StrictMode>
-          </PrivacyProvider>
-        </PageProvider>
-      </UserProvider>
-    </ThemeProvider>
-  </LanguageProvider>,
+  <MediaQueryProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <PageProvider>
+            <PrivacyProvider>
+              <React.StrictMode>
+                <Router>
+                  <AppRouter />
+                </Router>
+              </React.StrictMode>
+            </PrivacyProvider>
+          </PageProvider>
+        </UserProvider>
+      </ThemeProvider>
+    </LanguageProvider>
+  </MediaQueryProvider>,
   document.getElementById('root')
 );
 

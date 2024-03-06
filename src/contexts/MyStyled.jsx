@@ -330,7 +330,8 @@ export const CentralImage = styled.img`
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     max-width: 10em;
-    margin-right: 10%;
+    margin-right: 20%;
+    margin-bottom: 5%;
   }
 `;
 

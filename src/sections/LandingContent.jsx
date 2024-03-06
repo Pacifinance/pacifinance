@@ -5,6 +5,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.webp';
 import CookieBanner from '../components/CookieBanner';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../contexts/languages.json';
 import {
   MyButton,
@@ -24,6 +25,7 @@ import {
 
 export default function LandingContent({theme}) {
   const { language } = useContext(LanguageContext);
+  const { isMobileScreen } = useContext(MediaQueryContext);
   
 
   return (
@@ -36,14 +38,27 @@ export default function LandingContent({theme}) {
         <Subtitle theme={theme}>Personal, Privacy, Pacify</Subtitle>
         
         <CentralSection theme={theme}>
+
           <CentralText theme={theme}>
+          {isMobileScreen && (<CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>)}
+          {/* {isMobileScreen && (
+            <div className="fixed top-0 left-20 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+              <img
+                src={LandingPageImage}
+                className="w-32 h-32"
+                alt="Pacifinance Art"
+                draggable="false"
+                onContextMenu={(e) => e.preventDefault()}
+              />
+            </div>
+          )} */}
             <h1>{languages[language].landing.sectionTitle}</h1>
             <p>{languages[language].landing.descriptionRow1}</p>
             <p dangerouslySetInnerHTML={{ __html: languages[language].landing.descriptionRow2 }}></p>
             <p>{languages[language].landing.descriptionRow3}</p>
             <MyButton theme={theme} data-umami-event="discoverMore">{languages[language].landing.discoverButton}</MyButton>
           </CentralText>
-          <CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
+          {!isMobileScreen && (<CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>)}
           
         </CentralSection>
         <FeaturesSection theme={theme}>

@@ -1,11 +1,14 @@
 const express = require("express");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const cron = require("cron");
+
 require("dotenv").config();
+
 const db = require("./db/mongo.js");
 const jobs = require("./jobs/jobs.js");
 const utils = require("./utils.js");
@@ -25,10 +28,11 @@ const accountsDeletionJob = new cron.CronJob(
 
 /* ==================== Express.js server initialization ==================== */
 
-const options = {
-    key: fs.readFileSync(process.env.KEY_PATH),
-    cert: fs.readFileSync(process.env.CERT_PATH)
-};
+let options = {};
+if (process.env.ENV === "PROD") {
+    options.key = fs.readFileSync(process.env.KEY_PATH);
+    options.cert = fs.readFileSync(process.env.CERT_PATH);
+}
 
 const app = express();
 app.use(cookieParser());
@@ -642,8 +646,16 @@ db.connect(process.env.DB_URI)
         console.log("Connected to DB");
     })
     .catch(() => {
-        console.log("Cannot connect to DB: exiting");
+        console.error("Cannot connect to DB: exiting");
         process.exit(1);
     });
 
-https.createServer(options, app).listen(process.env.PORT);
+if (process.env.ENV === "PROD") {
+    if (!process.env.PORT) {
+        console.error("Port undefined: exiting");
+        process.exit(1);
+    }
+    https.createServer(options, app).listen(process.env.PORT);
+} else {
+    http.createServer(options, app).listen(process.env.PORT ?? 5000);
+}

@@ -157,6 +157,24 @@
                 }
 
             },
+            "deleteAccount": {
+                "title": "Elimina account",
+                "info": "Sei sicuro di voler eliminare il tuo account? tutti i dati andranno persi.",
+                "deleteButton": "Elimina Account",
+                "confirmButton": "Si voglio eliminare il mio account",
+                "cancelButton": "Annulla",
+                "errorPopup": {
+                    "title": "Errore in fase di eliminazione account",
+                    "message": "Si è verificato un errore nell'eliminazione del tuo account.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Account eliminato con successo",
+                    "message": "Verrai reindirizzato alla pagina di registrazione. L'eliminazione effettiva dell'account avverrà tra 30 giorni, a partire da oggi. Per annullare la cancellazione, ti basterà loggare anche solo una volta all'interno di questi 30 giorni.",
+                    "okButton": "ok va bene"
+                }
+            },
             "changeUsername": {
                 "title": "Genera username",
                 "info": "Il sistema genererà per te un username univoco e casuale",
@@ -490,6 +508,24 @@
                 "successPopup": {
                     "title": "Profile updated successfully",
                     "message": "Your profile information has been updated and saved correctly.",
+                    "okButton": "ok fine"
+                }
+            },
+            "deleteAccount": {
+                "title": "Delete account",
+                "info": "Are you sure you want to delete your account? all data will be lost.",
+                "deleteButton": "Delete Account",
+                "confirmButton": "I want delete my account",
+                "cancelButton": "Cancel",
+                "errorPopup": {
+                    "title": "Error during account deletion",
+                    "message": "An error occurred while deleting your account.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Account deleted successfully",
+                    "message": "You will be redirected to the registration page. The actual deletion of the account will take place in 30 days, starting from today. To cancel the deletion, you just need to log in even once within these 30 days.",
                     "okButton": "ok fine"
                 }
             },

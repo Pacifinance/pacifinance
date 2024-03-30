@@ -16,6 +16,8 @@ import { PrivacyContext } from '../contexts/PrivacyContext';
 import { IconContext } from '../contexts/PageContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../contexts/languages.json';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import {
     SidebarToggleModeButton,
     SidebarPrivacyToggleModeButton,
@@ -75,6 +77,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showUpdateProfileSuccess, setShowUpdateProfileSuccess] = useState(false);
+    const [showModalDeleteAccount, setShowModalDeleteAccount] = useState(false);
+    const [showSuccessDeleteAccount, setShowSuccessDeleteAccount] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
     const [showSettingsPopup, setShowSettingsPopup] = useState(false);
@@ -165,6 +169,29 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         event.preventDefault();
     };
 
+    const handleShowModalDeleteAccount = () => {
+        setShowModalDeleteAccount(true);
+    };
+
+    const handleDeleteAccount = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post('/user/delete', { withCredentials: true });
+            if(response.status === 200) {
+                handleSetIsAuthenticated(false); // Set the user authentication to false
+                navigate('/'); //direct redirect
+                //window.umami.trackEvent('deleteAccount', 'Account');
+                setShowSuccessDeleteAccount(true);
+            }
+            else {
+                console.log("Delete account failed");
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const handleCopyToClipboard = (newID) => (event) => {
         event.preventDefault();
         navigator.clipboard.writeText(newID)
@@ -197,6 +224,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         }
 
     };
+
+    
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -268,6 +297,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         setShowChangePWDModal(false);
         setShowUpdateProfileSuccess(false);
         setShowSettingsPopup(false);
+        setShowSuccessDeleteAccount(false);
     };
 
     const handleCloseSecondaryModal = () => {
@@ -898,6 +928,57 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             </MuiCustomDialogActions>
                         </MuiCustomDialog>
                     )}
+                    {showModalDeleteAccount && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showModalDeleteAccount}
+                            onClose={handleCloseModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {languages[language].sidebar.deleteAccount.title}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    {languages[language].sidebar.deleteAccount.info} <br></br>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleDeleteAccount} autoFocus>
+                                    {languages[language].sidebar.deleteAccount.confirmButton}
+                                </MuiCustomButton>
+                                <MuiCustomButton onClick={handleDeleteAccount} autoFocus>
+                                    {languages[language].sidebar.deleteAccount.cancelButton}
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
+
+                    {showSuccessDeleteAccount && (
+                        <MuiCustomDialog
+                            theme={theme}
+                            open={showSuccessDeleteAccount}
+                            onClose={handleCloseModalAndLogout}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <MuiCustomDialogTitle id="alert-dialog-title">
+                                {languages[language].sidebar.deleteAccount.successPopup.title}
+                            </MuiCustomDialogTitle>
+                            <MuiCustomDialogContent theme={theme}>
+                                <MuiCustomDialogContentText id="alert-dialog-description">
+                                    {languages[language].sidebar.deleteAccount.successPopup.message} <br></br>
+                                </MuiCustomDialogContentText>
+                            </MuiCustomDialogContent>
+                            <MuiCustomDialogActions>
+                                <MuiCustomButton onClick={handleCloseModalAndLogout} autoFocus>
+                                    {languages[language].sidebar.deleteAccount.successPopup.okButton}
+                                </MuiCustomButton>
+                            </MuiCustomDialogActions>
+                        </MuiCustomDialog>
+                    )}
 
                     {showChangePWDSuccess && (
                         <MuiCustomDialog
@@ -986,8 +1067,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                                 <div style={{color: 'red', marginTop: '20px'}}>
                                     <label> {languages[language].sidebar.settings.deleteAccount}</label>
-                                    <SettingsToggleButton data-umami-event="deleteAccount-settings" title="ComingSoon" disabled>
-                                        {languages[language].general.comingSoon} 
+                                    <SettingsToggleButton data-umami-event="deleteAccount-settings" title="deleteAccountButton" onClick={handleShowModalDeleteAccount}>
+                                        <FontAwesomeIcon icon={faSquareXmark} />
+                                        {/* {languages[language].sidebar.deleteAccount.deleteButton}  */}
                                     </SettingsToggleButton>
                                 </div>
 

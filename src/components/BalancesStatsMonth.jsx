@@ -6,10 +6,10 @@ import { SiHtml5, SiMoneygram } from "react-icons/si";
 import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
-import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../contexts/MyStyled';
-import { primaryColor, secondaryColor } from '../contexts/Themes';
+import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../styles/MyStyled';
+import { primaryColor, secondaryColor } from '../styles/Themes';
 import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 

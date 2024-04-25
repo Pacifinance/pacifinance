@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { PercentageExpensesChartContainer } from '../contexts/MyStyled';
+import { PercentageExpensesChartContainer } from '../styles/MyStyled';
 import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
 import { UserContext } from '../contexts/UserContext';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 export default function PercentageExpensesChart({theme, userData, isHidden}) {

@@ -1,7 +1,7 @@
 import React, {useEffect, useContext} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { PageWrapper } from '../contexts/MyStyled';
+import { PageWrapper } from '../styles/MyStyled';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import Sidebar from '../sections/Sidebar';
 import InsertValues from '../sections/InsertValues';

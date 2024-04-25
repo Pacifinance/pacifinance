@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyledComingSoon } from '../contexts/MyStyled';
-import languages from '../contexts/languages.json';
+import { StyledComingSoon } from '../styles/MyStyled';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 

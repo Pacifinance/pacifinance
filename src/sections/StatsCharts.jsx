@@ -7,12 +7,12 @@ import InOutCharts from '../components/InOutChart';
 import PercentageExpensesChart from '../components/PercentageExpensesChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../contexts/MyStyled';
+import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../styles/MyStyled';
 import InExStatsMonth from '../components/InExStatsMonth';
 import InExStatsYear from '../components/InExStatsYear';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utilities/customGraphsInfo';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 

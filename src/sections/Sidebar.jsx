@@ -4,7 +4,7 @@ import { Select, MenuItem } from "@mui/material";
 import { BiHomeAlt } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOutlineCaretDown } from "react-icons/ai";
 import { BsBook, BsInfoCircle } from "react-icons/bs";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { Link } from "react-router-dom";
 import avatarImage from "../assets/account-logo.png"
@@ -15,7 +15,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { IconContext } from '../contexts/PageContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -39,10 +39,9 @@ import {
     MuiCustomTextField,
     MuiCustomIconButton,
     MuiCustomInputAdornment,
-    MuiCustomVisibility,
-    MuiCustomVisibilityOff,
-    MuiUseStyles,
-} from '../contexts/MyStyled';
+    EyeVisibility,
+    EyeVisibilityOff
+} from '../styles/MyStyled';
 // import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton';
 
 
@@ -93,8 +92,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
-
-    const classes = MuiUseStyles();
 
     const fetchData = async () => {
     
@@ -329,6 +326,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             console.error(error);
         }
     };
+    
     //we could update the modal with an x button to close it and avoid the automate close
     const handleUpdateProfile = async (event) => {
         event.preventDefault();
@@ -724,7 +722,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             onChange={handlePasswordInput}
                                             required
                                             fullWidth
-                                            className={classes.root}
+                                            className="w-3/5"
                                             InputProps={{
                                                 endAdornment: (
                                                 <MuiCustomInputAdornment position="end">
@@ -732,9 +730,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                     aria-label="toggle password visibility"
                                                     onClick={handleTogglePasswordVisibility}
                                                     onMouseDown={handleMouseDownPassword}
-                                                    className={classes.icon}
+                                                    className=""
                                                     >
-                                                    {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    {showPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),
@@ -776,7 +774,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             onChange={handleOldPasswordInput}
                                             required
                                             fullWidth
-                                            className={classes.root}
+                                            className="w-3/4"
                                             InputProps={{
                                                 endAdornment: (
                                                 <MuiCustomInputAdornment theme={theme} position="end">
@@ -785,9 +783,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         aria-label="toggle password visibility"
                                                         onClick={handleToggleOldPasswordVisibility}
                                                         onMouseDown={handleMouseDownPassword}
-                                                        className={classes.icon}
+                                                        className=""
                                                     >
-                                                    {showOldPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                    {showOldPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),
@@ -803,7 +801,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             onChange={handlePasswordInput}
                                             required
                                             fullWidth
-                                            className={classes.root}
+                                            className="w-3/4"
                                             InputProps={{
                                                 endAdornment: (
                                                 <MuiCustomInputAdornment position="end">
@@ -811,9 +809,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         aria-label="toggle password visibility"
                                                         onClick={handleTogglePasswordVisibility}
                                                         onMouseDown={handleMouseDownPassword}
-                                                        className={classes.icon}
+                                                        className=""
                                                         >
-                                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        {showPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),
@@ -829,7 +827,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             onChange={handleConfirmPasswordInput}
                                             required
                                             fullWidth
-                                            className={classes.root}
+                                            className="w-3/4"
                                             InputProps={{
                                                 endAdornment: (
                                                 <MuiCustomInputAdornment position="end">
@@ -837,9 +835,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                         aria-label="toggle password visibility"
                                                         onClick={handleToggleConfirmPasswordVisibility}
                                                         onMouseDown={handleMouseDownPassword}
-                                                        className={classes.icon}
+                                                        className=""
                                                         >
-                                                        {showConfirmPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                                        {showConfirmPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                                     </MuiCustomIconButton>
                                                 </MuiCustomInputAdornment>
                                                 ),

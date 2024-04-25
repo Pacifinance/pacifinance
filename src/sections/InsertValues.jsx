@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
+// import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@mui/material/Typography'
 import axios from 'axios';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from "../contexts/LanguageContext";
 import {
   MySectionButton,
@@ -29,7 +29,7 @@ import {
   MuiCustomDialogContent,
   MuiCustomDialogContentText,
   MuiCustomDialogActions,
-} from '../contexts/MyStyled';
+} from '../styles/MyStyled';
 // import { set } from "mongoose";
 
 const currentDate = new Date().toISOString().split('T')[0];

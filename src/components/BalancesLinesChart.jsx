@@ -6,9 +6,9 @@ import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { AreaChart } from "recharts/lib/chart/AreaChart";
 import { Area } from "recharts/lib/cartesian/Area";
 import { Legend } from "recharts/lib/component/Legend";
-import { SectionBalancesCharts } from '../contexts/MyStyled';
+import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 

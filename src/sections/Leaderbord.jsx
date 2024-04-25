@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { TitleDashboard, Section } from '../contexts/MyStyled';
-import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../contexts/MyStyled';
+import { TitleDashboard, Section } from '../styles/MyStyled';
+import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 // Component for the rankings section

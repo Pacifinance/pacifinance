@@ -4,22 +4,18 @@ import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import LogoPaci from '../components/Logo';
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 // import MyStyled from '../contexts/MyStyled';
 import {
   // useTheme,
-  MyGenericModal,
   MyGenericModalContent,
   MyCloseButton,
   MyButton,
   ButtonContainer,
   ButtonGroup,
-  ContainerHeader,
-  ContainerFooter,
-  FooterText,
   ModalSignIn,
   ModalSignUp,
-} from '../contexts/MyStyled';
+} from '../styles/MyStyled';
 
 // const ModalSignIn = styled(MyGenericModal)`
   //   display: ${({ isOpenSignIn }) => isOpenSignIn ? 'flex' : 'none'};
@@ -53,31 +49,39 @@ function Header({theme, mode, toggleMode}) {
 
     
     return (
-        <ContainerHeader theme={theme}>
+      <div 
+        className="w-full h-auto flex flex-col items-start relative"
+        style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
+      >
+        <div className="flex-auto w-full flex p-4 md:p-2 items-center justify-between"
+          style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}>
           <LogoPaci />
-          <ButtonContainer >
-            <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
-            <MyButton theme={theme} data-umami-event="setLanguage" onClick={toggleLanguage}>
-              {language === 'it' ? 'IT' : 'EN'} 
-            </MyButton>
-            <ButtonGroup theme={theme}>
-              <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>{languages[language].header.login.titleButton}</MyButton>
-              <ModalSignIn theme={theme} isOpen={isOpenSignIn}> 
-                <MyGenericModalContent theme={theme}>
-                    <MyCloseButton theme={theme} className="close" onClick={handleCloseSignIn}>&times;</MyCloseButton>
-                    <SignInForm theme={theme} />
-                </MyGenericModalContent>
-              </ModalSignIn>
-              <MyButton theme={theme} id="openSignUpModalButton" disabled>{languages[language].header.register.titleButton}</MyButton> {/*Put this before "disabled" onClick={handleOpenSignUp} and eliminate disabled*/}
-              <ModalSignUp theme={theme} isOpen={isOpenSignUp}> 
-                <MyGenericModalContent theme={theme}>
-                    <MyCloseButton theme={theme} className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>
-                    <SignUpForm theme={theme} />
-                </MyGenericModalContent>
-              </ModalSignUp>
-            </ButtonGroup>
-          </ButtonContainer>
-        </ContainerHeader> 
+          <div className="flex flex-row md:mr-10">
+            <ButtonContainer >
+              <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
+              <MyButton theme={theme} data-umami-event="setLanguage" onClick={toggleLanguage}>
+                {language === 'it' ? 'IT' : 'EN'} 
+              </MyButton>
+              <ButtonGroup theme={theme}>
+                <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>{languages[language].header.login.titleButton}</MyButton>
+                <ModalSignIn theme={theme} isOpen={isOpenSignIn}> 
+                  <MyGenericModalContent theme={theme}>
+                      <MyCloseButton theme={theme} className="close" onClick={handleCloseSignIn}>&times;</MyCloseButton>
+                      <SignInForm theme={theme} />
+                  </MyGenericModalContent>
+                </ModalSignIn>
+                <MyButton theme={theme} id="openSignUpModalButton" disabled>{languages[language].header.register.titleButton}</MyButton> {/*Put this before "disabled" onClick={handleOpenSignUp} and eliminate disabled*/}
+                <ModalSignUp theme={theme} isOpen={isOpenSignUp}> 
+                  <MyGenericModalContent theme={theme}>
+                      <MyCloseButton theme={theme} className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>
+                      <SignUpForm theme={theme} />
+                  </MyGenericModalContent>
+                </ModalSignUp>
+              </ButtonGroup>
+            </ButtonContainer> 
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -85,9 +89,12 @@ function Footer({theme}) {
   const { language } = useContext(LanguageContext);
 
   return (
-    <ContainerFooter theme={theme}>
-      <FooterText theme={theme}>{languages[language].footer.rights}</FooterText>
-    </ContainerFooter>
+    <div 
+      className="flex-auto left-0 w-full bottom-0 h-18 p-2 flex z-10 fixed items-end justify-center"
+      style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
+    > 
+      <p className="text-xs md:text-base">{languages[language].footer.rights}</p>
+    </div>
   );
 };
 

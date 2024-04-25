@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Brightness4Icon from '@material-ui/icons/Brightness3';
+import Brightness4Icon from '@mui/icons-material/Brightness3';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 const ToggleModeButton = ({ mode, toggleMode }) => {

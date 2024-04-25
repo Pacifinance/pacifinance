@@ -1,5 +1,3 @@
-// import React, {useState, useContext} from 'react';
-// import Modal from 'react-modal';
 import { primaryColor, secondaryColor, backgroundColor, themes } from './Themes';
 import styled, { keyframes, css } from 'styled-components';
 import Button from '@mui/material/Button';
@@ -10,11 +8,10 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import ToggleModeButton from '../components/ToggleModeButton';
 import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton'; 
-import { IconButton, InputAdornment, TextField } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Calendar } from 'react-calendar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 export const PageWrapper = styled.div`
   position: relative;
@@ -247,7 +244,7 @@ export const ContainerHeader = styled.header`
   color: ${(props) => (props.theme.textColor)};
   height: 10vh;
   width: 100vw;
-  padding: 1em;
+  padding: 2em;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -288,14 +285,12 @@ export const ContainerFooter = styled.footer`
   justify-content: center;
   padding: 1em;
   bottom: 0;
-  position: absolute;
+  position: sticky;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     height: 10vh;
     width: 100vw;
-    bottom: 20em;
-    position: relative;
   }
 `;
 
@@ -343,7 +338,6 @@ export const Title = styled.h1`
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     font-size: 2em;
-    padding-top: 10%;
     margin-bottom: 0.25em;
   }
 
@@ -427,12 +421,20 @@ export const ButtonContainer = styled.div`
   gap: 0.5em;
 `;
 
+// export const ModalSignIn = styled(MyGenericModal)`
+//     display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
+// `;
+
+// export const ModalSignUp = styled(MyGenericModal)`
+//     display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
+// `;
+
 export const ModalSignIn = styled(MyGenericModal)`
-    display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
+    display: ${props => props.isOpen ? 'flex' : 'none'};
 `;
 
 export const ModalSignUp = styled(MyGenericModal)`
-    display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
+    display: ${props => props.isOpen ? 'flex' : 'none'};
 `;
 
 export const FooterText = styled.p`
@@ -2027,63 +2029,6 @@ export const slideOut = keyframes`
   }
 `;
 
-export const CookieBannerContainer = styled.div`
-  position: fixed;
-  left: 5.1vw;
-  width: auto;
-  bottom: 10vh;
-  border-radius: 0.5em;
-  background-color: white;
-  color: black;
-  text-align: center; /* Centra orizzontalmente il testo */
-  padding: 0.4em;
-  box-shadow: 0em -0.1em 0.5em rgba(0, 0, 0, 0.2);
-  animation: ${slideIn} 1s ease forwards;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  height: auto; /* Imposta l'altezza su "auto" per adattarsi al contenuto */
-
-  // Aggiungi un margine inferiore al pulsante per separarlo dal testo
-  button {
-    margin-bottom: 1.5em; /* Aggiungi il margine inferiore desiderato */
-    padding: 0.4em 0.8em;
-    background-color: ${themes.dark.buttonBackgroundColor};
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-
-  &p {
-    text-size: 1rem;
-  }
-
-  h4 {
-    color: ${themes.dark.buttonBackgroundColor};
-    margin-top: 1em;
-    padding: 0.4em;
-  }
-
-  &.accepted {
-    bottom: -5em;
-  }
-
-  &.show {
-    bottom: 10%;
-  }
-
-  button.reject {
-    background-color: ${themes.dark.backgroundColor};
-  }
-
-  /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  @media (max-width: 768px) {
-    
-  }
-`;
-
 export const StyledDateInput = styled.input`
   width: 200px; /* Adjust the width to your liking */
   padding: 8px;
@@ -2186,23 +2131,10 @@ export const MuiCustomIconButton = styled(IconButton)`
 export const MuiCustomInputAdornment = styled(InputAdornment)`
 `;
 
-export const MuiCustomVisibility = styled(Visibility)`
+export const EyeVisibility = styled(({ className }) => <FontAwesomeIcon className={className} icon={faEye} />)`
+  
 `;
 
-export const MuiCustomVisibilityOff = styled(VisibilityOff)`
+export const EyeVisibilityOff = styled(({ className }) => <FontAwesomeIcon className={className} icon={faEyeSlash} />)`
+  
 `;
-
-export const MuiCustomGrid = styled(Grid)`
-`;
-
-export const MuiUseStyles = makeStyles((theme) => ({
-  signIn: {
-    width: '50%',
-  },
-  root: {
-    width: '60%',
-  },
-  icon: {
-    color: '#079164',
-  },
-}));

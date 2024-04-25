@@ -54,7 +54,8 @@
 
         "cookie": {
             "title": "Questo sito utilizza solo cookie tecnici",
-            "description": "Pacifinance utilizza solo cookie tecnici <br></br> per facilitare l'accesso e rendere  <br></br> l'esperienza dell'utente più piacevole. <br></br> <br></br> La tua privacy è la nostra priorità. <br></br> <br></br>",
+            "description": "Pacifinance utilizza solo cookie tecnici per facilitare l'accesso e rendere l'esperienza dell'utente più piacevole.",
+            "catchyPhrase": "La tua privacy è la nostra priorità.",
             "acceptButton": "Ok capito",
             "declineButton": "Rifiuta"
         },
@@ -64,16 +65,16 @@
             "subtitle": "Personale, Privacy, Pacify",
             "sectionTitle": "Privacy, Sicurezza e Confronto",
             "descriptionRow1": "La piattaforma sicura e privacy oriented per la finanza personale.",
-            "descriptionRow2": "Potrai confrontarti con altri utenti sia nel tuo settore <br><br> che non, nel tuo paese o all'estero.", 
+            "descriptionRow2": "Potrai confrontarti con altri utenti sia nel tuo settore che non, nel tuo paese o all'estero.", 
             "descriptionRow3": "Check del portafoglio, delle entrate e delle spese nel tempo.",
             "discoverButton": "Scopri di più",
             "point1": {
                 "title": "Facile da usare",
-                "description": "Controlla i tuoi risparmi e i tuoi investimenti<br></br> in modo semplice e intuitivo."
+                "description": "Controlla i tuoi risparmi e i tuoi investimenti in modo semplice e intuitivo."
             },
             "point2": {
                 "title": "Sicurezza garantita",
-                "description": "Dati sicuri, anonimi e non sensibili.<br></br> La privacy dell'utente è la nostra priorità. "
+                "description": "Dati sicuri, anonimi e non sensibili.La privacy dell'utente è la nostra priorità. "
             },
             "point3": {
                 "title": "Professionale e affidabile",
@@ -394,7 +395,8 @@
 
         "cookie": {
             "title": "This site only uses technical cookies",
-            "description": "<br>Pacifinance only uses technical cookies <br> to facilitate access and make <br> the user experience more enjoyable. <br></br> Your privacy is our priority. <br></br>",
+            "description": "<br>Pacifinance only uses technical cookies <br> to facilitate access and make <br> the user experience more enjoyable.",
+            "catchyPhrase": "Your privacy is our priority.",
             "acceptButton": "Ok got it",
             "declineButton": "Decline"
         },
@@ -419,20 +421,20 @@
             "subtitle": "Personal, Privacy, Pacify",
             "sectionTitle": "Privacy, Security and Comparison",
             "descriptionRow1": "The secure and privacy oriented platform for personal finance.",
-            "descriptionRow2": "You can compare yourself with other users both in your sector <br><br> that not, in your country or abroad.",
+            "descriptionRow2": "You can compare yourself with other users both in your sector that not, in your country or abroad.",
             "descriptionRow3": "Check the portfolio, income and expenses over time.",
             "discoverButton": "Discover more",
             "point1": {
                 "title": "Easy to use",
-                "description": "Check your savings and investments<br></br> in a simple and intuitive way."
+                "description": "Check your savings and investments in a simple and intuitive way."
             },
             "point2": {
                 "title": "Guaranteed security",
-                "description": "Secure, anonymous and non-sensitive data.<br></br> User privacy is our priority."
+                "description": "Secure, anonymous and non-sensitive data. User privacy is our priority."
             },
             "point3": {
                 "title": "Professional and reliable",
-                "description": "Personal and with other users comparison<br></br> services, maintaining your privacy."
+                "description": "Personal and with other users comparison services, maintaining your privacy."
             }
         },
         "header": {

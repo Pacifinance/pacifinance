@@ -6,91 +6,80 @@ import LandingPageImage from '../assets/LandingPage/PacifinanceArt2NoBg.webp';
 import CookieBanner from '../components/CookieBanner';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import languages from '../contexts/languages.json';
-import {
-  MyButton,
-  LandingPageContainer,
-  Title,
-  PaciText,
-  FinanceText,
-  Subtitle,
-  CentralSection,
-  CentralText,
-  CentralImage,
-  FeaturesSection,
-  Feature,
-  FeatureIcon,
-  FeatureText,
-} from '../contexts/MyStyled';
+import languages from '../data/languages.json';
 
 export default function LandingContent({theme}) {
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
+  const disabled = false;
   
 
   return (
-      <LandingPageContainer theme={theme}>
+      <div className="relative left-0 w-full p-1 overflow-y-hidden"
+        style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
+      >
         <CookieBanner />
-        <Title theme={theme}>
-          <PaciText theme={theme}>Paci</PaciText>
-          <FinanceText theme={theme}>Finance</FinanceText>
-        </Title>
-        <Subtitle theme={theme}>Personal, Privacy, Pacify</Subtitle>
+        <h1 className="text-3xl mb-1 text-center md:text-6xl md:mb-1">
+          <span className="text-paciGreen">Paci</span>
+          <span className={`${theme.mode === 'dark' ? 'text-paciWhite' : 'text-paciBlack'}`}>Finance</span>
+        </h1>
+        <h2 className="text-xs text-center text-paciGreen md:mb-5 md:text-base">Personal, Privacy, Pacify</h2>
         
-        <CentralSection theme={theme}>
+        <section className="flex items-center justify-between ml-5 mb-0.5 md:ml-10 md:mr-10">
 
-          <CentralText theme={theme}>
-          {isMobileScreen && (<CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>)}
-          {/* {isMobileScreen && (
-            <div className="fixed top-0 left-20 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-              <img
-                src={LandingPageImage}
-                className="w-32 h-32"
-                alt="Pacifinance Art"
-                draggable="false"
-                onContextMenu={(e) => e.preventDefault()}
-              />
-            </div>
-          )} */}
-            <h1>{languages[language].landing.sectionTitle}</h1>
-            <p>{languages[language].landing.descriptionRow1}</p>
-            <p dangerouslySetInnerHTML={{ __html: languages[language].landing.descriptionRow2 }}></p>
-            <p>{languages[language].landing.descriptionRow3}</p>
-            <MyButton theme={theme} data-umami-event="discoverMore">{languages[language].landing.discoverButton}</MyButton>
-          </CentralText>
-          {!isMobileScreen && (<CentralImage src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()}/>)}
-          
-        </CentralSection>
-        <FeaturesSection theme={theme}>
-          <Feature theme={theme}>
-            <FeatureIcon theme={theme}>
+          <div className="max-w-xs md:max-w-xl">
+            {isMobileScreen && (
+              <div className="flex justify-center">
+                <img className="max-w-[10em] mr-3" src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()} />
+              </div>
+            )}
+              <div className={`${isMobileScreen ? 'flex flex-col items-center' : ''}`}>
+                <h1 className="text-base md:text-3xl font-bold mb-4">{languages[language].landing.sectionTitle}</h1>
+              </div>
+              <p>{languages[language].landing.descriptionRow1}</p>
+              <p dangerouslySetInnerHTML={{ __html: languages[language].landing.descriptionRow2 }}></p>
+              <p>{languages[language].landing.descriptionRow3}</p>
+              <div className={`${isMobileScreen ? 'flex flex-col items-center' : ''}`}>
+                <button className={`mt-4 p-2 border-none rounded-sm items-center text-base cursor-pointer ${disabled ? 'bg-gray-300 text-gray-600' : 'bg-paciGreen text-white'} sm:p-1 sm:text-lg rounded-xl shadow-xl`} disabled={disabled} data-umami-event="discoverMore">
+                  {languages[language].landing.discoverButton}
+                </button>
+              </div>
+          </div>
+          {!isMobileScreen && (
+            <img className="max-w-[30em]" src={LandingPageImage} width="100%" height="100%" alt="Pacifinance Art" draggable="false" onContextMenu={(e) => e.preventDefault()} />
+          )}
+        </section>
+
+        <section className="featurePacifinace flex flex-col items-center md:grid md:grid-cols-3 max-w-full mt-20 md:mt-2 pb-20">
+          <div className="flex flex-col justify-center items-center w-30 p-8">
+            <div className="bg-paciGreen text-white p-4 rounded-full flex items-center justify-center text-lg shadow-xl">
               <CheckCircleIcon />
-            </FeatureIcon>
-            <FeatureText theme={theme}>
-              <h3>{languages[language].landing.point1.title}</h3>
+            </div>
+            <div className="flex flex-col items-center p-2">
+              <h3 className="font-bold text-xl">{languages[language].landing.point1.title}</h3>
               <p dangerouslySetInnerHTML={{ __html: languages[language].landing.point1.description }}></p>
-            </FeatureText>
-          </Feature>
-          <Feature theme={theme}>
-            <FeatureIcon theme={theme}>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center items-center w-30 p-8">
+            <div className="bg-paciGreen text-white p-4 rounded-full flex items-center justify-center text-lg shadow-xl">
               <ShieldIcon />
-            </FeatureIcon>
-            <FeatureText theme={theme}>
-              <h3>{languages[language].landing.point2.title}</h3>
+            </div>
+            <div className="flex flex-col items-center p-2">
+              <h3 className="font-bold text-xl">{languages[language].landing.point2.title}</h3>
               <p dangerouslySetInnerHTML={{ __html: languages[language].landing.point2.description }}></p>
-            </FeatureText>
-          </Feature>
-          <Feature theme={theme}>
-            <FeatureIcon theme={theme}>
-              <LockIcon/>
-            </FeatureIcon>
-            <FeatureText theme={theme}>
-              <h3>{languages[language].landing.point3.title}</h3>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center items-center w-30 p-8">
+            <div className="bg-paciGreen text-white p-4 rounded-full flex items-center justify-center text-lg shadow-xl">
+              <LockIcon />
+            </div>
+            <div className="flex flex-col items-center p-2">
+              <h3 className="font-bold text-xl">{languages[language].landing.point3.title}</h3>
               <p dangerouslySetInnerHTML={{ __html: languages[language].landing.point3.description }}></p>
-            </FeatureText>
-          </Feature>
-        </FeaturesSection>
-      </LandingPageContainer>
+            </div>
+          </div>
+        </section>
+      </div>
   );
 };
 

@@ -6,13 +6,13 @@ import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { LineChart } from "recharts/lib/chart/LineChart";
 import { Line } from "recharts/lib/cartesian/Line";
 import { Legend } from "recharts/lib/component/Legend";
-import { SectionInOut } from '../contexts/MyStyled';
+import { SectionInOut } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import domtoimage from 'dom-to-image';
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 
 
 

@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { MuiCustomVisibility, MuiCustomVisibilityOff } from '../contexts/MyStyled';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const PrivacyToggleModeButton = ({ mode, toggleHidden, isHidden }) => {
 
   return (
     <ButtonToggle mode={mode} data-umami-event="setPrivacy" onClick={toggleHidden} >
-      {isHidden ? <MuiCustomVisibilityOff /> : <MuiCustomVisibility />}
+      {isHidden ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}
     </ButtonToggle>
   );
 };

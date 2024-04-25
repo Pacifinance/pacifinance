@@ -9,11 +9,11 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
 import { HiOutlinePencilAlt } from 'react-icons/hi';
-import { primaryColor, secondaryColor } from '../contexts/Themes';
-import { getColorsBalances, getColorsIncExp } from '../contexts/Themes';
+import { primaryColor, secondaryColor } from '../styles/Themes';
+import { getColorsBalances, getColorsIncExp } from '../styles/Themes';
 import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 
 import {
         TitleDashboard,
@@ -23,7 +23,7 @@ import {
         UpperSection,
         LowerSection,
         GraphsSection,
-  } from '../contexts/MyStyled';
+  } from '../styles/MyStyled';
 
 
 function Dashboard({ theme, userData, isHidden, CustomTick}) {

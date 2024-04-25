@@ -2,8 +2,8 @@
 import React, { useContext } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-import { languageContext } from './LanguageContext';
-import languages from './languages.json';
+import { languageContext } from '../contexts/LanguageContext';
+import languages from '../data/languages.json';
 
 // const { language } = useContext(languageContext);
 

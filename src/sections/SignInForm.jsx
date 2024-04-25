@@ -5,7 +5,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { UserContext } from '../contexts/UserContext';
 import InfoIcon from '@mui/icons-material/Info';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import {
   MuiCustomDialog,
   MuiCustomButton,
@@ -16,12 +16,11 @@ import {
   MuiCustomTextField,
   MuiCustomIconButton,
   MuiCustomInputAdornment,
-  MuiCustomVisibility,
-  MuiCustomVisibilityOff,
+  EyeVisibility,
+  EyeVisibilityOff,
   SignIn,
-  SignInButton,
-  MuiUseStyles,
-} from '../contexts/MyStyled';
+  SignInButton
+} from '../styles/MyStyled';
 
 // import MyStyled from '../contexts/MyStyled';
 
@@ -43,8 +42,6 @@ export default function SignInForm() {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
-
-    const classes = MuiUseStyles();
 
     const handleOpenModal = () => {
       setShowErrorModal(true);
@@ -100,12 +97,12 @@ export default function SignInForm() {
         <SignIn theme={theme}>
             <div className="sign-in-page">
                 <div className="sign-in-form" >
-                    <h1>{languages[language].header.login.titleButton}</h1>
+                    <h1 className="text-3xl">{languages[language].header.login.titleButton}</h1>
                     <div className="icon-with-text">
                         <InfoIcon theme={theme}/>
                         <h4>{languages[language].header.login.info}</h4>
                     </div>
-                    <form id = "signIn-IdPassword" onSubmit={handleSubmit}>
+                    <form id="signIn-IdPassword" className="max-w-screen-md mx-auto" onSubmit={handleSubmit}>
                         <MuiCustomTextField theme={theme}
                           id = "username"
                           label="Id o Username"
@@ -114,7 +111,7 @@ export default function SignInForm() {
                           onChange={(event) => setUsername(event.target.value)}
                           fullWidth
                           required
-                          className={classes.signIn}
+                          className="w-1/2"
                           InputProps={{
                             endAdornment: (
                               <MuiCustomInputAdornment theme={theme} position="end">
@@ -122,9 +119,9 @@ export default function SignInForm() {
                                   aria-label="toggle username visibility"
                                   onClick={handleClickShowUsername}
                                   onMouseDown={handleMouseDown}
-                                  className={classes.icon}
+                                  className=""
                                 >
-                                  {showUsername ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                  {showUsername ? <EyeVisibility /> : <EyeVisibilityOff />}
                                 </MuiCustomIconButton>
                               </MuiCustomInputAdornment>
                             ),
@@ -138,7 +135,7 @@ export default function SignInForm() {
                           onChange={(event) => setPassword(event.target.value)}
                           required
                           fullWidth
-                          className={classes.signIn}
+                          className="w-1/2"
                           InputProps={{
                             endAdornment: (
                               <MuiCustomInputAdornment theme={theme} position="end">
@@ -146,9 +143,9 @@ export default function SignInForm() {
                                   aria-label="toggle password visibility"
                                   onClick={handleClickShowPassword}
                                   onMouseDown={handleMouseDown}
-                                  className={classes.icon}
+                                  className=""
                                 >
-                                  {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                  {showPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                 </MuiCustomIconButton>
                               </MuiCustomInputAdornment>
                             ),

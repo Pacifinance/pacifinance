@@ -1,7 +1,7 @@
 import React from 'react'
 import LogoPaci from '../assets/Brand/PacifinanceLogoPNG3NoBg.webp';
 // import LogoPaci from '../assets/Brand/LogoPacifinance.png';
-import {LogoStyled} from '../contexts/MyStyled';
+import {LogoStyled} from '../styles/MyStyled';
 
 function Logo() {
 

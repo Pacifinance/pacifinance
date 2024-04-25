@@ -2,9 +2,9 @@ import React, { useEffect, useState, useContext } from 'react'
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
-import {SectionAMonth} from '../contexts/MyStyled';
+import {SectionAMonth} from '../styles/MyStyled';
 import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext'; 
 
 

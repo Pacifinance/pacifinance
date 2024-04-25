@@ -5,7 +5,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from '@mui/icons-material/Info';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../contexts/languages.json';
+import languages from '../data/languages.json';
 
 //for the modal and styled components
 import {
@@ -20,11 +20,9 @@ import {
     MuiCustomTextField,
     MuiCustomIconButton,
     MuiCustomInputAdornment,
-    MuiCustomVisibility,
-    MuiCustomVisibilityOff,
-    MuiUseStyles,
-} from '../contexts/MyStyled';
-// import MyStyled from '../contexts/MyStyled';
+    EyeVisibility,
+    EyeVisibilityOff
+} from '../styles/MyStyled';
 
 var generated_user_id = '';
 
@@ -118,8 +116,6 @@ export default function SignUpForm() {
     
     };
 
-    const classes = MuiUseStyles();
-
     return (
         
         <SignUp theme={theme}>
@@ -140,7 +136,7 @@ export default function SignUpForm() {
                             onChange={handlePasswordChange}
                             required
                             fullWidth
-                            className={classes.signIn}
+                            className="w-1/2"
                             InputProps={{
                                 endAdornment: (
                                 <MuiCustomInputAdornment theme={theme} position="end">
@@ -148,9 +144,9 @@ export default function SignUpForm() {
                                     aria-label="toggle password visibility"
                                     onClick={handleTogglePasswordVisibility}
                                     onMouseDown={handleMouseDownPassword}
-                                    className={classes.icon}
+                                    className=""
                                     >
-                                        {showPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                        {showPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                     </MuiCustomIconButton>
                                 </MuiCustomInputAdornment>
                                 ),
@@ -165,7 +161,7 @@ export default function SignUpForm() {
                                 onChange={handleConfirmPasswordChange}
                                 required
                                 fullWidth
-                                className={classes.signIn}
+                                className="w-1/2"
                                 InputProps={{
                                     endAdornment: (
                                     <MuiCustomInputAdornment theme={theme} position="end">
@@ -174,9 +170,9 @@ export default function SignUpForm() {
                                             aria-label="toggle password visibility"
                                             onClick={handleToggleConfirmPasswordVisibility}
                                             onMouseDown={handleMouseDownPassword}
-                                            className={classes.icon}
+                                            className=""
                                         >
-                                        {showConfirmPassword ? <MuiCustomVisibility /> : <MuiCustomVisibilityOff />}
+                                        {showConfirmPassword ? <EyeVisibility /> : <EyeVisibilityOff />}
                                         </MuiCustomIconButton>
                                     </MuiCustomInputAdornment>
                                     ),

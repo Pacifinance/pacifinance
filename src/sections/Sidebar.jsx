@@ -15,9 +15,11 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { IconContext } from '../contexts/PageContext';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../data/languages.json';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquareXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import {
     SidebarToggleModeButton,
     SidebarPrivacyToggleModeButton,
@@ -42,6 +44,7 @@ import {
     EyeVisibility,
     EyeVisibilityOff
 } from '../styles/MyStyled';
+import { Media } from 'reactstrap';
 // import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton';
 
 
@@ -51,10 +54,12 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, toggleLanguage } = useContext(LanguageContext);
-
+    const { isMobileScreen } = useContext(MediaQueryContext);
+    const [isSideBarMenuOpen, setIsSideBarMenuOpen] = useState(false);
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
-    const [userId, setUserId] = useState(''); 
+    const [userId, setUserId] = useState('');
+    const [userType, setUserType] = useState(''); // [0, 1, 2, 3] -> [regular, premium, test, demo]
     const [username, setUsername] = useState(''); 
     const [userNationality, setUserNationality] = useState({ key: "", value: "" }); 
     const [userWhereWorks, setUserWhereWorks] = useState({ key: "", value: "" }); 
@@ -98,6 +103,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         if (userData) {
           try {
                 setUserId(userData.userId);
+                setUserType(userData.userType);
                 setUsername(userData.username);
                 setUserNationality(userData.userNationality);
                 setUserWhereWorks(userData.userWhereWorks);
@@ -221,8 +227,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         }
 
     };
-
-    
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -357,6 +361,73 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         }
     };
 
+    const HamburgerMenu = () => (
+        <div onClick={() => setIsSideBarMenuOpen(false)}>
+          <div className={`hamburger-menu ${isSideBarMenuOpen ? 'open' : ''} bg-white rounded-md cursor-pointer p-0.5 px-1.5 ml-4 absolute top-4 right-4 flex flex-col z-50`}>
+            <FontAwesomeIcon icon={faBars} onClick={(e) => {e.stopPropagation(); setIsSideBarMenuOpen(!isSideBarMenuOpen)}} />
+          </div>
+          {isSideBarMenuOpen ? (
+            <div className={`hamburger-menu ${isSideBarMenuOpen ? 'open' : ''} bg-white rounded-md cursor-pointer p-0.5 px-1.5 ml-10 absolute top-11 right-4 flex flex-col z-9000`}>
+              <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/dashboard')}>
+                Dashboard
+              </button>
+              <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/your-charts')}>
+                    {languages[language].sidebar.graphs}
+                </button>
+                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/insert-values')}>
+                    {languages[language].sidebar.insert}
+                </button>
+                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/check-prices')}>
+                    {languages[language].sidebar.check}
+                </button>
+                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/leaderboard')}>
+                    {languages[language].sidebar.leaderboard}
+                </button>
+                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/knowledge')}>
+                    {languages[language].sidebar.learn}
+                </button>
+                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/info')}>
+                    {languages[language].sidebar.info}
+                </button>
+            </div>
+          ) : null}
+        </div>
+      );
+
+    // const HamburgerMenu = () => (
+    //     <div>
+    //         <FontAwesomeIcon icon={faBars} onClick={() => setIsSideBarMenuOpen(!isSideBarMenuOpen)} />
+    //     </div>
+    //     <>
+    //     {isSideBarMenuOpen ? (
+    //         <div className={`hamburger-menu ${isSideBarMenuOpen ? 'open' : ''} bg-white rounded-md cursor-pointer p-0.5 px-1.5 ml-4 fixed top-4 right-4 flex flex-col z-50`}>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/dashboard')}>
+    //             Dashboard
+    //             </button>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/your-charts')}>
+    //                 {languages[language].sidebar.graphs}
+    //             </button>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/insert-values')}>
+    //                 {languages[language].sidebar.insert}
+    //             </button>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/check-prices')}>
+    //                 {languages[language].sidebar.check}
+    //             </button>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/leaderboard')}>
+    //                 {languages[language].sidebar.leaderboard}
+    //             </button>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/knowledge')}>
+    //                 {languages[language].sidebar.learn}
+    //             </button>
+    //             <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/info')}>
+    //                 {languages[language].sidebar.info}
+    //             </button>
+    //         </div>
+    //     ) : null}
+    //     </>
+    //     )}
+    // );
+
     // Filter out the "Other" option
     const otherNationalityOption = nationalityTags.find(tag => tag.index === 9999); // option "Altro" ("Other")
     const otherNationalityTags = nationalityTags.filter(tag => tag.index !== 9999); // Remove the "Other" option from the array
@@ -380,93 +451,100 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         sortedJobTags.push(otherJobOption);
     }
 
+    
+
     return (
+        // <section className="font-roboto fixed top-0 md:left-0 bg-paciGray h-screen w-5 flex flex-row md:flex-col items-center justify-between p-4 md:p-8 gap-8 sm:sticky sm:mr-8 sm:w-screen sm:h-20 sm:gap-4">
         <SidebarSection theme={theme}>
             <Top>
                 <LogoPaci />
-                <Links theme={theme}>
-                    <ul>
-                        <Tooltip title="Dashboard" placement="right">
-                            <li
-                                className={activeIcon === 0 ? "active" : ""}
-                            >   
-                                <div onClick={() => handleIconClick(0, 'dashboard')} >
-                                    <Link to="/dashboard">
-                                        <BiHomeAlt />
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        <Tooltip title={languages[language].sidebar.graphs} placement="right">
-                            <li
-                                className={activeIcon === 1 ? "active" : ""}
-                            >
-                                <div onClick={() => handleIconClick(1, 'your-charts')}>
-                                    <Link to="/your-charts">
-                                        <AiOutlineDotChart />
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        <Tooltip title={languages[language].sidebar.insert} placement="right">
-                            <li
-                                className={activeIcon === 2 ? "active" : ""}
-                            >
-                                <div onClick={() => handleIconClick(2, 'insert-values')}>
-                                    <Link to="/insert-values">
-                                        <HiOutlinePencilAlt />
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        <Tooltip title={languages[language].sidebar.check} placement="right">
-                            <li
-                                className={activeIcon === 3 ? "active" : ""}
-                            >
-                                <div onClick={() => handleIconClick(3, 'check-prices')}>
-                                    <Link to="/check-prices">
-                                        <AiOutlineFundProjectionScreen />
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        <Tooltip title={languages[language].sidebar.leaderboard} placement="right">
-                            <li
-                                className={activeIcon === 4 ? "active" : ""}
-                            >
-                                <div onClick={() => handleIconClick(4, 'leaderboard')}>
-                                    <Link to="/leaderboard">
-                                        <AiOutlineTrophy />
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        
-                        <Tooltip title={languages[language].sidebar.learn} placement="right">
-                            <li
-                                className={activeIcon === 5 ? "active" : ""}
-                            >
-                                <div onClick={() => handleIconClick(5, 'knowledge')}>
-                                    <Link to="/knowledge">
-                                        <BsBook />
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        <Tooltip title={languages[language].sidebar.info} placement="right">
-                            <li
-                                className={activeIcon === 6 ? "active" : ""}
-                            >
-                                <div onClick={() => handleIconClick(6, 'info')}>
-                                    <Link to="/info">
-                                            <BsInfoCircle/>
-                                    </Link>
-                                </div>
-                            </li>
-                        </Tooltip>
-                        
-                    </ul>
-                </Links>
+                {isMobileScreen ? (
+                    <HamburgerMenu /> 
+                ) : (
+                    <Links theme={theme}>
+                        <ul>
+                            <Tooltip title="Dashboard" placement="right">
+                                <li
+                                    className={activeIcon === 0 ? "active" : ""}
+                                >   
+                                    <div onClick={() => handleIconClick(0, 'dashboard')} >
+                                        <Link to="/dashboard">
+                                            <BiHomeAlt />
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title={languages[language].sidebar.graphs} placement="right">
+                                <li
+                                    className={activeIcon === 1 ? "active" : ""}
+                                >
+                                    <div onClick={() => handleIconClick(1, 'your-charts')}>
+                                        <Link to="/your-charts">
+                                            <AiOutlineDotChart />
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title={languages[language].sidebar.insert} placement="right">
+                                <li
+                                    className={activeIcon === 2 ? "active" : ""}
+                                >
+                                    <div onClick={() => handleIconClick(2, 'insert-values')}>
+                                        <Link to="/insert-values">
+                                            <HiOutlinePencilAlt />
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title={languages[language].sidebar.check} placement="right">
+                                <li
+                                    className={activeIcon === 3 ? "active" : ""}
+                                >
+                                    <div onClick={() => handleIconClick(3, 'check-prices')}>
+                                        <Link to="/check-prices">
+                                            <AiOutlineFundProjectionScreen />
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title={languages[language].sidebar.leaderboard} placement="right">
+                                <li
+                                    className={activeIcon === 4 ? "active" : ""}
+                                >
+                                    <div onClick={() => handleIconClick(4, 'leaderboard')}>
+                                        <Link to="/leaderboard">
+                                            <AiOutlineTrophy />
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            
+                            <Tooltip title={languages[language].sidebar.learn} placement="right">
+                                <li
+                                    className={activeIcon === 5 ? "active" : ""}
+                                >
+                                    <div onClick={() => handleIconClick(5, 'knowledge')}>
+                                        <Link to="/knowledge">
+                                            <BsBook />
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            <Tooltip title={languages[language].sidebar.info} placement="right">
+                                <li
+                                    className={activeIcon === 6 ? "active" : ""}
+                                >
+                                    <div onClick={() => handleIconClick(6, 'info')}>
+                                        <Link to="/info">
+                                                <BsInfoCircle/>
+                                        </Link>
+                                    </div>
+                                </li>
+                            </Tooltip>
+                            
+                        </ul>
+                    </Links>
+                )}
                         
                 <Notification theme={theme}>
                     {/* <AiOutlineBell /> */}
@@ -479,26 +557,32 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             <AiOutlineCaretDown />
                         </div> */}
                     <DropdownContainer> 
-                        
                         {showDropdown && (
                             <div className="dropdown-menu">
-                                {options.map((option) => (
-                                    <div
-                                        key={option.value}
-                                        className={`dropdown-option ${selectedOption === option ? 'selected' : ''}`}
-                                        onClick={() => {
-                                            if (option.value !== 'changeUsername') {
-                                                handleOptionSelect(option);
-                                            }
-                                        }}
-                                        style={{
-                                            cursor: option.value === 'changeUsername' ? 'not-allowed' : 'pointer',
-                                            opacity: option.value === 'changeUsername' ? 0.5 : 1
-                                        }}
-                                    >
-                                        {option.label}
-                                    </div>
-                                ))}
+                                {options.map((option) => {
+                                    // Aggiorna qui la condizione per controllare se userType è 'test' o 'demo'
+                                    
+                                    const isDisabled = ['changeUsername'].includes(option.value) || (['changeid', 'changePassword'].includes(option.value) && (userType === 'test' || userType === 'demo'));
+                                    return (
+                                        <div
+                                            key={option.value}
+                                            className={`dropdown-option ${selectedOption === option ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            onClick={() => {
+                                                if (!isDisabled) {
+                                                    handleOptionSelect(option);
+                                                }
+                                            }}
+                                            style={{
+                                                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                                opacity: isDisabled ? 0.5 : 1,
+                                                // Aggiungi qui ulteriori stili per rendere l'opzione più grigia se necessario
+                                                backgroundColor: isDisabled ? '#d3d3d3' : ''
+                                            }}
+                                        >
+                                            {option.label}
+                                        </div>
+                                    );
+                                })}
                                 <div data-umami-event="logoutButton" className="dropdown-option logout" onClick={handleLogout}>
                                     {languages[language].sidebar.logout}
                                 </div>
@@ -1065,8 +1149,22 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                                 <div style={{color: 'red', marginTop: '20px'}}>
                                     <label> {languages[language].sidebar.settings.deleteAccount}</label>
-                                    <SettingsToggleButton data-umami-event="deleteAccount-settings" title="deleteAccountButton" onClick={handleShowModalDeleteAccount}>
-                                        <FontAwesomeIcon icon={faSquareXmark} />
+                                    <SettingsToggleButton 
+                                        data-umami-event="deleteAccount-settings" 
+                                        title="deleteAccountButton" 
+                                        onClick={() => {
+                                            if (!['test', 'demo'].includes(userType)) {
+                                                handleShowModalDeleteAccount();
+                                            }
+                                        }}
+                                        style={{ 
+                                            backgroundColor: ['test', 'demo'].includes(userType) ? '#d3d3d3' : '', 
+                                            color: ['test', 'demo'].includes(userType) ? '#a9a9a9' : '',
+                                            cursor: ['test', 'demo'].includes(userType) ? 'not-allowed' : 'pointer'
+                                        }}
+                                        disabled={['test','demo'].includes(userType)}>
+                                        
+                                        <FontAwesomeIcon icon={faTrashCan} />
                                         {/* {languages[language].sidebar.deleteAccount.deleteButton}  */}
                                     </SettingsToggleButton>
                                 </div>
@@ -1089,7 +1187,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 <ToggleButton title={languages[language].sidebar.settings.privacy} >
                     <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                 </ToggleButton>
+                
             </Top>
+            {/* <BuyMeACoffeeWidget isMobileScreen={isMobileScreen}/> */}
         </SidebarSection>
   );
 }

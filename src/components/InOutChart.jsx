@@ -10,9 +10,10 @@ import { SectionInOut } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
-import domtoimage from 'dom-to-image';
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../data/languages.json';
+import { downloadExcel } from '../utils/downloadData.jsx';
+import { RiFileExcel2Line } from "react-icons/ri";
 
 
 
@@ -45,22 +46,10 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   fetchData();
   }, [userData]);
 
-  const downloadPNG = () => {
-    const node = document.getElementById('myChart');
-    domtoimage.toPng(node)
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = 'my-image-name.png';
-        link.href = dataUrl;
-        link.click();
-      });
-  };
-
   const headers = [
     { label: languages[language].general.month, key: 'name' },
     { label: languages[language].general.expenses, key: languages[language].general.expenses },
     { label: languages[language].general.incomes, key: languages[language].general.incomes },
-    // Aggiungi qui eventuali altre colonne
   ];
 
   const today = new Date();
@@ -84,11 +73,24 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const data = lastTwelveMonths.reverse(); // Inverti l'ordine
 
   return (
-    <SectionInOut>
+    <SectionInOut style={{ position: 'relative' }}>
       {/* <button onClick={downloadPNG}>Download PNG</button> */}
-      <CSVLink data={data} headers={headers} style={{ position: 'absolute', top: 0, right: 0 }}>
-        <BsFiletypeCsv />
+      <CSVLink data={data} headers={headers}
+        filename={`incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
+        className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100"
+      >
+        <BsFiletypeCsv className="text-paciGreen text-xl" />
       </CSVLink>
+
+      <button
+          disabled
+          onClick={() => downloadExcel(data, headers, `incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+          className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200"
+        >
+          <RiFileExcel2Line className="text-paciGreen text-xl" />
+      </button>
+
+
       <LineChart
         width={600}
         height={400}
@@ -99,7 +101,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
           bottom: 40
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
+      <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
         <XAxis tick={{fontSize: 9, fill: theme.textColor}} interval={1} dataKey="name" />
         <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={11} dx={-10}/>} />
         <Tooltip

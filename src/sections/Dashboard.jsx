@@ -11,8 +11,9 @@ import { BsCoin } from "react-icons/bs";
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { primaryColor, secondaryColor } from '../styles/Themes';
 import { getColorsBalances, getColorsIncExp } from '../styles/Themes';
-import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
+import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../data/languages.json';
 
 import {
@@ -29,6 +30,7 @@ import {
 function Dashboard({ theme, userData, isHidden, CustomTick}) {
     const [isLoading, setIsLoading] = useState(true);
     const { language } = useContext(LanguageContext);
+    const { isMobileScreen } = useContext(MediaQueryContext);
     const colorsBalances = getColorsBalances(language);
     const colorsIncExp = getColorsIncExp(language);
     const [stocksReal, setStocksReal] = useState(0);
@@ -120,7 +122,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
 
     
     return (
-        <SectionDashboard theme={theme}>
+        <div className="font-roboto pt-8 bg-paciGray px-4 md:ml-20 overflow-hidden">
             <TitleDashboard theme={theme}>{languages[language].dashboard.title}</TitleDashboard>
             <CapitalValue theme={theme}>
                 {languages[language].dashboard.totalBalance}{" "}
@@ -129,164 +131,152 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 </span>
             </CapitalValue>
             <UpperSection theme={theme}>
-                <div className="analytic" style={{ position: 'relative' }}>
+                <div className="analytic">
                     <div className="design">
-                        <div className="logo" style={{ color: '#0D579B'}}>
+                        <div className="bankLogoCard mt-3 text-base md:text-2xl " style={{ color: '#0D579B'}}>
                             <BsBank />
                         </div>
-                        <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                        <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                             <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                 <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                             </Link>
                         </div>
                     </div>
-                    <div className="transfer">
+                    <div className="bankCardTitle text-xs md:text-base p-2">
                         <h6>{languages[language].general.deposited}</h6>
                         <h6>{languages[language].general.in} {languages[language].assets.bank}</h6>
                     </div>
-                    <div className="money">
-                        <h5>{isHidden ? '****' : bankReal.toLocaleString('it-IT')} €</h5>
+                    <div className="bankCardValue">
+                        <h5 className="text-xs md:text-base">{isHidden ? '****' : bankReal.toLocaleString('it-IT')} €</h5>
                     </div>
                 </div>
 
-                <div className="analytic" style={{ position: 'relative' }}>
+                <div className="analytic">
                     <div className="design">
-                        <div className="logo" style={{ color: '#329239' }}>
+                        <div className="cashLogoCard mt-3 text-base md:text-2xl " style={{ color: '#329239' }}>
                             <BsCashCoin />
                         </div>
-                        <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                        <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                             <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                 <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                             </Link>
                         </div>
                     </div>
-                    <div className="transfer">
+                    <div className="cashCardTitle text-xs md:text-base p-2">
                         <h6>{languages[language].assets.cash}</h6>
-                        {/* <h6>e monete</h6> */}
                     </div>
-                    <div className="money">
-                        <h5>{isHidden ? '****' : cashReal.toLocaleString('it-IT')} €</h5>
+                    <div className="cashCardValue">
+                        <h5 className="text-xs md:text-base">{isHidden ? '****' : cashReal.toLocaleString('it-IT')} €</h5>
                     </div>
                 </div>
 
-                <div className="analytic" style={{ position: 'relative' }}>
+                <div className="analytic">
                     <div className="design">
-                        <div className="logo" style={{ color: '#74b9ff' }}>
+                        <div className="digitalServicesLogoCard mt-3 text-base md:text-2xl " style={{ color: '#74b9ff' }}>
                             <SiMoneygram />
                         </div>
-                        <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                        <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                             <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                 <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                             </Link>
                         </div>
                     </div>
-                    <div className="transfer">
+                    <div className="digitalServicesCardTitle text-xs md:text-base p-2">
                         <h6 dangerouslySetInnerHTML={{ __html: languages[language].assets.digitalServices }}></h6>
                         {/* <h6>Pagamenti digitali</h6> */}
                     </div>
-                    <div className="money">
-                        <h5>{isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT')} €</h5>
+                    <div className="digitalServicesValue">
+                        <h5 className="text-xs md:text-base">{isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT')} €</h5>
                     </div>
                 </div>
-
             </UpperSection>
             <LowerSection theme={theme}>
                 {stocksReal !== 0 && (
-                    <div className="analytic" style={{ position: 'relative' }}>
+                    <div className="analytic">
                         <div className="design">
-                            <div className="logo" style={{ color: '#FF6600' }}>
+                            <div className="stocksLogoCard mt-3 text-base md:text-2xl " style={{ color: '#FF6600' }}>
                                 <MdOutlineAutoGraph />
                             </div>
-                            <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                                 <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
-                        <div className="transfer">
+                        <div className="stocksCardTitle text-xs md:text-base p-2">
                             <h6>{languages[language].assets.stocks}</h6>
                         </div>
-                        <div className="money">
-                            <h5>{isHidden ? '****' : stocksReal.toLocaleString('it-IT')} €</h5>
+                        <div className="stocksCardValue">
+                            <h5 className="text-xs md:text-base">{isHidden ? '****' : stocksReal.toLocaleString('it-IT')} €</h5>
                         </div>
                     </div>
                 )}
                 {etfReal !== 0 && (
-                    <div className="analytic" style={{ position: 'relative' }}>
+                    <div className="analytic">
                         <div className="design">
-                            <div className="logo" style={{ color: '#a29bfe' }}>
+                            <div className="etfLogoCard mt-3 text-base md:text-2xl " style={{ color: '#a29bfe' }}>
                                 <AiOutlineStock />
                             </div>
-                            <div className="action"style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                                 <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
-                        <div className="transfer">
+                        <div className="etfCardTitle text-xs md:text-base p-2">
                             <h6>{languages[language].assets.etf}</h6>
                         </div>
-                        <div className="money">
-                            <h5>{isHidden ? '****' : etfReal.toLocaleString('it-IT')} €</h5>
+                        <div className="etfCardValue">
+                            <h5 className="text-xs md:text-base">{isHidden ? '****' : etfReal.toLocaleString('it-IT')} €</h5>
                         </div>
                     </div>
                 )}
 
                 {bitcoinReal !== 0 && (
-                    <div className="analytic" style={{ position: 'relative' }}>
+                    <div className="analytic">
                         <div className="design">
-                            <div className="logo" style={{ color: '#F7B510' }}>
+                            <div className="bitcoinLogoCard mt-3 text-base md:text-2xl " style={{ color: '#F7B510' }}>
                                 <FaBitcoin />
                             </div>
-                            <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                                 <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
-                        <div className="transfer">
+                        <div className="bitcoinCardTitle text-xs md:text-base p-2">
                             <h6>{languages[language].assets.bitcoin}</h6>
                         </div>
-                        <div className="money">
-                            <h5>{isHidden ? '****' : bitcoinReal.toLocaleString('it-IT')} €</h5>
+                        <div className="bitcoinCardValue">
+                            <h5 className="text-xs md:text-base">{isHidden ? '****' : bitcoinReal.toLocaleString('it-IT')} €</h5>
                         </div>
                     </div>
                 )}
-                {/* <div className="analytic ">
-                <div className="design">
-                    <div className="logo" style={{ color: '#F7B510' }}>
-                        <FaBitcoin />
-                    </div>
-                </div>
-                <div className="transfer">
-                    <h6>Variazione</h6>
-                    <h6>Bitcoin in %</h6>
-                </div>             */}
                 {cryptoReal !== 0 && (
-                    <div className="analytic" style={{ position: 'relative' }}>
+                    <div className="analytic">
                         <div className="design">
-                            <div className="logo" style={{ color: '#d63031' }}>
+                            <div className="cryptoLogoCard mt-3 text-base md:text-2xl " style={{ color: '#d63031' }}>
                                 <BsCoin />
                             </div>
-                            <div className="action" style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <div className="actionUpdateBalance absolute top-1 right-1 md:top-2 md:right-2">
                                 <Link to="/insert-values" title={languages[language].dashboard.updateValue}>
                                     <AiOutlinePlusCircle style={{ color: secondaryColor }}/>
                                 </Link>
                             </div>
                         </div>
-                        <div className="transfer">
+                        <div className="cryptoCardTitle text-xs md:text-base p-2">
                             <h6>{languages[language].assets.crypto}</h6>
                         </div>
-                        <div className="money">
-                            <h5>{isHidden ? '****' : cryptoReal.toLocaleString('it-IT')} €</h5>
+                        <div className="cryptoCardValue">
+                            <h5 className="text-xs md:text-base">{isHidden ? '****' : cryptoReal.toLocaleString('it-IT')} €</h5>
                         </div>
                     </div>
                 )}
             </LowerSection> 
             <GraphsSection theme={theme}>
                 <div className="bar-chart-section">
-                    <h2>{languages[language].dashboard.titleGraph}</h2>
-                    <div style={{ width: 400, height: 300 }}>
+                    <h2 className="text-xs md:text-base">{languages[language].dashboard.titleGraph}</h2>
+                    <div className="w-350 h-300 md:w-400 md:h-300">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart width={500} height={300} data={isHidden ? capitalShuffleData: capitalData} margin={{
                                         top: 20,
@@ -333,8 +323,8 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
 
                 <div className="pie-chart-section">
                     
-                    <div style={{ width: 400, height: 400 }}>
-                        <h2>{languages[language].dashboard.titleGraph2}</h2>
+                    <div className="w-350 h-300 md:w-400 md:h-300"> 
+                        <h2 className="text-xs md:text-base">{languages[language].dashboard.titleGraph2}</h2>
                         <ResponsiveContainer width="100%" height="100%">
                         {isAllZero ? (
                             <div style={{
@@ -406,7 +396,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 </div>
 
                 <div className="bar-chart-section">
-                    <h2>{languages[language].dashboard.titleGraph3}</h2>
+                    <h2 className="text-xs md:text-base">{languages[language].dashboard.titleGraph3}</h2>
                     <div style={{ width: 350, height: 300 }}> 
                         <ResponsiveContainer width="100%" height="100%">
                                 <BarChart width={500} height={300} data={isHidden ? incExpShuffleData : incExpData} margin={{
@@ -453,7 +443,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                     </div>      
                 </div>
             </GraphsSection>
-        </SectionDashboard>
+        </div>
     )
 }
   

@@ -11,7 +11,7 @@ import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButto
 import InExStatsMonth from '../components/InExStatsMonth';
 import InExStatsYear from '../components/InExStatsYear';
 import { PrivacyContext } from '../contexts/PrivacyContext';
-import { CustomTick } from '../utilities/customGraphsInfo';
+import { CustomTick } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 

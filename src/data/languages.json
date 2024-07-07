@@ -116,10 +116,16 @@
                     "okButton": "ok va bene"
                 }
             },
-            "logout": "Esci"
+            "logout": "Esci",
+            "demo": {
+                "titleButton": "Prova la versione Demo",
+                "info": "Per accedere velocemente, clicca sul pulsante sottostante",
+                "button": "Accesso rapido",
+                "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
+            }
         },
         "footer": {
-            "rights": "Pacifinance © 2023. Tutti i diritti riservati."
+            "rights": "Pacifinance © 2024. Tutti i diritti riservati."
         },
         "sidebar": {
             "dashboard": "Dashboard",
@@ -348,7 +354,8 @@
             "lowerExpense": " Sei tra gli utenti che spendono di meno!",
             "higherExpense": " Attenzione! Sei tra gli utenti che spendono di più!",
             "higherIncome": " Sei tra gli utenti che guadagnano di più!",
-            "mediumRank": "Sei nella media degli utenti!"
+            "mediumRank": "Sei nella media degli utenti!",
+            "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
 
             
         }
@@ -472,10 +479,16 @@
                     "okButton": "ok fine"
                 }
             },
-            "logout": "Logout"
+            "logout": "Logout",
+            "demo": {
+                "titleButton": "Try Demo version",
+                "info": "To access quickly, click on the button below",
+                "button": "Quick access",
+                "demoWarning": "Warning! Random and not relevant values, used as an example."
+            }
         },
         "footer": {
-            "rights": "Pacifinance © 2023. All rights reserved."
+            "rights": "Pacifinance © 2024. All rights reserved."
         },
         "sidebar": {
             "dashboard": "Dashboard",
@@ -711,7 +724,8 @@
             "lowerExpense": " You are among the users who spend the least!",
             "higherExpense": " Attention! You are among the users who spend the most!",
             "higherIncome": " You are among the users who earn the most!",
-            "mediumRank": "You are in the average of users!"
+            "mediumRank": "You are in the average of users!",
+            "demoWarning": "Warning! Random and not relevant values, used as an example."
         }    
     }
   }

@@ -23,7 +23,7 @@ export const themes = {
     mode: 'dark',
     jollyColor: '#b5ded1', //maybe better white
     primaryColor: '#0d0f13', //black
-    secondaryColor: '#079164',
+    secondaryColor: '#079164', //green
     textColor: '#fff',
     borderColor: 'white',
     backgroundColor: '#222831', //#222831 o #3d3d3d 

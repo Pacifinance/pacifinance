@@ -17,8 +17,7 @@ import {
   StyledTable,
   StyledInputs,
   inputStyle,
-  LabelStyle,
-  LabelContainer,
+  StyledTextArea,
   Column,
   TitleLastAdds,
   TitleSection,
@@ -536,33 +535,33 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <TitleSection theme={theme}> {languages[language].insert.balanceSection.titleLiquidity} </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
                   {languages[language].assets.bank}
-                </LabelStyle>
-              </LabelContainer>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
+                </label>
+              </div>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
                   {languages[language].assets.cash}
-                </LabelStyle>
-              </LabelContainer>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
+                </label>
+              </div>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
                   {languages[language].assets.digitalServices}
-                </LabelStyle>
-              </LabelContainer>
-              </Column>
+                </label>
+              </div>
+            </Column>
             <Column>
               <div>
-                <input type="text" value={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} style={inputStyle} />
+                <input type="text" onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} placeholder={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
               <div>
-                <input type="text" value={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} style={inputStyle} />
+                <input type="text" onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} placeholder={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
               <div>
-                <input type="text" value={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} style={inputStyle} />
+                <input type="text" onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} placeholder={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}> €</span>
               </div>
             </Column>
@@ -570,48 +569,48 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <TitleSection theme={theme}> {languages[language].insert.balanceSection.titleInvestments} </TitleSection>
           <StyledInputs theme={theme}>
             <Column>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
-                  {languages[language].assets.stocks}
-                </LabelStyle>
-              </LabelContainer>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                  <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+                    {languages[language].assets.stocks}
+                </label>
+              </div>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
                   {languages[language].assets.etf}
-                </LabelStyle>
-              </LabelContainer>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
+                </label>
+              </div>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
                   {languages[language].assets.bitcoin}
-                </LabelStyle>
-              </LabelContainer>
-              <LabelContainer theme={theme}>
-                <LabelStyle theme={theme}>
+                </label>
+              </div>
+              <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
+                <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
                   {languages[language].assets.crypto}
-                </LabelStyle>
-              </LabelContainer>
+                </label>
+              </div>
             </Column>
             <Column>
               <div>
-                <input type="text" value={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} style={inputStyle} />
+                <input type="text" onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} placeholder={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} style={inputStyle} />
+                <input type="text" onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} placeholder={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} style={inputStyle} />
+                <input type="text" onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} placeholder={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
               <div>
-                <input type="text" value={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} style={inputStyle} />
+                <input type="text" onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} placeholder={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
                 <span style={{marginLeft:'0.2em'}}>€</span>
               </div>
             </Column>
           </StyledInputs>
 
-          <StyledCalendarInput theme={theme}>
+          <StyledCalendarInput>
             <StyledDateInput
               type="date"
               value={balanceDate}
@@ -631,6 +630,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     } else if (activePage === "income") {
       return (
         <>
+          {/* <div className="flex flex-col items-center justify-center"> */}
           <StyledAddSection theme={theme}>
             <label>
               <Select value={categoryIncome.value} 
@@ -699,40 +699,36 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               />
             </div>
           </StyledAddSection>
-
+          {/* </div> */}
+          {/* <div className="flex flex-col items-center justify-center"> */}
           <StyledAddSection theme={theme}>
             <label>
-              <textarea
+              <StyledTextArea
                 value={noteIncomeAreaValue}
                 onChange={(e) => setNoteIncomeAreaValue(e.target.value)}
                 maxLength={64}
                 placeholder={languages[language].insert.incomeSection.placeholderNote}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  color: "#333",
-                  outline: "none",
-                }}
               />
             </label>
           </StyledAddSection>
-            
+          {/* </div> */}
+          {/* <div className="flex flex-col items-center justify-center"> */}
           <StyledAddSection theme={theme}> 
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>{languages[language].insert.incomeSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>{languages[language].insert.incomeSection.titleListing}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <select value={selectedIncomesMonth} onChange={handleIncomesMonthChange} style={{ padding: '1em' }}>
-                {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </TitleLastAdds>
+          {/* </div> */}
+          <TitleLastAdds theme={theme}>{languages[language].insert.incomeSection.titleListing}</TitleLastAdds>
+
+          <div className="flex justify-center items-center mb-2 ml-8">
+            <select className="text-black text-center font-normal text-base px-2 py-1" value={selectedIncomesMonth} onChange={handleIncomesMonthChange}>
+              {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
+                <option className="text-center" key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          
           <StyledTable theme={theme}>
           
             <thead>
@@ -747,6 +743,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               {allIncomesAdds && allIncomesAdds.length > 0 && renderIncomeItems(allIncomesAdds[selectedIncomesMonth])}
             </tbody>
           </StyledTable>
+          
         </>
       );
     } else if (activePage === "expenses") {
@@ -859,19 +856,11 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
           <StyledAddSection theme={theme}>
             <label>
-              <textarea
+              <StyledTextArea
                 value={noteExpenseAreaValue}
                 onChange={(e) => setNoteExpenseAreaValue(e.target.value)}
                 maxLength={64}
                 placeholder={languages[language].insert.expenseSection.placeholderNote}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  color: "#333",
-                  outline: "none",
-                }}
               />
             </label>
           </StyledAddSection>
@@ -879,17 +868,18 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledAddSection theme={theme}>
             <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>{languages[language].insert.expenseSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>{languages[language].insert.expenseSection.titleListing}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <select value={selectedExpensesMonth} onChange={handleExpensesMonthChange} style={{ padding: '1em' }}>
-                {monthOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </TitleLastAdds>
+          <TitleLastAdds theme={theme}>{languages[language].insert.expenseSection.titleListing} </TitleLastAdds>
+
+          <div className="flex justify-center items-center mb-2 ml-8">
+            <select className="text-black text-center font-normal text-base px-1 py-1" value={selectedExpensesMonth} onChange={handleExpensesMonthChange}>
+              {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
+                <option className="text-center" key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          
           <StyledTable theme={theme}>
             <thead>
               <tr>

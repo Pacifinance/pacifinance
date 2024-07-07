@@ -8,7 +8,7 @@ import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../styles/MyStyled';
 import { primaryColor, secondaryColor } from '../styles/Themes';
-import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
+import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
@@ -133,11 +133,11 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#0D579B'}}>
-                        <BsBank />
+                        <BsBank/>
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
+                    <h2>{languages[language].graphs.statsBalance.variation}</h2>
                     <h6>{languages[language].assets.bank}</h6>
                 </div>
                 <div className="money">
@@ -177,8 +177,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     </div>
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsBalance.variation}</h6>
-                    <h6>{languages[language].assets.digitalServices}</h6>
+                    <h6 className="text-xs">{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6 className="text-xs">{languages[language].assets.digitalServices}</h6>
                 </div>
                 <div className="money">
                     <h5>

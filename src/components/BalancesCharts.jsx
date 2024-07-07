@@ -10,6 +10,10 @@ import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CSVLink } from 'react-csv';
+import { BsFiletypeCsv } from "react-icons/bs";
+import { RiFileExcel2Line } from "react-icons/ri";
+import { downloadExcel } from '../utils/downloadData.jsx';
 // import { }
 
 
@@ -38,6 +42,21 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
   fetchData();
   }, [userData]);
 
+  const headers = [
+    { label: languages[language].general.month, key: 'name' },
+    { label: languages[language].assets.cash, key: languages[language].assets.cash },
+    { label: languages[language].assets.digitalServices, key: languages[language].assets.digitalServices },
+    { label: languages[language].assets.stocks, key: languages[language].assets.stocks },
+    { label: languages[language].assets.bank, key: languages[language].assets.bank },
+    { label: languages[language].assets.crypto, key: languages[language].assets.crypto },
+    { label: languages[language].assets.etf, key: languages[language].assets.etf },
+    { label: languages[language].assets.bitcoin, key: languages[language].assets.bitcoin },
+    { label: languages[language].assets.total, key: languages[language].assets.total },
+    
+  ];
+
+  const today = new Date();
+
 
   const data = last12MonthsData.map((monthData) => {
     const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal;
@@ -57,7 +76,22 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
   }).reverse(); //reverse() to have the last month on the right
 
   return (
-    <SectionBalancesCharts theme={theme}>
+    <SectionBalancesCharts theme={theme} style={{ position: 'relative' }}>
+      <CSVLink data={data} headers={headers}
+        filename={`incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
+        className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100"
+      >
+        <BsFiletypeCsv className="text-paciGreen text-xl" />
+      </CSVLink>
+
+      <button
+          disabled
+          onClick={() => downloadExcel(data, headers, `incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+          className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200"
+        >
+          <RiFileExcel2Line className="text-paciGreen text-xl" />
+      </button>
+
       <BarChart
         width={600}
         height={400}
@@ -88,7 +122,7 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
             return [`${name}: ${formattedValue}`];
           }}
         />
-        <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
+        <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
         <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%' }}/>
 
         <Bar dataKey={isHidden ? '****' : languages[language].assets.bank} stackId="a" fill={isHidden ? theme.textColor : "#0D579B"} />

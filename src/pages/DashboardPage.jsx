@@ -5,7 +5,7 @@ import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import Dashboard from '../sections/Dashboard';
-import { CustomTick } from '../utilities/customGraphsInfo';
+import { CustomTick } from '../utils/customGraphsInfo';
 
 function DashboardPage() {
   const { theme, toggleMode } = useContext(ThemeContext);

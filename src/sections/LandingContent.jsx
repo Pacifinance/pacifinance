@@ -7,6 +7,7 @@ import CookieBanner from '../components/CookieBanner';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../data/languages.json';
+import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 
 export default function LandingContent({theme}) {
   const { language } = useContext(LanguageContext);
@@ -79,6 +80,7 @@ export default function LandingContent({theme}) {
             </div>
           </div>
         </section>
+        <BuyMeACoffeeWidget />
       </div>
   );
 };

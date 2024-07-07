@@ -73,6 +73,7 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
     const { language } = useContext(LanguageContext);
     const [selectedMonth, setSelectedMonth] = useState(1);
     const [selectedYear, setSelectedYear] = useState(2023);
+    const [userType, setUserType] = useState('');
     const [balanceRank, setBalanceRank] = useState([]);
     const [incomeRank, setIncomeRank] = useState([]);
     const [expenseRank, setExpenseRank] = useState([]);
@@ -83,7 +84,7 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
     const fetchData = async () => {
         if (userData) {
           try {
-              
+              setUserType(userData.userType);
               setBalanceRank(userData ? userData.percentageRankOnBalance : []);
               setIncomeRank(userData ? userData.percentageRankOnIncomes : []);
               setExpenseRank(userData ? userData.percentageRankOnExpenses : []);
@@ -118,7 +119,14 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                             onMonthChange={handleMonthChange}
                             onYearChange={handleYearChange}
                         /> */}
-                        <StyledLabel>{languages[language].leaderboard.monthRanking} <StyledMonth>{formattedPreMonthDate}</StyledMonth></StyledLabel>
+                        <StyledLabel>
+                            {languages[language].leaderboard.monthRanking} <StyledMonth>{formattedPreMonthDate}</StyledMonth>
+                            {userType === 'demo' && (
+                              <span className="block bg-red-400 border border-black rounded-xl p-2 mt-2">
+                                {languages[language].leaderboard.demoWarning}
+                              </span>
+                            )}
+                        </StyledLabel>
                         <RankingsTitle >{languages[language].leaderboard.generalRanking} </RankingsTitle>
                         <CenteredRankings>
                             <RankingsSection language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />

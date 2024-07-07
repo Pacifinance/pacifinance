@@ -556,6 +556,7 @@ export const SecondaryTitle = styled.h2 `
     margin-left: 5rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
+    padding: 1rem;
 
     /* For screens with a maximum width of 768px (e.g. mobile devices) */
     @media (max-width: 768px) {
@@ -565,7 +566,7 @@ export const SecondaryTitle = styled.h2 `
 `;
 
 export const TitleLastAdds = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
   color: ${(props) => (props.theme.textColor)};
   margin-bottom: 0.5%;
@@ -573,9 +574,9 @@ export const TitleLastAdds = styled.h2`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    font-size: 1rem;
-    margin-bottom: 1.5em;
-    margin-top: 1em;
+    font-size: 0.8rem;
+     margin-bottom: 2%;
+    margin-top: 2%;
   }
 `;
 
@@ -690,7 +691,7 @@ export const StyledCalendarInput = styled.div`
   height: 35%;
   margin-top: 1vw;
   margin-left: 5vw;
-  color: ${(props) => props.theme.textColor};
+  color: black;
 `;
 
 export const inputStyle = {
@@ -779,6 +780,12 @@ export const StyledTable = styled.table`
     background-color: ${(props) => props.theme.buttonBackgroundColor};
     color: white;
     padding: 0.3em;
+    &:first-child {
+      border-top-left-radius: 10px;
+    }
+    &:last-child {
+      border-top-right-radius: 10px;
+    }
   }
 
   td, th {
@@ -816,7 +823,7 @@ export const StyledTable = styled.table`
 export const StyledAddSection = styled.div`
   display: flex;
   justify-content: space-evenly;
-  width: 100%;
+  width: 50%;
   margin-bottom: 1%;
   margin-top: 2%;
   margin-left: 6vw;
@@ -845,6 +852,7 @@ export const StyledAddSection = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
+    width: 100%;
     align-items: center;
     margin-left: 0;
     margin-top: 3em;
@@ -861,6 +869,16 @@ export const StyledAddSection = styled.div`
       width: 50%;
     }
   }
+`;
+
+export const StyledTextArea = styled.textarea`
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 0.5em;
+  color: #333;
+  outline: none;
+  font-size: 1rem;
 `;
 
 export const StyledLastAdds = styled.div`
@@ -987,7 +1005,7 @@ export const SidebarToggleModeButton = styled(ToggleModeButton)`
 
 export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
       padding: 0.3em 0.5em;
-      font-size: 0.8em;
+      font-size: 4px;
       gap: 0.1em;
 
       /* For screens with a maximum width of 768px (e.g. mobile devices) */
@@ -1054,7 +1072,7 @@ export const DropdownContainer = styled.div`
 
     .dropdown-menu {
       top: 100%;
-      margin-right: 10vw;
+      margin-right: 0vw;
       background-color: #fff;
       border: 0.1em solid #ccc;
       border-radius: 0.2em;
@@ -1071,7 +1089,6 @@ export const Notification = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: -1em;
-  // margin-left: 1em;
   gap: 0.2rem;
   .font_icon{
       font-size: 1.5rem;
@@ -1133,9 +1150,8 @@ export const Notification = styled.div`
 
   @media (max-width: 768px) {
     position: absolute;
-    margin-top: 0.01em;
-    margin-bottom: 0em;
-    margin-left: 0em;
+    top: 1.3em;
+    right: 4.2em;
     gap: 0.1rem;
 
     .account-image {
@@ -1277,15 +1293,18 @@ export const Links = styled.div`
 export const ToggleButton = styled.div`
   display: flex;
   justify-content: center;
+  
+
+  svg {
+      font-size: 2.2em; 
+  }
 
   @media (max-width: 768px) {
-    display: block;
-    margin-top: 4em;
-    padding: 3px 3px;
-    font-size: 2px;
-
+    position: absolute;
+    top: 1.2em;
+    right: 6em;
     svg {
-      font-size: em; 
+      font-size: 7em; 
     }
   }
 `;
@@ -1336,7 +1355,7 @@ export const SidebarSection = styled.section`
     position: sticky;
     // bottom: 0; 
     margin-right: 2em;
-    width: 100vw;
+    width: 100%;
     height: 8vh;
     flex-direction: row;
     padding: 1em 1.5em; 
@@ -1350,16 +1369,17 @@ export const SidebarSection = styled.section`
   `
   ;
 
-  export const UpperSection = styled.section `
+  export const UpperSection = styled.div `
       display: flex;
       margin-top: 2rem;
-      margin-left: 3%;
-      margin-right: 6%;
+      align-items: center;
       justify-content: center;
+      z-index: -1; 
+
       .analytic {
           display: flex;
           position: relative;
-          flex-direction: column; /* Imposta la direzione dei figli come colonna */
+          flex-direction: column;
           border-radius: 1rem;
           justify-content: center;
           align-items: center;
@@ -1374,39 +1394,7 @@ export const SidebarSection = styled.section`
           height: 8.5em;
           width: 15em;
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
-      
-          .design{
-              
-              .logo {
-                  background-color: white;
-                  display: flex;
-                  justify-content: center;
-                  
-              
-                  svg {
-                      font-size: 1.5rem;
-                  }
-              }
-              .action {
-                position: absolute;
-                top: 10;
-                right: 10;
-                svg {
-                    font-size: 1.4rem;
-                    color: inherit; /* Inherit color from parent .action */
-                }
-            }
-
-          }
-          .transfer {
-              margin-top: 1em;
-              color: ${secondaryColor};
-              font-size: 1.4rem;
-          }
-          .money {
-              margin-top: 1em; 
-              font-size: 1.2rem;
-          }
+          z-index: 0;
       }
 
       .title{
@@ -1422,28 +1410,21 @@ export const SidebarSection = styled.section`
       margin-left: 0;
       align-items: center;
       flex-wrap: nowrap;
+
       .analytic {
         width: 30%;
-        height: 8em;
+        height: 7.2em;
         margin: 0.5em;
-
-        .design {
-          .logo {
-            svg {
-              font-size: 1.5rem;
-            }
-          }
-      }
       }
     }
   `;
 
   export const LowerSection = styled.div`
-      display : flex;
-      margin-top: 1rem;
-      // margin-left: 0%;
-      // margin-right: 0%;
-      justify-content: center;
+    display: flex;
+    margin-top: 1rem;
+    align-items: center;
+    justify-content: center;
+
       .analytic {
           display: flex;
           flex-direction: column; /* Imposta la direzione dei figli come colonna */
@@ -1505,7 +1486,7 @@ export const SidebarSection = styled.section`
         flex-wrap: wrap;
         .analytic {
           width: 40%; /* Imposta la larghezza in percentuale per mostrare 2 elementi per riga */
-          height: 8em;
+          height: 7.2em;
           margin: 0.5em;
           margin-left: 1.3em;
 
@@ -1522,10 +1503,12 @@ export const SidebarSection = styled.section`
 
   export const GraphsSection = styled.div`
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: row;
     margin-top: 8rem;
-    margin-left: 3%;
-    height: 70vh;
+    margin-left: 6vw;
+    margin-bottom: 2rem;
    
 
     .bar-chart-section {
@@ -1540,7 +1523,7 @@ export const SidebarSection = styled.section`
     }
 
     .pie-chart-section {
-      flex: 1; /* Fai in modo che la pie chart occupi la stessa larghezza disponibile */
+      flex: 1;
       align-items: center;
       margin-left: 6rem;
       h2 {
@@ -1575,8 +1558,7 @@ export const SidebarSection = styled.section`
       }
 
       .pie-chart-section {
-        flex: none; /* Remove the flexible width */
-        margin-left: 0;
+        flex: none; 
 
         h2 {
           margin-left: 0;
@@ -1647,19 +1629,15 @@ export const SidebarSection = styled.section`
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     margin-left: 6vw;
     margin-bottom: 1em;
-    .section-break {
-      display: block;
-      margin-bottom: 1rem; /* Adjust the margin as needed */
-    }
+
     .analytic {
       display: flex;
-      flex-direction: column; /* Imposta la direzione dei figli come colonna */
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 0.5rem 1rem 0.5rem 1rem;
+      padding: 0.5rem 1rem;
       border-radius: 1rem;
       margin-right: 1rem;
       color: black;
@@ -1668,12 +1646,14 @@ export const SidebarSection = styled.section`
       height: 7.5em;
       width: 7.5em;
       border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
+      overflow: hidden; /* Impedisce al contenuto di strabordare */
 
       .design {
+        display: flex;
+        justify-content: center;
         align-items: center;
 
         .logo {
-          background-color: white;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -1682,84 +1662,31 @@ export const SidebarSection = styled.section`
             font-size: 1.5rem;
           }
         }
-        .action {
-          margin-left: 4em;
-          svg {
-            font-size: 1rem;
-          }
-        }
       }
       .transfer {
-        margin-top: 1em;
-        color: ${secondaryColor};
+          font-size: 0.8em;
       }
-      .money {
-        margin-top: 1em;
+      .transfer, .money {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        h5, h6 {
-          color: ${secondaryColor};
-        }
+        color: ${secondaryColor};
       }
-
     }
 
-    .title {
-      h5 {
-        color: ${(props) => props.theme.textColor};
-      }
-    }
-    .search {
-      background-color: ${(props) => props.theme.backgroundColor};
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 8rem 1rem 1rem;
-      border-radius: 1.5rem;
-      svg {
-        color: ${(props) => props.theme.textColor};
-      }
-      input {
-        background-color: transparent;
-        border: none;
-        color: ${(props) => props.theme.textColor};
-        &:focus {
-          outline: none;
-        }
-        &::placeholder {
-          color: ${(props) => props.theme.textColor};
-        }
-      }
-    }
-    /* For screens with a maximum width of 768px (e.g. mobile devices) */
     @media (max-width: 768px) {
-      flex-direction: row;
-      flex-wrap: wrap;
+      justify-content: center; /* Centra gli elementi .analytic orizzontalmente */
+      flex-wrap: wrap; /* Permette agli elementi .analytic di andare a capo */
       .analytic {
-        flex-direction: column;
         height: 8em;
-        margin: 0.5em;
-        padding: 1rem 1.5rem;
-        border-radius: 1rem;
-        color: black;
-        background-color: white;
-        transition: 0.5s ease-in-out;
-        width: 45%; /* Aggiungi la larghezza appropriata per avere due componenti per riga */
-        max-width: 20em; /* Aggiungi la larghezza massima per evitare che i componenti siano troppo grandi */
-        border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
+        margin: 0.5em; /* Aggiunge spazio intorno per evitare che gli elementi si tocchino */
+        padding: 0.5rem 1rem;
+        width: 45%; /* Imposta la larghezza per far stare due elementi per riga */
+        max-width: 20em; /* Opzionale: limita la larghezza massima per evitare che gli elementi diventino troppo grandi */
 
-        &:last-child {
-          margin-left: 28%; 
-        }
-
-        .design {
-          .logo {
-            svg {
-              font-size: 1.5rem;
-            }
-          }
+        .design .logo svg {
+          font-size: 1.2rem;
         }
       }
     }
@@ -2030,10 +1957,11 @@ export const slideOut = keyframes`
 `;
 
 export const StyledDateInput = styled.input`
-  width: 200px; /* Adjust the width to your liking */
+  width: 10em; 
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  color: black;
   font-size: 16px;
 `;
   

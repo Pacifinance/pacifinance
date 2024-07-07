@@ -8,7 +8,7 @@ import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../styles/MyStyled';
 import { primaryColor, secondaryColor } from '../styles/Themes';
-import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
+import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
@@ -152,8 +152,8 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                 </div>
                 
                 <div className="transfer">
-                    <h6 style={{ color: secondaryColor}}>{languages[language].graphs.statsBalance.variation}</h6>
-                    <h6 style={{ color: secondaryColor}}>{languages[language].assets.digitalServices}</h6>
+                    <h6 className="text-xs">{languages[language].graphs.statsBalance.variation}</h6>
+                    <h6 className="text-xs">{languages[language].assets.digitalServices}</h6>
                 </div>
                 <div className="money">
                     <h5 style={{ color: secondaryColor}}>

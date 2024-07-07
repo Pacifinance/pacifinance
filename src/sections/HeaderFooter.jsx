@@ -1,9 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import ToggleModeButton from '../components/ToggleModeButton';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import LogoPaci from '../components/Logo';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { UserContext } from '../contexts/UserContext';
 import languages from '../data/languages.json';
 // import MyStyled from '../contexts/MyStyled';
 import {
@@ -27,9 +31,24 @@ import {
 
 function Header({theme, mode, toggleMode}) {
   // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
+  const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
   const [isOpenSignIn, setIsOpenSignIn] = useState(false);
   const [isOpenSignUp, setIsOpenSignUp] = useState(false);
   const { language, toggleLanguage } = useContext(LanguageContext);
+  const [username, setUsername] = useState('913418');
+  const [password, setPassword] = useState('vbwifc9u');
+  const [showDemoButton, setShowDemoButton] = useState(false);
+  const navigate = useNavigate();
+
+  
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowDemoButton(true);
+    }, 3000); // Cambia 3000 con il numero di millisecondi di ritardo desiderato
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOpenSignIn = () => {
     setIsOpenSignIn(true);
@@ -47,6 +66,35 @@ function Header({theme, mode, toggleMode}) {
     setIsOpenSignUp(false);
   };
 
+  const DemoLogin = async (event) => {
+    event.preventDefault();
+    try {
+      handleSetIsAuthenticated(false); //to be sure that the user will se his data
+      //navigate('/dashboard'); //must be commented for production
+      //username could be user_id o username
+      const response = await axios.post('/login', { user_id: username, password: password }, { withCredentials: true }); //the path in the db is called login
+      if(response.status === 200) {
+        handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
+        navigate('/dashboard'); //direct redirect 
+        //window.umami.trackEvent('signIn', 'SignIn');
+
+      }
+      else {
+        // handleOpenModal();
+
+        console.log('Error in the demo login');
+        
+      }
+      
+    } catch (error) {
+      // console.error(error);
+      setUsername('');
+      setPassword('');
+      // handleOpenModal();
+    }
+
+  };
+
     
     return (
       <div 
@@ -57,8 +105,15 @@ function Header({theme, mode, toggleMode}) {
           style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}>
           <LogoPaci />
           <div className="flex flex-row md:mr-10">
+            {showDemoButton && (
+              <button data-umami-event="tryDemo" 
+                      className={`animate-slide-down border-2 border-white rounded-xl md:rounded items-center text-base cursor-pointer bg-paciGreen text-white p-0.5 text-xs md:text-lg md:px-4 shadow-xl mr-2 md:mr-20`}
+                      onClick={DemoLogin}> {languages[language].header.demo.titleButton}
+              </button>
+            )}
             <ButtonContainer >
               <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
+        
               <MyButton theme={theme} data-umami-event="setLanguage" onClick={toggleLanguage}>
                 {language === 'it' ? 'IT' : 'EN'} 
               </MyButton>

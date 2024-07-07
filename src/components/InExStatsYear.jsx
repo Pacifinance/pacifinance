@@ -3,7 +3,7 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import {SectionAMonth} from '../styles/MyStyled';
-import { calculatePercentageChange, calculateDifference } from '../utilities/calculations';
+import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 

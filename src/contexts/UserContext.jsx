@@ -57,10 +57,19 @@ function UserProvider({ children }) {
             const workTimeTags = allTags.data.workTime;
             const remoteTypeTags = allTags.data.remoteType;
 
-
+            // Definizione dell'enum
+            const userTypeDict = {
+              0: 'regular',
+              1: 'premium',
+              2: 'test',
+              3: 'demo'
+            };
 
             const infoUser = await axios.post('/user/get', null, { withCredentials: true });
             const userId = infoUser.data.userId;
+            const userType = userTypeDict[infoUser.data.type]; //infoUser.data.type: 0 = regular, 1 = premium, 2 = test, 3 = demo
+            //Obtain the user type from the dictionary
+            // userType = userTypeDict[userType];
             const username = infoUser.data.nickname ?? 'Username non impostato';
             const userNationality = {key: infoUser.data.country?.index ?? -1, value: infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata'};
             const userWhereWorks = {key: infoUser.data.jobCountry?.index ?? -1 ,value: infoUser.data.jobCountry?.translations?.it ?? 'Dove lavora non impostato'};
@@ -68,6 +77,8 @@ function UserProvider({ children }) {
             const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato'};
             const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato'};
             const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
+
+
           
             
             //************************************* BALANCES **********************************************/
@@ -268,7 +279,7 @@ function UserProvider({ children }) {
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
               preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, allExpenses, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
               percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalExpensesPerCategoryPerMonth,
-              userId, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
+              userId, userType, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });
             handleSetIsUpdated(true);
         }

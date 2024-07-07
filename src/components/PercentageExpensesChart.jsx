@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { PercentageExpensesChartContainer } from '../styles/MyStyled';
-import { renderCustomizedLabel } from '../utilities/customGraphsInfo';
+import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import { UserContext } from '../contexts/UserContext';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';

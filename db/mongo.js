@@ -4,7 +4,7 @@ const balances = require("./models/balances.js");
 const expenses = require("./models/expenses.js");
 const tags = require("./models/tags.js")
 const delqueue = require("./models/delqueue.js");
-const cachestorage = require("./models/cache.js");
+const cachestorage = require("./models/cachestorage.js");
 
 async function connect(uri) {
     return mongoose.connect(uri);

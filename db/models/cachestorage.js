@@ -25,7 +25,7 @@ async function get(where, select) {
  * @returns Cache document
  */
 async function setOne(where, update) {
-    return await Cache.findOneAndUpdate(where, {$set: update}).lean().exec();
+    return await Cache.findOneAndUpdate(where, {$set: update}, {upsert: true}).lean().exec();
 }
 
 /* ==================== Specific queries ==================== */

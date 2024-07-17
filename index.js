@@ -10,6 +10,7 @@ const cron = require("cron");
 require("dotenv").config();
 
 const db = require("./db/mongo.js");
+const cache = require("./cache/cache.js");
 const jobs = require("./jobs/jobs.js");
 const utils = require("./utils.js");
 
@@ -642,8 +643,9 @@ app.get("/*", (req, res) => {
 });
 
 db.connect(process.env.DB_URI)
-    .then(() => {
+    .then(async () => {
         console.log("Connected to DB");
+        await cache.init();
     })
     .catch(() => {
         console.error("Cannot connect to DB: exiting");

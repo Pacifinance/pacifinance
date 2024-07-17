@@ -42,7 +42,7 @@ async function init() {
 
     // Restore the cache, element by element, by checking the expected items
     for (let key of Object.keys(expectedItems)) {
-        cache[key] = {value: stored_cache[key].value, expiration: stored_cache[key].expirationDate};
+        cache[key] = {value: stored_cache[key].value, expiration: stored_cache[key].expiration};
         if (!Object.keys(stored_cache).includes(key) || valueExpired(key))
             await invalidate(key);
     }

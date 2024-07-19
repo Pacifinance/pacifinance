@@ -5,7 +5,6 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
-const cron = require("cron");
 
 require("dotenv").config();
 
@@ -15,17 +14,6 @@ const jobs = require("./jobs/jobs.js");
 const utils = require("./utils.js");
 
 const day_ms = 24 * 60 * 60 * 1000;
-
-/* ==================== Cron jobs startup ==================== */
-
-// eslint-disable-next-line no-unused-vars
-const accountsDeletionJob = new cron.CronJob(
-    "0 1 * * *",
-    jobs.usersdel.deleteUsersJob,
-    null,
-    true,
-    "Europe/Berlin"
-);
 
 /* ==================== Express.js server initialization ==================== */
 
@@ -646,6 +634,7 @@ db.connect(process.env.DB_URI)
     .then(async () => {
         console.log("Connected to DB");
         await cache.init();
+        jobs.init();
     })
     .catch(() => {
         console.error("Cannot connect to DB: exiting");

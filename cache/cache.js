@@ -1,9 +1,12 @@
 const cachestorage = require("../db/models/cachestorage.js");
+const prices = require("./items/prices.js");
 
 /**
  * Dictionary of expected keys of the cache. Structure: { key: { duration: Number, fetch: async () => { } } }
  */
-const expectedItems = {};
+const expectedItems = {
+    "crypto": { duration: 3600, fetch: prices.fetchCryptoPrices }
+};
 
 /**
  * Cached values. Structure: { key: { value: { }, expiration: Date } }

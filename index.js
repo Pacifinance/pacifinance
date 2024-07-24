@@ -624,6 +624,31 @@ app.post("/rank/expenses", async (req, res) => {
     res.json(rank);
 });
 
+app.get("/prices/:key", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Check if the price key is valid is valid. Send status 404
+    // (Not Found) if it's not valid
+    const key = req.params.key;
+    if (!["crypto"].includes(key))
+    {
+        res.status(404);
+        res.send();
+        return;
+    }
+    // Retrieve the cached value and send it to the client with status code 200 (OK)
+    const value = cache.get(key);
+    res.status(200);
+    res.json(value);
+});
+
 app.get("/*", (req, res) => {
     // Refresh handler
     res.sendFile(path.join(__dirname, "build/index.html"));

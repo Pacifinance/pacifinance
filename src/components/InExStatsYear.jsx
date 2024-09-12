@@ -119,7 +119,7 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreYearSameMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-s">
                         {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreYearSameMonth)}
                     </h6>
                 </div>
@@ -142,7 +142,7 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreYearSameMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-s">
                         {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreYearSameMonth)}
                     </h6>
                 </div>
@@ -165,7 +165,7 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(savedMonth, savedPreYearSameMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-s">
                         {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreYearSameMonth)}
                     </h6>
                 </div>

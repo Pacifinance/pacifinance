@@ -19,7 +19,7 @@ import { downloadExcel } from '../utils/downloadData.jsx';
 
 
 
-export default function BalancesCharts({  theme, userData, isHidden, CustomTick }) {
+export default function BalancesCharts({ theme, userData, isHidden, CustomTick }) {
   const { language } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
 

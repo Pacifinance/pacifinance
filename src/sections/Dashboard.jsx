@@ -122,7 +122,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
 
     
     return (
-        <div className="font-roboto pt-8 bg-paciGray px-4 md:ml-20 overflow-hidden">
+        <SectionDashboard theme={theme} className="font-roboto pt-8 bg-paciGray px-4 md:ml-20 overflow-hidden">
             <TitleDashboard theme={theme}>{languages[language].dashboard.title}</TitleDashboard>
             <CapitalValue theme={theme}>
                 {languages[language].dashboard.totalBalance}{" "}
@@ -443,7 +443,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                     </div>      
                 </div>
             </GraphsSection>
-        </div>
+        </SectionDashboard>
     )
 }
   

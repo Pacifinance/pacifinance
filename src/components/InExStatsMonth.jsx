@@ -115,7 +115,7 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-s">
                         {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreMonth)}
                     </h6>
                 </div>
@@ -138,7 +138,7 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-s">
                         {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreMonth)}
                     </h6>
                 </div>
@@ -161,7 +161,7 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(savedMonth, savedPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-s">
                         {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreMonth)}
                     </h6>
                 </div>

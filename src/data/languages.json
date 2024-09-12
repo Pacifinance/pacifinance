@@ -358,6 +358,42 @@
             "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
 
             
+        },
+
+        "info": {
+            "title": "Informazioni e FAQ",
+            "title2": "Progetto - Pacifinance",
+            "description": "Pacifinance è una piattaforma di finanza personale e di confronto che si pone come obiettivo principale la privacy e permettere la comprensione della propria situazione finanziaria.",
+            "description2": "Il confronto con altri utenti è possibile in modo anonimo e non sensibile.",
+            "descriptiopn3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
+            "description4": "Il progetto è no-profit ed è unicamente sostenuto da donazioni volontarie.",
+            "description5": "La piattaforma è in continuo sviluppo e nuove funzionalità verranno aggiunte in futuro.",
+            "faq": {
+                "title": "Domande frequenti",
+                "question1": "Come posso aggiungere un'entrata o un'uscita?",
+                "answer1": "Per aggiungere un'entrata o un'uscita, vai nella sezione 'Inserimento dati' e seleziona il tipo di inserimento che vuoi fare.  Compila i campi richiesti e conferma l'inserimento. ",
+                "question2": "Come posso aggiornare il mio bilancio?",
+                "answer2": "Per aggiornare il tuo bilancio, vai nella sezione 'Inserimento dati' e seleziona la sezione 'Aggiorna Bilancio'.  Compila i campi richiesti e conferma l'aggiornamento. ",
+                "question3": "Come posso eliminare un'entrata o un'uscita?",
+                "answer3": "Per eliminare un'entrata o un'uscita, vai nella sezione 'Inserimento dati' e seleziona la sezione 'Aggiungi Entrate' o 'Aggiungi Uscite'.  Nella tabella delle entrate o delle uscite, seleziona l'entrata o l'uscita che vuoi eliminare e clicca su 'Elimina'. ",
+                "question4": "Come posso cambiare il mio id?",
+                "answer4": "Per cambiare il tuo id, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia ID'.  Compila i campi richiesti e conferma il cambio id. ",
+                "question5": "Come posso cambiare la mia password?",
+                "answer5": "Per cambiare la tua password, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia password'.  Compila i campi richiesti e conferma il cambio password. ",
+                "question6": "Come posso supportare il progetto?",
+                "answer6": "Il progetto è no-profit e viene sostenuto da donazioni volontarie. Se pensi che il servizio offerto sia utile e vuoi contribuire, puoi lasciare feedback e/o supportarci tramite donazione.", 
+                "answer6CallToAction": "In ogni pagina in basso a destra troverai un pop-up per supportare il progetto. Grazie da parte di tutto il team!.",
+                "question7": "Come posso eliminare il mio account?",
+                "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. "
+            },
+            "developers": {
+                "title": "Team",
+                "description": "Pacifinance è sviluppata e viene aggiornata e mantenuta da un team di sviluppatori appassionati di finanza e di sviluppo.", 
+                "description2": "Il team di sviluppo è sempre disponibile a ricevere feedback e suggerimenti per migliorare la piattaforma. ", 
+                "description3":"La piattaforma è stata creata con l'obiettivo di offrire un servizio utile e gratuito per gli utenti.",
+                "calltoaction": "Il costo del mantenimento dei server e del servizio è sostenuto dal team, se pensi che il servizio offerto sia utile e vuoi contribuire, puoi supportarci tramite donazione. ",
+                "contact": "Contattaci"
+            }
         }
 
     },
@@ -726,6 +762,43 @@
             "higherIncome": " You are among the users who earn the most!",
             "mediumRank": "You are in the average of users!",
             "demoWarning": "Warning! Random and not relevant values, used as an example."
-        }    
+        },
+
+        "info": {
+            "title": "Information and FAQ",
+            "title2": "Project - Pacifinance",
+            "description": "Pacifinance is a personal finance and comparison platform that has as its main objective privacy and allows you to understand your financial situation.",
+            "description2": "Comparison with other users is possible anonymously and not sensitively.",
+            "descriptiopn3": "The data entered by the user is anonymous, protected and not accessible by third parties.",
+            "description4": "The project is ad-free and non-profit and is solely supported by voluntary donations.",
+            "description5": "The platform is in continuous development and new features will be added in the future.",
+            "faq": {
+                "title": "Frequently asked questions",
+                "question1": "How can I add an income or an expense?",
+                "answer1": "To add an income or an expense, go to the 'Insert data' section and select the type of entry you want to make. Fill in the required fields and confirm the entry. ",
+                "question2": "How can I update my balance?",
+                "answer2": "To update your balance, go to the 'Insert data' section and select the 'Update Balance' section. Fill in the required fields and confirm the update. ",
+                "question3": "How can I delete an income or an expense?",
+                "answer3": "To delete an income or an expense, go to the 'Insert data' section and select the 'Add Incomes' or 'Add Expenses' section. In the table of incomes or expenses, select the income or expense you want to delete and click on 'Delete'. ",
+                "question4": "How can I change my id?",
+                "answer4": "To change your id, go to the 'Your Profile' section and select the 'Change ID' section. Fill in the required fields and confirm the id change. ",
+                "question5": "How can I change my password?",
+                "answer5": "To change your password, go to the 'Your Profile' section and select the 'Change password' section. Fill in the required fields and confirm the password change. ",
+                "question6": "How can I support the project?",
+                "answer6": "The project is non-profit and is supported by voluntary donations. If you think the service offered is useful and want to contribute, you can leave feedback and/or support us through a donation.",
+                "answer6CallToAction": "On every page at the bottom right you will find a pop-up to support the project. Thanks from the whole team!.",
+                "question7": "How can I delete my account?",
+                "answer7": "To delete your account, go to the 'Your Profile' section and select the 'Delete account' section. Confirm the deletion and you're done. "
+                
+            },
+            "developers": {
+                "title": "Team",
+                "description": "Pacifinance is developed, updated and maintained by a team of developers passionate about finance and development.",
+                "description2": "The development team is always available to receive feedback and suggestions to improve the platform. ", 
+                "description3":"The platform was created with the aim of offering a useful and free service for users.", 
+                "calltoaction": "The cost of maintaining the servers and the service is supported by the team, if you think the service offered is useful and want to contribute, you can support us through a donation. ",
+                "contact": "Contact us"
+            }
+        }
     }
   }

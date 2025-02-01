@@ -1,6 +1,6 @@
-const cron = require("cron");
-const usersdel = require("./functions/usersdel.js");
-const cacheup = require("./functions/cacheup.js");
+import cron from "cron";
+import usersdel from "./functions/usersdel.js";
+import cacheup from "./functions/cacheup.js";
 
 const timezone = "Europe/Berlin";
 

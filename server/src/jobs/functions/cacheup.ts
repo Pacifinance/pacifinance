@@ -1,4 +1,4 @@
-const cache = require("../../cache/cache.js");
+import cache from "../../cache/cache.js";
 
 /**
  * Periodic job that checks the validity of cache items and invalidates them to force their update
@@ -11,6 +11,6 @@ async function checkAndUpdateCache() {
     }
 }
 
-module.exports = {
+export default {
     checkAndUpdateCache,
 };

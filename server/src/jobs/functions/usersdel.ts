@@ -1,14 +1,15 @@
-const balances = require("../../db/models/balances.js");
-const delqueue = require("../../db/models/delqueue.js");
-const expenses = require("../../db/models/expenses.js");
-const users = require("../../db/models/users.js");
+import mongoose from "mongoose";
+import balances from "../../db/models/balances.js";
+import delqueue from "../../db/models/delqueue.js";
+import expenses from "../../db/models/expenses.js";
+import users from "../../db/models/users.js";
 
 /**
  * Checks if all user data has been deleted
- * @param {String} user_ref - ObjectId of the user
+ * @param user_ref ObjectId of the user
  * @returns true if all user data has been deleted, false otherwise
  */
-async function checkDeletion(user_ref) {
+async function checkDeletion(user_ref: mongoose.Types.ObjectId) {
     const userExists = await users.userExistsByRef(user_ref);
     const balancesExist = await balances.balancesExistByUserRef(user_ref);
     const expensesExist = await expenses.expensesExistByUserRef(user_ref);
@@ -17,9 +18,9 @@ async function checkDeletion(user_ref) {
 
 /**
  * Deletes all data of a user from the DB
- * @param {String} user_ref - ObjectId of the user
+ * @param user_ref - ObjectId of the user
  */
-async function deleteUserData(user_ref) {
+async function deleteUserData(user_ref: mongoose.Types.ObjectId) {
     // Delete user account and all its associated data
     await users.deleteUserByRef(user_ref);
     await balances.deleteBalancesByUserRef(user_ref);
@@ -39,14 +40,14 @@ async function deleteUsersJob() {
         if (user.date > now)
             continue;
         // Otherwise, delete all user data
-        await deleteUserData(user.userRef);
+        await deleteUserData(user.userRef as mongoose.Types.ObjectId);
         // Check if all user data was deleted. If so, remove the user from the deletion queue
-        const deletionWasOk = await checkDeletion(user.userRef);
+        const deletionWasOk = await checkDeletion(user.userRef as mongoose.Types.ObjectId);
         if (deletionWasOk)
-            await delqueue.removeFromQueueByUserRef(user.userRef);
+            await delqueue.removeFromQueueByUserRef(user.userRef as mongoose.Types.ObjectId);
     }
 }
 
-module.exports = {
+export default {
     deleteUsersJob,
 };

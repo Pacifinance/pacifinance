@@ -1,12 +1,12 @@
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
+import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 
 /**
  * Sanitizes user input by removing blank spaces and HTML tags
- * @param {String} data - data to sanitize
+ * @param data Data to sanitize
  * @returns Sanitized data
  */
-function sanitizeInput(data) {
+function sanitizeInput(data: string) {
     // Remove empty spaces
     let sanitized_data = String(data).trim();
     // Check if there are HTML tags and remove them
@@ -18,10 +18,10 @@ function sanitizeInput(data) {
 
 /**
  * Rounds a currency value to the second decimal digit
- * @param {Number} n - Currency value
+ * @param n Currency value
  * @returns Rounded currency value
  */
-function roundCurrency(n) {
+function roundCurrency(n: number) {
     if (n === undefined || isNaN(n)) return 0;
     // Round to the second decimal digit
 	let r = +n.toFixed(2); // toFixed() returns a string, but with the + in front it becomes a number
@@ -33,10 +33,10 @@ function roundCurrency(n) {
 
 /**
  * Converts any date to a Date object
- * @param {Date | String} date - date to convert
+ * @param date Date to convert
  * @returns A Date object, or undefined if the provided date is invalid
  */
-function toDateObject(date) {
+function toDateObject(date: Date | string) {
     // If the date is of type Date, return it
     if (date instanceof Date)
         return date;
@@ -56,10 +56,10 @@ function toDateObject(date) {
 
 /**
  * Checks if a balance is valid
- * @param {Object} data - Balance to check (sanitized and modified by this function)
+ * @param data Balance to check (sanitized and modified by this function)
  * @returns true if the balance is valid, false otherwise
  */
-function isBalanceValid(data) {
+function isBalanceValid(data: any) {
     // Cast all values to Number for type integrity, then round them to the second decimal digit
     data.bank = roundCurrency(Number(data.bank));
     data.cash = roundCurrency(Number(data.cash));
@@ -88,10 +88,10 @@ function isBalanceValid(data) {
 
 /**
  * Checks if an expense is valid
- * @param {Object} data - Expense to check (sanitized and modified by this function)
+ * @param data Expense to check (sanitized and modified by this function)
  * @returns true if the expense is valid, false otherwise
  */
-function isExpenseValid(data) {
+function isExpenseValid(data: any) {
     const NOTES_MAX_LENGTH = 64;
     const PAYMENT_NONE = 0; // database index of the 'none' payment type (hardcoded = bad, but it will never change...probably...)
     // Cast the amount to Number and the is_expense flag to Boolean for type integrity
@@ -122,12 +122,12 @@ function isExpenseValid(data) {
 }
 
 /**
- * Hashes a string (usually a password) using the given number of salt rounds
- * @param {String} password - password to hash
- * @param {BigInt} salt_rounds - number of salt rounds
+ * 
+ * @param password Password to hash
+ * @param salt_rounds Number of salt rounds
  * @returns Hashed password
  */
-function hashPassword(password, salt_rounds) {
+function hashPassword(password: string, salt_rounds: number) {
     // Hash the password using the given number of salt rounds
     // Cast to Number is used to make sure that the correct technique is used
     return bcrypt.hashSync(password, Number(salt_rounds));
@@ -135,20 +135,20 @@ function hashPassword(password, salt_rounds) {
 
 /**
  * Checks if a plain password corresponds to an hashed password
- * @param {String} plain_password - plain password to check
- * @param {String} hashed_password - reference hashed password
+ * @param plain_password Plain password to check
+ * @param hashed_password Reference hashed password
  * @returns true if the two passwords correspond, false otherwise
  */
-function checkPassword(plain_password, hashed_password) {
+function checkPassword(plain_password: string, hashed_password: string) {
     return bcrypt.compareSync(plain_password, hashed_password);
 }
 
 /**
  * Generates a random character
- * @param {boolean} alpha - if true an alphanumeric character is generated, numeric only otherwise
+ * @param alpha If true an alphanumeric character is generated, numeric only otherwise
  * @returns A character
  */
-function generateRandomCharacter(alpha=true) {
+function generateRandomCharacter(alpha: boolean =true) {
     let characters = "0123456789";
     if (alpha) characters = "abcdefghijklmnopqrstuvwxyz" + characters;
     const index = Math.floor(Math.random() * characters.length);
@@ -157,11 +157,11 @@ function generateRandomCharacter(alpha=true) {
 
 /**
  * Generates a random string (like user and session IDs)
- * @param {BigInt} length - length of the string to generate
- * @param {boolean} alpha - if true an alphanumeric string is generated, numeric only otherwise
+ * @param length Length of the string to generate
+ * @param alpha If true an alphanumeric string is generated, numeric only otherwise
  * @returns A random string
  */
-function generateRandomString(length, alpha=true) {
+function generateRandomString(length: number, alpha: boolean = true) {
     // Generate 'length' random characters
     let characters = [];
     for (let i = 0; i < length; i++)
@@ -171,10 +171,10 @@ function generateRandomString(length, alpha=true) {
 
 /**
  * Adds one day to a date
- * @param {Date} date - date to increment
+ * @param date Date to increment
  * @returns Incremented date
  */
-function incrementDateByOneDay(date) {
+function incrementDateByOneDay(date: Date) {
     let new_date = new Date(date);
     new_date.setUTCDate(new_date.getUTCDate() + 1);
     return new_date;
@@ -182,10 +182,10 @@ function incrementDateByOneDay(date) {
 
 /**
  * Subtracts one month to a date
- * @param {Date} date - date to decrement
+ * @param date Date to decrement
  * @returns Decremented date
  */
-function decrementDateByOneMonth(date) {
+function decrementDateByOneMonth(date: Date) {
     let new_date = new Date(date);
     new_date.setUTCMonth(new_date.getUTCMonth() - 1);
     return new_date;
@@ -193,10 +193,10 @@ function decrementDateByOneMonth(date) {
 
 /**
  * Capitalizes the first character of a string
- * @param {String} str - Target string
+ * @param str Target string
  * @returns The same string but with the first character capitalized
  */
-function capitalizeFirst(str) {
+function capitalizeFirst(str: string) {
     str = str.toLowerCase()
     return str[0].toUpperCase() + str.slice(1)
 }
@@ -211,11 +211,11 @@ function newNullObjectId() {
 
 /**
  * Computes the rank of a user among other users
- * @param {Objects[]} array - Sorted array of objects (must have a 'user' field)
- * @param {String} target_user - Target user ID or ObjectID whose position must be found
+ * @param array Sorted array of objects (must have a 'user' field)
+ * @param target_user Target user ID or ObjectID whose position must be found
  * @returns Object containing the position (top=1, bottom=array.length) and the total number of users
  */
-function computeRankOfUser(array, target_user) {
+function computeRankOfUser(array: any[], target_user: string) {
     let position = -1;
     for (let i = 0; i < array.length; i++) {
         if (array[i].user === target_user)
@@ -224,7 +224,7 @@ function computeRankOfUser(array, target_user) {
     return {position: position, total: array.length};
 }
 
-module.exports = {
+export default {
     sanitizeInput,
     roundCurrency,
     toDateObject,

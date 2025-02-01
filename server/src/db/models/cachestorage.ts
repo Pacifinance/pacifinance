@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const cacheSchema = new mongoose.Schema({
     key: {type: String, required: true, unique: true, dropDups: true},
@@ -10,21 +10,21 @@ const cacheSchema = new mongoose.Schema({
 
 /**
  * Gets a list of cached elements that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
+ * @param where Filter to match
+ * @param select Fields to return
  * @returns List of Cache documents
  */
-async function get(where, select) {
+async function get(where: object, select: string) {
     return await Cache.find(where, select).lean().exec();
 }
 
 /**
  * Updates a cached element that matches a filter
- * @param {Object} where - filter to match
- * @param {Object} update - fields to update
+ * @param where Filter to match
+ * @param update Fields to update
  * @returns Cache document
  */
-async function setOne(where, update) {
+async function setOne(where: object, update: object) {
     return await Cache.findOneAndUpdate(where, {$set: update}, {upsert: true}).lean().exec();
 }
 
@@ -40,12 +40,12 @@ async function getAllElements() {
 
 /**
  * Updates the value and the expiration date of a single cached element
- * @param {String} key - Key of the element to update
- * @param {Object} value - New value
- * @param {Date} expiration_date - New expiration date
+ * @param key Key of the element to update
+ * @param value New value
+ * @param expiration_date New expiration date
  * @returns Cache document
  */
-async function updateElement(key, value, expiration_date) {
+async function updateElement(key: string, value: object, expiration_date: Date) {
     return await setOne({key: key}, {value: value, expirationDate: expiration_date});
 }
 
@@ -54,7 +54,7 @@ async function updateElement(key, value, expiration_date) {
  */
 const Cache = mongoose.model("Cache", cacheSchema);
 
-module.exports = {
+export default {
     getAllElements,
     updateElement
 };

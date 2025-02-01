@@ -1,17 +1,27 @@
-const cachestorage = require("../db/models/cachestorage.js");
-const prices = require("./items/prices.js");
+import cachestorage from "../db/models/cachestorage";
+import prices from "./items/prices";
+
+interface CacheItemInfo {
+    durationSec: number
+    fetch: () => Promise<object | null>
+}
+
+interface CacheItemData {
+    value: any
+    expiration: Date
+}
 
 /**
- * Dictionary of expected keys of the cache. Structure: { key: { duration: Number, fetch: async () => { } } }
+ * Dictionary of expected keys of the cache
  */
-const expectedItems = {
-    "crypto": { duration: 3600, fetch: prices.fetchCryptoPrices }
+const expectedItems: {[key: string]: CacheItemInfo} = {
+    "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices }
 };
 
 /**
- * Cached values. Structure: { key: { value: { }, expiration: Date } }
+ * Cached values
  */
-let cache = {};
+let cache: {[key: string]: CacheItemData} = {};
 
 /**
  * Gets the list of expected cache items keys
@@ -23,10 +33,10 @@ function getExpectedKeys() {
 
 /**
  * Checks if a cache element is expired
- * @param {String} key - Key of the element to check
+ * @param key Key of the element to check
  * @returns true if the element is expired, false otherwise
  */
-function valueExpired(key) {
+function valueExpired(key: string) {
     let now = new Date(Date.now());
     return (now >= cache[key].expiration);
 }
@@ -39,7 +49,7 @@ async function init() {
         return;
 
     let stored_elements = await cachestorage.getAllElements();
-    let stored_cache = {};
+    let stored_cache: any = {};
     for (let element of stored_elements)    // list of DB elements is converted to the same structure of the cache
         stored_cache[element.key] = {value: element.value, expiration: element.expirationDate};
 
@@ -53,9 +63,9 @@ async function init() {
 
 /**
  * Invalidates one or all elements of the cache
- * @param {String} key - Key of the element to invalidate, or 'undefined' to invalidate all
+ * @param key Key of the element to invalidate, or 'undefined' to invalidate all
  */
-async function invalidate(key=undefined) {
+async function invalidate(key: string | undefined = undefined) {
     if (key === undefined) {
         for (let k of Object.keys(expectedItems))
             invalidate(k);
@@ -72,10 +82,10 @@ async function invalidate(key=undefined) {
 
 /**
  * Retrieves the value of a cache element by key
- * @param {String} key - Key of the element to get
+ * @param key Key of the element to get
  * @returns Cached value
  */
-function get(key) {
+function get(key: string) {
     if (!Object.keys(cache).includes(key))
         return null;
 
@@ -84,23 +94,22 @@ function get(key) {
 
 /**
  * Stores a new value in the cache and in the database by key
- * @param {String} key - Key of the element to set
- * @param {Object} value - New value to set
- * @returns 
+ * @param key Key of the element to set
+ * @param value New value to set
  */
-async function set(key, value) {
+async function set(key: string, value: object) {
     if ((!Object.keys(cache).includes(key)) || (!Object.keys(expectedItems).includes(key)) || (!value))
         return;
 
     let new_expiration = new Date(Date.now());
-    new_expiration.setUTCSeconds(new_expiration.getUTCSeconds() + expectedItems[key].duration);
+    new_expiration.setUTCSeconds(new_expiration.getUTCSeconds() + expectedItems[key].durationSec);
 
     cache[key] = {value: value, expiration: new_expiration};
 
     await cachestorage.updateElement(key, value, new_expiration);
 }
 
-module.exports = {
+export default {
     getExpectedKeys,
     valueExpired,
     init,

@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const tags = require("./tags.js");
-const utils = require("../../utils.js");
+import mongoose from "mongoose";
+import tags from "./tags"
+import utils from "../../utils";
 
 const userIdLength = 6;
 const sessionIdLength = 32;
@@ -34,40 +34,40 @@ const userSchema = new mongoose.Schema({
 
 /**
  * Adds a user
- * @param {Object} data - data of the new User document 
+ * @param data Data of the new User document 
  * @returns User document
  */
-async function addOne(data) {
+async function addOne(data: object) {
     return (await User.create(data)).toJSON();
 }
 
 /**
  * Gets a list of users that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
+ * @param where Filter to match
+ * @param select Fields to return
  * @returns List of User documents
  */
-async function get(where, select) {
+async function get(where: object, select: string) {
     return await User.find(where, select).lean().exec();
 }
 
 /**
  * Gets a user that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
+ * @param where Filter to match
+ * @param select Fields to return
  * @returns User document
  */
-async function getOne(where, select) {
+async function getOne(where: object, select: string) {
     return await User.findOne(where, select).lean().exec();
 }
 
 /**
  * Gets a user that match a filter, substituting all Tag references with Tag data
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
+ * @param where Filter to match
+ * @param select Fields to return
  * @returns User document
  */
-async function getOneAndPopulate(where, select) {
+async function getOneAndPopulate(where: object, select: string) {
     return await User.findOne(where, select)
     .populate({path: "country", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "country"
     .populate({path: "job", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "job"
@@ -80,20 +80,20 @@ async function getOneAndPopulate(where, select) {
 
 /**
  * Updates a user that match a filter
- * @param {Object} where - filter to match
- * @param {Object} update - fields to update
+ * @param where Filter to match
+ * @param update Fields to update
  * @returns User document
  */
-async function setOne(where, update) {
+async function setOne(where: object, update: object) {
     return await User.findOneAndUpdate(where, {$set: update}).lean().exec();
 }
 
 /**
  * Deletes a user that match a filter
- * @param {Object} where - filter to match
+ * @param where Filter to match
  * @returns DeleteResult object
  */
-async function deleteOne(where) {
+async function deleteOne(where: object) {
     return await User.deleteOne(where).lean().exec();
 }
 
@@ -101,11 +101,11 @@ async function deleteOne(where) {
 
 /**
  * Adds a new user
- * @param {String} user_id - ID of the user
- * @param {String} password - hashed password
- * @param {Number} type - account type (regular, premium, test, ...)
+ * @param user_id ID of the user
+ * @param password Hashed password
+ * @param type Account type (regular, premium, test, ...)
  */
-async function insertNew(user_id, password, type=UserType.regular.value) {
+async function insertNew(user_id: string, password: string, type: number = UserType.regular.value) {
     const data = {
         userId: user_id,
         password: password,
@@ -128,31 +128,31 @@ async function insertNew(user_id, password, type=UserType.regular.value) {
 
 /**
  * Checks if a user exists in the DB
- * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @param user_ref ObjectId of the user
  * @returns true if the user exists, false otherwise
  */
-async function userExistsByRef(user_ref) {
-    const user = await getOne({_id: user_ref});
+async function userExistsByRef(user_ref: mongoose.Types.ObjectId) {
+    const user = await getOne({_id: user_ref}, "");
     return user !== null;
 }
 
 /**
  * Gets the object reference of a user
- * @param {String} user_id - ID of the user
+ * @param user_id ID of the user
  * @returns User document
  */
-async function getReferenceByUserId(user_id) {
+async function getReferenceByUserId(user_id: string) {
     return await getOne({userId: user_id}, "_id");
 }
 
 /**
  * Gets all user IDs, filtering by "similar" users if a reference user is provided
- * @param {String} reference_user_id - ID of the user to use as a reference for filtering
- * @param {Boolean} ignore_test_users - true if test and demo users must be ignored, false otherwise
+ * @param reference_user_id ID of the user to use as a reference for filtering
+ * @param ignore_test_users True if test and demo users must be ignored, false otherwise
  * @returns List of User documents
  */
-async function getAllUsersIds(reference_user_id=undefined, ignore_test_users=false) {
-    let filter = {};
+async function getAllUsersIds(reference_user_id: string | undefined = undefined, ignore_test_users: boolean = false) {
+    let filter: any = {};
     if (reference_user_id !== undefined) {
         // Get the data of the reference user
         const reference_user = await getOne({userId: reference_user_id}, "");
@@ -174,79 +174,79 @@ async function getAllUsersIds(reference_user_id=undefined, ignore_test_users=fal
 
 /**
  * Updates the ID of a user
- * @param {String} old_user_id - Current ID of the user
- * @param {String} new_user_id - New ID to set
+ * @param old_user_id Current ID of the user
+ * @param new_user_id New ID to set
  * @returns User document
  */
-async function setUserIdByUserId(old_user_id, new_user_id) {
+async function setUserIdByUserId(old_user_id: string, new_user_id: string) {
     return await setOne({userId: old_user_id}, {userId: new_user_id});
 }
 
 /**
  * Gets the password of a user
- * @param {String} user_id - ID of the user
+ * @param user_id ID of the user
  * @returns User document
  */
-async function getPasswordByUserId(user_id) {
+async function getPasswordByUserId(user_id: string) {
     return await getOne({userId: user_id}, "_id password");
 }
 
 /**
  * Updates the password of a user
- * @param {String} user_id - ID of the user
- * @param {String} hashed_new_pwd - new hashed password to store
+ * @param user_id ID of the user
+ * @param hashed_new_pwd New hashed password to store
  * @returns User document
  */
-async function setPasswordOfUserId(user_id, hashed_new_pwd) {
+async function setPasswordOfUserId(user_id: string, hashed_new_pwd: string) {
     return await setOne({userId: user_id}, {password: hashed_new_pwd});
 }
 
 /**
  * Updates the nickname of a user
- * @param {String} user_id - ID of the user
- * @param {String} nickname - nickname to set
+ * @param user_id ID of the user
+ * @param nickname Nickname to set
  * @returns User document
  */
-async function setNicknameOfUserId(user_id, nickname) {
+async function setNicknameOfUserId(user_id: string, nickname: string) {
     return await setOne({userId: user_id}, {nickname: nickname});
 }
 
 /**
  * Gets the type of a user
- * @param {String} user_id - ID of the user
+ * @param user_id ID of the user
  * @returns User document
  */
-async function getTypeOfUserId(user_id) {
+async function getTypeOfUserId(user_id: string) {
     return await getOne({userId: user_id}, "-_id type");
 }
 
 /**
  * Updates the type of a user
- * @param {String} user_id - ID of the user
- * @param {Number} new_type - Index of the type to set
+ * @param user_id ID of the user
+ * @param new_type Index of the type to set
  * @returns User document
  */
-async function setTypeOfUserId(user_id, new_type) {
+async function setTypeOfUserId(user_id: string, new_type: number) {
     return await setOne({userId: user_id}, {type: new_type});
 }
 
 /**
  * Gets the session of a user
- * @param {String} user_id - ID of the user
+ * @param user_id ID of the user
  * @returns User document
  */
-async function getSessionByUserId(user_id) {
+async function getSessionByUserId(user_id: string) {
     return await getOne({userId: user_id}, "-_id session");
 }
 
 /**
  * Updates the session of a user
- * @param {String} user_id - ID of the user
- * @param {String} session_id - ID of the session
- * @param {Date} expiration_date - expiration date of the session
+ * @param user_id ID of the user
+ * @param session_id ID of the session
+ * @param expiration_date Expiration date of the session
  * @returns User document
  */
-async function setSessionOfUserId(user_id, session_id, expiration_date) {
+async function setSessionOfUserId(user_id: string, session_id: string, expiration_date: Date) {
     return await setOne({userId: user_id}, {session: {
         sessionId: session_id,
         expirationDate: expiration_date
@@ -255,31 +255,32 @@ async function setSessionOfUserId(user_id, session_id, expiration_date) {
 
 /**
  * Gets all public information of a user
- * @param {String} user_id - ID of the user
+ * @param user_id ID of the user
  * @returns User document
  */
-async function getPublicInfoByUserId(user_id) {
+async function getPublicInfoByUserId(user_id: string) {
     return await getOneAndPopulate({userId: user_id}, "-_id -__v -password -session");
 }
 
 /**
  * Sets all public information of a user
- * @param {String} user_id - ID of the user
- * @param {Number} country - Index of the country tag to set
- * @param {Number} job - Index of the job tag to set
- * @param {Number} job_type - Index of the jobType tag to set
- * @param {Number} job_country - Index of the jobCountry tag to set
- * @param {Number} work_time - Index of the workTime tag to set
- * @param {Number} remote_type - Index of the remoteType tag to set
+ * @param user_id ID of the user
+ * @param country Index of the country tag to set
+ * @param job Index of the job tag to set
+ * @param job_type Index of the jobType tag to set
+ * @param job_country Index of the jobCountry tag to set
+ * @param work_time Index of the workTime tag to set
+ * @param remote_type Index of the remoteType tag to set
  * @returns User document
  */
-async function setPublicInfoOfUserId(user_id, country, job, job_type, job_country, work_time, remote_type) {
+async function setPublicInfoOfUserId(user_id: string, country: number, job: number, job_type: number,
+    job_country: number, work_time: number, remote_type: number) {
     // Get the tags references by their index and type
     // If a reference is found, add it to the object that will be used to update the User document
     let tags_indeces = [country, job, job_type, job_country, work_time, remote_type];
     let tags_types = [tags.TagType.country, tags.TagType.job, tags.TagType.jobType, tags.TagType.country, tags.TagType.workTime, tags.TagType.remoteType];
     let user_fields = ["country", "job", "jobType", "jobCountry", "workTime", "remoteType"];
-    let update_object = {};
+    let update_object: any = {};
     for (let i = 0; i < tags_indeces.length; i++) {
         const tag_ref = await tags.getReferenceByIndexAndType(tags_indeces[i], tags_types[i].value);
         if (tag_ref !== null) {
@@ -292,10 +293,10 @@ async function setPublicInfoOfUserId(user_id, country, job, job_type, job_countr
 
 /**
  * Deletes a user by its reference
- * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @param user_ref ObjectId of the user
  * @returns DeleteResult object
  */
-async function deleteUserByRef(user_ref) {
+async function deleteUserByRef(user_ref: mongoose.Types.ObjectId) {
     return await deleteOne({_id: user_ref});
 }
 
@@ -304,7 +305,7 @@ async function deleteUserByRef(user_ref) {
  */
 const User = mongoose.model("User", userSchema);
 
-module.exports = {
+export default {
     userIdLength,
     sessionIdLength,
     UserType,

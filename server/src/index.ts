@@ -17,10 +17,10 @@ const day_ms = 24 * 60 * 60 * 1000;
 
 /* ==================== Express.js server initialization ==================== */
 
-let options = {key: "", cert: ""};
+let options = {key: Buffer.from(""), cert: Buffer.from("")};
 if (process.env.ENV === "PROD") {
-    options.key = fs.readFileSync(process.env.KEY_PATH || "").toString();
-    options.cert = fs.readFileSync(process.env.CERT_PATH || "").toString();
+    options.key = fs.readFileSync(process.env.KEY_PATH || "");
+    options.cert = fs.readFileSync(process.env.CERT_PATH || "");
 }
 
 const app = express();

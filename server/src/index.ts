@@ -10,7 +10,7 @@ require("dotenv").config();
 
 import db from "./db/mongo.js";
 import cache from "./cache/cache.js";
-const jobs = require("./jobs/jobs.js");
+import jobs from "./jobs/jobs.js";
 import utils from "./utils.js";
 
 const day_ms = 24 * 60 * 60 * 1000;

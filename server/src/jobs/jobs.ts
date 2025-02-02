@@ -1,4 +1,4 @@
-import cron from "cron";
+import { CronJob } from "cron";
 import usersdel from "./functions/usersdel.js";
 import cacheup from "./functions/cacheup.js";
 
@@ -6,7 +6,7 @@ const timezone = "Europe/Berlin";
 
 function init() {
     // User accounts deletion
-    new cron.CronJob(
+    new CronJob(
         "0 1 * * *",                // at 01:00
         usersdel.deleteUsersJob,
         null,
@@ -15,7 +15,7 @@ function init() {
     );
 
     // Cache periodic refresh
-    new cron.CronJob(
+    new CronJob(
         "* * * * *",                // every minute
         cacheup.checkAndUpdateCache,
         null,

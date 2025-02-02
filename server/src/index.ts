@@ -32,7 +32,7 @@ app.use(session({
     resave: false,
     cookie: {maxAge: day_ms}
 }));
-app.use(express.static(__dirname + "build"));
+app.use(express.static(path.join(__dirname, "../../build")));
 app.use(express.json());
 
 async function generateUserId() {
@@ -666,7 +666,7 @@ app.get("/prices/:key", async (req, res) => {
 
 app.get("/*", (req, res) => {
     // Refresh handler
-    res.sendFile(path.join(__dirname, "build/index.html"));
+    res.sendFile(path.join(__dirname, "../../build/index.html"));
     // res.redirect("/");
 });
 
@@ -676,8 +676,8 @@ db.connect(process.env.DB_URI || "")
         await cache.init();
         jobs.init();
     })
-    .catch(() => {
-        console.error("Cannot connect to DB: exiting");
+    .catch((err: any) => {
+        console.error(err);
         process.exit(1);
     });
 

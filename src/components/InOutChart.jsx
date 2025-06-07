@@ -22,7 +22,7 @@ import { RiFileExcel2Line } from "react-icons/ri";
 export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const { language } = React.useContext(LanguageContext);
   const [incomesArray, setIncomesArray] = useState([]);
-  const [expensesArray, setExpensesArray] = useState([]);
+  const [outflowsArray, setOutflowsArray] = useState([]);
 
   const greyScale1 = Math.floor(Math.random() * 256);
   const greyColor1 = `rgb(${greyScale1}, ${greyScale1}, ${greyScale1})`;
@@ -35,7 +35,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
       if (userData) {
         try {
             setIncomesArray(userData.incomesArray);
-            setExpensesArray(userData.expensesArray);  
+            setOutflowsArray(userData.expensesArray);  
             
         } catch (error) {
           console.error('Error', error);
@@ -48,7 +48,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
 
   const headers = [
     { label: languages[language].general.month, key: 'name' },
-    { label: languages[language].general.expenses, key: languages[language].general.expenses },
+    { label: languages[language].general.outflows, key: languages[language].general.outflows },
     { label: languages[language].general.incomes, key: languages[language].general.incomes },
   ];
 
@@ -64,7 +64,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
 
     lastTwelveMonths.push({
       name: monthName,
-      [languages[language].general.expenses]: expensesArray[i] || 0, // Usa 0 se non ci sono dati
+      [languages[language].general.outflows]: outflowsArray[i] || 0, // Usa 0 se non ci sono dati
       [languages[language].general.incomes]: incomesArray[i] || 0, // Usa 0 se non ci sono dati
       amt: 0, // Aggiungi eventuali dati aggiuntivi
     });
@@ -76,7 +76,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
     <SectionInOut style={{ position: 'relative' }}>
       {/* <button onClick={downloadPNG}>Download PNG</button> */}
       <CSVLink data={data} headers={headers}
-        filename={`incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
+        filename={`incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
         className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100"
       >
         <BsFiletypeCsv className="text-paciGreen text-xl" />
@@ -84,7 +84,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
 
       <button
           disabled
-          onClick={() => downloadExcel(data, headers, `incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+          onClick={() => downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
           className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200"
         >
           <RiFileExcel2Line className="text-paciGreen text-xl" />
@@ -117,9 +117,9 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
         />
         <Legend />
         <Line type="monotone" dataKey={languages[language].general.incomes} stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey={languages[language].general.expenses} stroke={isHidden ? greyColor2 : "#ff3838"} />
+        <Line type="monotone" dataKey={languages[language].general.outflows} stroke={isHidden ? greyColor2 : "#ff3838"} />
         
-        <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
+        {/* <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
       </LineChart>
     </SectionInOut>
   );

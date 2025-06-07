@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ButtonGroup, Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSearch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 // import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@mui/material/Typography'
 import axios from 'axios';
@@ -29,6 +29,7 @@ import {
   MuiCustomDialogContentText,
   MuiCustomDialogActions,
 } from '../styles/MyStyled';
+import { incomeCategoryColors, outflowCategoryColors } from '../data/categoryColors';
 // import { set } from "mongoose";
 
 const currentDate = new Date().toISOString().split('T')[0];
@@ -41,8 +42,8 @@ const currentDate = new Date().toISOString().split('T')[0];
 //   setIncomeDate(event.target.value);
 // };
 
-// const handleExpenseDateChange = (setExpenseDate, event) => {
-//   setExpenseDate(event.target.value);
+// const handleOutflowDateChange = (setOutflowDate, event) => {
+//   setOutflowDate(event.target.value);
 // };
 
 const handleChangeBalance = async (setIsConfirmBalanceOpen) => {
@@ -103,22 +104,26 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const { language } = React.useContext(LanguageContext);
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
   const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
-  const [isConfirmExpenseOpen, setIsConfirmExpenseOpen] = useState(false);
+  const [isConfirmOutflowOpen, setIsConfirmOutflowOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
   const [updateInExBalanceSuccess, setUpdateInExBalanceSuccess] = useState(false);
   const [updateIncomesSuccess, setUpdateIncomesSuccess] = useState(false);
-  const [updateExpensesSuccess, setUpdateExpensesSuccess] = useState(false);
+  const [updateOutflowsSuccess, setUpdateOutflowsSuccess] = useState(false);
   const [deleteIncomesSuccess, setDeleteIncomesSuccess] = useState(false);
-  const [deleteExpensesSuccess, setDeleteExpensesSuccess] = useState(false);
+  const [deleteOutflowsSuccess, setDeleteOutflowsSuccess] = useState(false);
+  const [deleteInvestmentSuccess, setDeleteInvestmentSuccess] = useState(false);
+  const [deleteInvestmentDate, setDeleteInvestmentDate] = useState("");
+  const [deleteInvestmentAmount, setDeleteInvestmentAmount] = useState("");
+  const [showConfirmationDeleteInvestment, setShowConfirmationDeleteInvestment] = useState(false);
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
-  const [showConfirmationDeleteExpense, setShowConfirmationDeleteExpense] = useState(false);
+  const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   const [deleteIncomeDate, setDeleteIncomeDate] = useState("");
   const [deleteIncomeAmount, setDeleteIncomeAmount] = useState("");
-  const [deleteExpenseDate, setDeleteExpenseDate] = useState("");
-  const [deleteExpenseAmount, setDeleteExpenseAmount] = useState("");
+  const [deleteOutflowDate, setDeleteOutflowDate] = useState("");
+  const [deleteOutflowAmount, setDeleteOutflowAmount] = useState("");
   const [noteIncomeAreaValue, setNoteIncomeAreaValue] = useState("");
-  const [noteExpenseAreaValue, setNoteExpenseAreaValue] = useState("");
+  const [noteOutflowAreaValue, setNoteOutflowAreaValue] = useState("");
   // const [isLoading, setIsLoading] = useState(true);
   const [bankReal, setBankReal] = useState(0);
   const [cashReal, setCashReal] = useState(0);
@@ -128,23 +133,39 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   const [bitcoinReal, setBitcoinReal] = useState(0);
   const [digitalServicesReal, setDigitalServicesReal] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
-  const [categoryExpense, setCategoryExpense] = useState({ key: "", value: "" });
-  const [typoExpense, setTypoExpense] = useState({ key: "", value: "" });
+  const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
+  const [typoOutflow, setTypoOutflow] = useState({ key: "", value: "" });
+  //const [typoInvestment, setTypoInvestment] = useState({ key: "", value: "" });
   const [income, setIncome] = useState("");
-  const [expense, setExpense] = useState("");
+  const [outflow, setOutflow] = useState("");
   // const [lastIncomesAdds, setLastIncomesAdds] = useState([]);
-  // const [lastExpensesAdds, setLastExpensesAdds] = useState([]);
+  // const [lastOutflowsAdds, setLastOutflowsAdds] = useState([]);
   const [allIncomesAdds, setAllIncomesAdds] = useState([]);
-  const [allExpensesAdds, setAllExpensesAdds] = useState([]);
+  const [allOutflowsAdds, setAllOutflowsAdds] = useState([]);
   const [incomeDate, setIncomeDate] = useState(currentDate);
-  const [expenseDate, setExpenseDate] = useState(currentDate);
+  const [outflowDate, setOutflowDate] = useState(currentDate);
   const [balanceDate, setBalanceDate] = useState(currentDate);
   const [activePage, setActivePage] = useState("bilancio");
-  const [expensesTags, setExpensesTags] = useState([]);
+  const [OutflowsTags, setOutflowsTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
   const [selectedIncomesMonth, setSelectedIncomesMonth] = useState(0); // Set default selected month as the first month
-  const [selectedExpensesMonth, setSelectedExpensesMonth] = useState(0); 
+  const [selectedOutflowsMonth, setSelectedOutflowsMonth] = useState(0);
+
+  //filtering
+  const [incomeCategoryFilter, setIncomeCategoryFilter] = useState('');
+  const [incomeDateFilter, setIncomeDateFilter] = useState('');
+  const [incomeNoteFilter, setIncomeNoteFilter] = useState('');
+  const [outflowCategoryFilter, setOutflowCategoryFilter] = useState('');
+  const [outflowDateFilter, setOutflowDateFilter] = useState('');
+  const [outflowNoteFilter, setOutflowNoteFilter] = useState('');
+  
+  // UI/UX state for table header filters
+  const [showIncomeNoteInput, setShowIncomeNoteInput] = useState(false);
+  const [showIncomeDatePicker, setShowIncomeDatePicker] = useState(false);
+  const [showOutflowNoteInput, setShowOutflowNoteInput] = useState(false);
+  const [showOutflowDatePicker, setShowOutflowDatePicker] = useState(false);
+  const [outflowTypologyFilter, setOutflowTypologyFilter] = useState('');
   
 
   const options = {
@@ -170,14 +191,17 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             setBankReal(userData? userData.bankReal : 0);
             setCashReal(userData ? userData.cashReal : 0);
             setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-            setExpensesTags(userData ? userData.expensesTags : []);
+            setOutflowsTags(userData ? userData.expensesTags : []);
             setIncomesTags(userData ? userData.incomesTags : []);
             setPaymentTags(userData ? userData.paymentTags : []);
+            //setTypoInvestment({ key: userData ? userData.typoInvestment.key : "", value: userData ? userData.typoInvestment.value : "" });
 
-            // setLastExpensesAdds(userData ? userData.lastExpenses : []);
+            // setLastOutflowsAdds(userData ? userData.lastExpenses : []);
             // setLastIncomesAdds(userData ? userData.lastIncomes : []); 
 
-            setAllExpensesAdds(userData ? userData.allExpenses : []);
+            //console.log("userDataExpense:", userData.allExpenses);
+
+            setAllOutflowsAdds(userData ? userData.allExpenses : []);
             setAllIncomesAdds(userData ? userData.allIncomes : []); 
             
             // setIsLoading(false); // Imposta isLoading su false quando le operazioni sono state completate
@@ -202,17 +226,17 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
     setIncomeDate(inputDate);
   };
   
-  const handleExpenseDateChange = (event) => {
+  const handleOutflowDateChange = (event) => {
     let inputDate = event.target.value;
-    setExpenseDate(inputDate);
+    setOutflowDate(inputDate);
   };
 
   const handleIncomesMonthChange = (event) => {
     setSelectedIncomesMonth(event.target.value); // Update the selected month
   };
 
-  const handleExpensesMonthChange = (event) => {
-    setSelectedExpensesMonth(event.target.value); 
+  const handleOutflowsMonthChange = (event) => {
+    setSelectedOutflowsMonth(event.target.value); 
   };
 
   // Array of month names
@@ -232,25 +256,69 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   };
   
   // Get the current month and year
-  const currentMonth = new Date().getMonth() + 1; // JavaScript months are 0-based, so add 1
+  const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  // Initialize monthOptions as an empty array
-  let monthOptions = [];
-  let year = currentYear;
-  
-  // Iterate over allExpensesAdds (could be used also allIncomesAdds, they have the same length)
-  for (let i = 0; i < Object.keys(allExpensesAdds).length; i++) {
-    // Calculate the month and year for the current index
-    let month = ((currentMonth - i - 1 + 12) % 12) + 1; // Subtract 1 before the modulo operation and add 1 after
-    
+  // Build the last 12 months (including current)
+  let monthsArray = [];
+  for (let i = 0; i < 12; i++) {
+    let d = new Date(currentYear, currentMonth - 1 - i, 1);
+    monthsArray.push({
+      month: d.getMonth() + 1,
+      year: d.getFullYear()
+    });
+  }
+  monthsArray.reverse(); // so oldest first, newest last
 
-    if (month === 12 && i !== 0) {
-      year--;
+  // Build monthOptions
+  let monthOptions = monthsArray.map((obj, idx) => ({
+    value: idx,
+    label: `${monthNames[obj.month]} ${obj.year}`,
+    month: obj.month,
+    year: obj.year
+  }));
+
+  const incomeMonthOptions = monthOptions;
+  const outflowMonthOptions = monthOptions;
+
+  let currentMonthIdx = monthsArray.findIndex(obj => obj.month === currentMonth && obj.year === currentYear);
+
+  useEffect(() => {
+    if (monthOptions.length > 0) {
+      if (currentMonthIdx !== -1) {
+        setSelectedIncomesMonth(currentMonthIdx);
+        setSelectedOutflowsMonth(currentMonthIdx);
+      } else {
+        setSelectedIncomesMonth(monthOptions.length - 1);
+        setSelectedOutflowsMonth(monthOptions.length - 1);
+      }
     }
-  
-    // Add an object with value and label properties to monthOptions
-    monthOptions.push({ value: i, label: `${monthNames[month]} ${year}` });
+  }, [userData]);
+
+  const selectedIncomeMonthKey = monthOptions[selectedIncomesMonth]
+    ? `${monthOptions[selectedIncomesMonth].month}-${monthOptions[selectedIncomesMonth].year}`
+    : '';
+  const selectedOutflowMonthKey = monthOptions[selectedOutflowsMonth]
+    ? `${monthOptions[selectedOutflowsMonth].month}-${monthOptions[selectedOutflowsMonth].year}`
+    : '';
+
+  // Sostituisci monthOptions con incomeMonthOptions/outflowMonthOptions dove necessario
+  // E filtra i dati per il mese selezionato
+  // Funzione aggiornata per trovare i dati del mese selezionato
+  function getAddsForMonth(allAdds, selectedMonthKey) {
+    if (!Array.isArray(allAdds)) return [];
+    for (let i = 0; i < allAdds.length; i++) {
+      const arr = allAdds[i];
+      if (Array.isArray(arr) && arr.length > 0) {
+        // Prendi la data del primo elemento
+        const d = new Date(arr[0].date);
+        // Costruisci la chiave mese-anno
+        const key = `${d.getMonth() + 1}-${d.getFullYear()}`;
+        if (key === selectedMonthKey) return arr;
+      }
+    }
+    // Se non trova nulla, restituisci array vuoto
+    return [];
   }
 
   const handleConfirmBalance = async (fetchData, setIsConfirmBalanceOpen, setBalanceDate, setUpdateBalanceSuccess, handleSetIsUpdated, balanceDate, bankReal, cashReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal) => {
@@ -293,12 +361,12 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   };
 
 
-  const createInExJson = (isExpense, date, amount, notes, payment_type, category_tag) => {
+  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag) => {
     return {
       expense: {
         date: date,
         amount: amount,
-        is_expense: isExpense,
+        is_expense: isOutflow,
         payment_type: payment_type,
         category_tag: category_tag,
         notes: notes
@@ -307,15 +375,15 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   };
 
 
-  const handleConfirmInEx = async (isExpense) => {
+  const handleConfirmInEx = async (isOutflow) => {
     let inExJson = {};
-    if (isExpense) {
-      setIsConfirmExpenseOpen(false);
-      inExJson = createInExJson(true, expenseDate, expense, noteExpenseAreaValue, typoExpense.key, categoryExpense.key);
-      setNoteExpenseAreaValue("");
-      setCategoryExpense({ key: "", value: "" });
-      setTypoExpense({ key: "", value: "" });
-      setExpenseDate(currentDate);
+    if (isOutflow) {
+      setIsConfirmOutflowOpen(false);
+      inExJson = createInExJson(true, outflowDate, outflow, noteOutflowAreaValue, typoOutflow.key, categoryOutflow.key);
+      setNoteOutflowAreaValue("");
+      setCategoryOutflow({ key: "", value: "" });
+      setTypoOutflow({ key: "", value: "" });
+      setOutflowDate(currentDate);
     } else {
       setIsConfirmIncomeOpen(false);
       inExJson = createInExJson(false, incomeDate, income, noteIncomeAreaValue, 0, categoryIncome.key);
@@ -341,11 +409,11 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
           const valueBalanceSelected = parseFloat(options[selectedOption]);
 
-          const expenseNumber = parseFloat(expense);
+          const outflowNumber = parseFloat(outflow);
           const incomeNumber = parseFloat(income);
 
           let newValue = 0;
-          if(isExpense) newValue = valueBalanceSelected - expenseNumber;
+          if(isOutflow) newValue = valueBalanceSelected - outflowNumber;
           else newValue = valueBalanceSelected + incomeNumber;
         
 
@@ -388,14 +456,14 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
         } 
         else {
           handleSetIsUpdated(false); 
-          if (isExpense) setUpdateExpensesSuccess(true);
+          if (isOutflow) setUpdateOutflowsSuccess(true);
           else setUpdateIncomesSuccess(true);
           fetchData();
         }
-        //window.umami.trackEvent('InExUpdate', 'IncomeExpense');
+        //window.umami.trackEvent('InExUpdate', 'IncomeOutflow');
           
       } else{
-        alert("Error in the update of the expense");
+        alert("Error in the update of the outflow");
       }
 
     } catch (error) {
@@ -404,21 +472,21 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   };
   
   
-  const handleAddExpenses = async () => {
+  const handleAddOutflows = async () => {
   
     // Verifica se income è uguale a 0 e/o categoryIncome è vuoto
-    if (categoryExpense.value === "") {
+    if (categoryOutflow.value === "") {
       alert("Select a category");
       return; 
-    } else if (typoExpense.value === "") {
+    } else if (typoOutflow.value === "") {
       alert("Select a payment type");
       return; 
-    } else if ((Number(expense) === 0 || expense === "" || expense === undefined)) { 
+    } else if ((Number(outflow) === 0 || outflow === "" || outflow === undefined)) { 
       alert("Insert a valid value greater than 0");
       return;
     }
   
-    setIsConfirmExpenseOpen(true);
+    setIsConfirmOutflowOpen(true);
   };
 
   const handleIncomesDelete = async (fetchData, setDeleteIncomesSuccess, handleSetIsUpdated, dateIncome, amountIncome) => { //data, 
@@ -436,7 +504,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
       setDeleteIncomesSuccess(true);
       fetchData();
-      //window.umami.trackEvent('incomeDelete', 'IncomeExpense');
+      //window.umami.trackEvent('incomeDelete', 'IncomeOutflow');
     }
     else {
       alert("Error in the update of the income");
@@ -444,11 +512,11 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
   };
   
-  const handleExpensesDelete = async (fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, dateExpense, amountExpense) => {
+  const handleOutflowsDelete = async (fetchData, setDeleteOutflowsSuccess, handleSetIsUpdated, dateOutflow, amountOutflow) => {
     const data = {
       expense : {
-        date : dateExpense, //must be an object date
-        amount : amountExpense,
+        date : dateOutflow, //must be an object date
+        amount : amountOutflow,
         is_expense : true,
       }
     }
@@ -456,75 +524,288 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
   
     if (incomesDelete.status === 200) {
       handleSetIsUpdated(false); // Forza il re-render di UserProvider
-      setDeleteExpensesSuccess(true);
+      setDeleteOutflowsSuccess(true);
       fetchData();
-      //window.umami.trackEvent('expenseDelete', 'IncomeExpense');
+      //window.umami.trackEvent('outflowDelete', 'IncomeOutflow');
     }
     else {
-      alert("Error in the update of the expense");
+      alert("Error in the update of the outflow");
     }
   };
   
 
-  function renderIncomeItems(chosenExpensesToShow) {
-    return chosenExpensesToShow.map((add, index) => {
-      const incomeDate = new Date(add.date);
-      const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
-
-      const handleDelete = () => {
-        setDeleteIncomeAmount(add.amount);
-        setDeleteIncomeDate(add.date);
-        setShowConfirmationDeleteIncome(true);
-      };
-  
-      return (
-        <tr key={index}>
-          <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
-          <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
-          <td>{isHidden ? '****' : add.notes}</td>
-          <td>{isHidden ? '****' : formattedDate}</td>
-          <td>
-            <button data-umami-event="deleteIncome" onClick={handleDelete}>
-                <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </td>
-        </tr>
-      );
-    });
-  }
-  
-  
-  
-  
-  function renderExpenseItems(chosenExpensesToShow) {
-    return chosenExpensesToShow.map((add, index) => {
-      const expenseDate = new Date(add.date);
-      const formattedDate = `${expenseDate.getDate()}/${expenseDate.getMonth() + 1}/${expenseDate.getFullYear()}`;
-
-      const handleDelete = () => {
-        setDeleteExpenseDate(add.date);
-        setDeleteExpenseAmount(add.amount);
-        setShowConfirmationDeleteExpense(true);
-      };
-
-      return (
-        <tr key={index}>
-          <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
-          <td>{isHidden ? '****' : add.paymentType.translations[language]}</td>
-          <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
-          <td>{isHidden ? '****' : add.notes}</td>
-          <td>{isHidden ? '****' : formattedDate}</td>
-          <td>
-            <button data-umami-event="deleteExpense" onClick={handleDelete}>
-                <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </td>
-        </tr>
-      );
-    });
+  function getGradientForCategory(baseColor) {
+    // Se il colore è in formato rgba, crea una versione più trasparente per il gradient
+    // Es: rgba(100,200,100,0.7) -> da 0.18 a 0.38
+    if (!baseColor) return 'linear-gradient(90deg, rgba(220,220,220,0.10) 0%, rgba(240,240,240,0.18) 100%)';
+    const match = baseColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if (match) {
+      const r = match[1], g = match[2], b = match[3];
+      // Usa alpha basso a sinistra, più alto a destra
+      return `linear-gradient(90deg, rgba(${r},${g},${b},0.18) 0%, rgba(${r},${g},${b},0.38) 100%)`;
+    }
+    // fallback: colore solido
+    return baseColor;
   }
 
-  
+  // Funzione per calcolare il totale visibile e il totale generale
+  function getTotals(filteredAdds, allAdds, isIncome) {
+    // filteredAdds: array di oggetti visibili (dopo filtri)
+    // allAdds: array di tutti gli oggetti del mese selezionato
+    const totalFiltered = filteredAdds.reduce((sum, add) => sum + (add.amount || 0), 0);
+    const totalAll = (Array.isArray(allAdds) ? allAdds : []).reduce((sum, add) => sum + (add.amount || 0), 0);
+    return {
+      totalFiltered,
+      totalAll,
+    };
+  }
+
+  function renderIncomeItems(chosenIncomesToShow) {
+    const filtered = chosenIncomesToShow.filter(add =>
+      (!incomeCategoryFilter || add.categoryTag.translations[language] === incomeCategoryFilter) &&
+      (!incomeNoteFilter || (add.notes && add.notes.toLowerCase().includes(incomeNoteFilter.toLowerCase()))) &&
+      (!incomeDateFilter || new Date(add.date).toISOString().slice(0, 10) === incomeDateFilter)
+    );
+    const totals = getTotals(filtered, chosenIncomesToShow, true);
+    return [
+      ...filtered.map((add, index) => {
+        const incomeDate = new Date(add.date);
+        const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
+        const handleDelete = () => {
+          setDeleteIncomeAmount(add.amount);
+          setDeleteIncomeDate(add.date);
+          setShowConfirmationDeleteIncome(true);
+        };
+        // Find the tag object in incomesTags by index/key
+        const tagObj = incomesTags.find(item => String(item.index) === String(add.categoryTag.key));
+        const englishLabel = tagObj ? tagObj.label : undefined;
+        const baseColor = incomeCategoryColors[englishLabel] || 'rgba(200,200,200,0.10)';
+        const rowGradient = getGradientForCategory(baseColor);
+        return (
+          <tr key={index} style={{ background: rowGradient }}>
+            <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
+            <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+            <td>{isHidden ? '****' : add.notes}</td>
+            <td>{isHidden ? '****' : formattedDate}</td>
+            <td>
+              <button data-umami-event="deleteIncome" onClick={handleDelete}>
+                  <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </td>
+          </tr>
+        );
+      }),
+      // Riga totale
+      <tr key="total-income" style={{ background: '#e6f4f0', fontWeight: 600 }}>
+        <td colSpan={1} style={{ textAlign: 'right' }}>{languages[language].general.total}</td>
+        <td colSpan={1} style={{ textAlign: 'center' }}>{isHidden ? '****' : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+        <td colSpan={3}></td>
+      </tr>
+    ];
+  }
+
+  function renderOutflowItems(chosenOutflowsToShow) {
+    const filtered = chosenOutflowsToShow.filter(add =>
+      (!outflowCategoryFilter || add.categoryTag.translations[language] === outflowCategoryFilter) &&
+      (!outflowTypologyFilter || add.paymentType.translations[language] === outflowTypologyFilter) &&
+      (!outflowNoteFilter || (add.notes && add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
+      (!outflowDateFilter || new Date(add.date).toISOString().slice(0, 10) === outflowDateFilter)
+    );
+    const totals = getTotals(filtered, chosenOutflowsToShow, false);
+    return [
+      ...filtered.map((add, index) => {
+        const outflowDate = new Date(add.date);
+        const formattedDate = `${outflowDate.getDate()}/${outflowDate.getMonth() + 1}/${outflowDate.getFullYear()}`;
+        const handleDelete = () => {
+          setDeleteOutflowDate(add.date);
+          setDeleteOutflowAmount(add.amount);
+          setShowConfirmationDeleteOutflow(true);
+        };
+        // Find the tag object in OutflowsTags by index/key
+        const tagObj = OutflowsTags.find(item => String(item.index) === String(add.categoryTag.key));
+        const englishLabel = tagObj ? tagObj.label : undefined;
+        const baseColor = outflowCategoryColors[englishLabel] || 'rgba(200,200,200,0.10)';
+        const rowGradient = getGradientForCategory(baseColor);
+        return (
+          <tr key={index} style={{ background: rowGradient }}>
+            <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
+            <td>{isHidden ? '****' : add.paymentType.translations[language]}</td>
+            <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+            <td>{isHidden ? '****' : add.notes}</td>
+            <td>{isHidden ? '****' : formattedDate}</td>
+            <td>
+              <button data-umami-event="deleteOutflow" onClick={handleDelete}>
+                  <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </td>
+          </tr>
+        );
+      }),
+      // Riga totale
+      <tr key="total-outflow" style={{ background: '#ffeaea', fontWeight: 600 }}>
+        <td colSpan={2} style={{ textAlign: 'right' }}>{languages[language].general.total}</td>
+        <td colSpan={1} style={{ textAlign: 'center' }}>{isHidden ? '****' : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+        <td colSpan={3}></td>
+      </tr>
+    ];
+  }
+
+  // Ref per focus input note
+  const incomeNoteInputRef = React.useRef(null);
+  const outflowNoteInputRef = React.useRef(null);
+
+  // Funzione per ottenere il range di giorni del mese selezionato
+  function getDateRangeForMonth(monthOption) {
+    if (!monthOption) return { min: '', max: '' };
+    const year = monthOption.year;
+    const month = monthOption.month;
+    const firstDay = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDayNum = new Date(year, month, 0).getDate();
+    const lastDay = `${year}-${String(month).padStart(2, '0')}-${String(lastDayNum).padStart(2, '0')}`;
+    return { min: firstDay, max: lastDay };
+  }
+
+  // Header tabella condiviso
+  function renderTableHeader({
+    categoryFilter, setCategoryFilter, categoryOptions, categoryLabel,
+    noteFilter, setNoteFilter, noteInputRef, noteLabel,
+    dateFilter, setDateFilter, dateLabel, monthOption, theme,
+    showNoteInput, setShowNoteInput,
+    showDatePicker, setShowDatePicker,
+    typologyFilter, setTypologyFilter, typologyOptions, typologyLabel,
+    isOutflow
+  }) {
+    // Per overlay grigio chiaro
+    const dropdownStyle = {
+      background: '#fff',
+      color: '#111',
+      borderRadius: '6px',
+      textAlign: 'center',
+      minWidth: 120,
+      boxShadow: '0 2px 8px rgba(100,100,100,0.10)',
+      border: '1px solid #bbb',
+      fontWeight: 500
+    };
+    const { min, max } = getDateRangeForMonth(monthOption);
+    return (
+      <tr style={{ color: 'white', background: 'transparent' }}>
+        <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+          <select
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+            style={dropdownStyle}
+          >
+            <option value="">{categoryLabel}</option>
+            {categoryOptions.map(item => (
+              <option key={item.index} value={item.translations[language]}>
+                {item.translations[language]}
+              </option>
+            ))}
+          </select>
+        </th>
+        {isOutflow && (
+          <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <select
+              value={typologyFilter}
+              onChange={e => setTypologyFilter(e.target.value)}
+              style={dropdownStyle}
+            >
+              <option value="">{typologyLabel}</option>
+              {typologyOptions.map(item => (
+                item.label !== 'none' && (
+                  <option key={item.index} value={item.translations[language]}>
+                    {item.translations[language]}
+                  </option>
+                )
+              ))}
+            </select>
+          </th>
+        )}
+        {/* Value column always after category (income) or after typology (outflow) */}
+        <th style={{ textAlign: 'center', verticalAlign: 'middle', minWidth: 100 }}>
+          {languages[language].general.value}
+        </th>
+        <th style={{ textAlign: 'center', verticalAlign: 'middle', minWidth: 120 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {!showNoteInput ? (
+              <span style={{ color: 'white', marginRight: 6, cursor: 'pointer' }} onClick={() => setShowNoteInput(true)}>
+                {noteLabel} <FontAwesomeIcon icon={faSearch} />
+              </span>
+            ) : (
+              <input
+                ref={noteInputRef}
+                type="text"
+                placeholder={noteLabel}
+                value={noteFilter}
+                onChange={e => setNoteFilter(e.target.value)}
+                className="w-full"
+                style={{ color: 'white', background: 'transparent', textAlign: 'center', marginTop: 2 }}
+                onBlur={() => setShowNoteInput(false)}
+                autoFocus
+              />
+            )}
+          </div>
+        </th>
+        <th style={{ textAlign: 'center', verticalAlign: 'middle', minWidth: 120 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {!showDatePicker ? (
+              <span style={{ color: 'white', marginRight: 6, cursor: 'pointer' }} onClick={() => setShowDatePicker(true)}>
+                <FontAwesomeIcon icon={faCalendarAlt} /> {dateFilter ? dateFilter.split('-').reverse().join('/') : dateLabel}
+              </span>
+            ) : (
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={e => {
+                  setDateFilter(e.target.value);
+                  setShowDatePicker(false);
+                }}
+                className="w-full"
+                style={{ color: 'white', background: 'transparent', textAlign: 'center', marginTop: 2 }}
+                min={min}
+                max={max}
+                onBlur={() => setShowDatePicker(false)}
+                autoFocus
+              />
+            )}
+          </div>
+        </th>
+        <th style={{ textAlign: 'center', verticalAlign: 'middle' }}></th>
+      </tr>
+    );
+  }
+
+  // Wrapper e stile per input con simbolo valuta
+  const inputCurrencyWrapper = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '0.5em',
+    minWidth: 0,
+  };
+  const inputWithCurrency = {
+    textAlign: 'center',
+    padding: '8px 8px 8px 2em', // spazio a sinistra per il simbolo
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    color: '#333',
+    outline: 'none',
+    width: '140px', // larghezza uniforme
+    height: '40px', // altezza uniforme
+    fontSize: '1.05em',
+    background: 'white',
+    boxSizing: 'border-box',
+  };
+  const currencySymbolStyle = {
+    position: 'absolute',
+    left: '0.7em',
+    color: '#888',
+    fontSize: '0.95em', // più piccolo
+    pointerEvents: 'none',
+    top: '50%',
+    transform: 'translateY(-52%)', // leggermente più su per centratura visiva
+    lineHeight: 1,
+  };
 
 
   const renderPage = () => {
@@ -664,30 +945,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </Select>
             </label>
             <label>
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input
                   type="text"
                   value={income}
-                  onChange={(e) => handleInputChange(e, setIncome)} 
-                  onBlur={(e) => handleInputBlur(e, setIncome)}
+                  onChange={e => handleInputChange(e, setIncome)}
+                  onBlur={e => handleInputBlur(e, setIncome)}
                   placeholder="0"
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
+                  style={inputWithCurrency}
                 />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
               </div>
             </label>
             <div>
@@ -717,48 +984,83 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>{languages[language].insert.incomeSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
           {/* </div> */}
-          <TitleLastAdds theme={theme}>{languages[language].insert.incomeSection.titleListing}</TitleLastAdds>
-
-          <div className="flex justify-center items-center mb-2 ml-8">
-            <select className="text-black text-center font-normal text-base px-2 py-1" value={selectedIncomesMonth} onChange={handleIncomesMonthChange}>
-              {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
+          <TitleLastAdds 
+            theme={theme}>{languages[language].insert.incomeSection.titleListing}
+            <select className="text-black text-center font-normal mx-2 text-base px-2 py-1" value={selectedIncomesMonth} onChange={handleIncomesMonthChange}>
+              {incomeMonthOptions && incomeMonthOptions.length > 0 && incomeMonthOptions.map((option) => (
                 <option className="text-center" key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </select>
-          </div>
+          </TitleLastAdds>
+
           
+            
+          
+          
+          {(() => {
+            const allAdds = getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey);
+            const filtered = allAdds.filter(add =>
+              (!incomeCategoryFilter || add.categoryTag.translations[language] === incomeCategoryFilter) &&
+              (!incomeNoteFilter || (add.notes && add.notes.toLowerCase().includes(incomeNoteFilter.toLowerCase()))) &&
+              (!incomeDateFilter || new Date(add.date).toISOString().slice(0, 10) === incomeDateFilter)
+            );
+            if (
+              incomeCategoryFilter || incomeNoteFilter || incomeDateFilter
+            ) {
+              const totalAll = allAdds.reduce((sum, add) => sum + (add.amount || 0), 0);
+              return (
+                <div style={{ color: '#079164', fontWeight: 600, textAlign: 'right', marginRight: '2em', marginBottom: 4 }}>
+                  {languages[language].general.total} {allAdds.length > 0 ? totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0.00'} €
+                </div>
+              );
+            }
+            return null;
+          })()}
           <StyledTable theme={theme}>
-          
             <thead>
-              <tr>
-                <th>{languages[language].insert.incomeSection.tableColumns.category}</th>
-                <th>{languages[language].insert.incomeSection.tableColumns.value}</th>
-                <th>{languages[language].insert.incomeSection.tableColumns.note}</th>
-                <th>{languages[language].insert.incomeSection.tableColumns.date}</th>
-              </tr>
+              {renderTableHeader({
+                categoryFilter: incomeCategoryFilter,
+                setCategoryFilter: setIncomeCategoryFilter,
+                categoryOptions: incomesTags,
+                categoryLabel: languages[language].insert.incomeSection.tableColumns.category,
+                noteFilter: incomeNoteFilter,
+                setNoteFilter: setIncomeNoteFilter,
+                noteInputRef: incomeNoteInputRef,
+                noteLabel: languages[language].insert.incomeSection.tableColumns.note,
+                dateFilter: incomeDateFilter,
+                setDateFilter: setIncomeDateFilter,
+                dateLabel: 'Data',
+                monthOption: incomeMonthOptions[selectedIncomesMonth],
+                theme,
+                showNoteInput: showIncomeNoteInput,
+                setShowNoteInput: setShowIncomeNoteInput,
+                showDatePicker: showIncomeDatePicker,
+                setShowDatePicker: setShowIncomeDatePicker,
+                isOutflow: false
+              })}
             </thead>
             <tbody>
-              {allIncomesAdds && allIncomesAdds.length > 0 && renderIncomeItems(allIncomesAdds[selectedIncomesMonth])}
+              {renderIncomeItems(getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey))}
             </tbody>
           </StyledTable>
           
         </>
       );
-    } else if (activePage === "expenses") {
+    } else if (activePage === "outflows") {
       return (
         <>
           <StyledAddSection theme={theme}>
             <label>
-              <Select value={categoryExpense.value} 
+              <Select value={categoryOutflow.value} 
                   onChange={(event) => {
                       const selectedKey = event.target.value;
-                      const selectedItem = expensesTags.find((item) => item.index === selectedKey);
+                      const selectedItem = OutflowsTags.find((item) => item.index === selectedKey);
 
                       if (selectedItem) {
                         const selectedValue = selectedItem.translations[language];
-                        setCategoryExpense({ key: selectedKey, value: selectedValue });
+                        setCategoryOutflow({ key: selectedKey, value: selectedValue });
                       }
                     }}  
                   
@@ -766,16 +1068,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
                   renderValue={(value) => {
                     if (value === "") {
-                      return languages[language].insert.expenseSection.placeholderCategory;
+                      return languages[language].insert.outflowSection.placeholderCategory;
                     }
                     return value;
                   }}
                   >
 
                   <MenuItem value="">
-                    <em>{languages[language].insert.expenseSection.placeholderCategory}</em>
+                    <em>{languages[language].insert.outflowSection.placeholderCategory}</em>
                   </MenuItem>
-                  {expensesTags.map((item) => (
+                  {OutflowsTags.map((item) => (
                     <MenuItem key={item.index} value={item.index}>
                       {item.translations[language]} 
                     </MenuItem>
@@ -783,14 +1085,14 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </Select>
             </label>
             <label>
-              <Select value={typoExpense.value} 
+              <Select value={typoOutflow.value} 
                   onChange={(event) => {
                       const selectedKey = event.target.value;
                       const selectedItem = paymentTags.find((item) => item.index === selectedKey);
 
                       if (selectedItem) {
                         const selectedValue = selectedItem.translations[language];
-                        setTypoExpense({ key: selectedKey, value: selectedValue });
+                        setTypoOutflow({ key: selectedKey, value: selectedValue });
                       }
                     }}  
                   
@@ -798,13 +1100,13 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
 
                   renderValue={(value) => {
                     if (value === "") {
-                      return languages[language].insert.expenseSection.placeholderTypology;
+                      return languages[language].insert.outflowSection.placeholderTypology;
                     }
                     return value;
                   }}
                   >
                   <MenuItem value="">
-                    <em>{languages[language].insert.expenseSection.placeholderTypology}</em>
+                    <em>{languages[language].insert.outflowSection.placeholderTypology}</em>
                   </MenuItem>
                   {paymentTags.map((item) => (
                     // check if the item is not none because we don't want to show it
@@ -818,37 +1120,23 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               
             </label>
             <label>
-              <div style={{ display: "flex", alignItems: "center" }}>
-              <input
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input
                   type="text"
-                  value={expense}
-                  onChange={(e) => handleInputChange(e, setExpense)} 
-                  onBlur={(e) => handleInputBlur(e, setExpense)}
+                  value={outflow}
+                  onChange={e => handleInputChange(e, setOutflow)}
+                  onBlur={e => handleInputBlur(e, setOutflow)}
                   placeholder="0"
-                  style={{
-                    textAlign: "center",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    color: "#333",
-                    outline: "none",
-                    width: "120px",
-                  }}
+                  style={inputWithCurrency}
                 />
-                <span
-                  style={{
-                    marginLeft: "4px",
-                  }}
-                >
-                  €
-                </span>
               </div>
             </label>
             <div>
               <StyledDateInput
                 type="date"
-                value={expenseDate}
-                onChange={handleExpenseDateChange}
+                value={outflowDate}
+                onChange={handleOutflowDateChange}
                 max={currentDate}
               />
             </div>
@@ -857,41 +1145,77 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           <StyledAddSection theme={theme}>
             <label>
               <StyledTextArea
-                value={noteExpenseAreaValue}
-                onChange={(e) => setNoteExpenseAreaValue(e.target.value)}
+                value={noteOutflowAreaValue}
+                onChange={(e) => setNoteOutflowAreaValue(e.target.value)}
                 maxLength={64}
-                placeholder={languages[language].insert.expenseSection.placeholderNote}
+                placeholder={languages[language].insert.outflowSection.placeholderNote}
               />
             </label>
           </StyledAddSection>
 
           <StyledAddSection theme={theme}>
-            <MySecondaryButton theme={theme} onClick={() => handleAddExpenses(setIsConfirmExpenseOpen, typoExpense,  categoryExpense, expense)}>{languages[language].insert.expenseSection.updateButton}</MySecondaryButton>
+            <MySecondaryButton theme={theme} onClick={() => handleAddOutflows(setIsConfirmOutflowOpen, typoOutflow,  categoryOutflow, outflow)}>{languages[language].insert.outflowSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
-          <TitleLastAdds theme={theme}>{languages[language].insert.expenseSection.titleListing} </TitleLastAdds>
-
-          <div className="flex justify-center items-center mb-2 ml-8">
-            <select className="text-black text-center font-normal text-base px-1 py-1" value={selectedExpensesMonth} onChange={handleExpensesMonthChange}>
-              {monthOptions && monthOptions.length > 0 && monthOptions.map((option) => (
+          <TitleLastAdds 
+            theme={theme}>{languages[language].insert.outflowSection.titleListing} 
+            <select className="text-black text-center font-normal text-base mx-2 px-1 py-1" value={selectedOutflowsMonth} onChange={handleOutflowsMonthChange}>
+              {outflowMonthOptions && outflowMonthOptions.length > 0 && outflowMonthOptions.map((option) => (
                 <option className="text-center" key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </select>
-          </div>
-          
+          </TitleLastAdds>
+
+          {(() => {
+            const allAdds = getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey);
+            const filtered = allAdds.filter(add =>
+              (!outflowCategoryFilter || add.categoryTag.translations[language] === outflowCategoryFilter) &&
+              (!outflowTypologyFilter || add.paymentType.translations[language] === outflowTypologyFilter) &&
+              (!outflowNoteFilter || (add.notes && add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
+              (!outflowDateFilter || new Date(add.date).toISOString().slice(0, 10) === outflowDateFilter)
+            );
+            if (
+              outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter || outflowDateFilter
+            ) {
+              const totalAll = allAdds.reduce((sum, add) => sum + (add.amount || 0), 0);
+              return (
+                <div style={{ color: '#e74c3c', fontWeight: 600, textAlign: 'right', marginRight: '2em', marginBottom: 4 }}>
+                  {languages[language].general.total} {allAdds.length > 0 ? totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0.00'} €
+                </div>
+              );
+            }
+            return null;
+          })()}
           <StyledTable theme={theme}>
             <thead>
-              <tr>
-                <th>{languages[language].insert.expenseSection.tableColumns.category}</th>
-                <th>{languages[language].insert.expenseSection.tableColumns.typology}</th>
-                <th>{languages[language].insert.expenseSection.tableColumns.value}</th>
-                <th>{languages[language].insert.expenseSection.tableColumns.note}</th>
-                <th>{languages[language].insert.expenseSection.tableColumns.date}</th>
-              </tr>
+              {renderTableHeader({
+                categoryFilter: outflowCategoryFilter,
+                setCategoryFilter: setOutflowCategoryFilter,
+                categoryOptions: OutflowsTags,
+                categoryLabel: languages[language].insert.outflowSection.tableColumns.category,
+                noteFilter: outflowNoteFilter,
+                setNoteFilter: setOutflowNoteFilter,
+                noteInputRef: outflowNoteInputRef,
+                noteLabel: languages[language].insert.outflowSection.tableColumns.note,
+                dateFilter: outflowDateFilter,
+                setDateFilter: setOutflowDateFilter,
+                dateLabel: 'Data',
+                monthOption: outflowMonthOptions[selectedOutflowsMonth],
+                theme,
+                showNoteInput: showOutflowNoteInput,
+                setShowNoteInput: setShowOutflowNoteInput,
+                showDatePicker: showOutflowDatePicker,
+                setShowDatePicker: setShowOutflowDatePicker,
+                typologyFilter: outflowTypologyFilter,
+                setTypologyFilter: setOutflowTypologyFilter,
+                typologyOptions: paymentTags,
+                typologyLabel: languages[language].insert.outflowSection.tableColumns.typology,
+                isOutflow: true
+              })}
             </thead>
             <tbody>
-              {allExpensesAdds && allExpensesAdds.length > 0 && renderExpenseItems(allExpensesAdds[selectedExpensesMonth])}
+              {renderOutflowItems(getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey))}
             </tbody>
           </StyledTable>
         </>
@@ -925,14 +1249,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             {languages[language].insert.buttonIncome}
           </MySectionButton>
           <MySectionButton theme={theme}
-            onClick={() => setActivePage("expenses")}
+            onClick={() => setActivePage("outflows")}
             style={{
               backgroundColor:
-                activePage === "expenses" ? "" : "#222831",
+                activePage === "outflows" ? "" : "#222831",
+              marginRight: "1vw",
             }}
           >
-            {languages[language].insert.buttonExpense}
+            {languages[language].insert.buttonOutflow}
           </MySectionButton>
+          
         </ButtonGroup>
         {renderPage()}
         {isConfirmBalanceOpen && (
@@ -986,21 +1312,21 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
-        {isConfirmExpenseOpen && ( 
+        {isConfirmOutflowOpen && ( 
           <MuiCustomDialog
-            open={isConfirmExpenseOpen}
-            onClose={() => handleExitConfirm(setIsConfirmExpenseOpen)}
+            open={isConfirmOutflowOpen}
+            onClose={() => handleExitConfirm(setIsConfirmOutflowOpen)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.confirmUpdate}</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.outflowSection.confirmUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogContent>
-              <MuiCustomDialogContentText>{languages[language].general.category}: {categoryExpense.value}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>{languages[language].insert.expenseSection.paymentType}: {typoExpense.value}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>{languages[language].general.value}: {expense}€</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>{languages[language].general.note}: {noteExpenseAreaValue}</MuiCustomDialogContentText>
-              <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {expenseDate}</MuiCustomDialogContentText>{/* TO FIX */}  
-              <Typography variant="body2" style={{ marginTop: '1em' }}>{languages[language].insert.expenseSection.decreaseWhichBalance}: </Typography>
+              <MuiCustomDialogContentText>{languages[language].general.category}: {categoryOutflow.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].insert.outflowSection.paymentType}: {typoOutflow.value}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.value}: {outflow}€</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.note}: {noteOutflowAreaValue}</MuiCustomDialogContentText>
+              <MuiCustomDialogContentText>{languages[language].general.selectedDate}: {outflowDate}</MuiCustomDialogContentText>{/* TO FIX */}  
+              <Typography variant="body2" style={{ marginTop: '1em' }}>{languages[language].insert.outflowSection.decreaseWhichBalance}: </Typography>
               <Select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
                 <MenuItem value="">{languages[language].general.selectAnOption}</MenuItem>
                 {Object.keys(options).map((option) => (
@@ -1009,8 +1335,8 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </Select>
             </MuiCustomDialogContent>
             <MuiCustomDialogActions>
-              <MuiCustomButton data-umami-event="expenseUpdate" onClick={() => handleConfirmInEx(true)}>{languages[language].general.confirm}</MuiCustomButton>
-              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmExpenseOpen)}>{languages[language].general.cancel}</MuiCustomButton>
+              <MuiCustomButton data-umami-event="outflowUpdate" onClick={() => handleConfirmInEx(true)}>{languages[language].general.confirm}</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setIsConfirmOutflowOpen)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1057,16 +1383,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
           </MuiCustomDialog>
         )}
 
-        {updateExpensesSuccess && (
+        {updateOutflowsSuccess && (
           <MuiCustomDialog
-            open={updateExpensesSuccess}
-            onClose={() => handleExitConfirm(setUpdateExpensesSuccess)}
+            open={updateOutflowsSuccess}
+            onClose={() => handleExitConfirm(setUpdateOutflowsSuccess)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.successUpdate}</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.outflowSection.successUpdate}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateExpensesSuccess)}>{languages[language].general.ok}</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setUpdateOutflowsSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1083,16 +1409,16 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
-        {deleteExpensesSuccess && (
+        {deleteOutflowsSuccess && (
           <MuiCustomDialog
-            open={deleteExpensesSuccess}
-            onClose={() => handleExitConfirm(setDeleteExpensesSuccess)}
+            open={deleteOutflowsSuccess}
+            onClose={() => handleExitConfirm(setDeleteOutflowsSuccess)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.successDelete}</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.outflowSection.successDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
-              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteExpensesSuccess)}>{languages[language].general.ok}</MuiCustomButton>
+              <MuiCustomButton onClick={() => handleExitConfirm(setDeleteOutflowsSuccess)}>{languages[language].general.ok}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
@@ -1113,20 +1439,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}
-        {showConfirmationDeleteExpense && (
+        {showConfirmationDeleteOutflow && (
           <MuiCustomDialog
-            open={showConfirmationDeleteExpense}
-            onClose={() => setShowConfirmationDeleteExpense(false)}
+            open={showConfirmationDeleteOutflow}
+            onClose={() => setShowConfirmationDeleteOutflow(false)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <MuiCustomDialogTitle>{languages[language].insert.expenseSection.confirmDelete}</MuiCustomDialogTitle>
+            <MuiCustomDialogTitle>{languages[language].insert.outflowSection.confirmDelete}</MuiCustomDialogTitle>
             <MuiCustomDialogActions>
               <MuiCustomButton onClick={() => {
-                handleExpensesDelete(fetchData, setDeleteExpensesSuccess, handleSetIsUpdated, deleteExpenseDate, deleteExpenseAmount);
-                setShowConfirmationDeleteExpense(false);
+                handleOutflowsDelete(fetchData, setDeleteOutflowsSuccess, handleSetIsUpdated, deleteOutflowDate, deleteOutflowAmount);
+                setShowConfirmationDeleteOutflow(false);
               }}>{languages[language].general.confirm}</MuiCustomButton>
-              <MuiCustomButton onClick={() => setShowConfirmationDeleteExpense(false)}>{languages[language].general.cancel}</MuiCustomButton>
+              <MuiCustomButton onClick={() => setShowConfirmationDeleteOutflow(false)}>{languages[language].general.cancel}</MuiCustomButton>
             </MuiCustomDialogActions>
           </MuiCustomDialog>
         )}

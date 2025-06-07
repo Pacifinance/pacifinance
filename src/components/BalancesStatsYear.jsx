@@ -118,7 +118,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(bankReal, bankRealPreYearSameMonth)}
                     </h5>
-                    <h6 className="text-s">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPreYearSameMonth)}
                     </h6>
                 </div>
@@ -138,7 +138,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(cashReal, cashRealPreYearSameMonth)}
                     </h5>
-                    <h6 className="text-s">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(cashReal, cashRealPreYearSameMonth)}
                     </h6>
                 </div>
@@ -159,7 +159,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5 style={{ color: secondaryColor}}>
                         {isHidden ? '****' : calculateDifference(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h5>
-                    <h6 style={{ color: secondaryColor}} className="text-s">
+                    <h6 style={{ color: secondaryColor}} className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h6>
                 </div>
@@ -179,7 +179,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(stocksReal, stocksRealPreYearSameMonth)}
                     </h5>
-                    <h6 className="text-s">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(stocksReal, stocksRealPreYearSameMonth)}
                     </h6>
                 </div>
@@ -199,7 +199,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(etfReal, etfRealPreYearSameMonth)}
                     </h5>
-                    <h6 className="text-s">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(etfReal, etfRealPreYearSameMonth)}
                     </h6>
                 </div>
@@ -219,7 +219,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(bitcoinReal, bitcoinRealPreYearSameMonth)}
                     </h5>
-                    <h6 className="text-s">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(bitcoinReal, bitcoinRealPreYearSameMonth)}
                     </h6>
                 </div>
@@ -239,7 +239,7 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(cryptoReal, cryptoRealPreYearSameMonth)}
                     </h5>
-                    <h6 className="text-s">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(cryptoReal, cryptoRealPreYearSameMonth)}
                     </h6>
                 </div>

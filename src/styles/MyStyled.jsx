@@ -13,6 +13,7 @@ import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+// UNUSED STYLED COMPONENTS (commented out for future cleanup)
 export const PageWrapper = styled.div`
   position: relative;
   width: 100vw;
@@ -1748,7 +1749,7 @@ export const SidebarSection = styled.section`
     }
   `;
 
-  export const PercentageExpensesChartContainer = styled.div`
+  export const PercentageOutflowsChartContainer = styled.div`
     padding-bot: 2em;
     display: flex;
     flex-direction: column;

@@ -5,18 +5,10 @@ import { MdOutlineSavings } from "react-icons/md";
 import {SectionAMonth} from '../styles/MyStyled';
 import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
 import languages from '../data/languages.json';
-import { LanguageContext } from '../contexts/LanguageContext';
+import { LanguageContext } from '../contexts/LanguageContext'; 
 
 
-// const [activeIndex, setActiveIndex] = useState(null);
 
-// const handleMouseEnter = (_, index) => {
-//   setActiveIndex(index);
-// };
-
-// const handleMouseLeave = () => {
-//   setActiveIndex(null);
-// };
 
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -50,14 +42,14 @@ const renderCustomizedLabel = ({
   );
 };
 
-function InExStatsYear({ theme, userData, isHidden}) {
+export default function InOutStatsMonth({ theme, userData, isHidden}) {
     const { language } = useContext(LanguageContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
-    const [expensesMonth, setExpensesMonth] = useState(0);
+    const [outflowsMonth, setOutflowsMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
-    const [incomesPreYearSameMonth, setIncomesPreYearSameMonth] = useState(0);
-    const [expensesPreYearSameMonth, setExpensesPreYearSameMonth] = useState(0);
-    const [savedPreYearSameMonth, setSavedPreYearSameMonth] = useState(0);
+    const [incomesPreMonth, setIncomesPreMonth] = useState(0);
+    const [outflowsPreMonth, setOutflowsPreMonth] = useState(0);
+    const [savedPreMonth, setSavedPreMonth] = useState(0);
 
     // const {
     //     SectionAMonth,
@@ -68,21 +60,21 @@ function InExStatsYear({ theme, userData, isHidden}) {
     useEffect(() => {
         const fetchData = async () => {
           if (userData) {
-            try {   
-                // Set the state with the data from the database
-
+            try {
+                
                 //CURRENT MONTH
-                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setOutflowsMonth(userData ? userData.expensesArray[0] : 0);
                 setIncomesMonth(userData ? userData.incomesArray[0] : 0);
                 setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
 
-                //PREVIOUS YEAR SAME MONTH
-                setExpensesPreYearSameMonth(userData ? userData.expensesArray[12]: 0);
-                setIncomesPreYearSameMonth(userData ? userData.incomesArray[12] : 0);
-                setSavedPreYearSameMonth(userData ? (userData.incomesArray[12] - userData.expensesArray[12]) : 0);
-
+                //PREVIOUS MONTH
+                setIncomesPreMonth(userData ? userData.incomesArray[0] : 0);
+                setSavedPreMonth(userData ? (userData.incomesArray[1] - userData.expensesArray[1]) : 0);
+                setOutflowsPreMonth(userData ? userData.expensesArray[1] : 0);
+                
+        
             } catch (error) {
-              console.error('Errore durante le operazioni:', error);
+              console.error('Error:', error);
             }
           }
         };
@@ -96,31 +88,35 @@ function InExStatsYear({ theme, userData, isHidden}) {
     //     { name: "Cash", value: cashReal },
     //     { name: "Crypto", value: cryptoReal }
     // ];
+
+    
       
     return (
         
         <div className="wrapper">
-        {/* <h1>Il tuo patrimonio è cresciuto di: {((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100} % </h1> */}
         <SectionAMonth theme={theme}>
+            {/* <h1>Le tue entrate sono variate del: {((incomesMonth - incomesPreMonth) / incomesPreMonth) * 100} percentuale </h1>
+            <h1>Le tue uscite sono variate del: {((outflowsMonth - outflowsPreMonth) / outflowsPreMonth) * 100} percentuale </h1> */}
+            
             <div className="analytic ">
                 <div className="design">
-                    <div className="logo" style={{ color: '#079164' }}>
+                    <div className="logo" style={{ color: '#079164 ' }}>
                         <GiReceiveMoney />
                     </div>
                     {/* <div className="action">
-                        <AiOutlineMore />
+                    <AiOutlineMore />
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
                     <h6>{languages[language].general.incomes}</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreMonth)}
                     </h5>
-                    <h6 className="text-s">
-                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreYearSameMonth)}
+                    <h6 className="text-xs">
+                        {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -131,42 +127,42 @@ function InExStatsYear({ theme, userData, isHidden}) {
                         <GiExpense />
                     </div>
                     {/* <div className="action">
-                        <AiOutlineMore />
+                    <AiOutlineMore />
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
-                    <h6>{languages[language].general.expenses}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
+                    <h6>{languages[language].general.outflows}</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(outflowsMonth, outflowsPreMonth)}
                     </h5>
-                    <h6 className="text-s">
-                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreYearSameMonth)}
+                    <h6 className="text-xs">
+                        {isHidden ? '****' : calculatePercentageChange(outflowsMonth, outflowsPreMonth)}
                     </h6>
                 </div>
             </div>
-            
+
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#33d9b2' }}>
-                        < MdOutlineSavings />
+                        <MdOutlineSavings />
                     </div>
                     {/* <div className="action">
-                        <AiOutlineMore />
+                    <AiOutlineMore />
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
                     <h6>{languages[language].general.saved}</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculateDifference(savedMonth, savedPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(savedMonth, savedPreMonth)}
                     </h5>
-                    <h6 className="text-s">
-                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreYearSameMonth)}
+                    <h6 className="text-xs">
+                        {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -175,4 +171,3 @@ function InExStatsYear({ theme, userData, isHidden}) {
     )
 }
 
-export default InExStatsYear;

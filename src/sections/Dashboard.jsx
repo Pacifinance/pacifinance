@@ -121,6 +121,16 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
     const isAllZero = capitalData.every(entry => entry.value === 0); //fakeCapitalData to test some change on the pie chart (main data is capitalData)
 
     
+    // Filtra solo investimenti per il grafico investimenti
+    const investmentsData = capitalData.filter(entry =>
+        entry.name !== languages[language].assets.bank &&
+        entry.name !== languages[language].assets.cash &&
+        entry.name !== languages[language].assets.digitalServices
+    );
+
+    // PieChart: filtra solo valori > 0
+    const filteredPieData = (isHidden ? capitalShuffleData : capitalData).filter(entry => entry.value > 0);
+
     return (
         <SectionDashboard theme={theme} className="font-roboto pt-8 bg-paciGray px-4 md:ml-20 overflow-hidden">
             <TitleDashboard theme={theme}>{languages[language].dashboard.title}</TitleDashboard>
@@ -278,31 +288,27 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                     <h2 className="text-xs md:text-base">{languages[language].dashboard.titleGraph}</h2>
                     <div className="w-350 h-300 md:w-400 md:h-300">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart width={500} height={300} data={isHidden ? capitalShuffleData: capitalData} margin={{
+                            <BarChart width={500} height={300} data={isHidden ? investmentsData.map(e => ({...e, value: Math.floor(Math.random()*1000)})) : investmentsData} margin={{
                                         top: 20,
                                         right: 15,
                                     }}>
                                 <Bar dataKey="value">
-                                    {capitalData.map(entry => {
+                                    {investmentsData.map(entry => {
                                         const greyScale = Math.floor(Math.random() * 256);
                                         const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
                                         return <Cell key={entry.name} fill={isHidden ? greyColor : colorsBalances[entry.name]} />
                                     })}
                                 </Bar>
-                                <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/> {/*stroke="rgba(255, 255, 255, 0.3)"*/}
-                                {/* <XAxis dataKey="name" interval={0} angle={15} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 12 }} />
-                                <YAxis tick={{ fill: theme.textColor }} /> */}
+                                <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
                                 <Tooltip
                                     content={({ payload, label, active }) => {
                                         if (active) {
                                         const value = isHidden ? '****' : payload[0].payload.value;
-
                                         const formattedValue = new Intl.NumberFormat('it-IT', {
                                             style: 'currency',
                                             currency: 'EUR',
                                             maximumFractionDigits: 0,
                                         }).format(value);
-
                                         return (
                                             <div style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
                                             <p>{isHidden ? '****' : label}</p>
@@ -312,13 +318,24 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                         }
                                         return null;
                                     }}
-                                    />
-                                <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor}  angle={15} fontSize='12' dy='10'/>} />
-                                <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill= {theme.textColor} dx='-10'/>} />
+                                />
+                                <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize='12' dy='10'/>} />
+                                <YAxis 
+                                    tick={({ x, y, payload }) => (
+                                        <text
+                                            x={x - 18}
+                                            y={y + 2}
+                                            textAnchor="end"
+                                            fill={theme.textColor}
+                                            fontSize="11"
+                                        >
+                                            {payload.value}
+                                        </text>
+                                    )}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-
                 </div>
 
                 <div className="pie-chart-section">
@@ -340,12 +357,12 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                 <h1 style={{color: '#079164'}}>{languages[language].dashboard.noData}</h1> <p dangerouslySetInnerHTML={{ __html: languages[language].dashboard.noData2}}></p> <p><HiOutlinePencilAlt style={{ fontSize: '30px' }} /></p>
                             </div>
                         ) : (
-                                <PieChart width={500} height={500} margin={{
+                                <PieChart width={500} height={550} margin={{
                                     top: 20,
                                     left: 60,
                                 }}>
                                     <Pie
-                                        data={isHidden ? capitalShuffleData : capitalData}  //fakeCapitalData to test some change on the pie chart (main data is capitalData)
+                                        data={filteredPieData}
                                         cx="25%"
                                         cy="35%"
                                         label={renderCustomizedLabel}
@@ -354,10 +371,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
-                                        {capitalData.map(entry => {   //fakeCapitalData to test some change on the pie chart (main data is capitalData)
-                                            if(entry.value === 0) {
-                                                return <Cell key={entry.name} fill="transparent" />;
-                                            }
+                                        {filteredPieData.map(entry => {
                                             const greyScale = Math.floor(Math.random() * 256);
                                             const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
                                             return <Cell key={entry.name} fill={isHidden ? greyColor : colorsBalances[entry.name]} />
@@ -368,21 +382,18 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                             if (active) {
                                             const data = payload[0].payload;
                                             const value = isHidden ? '****' : data.value;
-                                            const percentage = isHidden ? '****' : ((value / totalCapitalData) * 100).toFixed(0);
-
-                                                // Format the value with thousands and euro symbol
-                                                const formattedValue = new Intl.NumberFormat('it-IT', {
-                                                    style: 'currency',
-                                                    currency: 'EUR',
-                                                    maximumFractionDigits: 0,
-                                                }).format(value);
-
-                                                return (
-                                                    <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
-                                                        <p>{isHidden ? '****' : data.name}</p>
-                                                        <p style={{ color: 'black' }}>{formattedValue}({percentage}%)</p>
-                                                    </div>
-                                                );
+                                            const percentage = isHidden ? '****' : ((data.value / totalCapitalData) * 100).toFixed(0);
+                                            const formattedValue = new Intl.NumberFormat('it-IT', {
+                                                style: 'currency',
+                                                currency: 'EUR',
+                                                maximumFractionDigits: 0,
+                                            }).format(data.value);
+                                            return (
+                                                <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
+                                                    <p>{isHidden ? '****' : data.name}</p>
+                                                    <p style={{ color: 'black' }}>{formattedValue}({percentage}%)</p>
+                                                </div>
+                                            );
                                             }
                                             return null;
                                         }}
@@ -413,8 +424,20 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                                     <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/> 
                                     {/* <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 14 }} />
                                     <YAxis tick={{ fill: theme.textColor }} /> */}
-                                    <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} dy='16' />} />
-                                    <YAxis tick={(props) => <CustomTick {...props} fill={theme.textColor} />} />
+                                    <XAxis dataKey="name" interval={0} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize='12' dy='10' />} />
+                                    <YAxis 
+                                        tick={({ x, y, payload }) => (
+                                            <text
+                                                x={x - 18}
+                                                y={y + 2}
+                                                textAnchor="end"
+                                                fill={theme.textColor}
+                                                fontSize="11"
+                                            >
+                                                {payload.value}
+                                            </text>
+                                        )}
+                                    />
 
                                     <Tooltip
                                         content={({ payload, label, active }) => {

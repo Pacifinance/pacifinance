@@ -8,8 +8,10 @@ import { LanguageContext } from '../contexts/LanguageContext';
 
 // Component for the rankings section
 function RankingsSection({ theme, language, title, rankings, isHidden }) {
+    // Defensive: avoid crash if title is undefined
+    const safeTitle = title || '';
     // Verify if there is a title for expenses
-    const isExpenseTitle = title.toLowerCase().includes("uscite" || "expenses");
+    const isExpenseTitle = safeTitle.toLowerCase().includes("uscite") || safeTitle.toLowerCase().includes("expenses");
   
     // Verify if there are rankings > 50 (top 50%)
     const isRankingsAbove50 = rankings > 50;
@@ -48,12 +50,12 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
         textToDisplay = languages[language].leaderboard.noRank;
     }
   
-    const areNotEmpty = rankings.length > 0 || rankings > 0;
+    const areNotEmpty = (typeof rankings === 'string' && rankings.length > 0) || (typeof rankings === 'number' && rankings > 0);
   
     return (
       <StyledRankingsSection theme={theme}>
         <h2>
-          {title}
+          {safeTitle}
           {isExpenseTitle && (
             <Tooltip title={languages[language].leaderboard.infoExpenseRank} arrow>
               <InfoIcon style={{ color: 'white' }} />

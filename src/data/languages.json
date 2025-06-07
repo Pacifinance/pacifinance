@@ -16,7 +16,7 @@
             "month": "Mese",
             "year": "Anno",
             "incomes": "Entrate",
-            "expenses": "Uscite",
+            "Outflows": "Uscite",
             "saved": "Risparmiato",
             "balance": "Bilancio",
             "total": "Totale",
@@ -255,7 +255,7 @@
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Il tuo patrimonio totale è: ",
-            "titleGraph": "Distribuzione Capitale",
+            "titleGraph": "Distribuzione Investimenti",
             "titleGraph2": "% Distribuzione Capitale",
             "titleGraph3": "Entrate | Uscite",
             "updateValue": "Aggiorna valore",
@@ -273,7 +273,7 @@
                 "variation": "Variazione ",
                 "titleDetailsYear": "Il tuo patrimonio rispetto ad un anno fa è variato di: "
             },
-            "statsExpenses": {
+            "statsOutflows": {
                 "title": "Statistiche Entrate e Uscite",
                 "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
                 "titleGraph2": "Distribuzione delle tue spese per categoria",
@@ -288,7 +288,8 @@
             "title": "Inserimento Dati",
             "buttonBalance": "Aggiorna Bilancio",
             "buttonIncome": "Aggiungi Entrate",
-            "buttonExpense": "Aggiungi Uscite",
+            "buttonOutflow": "Aggiungi Uscite",
+            "buttonInvestment": "Aggiungi Investimenti",
             "balanceSection": {
                 "titleLiquidity": "Liquidità",
                 "titleInvestments": "Investimenti",
@@ -314,7 +315,7 @@
                 "successDelete": "Entrata eliminata con successo",
                 "increaseWhichBalance": "Seleziona dove aggiungere l'entrata: "
             },
-            "expenseSection": {
+            "outflowSection": {
                 "placeholderCategory": "Seleziona una categoria",
                 "placeholderTypology": "Seleziona una tipologia",
                 "placeholderNote": "Inserisci una nota (opzionale)",
@@ -333,6 +334,23 @@
                 "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
                 "successDelete": "Uscita eliminata con successo",
                 "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: " 
+            },
+            "investmentSection": {
+                "placeholderCategory": "Seleziona una categoria",
+                "placeholderNote": "Inserisci una nota (opzionale)",
+                "updateButton": "Aggiungi investimento",
+                "titleListing": "Gli investimenti del mese selezionato",
+                "tableColumns": {
+                    "category": "Categoria",
+                    "value": "Valore",
+                    "note": "Nota",
+                    "date": "Data Investimento"
+                },
+                "confirmUpdate": "Conferma inserimento investimento",
+                "successUpdate": "Investimento inserito con successo",
+                "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
+                "successDelete": "Investimento eliminato con successo",
+                "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
             }
         },
 
@@ -344,15 +362,15 @@
             "similarRanking": "Classifiche utenti simili: ",
             "balanceRanking": "Classifica Patrimonio ",
             "incomeRanking": "Classifica Entrate ",
-            "expenseRanking": "Classifica Uscite ",
-            "infoExpenseRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
+            "outflowRanking": "Classifica Uscite ",
+            "infoOutflowRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
             "noRank": "Rankings non disponibili",
             "compliments": "Complimenti! Sei nella top ",
             "superCompliments": "Incredibile!! Sei nella top ", 
             "top": "Sei nella top ",
             "users": " degli utenti!",
-            "lowerExpense": " Sei tra gli utenti che spendono di meno!",
-            "higherExpense": " Attenzione! Sei tra gli utenti che spendono di più!",
+            "lowerOutflow": " Sei tra gli utenti che spendono di meno!",
+            "higherOutflow": " Attenzione! Sei tra gli utenti che spendono di più!",
             "higherIncome": " Sei tra gli utenti che guadagnano di più!",
             "mediumRank": "Sei nella media degli utenti!",
             "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
@@ -368,6 +386,7 @@
             "descriptiopn3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
             "description4": "Il progetto è no-profit ed è unicamente sostenuto da donazioni volontarie.",
             "description5": "La piattaforma è in continuo sviluppo e nuove funzionalità verranno aggiunte in futuro.",
+            "calltoaction": "Supporta il progetto",
             "faq": {
                 "title": "Domande frequenti",
                 "question1": "Come posso aggiungere un'entrata o un'uscita?",
@@ -415,7 +434,7 @@
             "month": "Month",
             "year": "Year",
             "incomes": "Incomes",
-            "expenses": "Expenses",
+            "outflows": "Outflows",
             "saved": "Saved",
             "balance": "Balance",
             "total": "Total",
@@ -465,7 +484,7 @@
             "sectionTitle": "Privacy, Security and Comparison",
             "descriptionRow1": "The secure and privacy oriented platform for personal finance.",
             "descriptionRow2": "You can compare yourself with other users both in your sector that not, in your country or abroad.",
-            "descriptionRow3": "Check the portfolio, income and expenses over time.",
+            "descriptionRow3": "Check the portfolio, income and outflows over time.",
             "discoverButton": "Discover more",
             "point1": {
                 "title": "Easy to use",
@@ -656,9 +675,9 @@
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Your total balance is: ",
-            "titleGraph": "Capital Distribution",
+            "titleGraph": "Investment Distribution",
             "titleGraph2": "% Capital Distribution",
-            "titleGraph3": "Income | Expenses",
+            "titleGraph3": "Income | Outflows",
             "updateValue": "Update value",
             "noData": "No data:",
             "noData2": "Enter the values on the page <br></br> with the following icon: "
@@ -675,14 +694,14 @@
                 "variation": "Variation ",
                 "titleDetailsYear": "Your balance compared to a year ago has changed by: "
             },
-            "statsExpenses": {
-                "title": "Income and Expenses statistics",
-                "titleGraph": "Trend of your incomes and expenses in the last 12 months",
-                "titleGraph2": "Distribution of your expenses by category",
+            "statsOutflows": {
+                "title": "Income and Outflows statistics",
+                "titleGraph": "Trend of your incomes and outflows in the last 12 months",
+                "titleGraph2": "Distribution of your outflows by category",
                 "detailedVision": "Detailed vision",
-                "titleDetailsMonth": "Your income, expenses and savings compared to last month ",
+                "titleDetailsMonth": "Your income, outflows and savings compared to last month ",
                 "variation": "Variation ",
-                "titleDetailsYear": "Your income, expenses and savings compared to last year "
+                "titleDetailsYear": "Your income, outflows and savings compared to last year "
             }
 
         },
@@ -691,14 +710,15 @@
             "title": "Insert Data",
             "buttonBalance": "Update Balance",
             "buttonIncome": "Add Income",
-            "buttonExpense": "Add Expense",
+            "buttonOutflow": "Add Outflow",
+            "buttonInvestment": "Add Investment",
             "balanceSection": {
                 "titleLiquidity": "Liquidity",
                 "titleInvestments": "Investments",
                 "updateButton": "Update your balance",
                 "confirmUpdate": "Confirm balance update",
                 "successUpdate": "Balance updated successfully",
-                "successFullUpdate": "Balance and income/expense update successful"        
+                "successFullUpdate": "Balance and income/outflow update successful"        
             },
 
             "incomeSection": {
@@ -720,26 +740,48 @@
 
             },
 
-            "expenseSection": {
+            "outflowSection": {
                 "placeholderCategory": "Select a category",
                 "placeholderTypology": "Select a typology",
                 "paymentType": "Payment typology",
                 "placeholderNote": "Insert a note (optional)",
-                "updateButton": "Add expense",
-                "titleListing": "The expenses of the selected month",
+                "updateButton": "Add outflow",
+                "titleListing": "The outflows of the selected month",
                 "tableColumns": {
                     "category": "Category",
                     "typology": "Typology",
                     "value": "Value",
                     "note": "Note",
-                    "date": "Expense Date"
+                    "date": "Outflow Date"
                 },
-                "confirmUpdate": "Confirm expense insertion",
-                "successUpdate": "Expense inserted successfully",
-                "confirmDelete": "Are you sure you want to delete this expense?",
-                "successDelete": "Expense deleted successfully",
-                "decreaseWhichBalance": "Select where to subtract the expense"
+                "confirmUpdate": "Confirm outflow insertion",
+                "successUpdate": "Outflow inserted successfully",
+                "confirmDelete": "Are you sure you want to delete this outflow?",
+                "successDelete": "Outflow deleted successfully",
+                "decreaseWhichBalance": "Select where to subtract the outflow"
+            },
+
+            "investmentSection": {
+                "placeholderCategory": "Select a category",
+                "placeholderTypology": "Select a typology",
+                "placeholderNote": "Insert a note (optional)",
+                "updateButton": "Add investment",
+                "titleListing": "The investments of the selected month",
+                "tableColumns": {
+                    "category": "Category",
+                    "typology": "Typology",
+                    "value": "Value",
+                    "note": "Note",
+                    "date": "Investment Date"
+                },
+                "confirmUpdate": "Confirm investment insertion",
+                "successUpdate": "Investment inserted successfully",
+                "confirmDelete": "Are you sure you want to delete this investment?",
+                "successDelete": "Investment deleted successfully",
+                "decreaseWhichBalance": "Select where to subtract the investment"
             }
+        
+            
         },
 
         "leaderboard": {
@@ -750,15 +792,15 @@
             "similarRanking": "Similar users rankings: ",
             "balanceRanking": "Balance Ranking ",
             "incomeRanking": "Income Ranking ",
-            "expenseRanking": "Expense Ranking ",
-            "infoExpenseRank": "This rank shows in the high positions who spends the most.",
+            "OutflowRanking": "Outflow Ranking ",
+            "infoOutflowRank": "This rank shows in the high positions who spends the most.",
             "noRank": "Rankings not available",
             "compliments": "Congratulations! You are in the top ",
             "superCompliments": "Incredible!! You are in the top ", 
             "top": "You are in the top ",
             "users": " of users!",
-            "lowerExpense": " You are among the users who spend the least!",
-            "higherExpense": " Attention! You are among the users who spend the most!",
+            "lowerOutflow": " You are among the users who spend the least!",
+            "higherOutflow": " Attention! You are among the users who spend the most!",
             "higherIncome": " You are among the users who earn the most!",
             "mediumRank": "You are in the average of users!",
             "demoWarning": "Warning! Random and not relevant values, used as an example."
@@ -772,14 +814,15 @@
             "descriptiopn3": "The data entered by the user is anonymous, protected and not accessible by third parties.",
             "description4": "The project is ad-free and non-profit and is solely supported by voluntary donations.",
             "description5": "The platform is in continuous development and new features will be added in the future.",
+            "calltoaction": "Support the project",
             "faq": {
                 "title": "Frequently asked questions",
-                "question1": "How can I add an income or an expense?",
-                "answer1": "To add an income or an expense, go to the 'Insert data' section and select the type of entry you want to make. Fill in the required fields and confirm the entry. ",
+                "question1": "How can I add an income or an outflow?",
+                "answer1": "To add an income or an outflow, go to the 'Insert data' section and select the type of entry you want to make. Fill in the required fields and confirm the entry. ",
                 "question2": "How can I update my balance?",
                 "answer2": "To update your balance, go to the 'Insert data' section and select the 'Update Balance' section. Fill in the required fields and confirm the update. ",
-                "question3": "How can I delete an income or an expense?",
-                "answer3": "To delete an income or an expense, go to the 'Insert data' section and select the 'Add Incomes' or 'Add Expenses' section. In the table of incomes or expenses, select the income or expense you want to delete and click on 'Delete'. ",
+                "question3": "How can I delete an income or an outflow?",
+                "answer3": "To delete an income or an outflow, go to the 'Insert data' section and select the 'Add Incomes' or 'Add Outflows' section. In the table of incomes or outflows, select the income or outflow you want to delete and click on 'Delete'. ",
                 "question4": "How can I change my id?",
                 "answer4": "To change your id, go to the 'Your Profile' section and select the 'Change ID' section. Fill in the required fields and confirm the id change. ",
                 "question5": "How can I change my password?",

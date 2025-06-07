@@ -6,29 +6,35 @@ const UserContext = React.createContext();
 function UserProvider({ children }) {
   const [userData, setUserData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isUpdated, setIsUpdated] = useState(false); //this is used to force a re-render of the page when the user adds new data
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [loading, setLoading] = useState(true); // per evitare flicker
 
-
+  // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
   useEffect(() => {
-    //when the component mounts, check if the user is authenticated
-    const savedIsAuthenticated = localStorage.getItem('isAuthenticated');
-    if (savedIsAuthenticated) {
-      setIsAuthenticated(true); 
-    }
+    const checkSession = async () => {
+      try {
+        const res = await axios.post('/user/get', null, { withCredentials: true });
+        if (res.data && res.data.userId) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkSession();
   }, []);
-  
-  useEffect(() => {
-    // When the user logs in or out, save the value to localStorage
-    const expirationTimeInMilliseconds = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-    const expirationDate = new Date(new Date().getTime() + expirationTimeInMilliseconds);
-
-    localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated));
-    localStorage.setItem('expirationDate', expirationDate.toISOString());
-
-  }, [isAuthenticated]);
 
   useEffect(() => {
+    // Quando cambia autenticazione o update, carica i dati utente se autenticato
     const fetchUserData = async () => {
+      if (!isAuthenticated) {
+        setUserData(null);
+        return;
+      }
       try {
         //check if user is authenticated
         if (isAuthenticated && !isUpdated) { // && !isUpdated
@@ -285,9 +291,9 @@ function UserProvider({ children }) {
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);
+        setUserData(null);
       }
     };
-
     fetchUserData();
   }, [isAuthenticated, isUpdated]);
 
@@ -298,6 +304,8 @@ function UserProvider({ children }) {
   const handleSetIsUpdated = (value) => {
     setIsUpdated(value);
   };
+
+  if (loading) return null; // oppure uno spinner
 
   return (
     <UserContext.Provider value={{ userData, setUserData, isAuthenticated, isUpdated, handleSetIsAuthenticated, handleSetIsUpdated }}>

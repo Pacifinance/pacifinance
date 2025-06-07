@@ -121,7 +121,7 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
                     return [`${name}: ${formattedValue}`];
                 }}
             />
-            <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
+            {/* <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
             <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%'}}/>
 
             {data.every(item => item[languages[language].assets.total] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.total} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />}

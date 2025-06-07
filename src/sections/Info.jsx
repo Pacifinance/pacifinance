@@ -31,7 +31,7 @@ function Info({ theme }) {
                             <p className="m-0.5 text-l">{languages[language].info.developers.description3}</p>
                             <p className="m-0.5 text-l">{languages[language].info.developers.calltoaction}</p>
                             <a href="https://buymeacoffee.com/pacifinance" target="_blank" rel="noopener noreferrer">
-                                <button className="bg-white text-paciGreen font-bold shadow rounded-xl p-4 mt-4 mb-4">Supporta il progetto</button>
+                                <button className="bg-white text-paciGreen font-bold shadow rounded-xl p-4 mt-4 mb-4">{languages[language].info.calltoaction}</button>
                             </a>
                         </CenteredInfo>
                         <InfoTitle theme={theme}>{languages[language].info.faq.title} </InfoTitle >

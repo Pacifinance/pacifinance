@@ -567,41 +567,54 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       (!incomeDateFilter || new Date(add.date).toISOString().slice(0, 10) === incomeDateFilter)
     );
     const totals = getTotals(filtered, chosenIncomesToShow, true);
-    return [
+    const filtersActive = incomeCategoryFilter || incomeNoteFilter || incomeDateFilter;
+    const rows = [
       ...filtered.map((add, index) => {
-        const incomeDate = new Date(add.date);
-        const formattedDate = `${incomeDate.getDate()}/${incomeDate.getMonth() + 1}/${incomeDate.getFullYear()}`;
-        const handleDelete = () => {
-          setDeleteIncomeAmount(add.amount);
-          setDeleteIncomeDate(add.date);
-          setShowConfirmationDeleteIncome(true);
-        };
-        // Find the tag object in incomesTags by index/key
-        const tagObj = incomesTags.find(item => String(item.index) === String(add.categoryTag.key));
-        const englishLabel = tagObj ? tagObj.label : undefined;
-        const baseColor = incomeCategoryColors[englishLabel] || 'rgba(200,200,200,0.10)';
+        // Colore categoria robusto
+        let colorKey = undefined;
+        if (add.categoryTag && add.categoryTag.label) {
+          colorKey = add.categoryTag.label;
+        } else if (add.categoryTag && add.categoryTag.translations && add.categoryTag.translations['en']) {
+          colorKey = add.categoryTag.translations['en'];
+        } else if (add.categoryTag && add.categoryTag.translations) {
+          // fallback su prima traduzione
+          const keys = Object.keys(add.categoryTag.translations);
+          if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
+        }
+        const baseColor = incomeCategoryColors[colorKey] || '#b5ded1';
         const rowGradient = getGradientForCategory(baseColor);
         return (
           <tr key={index} style={{ background: rowGradient }}>
             <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
             <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
             <td>{isHidden ? '****' : add.notes}</td>
-            <td>{isHidden ? '****' : formattedDate}</td>
+            <td>{isHidden ? '****' : (() => { const d = new Date(add.date); return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`; })()}</td>
             <td>
-              <button data-umami-event="deleteIncome" onClick={handleDelete}>
+              <button data-umami-event="deleteIncome" onClick={() => { setDeleteIncomeAmount(add.amount); setDeleteIncomeDate(add.date); setShowConfirmationDeleteIncome(true); }}>
                   <FontAwesomeIcon icon={faTimes} />
               </button>
             </td>
           </tr>
         );
       }),
-      // Riga totale
-      <tr key="total-income" style={{ background: '#e6f4f0', fontWeight: 600 }}>
-        <td colSpan={1} style={{ textAlign: 'right' }}>{languages[language].general.total}</td>
-        <td colSpan={1} style={{ textAlign: 'center' }}>{isHidden ? '****' : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+    ];
+    if (filtersActive) {
+      rows.push(
+        <tr key="total-filtered-income" style={{ background: '#1ec6a6', fontWeight: 700 }}>
+          <td colSpan={1} style={{ textAlign: 'center', fontSize: '1.08em', letterSpacing: 1, color: '#1a2b2b' }}>{languages[language].general.totalFiltered || 'Total Filtered'}</td>
+          <td colSpan={1} style={{ textAlign: 'center', fontSize: '1.08em', color: '#1a2b2b' }}>{isHidden ? '****' : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+          <td colSpan={3}></td>
+        </tr>
+      );
+    }
+    rows.push(
+      <tr key="total-income" style={{ background: '#0fa37f', fontWeight: 700 }}>
+        <td colSpan={1} style={{ textAlign: 'center', fontSize: '1.15em', letterSpacing: 1, color: '#fff' }}>{languages[language].general.total}</td>
+        <td colSpan={1} style={{ textAlign: 'center', fontSize: '1.15em', color: '#fff' }}>{isHidden ? '****' : totals.totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
         <td colSpan={3}></td>
       </tr>
-    ];
+    );
+    return rows;
   }
 
   function renderOutflowItems(chosenOutflowsToShow) {
@@ -612,19 +625,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       (!outflowDateFilter || new Date(add.date).toISOString().slice(0, 10) === outflowDateFilter)
     );
     const totals = getTotals(filtered, chosenOutflowsToShow, false);
-    return [
+    const filtersActive = outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter || outflowDateFilter;
+    const rows = [
       ...filtered.map((add, index) => {
-        const outflowDate = new Date(add.date);
-        const formattedDate = `${outflowDate.getDate()}/${outflowDate.getMonth() + 1}/${outflowDate.getFullYear()}`;
-        const handleDelete = () => {
-          setDeleteOutflowDate(add.date);
-          setDeleteOutflowAmount(add.amount);
-          setShowConfirmationDeleteOutflow(true);
-        };
-        // Find the tag object in OutflowsTags by index/key
-        const tagObj = OutflowsTags.find(item => String(item.index) === String(add.categoryTag.key));
-        const englishLabel = tagObj ? tagObj.label : undefined;
-        const baseColor = outflowCategoryColors[englishLabel] || 'rgba(200,200,200,0.10)';
+        // Colore categoria robusto
+        let colorKey = undefined;
+        if (add.categoryTag && add.categoryTag.label) {
+          colorKey = add.categoryTag.label;
+        } else if (add.categoryTag && add.categoryTag.translations && add.categoryTag.translations['en']) {
+          colorKey = add.categoryTag.translations['en'];
+        } else if (add.categoryTag && add.categoryTag.translations) {
+          const keys = Object.keys(add.categoryTag.translations);
+          if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
+        }
+        const baseColor = outflowCategoryColors[colorKey] || '#ffcfcf';
         const rowGradient = getGradientForCategory(baseColor);
         return (
           <tr key={index} style={{ background: rowGradient }}>
@@ -632,22 +646,33 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
             <td>{isHidden ? '****' : add.paymentType.translations[language]}</td>
             <td>{isHidden ? '****' : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
             <td>{isHidden ? '****' : add.notes}</td>
-            <td>{isHidden ? '****' : formattedDate}</td>
+            <td>{isHidden ? '****' : (() => { const d = new Date(add.date); return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`; })()}</td>
             <td>
-              <button data-umami-event="deleteOutflow" onClick={handleDelete}>
+              <button data-umami-event="deleteOutflow" onClick={() => { setDeleteOutflowDate(add.date); setDeleteOutflowAmount(add.amount); setShowConfirmationDeleteOutflow(true); }}>
                   <FontAwesomeIcon icon={faTimes} />
               </button>
             </td>
           </tr>
         );
       }),
-      // Riga totale
-      <tr key="total-outflow" style={{ background: '#ffeaea', fontWeight: 600 }}>
-        <td colSpan={2} style={{ textAlign: 'right' }}>{languages[language].general.total}</td>
-        <td colSpan={1} style={{ textAlign: 'center' }}>{isHidden ? '****' : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+    ];
+    if (filtersActive) {
+      rows.push(
+        <tr key="total-filtered-outflow" style={{ background: '#ff6b6b', fontWeight: 700 }}>
+          <td colSpan={2} style={{ textAlign: 'center', fontSize: '1.08em', letterSpacing: 1, color: '#6b1a1a' }}>{languages[language].general.totalFiltered || 'Total Filtered'}</td>
+          <td colSpan={1} style={{ textAlign: 'center', fontSize: '1.08em', color: '#6b1a1a' }}>{isHidden ? '****' : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
+          <td colSpan={3}></td>
+        </tr>
+      );
+    }
+    rows.push(
+      <tr key="total-outflow" style={{ background: '#e23c3c', fontWeight: 700 }}>
+        <td colSpan={2} style={{ textAlign: 'center', fontSize: '1.15em', letterSpacing: 1, color: '#fff' }}>{languages[language].general.total}</td>
+        <td colSpan={1} style={{ textAlign: 'center', fontSize: '1.15em', color: '#fff' }}>{isHidden ? '****' : totals.totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €</td>
         <td colSpan={3}></td>
       </tr>
-    ];
+    );
+    return rows;
   }
 
   // Ref per focus input note
@@ -833,17 +858,17 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </div>
             </Column>
             <Column>
-              <div>
-                <input type="text" onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} placeholder={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}> €</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange={(e) => handleInputChange(e, setBankReal)} onBlur={(e) => handleInputBlur(e, setBankReal)} placeholder={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
-              <div>
-                <input type="text" onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} placeholder={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}> €</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange={(e) => handleInputChange(e, setCashReal)} onBlur={(e) => handleInputBlur(e, setCashReal)} placeholder={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
-              <div>
-                <input type="text" onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} placeholder={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}> €</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange={(e) => handleInputChange(e, setDigitalServicesReal)} onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)} placeholder={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
             </Column>
           </StyledInputs>
@@ -872,22 +897,31 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               </div>
             </Column>
             <Column>
-              <div>
-                <input type="text" onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} placeholder={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange={(e) => handleInputChange(e, setStocksReal)} onBlur={(e) => handleInputBlur(e, setStocksReal)} placeholder={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
-              <div>
-                <input type="text" onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} placeholder={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange={(e) => handleInputChange(e, setETFReal)} onBlur={(e) => handleInputBlur(e, setETFReal)} placeholder={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
-              <div>
-                <input type="text" onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} placeholder={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange={(e) => handleInputChange(e, setBitcoinReal)} onBlur={(e) => handleInputBlur(e, setBitcoinReal)} placeholder={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
-              <div>
-                <input type="text" onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} placeholder={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputStyle} />
-                <span style={{marginLeft:'0.2em'}}>€</span>
+              <div style={inputCurrencyWrapper}>
+                <span style={currencySymbolStyle}>€</span>
+                <input type="text" onChange= {(e) => handleInputChange(e, setCryptoReal)} onBlur={(e) => handleInputBlur(e, setCryptoReal)} placeholder={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })} style={inputWithCurrency} />
               </div>
+              {/* Responsive: riduci larghezza e font su mobile */}
+              <style>{`
+                @media (max-width: 600px) {
+                  .labelContainer { min-width: 0 !important; width: 100% !important; }
+                  .labelStyle { font-size: 0.90em !important; }
+                  input[type='text'] { font-size: 0.98em !important; height: 34px !important; }
+                  .MuiInputBase-root, .MuiSelect-root { font-size: 0.98em !important; }
+                }
+              `}</style>
             </Column>
           </StyledInputs>
 
@@ -944,19 +978,19 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                 ))}
               </Select>
             </label>
-            <label>
-              <div style={inputCurrencyWrapper}>
-                <span style={currencySymbolStyle}>€</span>
-                <input
-                  type="text"
-                  value={income}
-                  onChange={e => handleInputChange(e, setIncome)}
-                  onBlur={e => handleInputBlur(e, setIncome)}
-                  placeholder="0"
-                  style={inputWithCurrency}
-                />
-              </div>
-            </label>
+            
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                value={income}
+                onChange={e => handleInputChange(e, setIncome)}
+                onBlur={e => handleInputBlur(e, setIncome)}
+                placeholder="0"
+                style={inputWithCurrency}
+              />
+            </div>
+            
             <div>
               <StyledDateInput
                 type="date"
@@ -966,8 +1000,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               />
             </div>
           </StyledAddSection>
-          {/* </div> */}
-          {/* <div className="flex flex-col items-center justify-center"> */}
+
           <StyledAddSection theme={theme}>
             <label>
               <StyledTextArea
@@ -978,12 +1011,11 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               />
             </label>
           </StyledAddSection>
-          {/* </div> */}
-          {/* <div className="flex flex-col items-center justify-center"> */}
+
           <StyledAddSection theme={theme}> 
             <MySecondaryButton theme={theme} onClick={() =>handleAddIncome(setIsConfirmIncomeOpen, categoryIncome, income)}>{languages[language].insert.incomeSection.updateButton}</MySecondaryButton>
           </StyledAddSection>
-          {/* </div> */}
+  
           <TitleLastAdds 
             theme={theme}>{languages[language].insert.incomeSection.titleListing}
             <select className="text-black text-center font-normal mx-2 text-base px-2 py-1" value={selectedIncomesMonth} onChange={handleIncomesMonthChange}>
@@ -994,57 +1026,56 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               ))}
             </select>
           </TitleLastAdds>
-
           
-            
-          
-          
-          {(() => {
-            const allAdds = getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey);
-            const filtered = allAdds.filter(add =>
-              (!incomeCategoryFilter || add.categoryTag.translations[language] === incomeCategoryFilter) &&
-              (!incomeNoteFilter || (add.notes && add.notes.toLowerCase().includes(incomeNoteFilter.toLowerCase()))) &&
-              (!incomeDateFilter || new Date(add.date).toISOString().slice(0, 10) === incomeDateFilter)
-            );
-            if (
-              incomeCategoryFilter || incomeNoteFilter || incomeDateFilter
-            ) {
-              const totalAll = allAdds.reduce((sum, add) => sum + (add.amount || 0), 0);
-              return (
-                <div style={{ color: '#079164', fontWeight: 600, textAlign: 'right', marginRight: '2em', marginBottom: 4 }}>
-                  {languages[language].general.total} {allAdds.length > 0 ? totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0.00'} €
-                </div>
-              );
-            }
-            return null;
-          })()}
-          <StyledTable theme={theme}>
-            <thead>
-              {renderTableHeader({
-                categoryFilter: incomeCategoryFilter,
-                setCategoryFilter: setIncomeCategoryFilter,
-                categoryOptions: incomesTags,
-                categoryLabel: languages[language].insert.incomeSection.tableColumns.category,
-                noteFilter: incomeNoteFilter,
-                setNoteFilter: setIncomeNoteFilter,
-                noteInputRef: incomeNoteInputRef,
-                noteLabel: languages[language].insert.incomeSection.tableColumns.note,
-                dateFilter: incomeDateFilter,
-                setDateFilter: setIncomeDateFilter,
-                dateLabel: 'Data',
-                monthOption: incomeMonthOptions[selectedIncomesMonth],
-                theme,
-                showNoteInput: showIncomeNoteInput,
-                setShowNoteInput: setShowIncomeNoteInput,
-                showDatePicker: showIncomeDatePicker,
-                setShowDatePicker: setShowIncomeDatePicker,
-                isOutflow: false
-              })}
-            </thead>
-            <tbody>
-              {renderIncomeItems(getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey))}
-            </tbody>
-          </StyledTable>
+          {/* Wrapper responsive per tabella income */}
+          <div style={{overflowX: 'auto', maxWidth: '100vw', WebkitOverflowScrolling: 'touch'}}>
+            <StyledTable theme={theme} style={{minWidth: 600}}>
+              <thead>
+                {renderTableHeader({
+                  categoryFilter: incomeCategoryFilter,
+                  setCategoryFilter: setIncomeCategoryFilter,
+                  categoryOptions: incomesTags,
+                  categoryLabel: languages[language].insert.incomeSection.tableColumns.category,
+                  noteFilter: incomeNoteFilter,
+                  setNoteFilter: setIncomeNoteFilter,
+                  noteInputRef: incomeNoteInputRef,
+                  noteLabel: languages[language].insert.incomeSection.tableColumns.note,
+                  dateFilter: incomeDateFilter,
+                  setDateFilter: setIncomeDateFilter,
+                  dateLabel: 'Data',
+                  monthOption: incomeMonthOptions[selectedIncomesMonth],
+                  theme,
+                  showNoteInput: showIncomeNoteInput,
+                  setShowNoteInput: setShowIncomeNoteInput,
+                  showDatePicker: showIncomeDatePicker,
+                  setShowDatePicker: setShowIncomeDatePicker,
+                  isOutflow: false
+                })}
+              </thead>
+              <tbody>
+                {renderIncomeItems(getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey))}
+              </tbody>
+            </StyledTable>
+            <style>{`
+              @media (max-width: 600px) {
+                table, .StyledTable, .StyledTable th, .StyledTable td {
+                  font-size: 0.92em !important;
+                  padding: 4px 2px !important;
+                  min-width: 60px !important;
+                }
+                .StyledTable th, .StyledTable td {
+                  line-height: 1.1 !important;
+                }
+                .StyledTable select, .StyledTable input, .StyledTable button {
+                  font-size: 0.95em !important;
+                  padding: 4px 2px !important;
+                }
+                .StyledTable .MuiInputBase-root, .StyledTable .MuiSelect-root {
+                  font-size: 0.95em !important;
+                }
+              }
+            `}</style>
+          </div>
           
         </>
       );
@@ -1052,7 +1083,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
       return (
         <>
           <StyledAddSection theme={theme}>
-            <label>
+            <label> 
               <Select value={categoryOutflow.value} 
                   onChange={(event) => {
                       const selectedKey = event.target.value;
@@ -1083,7 +1114,7 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                     </MenuItem>
                   ))}
               </Select>
-            </label>
+            </label> 
             <label>
               <Select value={typoOutflow.value} 
                   onChange={(event) => {
@@ -1118,20 +1149,20 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
                   ))}
               </Select>
               
-            </label>
-            <label>
-              <div style={inputCurrencyWrapper}>
-                <span style={currencySymbolStyle}>€</span>
-                <input
-                  type="text"
-                  value={outflow}
-                  onChange={e => handleInputChange(e, setOutflow)}
-                  onBlur={e => handleInputBlur(e, setOutflow)}
-                  placeholder="0"
-                  style={inputWithCurrency}
-                />
-              </div>
-            </label>
+            </label> 
+            
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                value={outflow}
+                onChange={e => handleInputChange(e, setOutflow)}
+                onBlur={e => handleInputBlur(e, setOutflow)}
+                placeholder="0"
+                style={inputWithCurrency}
+              />
+            </div>
+           
             <div>
               <StyledDateInput
                 type="date"
@@ -1166,58 +1197,60 @@ export default function InsertValue ({ theme, userData, handleSetIsUpdated, isHi
               ))}
             </select>
           </TitleLastAdds>
-
-          {(() => {
-            const allAdds = getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey);
-            const filtered = allAdds.filter(add =>
-              (!outflowCategoryFilter || add.categoryTag.translations[language] === outflowCategoryFilter) &&
-              (!outflowTypologyFilter || add.paymentType.translations[language] === outflowTypologyFilter) &&
-              (!outflowNoteFilter || (add.notes && add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
-              (!outflowDateFilter || new Date(add.date).toISOString().slice(0, 10) === outflowDateFilter)
-            );
-            if (
-              outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter || outflowDateFilter
-            ) {
-              const totalAll = allAdds.reduce((sum, add) => sum + (add.amount || 0), 0);
-              return (
-                <div style={{ color: '#e74c3c', fontWeight: 600, textAlign: 'right', marginRight: '2em', marginBottom: 4 }}>
-                  {languages[language].general.total} {allAdds.length > 0 ? totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0.00'} €
-                </div>
-              );
-            }
-            return null;
-          })()}
-          <StyledTable theme={theme}>
-            <thead>
-              {renderTableHeader({
-                categoryFilter: outflowCategoryFilter,
-                setCategoryFilter: setOutflowCategoryFilter,
-                categoryOptions: OutflowsTags,
-                categoryLabel: languages[language].insert.outflowSection.tableColumns.category,
-                noteFilter: outflowNoteFilter,
-                setNoteFilter: setOutflowNoteFilter,
-                noteInputRef: outflowNoteInputRef,
-                noteLabel: languages[language].insert.outflowSection.tableColumns.note,
-                dateFilter: outflowDateFilter,
-                setDateFilter: setOutflowDateFilter,
-                dateLabel: 'Data',
-                monthOption: outflowMonthOptions[selectedOutflowsMonth],
-                theme,
-                showNoteInput: showOutflowNoteInput,
-                setShowNoteInput: setShowOutflowNoteInput,
-                showDatePicker: showOutflowDatePicker,
-                setShowDatePicker: setShowOutflowDatePicker,
-                typologyFilter: outflowTypologyFilter,
-                setTypologyFilter: setOutflowTypologyFilter,
-                typologyOptions: paymentTags,
-                typologyLabel: languages[language].insert.outflowSection.tableColumns.typology,
-                isOutflow: true
-              })}
-            </thead>
-            <tbody>
-              {renderOutflowItems(getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey))}
-            </tbody>
-          </StyledTable>
+          
+          {/* Wrapper responsive per tabella outflow */}
+          <div style={{overflowX: 'auto', maxWidth: '100vw', WebkitOverflowScrolling: 'touch'}}>
+            <StyledTable theme={theme} style={{minWidth: 700}}>
+              <thead>
+                {renderTableHeader({
+                  categoryFilter: outflowCategoryFilter,
+                  setCategoryFilter: setOutflowCategoryFilter,
+                  categoryOptions: OutflowsTags,
+                  categoryLabel: languages[language].insert.outflowSection.tableColumns.category,
+                  noteFilter: outflowNoteFilter,
+                  setNoteFilter: setOutflowNoteFilter,
+                  noteInputRef: outflowNoteInputRef,
+                  noteLabel: languages[language].insert.outflowSection.tableColumns.note,
+                  dateFilter: outflowDateFilter,
+                  setDateFilter: setOutflowDateFilter,
+                  dateLabel: 'Data',
+                  monthOption: outflowMonthOptions[selectedOutflowsMonth],
+                  theme,
+                  showNoteInput: showOutflowNoteInput,
+                  setShowNoteInput: setShowOutflowNoteInput,
+                  showDatePicker: showOutflowDatePicker,
+                  setShowDatePicker: setShowOutflowDatePicker,
+                  typologyFilter: outflowTypologyFilter,
+                  setTypologyFilter: setOutflowTypologyFilter,
+                  typologyOptions: paymentTags,
+                  typologyLabel: languages[language].insert.outflowSection.tableColumns.typology,
+                  isOutflow: true
+                })}
+              </thead>
+              <tbody>
+                {renderOutflowItems(getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey))}
+              </tbody>
+            </StyledTable>
+            <style>{`
+              @media (max-width: 600px) {
+                table, .StyledTable, .StyledTable th, .StyledTable td {
+                  font-size: 0.92em !important;
+                  padding: 4px 2px !important;
+                  min-width: 60px !important;
+                }
+                .StyledTable th, .StyledTable td {
+                  line-height: 1.1 !important;
+                }
+                .StyledTable select, .StyledTable input, .StyledTable button {
+                  font-size: 0.95em !important;
+                  padding: 4px 2px !important;
+                }
+                .StyledTable .MuiInputBase-root, .StyledTable .MuiSelect-root {
+                  font-size: 0.95em !important;
+                }
+              }
+            `}</style>
+          </div>
         </>
       );
     }

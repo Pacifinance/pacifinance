@@ -25,7 +25,7 @@ export const outflowCategoryColors = {
   'Digital service': 'rgba(203, 243, 240, 0.32)', // azzurro chiaro: tecnologia
   'Gift': 'rgba(255, 99, 132, 0.28)', // rosa/rosso: dono
   'Pets': 'rgba(255, 206, 86, 0.28)', // giallo chiaro: affetto
-  'Personal project': 'rgba(255, 159, 64, 0.28)', // arancione chiaro: creatività
+  'Personal project': 'rgba(255, 115, 0, 0.38)', // arancione acceso: creatività, motivazione, risalto
   'Investment': 'rgba(39, 174, 96, 0.22)', // verde: crescita
   'Transports': 'rgba(52, 73, 94, 0.22)', // grigio scuro: spostamenti
   'Other': 'rgba(127, 140, 141, 0.22)', // grigio: altro

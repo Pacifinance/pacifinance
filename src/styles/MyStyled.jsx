@@ -543,7 +543,7 @@ export const MySecondaryButton = styled(MyButton)`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     margin-bottom: 1em;
     margin-left: 0.2em;
     margin-top: 1em;
@@ -576,8 +576,17 @@ export const TitleLastAdds = styled.h2`
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     font-size: 0.8rem;
-     margin-bottom: 2%;
+    margin-bottom: 1%;
+    margin-left: 15vw;
     margin-top: 2%;
+    select {
+      font-size: 0.85em !important;
+      padding: 2px 4px !important;
+      min-width: 70px !important;
+      height: 1.7em !important;
+      line-height: 1.1 !important;
+      margin-left: 4.5em !important;
+    }
   }
 `;
 
@@ -774,7 +783,7 @@ export const StyledTable = styled.table`
   border-spacing: 0;
   width: 50%;
   color: ${(props) => props.theme.textColor};
-  margin-bottom: 1em;
+  margin-bottom: 5em;
   margin-left: 6vw;
 
   th {
@@ -797,6 +806,25 @@ export const StyledTable = styled.table`
 
   tbody tr:hover {
     background-color: ${(props) => props.theme.jollyColor};
+  }
+
+  /* Responsive styles for mobile */
+  @media (max-width: 600px) {
+    width: 100% !important;
+    min-width: 360px !important;
+    th, td {
+      font-size: 0.92em !important;
+      padding: 4px 2px !important;
+      min-width: 60px !important;
+      line-height: 1.1 !important;
+    }
+    select, input, button {
+      font-size: 0.95em !important;
+      padding: 4px 2px !important;
+    }
+    .MuiInputBase-root, .MuiSelect-root {
+      font-size: 0.95em !important;
+    }
   }
 `;
 

@@ -19,7 +19,7 @@ import { downloadExcel } from '../utils/downloadData.jsx';
 
 
 
-export default function BalancesCharts({  theme, userData, isHidden, CustomTick }) {
+export default function BalancesCharts({ theme, userData, isHidden, CustomTick }) {
   const { language } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
 
@@ -122,7 +122,7 @@ export default function BalancesCharts({  theme, userData, isHidden, CustomTick 
             return [`${name}: ${formattedValue}`];
           }}
         />
-        <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} />
+        {/* <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
         <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%' }}/>
 
         <Bar dataKey={isHidden ? '****' : languages[language].assets.bank} stackId="a" fill={isHidden ? theme.textColor : "#0D579B"} />

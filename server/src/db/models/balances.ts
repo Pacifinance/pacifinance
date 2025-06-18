@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const users = require("./users.js");
-const utils = require("../../utils.js");
+import mongoose from "mongoose";
+import users from "./users"
+import utils from "../../utils";
 
 const balanceSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
@@ -31,21 +31,21 @@ const balanceSchema = new mongoose.Schema({
 
 /**
  * Adds a balance
- * @param {Object} data - data of the new Balance document 
+ * @param data Data of the new Balance document 
  * @returns Balance document
  */
-async function addOne(data) {
+async function addOne(data: object) {
     return (await Balance.create(data)).toJSON();
 }
 
 /**
  * Gets a list of balances that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
- * @param {Object} sort - fields to sort by and their order
+ * @param where Filter to match
+ * @param select Fields to return
+ * @param sort Fields to sort by and their order
  * @returns Balance document
  */
-async function getOneSorted(where, select, sort) {
+async function getOneSorted(where: object, select: string, sort: any) {
     const res = await Balance.find(where, select).sort(sort).limit(1).lean().exec();
     if (res.length === 0)
         return null;
@@ -54,10 +54,10 @@ async function getOneSorted(where, select, sort) {
 
 /**
  * Deletes all balances that match a filter
- * @param {Object} where - filter to match
+ * @param where Filter to match
  * @returns DeleteResult object
  */
-async function deleteMany(where) {
+async function deleteMany(where: object) {
     return await Balance.deleteMany(where).lean().exec();
 }
 
@@ -65,24 +65,24 @@ async function deleteMany(where) {
 
 /**
  * Adds a balance associated to a user
- * @param {String} user_id - ID of the user
- * @param {Date} user_date - month and year inserted by the user
- * @param {Number} bank - bank amount
- * @param {Number} cash - cash amount
- * @param {Number} digital_services - amount on digital services platforms
- * @param {Number} stocks_real - real stocks amount
- * @param {Number} stocks_invested - invested stocks amount
- * @param {Number} etf_real - real etf amount
- * @param {Number} etf_invested - invested etf amount
- * @param {Number} bitcoin_real - real bitcoin amount
- * @param {Number} bitcoin_invested - invested bitcoin amount
- * @param {Number} crypto_real - real crypto amount
- * @param {Number} crypto_invested - invested crypto amount
+ * @param user_id ID of the user
+ * @param user_date Month and year inserted by the user
+ * @param bank Bank amount
+ * @param cash Cash amount
+ * @param digital_services Amount on digital services platforms
+ * @param stocks_real Real stocks amount
+ * @param stocks_invested Invested stocks amount
+ * @param etf_real Real etf amount
+ * @param etf_invested Invested etf amount
+ * @param bitcoin_real Real bitcoin amount
+ * @param bitcoin_invested Invested bitcoin amount
+ * @param crypto_real Real crypto amount
+ * @param crypto_invested Invested crypto amount
  * @returns Balance document
  */
 async function insertNew(
-    user_id, user_date, bank, cash, digital_services, stocks_real, stocks_invested,
-    etf_real, etf_invested, bitcoin_real, bitcoin_invested, crypto_real, crypto_invested
+    user_id: string, user_date: Date, bank: number, cash: number, digital_services: number, stocks_real: number, stocks_invested: number,
+    etf_real: number, etf_invested: number, bitcoin_real: number, bitcoin_invested: number, crypto_real: number, crypto_invested: number
 ) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
@@ -116,27 +116,27 @@ async function insertNew(
 
 /**
  * Checks if there are balances associated to a user
- * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @param user_ref ObjectId of the user
  * @returns true if there are balances associated to the user, false otherwise
  */
-async function balancesExistByUserRef(user_ref) {
-    const balance = await getOneSorted({userRef: user_ref});
+async function balancesExistByUserRef(user_ref: mongoose.Types.ObjectId) {
+    const balance = await getOneSorted({userRef: user_ref}, "", {});
     return balance !== null;
 }
 
 /**
  * Gets the latest balance of a user
- * @param {String} user_id - ID of the user
- * @param {Date} limit_date - Date after which balances are ignored
+ * @param user_id ID of the user
+ * @param limit_date Date after which balances are ignored
  * @returns Balance document
  */
-async function getLatestByUserId(user_id, limit_date=undefined) {
+async function getLatestByUserId(user_id: string, limit_date: Date | undefined = undefined) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
     // Get the balances with the most recent user-inserted date. Among these balances, the latest one
     // is that with the most recent insertion date (the one that overwrites all the others)
-    let filter = {userRef: user._id};
+    let filter = {userRef: user._id, userDate: {$lt: new Date(Date.now())}};
     if (limit_date !== undefined)
         filter.userDate = {$lt: limit_date};
     return await getOneSorted(filter, "-_id -__v -userRef", {userDate: -1, date: -1});
@@ -144,11 +144,11 @@ async function getLatestByUserId(user_id, limit_date=undefined) {
 
 /**
  * Gets the latest balance of a user and sums all its parts together
- * @param {String} user_id - ID of the user
- * @param {Date} limit_date - Date after which balances are ignored
+ * @param user_id ID of the user
+ * @param limit_date Date after which balances are ignored
  * @return Total balance of the user
  */
-async function getTotalLatestByUserId(user_id, limit_date=undefined) {
+async function getTotalLatestByUserId(user_id: string, limit_date: Date | undefined = undefined) {
     const balance = await getLatestByUserId(user_id, limit_date);
     if (balance === null)
         return null;
@@ -160,10 +160,10 @@ async function getTotalLatestByUserId(user_id, limit_date=undefined) {
 
 /**
  * Gets the balances of a user for the last 24 months
- * @param {String} user_id - ID of the user
+ * @param user_id ID of the user
  * @returns List of Balance documents
  */
-async function getYearlyBalanceByUserId(user_id) {
+async function getYearlyBalanceByUserId(user_id: string) {
     // Get start and end of the current month
     const now = new Date(Date.now());
     let month_start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
@@ -194,10 +194,10 @@ async function getYearlyBalanceByUserId(user_id) {
 
 /**
  * Deletes all balances of a user given the reference to that user
- * @param {mongoose.ObjectId} user_ref - ObjectId of the user
+ * @param user_ref ObjectId of the user
  * @returns DeleteResult object
  */
-async function deleteBalancesByUserRef(user_ref) {
+async function deleteBalancesByUserRef(user_ref: mongoose.Types.ObjectId) {
     return await deleteMany({userRef: user_ref});
 }
 
@@ -206,7 +206,7 @@ async function deleteBalancesByUserRef(user_ref) {
  */
 const Balance = mongoose.model("Balance", balanceSchema);
 
-module.exports = {
+export default {
     insertNew,
     balancesExistByUserRef,
     getLatestByUserId,

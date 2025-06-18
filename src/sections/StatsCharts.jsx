@@ -4,12 +4,12 @@ import BalancesStatsYear from '../components/BalancesStatsYear';
 import BalancesCharts from '../components/BalancesCharts';
 import BalancesLinesCharts from '../components/BalancesLinesChart';
 import InOutCharts from '../components/InOutChart';
-import PercentageExpensesChart from '../components/PercentageExpensesChart';
+import PercentageOutflowsChart from '../components/PercentageOutflowsChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../styles/MyStyled';
-import InExStatsMonth from '../components/InExStatsMonth';
-import InExStatsYear from '../components/InExStatsYear';
+import InOutStatsMonth from '../components/InOutStatsMonth';
+import InOutStatsYear from '../components/InOutStatsYear';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
@@ -51,18 +51,18 @@ export default function StatsCharts() {
                 
             </>
           );
-        } else if (activePage === "statsIncomesExpenses") {
+        } else if (activePage === "statsIncomesOutflows") {
           return (
             <>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleGraph}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph}</SecondaryTitle>
                 <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleGraph2}</SecondaryTitle>
-                <PercentageExpensesChart theme={theme} userData={userData} isHidden={isHidden}/>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.detailedVision}</SecondaryTitle>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsMonth} - {formattedPreMonthDate}</SecondaryTitle>
-                <InExStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsExpenses.titleDetailsYear} - {formattedPreYearSameMonthDate}</SecondaryTitle>
-                <InExStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph2}</SecondaryTitle>
+                <PercentageOutflowsChart theme={theme} userData={userData} isHidden={isHidden}/>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.detailedVision}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleDetailsMonth} - {formattedPreMonthDate}</SecondaryTitle>
+                <InOutStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleDetailsYear} - {formattedPreYearSameMonthDate}</SecondaryTitle>
+                <InOutStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
                 
             </>
           );
@@ -86,13 +86,13 @@ export default function StatsCharts() {
               </MySectionButton>
               <MySectionButton
                 theme={theme}
-                onClick={() => handlePageChange("statsIncomesExpenses")}
+                onClick={() => handlePageChange("statsIncomesOutflows")}
                 style={{
                   backgroundColor:
-                    activePage === "statsIncomesExpenses" ? "" : "#222831",
+                    activePage === "statsIncomesOutflows" ? "" : "#222831",
                 }}
               >
-                {languages[language].graphs.statsExpenses.title}
+                {languages[language].graphs.statsOutflows.title}
               </MySectionButton>
             </ButtonGroup>
             {renderPage()}

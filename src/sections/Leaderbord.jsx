@@ -7,9 +7,11 @@ import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 // Component for the rankings section
-function RankingsSection({ language, title, rankings, isHidden }) {
+function RankingsSection({ theme, language, title, rankings, isHidden }) {
+    // Defensive: avoid crash if title is undefined
+    const safeTitle = title || '';
     // Verify if there is a title for expenses
-    const isExpenseTitle = title.toLowerCase().includes("uscite" || "expenses");
+    const isExpenseTitle = safeTitle.toLowerCase().includes("uscite") || safeTitle.toLowerCase().includes("expenses");
   
     // Verify if there are rankings > 50 (top 50%)
     const isRankingsAbove50 = rankings > 50;
@@ -48,12 +50,12 @@ function RankingsSection({ language, title, rankings, isHidden }) {
         textToDisplay = languages[language].leaderboard.noRank;
     }
   
-    const areNotEmpty = rankings.length > 0 || rankings > 0;
+    const areNotEmpty = (typeof rankings === 'string' && rankings.length > 0) || (typeof rankings === 'number' && rankings > 0);
   
     return (
-      <StyledRankingsSection>
+      <StyledRankingsSection theme={theme}>
         <h2>
-          {title}
+          {safeTitle}
           {isExpenseTitle && (
             <Tooltip title={languages[language].leaderboard.infoExpenseRank} arrow>
               <InfoIcon style={{ color: 'white' }} />
@@ -112,14 +114,14 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
             <div className="grid"> 
                     <TitleDashboard theme={theme}>{languages[language].leaderboard.title}</TitleDashboard>
                     {/* <RankingComponent /> */}
-                    <StyledRankingPage>
+                    <StyledRankingPage theme={theme}>
                         {/* <MonthYearSelector
                             selectedMonth={selectedMonth}
                             selectedYear={selectedYear}
                             onMonthChange={handleMonthChange}
                             onYearChange={handleYearChange}
                         /> */}
-                        <StyledLabel>
+                        <StyledLabel theme={theme}>
                             {languages[language].leaderboard.monthRanking} <StyledMonth>{formattedPreMonthDate}</StyledMonth>
                             {userType === 'demo' && (
                               <span className="block bg-red-400 border border-black rounded-xl p-2 mt-2">
@@ -127,17 +129,17 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                               </span>
                             )}
                         </StyledLabel>
-                        <RankingsTitle >{languages[language].leaderboard.generalRanking} </RankingsTitle>
-                        <CenteredRankings>
-                            <RankingsSection language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
-                            <RankingsSection language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
-                            <RankingsSection language={language} title={languages[language].leaderboard.expenseRanking} rankings={expenseRank} isHidden={isHidden} />
+                        <RankingsTitle>{languages[language].leaderboard.generalRanking} </RankingsTitle>
+                        <CenteredRankings theme={theme}>
+                            <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
+                            <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
+                            <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={expenseRank} isHidden={isHidden} />
                         </CenteredRankings>
-                        <RankingsTitle  >{languages[language].leaderboard.similarRanking} </RankingsTitle >
-                        <CenteredRankings>
-                            <RankingsSection language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
-                            <RankingsSection language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />
-                            <RankingsSection language={language} title={languages[language].leaderboard.expenseRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} />
+                        <RankingsTitle>{languages[language].leaderboard.similarRanking} </RankingsTitle >
+                        <CenteredRankings theme={theme}>
+                            <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />
+                            <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} />
                         </CenteredRankings>
                     </StyledRankingPage>
             </div>

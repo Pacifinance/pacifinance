@@ -1,49 +1,38 @@
-const express = require("express");
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-const http = require("http");
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
-const cron = require("cron");
+import express from "express";
+import session, { SessionData } from "express-session";
+import cookieParser from "cookie-parser";
+import http from "http";
+import https from "https";
+import fs from "fs";
+import path from "path";
 
 require("dotenv").config();
 
-const db = require("./db/mongo.js");
-const jobs = require("./jobs/jobs.js");
-const utils = require("./utils.js");
+import db from "./db/mongo.js";
+import cache from "./cache/cache.js";
+import jobs from "./jobs/jobs.js";
+import utils from "./utils.js";
 
 const day_ms = 24 * 60 * 60 * 1000;
 
-/* ==================== Cron jobs startup ==================== */
-
-// eslint-disable-next-line no-unused-vars
-const accountsDeletionJob = new cron.CronJob(
-    "0 1 * * *",
-    jobs.usersdel.deleteUsersJob,
-    null,
-    true,
-    "Europe/Berlin"
-);
-
 /* ==================== Express.js server initialization ==================== */
 
-let options = {};
+let options = {key: Buffer.from(""), cert: Buffer.from("")};
 if (process.env.ENV === "PROD") {
-    options.key = fs.readFileSync(process.env.KEY_PATH);
-    options.cert = fs.readFileSync(process.env.CERT_PATH);
+    options.key = fs.readFileSync(process.env.KEY_PATH || "");
+    options.cert = fs.readFileSync(process.env.CERT_PATH || "");
 }
 
 const app = express();
 app.use(cookieParser());
 app.use(session({
     name: '__session',
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "",
     saveUninitialized: false,
     resave: false,
     cookie: {maxAge: day_ms}
 }));
-app.use(express.static("build"));
+app.use(express.static(path.join(__dirname, "../../build")));
 app.use(express.json());
 
 async function generateUserId() {
@@ -58,7 +47,7 @@ async function generateUserId() {
     return user_id;
 }
 
-async function checkUserSession(session) {
+async function checkUserSession(session: session.Session & Partial<session.SessionData>) {
     const now = new Date(Date.now());
     // Check if the session in the cookie is valid
     if (!session || !session.userId || !session.sessionId ||
@@ -162,9 +151,10 @@ app.post("/logout", async (req, res) => {
     }
     // Invalidate the session in the database by setting the
     // expiration date to 01/01/1970 and an invalid ID
-    await db.users.setSessionOfUserId(req.session.userId, req.session.userId, new Date(0));
+    const session = req.session as SessionData
+    await db.users.setSessionOfUserId(session.userId, session.userId, new Date(0));
     // Destroy the session
-    req.session.destroy();
+    req.session.destroy((err: any) => {});
     // Send status code 200 (OK)
     res.status(200);
     res.send();
@@ -182,8 +172,9 @@ app.post("/user/delete", async (req, res) => {
     }
     // Check if the user has the right to delete the account.
     // Send status code 403 (Forbidden) if it doesn't
-    const type = await db.users.getTypeOfUserId(req.session.userId);
-    if (type.type >= db.users.UserType.test.value)
+    const session = req.session as SessionData
+    const type = await db.users.getTypeOfUserId(session.userId);
+    if (type === null || type.type >= db.users.UserType.test.value)
     {
         res.status(403);
         res.send();
@@ -193,7 +184,7 @@ app.post("/user/delete", async (req, res) => {
     const deletion_delay_days = 30;
     let deletion_date = new Date(Date.now());
     deletion_date.setUTCDate(deletion_date.getUTCDate() + deletion_delay_days);
-    const doc = await db.delqueue.insertNew(req.session.userId, deletion_date);
+    const doc = await db.delqueue.insertNew(session.userId, deletion_date);
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
     if (doc === null)
@@ -218,8 +209,9 @@ app.post("/user/set-id", async (req, res) => {
     }
     // Check if the user has the right to change ID.
     // Send status code 403 (Forbidden) if it doesn't
-    const type = await db.users.getTypeOfUserId(req.session.userId);
-    if (type.type === db.users.UserType.demo.value)
+    const session = req.session as SessionData
+    const type = await db.users.getTypeOfUserId(session.userId);
+    if (type === null || type.type === db.users.UserType.demo.value)
     {
         res.status(403);
         res.send();
@@ -236,7 +228,7 @@ app.post("/user/set-id", async (req, res) => {
     }
     // Check if the user exists in the db. Send status code 401
     // (Unauthorized) if the user does not exist
-    const user = await db.users.getPasswordByUserId(req.session.userId);
+    const user = await db.users.getPasswordByUserId(session.userId);
     if (user === null)
     {
         res.status(401);
@@ -253,10 +245,10 @@ app.post("/user/set-id", async (req, res) => {
     }
     // Invalidate the session in the database by setting the
     // expiration date to 01/01/1970 and an invalid ID
-    const curr_user_id = req.session.userId;
+    const curr_user_id = session.userId;
     await db.users.setSessionOfUserId(curr_user_id, curr_user_id, new Date(0));
     // Destroy the session
-    req.session.destroy();
+    req.session.destroy((err: any) => {});
     // Generate a new random user ID and update the corresponding User document
     const new_user_id = await generateUserId();
     await db.users.setUserIdByUserId(curr_user_id, new_user_id);
@@ -277,8 +269,9 @@ app.post("/user/set-password", async (req, res) => {
     }
     // Check if the user has the right to change password.
     // Send status code 403 (Forbidden) if it doesn't
-    const type = await db.users.getTypeOfUserId(req.session.userId);
-    if (type.type === db.users.UserType.demo.value)
+    const session = req.session as SessionData
+    const type = await db.users.getTypeOfUserId(session.userId);
+    if (type === null || type.type === db.users.UserType.demo.value)
     {
         res.status(403);
         res.send();
@@ -308,7 +301,7 @@ app.post("/user/set-password", async (req, res) => {
     }
     // Check if the user exists in the db. Send status code 401
     // (Unauthorized) if the user does not exist
-    const user = await db.users.getPasswordByUserId(req.session.userId);
+    const user = await db.users.getPasswordByUserId(session.userId);
     if (user === null)
     {
         res.status(401);
@@ -326,8 +319,8 @@ app.post("/user/set-password", async (req, res) => {
     // The old password is correct and the new passwords are equal:
     // hash the new password and store it in the db
     // Then, force the logout (redirect to /logout route)
-    let hashed_new_pwd = utils.hashPassword(new_pwd, process.env.SALT_ROUNDS);
-    await db.users.setPasswordOfUserId(req.session.userId, hashed_new_pwd);
+    let hashed_new_pwd = utils.hashPassword(new_pwd, Number.parseInt(process.env.SALT_ROUNDS || "1"));
+    await db.users.setPasswordOfUserId(session.userId, hashed_new_pwd);
     res.redirect(307, "../logout");
 });
 
@@ -342,7 +335,8 @@ app.post("/user/get", async (req, res) => {
         return;
     }
     // Get the user's public information
-    const user = await db.users.getPublicInfoByUserId(req.session.userId);
+    const session = req.session as SessionData
+    const user = await db.users.getPublicInfoByUserId(session.userId);
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(user);
@@ -359,8 +353,9 @@ app.post("/user/set", async(req, res) => {
         return;
     }
     // Set the user's new public data
+    const session = req.session as SessionData
     const doc = await db.users.setPublicInfoOfUserId(
-        req.session.userId, req.body.country, req.body.job, req.body.job_type,
+        session.userId, req.body.country, req.body.job, req.body.job_type,
         req.body.job_country, req.body.work_time, req.body.remote_type
     );
     // Check if the document was inserted successfully. Send
@@ -396,8 +391,9 @@ app.post("/balances/add", async (req, res) => {
         return;
     }
     // Add the balance to the database
+    const session = req.session as SessionData
     const doc = await db.balances.insertNew(
-        req.session.userId, balance.date, balance.bank, balance.cash, balance.digital_services,
+        session.userId, balance.date, balance.bank, balance.cash, balance.digital_services,
         balance.stocks.real, balance.stocks.invested, balance.etf.real, balance.etf.invested,
         balance.bitcoin.real, balance.bitcoin.invested, balance.crypto.real, balance.crypto.invested
     );
@@ -425,7 +421,8 @@ app.post("/balances/get", async (req, res) => {
         return;
     }
     // Get the last 12 month of balances from the database
-    const balances = await db.balances.getYearlyBalanceByUserId(req.session.userId);
+    const session = req.session as SessionData
+    const balances = await db.balances.getYearlyBalanceByUserId(session.userId);
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(balances);
@@ -451,8 +448,9 @@ app.post("/expenses/add", async (req, res) => {
         return;
     }
     // Add the expense to the database
+    const session = req.session as SessionData
     const doc = await db.expenses.insertNew(
-        req.session.userId, expense.date, expense.amount, expense.is_expense,
+        session.userId, expense.date, expense.amount, expense.is_expense,
         expense.notes, expense.payment_type, expense.category_tag
     );
     // Check if the document was inserted successfully. Send
@@ -481,9 +479,10 @@ app.post("/expenses/get", async (req, res) => {
     // Retrieve the expenses for a full year
     let year = [];
     let reference_date = new Date(Date.now());
+    const session = req.session as SessionData
     for (let i = 0; i <= 12; i++) {
         // Get the expenses from the database for the desired month and add them to the year array
-        const expenses = await db.expenses.getMonthlyExpensesByUserId(req.session.userId, reference_date);
+        const expenses = await db.expenses.getMonthlyExpensesByUserId(session.userId, reference_date);
         year.push(expenses);
         // Go to the next month
         reference_date = utils.decrementDateByOneMonth(reference_date);
@@ -505,10 +504,11 @@ app.post("/expenses/delete", async (req, res) => {
     }
     // Delete the requested expense
     const expense = req.body.expense;
-    const del_res = await db.expenses.deleteExpenseByData(req.session.userId, expense.date, expense.amount, expense.is_expense);
+    const session = req.session as SessionData
+    const del_res = await db.expenses.deleteExpenseByData(session.userId, expense.date, expense.amount, expense.is_expense);
     // Check if the document was deleted successfully. Send
     // status code 500 (Internal Server Error) if it failed
-    if (del_res.deletedCount !== 1)
+    if (del_res === null || del_res.deletedCount !== 1)
     {
         res.status(500);
         res.send();
@@ -530,10 +530,12 @@ app.post("/tags/get", async (req, res) => {
         return;
     }
     // Get all the tags from the database
-    let tags = {}
+    let tags: any = {}
     for (let tag_type of Object.keys(db.tags.TagType))
     {
+        // @ts-ignore
         const tag_type_name = db.tags.TagType[tag_type].name;
+        // @ts-ignore
         const tag_type_value = db.tags.TagType[tag_type].value;
         const tags_of_type = await db.tags.getAllTagsByType(tag_type_value);
         tags[tag_type_name] = tags_of_type;
@@ -554,9 +556,10 @@ app.post("/rank/balances", async (req, res) => {
         return;
     }
     // If the user is of test/demo type, assign some random values
-    const target_user = req.session.userId;
+    const session = req.session as SessionData
+    const target_user = session.userId;
     const user_type = await db.users.getTypeOfUserId(target_user);
-    if (user_type.type >= db.users.UserType.test.value)
+    if (user_type === null || user_type.type >= db.users.UserType.test.value)
     {
         const fake_balances = [
             {user: "0"}, {user: "1"}, {user: target_user}, {user: "2"}
@@ -600,9 +603,10 @@ app.post("/rank/expenses", async (req, res) => {
         return;
     }
     // If the user is of test/demo type, assign some random values
-    const target_user = req.session.userId;
+    const session = req.session as SessionData
+    const target_user = session.userId;
     const user_type = await db.users.getTypeOfUserId(target_user);
-    if (user_type.type >= db.users.UserType.test.value)
+    if (user_type === null || user_type.type >= db.users.UserType.test.value)
     {
         const fake_expenses = [
             {user: "0"}, {user: target_user}, {user: "1"}, {user: "2"}
@@ -635,18 +639,45 @@ app.post("/rank/expenses", async (req, res) => {
     res.json(rank);
 });
 
+app.get("/prices/:key", async (req, res) => {
+    // Check if the session is valid. Send status code 401
+    // (Unauthorized) if it's not valid
+    const valid_session = await checkUserSession(req.session);
+    if (!valid_session)
+    {
+        res.status(401);
+        res.send();
+        return;
+    }
+    // Check if the price key is valid is valid. Send status 404
+    // (Not Found) if it's not valid
+    const key = req.params.key;
+    if (!["crypto"].includes(key))
+    {
+        res.status(404);
+        res.send();
+        return;
+    }
+    // Retrieve the cached value and send it to the client with status code 200 (OK)
+    const value = cache.get(key);
+    res.status(200);
+    res.json(value);
+});
+
 app.get("/*", (req, res) => {
     // Refresh handler
-    res.sendFile(path.join(__dirname, "build/index.html"));
+    res.sendFile(path.join(__dirname, "../../build/index.html"));
     // res.redirect("/");
 });
 
-db.connect(process.env.DB_URI)
-    .then(() => {
+db.connect(process.env.DB_URI || "")
+    .then(async () => {
         console.log("Connected to DB");
+        await cache.init();
+        jobs.init();
     })
-    .catch(() => {
-        console.error("Cannot connect to DB: exiting");
+    .catch((err: any) => {
+        console.error(err);
         process.exit(1);
     });
 
@@ -657,5 +688,5 @@ if (process.env.ENV === "PROD") {
     }
     https.createServer(options, app).listen(process.env.PORT);
 } else {
-    http.createServer(options, app).listen(process.env.PORT ?? 5000);
+    http.createServer({}, app).listen(process.env.PORT ?? 5000);
 }

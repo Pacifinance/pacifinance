@@ -13,6 +13,7 @@ import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+// UNUSED STYLED COMPONENTS (commented out for future cleanup)
 export const PageWrapper = styled.div`
   position: relative;
   width: 100vw;
@@ -41,17 +42,17 @@ export const Section = styled.section `
 `;
 
 export const SectionDashboard = styled.section `
-  font-family: Roboto, sans-serif;
-  margin-left: 6vw;
-  padding-top: 2em;
-  height: 100%;
+  // font-family: Roboto, sans-serif;
+  // margin-left: 6vw;
+  // padding-top: 2em;
+  // height: 100%;
   background-color: ${(props) => (props.theme.backgroundColor)};
 
-  /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  @media (max-width: 768px) {
-    margin-left: 0vw;
-    height: 300vh;
-  }
+  // /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  // @media (max-width: 768px) {
+  //   margin-left: 0vw;
+  //   height: 300vh;
+  // }
 `;
 
 export const MyGenericModal = styled.div`
@@ -528,7 +529,7 @@ export const MySecondaryButton = styled(MyButton)`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     margin-bottom: 1em;
     margin-left: 0.2em;
     margin-top: 1em;
@@ -561,8 +562,17 @@ export const TitleLastAdds = styled.h2`
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     font-size: 0.8rem;
-     margin-bottom: 2%;
+    margin-bottom: 1%;
+    margin-left: 15vw;
     margin-top: 2%;
+    select {
+      font-size: 0.85em !important;
+      padding: 2px 4px !important;
+      min-width: 70px !important;
+      height: 1.7em !important;
+      line-height: 1.1 !important;
+      margin-left: 4.5em !important;
+    }
   }
 `;
 
@@ -759,7 +769,7 @@ export const StyledTable = styled.table`
   border-spacing: 0;
   width: 50%;
   color: ${(props) => props.theme.textColor};
-  margin-bottom: 1em;
+  margin-bottom: 5em;
   margin-left: 6vw;
 
   th {
@@ -782,6 +792,25 @@ export const StyledTable = styled.table`
 
   tbody tr:hover {
     background-color: ${(props) => props.theme.jollyColor};
+  }
+
+  /* Responsive styles for mobile */
+  @media (max-width: 600px) {
+    width: 100% !important;
+    min-width: 360px !important;
+    th, td {
+      font-size: 0.92em !important;
+      padding: 4px 2px !important;
+      min-width: 60px !important;
+      line-height: 1.1 !important;
+    }
+    select, input, button {
+      font-size: 0.95em !important;
+      padding: 4px 2px !important;
+    }
+    .MuiInputBase-root, .MuiSelect-root {
+      font-size: 0.95em !important;
+    }
   }
 `;
 
@@ -1414,14 +1443,16 @@ export const SidebarSection = styled.section`
 
       .analytic {
           display: flex;
+          position: relative;
           flex-direction: column; /* Imposta la direzione dei figli come colonna */
+          align-items: center;
+          justify-content: space-evenly;
           padding: 1rem 2rem 1rem 2rem;
           border-radius: 1rem;
           margin-right: 3%;
           margin-left: 3%;
           color: black;
           background-color: white;
-          justify-content: space-evenly;
           align-items: center;
           transition: 0.5s ease-in-out;
           width: 15em;
@@ -1733,7 +1764,7 @@ export const SidebarSection = styled.section`
     }
   `;
 
-  export const PercentageExpensesChartContainer = styled.div`
+  export const PercentageOutflowsChartContainer = styled.div`
     padding-bot: 2em;
     display: flex;
     flex-direction: column;
@@ -1799,8 +1830,14 @@ export const SidebarSection = styled.section`
     `;
 
   export const StyledRankingsSection = styled.div`
-    h2 {
-      color: #ffffff; /* Testo bianco */
+    h2{
+      color: ${(props) => props.theme.textColor} !important;
+    }
+
+    p{
+      color: ${(props) => props.theme.textColor} !important;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
     }
     ol {
       list-style: none;
@@ -1811,18 +1848,20 @@ export const SidebarSection = styled.section`
       margin: 0.5rem 0;
       font-size: 1.1rem;
     }
-    p {
-      color: #ffffff;
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-    }
   `;
 
 export const StyledRankingPage = styled.div`
   // text-align: center;
   height: 100%;
   padding: 3.8rem;
-  background-color: #1a1a1a; /* Sfondo scuro */
+  background-color: ${(props) => props.theme.rankingInfoBackgroundColor};
+`;
+
+export const StyledInfoPage = styled.div`
+  // text-align: center;
+  height: 100%;
+  padding: 3.8rem;
+  background-color: ${(props) => props.theme.rankingInfoBackgroundColor}; 
 `;
 
 export const CenteredRankings = styled.div`
@@ -1831,6 +1870,30 @@ export const CenteredRankings = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+`;
+
+export const CenteredInfo = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 25em;
+  margin-right: 25em;
+
+  h2{
+    color: ${(props) => props.theme.textColor} !important;
+  }
+
+  p{
+    color: ${(props) => props.theme.textColor} !important;
+  }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    margin-left: 10em;
+    margin-right: 10em;
+  }
 `;
 
 export const RankingsTitle = styled.h1`
@@ -1842,6 +1905,15 @@ export const RankingsTitle = styled.h1`
   margin-bottom: 1.5em;
 `;
 
+export const InfoTitle = styled.h1`
+  text-align: center;
+  color: ${themes.dark.buttonBackgroundColor};
+  font-size: 1.6em;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.8em;
+`;
+
 export const StyledSelectContainer = styled.div`
   display: flex;
   align-items: center;
@@ -1850,7 +1922,7 @@ export const StyledSelectContainer = styled.div`
 export const StyledLabel = styled.label`
   text-align: left;
   font-size: 1em;
-  color: white;
+  color: ${(props) => (props.theme.textColor)};
   margin-right: 0.5em;
   display: inline-block; 
   vertical-align: middle; /* Facoltativo: per allineare verticalmente */

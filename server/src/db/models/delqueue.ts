@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const users = require("./users.js");
+import mongoose from "mongoose";
+import users from "./users"
 
 const deletionQueueSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, ref: "User", required: true, unique: true, dropDups: true},
@@ -8,29 +8,29 @@ const deletionQueueSchema = new mongoose.Schema({
 
 /**
  * Adds a document to the deletion queue
- * @param {Object} data - data of the new DeletionQueue document 
+ * @param data Data of the new DeletionQueue document 
  * @returns DeletionQueue document
  */
-async function addOne(data) {
+async function addOne(data: object) {
     return (await DeletionQueue.create(data)).toJSON();
 }
 
 /**
  * Gets a list of documents that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
+ * @param where Filter to match
+ * @param select Fields to return
  * @returns List of DeletionQueue documents
  */
-async function get(where, select) {
+async function get(where: object, select: string) {
     return await DeletionQueue.find(where, select).lean().exec();
 }
 
 /**
  * Deletes a document from the deletion queue
- * @param {Object} where - filter to match
+ * @param where Filter to match
  * @returns DeleteResult object
  */
-async function deleteOne(where) {
+async function deleteOne(where: object) {
     return await DeletionQueue.deleteOne(where).lean().exec();
 }
 
@@ -38,15 +38,15 @@ async function deleteOne(where) {
 
 /**
  * Adds a new account to the deletion queue
- * @param {String} user_id - ID of the user
- * @param {Date} date - expected deletion date
+ * @param user_id ID of the user
+ * @param date Expected deletion date
  */
-async function insertNew(user_id, date) {
+async function insertNew(user_id: string, date: Date) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
     // Do not add the account to the queue if it's already present
-    const docs = await get({userRef: user._id});
+    const docs = await get({userRef: user._id}, "");
     if (docs.length !== 0)
         return null;
     // Add the account to the queue
@@ -67,10 +67,10 @@ async function getAllAccountsInQueue() {
 
 /**
  * Removes an account from the deletion queue given a reference to its User document
- * @param {mongoose.ObjectId} user_ref - reference to a User document
+ * @param user_ref Reference to a User document
  * @returns DeleteResult object
  */
-async function removeFromQueueByUserRef(user_ref) {
+async function removeFromQueueByUserRef(user_ref: mongoose.Types.ObjectId) {
     return await deleteOne({userRef: user_ref});
 }
 
@@ -79,7 +79,7 @@ async function removeFromQueueByUserRef(user_ref) {
  */
 const DeletionQueue = mongoose.model("Deletion", deletionQueueSchema);
 
-module.exports = {
+export default {
     insertNew,
     getAllAccountsInQueue,
     removeFromQueueByUserRef

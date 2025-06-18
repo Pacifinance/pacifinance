@@ -1,11 +1,5 @@
 // Theme.js
-import React, { useContext } from 'react';
-import { createGlobalStyle } from 'styled-components';
-
-import { languageContext } from '../contexts/LanguageContext';
 import languages from '../data/languages.json';
-
-// const { language } = useContext(languageContext);
 
 export const themes = {
   light: {
@@ -18,17 +12,19 @@ export const themes = {
     backgroundColor: '#f5f5f5',
     buttonBackgroundColor: '#079164',
     iconBackgroundColor: '#079164',
+    rankingInfoBackgroundColor: '#ececec',
   },
   dark: {
     mode: 'dark',
     jollyColor: '#b5ded1', //maybe better white
     primaryColor: '#0d0f13', //black
     secondaryColor: '#079164', //green
-    textColor: '#fff',
+    textColor: 'white',
     borderColor: 'white',
     backgroundColor: '#222831', //#222831 o #3d3d3d 
     buttonBackgroundColor: '#079164 ',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
     iconBackgroundColor: '#079164 ',
+    rankingInfoBackgroundColor: '#1a1a1a',
   },
 };
 

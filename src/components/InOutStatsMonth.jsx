@@ -42,13 +42,13 @@ const renderCustomizedLabel = ({
   );
 };
 
-export default function InExStatsMonth({ theme, userData, isHidden}) {
+export default function InOutStatsMonth({ theme, userData, isHidden}) {
     const { language } = useContext(LanguageContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
-    const [expensesMonth, setExpensesMonth] = useState(0);
+    const [outflowsMonth, setOutflowsMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
     const [incomesPreMonth, setIncomesPreMonth] = useState(0);
-    const [expensesPreMonth, setExpensesPreMonth] = useState(0);
+    const [outflowsPreMonth, setOutflowsPreMonth] = useState(0);
     const [savedPreMonth, setSavedPreMonth] = useState(0);
 
     // const {
@@ -63,14 +63,14 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
             try {
                 
                 //CURRENT MONTH
-                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setOutflowsMonth(userData ? userData.expensesArray[0] : 0);
                 setIncomesMonth(userData ? userData.incomesArray[0] : 0);
                 setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
 
                 //PREVIOUS MONTH
                 setIncomesPreMonth(userData ? userData.incomesArray[0] : 0);
                 setSavedPreMonth(userData ? (userData.incomesArray[1] - userData.expensesArray[1]) : 0);
-                setExpensesPreMonth(userData ? userData.expensesArray[1] : 0);
+                setOutflowsPreMonth(userData ? userData.expensesArray[1] : 0);
                 
         
             } catch (error) {
@@ -96,7 +96,7 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
         <div className="wrapper">
         <SectionAMonth theme={theme}>
             {/* <h1>Le tue entrate sono variate del: {((incomesMonth - incomesPreMonth) / incomesPreMonth) * 100} percentuale </h1>
-            <h1>Le tue uscite sono variate del: {((expensesMonth - expensesPreMonth) / expensesPreMonth) * 100} percentuale </h1> */}
+            <h1>Le tue uscite sono variate del: {((outflowsMonth - outflowsPreMonth) / outflowsPreMonth) * 100} percentuale </h1> */}
             
             <div className="analytic ">
                 <div className="design">
@@ -108,14 +108,14 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
                     <h6>{languages[language].general.incomes}</h6>
                 </div>
                 <div className="money">
                     <h5>
                         {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreMonth)}
                     </h6>
                 </div>
@@ -131,15 +131,15 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
-                    <h6>{languages[language].general.expenses}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
+                    <h6>{languages[language].general.outflows}</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreMonth)}
+                        {isHidden ? '****' : calculateDifference(outflowsMonth, outflowsPreMonth)}
                     </h5>
-                    <h6>
-                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreMonth)}
+                    <h6 className="text-xs">
+                        {isHidden ? '****' : calculatePercentageChange(outflowsMonth, outflowsPreMonth)}
                     </h6>
                 </div>
             </div>
@@ -154,14 +154,14 @@ export default function InExStatsMonth({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
                     <h6>{languages[language].general.saved}</h6>
                 </div>
                 <div className="money">
                     <h5>
                         {isHidden ? '****' : calculateDifference(savedMonth, savedPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreMonth)}
                     </h6>
                 </div>

@@ -4,10 +4,10 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
-import ComingSoon from '../components/ComingSoon';
+import Info from '../sections/Info';
 
 function InfoPage() {
-  const { theme, toggleMode } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { mode } = theme;
@@ -32,8 +32,8 @@ function InfoPage() {
   return (
     <Div>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
-      {/* <Info /> */}
-      <ComingSoon />
+      <Info theme={theme}/>
+      {/* <ComingSoon /> */}
     </Div>
   );
 }

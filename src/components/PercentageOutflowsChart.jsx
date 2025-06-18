@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { PercentageExpensesChartContainer } from '../styles/MyStyled';
+import { PercentageOutflowsChartContainer } from '../styles/MyStyled';
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import { UserContext } from '../contexts/UserContext';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { outflowCategoryColors } from '../data/categoryColors';
 
-export default function PercentageExpensesChart({theme, userData, isHidden}) {
+export default function PercentageOutflowsChart({theme, userData, isHidden}) {
   const { language } = useContext(LanguageContext);
   //const { expensesTags } = useContext(UserContext);
-  const [totalExpensesPerCategoryPerMonth, setTotalExpensesPerCategoryPerMonth] = useState([]);
+  const [totalOutflowsPerCategoryPerMonth, setTotalOutflowsPerCategoryPerMonth] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0); // Set default selected month as the first month
 
   useEffect(() => {
     const fetchData = async () => {
       if (userData) {
         try {
-          setTotalExpensesPerCategoryPerMonth(userData.totalExpensesPerCategoryPerMonth);
+          setTotalOutflowsPerCategoryPerMonth(userData.totalExpensesPerCategoryPerMonth);
         } catch (error) {
           console.error('Error during operations:', error);
         }
@@ -31,36 +32,18 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
   };
 
   const renderPieChart = () => {
-    const selectedData = totalExpensesPerCategoryPerMonth[selectedMonth];
+    const selectedData = totalOutflowsPerCategoryPerMonth[selectedMonth];
 
     if (!selectedData) {
       return null;
     }
 
     const expensePerCategoryData = Object.keys(selectedData).map((category) => ({
-      name: category, // language == 'it' ? expensesTags[category].translation.it :  (to adjust)
+      name: category, // language == 'it' ? OutflowsTags[category].translation.it :  (to adjust)
       value: selectedData[category],
     }));
 
     const totalExpenseData = expensePerCategoryData.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0); 
-
-    const COLORS = [
-        '#0088FE',
-        '#00C49F',
-        '#FFBB28',
-        '#FF8042',
-        '#AF19FF',
-        '#FF6E6E',
-        '#82ca9d',
-        '#8884d8',
-        '#FFA500',
-        '#7FFFD4',
-        '#FF1493',
-        '#00CED1',
-        '#DC143C',
-        '#FFD700',
-        '#9ACD32',
-      ];
 
     return (
       <PieChart width={800} height={500}>
@@ -77,9 +60,11 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
             if(entry.value === 0) {
               return <Cell key={entry.name} fill="transparent" />;
             }
+            const fallbackColor = 'rgba(200,200,200,0.18)';
+            const color = outflowCategoryColors[entry.name] || fallbackColor;
             const greyScale = Math.floor(Math.random() * 256);
             const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
-            return <Cell key={`cell-${index}`} fill={isHidden ? greyColor : COLORS[index % COLORS.length]} />
+            return <Cell key={`cell-${index}`} fill={isHidden ? greyColor : color} />
           })}
         </Pie>
         <Tooltip
@@ -153,8 +138,8 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
   let monthOptions = [];
   let year = currentYear;
   
-  // Iterate over totalExpensesPerCategoryPerMonth
-  for (let i = 0; i < Object.keys(totalExpensesPerCategoryPerMonth).length; i++) {
+  // Iterate over totalOutflowsPerCategoryPerMonth
+  for (let i = 0; i < Object.keys(totalOutflowsPerCategoryPerMonth).length; i++) {
     // Calculate the month and year for the current index
     let month = ((currentMonth - i - 1 + 12) % 12) + 1; // Subtract 1 before the modulo operation and add 1 after
     
@@ -167,11 +152,11 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
     monthOptions.push({ value: i, label: `${monthNames[month]} ${year}` });
   }
 
-  // Now monthOptions contains the month names and years for the indices in totalExpensesPerCategoryPerMonth
+  // Now monthOptions contains the month names and years for the indices in totalOutflowsPerCategoryPerMonth
   // console.log(monthOptions);
 
   return (
-    <PercentageExpensesChartContainer>
+    <PercentageOutflowsChartContainer>
       <div>
         <select value={selectedMonth} onChange={handleMonthChange} style={{ padding: '1em' }}>
           {monthOptions.map((option) => (
@@ -182,6 +167,6 @@ export default function PercentageExpensesChart({theme, userData, isHidden}) {
         </select>
       </div>
       {renderPieChart()}
-    </PercentageExpensesChartContainer>
+    </PercentageOutflowsChartContainer>
   );
 }

@@ -144,7 +144,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5 style={{ color: secondaryColor}}>
                         {isHidden ? '****' : calculateDifference(bankReal, bankRealPreMonth)}
                     </h5>
-                    <h6 style={{ color: secondaryColor}}>
+                    <h6 style={{ color: secondaryColor}} className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPreMonth)}
                     </h6>
                 </div>
@@ -164,7 +164,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(cashReal, cashRealPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(cashReal, cashRealPreMonth)}
                     </h6>
                 </div>
@@ -184,7 +184,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(digitalServicesReal, digitalServicesRealPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPreMonth)}
                     </h6>
                 </div>
@@ -204,7 +204,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(stocksReal, stocksRealPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(stocksReal, stocksRealPreMonth)}
                     </h6>
 
@@ -225,7 +225,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(etfReal, etfRealPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(etfReal, etfRealPreMonth)}
                     </h6>
                 </div>
@@ -245,7 +245,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(bitcoinReal, bitcoinRealPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(bitcoinReal, bitcoinRealPreMonth)}
                     </h6>
                 </div>
@@ -265,7 +265,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h5>
                         {isHidden ? '****' : calculateDifference(cryptoReal, cryptoRealPreMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(cryptoReal, cryptoRealPreMonth)}
                     </h6>
                 </div>

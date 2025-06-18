@@ -50,13 +50,13 @@ const renderCustomizedLabel = ({
   );
 };
 
-function InExStatsYear({ theme, userData, isHidden}) {
+function InOutStatsYear({ theme, userData, isHidden}) {
     const { language } = useContext(LanguageContext);
     const [incomesMonth, setIncomesMonth] = useState(0);
-    const [expensesMonth, setExpensesMonth] = useState(0);
+    const [outflowsMonth, setOutflowsMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
     const [incomesPreYearSameMonth, setIncomesPreYearSameMonth] = useState(0);
-    const [expensesPreYearSameMonth, setExpensesPreYearSameMonth] = useState(0);
+    const [outflowsPreYearSameMonth, setOutflowsPreYearSameMonth] = useState(0);
     const [savedPreYearSameMonth, setSavedPreYearSameMonth] = useState(0);
 
     // const {
@@ -72,12 +72,12 @@ function InExStatsYear({ theme, userData, isHidden}) {
                 // Set the state with the data from the database
 
                 //CURRENT MONTH
-                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setOutflowsMonth(userData ? userData.expensesArray[0] : 0);
                 setIncomesMonth(userData ? userData.incomesArray[0] : 0);
                 setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
 
                 //PREVIOUS YEAR SAME MONTH
-                setExpensesPreYearSameMonth(userData ? userData.expensesArray[12]: 0);
+                setOutflowsPreYearSameMonth(userData ? userData.expensesArray[12]: 0);
                 setIncomesPreYearSameMonth(userData ? userData.incomesArray[12] : 0);
                 setSavedPreYearSameMonth(userData ? (userData.incomesArray[12] - userData.expensesArray[12]) : 0);
 
@@ -112,14 +112,14 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
                     <h6>{languages[language].general.incomes}</h6>
                 </div>
                 <div className="money">
                     <h5>
                         {isHidden ? '****' : calculateDifference(incomesMonth, incomesPreYearSameMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(incomesMonth, incomesPreYearSameMonth)}
                     </h6>
                 </div>
@@ -135,15 +135,15 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
-                    <h6>{languages[language].general.expenses}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
+                    <h6>{languages[language].general.Outflows}</h6>
                 </div>
                 <div className="money">
                     <h5>
-                        {isHidden ? '****' : calculateDifference(expensesMonth, expensesPreYearSameMonth)}
+                        {isHidden ? '****' : calculateDifference(outflowsMonth, outflowsPreYearSameMonth)}
                     </h5>
-                    <h6>
-                        {isHidden ? '****' : calculatePercentageChange(expensesMonth, expensesPreYearSameMonth)}
+                    <h6 className="text-xs">
+                        {isHidden ? '****' : calculatePercentageChange(outflowsMonth, outflowsPreYearSameMonth)}
                     </h6>
                 </div>
             </div>
@@ -158,14 +158,14 @@ function InExStatsYear({ theme, userData, isHidden}) {
                     </div> */}
                 </div>
                 <div className="transfer">
-                    <h6>{languages[language].graphs.statsExpenses.variation}</h6>
+                    <h6>{languages[language].graphs.statsOutflows.variation}</h6>
                     <h6>{languages[language].general.saved}</h6>
                 </div>
                 <div className="money">
                     <h5>
                         {isHidden ? '****' : calculateDifference(savedMonth, savedPreYearSameMonth)}
                     </h5>
-                    <h6>
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(savedMonth, savedPreYearSameMonth)}
                     </h6>
                 </div>
@@ -175,4 +175,4 @@ function InExStatsYear({ theme, userData, isHidden}) {
     )
 }
 
-export default InExStatsYear;
+export default InOutStatsYear;

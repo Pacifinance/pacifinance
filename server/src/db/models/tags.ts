@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const utils = require("../../utils.js")
+import mongoose, { TagSet } from "mongoose";
+import utils from "../../utils";
 
 const TagType = {
     expense: {name: "expense", value: 0},
@@ -26,41 +26,41 @@ const tagsSchema = new mongoose.Schema({
 
 /**
  * Adds a tag
- * @param {Object} data - data of the new Tag document 
+ * @param data Data of the new Tag document 
  * @returns Tag document
  */
-async function addOne(data) {
+async function addOne(data: object) {
     return (await Tag.create(data)).toJSON();
 }
 
 /**
  * Gets a list of tags that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
- * @param {Object} sort - fields to sort by and their order
+ * @param where Filter to match
+ * @param select Fields to return
+ * @param sort Fields to sort by and their order
  * @returns List of Tags documents
  */
-async function getSorted(where, select, sort) {
+async function getSorted(where: object, select: string, sort: any) {
     return await Tag.find(where, select).sort(sort).lean().exec();
 }
 
 /**
  * Gets a tag that match a filter
- * @param {Object} where - filter to match
- * @param {String} select - fields to return
+ * @param where Filter to match
+ * @param select Fields to return
  * @returns Tag document
  */
-async function getOne(where, select) {
+async function getOne(where: object, select: string) {
     return await Tag.findOne(where, select).lean().exec();
 }
 
 /**
  * Updates a tag that match a filter
- * @param {Object} where - filter to match
- * @param {Object} update - fields to update
+ * @param where Filter to match
+ * @param update Fields to update
  * @returns Tag document
  */
-async function setOne(where, update) {
+async function setOne(where: object, update: object) {
     return await Tag.findOneAndUpdate(where, {$set: update}).lean().exec();
 }
 
@@ -68,12 +68,12 @@ async function setOne(where, update) {
 
 /**
  * Adds a new tag
- * @param {String} label - Label of the tag
- * @param {Number} index - Tag index (client side ID)
- * @param {TagType} type - Type of tag
+ * @param label Label of the tag
+ * @param index Tag index (client side ID)
+ * @param type Type of tag
  * @returns Tag document
  */
-async function insertNew(label, index, type) {
+async function insertNew(label: string, index: number, type: typeof TagType) {
     const data = {
         label: label,
         index: index,
@@ -87,41 +87,41 @@ async function insertNew(label, index, type) {
 
 /**
  * Gets the object reference of a tag
- * @param {Number} index - Label index (client side ID)
- * @param {Number} type - Type of tag
+ * @param index Label index (client side ID)
+ * @param type Type of tag
  * @returns Tag document
  */
-async function getReferenceByIndexAndType(index, type) {
+async function getReferenceByIndexAndType(index: number, type: number) {
     return await getOne({index: index, type: type}, "_id");
 }
 
 /**
  * Gets all tags by type
- * @param {Number} type - Type of tag
+ * @param type Type of tag
  * @returns List of Tag documents
  */
-async function getAllTagsByType(type) {
+async function getAllTagsByType(type: number) {
     return await getSorted({type: type}, "-_id -__v -translations._id", {index: 1});
 }
 
 /**
  * Gets a tag by reference
- * @param {mongoose.Types.ObjectId} ref Reference to a tag
+ * @param ref Reference to a tag
  * @returns Tag document
  */
-async function getTagByReference(ref) {
+async function getTagByReference(ref: mongoose.ObjectId) {
     return await getOne({_id: ref}, "-_id -__v");
 }
 
 /**
  * Adds or updates the translation of a tag for a given language
- * @param {Number} index - Label index (client side ID)
- * @param {Number} type - Type of tag
- * @param {String} lang - Language (two letters format)
- * @param {String} translation - Translation to set
+ * @param index Label index (client side ID)
+ * @param type Type of tag
+ * @param lang Language (two letters format)
+ * @param translation Translation to set
  * @returns 
  */
-async function setTranslationByIndexAndType(index, type, lang, translation) {
+async function setTranslationByIndexAndType(index: number, type: number, lang: string, translation: string) {
     const field = "translations." + lang;
     return await setOne({index: index, type: type}, {[field]: translation});
 }
@@ -131,7 +131,7 @@ async function setTranslationByIndexAndType(index, type, lang, translation) {
  */
 const Tag = mongoose.model("Tag", tagsSchema);
 
-module.exports = {
+export default {
     TagType,
     insertNew,
     getReferenceByIndexAndType,

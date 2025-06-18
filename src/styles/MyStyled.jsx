@@ -995,7 +995,7 @@ export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
       gap: 0.1em;
 
       /* For screens with a maximum width of 768px (e.g. mobile devices) */
-```text
+
       @media (max-width: 768px) {
         margin-top: 0.5em;
         padding: 1px 1px;

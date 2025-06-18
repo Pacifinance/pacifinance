@@ -294,12 +294,6 @@ export const ContainerFooter = styled.footer`
   }
 `;
 
-export const SignInButton = styled(MyButton)`
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 1.5em;
-`;
-
 export const LogoStyled = styled.h1`
   font-size: 0em;
   img {
@@ -1001,6 +995,7 @@ export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
       gap: 0.1em;
 
       /* For screens with a maximum width of 768px (e.g. mobile devices) */
+```text
       @media (max-width: 768px) {
         margin-top: 0.5em;
         padding: 1px 1px;

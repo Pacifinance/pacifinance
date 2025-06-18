@@ -7,6 +7,8 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { UserContext } from '../contexts/UserContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import Sidebar from '../sections/Sidebar';
 import languages from '../data/languages.json';
 import {
     Section,
@@ -20,7 +22,8 @@ const AccountPage = () => {
     const { theme } = useContext(ThemeContext);
     const { isHidden } = useContext(PrivacyContext);
     const { language } = useContext(LanguageContext);
-    const { userData, handleSetIsUpdated } = useContext(UserContext);
+    const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+    const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useNavigate();
 
     const [userId, setUserId] = useState('');
@@ -97,48 +100,53 @@ const AccountPage = () => {
     }
 
     return (
-        <Section theme={theme}>
-            <StyledSection theme={theme}>
-                <TitleDashboard theme={theme}>
-                    {languages[language].sidebar.account.title}
-                </TitleDashboard>
-
-                {showUpdateSuccess && (
-                    <div style={{
-                        backgroundColor: theme.buttonBackgroundColor,
-                        color: 'white',
-                        padding: '1rem',
-                        borderRadius: '8px',
-                        margin: '1rem 0',
-                        textAlign: 'center'
-                    }}>
-                        {languages[language].sidebar.account.successPopup.message}
-                    </div>
-                )}
-
-                <div style={{
-                    maxWidth: '800px',
-                    margin: '0 auto',
-                    padding: '2rem',
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    border: `2px solid ${theme.buttonBackgroundColor}`,
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }}>
-                    <TitleSection theme={theme}>
+        <div style={{ display: 'flex', height: '100vh' }}>
+            {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+            
+            <Section theme={theme} style={{ marginLeft: isMobileScreen ? '0' : '6vw', width: '100%' }}>
+                {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+                
+                <StyledSection theme={theme}>
+                    <TitleDashboard theme={theme} style={{ fontSize: isMobileScreen ? '1.2rem' : '1.5rem' }}>
                         {languages[language].sidebar.account.title}
-                    </TitleSection>
+                    </TitleDashboard>
 
-                    <div style={{ marginBottom: '2rem', fontSize: '1.1rem', color: '#333' }}>
-                        <p><strong>{languages[language].sidebar.account.id}:</strong> {isHidden ? '****' : userId}</p>
-                        <p><strong>{languages[language].sidebar.account.userType}:</strong> {userType}</p>
-                    </div>
+                    {showUpdateSuccess && (
+                        <div style={{
+                            backgroundColor: theme.buttonBackgroundColor,
+                            color: 'white',
+                            padding: '0.8rem',
+                            borderRadius: '8px',
+                            margin: '0.8rem 0',
+                            textAlign: 'center'
+                        }}>
+                            {languages[language].sidebar.account.successPopup.message}
+                        </div>
+                    )}
 
-                    <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
-                                {languages[language].sidebar.account.nationality}
-                            </label>
+                    <div style={{
+                        maxWidth: isMobileScreen ? '95%' : '600px',
+                        margin: '0 auto',
+                        padding: isMobileScreen ? '1rem' : '1.5rem',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        border: `2px solid ${theme.buttonBackgroundColor}`,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                    }}>
+                        <TitleSection theme={theme} style={{ fontSize: isMobileScreen ? '1rem' : '1.2rem', marginBottom: '1rem' }}>
+                            {languages[language].sidebar.account.title}
+                        </TitleSection>
+
+                        <div style={{ marginBottom: '1.5rem', fontSize: isMobileScreen ? '0.9rem' : '1rem', color: '#333' }}>
+                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.id}:</strong> {isHidden ? '****' : userId}</p>
+                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.userType}:</strong> {userType}</p>
+                        </div>
+
+                    <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '1.2rem' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.nationality}
+                                </label>
                             <Select
                                 value={isHidden ? '****' : userNationality.value}
                                 onChange={(event) => {
@@ -165,9 +173,9 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
-                                {languages[language].sidebar.account.whereWork}
-                            </label>
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.whereWork}
+                                </label>
                             <Select
                                 value={isHidden ? '****' : userWhereWorks.value}
                                 onChange={(event) => {
@@ -194,9 +202,9 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
-                                {languages[language].sidebar.account.work}
-                            </label>
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.work}
+                                </label>
                             <Select
                                 value={isHidden ? '****' : userJob.value}
                                 onChange={(event) => {
@@ -223,9 +231,9 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
-                                {languages[language].sidebar.account.workType}
-                            </label>
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.workType}
+                                </label>
                             <Select
                                 value={isHidden ? '****' : userJobType.value}
                                 onChange={(event) => {
@@ -252,9 +260,9 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
-                                {languages[language].sidebar.account.hoursContract}
-                            </label>
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.hoursContract}
+                                </label>
                             <Select
                                 value={isHidden ? '****' : userWorkTime.value}
                                 onChange={(event) => {
@@ -279,9 +287,9 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
-                                {languages[language].sidebar.account.remoteWork}
-                            </label>
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.remoteWork}
+                                </label>
                             <Select
                                 value={isHidden ? '****' : userRemoteType.value}
                                 onChange={(event) => {
@@ -305,18 +313,19 @@ const AccountPage = () => {
                             </Select>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
-                            <MyButton type="submit" theme={theme}>
-                                {languages[language].sidebar.account.saveButton}
-                            </MyButton>
-                            <MyButton type="button" theme={theme} onClick={() => navigate('/dashboard')}>
-                                {languages[language].sidebar.settings.backToDashboard || 'Torna alla Dashboard'}
-                            </MyButton>
-                        </div>
-                    </form>
-                </div>
-            </StyledSection>
-        </Section>
+                        <div style={{ display: 'flex', gap: isMobileScreen ? '0.5rem' : '1rem', justifyContent: 'center', marginTop: isMobileScreen ? '1.5rem' : '2rem', flexDirection: isMobileScreen ? 'column' : 'row' }}>
+                                <MyButton type="submit" theme={theme} style={{ fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.account.saveButton}
+                                </MyButton>
+                                <MyButton type="button" theme={theme} onClick={() => navigate('/dashboard')} style={{ fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                    {languages[language].sidebar.settings.backToDashboard || 'Torna alla Dashboard'}
+                                </MyButton>
+                            </div>
+                        </form>
+                    </div>
+                </StyledSection>
+            </Section>
+        </div>
     );
 };
 

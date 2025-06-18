@@ -1,13 +1,12 @@
-
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { UserContext } from '../contexts/UserContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import Sidebar from '../sections/Sidebar';
 import ToggleModeButton from '../components/ToggleModeButton';
 import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton';
 import languages from '../data/languages.json';
@@ -18,8 +17,10 @@ import {
     StyledSection,
     TitleSection,
     MuiCustomTextField,
+    MuiCustomIconButton,
     MuiCustomInputAdornment,
-    MuiCustomIconButton
+    EyeVisibility,
+    EyeVisibilityOff
 } from '../styles/MyStyled';
 
 const SettingsPage = () => {
@@ -28,6 +29,7 @@ const SettingsPage = () => {
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, toggleLanguage } = useContext(LanguageContext);
     const { userData, handleSetIsAuthenticated } = useContext(UserContext);
+    const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useNavigate();
 
     const [showChangeID, setShowChangeID] = useState(false);
@@ -113,6 +115,7 @@ const SettingsPage = () => {
 
     return (
         <Section theme={theme}>
+            {!isMobileScreen && <Sidebar />}
             <StyledSection theme={theme}>
                 <TitleDashboard theme={theme}>
                     {languages[language].sidebar.settings.title}
@@ -181,7 +184,7 @@ const SettingsPage = () => {
                     {/* Security Settings */}
                     <div style={{ marginBottom: '2rem', padding: '1.5rem', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                         <h3 style={{ marginBottom: '1rem', color: '#333' }}>Sicurezza</h3>
-                        
+
                         <div style={{ marginBottom: '1rem' }}>
                             <MyButton 
                                 theme={theme} 
@@ -195,7 +198,7 @@ const SettingsPage = () => {
                             >
                                 {languages[language].sidebar.changeID.title}
                             </MyButton>
-                            
+
                             {showChangeID && (
                                 <form onSubmit={handleGenerateID} style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'white', borderRadius: '8px' }}>
                                     <MuiCustomTextField
@@ -239,7 +242,7 @@ const SettingsPage = () => {
                             >
                                 {languages[language].sidebar.changePassword.title}
                             </MyButton>
-                            
+
                             {showChangePassword && (
                                 <form onSubmit={handleChangePassword} style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'white', borderRadius: '8px' }}>
                                     <MuiCustomTextField
@@ -331,7 +334,7 @@ const SettingsPage = () => {
                             <FontAwesomeIcon icon={faTrashCan} style={{ marginRight: '0.5rem' }} />
                             {languages[language].sidebar.settings.deleteAccount}
                         </MyButton>
-                        
+
                         {showDeleteAccount && (
                             <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'white', borderRadius: '8px' }}>
                                 <p style={{ color: '#dc3545', marginBottom: '1rem' }}>

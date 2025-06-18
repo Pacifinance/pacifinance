@@ -46,7 +46,7 @@ export default function SignInForm() {
     const handleOpenModal = () => {
       setShowErrorModal(true);
     };
-  
+
     const handleCloseModal = () => {
       setShowErrorModal(false);
     };
@@ -63,7 +63,7 @@ export default function SignInForm() {
       event.preventDefault();
     };
 
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -75,34 +75,28 @@ export default function SignInForm() {
             handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
             navigate('/dashboard'); //direct redirect
             //window.umami.trackEvent('signIn', 'SignIn');
-    
+
           }
           else {
             handleOpenModal();
-            
+
           }
-          
+
         } catch (error) {
           // console.error(error);
           setUsername('');
           setPassword('');
           handleOpenModal();
         }
-    
+
     };
 
-    
+
 
     return (
-        <SignIn theme={theme}>
-            <div className="sign-in-page">
-                <div className="sign-in-form" >
-                    <h1 className="text-3xl">{languages[language].header.login.titleButton}</h1>
-                    <div className="icon-with-text">
-                        <InfoIcon theme={theme}/>
-                        <h4>{languages[language].header.login.info}</h4>
-                    </div>
-                    <form id="signIn-IdPassword" className="max-w-screen-md mx-auto" onSubmit={handleSubmit}>
+        <div>
+            <div className="space-y-6">
+                    <form id="signIn-IdPassword" className="space-y-4" onSubmit={handleSubmit}>
                         <MuiCustomTextField theme={theme}
                           id = "username"
                           label="Id o Username"
@@ -152,13 +146,12 @@ export default function SignInForm() {
                           }}
                         />
                         <div className="button-wrapper">
-                          <SignInButton theme={theme} type="submit" fullWidth>
+                          <SignInButton theme={theme} type="submit" $fullWidth>
                             {languages[language].header.login.titleButton}
                           </SignInButton>
                         </div>
 
                     </form>
-                </div>
             </div>
             {showErrorModal && (
                 <MuiCustomDialog
@@ -182,6 +175,6 @@ export default function SignInForm() {
                     </MuiCustomDialogActions>
                 </MuiCustomDialog>
             )}
-        </SignIn>
+        </div>
     );
 }

@@ -8,15 +8,24 @@ import CheckPrices from './pages/CheckPricesPage';
 import Leaderboard from './pages/LeaderboardPage';
 import Knowledge from './pages/KnowledgePage';
 import Info from './pages/InfoPage';
-// import SignIn from './SignInPage';
+import SignInPage from './pages/SignInPage';
 import LandingPage from './pages/LandingPage';
-// import SignUp from './SignUpPage';
+import SignUpPage from './pages/SignUpPage';
+import AuthPage from './pages/AuthPage';
+import FAQPage from './pages/FAQPage';
+import PricingPage from './pages/PricingPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import SitemapPage from './pages/SitemapPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import DisclaimerPage from './pages/DisclaimerPage';
+import ContactPage from './pages/ContactPage';
 
 
 function AppRouter() {
   const { handleSetIsUpdated, isAuthenticated, setIsAuthenticated, userData, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     var _mtm = window._mtm = window._mtm || [];
     _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
@@ -78,6 +87,17 @@ function AppRouter() {
             {/* <Route path="/sign-up" exact element={<SignUp />} />
             <Route path="/sign-in" exact element={<SignIn />} /> */}
             {/* <Route path="*" element={<NotFound />} /> */}
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/signin" element={<SignInPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
         </Routes>
   );
 }

@@ -24,7 +24,7 @@ export const PageWrapper = styled.div`
     width: auto;
     height: auto;
     display: block;
-    
+
   }
 `;
 
@@ -143,9 +143,9 @@ export const TitleStatsCharts = styled.h1 `
 `;
 
 export const SignIn = styled.div`
-  
+
   font-family: Roboto, sans-serif;
-  
+
   .sign-in-page {
     background-color: ${(props) => (props.theme.backgroundColor)};
     height: 50vh;
@@ -171,7 +171,7 @@ export const SignIn = styled.div`
     align-items: center; 
     margin-bottom: 2.5em;
   }
-  
+
   .icon-with-text h4 {
     color: ${(props) => (props.theme.buttonBackgroundColor)};
     margin-left: 0.5em; 
@@ -295,12 +295,6 @@ export const ContainerFooter = styled.footer`
   }
 `;
 
-export const SignInButton = styled(MyButton)`
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 1.5em;
-`;
-
 export const LogoStyled = styled.h1`
   font-size: 0em;
   img {
@@ -315,7 +309,7 @@ export const LogoStyled = styled.h1`
     margin-right: 5%;
     margin-top: -1%;
   }
-  
+
 `;
 
 export const CentralImage = styled.img`
@@ -375,7 +369,7 @@ export const CentralSection = styled.section`
   @media (max-width: 768px) {
     // flex-direction: column;
     margin-left: 5%;
-    
+
   }
 `;
 
@@ -401,8 +395,8 @@ export const CentralText = styled.div`
       font-size: 1rem;
       margin-bottom: 5%; 
     }
-    
-    
+
+
   }
 `;
 
@@ -422,20 +416,12 @@ export const ButtonContainer = styled.div`
   gap: 0.5em;
 `;
 
-// export const ModalSignIn = styled(MyGenericModal)`
-//     display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
-// `;
-
-// export const ModalSignUp = styled(MyGenericModal)`
-//     display: ${({ isOpen }) => isOpen ? 'flex' : 'none'};
-// `;
-
 export const ModalSignIn = styled(MyGenericModal)`
-    display: ${props => props.isOpen ? 'flex' : 'none'};
+  display: ${({ $isOpen }) => $isOpen ? 'flex' : 'none'};
 `;
 
 export const ModalSignUp = styled(MyGenericModal)`
-    display: ${props => props.isOpen ? 'flex' : 'none'};
+  display: ${({ $isOpen }) => $isOpen ? 'flex' : 'none'};
 `;
 
 export const FooterText = styled.p`
@@ -444,7 +430,7 @@ export const FooterText = styled.p`
 
 export const SignUp = styled.div`
       font-family: Roboto, sans-serif;
-      
+
       .signUp-page {
           background-color: ${(props) => (props.theme.backgroundColor)};
           height: 50vh;
@@ -452,7 +438,7 @@ export const SignUp = styled.div`
           justify-content: center;
           align-items: center;
       }
-  
+
       .signUp-form {
           display: flex;
           flex-direction: column;
@@ -470,7 +456,7 @@ export const SignUp = styled.div`
           align-items: center; /* Allinea verticalmente gli elementi */
           margin-bottom: 2.5em;
         }
-        
+
       .icon-with-text h4 {
           color: ${(props) => (props.theme.buttonBackgroundColor)};
           margin-left: 0.5em; /* Aggiungi uno spazio tra l'icona e il testo */
@@ -479,13 +465,13 @@ export const SignUp = styled.div`
       .input-wrapper {
           position: relative;
       }
-        
-  
+
+
       .signUp-form label {
           color: ${(props) => (props.theme.textColor)};
           margin-bottom: 0.4em;
       }
-  
+
       .signUp-form input {
           padding: 0.4em;
           border: none;
@@ -493,11 +479,11 @@ export const SignUp = styled.div`
           color: ${(props) => (props.theme.textColor)};
           margin-bottom: 0.8em;
       }
-  
+
       .signUp-form input::placeholder {
           color: ${(props) => (props.theme.textColor)};
       }
-  
+
       // .signUp-form button {
       //     // padding: o.4em 0.8em;
       //     background-color: ${(props) => (props.theme.buttonBackgroundColor)};
@@ -513,8 +499,8 @@ export const SignUp = styled.div`
           margin-top: 1em;
         }
 
-      
-      
+
+
   `;
 
   export const SignUpButton = styled(MyButton)`
@@ -600,7 +586,7 @@ export const TitleSection = styled.h2`
 
   @media (max-width: 768px) {
     font-size: 1rem;
-    
+
   }
 
 `;
@@ -653,8 +639,8 @@ export const StyledSectionStats = styled.div`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    
-    
+
+
   }
 `;
 
@@ -729,7 +715,7 @@ export const LabelContainer = styled.div`
   @media (max-width: 768px) {
     width: 8em;
     margin-bottom: 0.5em;
-    
+
   }
 `;
 
@@ -743,7 +729,7 @@ export const LabelStyle = styled.label`{
   @media (max-width: 768px) {
     font-size: 1em;
   }
-  
+
 `;
 
 // export const StyledInputs = styled.div`
@@ -1038,6 +1024,7 @@ export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
       gap: 0.1em;
 
       /* For screens with a maximum width of 768px (e.g. mobile devices) */
+
       @media (max-width: 768px) {
         margin-top: 0.5em;
         padding: 1px 1px;
@@ -1144,9 +1131,9 @@ export const Notification = styled.div`
       border-radius: 3rem;
       background-color: white; /* Imposta il colore di sfondo dell'immagine */
       cursor: pointer;
-      
+
   }
-  
+
   .popup-container {
       position: fixed;
       top: 0;
@@ -1157,7 +1144,7 @@ export const Notification = styled.div`
       align-items: center;
       justify-content: center;
   }
-  
+
   .popup-window {
       width: 20em;
       padding: 1em;
@@ -1167,7 +1154,7 @@ export const Notification = styled.div`
       border-radius: 0.5em;
       box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
   }
-  
+
   .overlay {
       position: fixed;
       top: 0;
@@ -1194,7 +1181,7 @@ export const Notification = styled.div`
     .bell-icon {
         font-size: 1.5rem; /* Imposta la grandezza desiderata */
     }
-    
+
     .popup-container {
       position: fixed;
       top: 0;
@@ -1205,7 +1192,7 @@ export const Notification = styled.div`
       align-items: center;
       justify-content: center;
     }
-    
+
     .popup-window {
       width: 10em;
       padding: 0.5em;
@@ -1214,7 +1201,7 @@ export const Notification = styled.div`
       border-radius: 0.5em;
       box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
     }
-    
+
     .overlay {
       position: fixed;
       top: 0;
@@ -1246,17 +1233,17 @@ export const Links = styled.div`
       .active {
           border-right: 0.2rem solid ${(props) => (props.theme.textColor)};
       }
-      
+
       .active a {
           color: ${(props) => (props.theme.buttonBackgroundColor)};
       }
-      
+
       .active svg {
           color: ${(props) => (props.theme.buttonBackgroundColor)};
 
       }
-        
-      
+
+
       li{
           display: flex;
           justify-content: center;
@@ -1288,9 +1275,9 @@ export const Links = styled.div`
                   color: ${(props) => (props.theme.buttonBackgroundColor)};
               }
           }
-      
+
       }
-  
+
   }
 
   @media (max-width: 768px) {
@@ -1314,7 +1301,7 @@ export const Links = styled.div`
               font-size: 1.5rem; /* Riduci la dimensione del testo */
             }         
         }
-    
+
       }
   }
 `;
@@ -1322,7 +1309,7 @@ export const Links = styled.div`
 export const ToggleButton = styled.div`
   display: flex;
   justify-content: center;
-  
+
 
   svg {
       font-size: 2.2em; 
@@ -1378,7 +1365,7 @@ export const SidebarSection = styled.section`
   justify-content: space-between;
   padding: 2rem 0;
   gap: 2rem;
-  
+
   /* Style for mobile */
   @media (max-width: 768px) {
     position: sticky;
@@ -1390,7 +1377,7 @@ export const SidebarSection = styled.section`
     padding: 1em 1.5em; 
     gap: 1em;
     justify-content: space-between;
-    
+
     .active {
         margin-right: 1em; /* Personalizza il margine inferiore per aumentare lo spazio tra le icone nei tooltip */
     }
@@ -1471,17 +1458,17 @@ export const SidebarSection = styled.section`
           width: 15em;
           height: 8em;
           border: 0.25em solid ${(props) => (props.theme.buttonBackgroundColor)};
-      
+
           .design{
               display: flex;
               align-items: center;
-              
+
               .logo {
                   background-color: white;
                   display: flex;
                   justify-content: center;
                   align-items: center;
-              
+
                   svg {
                       font-size: 2rem;
                   }
@@ -1540,7 +1527,7 @@ export const SidebarSection = styled.section`
     margin-top: 8rem;
     margin-left: 6vw;
     margin-bottom: 2rem;
-   
+
 
     .bar-chart-section {
       flex: 1; /*all the graphs will have the same width*/
@@ -1548,7 +1535,7 @@ export const SidebarSection = styled.section`
       h2 {
         color: ${(props) => props.theme.textColor};
         text-align: center;
-        
+
         margin-right: 6rem;
       }
     }
@@ -1729,7 +1716,7 @@ export const SidebarSection = styled.section`
     padding-bot: 2em;
     h5{
       color: grey;
-      
+
     }
     h3{
       color: black;
@@ -1763,15 +1750,15 @@ export const SidebarSection = styled.section`
                     text-align: center;
                     padding: 0.25em;
                     justify-content: space-evenly;
-                  
+
                     img{
                     height: 2.5rem;
                     width: 2.5rem;
                     border-radius: 3rem;
                 }
-                    
+
                 }
-                
+
             }
         }
     }
@@ -1809,10 +1796,10 @@ export const SidebarSection = styled.section`
       margin: 0 auto;
       border: 0.1em solid white;
       border-radius: 0.2em;
-  
+
       background-color: ${(props) => (props.theme.backgroundColor)};
       font-family: Arial, sans-serif;
-  
+
       .react-calendar__tile {
         flex: 1;
         padding: 0.25rem;
@@ -1823,17 +1810,17 @@ export const SidebarSection = styled.section`
         align-items: center;
         font-size: 0.6rem; /* Modifica la dimensione del testo dei numeri dei giorni */
       }
-  
+
       .react-calendar__tile--active {
         background-color: ${(props) => (props.theme.buttonBackgroundColor)};
         color: white;
       }
-  
+
       .react-calendar__tile--active:enabled:hover,
       .react-calendar__tile--active:enabled:focus {
         background-color: ${(props) => (props.theme.buttonBackgroundColor)};
       }
-  
+
       .react-calendar__navigation {
         display: flex;
         justify-content: center;
@@ -1997,7 +1984,7 @@ export const StyledComingSoon = styled.div`
       font-weight: bold;
       text-align: center; /* centra il testo orizzontalmente */
     }
-  
+
     .coming-soon-subtitle {
       font-size: 1rem;
       font-weight: normal;
@@ -2036,7 +2023,7 @@ export const StyledDateInput = styled.input`
   color: black;
   font-size: 16px;
 `;
-  
+
 
   //****************************************************** MUI CUSTOM STYLED ******************************************************************* *//
 
@@ -2103,7 +2090,7 @@ export const MuiCustomDialogActions = styled(DialogActions)`
 
 export const MuiCustomTextField = styled(TextField)`
   && {
-      
+
       label.Mui-focused {
         color: ${(props) => (props.theme.buttonBackgroundColor)};
       }
@@ -2125,16 +2112,23 @@ export const MuiCustomIconButton = styled(IconButton)`
     color: ${props => props.theme.buttonBackgroundColor};
     margin-left: 0.5em;
   }
-  
+
 `;
 
 export const MuiCustomInputAdornment = styled(InputAdornment)`
 `;
 
 export const EyeVisibility = styled(({ className }) => <FontAwesomeIcon className={className} icon={faEye} />)`
-  
+
 `;
 
 export const EyeVisibilityOff = styled(({ className }) => <FontAwesomeIcon className={className} icon={faEyeSlash} />)`
-  
+
+`;
+
+export const SignInButton = styled(MyButton)`
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 1.5em;
+  width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'auto'};
 `;

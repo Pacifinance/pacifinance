@@ -6,27 +6,11 @@ import LogoPaci from '../components/Logo';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { UserContext } from '../contexts/UserContext';
 import languages from '../data/languages.json';
-import SignInForm from './SignInForm';
-import SignUpForm from './SignUpForm';
 // import MyStyled from '../contexts/MyStyled';
 import {
-  // useTheme,
-  MyGenericModalContent,
-  MyCloseButton,
   MyButton,
   ButtonContainer,
-  ButtonGroup,
-  ModalSignIn,
-  ModalSignUp,
 } from "../styles/MyStyled";
-
-// const ModalSignIn = styled(MyGenericModal)`
-//   display: ${({ isOpenSignIn }) => isOpenSignIn ? 'flex' : 'none'};
-// `;
-
-// const ModalSignUp = styled(MyGenericModal)`
-//   display: ${({ isOpenSignUp }) => isOpenSignUp ? 'flex' : 'none'};
-// `;
 
 function Header({
   theme,
@@ -34,68 +18,40 @@ function Header({
   toggleMode,
   toggleLanguage: propToggleLanguage,
 }) {
-  // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
-  const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
-  const [isOpenSignIn, setIsOpenSignIn] = useState(false);
-  const [isOpenSignUp, setIsOpenSignUp] = useState(false);
+  const { handleSetIsAuthenticated } = useContext(UserContext);
+  const [showDemoButton, setShowDemoButton] = useState(false);
   const { language, toggleLanguage } = useContext(LanguageContext);
-
-  // Use prop toggleLanguage if provided, otherwise use context
   const handleLanguageToggle = propToggleLanguage || toggleLanguage;
   const [username, setUsername] = useState("913418");
   const [password, setPassword] = useState("vbwifc9u");
-  const [showDemoButton, setShowDemoButton] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowDemoButton(true);
-    }, 3000); // Cambia 3000 con il numero di millisecondi di ritardo desiderato
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
-  const handleOpenSignIn = () => {
-    setIsOpenSignIn(true);
-  };
-
-  const handleOpenSignUp = () => {
-    setIsOpenSignUp(true);
-  };
-
-  const handleCloseSignIn = () => {
-    setIsOpenSignIn(false);
-  };
-
-  const handleCloseSignUp = () => {
-    setIsOpenSignUp(false);
-  };
-
   const DemoLogin = async (event) => {
     event.preventDefault();
     try {
-      handleSetIsAuthenticated(false); //to be sure that the user will se his data
-      //navigate('/dashboard'); //must be commented for production
-      //username could be user_id o username
+      handleSetIsAuthenticated(false);
       const response = await axios.post(
         "/login",
         { user_id: username, password: password },
         { withCredentials: true },
-      ); //the path in the db is called login
+      );
       if (response.status === 200) {
-        handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
-        navigate("/dashboard"); //direct redirect
-        //window.umami.trackEvent('signIn', 'SignIn');
+        handleSetIsAuthenticated(true);
+        navigate("/dashboard");
       } else {
-        // handleOpenModal();
-
         console.log("Error in the demo login");
       }
     } catch (error) {
-      // console.error(error);
       setUsername("");
       setPassword("");
-      // handleOpenModal();
     }
   };
 

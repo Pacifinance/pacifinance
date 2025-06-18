@@ -47,11 +47,15 @@ export default function AuthPage() {
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   {isSignUp ? (
                     <>
-                      <span style={{ color: theme.secondaryColor }}>Join</span> PaciFinance
+                      <span style={{ color: theme.secondaryColor }}>
+                        {language === 'it' ? 'Unisciti a' : 'Join'}
+                      </span> PaciFinance
                     </>
                   ) : (
                     <>
-                      <span style={{ color: theme.secondaryColor }}>Welcome</span> Back
+                      <span style={{ color: theme.secondaryColor }}>
+                        {language === 'it' ? 'Bentornato' : 'Welcome'}
+                      </span> {language === 'it' ? '' : 'Back'}
                     </>
                   )}
                 </h1>
@@ -67,7 +71,7 @@ export default function AuthPage() {
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold mb-4 flex items-center">
                   <SecurityIcon style={{ color: theme.secondaryColor }} className="mr-3" />
-                  Your Privacy & Security
+                  {language === 'it' ? 'La Tua Privacy e Sicurezza' : 'Your Privacy & Security'}
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,8 +83,15 @@ export default function AuthPage() {
                     }}
                   >
                     <LockIcon style={{ color: theme.secondaryColor }} className="mb-2" />
-                    <h4 className="font-semibold mb-2">No Email Required</h4>
-                    <p className="text-sm opacity-80">Complete anonymity with secure ID-based authentication</p>
+                    <h4 className="font-semibold mb-2">
+                      {language === 'it' ? 'Nessuna Email Richiesta' : 'No Email Required'}
+                    </h4>
+                    <p className="text-sm opacity-80">
+                      {language === 'it' 
+                        ? 'Completo anonimato con autenticazione sicura basata su ID'
+                        : 'Complete anonymity with secure ID-based authentication'
+                      }
+                    </p>
                   </div>
                   
                   <div 
@@ -91,8 +102,15 @@ export default function AuthPage() {
                     }}
                   >
                     <SecurityIcon style={{ color: theme.secondaryColor }} className="mb-2" />
-                    <h4 className="font-semibold mb-2">256-bit Encryption</h4>
-                    <p className="text-sm opacity-80">Bank-level security for all your financial data</p>
+                    <h4 className="font-semibold mb-2">
+                      {language === 'it' ? 'Crittografia a 256-bit' : '256-bit Encryption'}
+                    </h4>
+                    <p className="text-sm opacity-80">
+                      {language === 'it'
+                        ? 'Sicurezza di livello bancario per tutti i tuoi dati finanziari'
+                        : 'Bank-level security for all your financial data'
+                      }
+                    </p>
                   </div>
                 </div>
               </div>
@@ -108,19 +126,39 @@ export default function AuthPage() {
                 <div className="flex items-start space-x-3">
                   <WarningIcon style={{ color: '#ff9800' }} className="mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold mb-2 text-orange-600">Important Security Recommendation</h4>
+                    <h4 className="font-semibold mb-2 text-orange-600">
+                      {language === 'it' 
+                        ? 'Importante Raccomandazione di Sicurezza'
+                        : 'Important Security Recommendation'
+                      }
+                    </h4>
                     <p className="text-sm opacity-90 mb-3">
-                      Since we don't require email addresses to maintain your anonymity, please save your 
-                      <strong> User ID and password</strong> in a secure password manager like:
+                      {language === 'it' 
+                        ? 'Dato che non richiediamo indirizzi email per mantenere il tuo anonimato, ti preghiamo di salvare il tuo '
+                        : 'Since we don\'t require email addresses to maintain your anonymity, please save your '
+                      }
+                      <strong>
+                        {language === 'it' ? ' ID Utente e password' : ' User ID and password'}
+                      </strong>
+                      {language === 'it' 
+                        ? ' in un gestore di password sicuro come:'
+                        : ' in a secure password manager like:'
+                      }
                     </p>
                     <ul className="text-sm opacity-80 space-y-1 ml-4">
-                      <li>• Bitwarden (Free & Open Source)</li>
+                      <li>• Bitwarden ({language === 'it' ? 'Gratuito e Open Source' : 'Free & Open Source'})</li>
                       <li>• 1Password</li>
                       <li>• LastPass</li>
-                      <li>• Your browser's built-in password manager</li>
+                      <li>• {language === 'it' 
+                        ? 'Il gestore di password integrato del tuo browser'
+                        : 'Your browser\'s built-in password manager'
+                      }</li>
                     </ul>
                     <p className="text-sm opacity-90 mt-3 font-medium">
-                      ⚠️ Without these credentials, account recovery is impossible due to our privacy-first approach.
+                      ⚠️ {language === 'it'
+                        ? 'Senza queste credenziali, il recupero dell\'account è impossibile a causa del nostro approccio privacy-first.'
+                        : 'Without these credentials, account recovery is impossible due to our privacy-first approach.'
+                      }
                     </p>
                   </div>
                 </div>
@@ -193,16 +231,19 @@ export default function AuthPage() {
                 <div className="mt-6 pt-6 border-t" style={{ borderColor: `${theme.secondaryColor}30` }}>
                   <p className="text-center text-sm opacity-70">
                     {isSignUp ? (
-                      <>Already have an account? </>
+                      <>{language === 'it' ? 'Hai già un account? ' : 'Already have an account? '}</>
                     ) : (
-                      <>New to PaciFinance? </>
+                      <>{language === 'it' ? 'Nuovo su PaciFinance? ' : 'New to PaciFinance? '}</>
                     )}
                     <button
                       onClick={toggleAuthMode}
                       className="font-semibold hover:underline"
                       style={{ color: theme.secondaryColor }}
                     >
-                      {isSignUp ? 'Sign In' : 'Create Account'}
+                      {isSignUp 
+                        ? (language === 'it' ? 'Accedi' : 'Sign In')
+                        : (language === 'it' ? 'Crea Account' : 'Create Account')
+                      }
                     </button>
                   </p>
                 </div>

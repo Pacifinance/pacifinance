@@ -1,3 +1,4 @@
+
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -5,7 +6,7 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { Header, Footer } from '../sections/HeaderFooter';
 import NewLandingContent from '../sections/NewLandingContent';
 
-export default function LandingPage() {
+export default function NewLandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -30,21 +31,3 @@ export default function LandingPage() {
     </>
   );
 }
-
-  // Chiamata per caricare i dati dell'utente
-  // const loadUserData = () => {
-  //   handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  // };
-
-  // useEffect(() => {
-  //   loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
-  // }, []);
-
-  // Matomo Tag Manager
-  // React.useEffect(() => {
-  //   var _mtm = window._mtm = window._mtm || [];
-  //   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  //   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  //   g.async=true; g.src='https://cdn.matomo.cloud/pacifinance.matomo.cloud/container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-  // }, [])
-

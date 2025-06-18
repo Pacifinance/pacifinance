@@ -82,7 +82,7 @@
             "subtitle": "Personale, Privacy, Pacify",
             "sectionTitle": "Privacy, Sicurezza e Confronto",
             "descriptionRow1": "La piattaforma sicura e privacy oriented per la finanza personale.",
-            "descriptionRow2": "Potrai confrontarti con altri utenti sia nel tuo settore che non, nel tuo paese o all'estero.", 
+            "descriptionRow2": "Potrai confrontarti con altri utenti sia nel tuo settore che non, nel tuo paese o all'estero.",
             "descriptionRow3": "Check del portafoglio, delle entrate e delle spese nel tempo.",
             "discoverButton": "Scopri di più",
             "point1": {
@@ -117,32 +117,56 @@
                     "privacy": {
                         "title": "Privacy Completa",
                         "description": "I tuoi dati finanziari non lasciano mai il tuo dispositivo non criptati. Utilizziamo crittografia end-to-end e analisi anonime per proteggere la tua privacy.",
-                        "features": ["• Nessuna raccolta di dati personali", "• Solo confronti anonimi", "• Crittografia locale dei dati"]
+                        "features": [
+                            "• Nessuna raccolta di dati personali",
+                            "• Solo confronti anonimi",
+                            "• Crittografia locale dei dati"
+                        ]
                     },
                     "analytics": {
                         "title": "Analytics Intelligenti",
                         "description": "Ottieni automaticamente insights e bellissime visualizzazioni della tua salute finanziaria. Monitora spese, investimenti e risparmi con facilità.",
-                        "features": ["• Categorizzazione automatica", "• Grafici interattivi", "• Analisi delle tendenze"]
+                        "features": [
+                            "• Categorizzazione automatica",
+                            "• Grafici interattivi",
+                            "• Analisi delle tendenze"
+                        ]
                     },
                     "comparisons": {
                         "title": "Benchmarking Anonimo",
                         "description": "Confronta i tuoi progressi finanziari con utenti simili in modo anonimo. Impara dagli altri senza compromettere la tua privacy.",
-                        "features": ["• Confronti tra pari", "• Benchmark di settore", "• Monitoraggio della crescita"]
+                        "features": [
+                            "• Confronti tra pari",
+                            "• Benchmark di settore",
+                            "• Monitoraggio della crescita"
+                        ]
                     },
                     "investment": {
                         "title": "Gestione Investimenti",
                         "description": "Monitora azioni, ETF, crypto e altri investimenti. Controlla le performance e la diversificazione con insights in tempo reale.",
-                        "features": ["• Monitoraggio portafoglio", "• Analytics delle performance", "• Valutazione del rischio"]
+                        "features": [
+                            "• Monitoraggio portafoglio",
+                            "• Analytics delle performance",
+                            "• Valutazione del rischio"
+                        ]
                     },
                     "free": {
                         "title": "100% Gratuito",
                         "description": "Nessun abbonamento, nessuna commissione nascosta, nessun livello premium. Supportato interamente dalle donazioni della community.",
-                        "features": ["• Nessuna carta di credito richiesta", "• Tutte le funzionalità incluse", "• Supportato dalla community"]
+                        "features": [
+                            "• Nessuna carta di credito richiesta",
+                            "• Tutte le funzionalità incluse",
+                            "• Supportato dalla community"
+                        ]
                     },
                     "security": {
                         "title": "Sicurezza di Livello Bancario",
                         "description": "I tuoi dati sono protetti con misure di sicurezza standard del settore. Non possiamo vedere i tuoi dati, anche se volessimo.",
-                        "features": ["• Crittografia a 256 bit", "• Architettura zero-knowledge", "• Audit di sicurezza regolari"]
+                        "features": [
+                            "• Crittografia a 256 bit",
+                            "• Architettura zero-knowledge",
+                            "• Audit di sicurezza regolari"
+                        ]
                     }
                 },
                 "cta": {
@@ -267,7 +291,6 @@
                     "message": "Le informazioni del tuo profilo sono state aggiornate e salvate correttamente.",
                     "okButton": "ok va bene"
                 }
-
             },
             "deleteAccount": {
                 "title": "Elimina account",
@@ -322,7 +345,7 @@
                 "successPopup": {
                     "title": "Generazione avvenuta con successo",
                     "message": "Il tuo nuovo ID è: ",
-                    "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>" ,
+                    "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>",
                     "copied": "Copiato negli appunti!",
                     "toCopy": "Copia il tuo ID",
                     "okButton": "ok va bene"
@@ -337,7 +360,7 @@
                 "confirmButton": "Cambia password",
                 "errorPopup": {
                     "title": "Errore in fase di cambio password",
-                    "message": "Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br>" ,
+                    "message": "Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br>",
                     "message2": "Per favore riprova tra un istante.",
                     "okButton": "ok va bene"
                 },
@@ -387,7 +410,6 @@
                 "variation": "Variazione ",
                 "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: "
             }
-
         },
         "insert": {
             "title": "Inserimento Dati",
@@ -438,7 +460,7 @@
                 "successUpdate": "Uscita inserita con successo",
                 "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
                 "successDelete": "Uscita eliminata con successo",
-                "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: " 
+                "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: "
             },
             "investmentSection": {
                 "placeholderCategory": "Seleziona una categoria",
@@ -471,7 +493,7 @@
             "infoOutflowRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
             "noRank": "Rankings non disponibili",
             "compliments": "Complimenti! Sei nella top ",
-            "superCompliments": "Incredibile!! Sei nella top ", 
+            "superCompliments": "Incredibile!! Sei nella top ",
             "top": "Sei nella top ",
             "users": " degli utenti!",
             "lowerOutflow": " Sei tra gli utenti che spendono di meno!",
@@ -479,7 +501,6 @@
             "higherIncome": " Sei tra gli utenti che guadagnano di più!",
             "mediumRank": "Sei nella media degli utenti!",
             "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
-            
         },
 
         "info": {
@@ -504,22 +525,21 @@
                 "question5": "Come posso cambiare la mia password?",
                 "answer5": "Per cambiare la tua password, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia password'.  Compila i campi richiesti e conferma il cambio password. ",
                 "question6": "Come posso supportare il progetto?",
-                "answer6": "Il progetto è no-profit e viene sostenuto da donazioni volontarie. Se pensi che il servizio offerto sia utile e vuoi contribuire, puoi lasciare feedback e/o supportarci tramite donazione.", 
+                "answer6": "Il progetto è no-profit e viene sostenuto da donazioni volontarie. Se pensi che il servizio offerto sia utile e vuoi contribuire, puoi lasciare feedback e/o supportarci tramite donazione.",
                 "answer6CallToAction": "In ogni pagina in basso a destra troverai un pop-up per supportare il progetto. Grazie da parte di tutto il team!.",
                 "question7": "Come posso eliminare il mio account?",
                 "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. "
             },
             "developers": {
                 "title": "Team",
-                "description": "Pacifinance è sviluppata e viene aggiornata e mantenuta da un team di sviluppatori appassionati di finanza e di sviluppo.", 
-                "description2": "Il team di sviluppo è sempre disponibile a ricevere feedback e suggerimenti per migliorare la piattaforma. ", 
-                "description3":"La piattaforma è stata creata con l'obiettivo di offrire un servizio utile e gratuito per gli utenti.",
+                "description": "Pacifinance è sviluppata e viene aggiornata e mantenuta da un team di sviluppatori appassionati di finanza e di sviluppo.",
+                "description2": "Il team di sviluppo è sempre disponibile a ricevere feedback e suggerimenti per migliorare la piattaforma. ",
+                "description3": "La piattaforma è stata creata con l'obiettivo di offrire un servizio utile e gratuito per gli utenti.",
                 "calltoaction": "Il costo del mantenimento dei server e del servizio è sostenuto dal team, se pensi che il servizio offerto sia utile e vuoi contribuire, puoi supportarci tramite donazione. ",
                 "contact": "Contattaci"
             }
-
         },
-      
+
         "legal": {
             "privacy": {
                 "title": "Privacy Policy",
@@ -748,32 +768,56 @@
                     "privacy": {
                         "title": "Complete Privacy",
                         "description": "Your financial data never leaves your device unencrypted. We use end-to-end encryption and anonymous analytics to protect your privacy.",
-                        "features": ["• No personal data collection", "• Anonymous comparisons only", "• Local data encryption"]
+                        "features": [
+                            "• No personal data collection",
+                            "• Anonymous comparisons only",
+                            "• Local data encryption"
+                        ]
                     },
                     "analytics": {
                         "title": "Smart Analytics",
                         "description": "Get automatic insights and beautiful visualizations of your financial health. Track expenses, investments, and savings with ease.",
-                        "features": ["• Automated categorization", "• Interactive charts", "• Trend analysis"]
+                        "features": [
+                            "• Automated categorization",
+                            "• Interactive charts",
+                            "• Trend analysis"
+                        ]
                     },
                     "comparisons": {
                         "title": "Anonymous Benchmarking",
                         "description": "Compare your financial progress with similar users anonymously. Learn from others without compromising your privacy.",
-                        "features": ["• Peer comparisons", "• Industry benchmarks", "• Growth tracking"]
+                        "features": [
+                            "• Peer comparisons",
+                            "• Industry benchmarks",
+                            "• Growth tracking"
+                        ]
                     },
                     "investment": {
                         "title": "Investment Management",
                         "description": "Track stocks, ETFs, crypto, and other investments. Monitor performance and diversification with real-time insights.",
-                        "features": ["• Portfolio tracking", "• Performance analytics", "• Risk assessment"]
+                        "features": [
+                            "• Portfolio tracking",
+                            "• Performance analytics",
+                            "• Risk assessment"
+                        ]
                     },
                     "free": {
                         "title": "100% Free",
                         "description": "No subscriptions, no hidden fees, no premium tiers. Supported entirely by community donations.",
-                        "features": ["• No credit card required", "• All features included", "• Community supported"]
+                        "features": [
+                            "• No credit card required",
+                            "• All features included",
+                            "• Community supported"
+                        ]
                     },
                     "security": {
                         "title": "Bank-Level Security",
                         "description": "Your data is protected with industry-standard security measures. We can't see your data, even if we wanted to.",
-                        "features": ["• 256-bit encryption", "• Zero-knowledge architecture", "• Regular security audits"]
+                        "features": [
+                            "• 256-bit encryption",
+                            "• Zero-knowledge architecture",
+                            "• Regular security audits"
+                        ]
                     }
                 },
                 "cta": {
@@ -952,7 +996,7 @@
                 "successPopup": {
                     "title": "Generation successful",
                     "message": "Your new ID is: ",
-                    "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>" ,
+                    "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>",
                     "copied": "Copied to clipboard!",
                     "toCopy": "Copy your ID",
                     "okButton": "ok fine"
@@ -985,7 +1029,6 @@
                 "language": "Change Language",
                 "deleteAccount": "Delete account (!)",
                 "saveSettings": "Save settings"
-
             },
             "logout": "Logout"
         },
@@ -1021,7 +1064,6 @@
                 "variation": "Variation ",
                 "titleDetailsYear": "Your income, outflows and savings compared to last year "
             }
-
         },
 
         "insert": {
@@ -1036,7 +1078,7 @@
                 "updateButton": "Update your balance",
                 "confirmUpdate": "Confirm balance update",
                 "successUpdate": "Balance updated successfully",
-                "successFullUpdate": "Balance and income/outflow update successful"        
+                "successFullUpdate": "Balance and income/outflow update successful"
             },
 
             "incomeSection": {
@@ -1055,7 +1097,6 @@
                 "confirmDelete": "Are you sure you want to delete this income?",
                 "successDelete": "Income deleted successfully",
                 "increaseWhichBalance": "Select where to add the income"
-
             },
 
             "outflowSection": {
@@ -1098,8 +1139,6 @@
                 "successDelete": "Investment deleted successfully",
                 "decreaseWhichBalance": "Select where to subtract the investment"
             }
-        
-            
         },
 
         "leaderboard": {
@@ -1114,7 +1153,7 @@
             "infoOutflowRank": "This rank shows in the high positions who spends the most.",
             "noRank": "Rankings not available",
             "compliments": "Congratulations! You are in the top ",
-            "superCompliments": "Incredible!! You are in the top ", 
+            "superCompliments": "Incredible!! You are in the top ",
             "top": "You are in the top ",
             "users": " of users!",
             "lowerOutflow": " You are among the users who spend the least!",
@@ -1208,16 +1247,15 @@
                 "answer6CallToAction": "On every page at the bottom right you will find a pop-up to support the project. Thanks from the whole team!.",
                 "question7": "How can I delete my account?",
                 "answer7": "To delete your account, go to the 'Your Profile' section and select the 'Delete account' section. Confirm the deletion and you're done. "
-                
             },
             "developers": {
                 "title": "Team",
                 "description": "Pacifinance is developed, updated and maintained by a team of developers passionate about finance and development.",
-                "description2": "The development team is always available to receive feedback and suggestions to improve the platform. ", 
-                "description3":"The platform was created with the aim of offering a useful and free service for users.", 
+                "description2": "The development team is always available to receive feedback and suggestions to improve the platform. ",
+                "description3": "The platform was created with the aim of offering a useful and free service for users.",
                 "calltoaction": "The cost of maintaining the servers and the service is supported by the team, if you think the service offered is useful and want to contribute, you can support us through a donation. ",
                 "contact": "Contact us"
-
+            }
         },
         "pricing": {
             "title": "Pricing",
@@ -1266,7 +1304,6 @@
                 "description": "If PaciFinance is useful to you, consider a donation to help us keep the platform online and develop new features. Every contribution is highly appreciated!",
                 "disclaimer": "Donations are completely voluntary and do not unlock additional features."
             }
-
         }
     }
 }

@@ -125,7 +125,30 @@
             }
         },
         "footer": {
-            "rights": "Pacifinance © 2024. Tutti i diritti riservati."
+            "rights": "Tutti i diritti riservati.",
+            "description": "La piattaforma sicura e privacy-oriented per la finanza personale. Confrontati anonimamente con altri utenti mantenendo la tua privacy.",
+            "legal": {
+                "title": "Legale",
+                "privacy": "Privacy Policy",
+                "terms": "Termini di Servizio",
+                "cookies": "Cookie Policy",
+                "disclaimer": "Disclaimer"
+            },
+            "support": {
+                "title": "Supporto",
+                "faq": "FAQ",
+                "pricing": "Prezzi",
+                "contact": "Contatti",
+                "sitemap": "Mappa del Sito"
+            },
+            "community": {
+                "title": "Comunità",
+                "donationText": "PaciFinance è completamente gratuito e vive solo attraverso le donazioni.",
+                "supportTitle": "Sostieni il Progetto",
+                "supportDescription": "Il tuo contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità. Ogni donazione è molto apprezzata!"
+            },
+            "madeWith": "Fatto con",
+            "forPrivacy": "per la tua privacy"
         },
         "sidebar": {
             "dashboard": "Dashboard",
@@ -357,8 +380,116 @@
             "mediumRank": "Sei nella media degli utenti!",
             "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
 
-            
-        }
+
+        },
+        "legal": {
+            "privacy": {
+                "title": "Privacy Policy",
+                "introduction": {
+                    "title": "Introduzione",
+                    "content": "La tua privacy è la nostra priorità assoluta. PaciFinance è stato progettato fin dall'inizio con la privacy al centro. Questa politica spiega come gestiamo i tuoi dati con il massimo rispetto per la tua privacy."
+                },
+                "dataCollection": {
+                    "title": "Raccolta Dati",
+                    "content": "Raccogliamo solo i dati essenziali per il funzionamento del servizio:",
+                    "items": [
+                        "Dati finanziari inseriti volontariamente (sempre anonimi)",
+                        "Cookie tecnici necessari per il funzionamento",
+                        "Dati di utilizzo aggregati e anonimi"
+                    ]
+                },
+                "dataUsage": {
+                    "title": "Utilizzo dei Dati",
+                    "content": "I tuoi dati vengono utilizzati esclusivamente per fornire le funzionalità della piattaforma e per confronti anonimi. Non vendiamo, condividiamo o utilizziamo i tuoi dati per scopi commerciali."
+                },
+                "anonymity": {
+                    "title": "Anonimato",
+                    "content": "Tutti i confronti e le statistiche sono completamente anonimi. I tuoi dati personali non vengono mai associati ai dati finanziari utilizzati per i confronti."
+                },
+                "contact": {
+                    "title": "Contatti",
+                    "content": "Per qualsiasi domanda riguardo questa privacy policy, contattaci tramite i canali ufficiali della piattaforma."
+                },
+                "lastUpdated": "Ultimo aggiornamento"
+            }
+        },
+
+        "faq": {
+            "title": "Domande Frequenti",
+            "questions": [
+                {
+                    "question": "PaciFinance è davvero gratuito?",
+                    "answer": "Sì, PaciFinance è completamente gratuito. Non ci sono costi nascosti, abbonamenti o limitazioni. La piattaforma è sostenuta da donazioni volontarie."
+                },
+                {
+                    "question": "Come funziona la privacy su PaciFinance?",
+                    "answer": "La privacy è al centro di tutto ciò che facciamo. I tuoi dati sono sempre anonimi e non vengono mai condivisi. Utilizziamo solo cookie tecnici necessari per il funzionamento."
+                },
+                {
+                    "question": "Come posso confrontarmi con altri utenti?",
+                    "answer": "I confronti sono completamente anonimi e basati su dati aggregati. Puoi vedere statistiche generali per categoria, settore o area geografica senza mai rivelare la tua identità."
+                },
+                {
+                    "question": "Che tipo di dati posso inserire?",
+                    "answer": "Puoi inserire entrate, uscite, investimenti, risparmi e altri dati finanziari. Tutti i dati rimangono anonimi e sono utilizzati solo per le tue analisi personali."
+                },
+                {
+                    "question": "Come posso supportare il progetto?",
+                    "answer": "Il modo migliore per supportare PaciFinance è attraverso donazioni volontarie via Buy Me a Coffee. Ogni contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità."
+                }
+            ],
+            "stillHaveQuestions": "Hai ancora domande?",
+            "contactInfo": "Contattaci attraverso i nostri canali ufficiali per ricevere assistenza."
+        },
+
+        "pricing": {
+            "title": "Prezzi",
+            "subtitle": "Semplice, trasparente e completamente gratuito. Per sempre.",
+            "popular": "Più Popolare",
+            "freePlan": {
+                "title": "Gratuito",
+                "price": "0€",
+                "period": "/sempre",
+                "features": [
+                    "Tutte le funzionalità",
+                    "Privacy garantita",
+                    "Confronti anonimi",
+                    "Grafici e statistiche",
+                    "Nessun limite",
+                    "Supporto della community"
+                ],
+                "button": "Inizia Gratis"
+            },
+            "premiumPlan": {
+                "title": "Premium",
+                "price": "∞€",
+                "period": "/mese",
+                "features": [
+                    "Non esiste",
+                    "Serio, è tutto gratis",
+                    "Non ci credi?",
+                    "Controlla il codice sorgente"
+                ],
+                "button": "Non Disponibile"
+            },
+            "enterprisePlan": {
+                "title": "Enterprise",
+                "price": "∞∞€",
+                "period": "/anno",
+                "features": [
+                    "Ancora non esiste",
+                    "Ma se vuoi donare...",
+                    "Saremo felici",
+                    "Davvero, grazie! ❤️"
+                ],
+                "button": "Dona Invece"
+            },
+            "donation": {
+                "title": "Supporta PaciFinance",
+                "description": "Se PaciFinance ti è utile, considera una donazione per aiutarci a mantenere la piattaforma online e sviluppare nuove funzionalità. Ogni contributo è molto apprezzato!",
+                "disclaimer": "Le donazioni sono completamente volontarie e non sbloccano funzionalità aggiuntive."
+            }
+        },
 
     },
     "en": {
@@ -488,7 +619,30 @@
             }
         },
         "footer": {
-            "rights": "Pacifinance © 2024. All rights reserved."
+            "rights": "All rights reserved.",
+            "description": "The secure and privacy-oriented platform for personal finance. Compare anonymously with other users while maintaining your privacy.",
+            "legal": {
+                "title": "Legal",
+                "privacy": "Privacy Policy",
+                "terms": "Terms of Service",
+                "cookies": "Cookie Policy",
+                "disclaimer": "Disclaimer"
+            },
+            "support": {
+                "title": "Support",
+                "faq": "FAQ",
+                "pricing": "Pricing",
+                "contact": "Contact",
+                "sitemap": "Sitemap"
+            },
+            "community": {
+                "title": "Community",
+                "donationText": "PaciFinance is completely free and lives only through donations.",
+                "supportTitle": "Support the Project",
+                "supportDescription": "Your contribution helps us keep the platform online and develop new features. Every donation is highly appreciated!"
+            },
+            "madeWith": "Made with",
+            "forPrivacy": "for your privacy"
         },
         "sidebar": {
             "dashboard": "Dashboard",
@@ -600,6 +754,7 @@
                     "okButton": "ok fine"
                 },
                 "successPopup": {
+```python
                     "title": "Your password has been changed successfully.",
                     "message": "You will be redirected to the login page.",
                     "okButton": "ok fine"
@@ -726,6 +881,114 @@
             "higherIncome": " You are among the users who earn the most!",
             "mediumRank": "You are in the average of users!",
             "demoWarning": "Warning! Random and not relevant values, used as an example."
-        }    
+        },
+        "legal": {
+            "privacy": {
+                "title": "Privacy Policy",
+                "introduction": {
+                    "title": "Introduction",
+                    "content": "Your privacy is our absolute priority. PaciFinance has been designed from the ground up with privacy at its core. This policy explains how we handle your data with maximum respect for your privacy."
+                },
+                "dataCollection": {
+                    "title": "Data Collection",
+                    "content": "We only collect data essential for the service to function:",
+                    "items": [
+                        "Financial data voluntarily entered (always anonymous)",
+                        "Technical cookies necessary for operation",
+                        "Aggregated and anonymous usage data"
+                    ]
+                },
+                "dataUsage": {
+                    "title": "Data Usage",
+                    "content": "Your data is used exclusively to provide platform functionality and for anonymous comparisons. We do not sell, share, or use your data for commercial purposes."
+                },
+                "anonymity": {
+                    "title": "Anonymity",
+                    "content": "All comparisons and statistics are completely anonymous. Your personal data is never associated with financial data used for comparisons."
+                },
+                "contact": {
+                    "title": "Contact",
+                    "content": "For any questions regarding this privacy policy, contact us through the platform's official channels."
+                },
+                "lastUpdated": "Last updated"
+            }
+        },
+
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "questions": [
+                {
+                    "question": "Is PaciFinance really free?",
+                    "answer": "Yes, PaciFinance is completely free. There are no hidden costs, subscriptions, or limitations. The platform is supported by voluntary donations."
+                },
+                {
+                    "question": "How does privacy work on PaciFinance?",
+                    "answer": "Privacy is at the heart of everything we do. Your data is always anonymous and never shared. We only use technical cookies necessary for operation."
+                },
+                {
+                    "question": "How can I compare myself with other users?",
+                    "answer": "Comparisons are completely anonymous and based on aggregated data. You can see general statistics by category, sector, or geographic area without ever revealing your identity."
+                },
+                {
+                    "question": "What type of data can I enter?",
+                    "answer": "You can enter income, expenses, investments, savings, and other financial data. All data remains anonymous and is used only for your personal analysis."
+                },
+                {
+                    "question": "How can I support the project?",
+                    "answer": "The best way to support PaciFinance is through voluntary donations via Buy Me a Coffee. Every contribution helps us keep the platform online and develop new features."
+                }
+            ],
+            "stillHaveQuestions": "Still have questions?",
+            "contactInfo": "Contact us through our official channels for assistance."
+        },
+
+        "pricing": {
+            "title": "Pricing",
+            "subtitle": "Simple, transparent, and completely free. Forever.",
+            "popular": "Most Popular",
+            "freePlan": {
+                "title": "Free",
+                "price": "$0",
+                "period": "/forever",
+                "features": [
+                    "All features",
+                    "Guaranteed privacy",
+                    "Anonymous comparisons",
+                    "Charts and statistics",
+                    "No limits",
+                    "Community support"
+                ],
+                "button": "Start Free"
+            },
+            "premiumPlan": {
+                "title": "Premium",
+                "price": "$∞",
+                "period": "/month",
+                "features": [
+                    "Doesn't exist",
+                    "Seriously, it's all free",
+                    "Don't believe us?",
+                    "Check the source code"
+                ],
+                "button": "Not Available"
+            },
+            "enterprisePlan": {
+                "title": "Enterprise",
+                "price": "$∞∞",
+                "period": "/year",
+                "features": [
+                    "Still doesn't exist",
+                    "But if you want to donate...",
+                    "We'd be happy",
+                    "Really, thank you! ❤️"
+                ],
+                "button": "Donate Instead"
+            },
+            "donation": {
+                "title": "Support PaciFinance",
+                "description": "If PaciFinance is useful to you, consider a donation to help us keep the platform online and develop new features. Every contribution is highly appreciated!",
+                "disclaimer": "Donations are completely voluntary and do not unlock additional features."
+            }
+        }
     }
   }

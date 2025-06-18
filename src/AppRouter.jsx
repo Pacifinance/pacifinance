@@ -11,12 +11,17 @@ import Info from './pages/InfoPage';
 // import SignIn from './SignInPage';
 import LandingPage from './pages/LandingPage';
 // import SignUp from './SignUpPage';
+import FAQPage from './pages/FAQPage';
+import PricingPage from './pages/PricingPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import SitemapPage from './pages/SitemapPage';
 
 
 function AppRouter() {
   const { handleSetIsUpdated, isAuthenticated, setIsAuthenticated, userData, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     var _mtm = window._mtm = window._mtm || [];
     _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
@@ -78,6 +83,16 @@ function AppRouter() {
             {/* <Route path="/sign-up" exact element={<SignUp />} />
             <Route path="/sign-in" exact element={<SignIn />} /> */}
             {/* <Route path="*" element={<NotFound />} /> */}
+            <Route path="/signin" element={<SignInPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="/cookie-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/disclaimer" element={<PrivacyPolicyPage />} />
+            <Route path="/contact" element={<FAQPage />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
         </Routes>
   );
 }

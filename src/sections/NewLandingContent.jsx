@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LockIcon from '@mui/icons-material/Lock';
@@ -15,12 +14,10 @@ import Logo from '../assets/Brand/PacifinanceLogoPNG3NoBg.webp';
 import CookieBanner from '../components/CookieBanner';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../data/languages.json';
 
 export default function NewLandingContent({ theme }) {
   const { language } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -36,11 +33,11 @@ export default function NewLandingContent({ theme }) {
       style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
     >
       <CookieBanner />
-      
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 py-20" 
         style={{ background: `linear-gradient(135deg, ${theme.primaryColor} 0%, ${theme.backgroundColor} 100%)` }}>
-        
+
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" 
@@ -58,7 +55,7 @@ export default function NewLandingContent({ theme }) {
             <div className="flex justify-center lg:justify-start mb-6">
               <img src={Logo} alt="PaciFinance Logo" className="h-16 w-auto" />
             </div>
-            
+
             {/* Main Headline */}
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
@@ -68,7 +65,7 @@ export default function NewLandingContent({ theme }) {
                   of Your Finances
                 </span>
               </h1>
-              
+
               <p className="text-xl md:text-2xl opacity-80 max-w-2xl">
                 The only personal finance platform that puts your <strong>privacy first</strong>. 
                 Track, analyze, and improve your financial health with complete anonymity.
@@ -323,7 +320,7 @@ export default function NewLandingContent({ theme }) {
             Join thousands of users who have already transformed their financial lives with PaciFinance. 
             Start your journey today, completely free.
           </p>
-          
+
           <div className="space-y-4">
             <button 
               onClick={handleGetStarted}
@@ -333,7 +330,7 @@ export default function NewLandingContent({ theme }) {
             >
               Start Your Free Account
             </button>
-            
+
             <p className="text-sm opacity-60">
               No credit card required • Takes less than 2 minutes • Start immediately
             </p>

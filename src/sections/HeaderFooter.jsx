@@ -29,12 +29,15 @@ import {
   //   display: ${({ isOpenSignUp }) => isOpenSignUp ? 'flex' : 'none'};
   // `;
 
-function Header({theme, mode, toggleMode}) {
+function Header({theme, mode, toggleMode, toggleLanguage: propToggleLanguage}) {
   // const { setIsOpenSignIn, setIsOpenSignUp } = useTheme();
   const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
   const [isOpenSignIn, setIsOpenSignIn] = useState(false);
   const [isOpenSignUp, setIsOpenSignUp] = useState(false);
   const { language, toggleLanguage } = useContext(LanguageContext);
+  
+  // Use prop toggleLanguage if provided, otherwise use context
+  const handleLanguageToggle = propToggleLanguage || toggleLanguage;
   const [username, setUsername] = useState('913418');
   const [password, setPassword] = useState('vbwifc9u');
   const [showDemoButton, setShowDemoButton] = useState(false);
@@ -114,7 +117,7 @@ function Header({theme, mode, toggleMode}) {
             <ButtonContainer >
               <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
 
-              <MyButton theme={theme} data-umami-event="setLanguage" onClick={toggleLanguage}>
+              <MyButton theme={theme} data-umami-event="setLanguage" onClick={handleLanguageToggle}>
                 {language === 'it' ? 'IT' : 'EN'} 
               </MyButton>
               <ButtonGroup theme={theme}>

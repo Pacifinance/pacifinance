@@ -7,11 +7,19 @@ import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
 import languages from '../data/languages.json';
 
 export default function PrivacyPolicyPage() {
-  const { theme } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { mode } = theme;
 
   return (
-    <PolicyContainer theme={theme}>
+    <>
+      <title>Privacy Policy - PaciFinance</title>
+      <meta name="description" content="Privacy Policy for PaciFinance - Learn how we protect your privacy and handle your data on our personal finance platform." />
+      
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
+        <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
+        
+        <PolicyContainer theme={theme}>
       <div className="max-w-4xl mx-auto">
         <PolicyHeader theme={theme}>
           <h1>Privacy Policy</h1>
@@ -70,6 +78,10 @@ export default function PrivacyPolicyPage() {
             </section>
           </div>
         </div>
-    </PolicyContainer>
+        </PolicyContainer>
+
+        <LandingFooter theme={theme}/>
+      </div>
+    </>
   );
 }

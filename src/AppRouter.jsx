@@ -16,6 +16,8 @@ import PricingPage from './pages/PricingPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import SitemapPage from './pages/SitemapPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import DisclaimerPage from './pages/DisclaimerPage';
 
 
 function AppRouter() {
@@ -89,8 +91,8 @@ function AppRouter() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-            <Route path="/cookie-policy" element={<PrivacyPolicyPage />} />
-            <Route path="/disclaimer" element={<PrivacyPolicyPage />} />
+            <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
             <Route path="/contact" element={<FAQPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
         </Routes>

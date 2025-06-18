@@ -6,15 +6,15 @@ import { Header } from '../sections/HeaderFooter';
 import LandingFooter from '../components/LandingFooter';
 import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
 
-export default function TermsOfServicePage() {
+export default function DisclaimerPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { language, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   return (
     <>
-      <title>Terms of Service - PaciFinance</title>
-      <meta name="description" content="Terms of Service for PaciFinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform." />
+      <title>Disclaimer - PaciFinance</title>
+      <meta name="description" content="Disclaimer for PaciFinance - Important information about using our personal finance platform." />
       
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
@@ -22,55 +22,55 @@ export default function TermsOfServicePage() {
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1>{language === 'it' ? 'Termini di Servizio' : 'Terms of Service'}</h1>
+              <h1>{language === 'it' ? 'Disclaimer' : 'Disclaimer'}</h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
             </PolicyHeader>
-          
-          <div className="space-y-6">
-              <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '1. Accettazione dei Termini' : '1. Acceptance of Terms'}
-                </h2>
-                <p className="mb-4 leading-relaxed">
-                  {language === 'it' 
-                    ? 'Utilizzando PaciFinance, accetti questi termini di servizio. Se non accetti questi termini, non utilizzare la piattaforma.'
-                    : 'By using PaciFinance, you accept these terms of service. If you do not accept these terms, do not use the platform.'
-                  }
-                </p>
-              </section>
 
+            <div className="space-y-6">
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '2. Uso del Servizio' : '2. Use of Service'}
+                  {language === 'it' ? 'Informazioni Generali' : 'General Information'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
                   {language === 'it'
-                    ? 'PaciFinance è fornito gratuitamente per uso personale. Non è consentito utilizzare la piattaforma per scopi commerciali non autorizzati.'
-                    : 'PaciFinance is provided free of charge for personal use. You may not use the platform for unauthorized commercial purposes.'
+                    ? 'PaciFinance è uno strumento di gestione finanziaria personale fornito gratuitamente. Non costituisce consulenza finanziaria professionale.'
+                    : 'PaciFinance is a personal financial management tool provided free of charge. It does not constitute professional financial advice.'
                   }
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '3. Privacy e Dati' : '3. Privacy and Data'}
+                  {language === 'it' ? 'Limitazioni di Responsabilità' : 'Limitations of Liability'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
                   {language === 'it'
-                    ? 'I tuoi dati sono sempre anonimi e protetti. Consulta la nostra Privacy Policy per maggiori dettagli.'
-                    : 'Your data is always anonymous and protected. See our Privacy Policy for more details.'
+                    ? 'L\'utilizzo di PaciFinance è a tuo rischio. Non siamo responsabili per eventuali perdite finanziarie derivanti dall\'uso della piattaforma.'
+                    : 'Use of PaciFinance is at your own risk. We are not responsible for any financial losses resulting from the use of the platform.'
                   }
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '4. Limitazione di Responsabilità' : '4. Limitation of Liability'}
+                  {language === 'it' ? 'Accuratezza dei Dati' : 'Data Accuracy'}
+                </h2>
+                <p className="mb-4 leading-relaxed">
+                  {language === 'it'
+                    ? 'Sebbene ci impegniamo a fornire strumenti accurati, non garantiamo l\'accuratezza completa di tutti i calcoli e le analisi.'
+                    : 'While we strive to provide accurate tools, we do not guarantee the complete accuracy of all calculations and analyses.'
+                  }
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                  {language === 'it' ? 'Consulenza Professionale' : 'Professional Advice'}
                 </h2>
                 <p className="leading-relaxed">
                   {language === 'it'
-                    ? 'PaciFinance è fornito "così com\'è". Non garantiamo che il servizio sia sempre disponibile o privo di errori.'
-                    : 'PaciFinance is provided "as is". We do not guarantee that the service will always be available or error-free.'
+                    ? 'Per decisioni finanziarie importanti, ti consigliamo sempre di consultare un consulente finanziario professionale qualificato.'
+                    : 'For important financial decisions, we always recommend consulting a qualified professional financial advisor.'
                   }
                 </p>
               </section>

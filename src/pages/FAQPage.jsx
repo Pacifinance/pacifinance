@@ -8,7 +8,7 @@ import languages from '../data/languages.json';
 
 export default function FAQPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
   const [openQuestion, setOpenQuestion] = useState(null);
 
@@ -22,7 +22,7 @@ export default function FAQPage() {
       <meta name="description" content="Frequently Asked Questions about PaciFinance - Learn about privacy, security, features, and how to use our personal finance platform." />
       
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
-        <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
+        <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
         
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-12" style={{ color: theme.textColor }}>
           <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: theme.secondaryColor }}>

@@ -9,7 +9,7 @@ import languages from '../data/languages.json';
 
 export default function PricingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   return (
@@ -18,14 +18,14 @@ export default function PricingPage() {
       <meta name="description" content="PaciFinance Pricing - Completely free personal finance platform. No hidden fees, no subscriptions. Optional donations to support development." />
       
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
-        <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
+        <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
         
         <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-12" style={{ color: theme.textColor }}>
           <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: theme.secondaryColor }}>
             {languages[language].pricing.title}
           </h1>
           
-          <p className="text-xl text-center mb-12 opacity-80">
+          <p className="text-xl text-center mb-12 opacity-80" style={{ color: theme.textColor }}>
             {languages[language].pricing.subtitle}
           </p>
 

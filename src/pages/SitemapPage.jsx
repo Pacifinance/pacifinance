@@ -8,7 +8,7 @@ import LandingFooter from '../components/LandingFooter';
 
 export default function SitemapPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   const pages = [
@@ -19,6 +19,7 @@ export default function SitemapPage() {
     { path: '/privacy-policy', name: 'Privacy Policy' },
     { path: '/terms-of-service', name: language === 'it' ? 'Termini di Servizio' : 'Terms of Service' },
     { path: '/cookie-policy', name: 'Cookie Policy' },
+    { path: '/disclaimer', name: 'Disclaimer' },
     { path: '/sitemap', name: language === 'it' ? 'Mappa del Sito' : 'Sitemap' }
   ];
 
@@ -28,7 +29,7 @@ export default function SitemapPage() {
       <meta name="description" content="Sitemap for PaciFinance - Navigate through all pages of our privacy-focused personal finance platform." />
       
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
-        <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
+        <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
         
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-12" style={{ color: theme.textColor }}>
           <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: theme.secondaryColor }}>

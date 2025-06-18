@@ -99,7 +99,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const navigate = useNavigate();
 
     const fetchData = async () => {
-    
+
         if (userData) {
           try {
                 setUserId(userData.userId);
@@ -116,13 +116,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 setJobTypeTags(userData.jobTypeTags);
                 setWorkTimeTags(userData.workTimeTags);
                 setRemoteTypeTags(userData.remoteTypeTags);
-              
+
           } catch (error) {
             console.error('Error:', error);
           }
         }
     };
-  
+
     useEffect(() => {
       fetchData();
     }, [userData]);
@@ -147,7 +147,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const handleOldIdInput = (event) => {
         setOldId(event.target.value);
     };
-    
+
     const handlePasswordInput = (event) => {
         setPassword(event.target.value);
     };
@@ -302,7 +302,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     };
 
     const handleCloseSecondaryModal = () => {
-        
+
         setShowChangePWDError(false);
         setShowUsername(false);
     };
@@ -325,12 +325,12 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             else {
                 console.log("Logout failed");
             }
-            
+
         } catch (error) {
             console.error(error);
         }
     };
-    
+
     //we could update the modal with an x button to close it and avoid the automate close
     const handleUpdateProfile = async (event) => {
         event.preventDefault();
@@ -355,7 +355,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 console.log("Update failed");
                 alert(languages[language].sidebar.account.errorUpdateProfile)
             }
-            
+
         } catch(error) {
             console.error(error);
         }
@@ -571,7 +571,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         sortedJobTags.push(otherJobOption);
     }
 
-    
+
 
     return (
         // <section className="font-roboto fixed top-0 md:left-0 bg-paciGray h-screen w-5 flex flex-row md:flex-col items-center justify-between p-4 md:p-8 gap-8 sm:sticky sm:mr-8 sm:w-screen sm:h-20 sm:gap-4">
@@ -638,7 +638,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     </div>
                                 </li>
                             </Tooltip>
-                            
+
                             <Tooltip title={languages[language].sidebar.learn} placement="right">
                                 <li
                                     className={activeIcon === 5 ? "active" : ""}
@@ -661,11 +661,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     </div>
                                 </li>
                             </Tooltip>
-                            
+
                         </ul>
                     </Links>
                 )}
-                        
+
                 <Notification theme={theme}>
                     {/* <AiOutlineBell /> */}
                     <div className="account-container">
@@ -676,12 +676,12 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     {/* <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
                             <AiOutlineCaretDown />
                         </div> */}
-                    <DropdownContainer> 
+                    <DropdownContainer theme={theme}> 
                         {showDropdown && (
                             <div className="dropdown-menu">
                                 {options.map((option) => {
                                     // Aggiorna qui la condizione per controllare se userType è 'test' o 'demo'
-                                    
+
                                     const isDisabled = ['changeUsername'].includes(option.value) || (['changeid', 'changePassword'].includes(option.value) && (userType === 'test' || userType === 'demo'));
                                     return (
                                         <div
@@ -735,7 +735,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     {languages[language].sidebar.account.nationality} <Select
                                                     value={isHidden ? '****' : userNationality.value}
                                                     onChange={(event) => {
-                                                       
+
                                                         setUserNationality({key: event.target.value.key, value: event.target.value.label});
                                                     }}
                                                     style={{ backgroundColor: 'white', height: '2em', marginBottom: '0.5em' }}
@@ -867,7 +867,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                             </MenuItem>
                                                         ))}
                                                     </Select> <br></br>
-                                    
+
                                 </MuiCustomDialogContentText>
                             </MuiCustomDialogProfileContent>
                             <MuiCustomDialogActions>
@@ -1283,7 +1283,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             cursor: ['test', 'demo'].includes(userType) ? 'not-allowed' : 'pointer'
                                         }}
                                         disabled={['test','demo'].includes(userType)}>
-                                        
+
                                         <FontAwesomeIcon icon={faTrashCan} />
                                         {/* {languages[language].sidebar.deleteAccount.deleteButton}  */}
                                     </SettingsToggleButton>
@@ -1307,7 +1307,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 <ToggleButton title={languages[language].sidebar.settings.privacy} >
                     <SidebarPrivacyToggleModeButton theme={theme} mode={mode} toggleHidden={toggleHidden} isHidden={isHidden}/>
                 </ToggleButton>
-                
+
             </Top>
             {/* <BuyMeACoffeeWidget isMobileScreen={isMobileScreen}/> */}
         </SidebarSection>

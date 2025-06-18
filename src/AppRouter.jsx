@@ -20,6 +20,8 @@ import SitemapPage from './pages/SitemapPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import DisclaimerPage from './pages/DisclaimerPage';
 import ContactPage from './pages/ContactPage';
+import AccountPage from './pages/AccountPage';
+import SettingsPage from './pages/SettingsPage';
 
 
 function AppRouter() {
@@ -83,7 +85,7 @@ function AppRouter() {
             <Route path="/check-prices" element={<CheckPrices />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/knowledge" element={<Knowledge />} />
-            <Route path="/info" element={<Info/>} />
+            <Route path="/info" element={<Info />} />
             {/* <Route path="/sign-up" exact element={<SignUp />} />
             <Route path="/sign-in" exact element={<SignIn />} /> */}
             {/* <Route path="*" element={<NotFound />} /> */}
@@ -98,6 +100,8 @@ function AppRouter() {
             <Route path="/disclaimer" element={<DisclaimerPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
         </Routes>
   );
 }

@@ -363,32 +363,152 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
     const HamburgerMenu = () => (
         <div onClick={() => setIsSideBarMenuOpen(false)}>
-          <div className={`hamburger-menu ${isSideBarMenuOpen ? 'open' : ''} bg-white rounded-md cursor-pointer p-0.5 px-1.5 ml-4 absolute top-4 right-4 flex flex-col z-50`}>
+          <div className={`hamburger-menu ${isSideBarMenuOpen ? 'open' : ''} cursor-pointer p-2 ml-4 absolute top-3 right-4 flex flex-col`} style={{zIndex: 10000, backgroundColor: theme.buttonBackgroundColor, borderRadius: '8px', color: 'white'}}>
             <FontAwesomeIcon icon={faBars} onClick={(e) => {e.stopPropagation(); setIsSideBarMenuOpen(!isSideBarMenuOpen)}} />
           </div>
           {isSideBarMenuOpen ? (
-            <div className={`hamburger-menu ${isSideBarMenuOpen ? 'open' : ''} bg-white rounded-md cursor-pointer p-0.5 px-1.5 ml-10 absolute top-11 right-4 flex flex-col z-9000`}>
-              <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/dashboard')}>
+            <div className={`hamburger-menu-dropdown fixed top-14 right-4 flex flex-col shadow-lg border`} style={{
+              zIndex: 10001, 
+              backgroundColor: theme.backgroundColor, 
+              borderRadius: '12px', 
+              padding: '12px',
+              minWidth: '200px',
+              border: `2px solid ${theme.buttonBackgroundColor}`,
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)'
+            }}>
+              <button 
+                className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/dashboard'); setIsSideBarMenuOpen(false)}}
+              >
                 Dashboard
               </button>
-              <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/your-charts')}>
-                    {languages[language].sidebar.graphs}
-                </button>
-                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/insert-values')}>
-                    {languages[language].sidebar.insert}
-                </button>
-                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/check-prices')}>
-                    {languages[language].sidebar.check}
-                </button>
-                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/leaderboard')}>
-                    {languages[language].sidebar.leaderboard}
-                </button>
-                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/knowledge')}>
-                    {languages[language].sidebar.learn}
-                </button>
-                <button className="text-black hover:text-white hover:bg-paciGreen hover:font-bold rounded-md p-0.5" onClick={() => navigate('/info')}>
-                    {languages[language].sidebar.info}
-                </button>
+              <button 
+                className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/your-charts'); setIsSideBarMenuOpen(false)}}
+              >
+                {languages[language].sidebar.graphs}
+              </button>
+              <button 
+                className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/insert-values'); setIsSideBarMenuOpen(false)}}
+              >
+                {languages[language].sidebar.insert}
+              </button>
+              <button 
+                className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/check-prices'); setIsSideBarMenuOpen(false)}}
+              >
+                {languages[language].sidebar.check}
+              </button>
+              <button 
+                className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/leaderboard'); setIsSideBarMenuOpen(false)}}
+              >
+                {languages[language].sidebar.leaderboard}
+              </button>
+              <button 
+                className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/knowledge'); setIsSideBarMenuOpen(false)}}
+              >
+                {languages[language].sidebar.learn}
+              </button>
+              <button 
+                className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105" 
+                style={{
+                  color: theme.textColor,
+                  backgroundColor: 'transparent',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = theme.textColor;
+                }}
+                onClick={() => {navigate('/info'); setIsSideBarMenuOpen(false)}}
+              >
+                {languages[language].sidebar.info}
+              </button>
             </div>
           ) : null}
         </div>

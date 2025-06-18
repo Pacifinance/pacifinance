@@ -5,6 +5,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
 
 function Info({ theme }) {
     const { language } = useContext(LanguageContext);
@@ -31,7 +32,8 @@ function Info({ theme }) {
                             <p className="m-0.5 text-l">{languages[language].info.developers.description3}</p>
                             <p className="m-0.5 text-l">{languages[language].info.developers.calltoaction}</p>
                             <a href="https://buymeacoffee.com/pacifinance" target="_blank" rel="noopener noreferrer">
-                                <button className="bg-white text-paciGreen font-bold shadow rounded-xl p-4 mt-4 mb-4">{languages[language].info.calltoaction}</button>
+                                {/* <button className="bg-white text-paciGreen font-bold shadow rounded-xl p-4 mt-4 mb-4">{languages[language].info.calltoaction}</button> */}
+                                <BuyMeACoffeeWidget showLink={true} />
                             </a>
                         </CenteredInfo>
                         <InfoTitle theme={theme}>{languages[language].info.faq.title} </InfoTitle >

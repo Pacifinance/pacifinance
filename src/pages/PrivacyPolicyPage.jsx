@@ -69,6 +69,7 @@ export default function PrivacyPolicyPage() {
               </p>
             </section>
           </div>
+        </div>
     </PolicyContainer>
   );
 }

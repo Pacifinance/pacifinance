@@ -46,7 +46,7 @@ export default function SignInForm() {
     const handleOpenModal = () => {
       setShowErrorModal(true);
     };
-  
+
     const handleCloseModal = () => {
       setShowErrorModal(false);
     };
@@ -63,7 +63,7 @@ export default function SignInForm() {
       event.preventDefault();
     };
 
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -75,23 +75,23 @@ export default function SignInForm() {
             handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
             navigate('/dashboard'); //direct redirect
             //window.umami.trackEvent('signIn', 'SignIn');
-    
+
           }
           else {
             handleOpenModal();
-            
+
           }
-          
+
         } catch (error) {
           // console.error(error);
           setUsername('');
           setPassword('');
           handleOpenModal();
         }
-    
+
     };
 
-    
+
 
     return (
         <SignIn theme={theme}>
@@ -152,7 +152,7 @@ export default function SignInForm() {
                           }}
                         />
                         <div className="button-wrapper">
-                          <SignInButton theme={theme} type="submit" fullWidth>
+                          <SignInButton theme={theme} type="submit" $fullWidth>
                             {languages[language].header.login.titleButton}
                           </SignInButton>
                         </div>

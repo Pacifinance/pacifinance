@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import {BrowserRouter as Router}  from "react-router-dom";
 import './index.css';
 import AppRouter from './AppRouter';
@@ -10,8 +10,10 @@ import { PrivacyProvider } from './contexts/PrivacyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { MediaQueryProvider } from './contexts/MediaQueryContext';
 
+const container = document.getElementById('root');
+const root = createRoot(container);
 
-ReactDOM.render(
+root.render(
   <MediaQueryProvider>
     <LanguageProvider>
       <ThemeProvider>
@@ -28,8 +30,7 @@ ReactDOM.render(
         </UserProvider>
       </ThemeProvider>
     </LanguageProvider>
-  </MediaQueryProvider>,
-  document.getElementById('root')
+  </MediaQueryProvider>
 );
 
 // const MatomoTagManager = () => {
@@ -40,7 +41,7 @@ ReactDOM.render(
 //     g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
 //   }, []);
 
-  
+
 
 //   return null;
 // };
@@ -64,5 +65,3 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 //reportWebVitals();
-
-

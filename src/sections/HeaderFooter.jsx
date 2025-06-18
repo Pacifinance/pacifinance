@@ -40,7 +40,7 @@ function Header({theme, mode, toggleMode}) {
   const [showDemoButton, setShowDemoButton] = useState(false);
   const navigate = useNavigate();
 
-  
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,9 +83,9 @@ function Header({theme, mode, toggleMode}) {
         // handleOpenModal();
 
         console.log('Error in the demo login');
-        
+
       }
-      
+
     } catch (error) {
       // console.error(error);
       setUsername('');
@@ -95,7 +95,7 @@ function Header({theme, mode, toggleMode}) {
 
   };
 
-    
+
     return (
       <div 
         className="w-full h-auto flex flex-col items-start relative"
@@ -113,20 +113,20 @@ function Header({theme, mode, toggleMode}) {
             )}
             <ButtonContainer >
               <ToggleModeButton mode={mode} toggleMode={toggleMode}/>
-        
+
               <MyButton theme={theme} data-umami-event="setLanguage" onClick={toggleLanguage}>
                 {language === 'it' ? 'IT' : 'EN'} 
               </MyButton>
               <ButtonGroup theme={theme}>
                 <MyButton theme={theme} id="openSignInModalButton" onClick={handleOpenSignIn}>{languages[language].header.login.titleButton}</MyButton>
-                <ModalSignIn theme={theme} isOpen={isOpenSignIn}> 
+                <ModalSignIn theme={theme} $isOpen={isOpenSignIn}> 
                   <MyGenericModalContent theme={theme}>
                       <MyCloseButton theme={theme} className="close" onClick={handleCloseSignIn}>&times;</MyCloseButton>
                       <SignInForm theme={theme} />
                   </MyGenericModalContent>
                 </ModalSignIn>
                 <MyButton theme={theme} id="openSignUpModalButton" disabled>{languages[language].header.register.titleButton}</MyButton> {/*Put this before "disabled" onClick={handleOpenSignUp} and eliminate disabled*/}
-                <ModalSignUp theme={theme} isOpen={isOpenSignUp}> 
+                <ModalSignUp theme={theme} $isOpen={isOpenSignUp}> 
                   <MyGenericModalContent theme={theme}>
                       <MyCloseButton theme={theme} className="close" onClick={handleCloseSignUp}>&times;</MyCloseButton>
                       <SignUpForm theme={theme} />

@@ -754,7 +754,6 @@
                     "okButton": "ok fine"
                 },
                 "successPopup": {
-```python
                     "title": "Your password has been changed successfully.",
                     "message": "You will be redirected to the login page.",
                     "okButton": "ok fine"

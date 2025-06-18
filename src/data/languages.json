@@ -96,6 +96,71 @@
             "point3": {
                 "title": "Professionale e affidabile",
                 "description": "Servizi di confronto personale e con altri<br></br> utenti, mantenendo la tua privacy."
+            },
+            "new": {
+                "hero": {
+                    "title": "Prendi il Controllo",
+                    "subtitle": "delle Tue Finanze",
+                    "description": "L'unica piattaforma di finanza personale che mette la tua privacy al primo posto. Monitora, analizza e migliora la tua salute finanziaria in completo anonimato.",
+                    "getStarted": "Inizia Gratis",
+                    "learnMore": "Scopri di Più",
+                    "socialProof": "Affidabile da utenti attenti alla privacy in tutto il mondo"
+                },
+                "benefits": {
+                    "freeForever": "100% Gratuito per Sempre",
+                    "privacyFirst": "Privacy Prima di Tutto",
+                    "smartAnalytics": "Analytics Intelligenti"
+                },
+                "features": {
+                    "title": "Perché Scegliere PaciFinance?",
+                    "subtitle": "Abbiamo costruito la piattaforma di finanza personale definitiva pensando alla tua privacy e al tuo successo. Ecco cosa ci rende diversi.",
+                    "privacy": {
+                        "title": "Privacy Completa",
+                        "description": "I tuoi dati finanziari non lasciano mai il tuo dispositivo non criptati. Utilizziamo crittografia end-to-end e analisi anonime per proteggere la tua privacy.",
+                        "features": ["• Nessuna raccolta di dati personali", "• Solo confronti anonimi", "• Crittografia locale dei dati"]
+                    },
+                    "analytics": {
+                        "title": "Analytics Intelligenti",
+                        "description": "Ottieni automaticamente insights e bellissime visualizzazioni della tua salute finanziaria. Monitora spese, investimenti e risparmi con facilità.",
+                        "features": ["• Categorizzazione automatica", "• Grafici interattivi", "• Analisi delle tendenze"]
+                    },
+                    "comparisons": {
+                        "title": "Benchmarking Anonimo",
+                        "description": "Confronta i tuoi progressi finanziari con utenti simili in modo anonimo. Impara dagli altri senza compromettere la tua privacy.",
+                        "features": ["• Confronti tra pari", "• Benchmark di settore", "• Monitoraggio della crescita"]
+                    },
+                    "investment": {
+                        "title": "Gestione Investimenti",
+                        "description": "Monitora azioni, ETF, crypto e altri investimenti. Controlla le performance e la diversificazione con insights in tempo reale.",
+                        "features": ["• Monitoraggio portafoglio", "• Analytics delle performance", "• Valutazione del rischio"]
+                    },
+                    "free": {
+                        "title": "100% Gratuito",
+                        "description": "Nessun abbonamento, nessuna commissione nascosta, nessun livello premium. Supportato interamente dalle donazioni della community.",
+                        "features": ["• Nessuna carta di credito richiesta", "• Tutte le funzionalità incluse", "• Supportato dalla community"]
+                    },
+                    "security": {
+                        "title": "Sicurezza di Livello Bancario",
+                        "description": "I tuoi dati sono protetti con misure di sicurezza standard del settore. Non possiamo vedere i tuoi dati, anche se volessimo.",
+                        "features": ["• Crittografia a 256 bit", "• Architettura zero-knowledge", "• Audit di sicurezza regolari"]
+                    }
+                },
+                "cta": {
+                    "title": "Pronto a Prendere il Controllo del Tuo",
+                    "subtitle": "Futuro Finanziario",
+                    "description": "Unisciti a migliaia di utenti che hanno già trasformato le loro vite finanziarie con PaciFinance. Inizia il tuo viaggio oggi, completamente gratis.",
+                    "button": "Apri il Tuo Account Gratuito",
+                    "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente"
+                },
+                "trust": {
+                    "encryption": "Crittografia",
+                    "dataCollection": "Raccolta Dati",
+                    "freeForever": "Gratuito per Sempre"
+                },
+                "donation": {
+                    "title": "Ti piace PaciFinance? Aiutaci a Mantenerlo Gratuito!",
+                    "description": "Questa piattaforma è mantenuta interamente attraverso le donazioni della community. Il tuo supporto ci aiuta a continuare a migliorare e aggiungere nuove funzionalità."
+                }
             }
         },
         "header": {
@@ -606,6 +671,71 @@
             "point3": {
                 "title": "Professional and reliable",
                 "description": "Personal and with other users comparison services, maintaining your privacy."
+            },
+            "new": {
+                "hero": {
+                    "title": "Take Control",
+                    "subtitle": "of Your Finances",
+                    "description": "The only personal finance platform that puts your privacy first. Track, analyze, and improve your financial health with complete anonymity.",
+                    "getStarted": "Get Started Free",
+                    "learnMore": "Learn More",
+                    "socialProof": "Trusted by privacy-conscious users worldwide"
+                },
+                "benefits": {
+                    "freeForever": "100% Free Forever",
+                    "privacyFirst": "Privacy First",
+                    "smartAnalytics": "Smart Analytics"
+                },
+                "features": {
+                    "title": "Why Choose PaciFinance?",
+                    "subtitle": "We've built the ultimate personal finance platform with your privacy and success in mind. Here's what makes us different.",
+                    "privacy": {
+                        "title": "Complete Privacy",
+                        "description": "Your financial data never leaves your device unencrypted. We use end-to-end encryption and anonymous analytics to protect your privacy.",
+                        "features": ["• No personal data collection", "• Anonymous comparisons only", "• Local data encryption"]
+                    },
+                    "analytics": {
+                        "title": "Smart Analytics",
+                        "description": "Get automatic insights and beautiful visualizations of your financial health. Track expenses, investments, and savings with ease.",
+                        "features": ["• Automated categorization", "• Interactive charts", "• Trend analysis"]
+                    },
+                    "comparisons": {
+                        "title": "Anonymous Benchmarking",
+                        "description": "Compare your financial progress with similar users anonymously. Learn from others without compromising your privacy.",
+                        "features": ["• Peer comparisons", "• Industry benchmarks", "• Growth tracking"]
+                    },
+                    "investment": {
+                        "title": "Investment Management",
+                        "description": "Track stocks, ETFs, crypto, and other investments. Monitor performance and diversification with real-time insights.",
+                        "features": ["• Portfolio tracking", "• Performance analytics", "• Risk assessment"]
+                    },
+                    "free": {
+                        "title": "100% Free",
+                        "description": "No subscriptions, no hidden fees, no premium tiers. Supported entirely by community donations.",
+                        "features": ["• No credit card required", "• All features included", "• Community supported"]
+                    },
+                    "security": {
+                        "title": "Bank-Level Security",
+                        "description": "Your data is protected with industry-standard security measures. We can't see your data, even if we wanted to.",
+                        "features": ["• 256-bit encryption", "• Zero-knowledge architecture", "• Regular security audits"]
+                    }
+                },
+                "cta": {
+                    "title": "Ready to Take Control of Your",
+                    "subtitle": "Financial Future",
+                    "description": "Join thousands of users who have already transformed their financial lives with PaciFinance. Start your journey today, completely free.",
+                    "button": "Start Your Free Account",
+                    "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately"
+                },
+                "trust": {
+                    "encryption": "Encryption",
+                    "dataCollection": "Data Collection",
+                    "freeForever": "Free Forever"
+                },
+                "donation": {
+                    "title": "Love PaciFinance? Help Keep It Free!",
+                    "description": "This platform is maintained entirely through community donations. Your support helps us keep improving and adding new features."
+                }
             }
         },
         "header": {

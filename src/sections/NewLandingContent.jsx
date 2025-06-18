@@ -65,18 +65,16 @@ export default function NewLandingContent({ theme }) {
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 <span style={{ color: theme.secondaryColor }}>
-                  Take Control
+                  {languages[language].landing.new.hero.title}
                 </span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">
-                  of Your Finances
+                  {languages[language].landing.new.hero.subtitle}
                 </span>
               </h1>
 
               <p className="text-xl md:text-2xl opacity-80 max-w-2xl">
-                The only personal finance platform that puts your{" "}
-                <strong>privacy first</strong>. Track, analyze, and improve your
-                financial health with complete anonymity.
+                {languages[language].landing.new.hero.description}
               </p>
             </div>
 
@@ -90,7 +88,7 @@ export default function NewLandingContent({ theme }) {
                   style={{ color: theme.secondaryColor }}
                   fontSize="small"
                 />
-                <span className="text-sm font-medium">100% Free Forever</span>
+                <span className="text-sm font-medium">{languages[language].landing.new.benefits.freeForever}</span>
               </div>
               <div
                 className="flex items-center space-x-2 px-4 py-2 rounded-full"
@@ -100,7 +98,7 @@ export default function NewLandingContent({ theme }) {
                   style={{ color: theme.secondaryColor }}
                   fontSize="small"
                 />
-                <span className="text-sm font-medium">Privacy First</span>
+                <span className="text-sm font-medium">{languages[language].landing.new.benefits.privacyFirst}</span>
               </div>
               <div
                 className="flex items-center space-x-2 px-4 py-2 rounded-full"
@@ -110,7 +108,7 @@ export default function NewLandingContent({ theme }) {
                   style={{ color: theme.secondaryColor }}
                   fontSize="small"
                 />
-                <span className="text-sm font-medium">Smart Analytics</span>
+                <span className="text-sm font-medium">{languages[language].landing.new.benefits.smartAnalytics}</span>
               </div>
             </div>
 
@@ -122,7 +120,7 @@ export default function NewLandingContent({ theme }) {
                 style={{ backgroundColor: theme.secondaryColor }}
                 data-umami-event="hero-get-started"
               >
-                Get Started Free
+                {languages[language].landing.new.hero.getStarted}
               </button>
               <button
                 onClick={handleLearnMore}
@@ -134,7 +132,7 @@ export default function NewLandingContent({ theme }) {
                 }}
                 data-umami-event="hero-learn-more"
               >
-                Learn More
+                {languages[language].landing.new.hero.learnMore}
               </button>
             </div>
 
@@ -150,7 +148,7 @@ export default function NewLandingContent({ theme }) {
                 ))}
               </div>
               <span className="text-sm">
-                Trusted by privacy-conscious users worldwide
+                {languages[language].landing.new.hero.socialProof}
               </span>
             </div>
           </div>
@@ -203,12 +201,12 @@ export default function NewLandingContent({ theme }) {
           {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Why Choose{" "}
-              <span style={{ color: theme.secondaryColor }}>PaciFinance</span>?
+              {languages[language].landing.new.features.title.split('PaciFinance')[0]}
+              <span style={{ color: theme.secondaryColor }}>PaciFinance</span>
+              {languages[language].landing.new.features.title.split('PaciFinance')[1] || '?'}
             </h2>
             <p className="text-xl opacity-80 max-w-3xl mx-auto">
-              We've built the ultimate personal finance platform with your
-              privacy and success in mind. Here's what makes us different.
+              {languages[language].landing.new.features.subtitle}
             </p>
           </div>
 
@@ -231,16 +229,14 @@ export default function NewLandingContent({ theme }) {
               >
                 <ShieldIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Complete Privacy</h3>
+              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.privacy.title}</h3>
               <p className="opacity-80 mb-4">
-                Your financial data never leaves your device unencrypted. We use
-                end-to-end encryption and anonymous analytics to protect your
-                privacy.
+                {languages[language].landing.new.features.privacy.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                <li>• No personal data collection</li>
-                <li>• Anonymous comparisons only</li>
-                <li>• Local data encryption</li>
+                {languages[language].landing.new.features.privacy.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
               </ul>
             </div>
 
@@ -261,16 +257,14 @@ export default function NewLandingContent({ theme }) {
               >
                 <AnalyticsIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Smart Analytics</h3>
+              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.analytics.title}</h3>
               <p className="opacity-80 mb-4">
-                Get automatic insights and beautiful visualizations of your
-                financial health. Track expenses, investments, and savings with
-                ease.
+                {languages[language].landing.new.features.analytics.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                <li>• Automated categorization</li>
-                <li>• Interactive charts</li>
-                <li>• Trend analysis</li>
+                {languages[language].landing.new.features.analytics.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
               </ul>
             </div>
 
@@ -292,16 +286,15 @@ export default function NewLandingContent({ theme }) {
                 <CompareArrowsIcon className="text-white" fontSize="large" />
               </div>
               <h3 className="text-2xl font-bold mb-4">
-                Anonymous Benchmarking
+                {languages[language].landing.new.features.comparisons.title}
               </h3>
               <p className="opacity-80 mb-4">
-                Compare your financial progress with similar users anonymously.
-                Learn from others without compromising your privacy.
+                {languages[language].landing.new.features.comparisons.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                <li>• Peer comparisons</li>
-                <li>• Industry benchmarks</li>
-                <li>• Growth tracking</li>
+                {languages[language].landing.new.features.comparisons.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
               </ul>
             </div>
 
@@ -322,15 +315,14 @@ export default function NewLandingContent({ theme }) {
               >
                 <TrendingUpIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Investment Management</h3>
+              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.investment.title}</h3>
               <p className="opacity-80 mb-4">
-                Track stocks, ETFs, crypto, and other investments. Monitor
-                performance and diversification with real-time insights.
+                {languages[language].landing.new.features.investment.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                <li>• Portfolio tracking</li>
-                <li>• Performance analytics</li>
-                <li>• Risk assessment</li>
+                {languages[language].landing.new.features.investment.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
               </ul>
             </div>
 
@@ -351,15 +343,14 @@ export default function NewLandingContent({ theme }) {
               >
                 <PaidIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">100% Free</h3>
+              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.free.title}</h3>
               <p className="opacity-80 mb-4">
-                No subscriptions, no hidden fees, no premium tiers. Supported
-                entirely by community donations.
+                {languages[language].landing.new.features.free.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                <li>• No credit card required</li>
-                <li>• All features included</li>
-                <li>• Community supported</li>
+                {languages[language].landing.new.features.free.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
               </ul>
             </div>
 
@@ -380,15 +371,14 @@ export default function NewLandingContent({ theme }) {
               >
                 <VisibilityOffIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Bank-Level Security</h3>
+              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.security.title}</h3>
               <p className="opacity-80 mb-4">
-                Your data is protected with industry-standard security measures.
-                We can't see your data, even if we wanted to.
+                {languages[language].landing.new.features.security.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                <li>• 256-bit encryption</li>
-                <li>• Zero-knowledge architecture</li>
-                <li>• Regular security audits</li>
+                {languages[language].landing.new.features.security.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -402,15 +392,14 @@ export default function NewLandingContent({ theme }) {
       >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Take Control of Your{" "}
+            {languages[language].landing.new.cta.title}{" "}
             <span style={{ color: theme.secondaryColor }}>
-              Financial Future
+              {languages[language].landing.new.cta.subtitle}
             </span>
             ?
           </h2>
           <p className="text-xl opacity-80 mb-8 max-w-2xl mx-auto">
-            Join thousands of users who have already transformed their financial
-            lives with PaciFinance. Start your journey today, completely free.
+            {languages[language].landing.new.cta.description}
           </p>
 
           <div className="space-y-4">
@@ -420,12 +409,11 @@ export default function NewLandingContent({ theme }) {
               style={{ backgroundColor: theme.secondaryColor }}
               data-umami-event="cta-get-started"
             >
-              Start Your Free Account
+              {languages[language].landing.new.cta.button}
             </button>
 
             <p className="text-sm opacity-60">
-              No credit card required • Takes less than 2 minutes • Start
-              immediately
+              {languages[language].landing.new.cta.disclaimer}
             </p>
           </div>
 
@@ -438,7 +426,7 @@ export default function NewLandingContent({ theme }) {
               >
                 256-bit
               </div>
-              <div className="text-sm">Encryption</div>
+              <div className="text-sm">{languages[language].landing.new.trust.encryption}</div>
             </div>
             <div className="text-center">
               <div
@@ -447,7 +435,7 @@ export default function NewLandingContent({ theme }) {
               >
                 0%
               </div>
-              <div className="text-sm">Data Collection</div>
+              <div className="text-sm">{languages[language].landing.new.trust.dataCollection}</div>
             </div>
             <div className="text-center">
               <div
@@ -456,7 +444,7 @@ export default function NewLandingContent({ theme }) {
               >
                 100%
               </div>
-              <div className="text-sm">Free Forever</div>
+              <div className="text-sm">{languages[language].landing.new.trust.freeForever}</div>
             </div>
           </div>
         </div>
@@ -469,11 +457,10 @@ export default function NewLandingContent({ theme }) {
       >
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl font-bold mb-4">
-            Love PaciFinance? Help Keep It Free!
+            {languages[language].landing.new.donation.title}
           </h3>
           <p className="opacity-80 mb-6">
-            This platform is maintained entirely through community donations.
-            Your support helps us keep improving and adding new features.
+            {languages[language].landing.new.donation.description}
           </p>
           <BuyMeACoffeeWidget showLink={true} />
         </div>

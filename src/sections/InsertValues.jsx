@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import axios from "axios";
 import languages from "../data/languages.json";
 import { LanguageContext } from "../contexts/LanguageContext";
+import { useToast } from "../contexts/ToastContext";
 import {
   MySectionButton,
   MySecondaryButton,
@@ -121,6 +122,7 @@ export default function InsertValue({
   isHidden,
 }) {
   const { language } = React.useContext(LanguageContext);
+  const { showSuccess } = useToast();
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
   const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
   const [isConfirmOutflowOpen, setIsConfirmOutflowOpen] = useState(false);
@@ -242,6 +244,67 @@ export default function InsertValue({
   useEffect(() => {
     fetchData();
   }, [userData]);
+
+  // Auto-hide success notifications with toast
+  useEffect(() => {
+    if (updateBalanceSuccess) {
+      showSuccess(languages[language].insert.balanceSection.successUpdate);
+      const timer = setTimeout(() => {
+        setUpdateBalanceSuccess(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [updateBalanceSuccess]);
+
+  useEffect(() => {
+    if (updateInExBalanceSuccess) {
+      showSuccess(languages[language].insert.balanceSection.successFullUpdate);
+      const timer = setTimeout(() => {
+        setUpdateInExBalanceSuccess(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [updateInExBalanceSuccess]);
+
+  useEffect(() => {
+    if (updateIncomesSuccess) {
+      showSuccess(languages[language].insert.incomeSection.successUpdate);
+      const timer = setTimeout(() => {
+        setUpdateIncomesSuccess(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [updateIncomesSuccess]);
+
+  useEffect(() => {
+    if (updateOutflowsSuccess) {
+      showSuccess(languages[language].insert.outflowSection.successUpdate);
+      const timer = setTimeout(() => {
+        setUpdateOutflowsSuccess(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [updateOutflowsSuccess]);
+
+  useEffect(() => {
+    if (deleteIncomesSuccess) {
+      showSuccess(languages[language].insert.incomeSection.successDelete);
+      const timer = setTimeout(() => {
+        setDeleteIncomesSuccess(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [deleteIncomesSuccess]);
+
+  useEffect(() => {
+    if (deleteOutflowsSuccess) {
+      showSuccess(languages[language].insert.outflowSection.successDelete);
+      const timer = setTimeout(() => {
+        setDeleteOutflowsSuccess(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [deleteOutflowsSuccess]);
 
   const handleBalanceDateChange = (event) => {
     let inputDate = event.target.value;
@@ -2012,123 +2075,7 @@ export default function InsertValue({
         </MuiCustomDialog>
       )}
 
-      {updateBalanceSuccess && (
-        <MuiCustomDialog
-          open={updateBalanceSuccess}
-          onClose={() => handleExitConfirm(setUpdateBalanceSuccess)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {languages[language].insert.balanceSection.successUpdate}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogActions>
-            <MuiCustomButton
-              onClick={() => handleExitConfirm(setUpdateBalanceSuccess)}
-            >
-              {languages[language].general.ok}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
-      )}
-
-      {updateInExBalanceSuccess && (
-        <MuiCustomDialog
-          open={updateInExBalanceSuccess}
-          onClose={() => handleExitConfirm(setUpdateInExBalanceSuccess)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {languages[language].insert.balanceSection.successFullUpdate}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogActions>
-            <MuiCustomButton
-              onClick={() => handleExitConfirm(setUpdateInExBalanceSuccess)}
-            >
-              {languages[language].general.ok}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
-      )}
-
-      {updateIncomesSuccess && (
-        <MuiCustomDialog
-          open={updateIncomesSuccess}
-          onClose={() => handleExitConfirm(setUpdateIncomesSuccess)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {languages[language].insert.incomeSection.successUpdate}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogActions>
-            <MuiCustomButton
-              onClick={() => handleExitConfirm(setUpdateIncomesSuccess)}
-            >
-              {languages[language].general.ok}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
-      )}
-
-      {updateOutflowsSuccess && (
-        <MuiCustomDialog
-          open={updateOutflowsSuccess}
-          onClose={() => handleExitConfirm(setUpdateOutflowsSuccess)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {languages[language].insert.outflowSection.successUpdate}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogActions>
-            <MuiCustomButton
-              onClick={() => handleExitConfirm(setUpdateOutflowsSuccess)}
-            >
-              {languages[language].general.ok}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
-      )}
-      {deleteIncomesSuccess && (
-        <MuiCustomDialog
-          open={deleteIncomesSuccess}
-          onClose={() => handleExitConfirm(setDeleteIncomesSuccess)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {languages[language].insert.incomeSection.successDelete}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogActions>
-            <MuiCustomButton
-              onClick={() => handleExitConfirm(setDeleteIncomesSuccess)}
-            >
-              {languages[language].general.ok}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
-      )}
-      {deleteOutflowsSuccess && (
-        <MuiCustomDialog
-          open={deleteOutflowsSuccess}
-          onClose={() => handleExitConfirm(setDeleteOutflowsSuccess)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {languages[language].insert.outflowSection.successDelete}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogActions>
-            <MuiCustomButton
-              onClick={() => handleExitConfirm(setDeleteOutflowsSuccess)}
-            >
-              {languages[language].general.ok}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
-      )}
+      
       {showConfirmationDeleteIncome && (
         <MuiCustomDialog
           open={showConfirmationDeleteIncome}

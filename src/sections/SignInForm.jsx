@@ -13,6 +13,12 @@ import {
     MuiCustomDialogContentText,
     MuiCustomDialogActions,
     MuiCustomButton,
+    MuiCustomTextField,
+    MuiCustomInputAdornment,
+    MuiCustomIconButton,
+    EyeVisibility,
+    EyeVisibilityOff,
+    SignInButton,
 } from '../styles/MyStyled';
 
 // import MyStyled from '../contexts/MyStyled';
@@ -37,6 +43,9 @@ export default function SignInForm() {
     const navigate = useNavigate();
     const { showSuccess, showError } = useToast();
 
+    const handleCloseModal = () => {
+        setShowErrorModal(false);
+    };
 
     const handleClickShowPassword = () => {
       setShowPassword(!showPassword);

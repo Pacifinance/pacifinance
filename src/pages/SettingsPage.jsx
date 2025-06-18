@@ -22,6 +22,8 @@ import {
     EyeVisibility,
     EyeVisibilityOff
 } from '../styles/MyStyled';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faTrashCan, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);

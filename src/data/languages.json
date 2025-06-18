@@ -53,11 +53,28 @@
         },
 
         "cookie": {
-            "title": "Questo sito utilizza solo cookie tecnici",
-            "description": "Pacifinance utilizza solo cookie tecnici per facilitare l'accesso e rendere l'esperienza dell'utente più piacevole.",
-            "catchyPhrase": "La tua privacy è la nostra priorità.",
-            "acceptButton": "Ok capito",
-            "declineButton": "Rifiuta"
+            "title": "Utilizziamo i cookie",
+            "description": "Utilizziamo i cookie per migliorare la tua esperienza, analizzare il traffico del sito e per scopi di marketing. Puoi scegliere quali cookie accettare.",
+            "catchyPhrase": "Accetta i nostri cookie e goditi un'esperienza migliore! 🍪",
+            "acceptButton": "Accetta Tutti",
+            "acceptNecessary": "Solo Cookie Necessari",
+            "customize": "Personalizza",
+            "savePreferences": "Salva Preferenze",
+            "hideDetails": "Nascondi Dettagli",
+            "necessary": {
+                "title": "Cookie Necessari",
+                "description": "Essenziali per il corretto funzionamento del sito web. Non possono essere disabilitati.",
+                "required": "(Obbligatori)"
+            },
+            "analytics": {
+                "title": "Cookie Analitici",
+                "description": "Ci aiutano a capire come i visitatori interagiscono con il nostro sito web (Umami Analytics)."
+            },
+            "marketing": {
+                "title": "Cookie di Marketing",
+                "description": "Utilizzati per tracciare i visitatori per pubblicità personalizzata (attualmente non utilizzati)."
+            },
+            "footer": "Puoi modificare le tue preferenze in qualsiasi momento nella nostra Politica sulla Privacy"
         },
 
         "landing": {
@@ -240,7 +257,7 @@
                 "successPopup": {
                     "title": "Generazione avvenuta con successo",
                     "message": "Il tuo nuovo ID è: ",
-                    "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso  e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>" ,
+                    "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>" ,
                     "copied": "Copiato negli appunti!",
                     "toCopy": "Copia il tuo ID",
                     "okButton": "ok va bene"
@@ -531,11 +548,28 @@
         },
 
         "cookie": {
-            "title": "This site only uses technical cookies",
-            "description": "<br>Pacifinance only uses technical cookies <br> to facilitate access and make <br> the user experience more enjoyable.",
-            "catchyPhrase": "Your privacy is our priority.",
-            "acceptButton": "Ok got it",
-            "declineButton": "Decline"
+            "title": "We use cookies",
+            "description": "We use cookies to enhance your experience, analyze site traffic, and for marketing purposes. You can choose which cookies to accept.",
+            "catchyPhrase": "Accept our cookies and enjoy a better experience! 🍪",
+            "acceptButton": "Accept All",
+            "acceptNecessary": "Accept Necessary Only",
+            "customize": "Customize",
+            "savePreferences": "Save Preferences",
+            "hideDetails": "Hide Details",
+            "necessary": {
+                "title": "Necessary Cookies",
+                "description": "Essential for the website to function properly. Cannot be disabled.",
+                "required": "(Required)"
+            },
+            "analytics": {
+                "title": "Analytics Cookies",
+                "description": "Help us understand how visitors interact with our website (Umami Analytics)."
+            },
+            "marketing": {
+                "title": "Marketing Cookies",
+                "description": "Used to track visitors for personalized advertising (currently not used)."
+            },
+            "footer": "You can change your preferences at any time in our Privacy Policy"
         },
 
         "months": {

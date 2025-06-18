@@ -364,7 +364,7 @@ export default function NewLandingContent({ theme }) {
             This platform is maintained entirely through community donations. 
             Your support helps us keep improving and adding new features.
           </p>
-          <BuyMeACoffeeWidget />
+          <BuyMeACoffeeWidget showLink={true} />
         </div>
       </section>
     </div>

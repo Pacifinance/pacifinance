@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-export default function Buymeacoffee({ isMobileScreen }) {
+export default function Buymeacoffee({ isMobileScreen, showLink = false }) {
   useEffect(() => {
     const div = document.getElementById("supportByBMC");
     // Check if the script is already there
@@ -37,5 +37,19 @@ export default function Buymeacoffee({ isMobileScreen }) {
     div.appendChild(script);
   }, []);
 
-  return <div id="supportByBMC"></div>;
+  return (
+    <>
+      <div id="supportByBMC"></div>
+      {showLink && (
+        <a 
+          href="https://www.buymeacoffee.com/pacifinance" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center px-4 py-2 bg-paciGreen text-white rounded-lg hover:opacity-80 transition-opacity"
+        >
+          ☕ Support PaciFinance
+        </a>
+      )}
+    </>
+  );
 }

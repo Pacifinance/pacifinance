@@ -8,7 +8,7 @@ import NewLandingContent from '../sections/NewLandingContent';
 
 export default function LandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, toggleLanguage } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { mode } = theme;
 
@@ -24,7 +24,7 @@ export default function LandingPage() {
       <meta name="twitter:card" content="summary_large_image" />
       
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
-        <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
+        <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
         <NewLandingContent theme={theme} language={language} isMobileScreen={isMobileScreen}/>
         <LandingFooter theme={theme}/>
       </div>

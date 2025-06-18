@@ -2,10 +2,12 @@ import React, { useState, useContext, useEffect } from "react";
 import ToggleModeButton from "../components/ToggleModeButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import LogoPaci from "../components/Logo";
-import { LanguageContext } from "../contexts/LanguageContext";
-import { UserContext } from "../contexts/UserContext";
-import languages from "../data/languages.json";
+import LogoPaci from '../components/Logo';
+import { LanguageContext } from '../contexts/LanguageContext';
+import { UserContext } from '../contexts/UserContext';
+import languages from '../data/languages.json';
+import SignInForm from './SignInForm';
+import SignUpForm from './SignUpForm';
 // import MyStyled from '../contexts/MyStyled';
 import {
   // useTheme,

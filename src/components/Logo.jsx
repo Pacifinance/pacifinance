@@ -13,7 +13,7 @@ export default function LogoPaci() {
     <img
       src={LogoPacifinance}
       alt="PaciFinance Logo"
-      className="h-12 w-12 cursor-pointer"
+      className="h-16 w-16 cursor-pointer"
       onClick={handleLogoClick}
     />
   );

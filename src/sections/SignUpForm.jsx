@@ -5,6 +5,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from '@mui/icons-material/Info';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { useToast } from '../contexts/ToastContext';
 import languages from '../data/languages.json';
 
 //for the modal and styled components
@@ -30,35 +31,16 @@ var generated_user_id = '';
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
     const { language } = useContext(LanguageContext);
+    const { showSuccess, showError } = useToast();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [showErrorModal, setShowErrorModal] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
 
     const navigate = useNavigate();
 
-
-    const openSuccessModal = () => {
-        setShowSuccessModal(true);
-    };
-
-    const openErrorModal = () => {
-        setShowErrorModal(true);
-    };
-
-    const closeSuccessModal = () => {
-        setShowSuccessModal(false);
-        copyToClipboard();
-        navigate('/');
-    };
-    
-    const closeErrorModal = () => {
-        setShowErrorModal(false);
-    };
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -90,30 +72,50 @@ export default function SignUpForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         try {
           const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword }, { withCredentials: true });
           if(response.status === 200) {
             generated_user_id = response.data.user_id;
+            const successMessage = `
+                    <div>
+                        <strong>${languages[language].header.register.successPopup.title}</strong><br/>
+                        ${languages[language].header.register.successPopup.message} ${generated_user_id}.<br/>
+                         ${languages[language].header.register.successPopup.securityMessage}
+                    </div>
+                `;
+                showSuccess(successMessage, 6000);
             //window.umami.trackEvent('SignUp');
-            openSuccessModal();
+            // openSuccessModal();
             // alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: " + generated_user_id + ".\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
             // navigate('/sign-in');
           }
           else {
             // alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
-            openErrorModal();
-            
+           showError(`
+                <div>
+                    <strong>${languages[language].header.register.errorPopup.title}</strong><br/>
+                    ${languages[language].header.register.errorPopup.message}<br/>
+                    ${languages[language].header.register.errorPopup.message2}
+                </div>
+            `, 5000);
+
           }
-          
+
         } catch (error) {
             // console.error(error);
             setPassword('');
             setConfirmPassword('');
-            openErrorModal();
+            showError(`
+                <div>
+                    <strong>${languages[language].header.register.errorPopup.title}</strong><br/>
+                    ${languages[language].header.register.errorPopup.message}<br/>
+                    ${languages[language].header.register.errorPopup.message2}
+                </div>
+            `, 5000);
         //   alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
         }
-    
+
     };
 
     return (
@@ -177,64 +179,6 @@ export default function SignUpForm() {
 
                     </form>
             </div>
-            
-            {showSuccessModal && (
-                <MuiCustomDialog
-                    theme={theme}
-                    open={showSuccessModal}
-                    onClose={closeSuccessModal}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                        {languages[language].header.register.successPopup.title}
-                    </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent theme={theme}>
-                        <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                            {languages[language].header.register.successPopup.message} {generated_user_id}.<br></br> {languages[language].header.register.successPopup.securityMessage}
-                        </MuiCustomDialogContentText>
-                    </MuiCustomDialogContent>
-                    <MuiCustomDialogActions theme={theme}>
-                        <input type="text" ref={inputRef} value={generated_user_id} readOnly style={{ position: 'fixed', top: '-9999px' }} />
-                        <CopyToClipboard 
-                            text={generated_user_id}
-                            onCopy={() => {
-                                setIsCopied(true);
-                                setTimeout(() => {
-                                setIsCopied(false);
-                                    }, 1000);
-                            }}
-                        >
-                            <MuiCustomButton theme={theme} onClick={closeSuccessModal} autofocus>
-                            <span>{isCopied ? languages[language].header.register.successPopup.copied : languages[language].header.register.successPopup.toCopy}</span>
-                            </MuiCustomButton>
-                        </CopyToClipboard>
-                    </MuiCustomDialogActions>
-                </MuiCustomDialog>   
-            )}
-            {showErrorModal && (
-                <MuiCustomDialog theme={theme}
-                    open={showErrorModal}
-                    onClose={closeErrorModal}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <MuiCustomDialogTitle theme={theme} id="alert-dialog-title">
-                        {"Errore in fase di registrazione"}
-                    </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent theme={theme}>
-                        <MuiCustomDialogContentText theme={theme} id="alert-dialog-description">
-                            {languages[language].header.register.errorPopup.message} <br></br>
-                            {languages[language].header.register.errorPopup.message2}<br></br>
-                        </MuiCustomDialogContentText>
-                    </MuiCustomDialogContent>
-                    <MuiCustomDialogActions theme={theme}>
-                        <MuiCustomButton theme={theme} onClick={closeErrorModal} autoFocus>
-                            {languages[language].header.register.errorPopup.okButton}
-                        </MuiCustomButton>
-                    </MuiCustomDialogActions>
-                </MuiCustomDialog>
-            )}
         </div>
     );
 }

@@ -9,6 +9,7 @@ import { PageProvider } from './contexts/PageContext';
 import { PrivacyProvider } from './contexts/PrivacyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { MediaQueryProvider } from './contexts/MediaQueryContext';
+import { ToastProvider } from './contexts/ToastContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -20,11 +21,13 @@ root.render(
         <UserProvider>
           <PageProvider>
             <PrivacyProvider>
-              <React.StrictMode>
-                <Router>
-                  <AppRouter />
-                </Router>
-              </React.StrictMode>
+              <ToastProvider>
+                <React.StrictMode>
+                  <Router>
+                    <AppRouter />
+                  </Router>
+                </React.StrictMode>
+              </ToastProvider>
             </PrivacyProvider>
           </PageProvider>
         </UserProvider>

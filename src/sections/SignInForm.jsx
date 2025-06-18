@@ -1,25 +1,18 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-import { LanguageContext } from '../contexts/LanguageContext';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { LanguageContext } from '../contexts/LanguageContext';
 import { UserContext } from '../contexts/UserContext';
-import InfoIcon from '@mui/icons-material/Info';
+import { useToast } from '../contexts/ToastContext';
 import languages from '../data/languages.json';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
-  MuiCustomDialog,
-  MuiCustomButton,
-  MuiCustomDialogTitle,
-  MuiCustomDialogContent,
-  MuiCustomDialogContentText,
-  MuiCustomDialogActions,
-  MuiCustomTextField,
-  MuiCustomIconButton,
-  MuiCustomInputAdornment,
-  EyeVisibility,
-  EyeVisibilityOff,
-  SignIn,
-  SignInButton
+    MuiCustomDialog,
+    MuiCustomDialogTitle,
+    MuiCustomDialogContent,
+    MuiCustomDialogContentText,
+    MuiCustomDialogActions,
+    MuiCustomButton,
 } from '../styles/MyStyled';
 
 // import MyStyled from '../contexts/MyStyled';
@@ -42,14 +35,8 @@ export default function SignInForm() {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
+    const { showSuccess, showError } = useToast();
 
-    const handleOpenModal = () => {
-      setShowErrorModal(true);
-    };
-
-    const handleCloseModal = () => {
-      setShowErrorModal(false);
-    };
 
     const handleClickShowPassword = () => {
       setShowPassword(!showPassword);
@@ -78,15 +65,11 @@ export default function SignInForm() {
 
           }
           else {
-            handleOpenModal();
-
-          }
-
+                showError(languages[language].header.login.errorPopup.message, 4000);
+            }
         } catch (error) {
-          // console.error(error);
-          setUsername('');
-          setPassword('');
-          handleOpenModal();
+            console.error('Login error:', error);
+            showError(languages[language].header.login.errorPopup.message, 4000);
         }
 
     };

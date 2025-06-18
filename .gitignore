@@ -26,3 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 
 .replit
+
+/attached_assets
+
+
+attached_assets/

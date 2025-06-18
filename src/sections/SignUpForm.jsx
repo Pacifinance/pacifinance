@@ -29,7 +29,7 @@ var generated_user_id = '';
 // export { generated_user_id };
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
-    const [language] = useState('it');
+    const { language } = useContext(LanguageContext);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -117,16 +117,9 @@ export default function SignUpForm() {
     };
 
     return (
-        
-        <SignUp theme={theme}>
-            <div className="signUp-page">
-                <div className="signUp-form" style={{ display: 'flex' }}>
-                    <h1>{languages[language].header.register.title}</h1>
-                    <div className="icon-with-text">
-                        <InfoIcon theme={theme}/>
-                        <h4>{languages[language].header.register.info}</h4>
-                    </div>
-                    <form id="signUp-PasswordConfirm" onSubmit={handleSubmit}>
+        <div>
+            <div className="space-y-6">
+                    <form id="signUp-PasswordConfirm" className="space-y-4" onSubmit={handleSubmit}>
                         <MuiCustomTextField
                             theme={theme}
                             id="passwordSignUp"
@@ -183,7 +176,6 @@ export default function SignUpForm() {
                         </div>
 
                     </form>
-                </div>
             </div>
             
             {showSuccessModal && (
@@ -243,8 +235,6 @@ export default function SignUpForm() {
                     </MuiCustomDialogActions>
                 </MuiCustomDialog>
             )}
-
-            
-        </SignUp>
+        </div>
     );
 }

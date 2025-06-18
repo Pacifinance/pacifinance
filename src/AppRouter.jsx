@@ -11,6 +11,7 @@ import Info from './pages/InfoPage';
 import SignInPage from './pages/SignInPage';
 import LandingPage from './pages/LandingPage';
 import SignUpPage from './pages/SignUpPage';
+import AuthPage from './pages/AuthPage';
 import FAQPage from './pages/FAQPage';
 import PricingPage from './pages/PricingPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -86,6 +87,7 @@ function AppRouter() {
             {/* <Route path="/sign-up" exact element={<SignUp />} />
             <Route path="/sign-in" exact element={<SignIn />} /> */}
             {/* <Route path="*" element={<NotFound />} /> */}
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/faq" element={<FAQPage />} />

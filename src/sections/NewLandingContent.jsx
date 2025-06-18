@@ -21,7 +21,7 @@ export default function NewLandingContent({ theme }) {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate("/signup");
+    navigate("/auth");
   };
 
   const handleLearnMore = () => {

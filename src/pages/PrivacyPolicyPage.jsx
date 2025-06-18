@@ -3,6 +3,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/HeaderFooter';
 import LandingFooter from '../components/LandingFooter';
+import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
 import languages from '../data/languages.json';
 
 export default function PrivacyPolicyPage() {

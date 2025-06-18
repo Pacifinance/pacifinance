@@ -127,13 +127,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
       fetchData();
     }, [userData]);
 
-    const options = [
-        { value: 'account', label: languages[language].sidebar.account.title },
-        { value: 'changeUsername', label: languages[language].sidebar.changeUsername.title },
-        { value: 'changeid', label: languages[language].sidebar.changeID.title },
-        { value: 'changePassword', label: languages[language].sidebar.changePassword.title },
-        { value: 'settings', label: languages[language].sidebar.settings.title },
-    ];
+    
 
     const handleIconClick = (iconIndex, pageLink) => {
         setActiveIcon(iconIndex);
@@ -209,24 +203,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     }
 
 
-    const handleOptionSelect = (option) => {
-        // console.log(`Option selected:`, option);
-        // console.log(`Option selected:`, option.value);
-        if (option && option.value) {
-            setSelectedOption(option);
-            if(option.value === 'account') setShowAccountModal(true);
-            else if(option.value === 'changeUsername') setShowChangeUsernameModal(true);
-            else if(option.value === 'changeid') setShowChangeIDModal(true);
-            else if(option.value === 'changePassword') setShowChangePWDModal(true);
-            else if(option.value === 'settings') setShowSettingsPopup(true);
-            // if(selectedOption.value === 'account') setShowAccountModal(true);
-            // else if(selectedOption.value === 'changeUsername') setShowChangeUsernameModal(true);
-            // else if(selectedOption.value === 'changeid') setShowChangeIDModal(true);
-            // else if(selectedOption.value === 'changePassword') setShowChangePWDModal(true);
-            setShowDropdown(false);
-        }
-
-    };
+    
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -678,34 +655,76 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         </div> */}
                     <DropdownContainer theme={theme}> 
                         {showDropdown && (
-                            <div className="dropdown-menu">
-                                {options.map((option) => {
-                                    // Aggiorna qui la condizione per controllare se userType è 'test' o 'demo'
-
-                                    const isDisabled = ['changeUsername'].includes(option.value) || (['changeid', 'changePassword'].includes(option.value) && (userType === 'test' || userType === 'demo'));
-                                    return (
-                                        <div
-                                            key={option.value}
-                                            className={`dropdown-option ${selectedOption === option ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-                                            onClick={() => {
-                                                if (!isDisabled) {
-                                                    handleOptionSelect(option);
-                                                }
-                                            }}
-                                            style={{
-                                                cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                                opacity: isDisabled ? 0.5 : 1,
-                                                // Aggiungi qui ulteriori stili per rendere l'opzione più grigia se necessario
-                                                backgroundColor: isDisabled ? '#d3d3d3' : ''
-                                            }}
-                                        >
-                                            {option.label}
-                                        </div>
-                                    );
-                                })}
-                                <div data-umami-event="logoutButton" className="dropdown-option logout" onClick={handleLogout}>
+                            <div className="dropdown-menu" style={{
+                                position: 'fixed',
+                                top: '4rem',
+                                right: '1rem',
+                                backgroundColor: theme.backgroundColor,
+                                borderRadius: '12px',
+                                padding: '12px',
+                                minWidth: '200px',
+                                border: `2px solid ${theme.buttonBackgroundColor}`,
+                                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+                                zIndex: 10001
+                            }}>
+                                <button 
+                                    className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full" 
+                                    style={{
+                                        color: theme.textColor,
+                                        backgroundColor: 'transparent',
+                                        border: 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                        e.target.style.color = 'white';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = 'transparent';
+                                        e.target.style.color = theme.textColor;
+                                    }}
+                                    onClick={() => {navigate('/account'); setShowDropdown(false)}}
+                                >
+                                    {languages[language].sidebar.account.title}
+                                </button>
+                                <button 
+                                    className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full" 
+                                    style={{
+                                        color: theme.textColor,
+                                        backgroundColor: 'transparent',
+                                        border: 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                        e.target.style.color = 'white';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = 'transparent';
+                                        e.target.style.color = theme.textColor;
+                                    }}
+                                    onClick={() => {navigate('/settings'); setShowDropdown(false)}}
+                                >
+                                    {languages[language].sidebar.settings.title}
+                                </button>
+                                <button 
+                                    data-umami-event="logoutButton"
+                                    className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full" 
+                                    style={{
+                                        color: theme.textColor,
+                                        backgroundColor: 'transparent',
+                                        border: 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                        e.target.style.color = 'white';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = 'transparent';
+                                        e.target.style.color = theme.textColor;
+                                    }}
+                                    onClick={handleLogout}
+                                >
                                     {languages[language].sidebar.logout}
-                                </div>
+                                </button>
                             </div>
                         )}
                     </DropdownContainer>

@@ -1080,39 +1080,10 @@ export const DropdownContainer = styled.div`
     color: #dc3545;
   }
 
-  @media (max-width: 768px) {
-    .dropdown-menu {
-      position: fixed;
-      top: 4rem;
-      right: 1rem;
-      left: auto;
-      width: 12rem;
-      background-color: #fff;
-      border: 0.1em solid #ccc;
-      border-radius: 0.5em;
-      padding: 0.5em;
-      box-shadow: 0em 0.5em 1em rgba(0, 0, 0, 0.2);
-      z-index: 10001;
-    }
-  }
-
-  @media (min-width: 768px) {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .dropdown-menu {
-      top: 100%;
-      margin-right: 0vw;
-      background-color: #fff;
-      border: 0.1em solid #ccc;
-      border-radius: 0.2em;
-      padding: 0.4em;
-      box-shadow: 0em 0.1em 0.2em rgba(0, 0, 0, 0.1);
-    }
-
-  }
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
 `;
 

@@ -18,6 +18,7 @@ import TermsOfServicePage from './pages/TermsOfServicePage';
 import SitemapPage from './pages/SitemapPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import DisclaimerPage from './pages/DisclaimerPage';
+import ContactPage from './pages/ContactPage';
 
 
 function AppRouter() {
@@ -93,7 +94,7 @@ function AppRouter() {
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route path="/cookie-policy" element={<CookiePolicyPage />} />
             <Route path="/disclaimer" element={<DisclaimerPage />} />
-            <Route path="/contact" element={<FAQPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
         </Routes>
   );

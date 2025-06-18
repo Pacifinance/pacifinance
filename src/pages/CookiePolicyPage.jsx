@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -16,20 +15,22 @@ export default function CookiePolicyPage() {
     <>
       <title>Cookie Policy - PaciFinance</title>
       <meta name="description" content="Cookie Policy for PaciFinance - Learn about how we use cookies on our privacy-focused personal finance platform." />
-      
+
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
-        
+
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1>Cookie Policy</h1>
+              <h1 style={{ color: '#079164' }}>
+                {language === 'it' ? 'Politica sui Cookie' : 'Cookie Policy'}
+              </h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
             </PolicyHeader>
 
             <div className="space-y-6">
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? 'Cosa sono i Cookie' : 'What are Cookies'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -41,7 +42,7 @@ export default function CookiePolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? 'Come Utilizziamo i Cookie' : 'How We Use Cookies'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -57,7 +58,7 @@ export default function CookiePolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? 'Gestione dei Cookie' : 'Cookie Management'}
                 </h2>
                 <p className="leading-relaxed">

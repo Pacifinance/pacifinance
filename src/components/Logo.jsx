@@ -1,15 +1,20 @@
-import React from 'react'
-import LogoPaci from '../assets/Brand/PacifinanceLogoPNG3NoBg.webp';
-// import LogoPaci from '../assets/Brand/LogoPacifinance.png';
-import {LogoStyled} from '../styles/MyStyled';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import LogoPacifinance from '../assets/Brand/PacifinanceLogoPNG3NoBg.webp';
 
-function Logo() {
+export default function LogoPaci() {
+  const navigate = useNavigate();
 
-    return (
-        <LogoStyled>
-            <img src={LogoPaci} width="100%" height="100%" alt="Pacifinance Logo" draggable="false" onContextMenu={(e) => e.preventDefault()}/>
-        </LogoStyled>
-    )
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
+  return (
+    <img
+      src={LogoPacifinance}
+      alt="PaciFinance Logo"
+      className="h-12 w-12 cursor-pointer"
+      onClick={handleLogoClick}
+    />
+  );
 }
-
-export default Logo;

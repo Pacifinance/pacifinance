@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -15,20 +14,22 @@ export default function TermsOfServicePage() {
     <>
       <title>Terms of Service - PaciFinance</title>
       <meta name="description" content="Terms of Service for PaciFinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform." />
-      
+
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
-        
+
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1>{language === 'it' ? 'Termini di Servizio' : 'Terms of Service'}</h1>
+              <h1 style={{ color: '#079164' }}>
+                {language === 'it' ? 'Termini di Servizio' : 'Terms of Service'}
+              </h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
             </PolicyHeader>
-          
+
           <div className="space-y-6">
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? '1. Accettazione dei Termini' : '1. Acceptance of Terms'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -40,7 +41,7 @@ export default function TermsOfServicePage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? '2. Uso del Servizio' : '2. Use of Service'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -52,7 +53,7 @@ export default function TermsOfServicePage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? '3. Privacy e Dati' : '3. Privacy and Data'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -64,7 +65,7 @@ export default function TermsOfServicePage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                   {language === 'it' ? '4. Limitazione di Responsabilità' : '4. Limitation of Liability'}
                 </h2>
                 <p className="leading-relaxed">

@@ -25,7 +25,10 @@ export default function PricingPage() {
             {languages[language].pricing.title}
           </h1>
           
-          <p className="text-xl text-center mb-12 opacity-80" style={{ color: theme.textColor }}>
+          <p 
+            className="text-xl text-center mb-12 opacity-80" 
+            style={{ color: mode === 'dark' ? '#000000' : theme.textColor }}
+          >
             {languages[language].pricing.subtitle}
           </p>
 
@@ -162,8 +165,14 @@ export default function PricingPage() {
             <p className="text-lg mb-6 opacity-80">
               {languages[language].pricing.donation.description}
             </p>
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center space-y-4">
               <BuyMeACoffeeWidget />
+              <p className="text-sm opacity-70 text-center max-w-md">
+                {language === 'it' 
+                  ? 'Il tuo supporto ci aiuta a mantenere PaciFinance gratuito per tutti. Ogni donazione, anche piccola, fa la differenza!'
+                  : 'Your support helps us keep PaciFinance free for everyone. Every donation, no matter how small, makes a difference!'
+                }
+              </p>
             </div>
             <p className="text-sm mt-4 opacity-60">
               {languages[language].pricing.donation.disclaimer}

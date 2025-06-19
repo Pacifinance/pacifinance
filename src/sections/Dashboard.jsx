@@ -772,6 +772,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             )}
                         </ResponsiveContainer>
                     </div>
+                    <div className="chart-container">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 width={500}
@@ -807,8 +808,6 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                                     stroke="transparent"
                                     vertical={false}
                                 />
-                                {/* <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 14 }} />
-                                    <YAxis tick={{ fill: theme.textColor }} /> */}
                                 <XAxis
                                     dataKey="name"
                                     interval={0}

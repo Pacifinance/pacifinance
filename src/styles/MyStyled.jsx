@@ -2010,7 +2010,6 @@ export const StyledDateInput = styled.input`
   font-size: 16px;
 `;
 
-```text
 const CoffeeContainer = styled.div`
   display: flex;
   justify-content: center;

@@ -29,15 +29,17 @@ export const PageWrapper = styled.div`
 `;
 
 export const Section = styled.section `
-  font-family: Roboto, sans-serif;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   margin-left: 0;
-  padding-top: 2em;
-  height: 100vh;
+  padding-top: 2rem;
+  min-height: 100vh;
   background-color: ${(props) => (props.theme.backgroundColor)};
+  line-height: 1.6;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    margin-left: 0vw;
+    margin-left: 0;
+    padding-top: 1rem;
   }
 `;
 
@@ -116,15 +118,17 @@ export const MyCloseButton = styled.span`
 `;
 
 export const TitleDashboard = styled.h1 `
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
     color: ${(props) => (props.theme.textColor)};
-    font-size: 2rem;
-    font-weight: 400;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
     margin-bottom: 2rem;
-    /*margin-left: 3%;*/
 
     /* For screens with a maximum width of 768px (e.g. mobile devices) */
     @media (max-width: 768px) {
-      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 `;
 
@@ -1819,10 +1823,13 @@ export const StyledRankingPage = styled.div`
 `;
 
 export const StyledInfoPage = styled.div`
-  // text-align: center;
-  height: 100%;
-  padding: 3.8rem;
-  background-color: ${(props) => props.theme.rankingInfoBackgroundColor}; 
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: ${(props) => props.theme.backgroundColor};
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 export const CenteredRankings = styled.div`
@@ -1834,26 +1841,47 @@ export const CenteredRankings = styled.div`
 `;
 
 export const CenteredInfo = styled.div`
-  text-align: center;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: 25em;
-  margin-right: 25em;
+  align-items: stretch;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 2rem;
 
   h2{
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
     color: ${(props) => props.theme.textColor} !important;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
   }
 
   p{
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
     color: ${(props) => props.theme.textColor} !important;
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    margin-bottom: 1rem;
   }
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    margin-left: 10em;
-    margin-right: 10em;
+    padding: 0 1rem;
+    gap: 1.25rem;
+    
+    h2 {
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      margin-bottom: 0.75rem;
+    }
   }
 `;
 
@@ -1867,12 +1895,20 @@ export const RankingsTitle = styled.h1`
 `;
 
 export const InfoTitle = styled.h1`
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   text-align: center;
-  color: ${themes.dark.buttonBackgroundColor};
-  font-size: 1.6em;
-  font-weight: bold;
-  margin-top: 2em;
-  margin-bottom: 0.8em;
+  color: ${({ theme }) => theme.buttonBackgroundColor};
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 export const StyledSelectContainer = styled.div`

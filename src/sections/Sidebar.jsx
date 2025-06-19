@@ -2093,18 +2093,18 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         </MuiCustomDialog>
                     )}
                 </Notification>
-            
+
                 {!isMobileScreen && (
-                <ToggleButton
-                    title={languages[language].sidebar.settings.privacy}
-                >
-                    <SidebarPrivacyToggleModeButton
-                        theme={theme}
-                        mode={mode}
-                        toggleHidden={toggleHidden}
-                        isHidden={isHidden}
-                    />
-                </ToggleButton>
+                    <ToggleButton
+                        title={languages[language].sidebar.settings.privacy}
+                    >
+                        <SidebarPrivacyToggleModeButton
+                            theme={theme}
+                            mode={mode}
+                            toggleHidden={toggleHidden}
+                            isHidden={isHidden}
+                        />
+                    </ToggleButton>
                 )}
             </Top>
             {/* <BuyMeACoffeeWidget isMobileScreen={isMobileScreen}/> */}

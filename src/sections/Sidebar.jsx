@@ -669,28 +669,64 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                 <Notification theme={theme}>
                     {/* <AiOutlineBell /> */}
-                    <div className="account-container">
-                        <div className="account-image-wrapper">
-                            <img src={avatarImage} title={languages[language].sidebar.account.title} width="100%" height="100%" alt="Account" className="account-image" onClick={() => setShowDropdown(!showDropdown)} onContextMenu={(e) => e.preventDefault()}/>
+                    <div className="account-container" style={{ position: 'relative' }}>
+                        <div 
+                            className="account-image-wrapper"
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            onMouseLeave={() => {
+                                // Ritardo per permettere al mouse di spostarsi nel dropdown
+                                setTimeout(() => {
+                                    if (!document.querySelector('.dropdown-menu:hover')) {
+                                        setShowDropdown(false);
+                                    }
+                                }, 150);
+                            }}
+                        >
+                            <img 
+                                src={avatarImage} 
+                                title={languages[language].sidebar.account.title} 
+                                width="100%" 
+                                height="100%" 
+                                alt="Account" 
+                                className="account-image" 
+                                onContextMenu={(e) => e.preventDefault()}
+                            />
                         </div>
-                    </div>
-                    {/* <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
-                            <AiOutlineCaretDown />
-                        </div> */}
-                    <DropdownContainer theme={theme}> 
+                        
                         {showDropdown && (
-                            <div className="dropdown-menu" style={{
-                                position: 'fixed',
-                                top: '4rem',
-                                right: '1rem',
-                                backgroundColor: theme.backgroundColor,
-                                borderRadius: '12px',
-                                padding: '12px',
-                                minWidth: '200px',
-                                border: `2px solid ${theme.buttonBackgroundColor}`,
-                                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-                                zIndex: 10001
-                            }}>
+                            <>
+                                {isMobileScreen && (
+                                    <div
+                                        style={{
+                                            position: 'fixed',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                                            zIndex: 10000
+                                        }}
+                                        onClick={() => setShowDropdown(false)}
+                                    />
+                                )}
+                                <div 
+                                    className="dropdown-menu" 
+                                    style={{
+                                        position: isMobileScreen ? 'fixed' : 'absolute',
+                                        top: isMobileScreen ? '50%' : '0',
+                                        left: isMobileScreen ? '50%' : '60px',
+                                        right: isMobileScreen ? 'auto' : 'auto',
+                                        transform: isMobileScreen ? 'translate(-50%, -50%)' : 'translateY(-50%)',
+                                        backgroundColor: theme.backgroundColor,
+                                        borderRadius: '12px',
+                                        padding: '12px',
+                                        minWidth: isMobileScreen ? '280px' : '200px',
+                                        border: `2px solid ${theme.buttonBackgroundColor}`,
+                                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+                                        zIndex: 10001
+                                    }}
+                                    onMouseLeave={() => !isMobileScreen && setShowDropdown(false)}
+                                >
                                 <button 
                                     className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full" 
                                     style={{
@@ -749,9 +785,10 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 >
                                     {languages[language].sidebar.logout}
                                 </button>
-                            </div>
+                                </div>
+                            </>
                         )}
-                    </DropdownContainer>
+                    </div>
                     {showPopup && (
                         <div className="popup-container">
                             <div className="popup-window">

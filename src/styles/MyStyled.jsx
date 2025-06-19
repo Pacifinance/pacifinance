@@ -120,7 +120,7 @@ export const TitleDashboard = styled.h1 `
     font-size: 2rem;
     font-weight: 400;
     margin-bottom: 2rem;
-    margin-left: 3%;
+    /*margin-left: 3%;*/
 
     /* For screens with a maximum width of 768px (e.g. mobile devices) */
     @media (max-width: 768px) {

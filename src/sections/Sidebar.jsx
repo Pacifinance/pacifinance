@@ -694,7 +694,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             <div className="dropdown-menu" style={{
                                 position: 'absolute',
                                 top: '50px',
-                                left: '-150px',
+                                right: '-50px',
                                 backgroundColor: theme.backgroundColor,
                                 borderRadius: '12px',
                                 padding: '12px',

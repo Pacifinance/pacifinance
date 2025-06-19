@@ -1056,7 +1056,7 @@ export const DropdownContainer = styled.div`
   .dropdown-menu {
     position: absolute;
     top: 50px;
-    left: -150px;
+    right: -50px;
     width: 200px;
     background-color: ${({ theme }) => theme.backgroundColor};
     border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
@@ -1106,24 +1106,15 @@ export const Notification = styled.div`
   cursor: pointer;
   color: ${({ theme }) => theme.textColor};
   font-size: 1.5rem;
-  padding: 0.5rem;
+  padding: 0.25rem;
   border-radius: 50%;
-  background: ${({ theme }) => theme.mode === 'dark' 
-    ? `linear-gradient(135deg, ${theme.primaryColor} 0%, ${theme.backgroundColor} 100%)`
-    : `linear-gradient(135deg, #ffffff 0%, ${theme.primaryColor} 100%)`};
-  box-shadow: ${({ theme }) => theme.mode === 'dark' 
-    ? `0 4px 15px ${theme.buttonBackgroundColor}20` 
-    : '0 4px 15px rgba(0, 0, 0, 0.1)'};
-  border: ${({ theme }) => theme.mode === 'dark' 
-    ? `1px solid ${theme.buttonBackgroundColor}30`
-    : '1px solid #e2e8f0'};
+  background: transparent;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background: ${({ theme }) => `linear-gradient(135deg, ${theme.buttonBackgroundColor} 0%, ${theme.buttonBackgroundColor}80 100%)`};
-    color: white;
+    background: ${({ theme }) => `${theme.buttonBackgroundColor}15`};
     transform: translateY(-2px) scale(1.05);
-    box-shadow: ${({ theme }) => `0 8px 25px ${theme.buttonBackgroundColor}30`};
+    box-shadow: ${({ theme }) => `0 4px 15px ${theme.buttonBackgroundColor}20`};
   }
 
   .account-container {
@@ -1133,18 +1124,16 @@ export const Notification = styled.div`
   }
 
   .account-image-wrapper {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: ${({ theme }) => theme.mode === 'dark' 
-      ? `linear-gradient(135deg, ${theme.backgroundColor} 0%, ${theme.primaryColor} 100%)`
-      : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`};
+    background: white;
     border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     aspect-ratio: 1;
   }

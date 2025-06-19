@@ -981,13 +981,8 @@ export const Feature = styled.div`
 
 export const FeatureIcon = styled.div`
   background-color: ${(props) => (props.theme.iconBackgroundColor)};
-    color: white;
+  color: white;
   padding: 1em;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2em;
 `;
 
 export const FeatureText = styled.div`

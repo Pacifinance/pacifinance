@@ -1971,7 +1971,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                                 <div>
                                     <label>
-                                        ```text
                                         {
                                             languages[language].sidebar.settings
                                                 .light
@@ -2094,9 +2093,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         </MuiCustomDialog>
                     )}
                 </Notification>
-            </Top>
 
-            {!isMobileScreen && (
+                {!isMobileScreen && (
                 <ToggleButton
                     title={languages[language].sidebar.settings.privacy}
                 >
@@ -2107,7 +2105,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         isHidden={isHidden}
                     />
                 </ToggleButton>
-            )}
+                )}
+            </Top>
             {/* <BuyMeACoffeeWidget isMobileScreen={isMobileScreen}/> */}
         </SidebarSection>
     );

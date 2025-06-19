@@ -393,7 +393,7 @@
             "titleGraph3": "Entrate | Uscite",
             "updateValue": "Aggiorna valore",
             "noData": "Assenza di dati:",
-            "noData2": "Inserire i valori nella pagina <br></br>con la seguente icona: "
+            "noData2": "Inserire i valori <br></br>cliccando qui: "
         },
         "graphs": {
             "Title": "Le tue statistiche",
@@ -1275,7 +1275,7 @@
             "titleGraph3": "Income | Outflows",
             "updateValue": "Update value",
             "noData": "No data:",
-            "noData2": "Enter the values on the page <br></br> with the following icon: "
+            "noData2": "Enter the values <br></br> clicking here: "
         },
 
         "graphs": {

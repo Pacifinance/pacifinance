@@ -976,8 +976,7 @@ export const FeaturesSection = styled.section`
     margin-top: 25vh;
     gap: 4em; 
     max-width: 100vw;
-  }
-`;
+  }`
 
 export const Feature = styled.div`
   display: flex;
@@ -1826,7 +1825,7 @@ export const StyledInfoPage = styled.div`
   min-height: 100vh;
   padding: 2rem;
   background-color: ${(props) => props.theme.backgroundColor};
-  
+
   @media (max-width: 768px) {
     padding: 1rem;
   }
@@ -1874,11 +1873,11 @@ export const CenteredInfo = styled.div`
   @media (max-width: 768px) {
     padding: 0 1rem;
     gap: 1.25rem;
-    
+
     h2 {
       margin-bottom: 0.5rem;
     }
-    
+
     p {
       margin-bottom: 0.75rem;
     }
@@ -1982,7 +1981,8 @@ export const StyledComingSoon = styled.div`
       text-align: center; /* centra il testo orizzontalmente */
     }
 
-    .coming-soon-subtitle {
+    .coming-soon-subtitle<replit_final_file>
+ {
       font-size: 1rem;
       font-weight: normal;
       text-align: center; /* centra il testo orizzontalmente */
@@ -2021,6 +2021,104 @@ export const StyledDateInput = styled.input`
   font-size: 16px;
 `;
 
+const CoffeeContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+
+  @media (max-width: 768px) {
+    margin: 1.5rem 0;
+  }
+`;
+
+const FAQContainer = styled.div`
+  margin: 2rem 0;
+`;
+
+const FAQItem = styled.div`
+  border: 1px solid ${({ theme }) => theme.mode === 'dark' ? '#374151' : '#e5e7eb'};
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: ${({ theme }) => theme.mode === 'dark' 
+    ? 'linear-gradient(135deg, #1f2937 0%, #111827 100%)'
+    : 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)'};
+  box-shadow: ${({ theme }) => theme.mode === 'dark' 
+    ? '0 4px 15px rgba(0, 0, 0, 0.2)' 
+    : '0 2px 10px rgba(0, 0, 0, 0.05)'};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.mode === 'dark' 
+      ? '0 8px 25px rgba(0, 0, 0, 0.3)' 
+      : '0 4px 20px rgba(0, 0, 0, 0.1)'};
+  }
+`;
+
+const FAQQuestionButton = styled.button`
+  width: 100%;
+  padding: 1.5rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-weight: 600;
+  color: ${({ theme }) => theme.textColor};
+  line-height: 1.4;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: ${({ theme }) => theme.buttonBackgroundColor};
+  }
+
+  &:focus {
+    outline: none;
+    color: ${({ theme }) => theme.buttonBackgroundColor};
+  }
+
+  .icon {
+    font-size: 1.5rem;
+    font-weight: 300;
+    transition: transform 0.3s ease;
+    color: ${({ theme }) => theme.buttonBackgroundColor};
+
+    ${({ $isOpen }) => $isOpen && `
+      transform: rotate(45deg);
+    `}
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+
+    .icon {
+      font-size: 1.25rem;
+    }
+  }
+`;
+
+const FAQAnswerContainer = styled.div`
+  max-height: ${({ $isOpen }) => $isOpen ? '500px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top: ${({ $isOpen, theme }) => $isOpen 
+    ? `1px solid ${theme.mode === 'dark' ? '#374151' : '#e5e7eb'}` 
+    : 'none'};
+`;
+
+const FAQAnswerContent = styled.div`
+  padding: ${({ $isOpen }) => $isOpen ? '1.5rem' : '0 1.5rem'};
+
+  @media (max-width: 768px) {
+    padding: ${({ $isOpen }) => $isOpen ? '1.25rem' : '0 1.25rem'};
+  }
+`;
 
   //****************************************************** MUI CUSTOM STYLED ******************************************************************* *//
 
@@ -2129,3 +2227,5 @@ export const SignInButton = styled(MyButton)`
   margin-top: 1.5em;
   width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'auto'};
 `;
+
+export { FAQContainer, FAQItem, FAQQuestionButton, FAQAnswerContainer, FAQAnswerContent };

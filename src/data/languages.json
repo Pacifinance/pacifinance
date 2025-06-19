@@ -508,6 +508,230 @@
             "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
         },
 
+        "knowledge": {
+            "title": "Conoscenze Finanziarie",
+            "subtitle": "Impara a gestire meglio le tue finanze personali",
+            "disclaimer": "⚠️ Le informazioni fornite sono a scopo educativo e non costituiscono consigli finanziari personalizzati. Consulta sempre un consulente finanziario qualificato per decisioni importanti.",
+            "sections": {
+                "investments": {
+                    "title": "Investimenti",
+                    "subtitle": "Guida agli strumenti di investimento",
+                    "content": {
+                        "intro": "Investire significa mettere i propri soldi in strumenti finanziari con l'obiettivo di ottenere un rendimento nel tempo. È importante diversificare e comprendere i rischi.",
+                        "etf": {
+                            "title": "ETF (Exchange Traded Fund)",
+                            "description": "Gli ETF sono fondi che replicano un indice (es. FTSE MIB) e si possono comprare/vendere in borsa come azioni. Permettono di diversificare con piccole somme.",
+                            "pros": "• Diversificazione automatica\n• Costi bassi\n• Liquidi (vendibili in qualsiasi momento)\n• Trasparenti",
+                            "cons": "• Seguono il mercato (anche nelle discese)\n• Non battono mai l'indice di riferimento"
+                        },
+                        "stocks": {
+                            "title": "Azioni",
+                            "description": "Le azioni rappresentano quote di proprietà di un'azienda. Il loro valore dipende dalle performance dell'azienda e dal sentiment del mercato.",
+                            "pros": "• Potenziali rendimenti elevati\n• Dividendi possibili\n• Diritti di voto in assemblea",
+                            "cons": "• Rischio elevato\n• Serve tempo per analisi\n• Volatilità alta"
+                        },
+                        "bonds": {
+                            "title": "Obbligazioni",
+                            "description": "Le obbligazioni sono prestiti che fai a enti (stati, aziende). In cambio ricevi interessi periodici e il capitale a scadenza.",
+                            "pros": "• Rendimento più prevedibile\n• Rischio generalmente più basso\n• Diversificazione dal mercato azionario",
+                            "cons": "• Rendimenti più bassi\n• Rischio inflazione\n• Rischio tasso di interesse"
+                        },
+                        "crypto": {
+                            "title": "Criptovalute",
+                            "description": "Valute digitali decentralizzate. Bitcoin è la più conosciuta, ma esistono migliaia di criptovalute diverse.",
+                            "pros": "• Potenziali rendimenti molto elevati\n• Decentralizzazione\n• Innovazione tecnologica",
+                            "cons": "• Estrema volatilità\n• Regolamentazione incerta\n• Rischio tecnologico alto"
+                        },
+                        "government_bonds": {
+                            "title": "Titoli di Stato",
+                            "description": "Obbligazioni emesse dallo Stato. I BTP italiani, Bund tedeschi, Treasury USA sono esempi. Sono considerati tra gli investimenti più sicuri.",
+                            "pros": "• Sicurezza elevata\n• Garanzia dello Stato\n• Rendimento fisso",
+                            "cons": "• Rendimenti bassi\n• Rischio inflazione\n• Rischio paese (per stati meno stabili)"
+                        },
+                        "beginner_tips": {
+                            "title": "Consigli per Principianti",
+                            "tips": [
+                                "Inizia con ETF diversificati su indici mondiali",
+                                "Non investire mai soldi che ti servono a breve termine",
+                                "Investi regolarmente piccole somme (PAC - Piano di Accumulo)",
+                                "Non cercare di 'battere il mercato' all'inizio",
+                                "Studia prima di investire in singole azioni",
+                                "Tieni massimo 5-10% in criptovalute",
+                                "Diversifica sempre: mai tutto su un singolo investimento"
+                            ]
+                        }
+                    }
+                },
+                "saving": {
+                    "title": "Risparmio",
+                    "subtitle": "Come mettere da parte i tuoi soldi",
+                    "content": {
+                        "intro": "Il risparmio è la base della salute finanziaria. Prima di investire, è fondamentale avere un fondo di emergenza e obiettivi chiari.",
+                        "emergency_fund": {
+                            "title": "Fondo di Emergenza",
+                            "description": "Un fondo di emergenza dovrebbe coprire 3-6 mesi di spese. Va tenuto in conti deposito o conti correnti facilmente accessibili.",
+                            "tips": [
+                                "Calcola le tue spese mensili essenziali",
+                                "Moltiplica per 3-6 mesi",
+                                "Tieni questi soldi in conti sicuri e liquidi",
+                                "Non toccare tranne per vere emergenze"
+                            ]
+                        },
+                        "savings_goals": {
+                            "title": "Obiettivi di Risparmio",
+                            "description": "Avere obiettivi chiari aiuta a rimanere motivati. Distingui tra obiettivi a breve, medio e lungo termine.",
+                            "short_term": "Breve termine (1-2 anni): Vacanze, elettrodomestici, corso di formazione",
+                            "medium_term": "Medio termine (2-5 anni): Auto, matrimonio, ristrutturazione casa",
+                            "long_term": "Lungo termine (5+ anni): Casa, pensione, educazione figli"
+                        },
+                        "saving_strategies": {
+                            "title": "Strategie di Risparmio",
+                            "strategies": [
+                                "Regola del 50/30/20: 50% bisogni, 30% desideri, 20% risparmio",
+                                "Paga te stesso per primo: risparmia appena ricevi lo stipendio",
+                                "Automatizza i risparmi con bonifici automatici",
+                                "Traccia tutte le spese per 1 mese per capire dove vanno i soldi",
+                                "Elimina abbonamenti non utilizzati",
+                                "Confronta prezzi prima di acquisti importanti"
+                            ]
+                        }
+                    }
+                },
+                "budgeting": {
+                    "title": "Gestione Budget",
+                    "subtitle": "Come pianificare e controllare le tue spese",
+                    "content": {
+                        "intro": "Un budget ti aiuta a controllare dove vanno i tuoi soldi e a raggiungere i tuoi obiettivi finanziari. Non deve essere rigido, ma una guida flessibile.",
+                        "budget_creation": {
+                            "title": "Come Creare un Budget",
+                            "steps": [
+                                "1. Calcola il tuo reddito netto mensile",
+                                "2. Elenca tutte le spese fisse (affitto, utenze, assicurazioni)",
+                                "3. Stima le spese variabili (cibo, trasporti, svago)",
+                                "4. Assegna una percentuale al risparmio",
+                                "5. Monitora mensilmente e aggiusta se necessario"
+                            ]
+                        },
+                        "budget_methods": {
+                            "title": "Metodi di Budgeting",
+                            "methods": {
+                                "50_30_20": "50/30/20: 50% bisogni essenziali, 30% desideri, 20% risparmio e investimenti",
+                                "envelope": "Metodo delle buste: Assegna contanti a categorie specifiche",
+                                "zero_based": "Budget a base zero: Ogni euro deve avere uno scopo",
+                                "pay_yourself_first": "Paga te stesso per primo: Risparmia prima di spendere"
+                            }
+                        },
+                        "expense_tracking": {
+                            "title": "Tracciamento Spese",
+                            "tips": [
+                                "Usa app come PaciFinance per monitorare automaticamente",
+                                "Controlla il conto almeno settimanalmente",
+                                "Categorizza le spese per identificare pattern",
+                                "Fai foto degli scontrini per spese in contanti",
+                                "Rivedi mensilmente e identifica aree di miglioramento"
+                            ]
+                        }
+                    }
+                },
+                "salary_management": {
+                    "title": "Gestione Stipendio",
+                    "subtitle": "Come ottimizzare il tuo reddito",
+                    "content": {
+                        "intro": "La gestione dello stipendio non riguarda solo come spenderlo, ma anche come ottimizzarlo e farlo crescere nel tempo.",
+                        "salary_allocation": {
+                            "title": "Allocazione dello Stipendio",
+                            "breakdown": {
+                                "needs": "Bisogni Essenziali (50-60%): Affitto, cibo, utenze, trasporti, minimo vestiario",
+                                "wants": "Desideri (20-30%): Ristoranti, hobby, shopping, intrattenimento",
+                                "savings": "Risparmio e Investimenti (20%): Fondo emergenza, investimenti, pensione integrativa"
+                            }
+                        },
+                        "tax_optimization": {
+                            "title": "Ottimizzazione Fiscale",
+                            "tips": [
+                                "Sfrutta detrazioni per spese mediche e istruzione",
+                                "Considera fondi pensione per ridurre il carico fiscale",
+                                "Valuta benefits aziendali (buoni pasto, auto aziendali)",
+                                "Tieni traccia di tutte le spese detraibili",
+                                "Consulta un commercialista per situazioni complesse"
+                            ]
+                        },
+                        "income_growth": {
+                            "title": "Far Crescere il Reddito",
+                            "strategies": [
+                                "Investi in formazione per aumentare le competenze",
+                                "Chiedi aumenti quando appropriato",
+                                "Considera lavori extra o freelancing",
+                                "Sviluppa fonti di reddito passive",
+                                "Network professionale per nuove opportunità"
+                            ]
+                        }
+                    }
+                },
+                "portfolio_management": {
+                    "title": "Gestione Portafoglio",
+                    "subtitle": "Come bilanciare i tuoi investimenti",
+                    "content": {
+                        "intro": "Un portafoglio diversificato riduce i rischi e ottimizza i rendimenti. La chiave è l'allocazione tra diverse classi di investimento.",
+                        "asset_allocation": {
+                            "title": "Allocazione degli Asset",
+                            "description": "Distribuisci i tuoi investimenti tra diverse categorie per ridurre il rischio complessivo.",
+                            "conservative": "Conservativo (20-30 anni): 70% obbligazioni, 30% azioni",
+                            "moderate": "Moderato (30-50 anni): 50% azioni, 40% obbligazioni, 10% alternative",
+                            "aggressive": "Aggressivo (giovani): 80% azioni, 15% obbligazioni, 5% alternative"
+                        },
+                        "diversification": {
+                            "title": "Diversificazione",
+                            "principles": [
+                                "Non mettere tutto in un singolo investimento",
+                                "Diversifica per area geografica (Italia, Europa, USA, Mercati Emergenti)",
+                                "Diversifica per settore (tecnologia, sanità, energia, ecc.)",
+                                "Diversifica per dimensione azienda (large cap, mid cap, small cap)",
+                                "Considera diverse classi di asset (azioni, obbligazioni, immobili, materie prime)"
+                            ]
+                        },
+                        "rebalancing": {
+                            "title": "Ribilanciamento",
+                            "description": "Periodicamente aggiusta il portafoglio per mantenere l'allocazione desiderata.",
+                            "frequency": "Controlla ogni 6-12 mesi e ribilancia se necessario",
+                            "trigger": "Ribilancia quando una categoria si discosta >5% dall'obiettivo",
+                            "method": "Vendi asset che hanno performato bene, compra quelli che hanno performato male"
+                        }
+                    }
+                },
+                "general_knowledge": {
+                    "title": "Conoscenze Generali",
+                    "subtitle": "Concetti fondamentali della finanza",
+                    "content": {
+                        "compound_interest": {
+                            "title": "Interesse Composto",
+                            "description": "L'interesse composto è 'l'ottava meraviglia del mondo'. Significa guadagnare interesse sull'interesse già maturato.",
+                            "example": "Con 1000€ al 5% annuo: Anno 1: 1050€, Anno 2: 1102€, Anno 10: 1629€, Anno 30: 4322€"
+                        },
+                        "risk_return": {
+                            "title": "Rapporto Rischio-Rendimento",
+                            "description": "Maggiore è il potenziale rendimento, maggiore è il rischio. È importante capire il proprio profilo di rischio.",
+                            "risk_levels": [
+                                "Basso rischio: Conti deposito, titoli di stato (1-3% annuo)",
+                                "Medio rischio: ETF diversificati, fondi bilanciati (4-7% annuo)",
+                                "Alto rischio: Azioni singole, criptovalute (possibili grandi guadagni o perdite)"
+                            ]
+                        },
+                        "inflation": {
+                            "title": "Inflazione",
+                            "description": "L'inflazione erode il potere d'acquisto nel tempo. 100€ oggi valgono meno di 100€ tra 10 anni.",
+                            "protection": "Proteggi i risparmi dall'inflazione investendo in asset che crescono più dell'inflazione"
+                        },
+                        "financial_independence": {
+                            "title": "Indipendenza Finanziaria",
+                            "description": "L'obiettivo finale: avere abbastanza investimenti da vivere dei rendimenti senza lavorare.",
+                            "rule_25": "Regola del 25: Accumula 25 volte le tue spese annuali in investimenti",
+                            "withdrawal_rate": "Regola del 4%: Preleva max 4% all'anno dal portafoglio per mantenerlo nel tempo"
+                        }
+                    }
+                }
+            }
+        },
         "info": {
             "title": "Informazioni e FAQ",
             "title2": "Progetto - Pacifinance",
@@ -1230,6 +1454,230 @@
             ],
             "stillHaveQuestions": "Still have questions?",
             "contactInfo": "Contact us through our official channels for assistance."
+        },
+        "knowledge": {
+            "title": "Financial Knowledge",
+            "subtitle": "Learn to better manage your personal finances",
+            "disclaimer": "⚠️ The information provided is for educational purposes and does not constitute personalized financial advice. Always consult a qualified financial advisor for important decisions.",
+            "sections": {
+                "investments": {
+                    "title": "Investments",
+                    "subtitle": "Guide to investment instruments",
+                    "content": {
+                        "intro": "Investing means putting your money into financial instruments with the goal of obtaining a return over time. It's important to diversify and understand the risks.",
+                        "etf": {
+                            "title": "ETF (Exchange Traded Fund)",
+                            "description": "ETFs are funds that replicate an index (e.g., S&P 500) and can be bought/sold on the stock exchange like stocks. They allow diversification with small amounts.",
+                            "pros": "• Automatic diversification\n• Low costs\n• Liquid (sellable anytime)\n• Transparent",
+                            "cons": "• Follow the market (even in downturns)\n• Never beat the reference index"
+                        },
+                        "stocks": {
+                            "title": "Stocks",
+                            "description": "Stocks represent ownership shares in a company. Their value depends on company performance and market sentiment.",
+                            "pros": "• Potential high returns\n• Possible dividends\n• Voting rights in assemblies",
+                            "cons": "• High risk\n• Requires time for analysis\n• High volatility"
+                        },
+                        "bonds": {
+                            "title": "Bonds",
+                            "description": "Bonds are loans you make to entities (states, companies). In return, you receive periodic interest and capital at maturity.",
+                            "pros": "• More predictable returns\n• Generally lower risk\n• Diversification from stock market",
+                            "cons": "• Lower returns\n• Inflation risk\n• Interest rate risk"
+                        },
+                        "crypto": {
+                            "title": "Cryptocurrencies",
+                            "description": "Decentralized digital currencies. Bitcoin is the most known, but thousands of different cryptocurrencies exist.",
+                            "pros": "• Potential very high returns\n• Decentralization\n• Technological innovation",
+                            "cons": "• Extreme volatility\n• Uncertain regulation\n• High technological risk"
+                        },
+                        "government_bonds": {
+                            "title": "Government Bonds",
+                            "description": "Bonds issued by the state. Italian BTPs, German Bunds, US Treasuries are examples. They're considered among the safest investments.",
+                            "pros": "• High security\n• Government guarantee\n• Fixed return",
+                            "cons": "• Low returns\n• Inflation risk\n• Country risk (for less stable states)"
+                        },
+                        "beginner_tips": {
+                            "title": "Tips for Beginners",
+                            "tips": [
+                                "Start with diversified ETFs on global indices",
+                                "Never invest money you need short-term",
+                                "Invest regularly small amounts (Dollar Cost Averaging)",
+                                "Don't try to 'beat the market' at the beginning",
+                                "Study before investing in individual stocks",
+                                "Keep maximum 5-10% in cryptocurrencies",
+                                "Always diversify: never everything in a single investment"
+                            ]
+                        }
+                    }
+                },
+                "saving": {
+                    "title": "Saving",
+                    "subtitle": "How to put aside your money",
+                    "content": {
+                        "intro": "Saving is the foundation of financial health. Before investing, it's essential to have an emergency fund and clear goals.",
+                        "emergency_fund": {
+                            "title": "Emergency Fund",
+                            "description": "An emergency fund should cover 3-6 months of expenses. Keep it in deposit accounts or easily accessible current accounts.",
+                            "tips": [
+                                "Calculate your essential monthly expenses",
+                                "Multiply by 3-6 months",
+                                "Keep this money in safe and liquid accounts",
+                                "Don't touch except for real emergencies"
+                            ]
+                        },
+                        "savings_goals": {
+                            "title": "Savings Goals",
+                            "description": "Having clear goals helps stay motivated. Distinguish between short, medium and long-term goals.",
+                            "short_term": "Short term (1-2 years): Vacation, appliances, training course",
+                            "medium_term": "Medium term (2-5 years): Car, wedding, home renovation",
+                            "long_term": "Long term (5+ years): House, retirement, children's education"
+                        },
+                        "saving_strategies": {
+                            "title": "Saving Strategies",
+                            "strategies": [
+                                "50/30/20 rule: 50% needs, 30% wants, 20% savings",
+                                "Pay yourself first: save as soon as you receive salary",
+                                "Automate savings with automatic transfers",
+                                "Track all expenses for 1 month to understand where money goes",
+                                "Eliminate unused subscriptions",
+                                "Compare prices before important purchases"
+                            ]
+                        }
+                    }
+                },
+                "budgeting": {
+                    "title": "Budget Management",
+                    "subtitle": "How to plan and control your expenses",
+                    "content": {
+                        "intro": "A budget helps you control where your money goes and reach your financial goals. It shouldn't be rigid, but a flexible guide.",
+                        "budget_creation": {
+                            "title": "How to Create a Budget",
+                            "steps": [
+                                "1. Calculate your monthly net income",
+                                "2. List all fixed expenses (rent, utilities, insurance)",
+                                "3. Estimate variable expenses (food, transport, entertainment)",
+                                "4. Assign a percentage to savings",
+                                "5. Monitor monthly and adjust if necessary"
+                            ]
+                        },
+                        "budget_methods": {
+                            "title": "Budgeting Methods",
+                            "methods": {
+                                "50_30_20": "50/30/20: 50% essential needs, 30% wants, 20% savings and investments",
+                                "envelope": "Envelope method: Assign cash to specific categories",
+                                "zero_based": "Zero-based budget: Every dollar must have a purpose",
+                                "pay_yourself_first": "Pay yourself first: Save before spending"
+                            }
+                        },
+                        "expense_tracking": {
+                            "title": "Expense Tracking",
+                            "tips": [
+                                "Use apps like PaciFinance to monitor automatically",
+                                "Check account at least weekly",
+                                "Categorize expenses to identify patterns",
+                                "Take photos of receipts for cash expenses",
+                                "Review monthly and identify areas for improvement"
+                            ]
+                        }
+                    }
+                },
+                "salary_management": {
+                    "title": "Salary Management",
+                    "subtitle": "How to optimize your income",
+                    "content": {
+                        "intro": "Salary management isn't just about how to spend it, but also how to optimize it and make it grow over time.",
+                        "salary_allocation": {
+                            "title": "Salary Allocation",
+                            "breakdown": {
+                                "needs": "Essential Needs (50-60%): Rent, food, utilities, transport, basic clothing",
+                                "wants": "Wants (20-30%): Restaurants, hobbies, shopping, entertainment",
+                                "savings": "Savings and Investments (20%): Emergency fund, investments, supplementary pension"
+                            }
+                        },
+                        "tax_optimization": {
+                            "title": "Tax Optimization",
+                            "tips": [
+                                "Take advantage of deductions for medical and education expenses",
+                                "Consider pension funds to reduce tax burden",
+                                "Evaluate company benefits (meal vouchers, company cars)",
+                                "Keep track of all deductible expenses",
+                                "Consult an accountant for complex situations"
+                            ]
+                        },
+                        "income_growth": {
+                            "title": "Growing Income",
+                            "strategies": [
+                                "Invest in training to increase skills",
+                                "Ask for raises when appropriate",
+                                "Consider extra jobs or freelancing",
+                                "Develop passive income sources",
+                                "Professional networking for new opportunities"
+                            ]
+                        }
+                    }
+                },
+                "portfolio_management": {
+                    "title": "Portfolio Management",
+                    "subtitle": "How to balance your investments",
+                    "content": {
+                        "intro": "A diversified portfolio reduces risks and optimizes returns. The key is allocation between different investment classes.",
+                        "asset_allocation": {
+                            "title": "Asset Allocation",
+                            "description": "Distribute your investments among different categories to reduce overall risk.",
+                            "conservative": "Conservative (20-30 years): 70% bonds, 30% stocks",
+                            "moderate": "Moderate (30-50 years): 50% stocks, 40% bonds, 10% alternatives",
+                            "aggressive": "Aggressive (young): 80% stocks, 15% bonds, 5% alternatives"
+                        },
+                        "diversification": {
+                            "title": "Diversification",
+                            "principles": [
+                                "Don't put everything in a single investment",
+                                "Diversify by geographic area (US, Europe, Italy, Emerging Markets)",
+                                "Diversify by sector (technology, healthcare, energy, etc.)",
+                                "Diversify by company size (large cap, mid cap, small cap)",
+                                "Consider different asset classes (stocks, bonds, real estate, commodities)"
+                            ]
+                        },
+                        "rebalancing": {
+                            "title": "Rebalancing",
+                            "description": "Periodically adjust the portfolio to maintain the desired allocation.",
+                            "frequency": "Check every 6-12 months and rebalance if necessary",
+                            "trigger": "Rebalance when a category deviates >5% from target",
+                            "method": "Sell assets that performed well, buy those that performed poorly"
+                        }
+                    }
+                },
+                "general_knowledge": {
+                    "title": "General Knowledge",
+                    "subtitle": "Fundamental concepts of finance",
+                    "content": {
+                        "compound_interest": {
+                            "title": "Compound Interest",
+                            "description": "Compound interest is 'the eighth wonder of the world'. It means earning interest on already accrued interest.",
+                            "example": "With $1000 at 5% annual: Year 1: $1050, Year 2: $1102, Year 10: $1629, Year 30: $4322"
+                        },
+                        "risk_return": {
+                            "title": "Risk-Return Relationship",
+                            "description": "The higher the potential return, the higher the risk. It's important to understand your risk profile.",
+                            "risk_levels": [
+                                "Low risk: Deposit accounts, government bonds (1-3% annual)",
+                                "Medium risk: Diversified ETFs, balanced funds (4-7% annual)",
+                                "High risk: Individual stocks, cryptocurrencies (possible large gains or losses)"
+                            ]
+                        },
+                        "inflation": {
+                            "title": "Inflation",
+                            "description": "Inflation erodes purchasing power over time. $100 today is worth less than $100 in 10 years.",
+                            "protection": "Protect savings from inflation by investing in assets that grow more than inflation"
+                        },
+                        "financial_independence": {
+                            "title": "Financial Independence",
+                            "description": "The ultimate goal: having enough investments to live off returns without working.",
+                            "rule_25": "Rule of 25: Accumulate 25 times your annual expenses in investments",
+                            "withdrawal_rate": "4% rule: Withdraw max 4% annually from portfolio to maintain it over time"
+                        }
+                    }
+                }
+            }
         },
         "info": {
             "title": "Information and FAQ",

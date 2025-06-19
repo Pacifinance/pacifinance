@@ -2,14 +2,16 @@ import React, {useEffect, useContext} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
-import ComingSoon from '../components/ComingSoon';
+import Knowledge from '../sections/Knowledge';
 
 function KnowledgePage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { isMobileScreen } = useContext(MediaQueryContext);
 
   const { mode } = theme;
 
@@ -22,24 +24,17 @@ function KnowledgePage() {
     loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
   }, []);
 
-  // Matomo Tag Manager
-  // React.useEffect(() => {
-  //   var _mtm = window._mtm = window._mtm || [];
-  //   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  //   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  //   g.async=true; g.src='https://cdn.matomo.cloud/pacifinance.matomo.cloud/container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-  // }, [])
-
   return (
     <Div>
-      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      {/* <Knowledge /> */}
-      <ComingSoon />
+      {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+      <Knowledge />
+      {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
     </Div>
   );
 }
 
 export default KnowledgePage;
 const Div = styled.div `
-  position: relative;
+  display: flex;
+  height: 100vh;
 `;

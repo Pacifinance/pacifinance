@@ -458,10 +458,10 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
             </LowerSection>
             <GraphsSection theme={theme}>
                 <div className="bar-chart-section">
-                    <h2>
+                    <h2 className="text-xs md:text-base">
                         {languages[language].dashboard.titleGraph}
                     </h2>
-                    <div className="chart-container">
+                    <div className="w-350 h-300 md:w-400 md:h-300">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 width={500}
@@ -579,17 +579,10 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                 </div>
 
                 <div className="pie-chart-section">
-                    <h2>
-                        {languages[language].dashboard.titleGraph2}
-                    </h2>
-                    <div className="chart-container"></div>
-                </div>
-
-                <div className="bar-chart-section">
-                    <h2>
-                        {languages[language].dashboard.titleGraph3}
-                    </h2>
-                    <div className="chart-container">
+                    <div className="w-350 h-300 md:w-400 md:h-300">
+                        <h2 className="text-xs md:text-base">
+                            {languages[language].dashboard.titleGraph2}
+                        </h2>
                         <ResponsiveContainer width="100%" height="100%">
                             {isAllZero ? (
                                 <div
@@ -772,7 +765,13 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             )}
                         </ResponsiveContainer>
                     </div>
-                    <div className="chart-container">
+                </div>
+
+                <div className="bar-chart-section">
+                    <h2 className="text-xs md:text-base">
+                        {languages[language].dashboard.titleGraph3}
+                    </h2>
+                    <div style={{ width: 350, height: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 width={500}
@@ -808,6 +807,8 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                                     stroke="transparent"
                                     vertical={false}
                                 />
+                                {/* <XAxis dataKey="name" interval={0} angle={0} textAnchor="middle" tick={{ fill: theme.textColor, fontSize: 14 }} />
+                                    <YAxis tick={{ fill: theme.textColor }} /> */}
                                 <XAxis
                                     dataKey="name"
                                     interval={0}

@@ -603,7 +603,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             { icon: BsInfoCircle, route: '/info', tooltip: languages[language].sidebar.info, index: 6 }
                         ].map(({ icon: Icon, route, tooltip, index }) => (
                             <Tooltip key={index} title={tooltip} placement="right">
-                                <div
+                                <Link 
+                                    to={route}
+                                    onClick={() => handleIconClick(index, route.substring(1))}
                                     style={{
                                         position: 'relative',
                                         display: 'flex',
@@ -622,21 +624,26 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         transform: activePageIndex === index ? 'translateX(4px)' : 'translateX(0)',
                                         boxShadow: activePageIndex === index 
                                             ? `0 4px 12px ${theme.buttonBackgroundColor}20` 
-                                            : '0 2px 4px rgba(0,0,0,0.1)'
+                                            : '0 2px 4px rgba(0,0,0,0.1)',
+                                        textDecoration: 'none',
+                                        color: activePageIndex === index 
+                                            ? theme.buttonBackgroundColor 
+                                            : theme.textColor,
+                                        fontSize: '20px',
+                                        fontWeight: activePageIndex === index ? '600' : '400'
                                     }}
                                     onMouseEnter={(e) => {
                                         if (activePageIndex !== index) {
-                                            e.target.style.backgroundColor = `${theme.buttonBackgroundColor}08`;
-                                            e.target.style.transform = 'translateX(2px)';
+                                            e.currentTarget.style.backgroundColor = `${theme.buttonBackgroundColor}08`;
+                                            e.currentTarget.style.transform = 'translateX(2px)';
                                         }
                                     }}
                                     onMouseLeave={(e) => {
                                         if (activePageIndex !== index) {
-                                            e.target.style.backgroundColor = 'transparent';
-                                            e.target.style.transform = 'translateX(0)';
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                            e.currentTarget.style.transform = 'translateX(0)';
                                         }
                                     }}
-                                    onClick={() => handleIconClick(index, route.substring(1))}
                                 >
                                     {/* Barra di indicazione a sinistra */}
                                     <div
@@ -649,31 +656,18 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             height: '60%',
                                             backgroundColor: theme.buttonBackgroundColor,
                                             borderRadius: '0 4px 4px 0',
-                                            transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                            transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            pointerEvents: 'none'
                                         }}
                                     />
-                                    <Link 
-                                        to={route} 
-                                        style={{ 
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            textDecoration: 'none',
-                                            color: activePageIndex === index 
-                                                ? theme.buttonBackgroundColor 
-                                                : theme.textColor,
-                                            fontSize: '20px',
-                                            fontWeight: activePageIndex === index ? '600' : '400',
-                                            transition: 'all 0.3s ease'
-                                        }}
-                                    >
-                                        <Icon style={{ 
-                                            fontSize: '22px',
-                                            filter: activePageIndex === index 
-                                                ? `drop-shadow(0 0 4px ${theme.buttonBackgroundColor}40)` 
-                                                : 'none'
-                                        }} />
-                                    </Link>
-                                </div>
+                                    <Icon style={{ 
+                                        fontSize: '22px',
+                                        filter: activePageIndex === index 
+                                            ? `drop-shadow(0 0 4px ${theme.buttonBackgroundColor}40)` 
+                                            : 'none',
+                                        pointerEvents: 'none'
+                                    }} />
+                                </Link>
                             </Tooltip>
                         ))}
                     </div>

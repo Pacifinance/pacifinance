@@ -892,7 +892,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     }}
                                     onMouseLeave={(e) => {
                                         if (activePageIndex !== index) {
-                                            e.currentTarget.style.backgroundColor =
+                                                                           e.currentTarget.style.backgroundColor =
                                                 "transparent";
                                             e.currentTarget.style.transform =
                                                 "translateX(0)";
@@ -1971,6 +1971,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                                 <div>
                                     <label>
+                                        ```text
                                         {
                                             languages[language].sidebar.settings
                                                 .light

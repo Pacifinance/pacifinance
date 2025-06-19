@@ -5,16 +5,16 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../data/languages.json';
 import {
-  TrendingUpIcon,
-  SavingsIcon,
-  AccountBalanceWalletIcon,
-  PaidIcon,
-  PieChartIcon,
-  SchoolIcon,
-  ExpandMoreIcon,
-  ExpandLessIcon,
-  InfoIcon,
-  CheckCircleIcon
+  TrendingUp as TrendingUpIcon,
+  Savings as SavingsIcon,
+  AccountBalanceWallet as AccountBalanceWalletIcon,
+  Paid as PaidIcon,
+  PieChart as PieChartIcon,
+  School as SchoolIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+  Info as InfoIcon,
+  CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import styled from 'styled-components';
 

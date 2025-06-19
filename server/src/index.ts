@@ -1,9 +1,6 @@
 import express from "express";
 import session, { SessionData } from "express-session";
 import cookieParser from "cookie-parser";
-import http from "http";
-import https from "https";
-import fs from "fs";
 import path from "path";
 
 require("dotenv").config();
@@ -15,13 +12,19 @@ import utils from "./utils.js";
 
 const day_ms = 24 * 60 * 60 * 1000;
 
-/* ==================== Express.js server initialization ==================== */
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:\n', err);
+    process.exit(1);
+});
 
-let options = {key: Buffer.from(""), cert: Buffer.from("")};
-if (process.env.ENV === "PROD") {
-    options.key = fs.readFileSync(process.env.KEY_PATH || "");
-    options.cert = fs.readFileSync(process.env.CERT_PATH || "");
-}
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:\n', promise, '\nreason:\n', reason);
+    process.exit(1);
+});
+
+/* ==================== Express.js server initialization ==================== */
 
 const app = express();
 app.use(cookieParser());
@@ -65,6 +68,10 @@ async function checkUserSession(session: session.Session & Partial<session.Sessi
 }
 
 /* ============================ Express.js routes ============================ */
+
+app.get("/health", (req, res) => {
+    res.status(200).send("OK")
+})
 
 // app.post("/registration", async (req, res) => {
 //     // Sanitize user input. Send status code 400 (Bad Request)
@@ -681,12 +688,10 @@ db.connect(process.env.DB_URI || "")
         process.exit(1);
     });
 
-if (process.env.ENV === "PROD") {
-    if (!process.env.PORT) {
-        console.error("Port undefined: exiting");
-        process.exit(1);
-    }
-    https.createServer(options, app).listen(process.env.PORT);
-} else {
-    http.createServer({}, app).listen(process.env.PORT ?? 5000);
-}
+// Start the server
+app.listen(process.env.PORT || 3000, () => {
+    console.log("Server is listening...");
+}).on('error', (err) => {
+    console.error("Startup error:\n", err);
+    process.exit(1);
+})

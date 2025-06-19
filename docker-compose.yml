@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  database:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      - /var/lib/mongodb:/data/db # Only works on the VPS
+    networks:
+      - backend
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - database
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  backend:
+    driver: bridge

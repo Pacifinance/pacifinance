@@ -1,0 +1,7 @@
+build
+node_modules
+server/build
+.env
+.gitignore
+README.md
+*.log

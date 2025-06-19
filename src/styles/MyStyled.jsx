@@ -988,6 +988,7 @@ export const FeatureIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+```text
   font-size: 1.2em;
 `;
 
@@ -1088,114 +1089,66 @@ export const DropdownContainer = styled.div`
 `;
 
 export const Notification = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -1em;
-  gap: 0.2rem;
-  .font_icon{
-      font-size: 1.5rem;
+  position: relative;
+  cursor: pointer;
+  color: ${({ theme }) => theme.textColor};
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.mode === 'dark' 
+    ? `linear-gradient(135deg, ${theme.primaryColor} 0%, ${theme.backgroundColor} 100%)`
+    : `linear-gradient(135deg, #ffffff 0%, ${theme.primaryColor} 100%)`};
+  box-shadow: ${({ theme }) => theme.mode === 'dark' 
+    ? `0 4px 15px ${theme.buttonBackgroundColor}20` 
+    : '0 4px 15px rgba(0, 0, 0, 0.1)'};
+  border: ${({ theme }) => theme.mode === 'dark' 
+    ? `1px solid ${theme.buttonBackgroundColor}30`
+    : '1px solid #e2e8f0'};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: ${({ theme }) => `linear-gradient(135deg, ${theme.buttonBackgroundColor} 0%, ${theme.buttonBackgroundColor}80 100%)`};
+    color: white;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: ${({ theme }) => `0 8px 25px ${theme.buttonBackgroundColor}30`};
   }
 
-  svg{
-      color: ${(props) => (props.theme.textColor)};
+  .account-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .image {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      img{
-          height: 2.5rem;
-          width: 2.5rem;
-          border-radius: 3rem;
-      }
+  .account-image-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: ${({ theme }) => theme.mode === 'dark' 
+      ? `linear-gradient(135deg, ${theme.backgroundColor} 0%, ${theme.primaryColor} 100%)`
+      : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`};
+    border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
   }
 
   .account-image {
-      height: 2rem;
-      width: 2rem;
-      border-radius: 3rem;
-      background-color: white; /* Imposta il colore di sfondo dell'immagine */
-      cursor: pointer;
-
-  }
-
-  .popup-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  }
-
-  .popup-window {
-      width: 20em;
-      padding: 1em;
-      margin-left: 1em;
-      background-color: white;
-      border: 0.1em solid orange;
-      border-radius: 0.5em;
-      box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
-  }
-
-  .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: ${({ theme }) => theme.mode === 'dark' ? 'brightness(1.1)' : 'brightness(1)'};
   }
 
   @media (max-width: 768px) {
-    position: absolute;
-    top: 1.3em;
-    right: 4.2em;
-    gap: 0.1rem;
+    font-size: 1.2rem;
 
-    .account-image {
-        height: 1.2rem;
-        width: 1.2rem;
-        background-color: white; /* Imposta il colore di sfondo dell'immagine */
-        margin-top: 0.7em;
-        margin-left: 2em;
-    }
-
-    .bell-icon {
-        font-size: 1.5rem; /* Imposta la grandezza desiderata */
-    }
-
-    .popup-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 50%;
-      height: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .popup-window {
-      width: 10em;
-      padding: 0.5em;
-      background-color: white;
-      border: 0.1em solid orange;
-      border-radius: 0.5em;
-      box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 50%;
-      height: 50%;
-      background-color: rgba(255, 255, 255, 0.8);
+    .account-image-wrapper {
+      width: 35px;
+      height: 35px;
     }
   }
 `;
@@ -1203,14 +1156,18 @@ export const Notification = styled.div`
 export const Top = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  gap: 1rem;
   width: 100%;
 
   @media (max-width: 768px) {
     flex-direction: row;
-    gap: 0.01rem;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 1rem;
+    gap: 1rem;
+    flex: none;
   }
-
 `;
 
 export const Links = styled.div`
@@ -1339,38 +1296,55 @@ export const SettingsToggleButton = styled.div`
 
 
 export const SidebarSection = styled.section`
-  font-family: Roboto, sans-serif;
-  // overflow: auto;
+  font-family: 'Roboto', sans-serif;
   position: fixed;
+  top: 0;
   left: 0;
-  background-color: ${(props) => (props.theme.backgroundColor)};
+  width: 5.5rem;
   height: 100vh;
-  width: 6vw;
+  background: ${({ theme }) => theme.mode === 'dark' 
+    ? `linear-gradient(135deg, ${theme.backgroundColor} 0%, ${theme.backgroundColor}f0 100%)`
+    : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`};
+  border-right: ${({ theme }) => theme.mode === 'dark' 
+    ? `1px solid ${theme.buttonBackgroundColor}30`
+    : '1px solid #e2e8f0'};
+  box-shadow: ${({ theme }) => theme.mode === 'dark' 
+    ? '4px 0 20px rgba(0, 0, 0, 0.3)' 
+    : '4px 0 20px rgba(0, 0, 0, 0.08)'};
+  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 2rem 0;
-  gap: 2rem;
+  padding: 1.5rem 0;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Style for mobile */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${({ theme }) => theme.mode === 'dark' 
+      ? `radial-gradient(circle at 50% 0%, ${theme.buttonBackgroundColor}10 0%, transparent 50%)`
+      : `radial-gradient(circle at 50% 0%, ${theme.buttonBackgroundColor}05 0%, transparent 50%)`};
+    pointer-events: none;
+    z-index: -1;
+  }
+
   @media (max-width: 768px) {
-    position: sticky;
-    // bottom: 0; 
-    margin-right: 2em;
     width: 100%;
-    height: 8vh;
+    height: auto;
+    position: static;
     flex-direction: row;
-    padding: 1em 1.5em; 
-    gap: 1em;
-    justify-content: space-between;
-
-    .active {
-        margin-right: 1em; /* Personalizza il margine inferiore per aumentare lo spazio tra le icone nei tooltip */
-    }
-  }  
-  `
-  ;
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-right: none;
+    border-bottom: 1px solid ${({ theme }) => theme.borderColor};
+  }
+`;
 
   export const UpperSection = styled.div `
       display: flex;

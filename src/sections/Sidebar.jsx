@@ -6,7 +6,7 @@ import { AiOutlineFundProjectionScreen, AiOutlineTrophy, AiOutlineDotChart, AiOu
 import { BsBook, BsInfoCircle } from "react-icons/bs";
 import Tooltip from '@mui/material/Tooltip';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import avatarImage from "../assets/account-logo.png"
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
@@ -57,6 +57,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { isMobileScreen } = useContext(MediaQueryContext);
     const [isSideBarMenuOpen, setIsSideBarMenuOpen] = useState(false);
     const { activeIcon, setActiveIcon} = useContext(IconContext); // Stato per l'icona attiva
+    const location = useLocation(); // Per rilevare la pagina corrente
     // const [currentPage, setCurrentPage] = useState('dashboard'); // Stato per la pagina corrente
     const [userId, setUserId] = useState('');
     const [userType, setUserType] = useState(''); // [0, 1, 2, 3] -> [regular, premium, test, demo]
@@ -128,6 +129,21 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     }, [userData]);
 
     
+
+    // Funzione per determinare la pagina attiva basata sulla route corrente
+    const getActivePageIndex = () => {
+        const path = location.pathname;
+        if (path === '/dashboard') return 0;
+        if (path === '/your-charts') return 1;
+        if (path === '/insert-values') return 2;
+        if (path === '/check-prices') return 3;
+        if (path === '/leaderboard') return 4;
+        if (path === '/knowledge') return 5;
+        if (path === '/info') return 6;
+        return -1; // Nessuna pagina attiva
+    };
+
+    const activePageIndex = getActivePageIndex();
 
     const handleIconClick = (iconIndex, pageLink) => {
         setActiveIcon(iconIndex);
@@ -558,89 +574,97 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 {isMobileScreen ? (
                     <HamburgerMenu /> 
                 ) : (
-                    <Links theme={theme}>
-                        <ul>
-                            <Tooltip title="Dashboard" placement="right">
-                                <li
-                                    className={activeIcon === 0 ? "active" : ""}
-                                >   
-                                    <div onClick={() => handleIconClick(0, 'dashboard')} >
-                                        <Link to="/dashboard">
-                                            <BiHomeAlt />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title={languages[language].sidebar.graphs} placement="right">
-                                <li
-                                    className={activeIcon === 1 ? "active" : ""}
+                    <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '8px',
+                        padding: '20px 0',
+                        flex: 1
+                    }}>
+                        {[
+                            { icon: BiHomeAlt, route: '/dashboard', tooltip: 'Dashboard', index: 0 },
+                            { icon: AiOutlineDotChart, route: '/your-charts', tooltip: languages[language].sidebar.graphs, index: 1 },
+                            { icon: HiOutlinePencilAlt, route: '/insert-values', tooltip: languages[language].sidebar.insert, index: 2 },
+                            { icon: AiOutlineFundProjectionScreen, route: '/check-prices', tooltip: languages[language].sidebar.check, index: 3 },
+                            { icon: AiOutlineTrophy, route: '/leaderboard', tooltip: languages[language].sidebar.leaderboard, index: 4 },
+                            { icon: BsBook, route: '/knowledge', tooltip: languages[language].sidebar.learn, index: 5 },
+                            { icon: BsInfoCircle, route: '/info', tooltip: languages[language].sidebar.info, index: 6 }
+                        ].map(({ icon: Icon, route, tooltip, index }) => (
+                            <Tooltip key={index} title={tooltip} placement="right">
+                                <div
+                                    style={{
+                                        position: 'relative',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        padding: '12px 16px',
+                                        margin: '0 8px',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        backgroundColor: activePageIndex === index 
+                                            ? `${theme.buttonBackgroundColor}15` 
+                                            : 'transparent',
+                                        border: activePageIndex === index 
+                                            ? `1px solid ${theme.buttonBackgroundColor}30` 
+                                            : '1px solid transparent',
+                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        transform: activePageIndex === index ? 'translateX(4px)' : 'translateX(0)',
+                                        boxShadow: activePageIndex === index 
+                                            ? `0 4px 12px ${theme.buttonBackgroundColor}20` 
+                                            : '0 2px 4px rgba(0,0,0,0.1)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (activePageIndex !== index) {
+                                            e.target.style.backgroundColor = `${theme.buttonBackgroundColor}08`;
+                                            e.target.style.transform = 'translateX(2px)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (activePageIndex !== index) {
+                                            e.target.style.backgroundColor = 'transparent';
+                                            e.target.style.transform = 'translateX(0)';
+                                        }
+                                    }}
+                                    onClick={() => handleIconClick(index, route.substring(1))}
                                 >
-                                    <div onClick={() => handleIconClick(1, 'your-charts')}>
-                                        <Link to="/your-charts">
-                                            <AiOutlineDotChart />
-                                        </Link>
-                                    </div>
-                                </li>
+                                    {/* Barra di indicazione a sinistra */}
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            left: '0',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: activePageIndex === index ? '4px' : '0',
+                                            height: '60%',
+                                            backgroundColor: theme.buttonBackgroundColor,
+                                            borderRadius: '0 4px 4px 0',
+                                            transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                        }}
+                                    />
+                                    <Link 
+                                        to={route} 
+                                        style={{ 
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            textDecoration: 'none',
+                                            color: activePageIndex === index 
+                                                ? theme.buttonBackgroundColor 
+                                                : theme.textColor,
+                                            fontSize: '20px',
+                                            fontWeight: activePageIndex === index ? '600' : '400',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                    >
+                                        <Icon style={{ 
+                                            fontSize: '22px',
+                                            filter: activePageIndex === index 
+                                                ? `drop-shadow(0 0 4px ${theme.buttonBackgroundColor}40)` 
+                                                : 'none'
+                                        }} />
+                                    </Link>
+                                </div>
                             </Tooltip>
-                            <Tooltip title={languages[language].sidebar.insert} placement="right">
-                                <li
-                                    className={activeIcon === 2 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(2, 'insert-values')}>
-                                        <Link to="/insert-values">
-                                            <HiOutlinePencilAlt />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title={languages[language].sidebar.check} placement="right">
-                                <li
-                                    className={activeIcon === 3 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(3, 'check-prices')}>
-                                        <Link to="/check-prices">
-                                            <AiOutlineFundProjectionScreen />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title={languages[language].sidebar.leaderboard} placement="right">
-                                <li
-                                    className={activeIcon === 4 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(4, 'leaderboard')}>
-                                        <Link to="/leaderboard">
-                                            <AiOutlineTrophy />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-
-                            <Tooltip title={languages[language].sidebar.learn} placement="right">
-                                <li
-                                    className={activeIcon === 5 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(5, 'knowledge')}>
-                                        <Link to="/knowledge">
-                                            <BsBook />
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-                            <Tooltip title={languages[language].sidebar.info} placement="right">
-                                <li
-                                    className={activeIcon === 6 ? "active" : ""}
-                                >
-                                    <div onClick={() => handleIconClick(6, 'info')}>
-                                        <Link to="/info">
-                                                <BsInfoCircle/>
-                                        </Link>
-                                    </div>
-                                </li>
-                            </Tooltip>
-
-                        </ul>
-                    </Links>
+                        ))}
+                    </div>
                 )}
 
                 <Notification theme={theme}>

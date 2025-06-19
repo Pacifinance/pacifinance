@@ -10,11 +10,31 @@ export default function LogoPaci() {
   };
 
   return (
-    <img
-      src={LogoPacifinance}
-      alt="PaciFinance Logo"
-      className="h-16 w-16 cursor-pointer"
-      onClick={handleLogoClick}
-    />
+    <div style={{
+      padding: '8px',
+      borderRadius: '12px',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      cursor: 'pointer'
+    }}
+    onMouseEnter={(e) => {
+      e.target.style.transform = 'translateY(-2px) scale(1.05)';
+      e.target.style.boxShadow = '0 8px 25px rgba(7, 145, 100, 0.2)';
+    }}
+    onMouseLeave={(e) => {
+      e.target.style.transform = 'translateY(0) scale(1)';
+      e.target.style.boxShadow = 'none';
+    }}
+    onClick={handleLogoClick}>
+      <img
+        src={LogoPacifinance}
+        alt="PaciFinance Logo"
+        style={{
+          height: '48px',
+          width: '48px',
+          borderRadius: '8px',
+          transition: 'all 0.3s ease'
+        }}
+      />
+    </div>
   );
 }

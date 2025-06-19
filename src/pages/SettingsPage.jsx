@@ -133,12 +133,16 @@ const SettingsPage = () => {
     };
 
     return (
-        <Section theme={theme}>
-            {!isMobileScreen && <Sidebar />}
-            <StyledSection theme={theme}>
-                <TitleDashboard theme={theme}>
-                    {languages[language].sidebar.settings.title}
-                </TitleDashboard>
+        <div style={{ display: 'flex', height: '100vh' }}>
+            {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={() => {}} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+            
+            <Section theme={theme} style={{ marginLeft: isMobileScreen ? '0' : '6vw', width: '100%' }}>
+                {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={() => {}} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+                
+                <StyledSection theme={theme}>
+                    <TitleDashboard theme={theme} style={{ textAlign: 'center', fontSize: isMobileScreen ? '1.2rem' : '1.5rem' }}>
+                        {languages[language].sidebar.settings.title}
+                    </TitleDashboard>
 
                 {successMessage && (
                     <div
@@ -191,7 +195,7 @@ const SettingsPage = () => {
                         }}
                     >
                         <h3 style={{ marginBottom: "1rem", color: "#333" }}>
-                            Tema e Aspetto
+                            {languages[language].sidebar.settings.themeSection || (language === 'it' ? 'Tema e Aspetto' : 'Theme and Appearance')}
                         </h3>
                         <div
                             style={{
@@ -272,7 +276,7 @@ const SettingsPage = () => {
                         }}
                     >
                         <h3 style={{ marginBottom: "1rem", color: "#333" }}>
-                            Sicurezza
+                            {languages[language].sidebar.settings.securitySection || (language === 'it' ? 'Sicurezza' : 'Security')}
                         </h3>
 
                         <div style={{ marginBottom: "1rem" }}>
@@ -528,7 +532,7 @@ const SettingsPage = () => {
                         }}
                     >
                         <h3 style={{ marginBottom: "1rem", color: "#dc3545" }}>
-                            Zona Pericolosa
+                            {languages[language].sidebar.settings.dangerZone || (language === 'it' ? 'Zona Pericolosa' : 'Danger Zone')}
                         </h3>
                         <MyButton
                             onClick={() =>
@@ -611,8 +615,9 @@ const SettingsPage = () => {
                         </MyButton>
                     </div>
                 </div>
-            </StyledSection>
-        </Section>
+                </StyledSection>
+            </Section>
+        </div>
     );
 };
 

@@ -267,6 +267,7 @@
             "account": {
                 "title": "Il tuo Profilo",
                 "id": "ID utente: ",
+                "userType": "Tipo utente: ",
                 "nationality": "Nazionalità: ",
                 "selectNationality": "Seleziona una nazionalità",
                 "whereWork": "Dove lavori: ",
@@ -376,7 +377,11 @@
                 "privacy": "Modalità privacy",
                 "language": "Cambia Lingua",
                 "deleteAccount": "Elimina account (!)",
-                "saveSettings": "Salva impostazioni"
+                "saveSettings": "Salva impostazioni",
+                "themeSection": "Tema e Aspetto",
+                "securitySection": "Sicurezza",
+                "dangerZone": "Zona Pericolosa",
+                "backToDashboard": "Torna alla Dashboard"
             },
             "logout": "Esci"
         },
@@ -918,6 +923,7 @@
             "account": {
                 "title": "Your Account",
                 "id": "User ID: ",
+                "userType": "User Type: ",
                 "nationality": "Nationality: ",
                 "selectNationality": "Select a nationality",
                 "whereWork": "Where do you work: ",
@@ -1028,7 +1034,11 @@
                 "privacy": "Privacy mode",
                 "language": "Change Language",
                 "deleteAccount": "Delete account (!)",
-                "saveSettings": "Save settings"
+                "saveSettings": "Save settings",
+                "themeSection": "Theme and Appearance",
+                "securitySection": "Security",
+                "dangerZone": "Danger Zone",
+                "backToDashboard": "Back to Dashboard"
             },
             "logout": "Logout"
         },

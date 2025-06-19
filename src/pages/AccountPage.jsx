@@ -1,4 +1,3 @@
-
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, MenuItem } from "@mui/material";
@@ -102,10 +101,10 @@ const AccountPage = () => {
     return (
         <div style={{ display: 'flex', height: '100vh' }}>
             {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
-            
+
             <Section theme={theme} style={{ marginLeft: isMobileScreen ? '0' : '6vw', width: '100%' }}>
                 {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
-                
+
                 <StyledSection theme={theme}>
                     <TitleDashboard theme={theme} style={{ fontSize: isMobileScreen ? '1.2rem' : '1.5rem' }}>
                         {languages[language].sidebar.account.title}
@@ -144,7 +143,7 @@ const AccountPage = () => {
 
                     <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '1.2rem' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
                                     {languages[language].sidebar.account.nationality}
                                 </label>
                             <Select
@@ -173,7 +172,7 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
                                     {languages[language].sidebar.account.whereWork}
                                 </label>
                             <Select
@@ -202,7 +201,7 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
                                     {languages[language].sidebar.account.work}
                                 </label>
                             <Select
@@ -231,7 +230,7 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
                                     {languages[language].sidebar.account.workType}
                                 </label>
                             <Select
@@ -260,7 +259,7 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
                                     {languages[language].sidebar.account.hoursContract}
                                 </label>
                             <Select
@@ -287,7 +286,7 @@ const AccountPage = () => {
                         </div>
 
                         <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
                                     {languages[language].sidebar.account.remoteWork}
                                 </label>
                             <Select

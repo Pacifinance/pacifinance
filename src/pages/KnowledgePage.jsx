@@ -27,7 +27,9 @@ function KnowledgePage() {
   return (
     <Div>
       {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
-      <Knowledge />
+      <div style={{ marginLeft: isMobileScreen ? '0' : '5.5rem', width: '100%' }}>
+        <Knowledge />
+      </div>
       {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
     </Div>
   );

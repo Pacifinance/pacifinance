@@ -1999,13 +1999,6 @@ export const StyledComingSoon = styled.div`
     }
   }
 `;
- {
-      font-size: 1rem;
-      font-weight: normal;
-      text-align: center; /* centra il testo orizzontalmente */
-    }
-  }
-`;
 
 export const slideIn = keyframes`
   0% {

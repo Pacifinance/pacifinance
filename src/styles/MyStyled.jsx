@@ -974,14 +974,10 @@ export const FeaturesSection = styled.section`
   }
 `;
 
-export const Feature = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 export const FeatureIcon = styled.div`
   background-color: ${(props) => (props.theme.iconBackgroundColor)};
-  color: white;  padding: 1em;
+  color: white;
+  padding: 1em;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2014,6 +2010,7 @@ export const StyledDateInput = styled.input`
   font-size: 16px;
 `;
 
+```text
 const CoffeeContainer = styled.div`
   display: flex;
   justify-content: center;

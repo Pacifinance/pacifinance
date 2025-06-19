@@ -30,7 +30,7 @@ export const PageWrapper = styled.div`
 
 export const Section = styled.section `
   font-family: Roboto, sans-serif;
-  margin-left: 6vw;
+  margin-left: 0;
   padding-top: 2em;
   height: 100vh;
   background-color: ${(props) => (props.theme.backgroundColor)};
@@ -1119,8 +1119,8 @@ export const Notification = styled.div`
   }
 
   .account-image-wrapper {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -1132,6 +1132,7 @@ export const Notification = styled.div`
     border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    aspect-ratio: 1;
   }
 
   .account-image {
@@ -1146,8 +1147,8 @@ export const Notification = styled.div`
     font-size: 1.2rem;
 
     .account-image-wrapper {
-      width: 35px;
-      height: 35px;
+      width: 37px;
+      height: 37px;
     }
   }
 `;

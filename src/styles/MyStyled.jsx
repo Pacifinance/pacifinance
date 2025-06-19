@@ -988,7 +988,6 @@ export const FeatureIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-```text
   font-size: 1.2em;
 `;
 

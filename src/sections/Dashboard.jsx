@@ -182,8 +182,12 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
     return (
         <SectionDashboard
             theme={theme}
-            className="font-roboto pt-8 bg-paciGray px-4 md:ml-20 overflow-hidden"
-            style={{ paddingBottom: "2rem" }}
+            className="font-roboto pt-8 bg-paciGray px-4 overflow-hidden"
+            style={{ 
+                paddingBottom: "2rem",
+                maxWidth: "100vw",
+                boxSizing: "border-box"
+            }}
         >
             <TitleDashboard theme={theme} className="ml-20">
                 {languages[language].dashboard.title}

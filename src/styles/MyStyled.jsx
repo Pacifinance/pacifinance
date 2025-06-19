@@ -981,6 +981,7 @@ export const Feature = styled.div`
 
 export const FeatureIcon = styled.div`
   background-color: ${(props) => (props.theme.iconBackgroundColor)};
+```text
   color: white;  padding: 1em;
   border-radius: 50%;
   display: flex;
@@ -1952,33 +1953,33 @@ export const StyledComingSoon = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; /* centra gli elementi orizzontalmente */
+  align-items: center;
   min-height: 100vh;
   background-color: ${themes.light.backgroundColor};
 
   .coming-soon-title {
     font-size: 4rem;
     font-weight: bold;
-    text-align: center; /* centra il testo orizzontalmente */
+    text-align: center;
   }
 
   .coming-soon-subtitle {
     font-size: 1.5rem;
     font-weight: normal;
-    text-align: center; /* centra il testo orizzontalmente */
+    text-align: center;
   }
 
   @media (max-width: 768px) {
     .coming-soon-title {
       font-size: 4rem;
       font-weight: bold;
-      text-align: center; /* centra il testo orizzontalmente */
+      text-align: center;
     }
 
     .coming-soon-subtitle {
       font-size: 1rem;
       font-weight: normal;
-      text-align: center; /* centra il testo orizzontalmente */
+      text-align: center;
     }
   }
 `;
@@ -2016,7 +2017,7 @@ export const StyledDateInput = styled.input`
 
 const CoffeeContainer = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: center;```text
   align-items: center;
   margin: 2rem 0;
 

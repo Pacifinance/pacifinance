@@ -971,7 +971,8 @@ export const FeaturesSection = styled.section`
     margin-top: 25vh;
     gap: 4em; 
     max_width: 100vw;
-  }`
+  }
+`;
 
 export const Feature = styled.div`
   display: flex;
@@ -980,8 +981,7 @@ export const Feature = styled.div`
 
 export const FeatureIcon = styled.div`
   background-color: ${(props) => (props.theme.iconBackgroundColor)};
-  color: white;
-  padding: 1em;
+  color: white;  padding: 1em;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1947,7 +1947,6 @@ export const StyledSelect = styled.select`
   }
 
 `;
-
 
 export const StyledComingSoon = styled.div`
   display: flex;

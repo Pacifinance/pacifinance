@@ -137,7 +137,7 @@ const AccountPage = () => {
                             {languages[language].sidebar.account.title}
                         </TitleSection>
 
-                        <div style={{ marginBottom: '1.5rem', fontSize: isMobileScreen ? '0.9rem' : '1rem', color: '#333' }}>
+                        <div style={{ marginBottom: '1rem', fontSize: isMobileScreen ? '0.9rem' : '1rem', color: '#333' }}>
                             <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.id}:</strong> {isHidden ? '****' : userId}</p>
                             <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.userType}:</strong> {userType}</p>
                         </div>

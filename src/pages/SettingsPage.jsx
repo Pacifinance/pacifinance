@@ -145,7 +145,7 @@ const SettingsPage = () => {
             <Section
                 theme={theme}
                 style={{
-                    marginLeft: isMobileScreen ? "0" : "6vw",
+                    marginLeft: "0",
                     width: "100%",
                 }}
             >

@@ -102,7 +102,7 @@ const AccountPage = () => {
         <div style={{ display: 'flex', height: '100vh' }}>
             {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
 
-            <Section theme={theme} style={{ marginLeft: isMobileScreen ? '0' : '6vw', width: '100%' }}>
+            <Section theme={theme} style={{ marginLeft: '0', width: '100%' }}>
                 {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
 
                 <StyledSection theme={theme}>

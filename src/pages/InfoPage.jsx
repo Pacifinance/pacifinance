@@ -30,11 +30,13 @@ function InfoPage() {
   // }, [])
 
   return (
-    <Div>
+    <div style={{ display: 'flex', height: '100vh' }}>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
-      <Info theme={theme}/>
+      <div style={{ marginLeft: '5.5rem', width: '100%' }}>
+        <Info theme={theme}/>
+      </div>
       {/* <ComingSoon /> */}
-    </Div>
+    </div>
   );
 }
 

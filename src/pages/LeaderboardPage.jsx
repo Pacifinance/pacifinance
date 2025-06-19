@@ -31,11 +31,13 @@ function LeaderboardPage() {
   // }, [])
 
   return (
-    <Div>
+    <div style={{ display: 'flex', height: '100vh' }}>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <Leaderboard theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
+      <div style={{ marginLeft: '5.5rem', width: '100%' }}>
+        <Leaderboard theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
+      </div>
       {/* <ComingSoon /> */}
-    </Div>
+    </div>
   );
 }
 

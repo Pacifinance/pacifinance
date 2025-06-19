@@ -137,8 +137,8 @@ const AccountPage = () => {
                         </TitleSection>
 
                         <div style={{ marginBottom: '1rem', fontSize: isMobileScreen ? '0.9rem' : '1rem', color: '#333' }}>
-                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.id}:</strong> {isHidden ? '****' : userId}</p>
-                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.userType}:</strong> {userType}</p>
+                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.id}</strong> {isHidden ? '****' : userId}</p>
+                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.userType}</strong> {userType}</p>
                         </div>
 
                     <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '1.2rem' }}>
@@ -151,7 +151,7 @@ const AccountPage = () => {
                                 onChange={(event) => {
                                     setUserNationality({key: event.target.value.key, value: event.target.value.label});
                                 }}
-                                style={{ backgroundColor: 'white', width: '100%' }}
+                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -180,7 +180,7 @@ const AccountPage = () => {
                                 onChange={(event) => {
                                     setUserWhereWorks({key: event.target.value.key, value: event.target.value.label});
                                 }}
-                                style={{ backgroundColor: 'white', width: '100%' }}
+                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -209,7 +209,7 @@ const AccountPage = () => {
                                 onChange={(event) => {
                                     setUserJob({key: event.target.value.key, value: event.target.value.label});
                                 }}
-                                style={{ backgroundColor: 'white', width: '100%' }}
+                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -238,7 +238,7 @@ const AccountPage = () => {
                                 onChange={(event) => {
                                     setUserJobType({key: event.target.value.key, value: event.target.value.label});
                                 }}
-                                style={{ backgroundColor: 'white', width: '100%' }}
+                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -267,7 +267,7 @@ const AccountPage = () => {
                                 onChange={(event) => {
                                     setUserWorkTime({key: event.target.value.key, value: event.target.value.label});
                                 }}
-                                style={{ backgroundColor: 'white', width: '100%' }}
+                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") return `${languages[language].sidebar.account.selectHoursContract}`;
@@ -294,7 +294,7 @@ const AccountPage = () => {
                                 onChange={(event) => {
                                     setUserRemoteType({key: event.target.value.key, value: event.target.value.label});
                                 }}
-                                style={{ backgroundColor: 'white', width: '100%' }}
+                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") return `${languages[language].sidebar.account.selectRemoteWork}`;

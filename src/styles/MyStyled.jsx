@@ -12,6 +12,7 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 // UNUSED STYLED COMPONENTS (commented out for future cleanup)
 export const PageWrapper = styled.div`
@@ -975,7 +976,7 @@ export const FeaturesSection = styled.section`
     margin-left: 5vw;
     margin-top: 25vh;
     gap: 4em; 
-    max-width: 100vw;
+    max_width: 100vw;
   }`
 
 export const Feature = styled.div`

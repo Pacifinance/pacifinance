@@ -2093,7 +2093,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         </MuiCustomDialog>
                     )}
                 </Notification>
-
+            
                 {!isMobileScreen && (
                 <ToggleButton
                     title={languages[language].sidebar.settings.privacy}

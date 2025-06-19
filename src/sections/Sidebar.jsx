@@ -99,6 +99,18 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
+    // Chiudi il dropdown quando si clicca fuori
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showDropdown && !event.target.closest('.account-container') && !event.target.closest('.dropdown-menu')) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showDropdown]);
+
     const fetchData = async () => {
 
         if (userData) {
@@ -680,9 +692,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     <DropdownContainer theme={theme}> 
                         {showDropdown && (
                             <div className="dropdown-menu" style={{
-                                position: 'fixed',
-                                top: '4rem',
-                                right: '1rem',
+                                position: 'absolute',
+                                top: '50px',
+                                left: '-150px',
                                 backgroundColor: theme.backgroundColor,
                                 borderRadius: '12px',
                                 padding: '12px',

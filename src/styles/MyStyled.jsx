@@ -1045,6 +1045,9 @@ export const DropdownContainer = styled.div`
   position: relative;
   margin-bottom: 2em;
   z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   .dropdown-header {
     cursor: pointer;
@@ -1052,30 +1055,34 @@ export const DropdownContainer = styled.div`
 
   .dropdown-menu {
     position: absolute;
-    top: 80%;
-    left: 2em;
-    width: 10em;
-    background-color: #fff;
-    border: 0.1em solid #ccc;
-    border-radius: 0.2em;
-    padding: 0.4em;
-    box-shadow: 0em 0.1em 0.2em rgba(0, 0, 0, 0.1);
+    top: 50px;
+    left: -150px;
+    width: 200px;
+    background-color: ${({ theme }) => theme.backgroundColor};
+    border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     z-index: 10001;
-
   }
 
   .dropdown-option {
-    padding: 0.3em;
+    padding: 0.75rem;
     cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    color: ${({ theme }) => theme.textColor};
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
   }
 
   .dropdown-option:hover {
-    background-color: #f5f5f5;
-  }
-
-  .dropdown-option.selected {
-    background-color: #007bff;
-    color: #fff;
+    background-color: ${({ theme }) => theme.buttonBackgroundColor};
+    color: white;
+    transform: scale(1.02);
   }
 
   .dropdown-option.logout {
@@ -1083,11 +1090,15 @@ export const DropdownContainer = styled.div`
     color: #dc3545;
   }
 
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
+  @media (max-width: 768px) {
+    .dropdown-menu {
+      position: fixed;
+      top: 4rem;
+      right: 1rem;
+      left: auto;
+      width: 180px;
+    }
+  }
 `;
 
 export const Notification = styled.div`
@@ -1981,7 +1992,13 @@ export const StyledComingSoon = styled.div`
       text-align: center; /* centra il testo orizzontalmente */
     }
 
-    .coming-soon-subtitle<replit_final_file>
+    .coming-soon-subtitle {
+      font-size: 1rem;
+      font-weight: normal;
+      text-align: center; /* centra il testo orizzontalmente */
+    }
+  }
+`;
  {
       font-size: 1rem;
       font-weight: normal;

@@ -262,7 +262,7 @@
             "insert": "Inserimento dati",
             "check": "Controlla i mercati",
             "leaderboard": "Classifica",
-            "learn": "Conoscenze",
+            "knowledge": "Conoscenze",
             "info": "Info",
             "account": {
                 "title": "Il tuo Profilo",
@@ -1142,7 +1142,7 @@
             "insert": "Insert data",
             "check": "Check markets",
             "leaderboard": "Leaderboard",
-            "learn": "Learn",
+            "knowledge": "Knowledge",
             "info": "Info",
             "account": {
                 "title": "Your Account",

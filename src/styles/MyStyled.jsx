@@ -980,3 +980,53 @@ export const FeaturesSection = styled.section`
 
 export const Feature = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  background-color: ${(props) => props.theme.backgroundColor};
+  color: ${(props) => props.theme.textColor};
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(7, 145, 100, 0.15);
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: ${(props) => props.theme.buttonBackgroundColor};
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: ${(props) => props.theme.buttonBackgroundColor};
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+    
+    p {
+      font-size: 0.9rem;
+    }
+    
+    .icon {
+      font-size: 2.5rem;
+    }
+  }
+`;

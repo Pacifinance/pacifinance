@@ -186,7 +186,8 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
             style={{ 
                 paddingBottom: "2rem",
                 maxWidth: "100vw",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                paddingTop: isMobileScreen ? "90px" : "2rem"
             }}
         >
             <TitleDashboard theme={theme} className="ml-20">

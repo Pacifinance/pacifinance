@@ -646,12 +646,138 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     }
 
     return (
-        // <section className="font-roboto fixed top-0 md:left-0 bg-paciGray h-screen w-5 flex flex-row md:flex-col items-center justify-between p-4 md:p-8 gap-8 sm:sticky sm:mr-8 sm:w-screen sm:h-20 sm:gap-4">
-        <SidebarSection theme={theme}>
-            <Top>
+        <SidebarSection theme={theme} style={{ 
+            ...(isMobileScreen && {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                width: '100%',
+                height: '70px',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '0 1rem',
+                zIndex: 1001
+            })
+        }}>
+            <Top style={{
+                ...(isMobileScreen && {
+                    width: '100%',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                })
+            }}>
                 <LogoPaci />
                 {isMobileScreen ? (
-                    <HamburgerMenu />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <Notification theme={theme}>
+                            <div className="account-container">
+                                <div className="account-image-wrapper">
+                                    <img
+                                        src={avatarImage}
+                                        title={languages[language].sidebar.account.title}
+                                        width="40px"
+                                        height="40px"
+                                        alt="Account"
+                                        className="account-image"
+                                        onClick={() => setShowDropdown(!showDropdown)}
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        style={{
+                                            borderRadius: '50%',
+                                            cursor: 'pointer'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <DropdownContainer theme={theme}>
+                                {showDropdown && (
+                                    <div
+                                        className="dropdown-menu"
+                                        style={{
+                                            position: 'fixed',
+                                            top: '70px',
+                                            right: '60px',
+                                            backgroundColor: theme.backgroundColor,
+                                            borderRadius: '12px',
+                                            padding: '12px',
+                                            minWidth: '200px',
+                                            border: `2px solid ${theme.buttonBackgroundColor}`,
+                                            boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+                                            zIndex: 10002,
+                                        }}
+                                    >
+                                        <button
+                                            className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                                            style={{
+                                                color: theme.textColor,
+                                                backgroundColor: "transparent",
+                                                border: "none",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                                e.target.style.color = "white";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.backgroundColor = "transparent";
+                                                e.target.style.color = theme.textColor;
+                                            }}
+                                            onClick={() => {
+                                                navigate("/account");
+                                                setShowDropdown(false);
+                                            }}
+                                        >
+                                            {languages[language].sidebar.account.title}
+                                        </button>
+                                        <button
+                                            className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                                            style={{
+                                                color: theme.textColor,
+                                                backgroundColor: "transparent",
+                                                border: "none",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                                e.target.style.color = "white";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.backgroundColor = "transparent";
+                                                e.target.style.color = theme.textColor;
+                                            }}
+                                            onClick={() => {
+                                                navigate("/settings");
+                                                setShowDropdown(false);
+                                            }}
+                                        >
+                                            {languages[language].sidebar.settings.title}
+                                        </button>
+                                        <button
+                                            data-umami-event="logoutButton"
+                                            className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full"
+                                            style={{
+                                                color: theme.textColor,
+                                                backgroundColor: "transparent",
+                                                border: "none",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                                e.target.style.color = "white";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.backgroundColor = "transparent";
+                                                e.target.style.color = theme.textColor;
+                                            }}
+                                            onClick={handleLogout}
+                                        >
+                                            {languages[language].sidebar.logout}
+                                        </button>
+                                    </div>
+                                )}
+                            </DropdownContainer>
+                        </Notification>
+                        <HamburgerMenu />
+                    </div>
                 ) : (
                     <div
                         style={{
@@ -809,117 +935,108 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     </div>
                 )}
 
-                <Notification theme={theme}>
-                    {/* <AiOutlineBell /> */}
-                    <div className="account-container">
-                        <div className="account-image-wrapper">
-                            <img
-                                src={avatarImage}
-                                title={
-                                    languages[language].sidebar.account.title
-                                }
-                                width="100%"
-                                height="100%"
-                                alt="Account"
-                                className="account-image"
-                                onClick={() => setShowDropdown(!showDropdown)}
-                                onContextMenu={(e) => e.preventDefault()}
-                            />
-                        </div>
-                    </div>
-                    {/* <div className="dropdown-header" onClick={() => setShowDropdown(!showDropdown)}>
-                            <AiOutlineCaretDown />
-                        </div> */}
-                    <DropdownContainer theme={theme}>
-                        {showDropdown && (
-                            <div
-                                className="dropdown-menu"
-                                style={{
-                                    position: "absolute",
-                                    top: "50px",
-                                    left: "60px",
-                                    backgroundColor: theme.backgroundColor,
-                                    borderRadius: "12px",
-                                    padding: "12px",
-                                    minWidth: "200px",
-                                    border: `2px solid ${theme.buttonBackgroundColor}`,
-                                    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
-                                    zIndex: 10001,
-                                }}
-                            >
-                                <button
-                                    className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
-                                    style={{
-                                        color: theme.textColor,
-                                        backgroundColor: "transparent",
-                                        border: "none",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor =
-                                            theme.buttonBackgroundColor;
-                                        e.target.style.color = "white";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor =
-                                            "transparent";
-                                        e.target.style.color = theme.textColor;
-                                    }}
-                                    onClick={() => {
-                                        navigate("/account");
-                                        setShowDropdown(false);
-                                    }}
-                                >
-                                    {languages[language].sidebar.account.title}
-                                </button>
-                                <button
-                                    className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
-                                    style={{
-                                        color: theme.textColor,
-                                        backgroundColor: "transparent",
-                                        border: "none",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor =
-                                            theme.buttonBackgroundColor;
-                                        e.target.style.color = "white";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor =
-                                            "transparent";
-                                        e.target.style.color = theme.textColor;
-                                    }}
-                                    onClick={() => {
-                                        navigate("/settings");
-                                        setShowDropdown(false);
-                                    }}
-                                >
-                                    {languages[language].sidebar.settings.title}
-                                </button>
-                                <button
-                                    data-umami-event="logoutButton"
-                                    className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full"
-                                    style={{
-                                        color: theme.textColor,
-                                        backgroundColor: "transparent",
-                                        border: "none",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor =
-                                            theme.buttonBackgroundColor;
-                                        e.target.style.color = "white";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor =
-                                            "transparent";
-                                        e.target.style.color = theme.textColor;
-                                    }}
-                                    onClick={handleLogout}
-                                >
-                                    {languages[language].sidebar.logout}
-                                </button>
+                {!isMobileScreen && (
+                    <Notification theme={theme}>
+                        <div className="account-container">
+                            <div className="account-image-wrapper">
+                                <img
+                                    src={avatarImage}
+                                    title={languages[language].sidebar.account.title}
+                                    width="100%"
+                                    height="100%"
+                                    alt="Account"
+                                    className="account-image"
+                                    onClick={() => setShowDropdown(!showDropdown)}
+                                    onContextMenu={(e) => e.preventDefault()}
+                                />
                             </div>
-                        )}
-                    </DropdownContainer>
+                        </div>
+                        <DropdownContainer theme={theme}>
+                            {showDropdown && (
+                                <div
+                                    className="dropdown-menu"
+                                    style={{
+                                        position: "absolute",
+                                        top: "50px",
+                                        left: "60px",
+                                        backgroundColor: theme.backgroundColor,
+                                        borderRadius: "12px",
+                                        padding: "12px",
+                                        minWidth: "200px",
+                                        border: `2px solid ${theme.buttonBackgroundColor}`,
+                                        boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
+                                        zIndex: 10001,
+                                    }}
+                                >
+                                    <button
+                                        className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                                        style={{
+                                            color: theme.textColor,
+                                            backgroundColor: "transparent",
+                                            border: "none",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                            e.target.style.color = "white";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.backgroundColor = "transparent";
+                                            e.target.style.color = theme.textColor;
+                                        }}
+                                        onClick={() => {
+                                            navigate("/account");
+                                            setShowDropdown(false);
+                                        }}
+                                    >
+                                        {languages[language].sidebar.account.title}
+                                    </button>
+                                    <button
+                                        className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                                        style={{
+                                            color: theme.textColor,
+                                            backgroundColor: "transparent",
+                                            border: "none",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                            e.target.style.color = "white";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.backgroundColor = "transparent";
+                                            e.target.style.color = theme.textColor;
+                                        }}
+                                        onClick={() => {
+                                            navigate("/settings");
+                                            setShowDropdown(false);
+                                        }}
+                                    >
+                                        {languages[language].sidebar.settings.title}
+                                    </button>
+                                    <button
+                                        data-umami-event="logoutButton"
+                                        className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full"
+                                        style={{
+                                            color: theme.textColor,
+                                            backgroundColor: "transparent",
+                                            border: "none",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                            e.target.style.color = "white";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.backgroundColor = "transparent";
+                                            e.target.style.color = theme.textColor;
+                                        }}
+                                        onClick={handleLogout}
+                                    >
+                                        {languages[language].sidebar.logout}
+                                    </button>
+                                </div>
+                            )}
+                        </DropdownContainer>
+                    </Notification>
+                )}
                     {showPopup && (
                         <div className="popup-container">
                             <div className="popup-window">

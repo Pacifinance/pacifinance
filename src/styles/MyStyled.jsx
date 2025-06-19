@@ -981,7 +981,6 @@ export const Feature = styled.div`
 
 export const FeatureIcon = styled.div`
   background-color: ${(props) => (props.theme.iconBackgroundColor)};
-```text
   color: white;  padding: 1em;
   border-radius: 50%;
   display: flex;
@@ -2017,10 +2016,12 @@ export const StyledDateInput = styled.input`
 
 const CoffeeContainer = styled.div`
   display: flex;
-  justify-content: center;```text
+  justify-content: center;
   align-items: center;
   margin: 2rem 0;
 
+  ```python
+// Update Top component for mobile responsiveness
   @media (max-width: 768px) {
     margin: 1.5rem 0;
   }

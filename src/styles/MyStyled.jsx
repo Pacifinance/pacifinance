@@ -44,18 +44,12 @@ export const Section = styled.section `
   }
 `;
 
-export const SectionDashboard = styled.section `
-  // font-family: Roboto, sans-serif;
-  // margin-left: 6vw;
-  // padding-top: 2em;
-  // height: 100%;
-  background-color: ${(props) => (props.theme.backgroundColor)};
-
-  // /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  // @media (max-width: 768px) {
-  //   margin-left: 0vw;
-  //   height: 300vh;
-  // }
+export const SectionDashboard = styled.section`
+    font-family: Roboto, sans-serif;
+    background-color: ${(props) => (props.theme.backgroundColor)};
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: auto;
 `;
 
 export const MyGenericModal = styled.div`

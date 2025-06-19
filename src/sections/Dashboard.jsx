@@ -183,6 +183,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
         <SectionDashboard
             theme={theme}
             className="font-roboto pt-8 bg-paciGray px-4 md:ml-20 overflow-hidden"
+            style={{ paddingBottom: "2rem" }}
         >
             <TitleDashboard theme={theme} className="ml-20">
                 {languages[language].dashboard.title}
@@ -586,30 +587,82 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             {isAllZero ? (
                                 <div
                                     style={{
-                                        // display: 'flex',
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                         justifyContent: "center",
-                                        marginTop: "5em",
                                         alignItems: "center",
-                                        width: "80%",
-                                        height: "100%",
-                                        backgroundColor: "transparent", // Imposta il colore di sfondo trasparente
-                                        fontSize: "18px", // Imposta la dimensione del carattere desiderata
+                                        width: "100%",
+                                        height: "300px",
+                                        backgroundColor: "rgba(7, 145, 100, 0.05)",
+                                        borderRadius: "16px",
+                                        border: "2px dashed #079164",
+                                        padding: "2rem",
+                                        marginTop: "2rem",
+                                        textAlign: "center"
                                     }}
                                 >
-                                    <h1 style={{ color: "#079164" }}>
+                                    <div style={{
+                                        backgroundColor: "#079164",
+                                        borderRadius: "50%",
+                                        width: "80px",
+                                        height: "80px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        marginBottom: "1.5rem"
+                                    }}>
+                                        <HiOutlinePencilAlt
+                                            style={{ 
+                                                fontSize: "36px",
+                                                color: "white"
+                                            }}
+                                        />
+                                    </div>
+                                    <h2 style={{ 
+                                        color: "#079164",
+                                        fontSize: "1.5rem",
+                                        fontWeight: "600",
+                                        marginBottom: "0.5rem",
+                                        margin: 0
+                                    }}>
                                         {languages[language].dashboard.noData}
-                                    </h1>{" "}
-                                    <p
+                                    </h2>
+                                    <p style={{
+                                        color: theme.textColor,
+                                        fontSize: "1rem",
+                                        marginBottom: "2rem",
+                                        lineHeight: "1.5",
+                                        opacity: 0.8
+                                    }}
                                         dangerouslySetInnerHTML={{
                                             __html: languages[language]
                                                 .dashboard.noData2,
                                         }}
-                                    ></p>{" "}
-                                    <p>
-                                        <HiOutlinePencilAlt
-                                            style={{ fontSize: "30px" }}
-                                        />
-                                    </p>
+                                    ></p>
+                                    <Link 
+                                        to="/insert-values"
+                                        style={{
+                                            backgroundColor: "#079164",
+                                            color: "white",
+                                            padding: "12px 24px",
+                                            borderRadius: "8px",
+                                            textDecoration: "none",
+                                            fontSize: "1rem",
+                                            fontWeight: "500",
+                                            transition: "all 0.3s ease",
+                                            boxShadow: "0 4px 12px rgba(7, 145, 100, 0.3)"
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.transform = 'translateY(-2px)';
+                                            e.target.style.boxShadow = '0 6px 20px rgba(7, 145, 100, 0.4)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.transform = 'translateY(0)';
+                                            e.target.style.boxShadow = '0 4px 12px rgba(7, 145, 100, 0.3)';
+                                        }}
+                                    >
+                                        {languages[language].dashboard.updateValue || "Inserisci i tuoi dati"}
+                                    </Link>
                                 </div>
                             ) : (
                                 <PieChart

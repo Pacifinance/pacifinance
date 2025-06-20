@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { TitleDashboard, Section } from '../styles/MyStyled';
-import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StyledRankingPage, CenteredRankings, RankingsTitle } from '../styles/MyStyled';
+import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StandardPageTitleGreen, StyledRankingPage, CenteredRankings } from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 import languages from '../data/languages.json';
@@ -12,11 +12,11 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
     const safeTitle = title || '';
     // Verify if there is a title for expenses
     const isExpenseTitle = safeTitle.toLowerCase().includes("uscite") || safeTitle.toLowerCase().includes("expenses");
-  
+
     // Verify if there are rankings > 50 (top 50%)
     const isRankingsAbove50 = rankings > 50;
     const isRankingBelow20 = rankings < 20;
-  
+
     // Calculate the text to display
     let textToDisplay = "";
     if (!isNaN(parseFloat(rankings))) {
@@ -42,16 +42,16 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
           } else {
             textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
           }
-          
+
         }
       }
     } else {
         // Set the text to display if rankings is not a number
         textToDisplay = languages[language].leaderboard.noRank;
     }
-  
+
     const areNotEmpty = (typeof rankings === 'string' && rankings.length > 0) || (typeof rankings === 'number' && rankings > 0);
-  
+
     return (
       <StyledRankingsSection theme={theme}>
         <h2>
@@ -93,7 +93,7 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
               setBalanceSimilarUsersRank(userData ? userData.percentageRankOnBalanceSimilar : []);
               setIncomeSimilarUsersRank(userData ? userData.percentageRankOnIncomesSimilar : []);
               setExpenseSimilarUsersRank(userData ? userData.percentageRankOnExpensesSimilar : []);
-  
+
           } catch (error) {
             console.error('Error:', error);
           }
@@ -103,16 +103,18 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
     useEffect(() => {
         fetchData();
       }, [userData]);
-    
+
       const formattedPreMonthDate = userData?.preMonthDate
           ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
           : "";
-    
+
 
     return (
         <Section theme={theme}>
             <div className="grid"> 
-                    <TitleDashboard theme={theme}>{languages[language].leaderboard.title}</TitleDashboard>
+                <StandardPageTitleGreen theme={theme}>
+                    {languages[language].leaderboard.title}
+                </StandardPageTitleGreen>
                     {/* <RankingComponent /> */}
                     <StyledRankingPage theme={theme}>
                         {/* <MonthYearSelector
@@ -129,13 +131,13 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                               </span>
                             )}
                         </StyledLabel>
-                        <RankingsTitle>{languages[language].leaderboard.generalRanking} </RankingsTitle>
+                        {/* <RankingsTitle>{languages[language].leaderboard.generalRanking} </RankingsTitle> */}
                         <CenteredRankings theme={theme}>
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={expenseRank} isHidden={isHidden} />
                         </CenteredRankings>
-                        <RankingsTitle>{languages[language].leaderboard.similarRanking} </RankingsTitle >
+                        {/* <RankingsTitle>{languages[language].leaderboard.similarRanking} </RankingsTitle > */}
                         <CenteredRankings theme={theme}>
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />
@@ -146,5 +148,5 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
         </Section>
     )
 }
-  
+
 export default Leaderboard;

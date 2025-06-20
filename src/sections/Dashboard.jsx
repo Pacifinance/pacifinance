@@ -30,13 +30,11 @@ import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import languages from "../data/languages.json";
 
 import {
-    TitleDashboard,
-    SectionDashboard,
-    SectionADashboard,
-    CapitalValue,
+    StandardPageTitle,
     UpperSection,
     LowerSection,
-    GraphsSection,
+    SectionDashboard,
+    TitleLastAdds,
 } from "../styles/MyStyled";
 
 function Dashboard({ theme, userData, isHidden, CustomTick }) {
@@ -190,9 +188,9 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                 paddingTop: isMobileScreen ? "90px" : "2rem"
             }}
         >
-            <TitleDashboard theme={theme} className="ml-20">
+            <StandardPageTitle theme={theme}>
                 {languages[language].dashboard.title}
-            </TitleDashboard>
+            </StandardPageTitle>
             <CapitalValue theme={theme}>
                 {languages[language].dashboard.totalBalance}{" "}
                 <span style={{ color: primaryColor }}>

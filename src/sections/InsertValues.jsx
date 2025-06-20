@@ -7,7 +7,7 @@ import { useToast } from "../contexts/ToastContext";
 import {
   MySectionButton,
   StyledSection,
-  ModifiedTitleDashboard,
+  StandardPageTitle,
 } from "../styles/MyStyled";
 import BalanceSection from "../components/BalanceSection";
 import IncomeSection from "../components/IncomeSection";
@@ -605,9 +605,9 @@ export default function InsertValue({
 
   return (
     <StyledSection theme={theme}>
-      <ModifiedTitleDashboard theme={theme}>
+      <StandardPageTitle theme={theme}>
         {languages[language].insert.title}
-      </ModifiedTitleDashboard>
+      </StandardPageTitle>
       <ButtonGroup aria-label="outlined primary button group">
         <MySectionButton
           theme={theme}

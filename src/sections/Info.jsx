@@ -3,12 +3,12 @@ import { TitleDashboard, Section } from "../styles/MyStyled";
 import {
     StyledInfoPage,
     CenteredInfo,
-    InfoTitle,
     FAQContainer,
     FAQItem,
     FAQQuestionButton,
     FAQAnswerContainer,
     FAQAnswerContent,
+    StandardPageTitleGreen,
 } from "../styles/MyStyled";
 import languages from "../data/languages.json";
 import { LanguageContext } from "../contexts/LanguageContext";
@@ -153,9 +153,9 @@ function Info({ theme }) {
                 </TitleDashboard>
 
                 <StyledInfoPage theme={theme}>
-                    <InfoTitle theme={theme}>
+                    <StandardPageTitleGreen theme={theme}>
                         {languages[language].info.title2}
-                    </InfoTitle>
+                    </StandardPageTitleGreen>
 
                     <CenteredInfo theme={theme}>
                         <InfoText theme={theme}>

@@ -30,7 +30,7 @@ export default function StatsCharts() {
     const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate
       ? new Date(userData.preYearSameMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
       : "";
-    
+
 
     const handlePageChange = (page) => {
         setActivePage(page);
@@ -39,7 +39,7 @@ export default function StatsCharts() {
     const renderPage = () => {
         if (activePage === "statsBilancio") {
           return (
-            
+
             <>
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph}</SecondaryTitle>
                 <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
@@ -48,7 +48,7 @@ export default function StatsCharts() {
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.detailedVision}</SecondaryTitle>
                 <BalancesStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
                 <BalancesStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
-                
+
             </>
           );
         } else if (activePage === "statsIncomesOutflows") {
@@ -63,7 +63,7 @@ export default function StatsCharts() {
                 <InOutStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleDetailsYear} - {formattedPreYearSameMonthDate}</SecondaryTitle>
                 <InOutStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
-                
+
             </>
           );
         }
@@ -99,5 +99,3 @@ export default function StatsCharts() {
         </StyledSectionStats>
       );
 }
-
-

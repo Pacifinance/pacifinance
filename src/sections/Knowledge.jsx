@@ -1,4 +1,3 @@
-
 import React, { useContext, useState } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -17,6 +16,7 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import styled from 'styled-components';
+import { StandardPageTitle, StyledSection } from '../styles/MyStyled';
 
 const KnowledgeContainer = styled.div`
   flex: 1;
@@ -73,7 +73,7 @@ const SectionCard = styled.div`
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
@@ -177,7 +177,7 @@ const ListItem = styled.li`
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -192,7 +192,7 @@ const BackButton = styled.button`
   cursor: pointer;
   font-size: 1rem;
   margin-bottom: 1rem;
-  
+
   &:hover {
     opacity: 0.9;
   }
@@ -244,13 +244,13 @@ const Knowledge = () => {
             {value.title}
             {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </SubsectionTitle>
-          
+
           {isExpanded && (
             <div>
               <p style={{ marginBottom: '1rem', lineHeight: '1.6' }}>
                 {value.description}
               </p>
-              
+
               {value.pros && value.cons && (
                 <ProsCons isMobile={isMobileScreen}>
                   <ProsConsBox type="pros">
@@ -267,7 +267,7 @@ const Knowledge = () => {
                   </ProsConsBox>
                 </ProsCons>
               )}
-              
+
               {value.tips && (
                 <List>
                   {value.tips.map((tip, index) => (
@@ -278,7 +278,7 @@ const Knowledge = () => {
                   ))}
                 </List>
               )}
-              
+
               {value.strategies && (
                 <List>
                   {value.strategies.map((strategy, index) => (
@@ -289,7 +289,7 @@ const Knowledge = () => {
                   ))}
                 </List>
               )}
-              
+
               {value.steps && (
                 <List>
                   {value.steps.map((step, index) => (
@@ -313,7 +313,7 @@ const Knowledge = () => {
                   ))}
                 </List>
               )}
-              
+
               {value.methods && (
                 <div>
                   {Object.entries(value.methods).map(([methodKey, methodValue]) => (
@@ -326,7 +326,7 @@ const Knowledge = () => {
                   ))}
                 </div>
               )}
-              
+
               {value.breakdown && (
                 <div>
                   {Object.entries(value.breakdown).map(([breakdownKey, breakdownValue]) => (
@@ -339,7 +339,7 @@ const Knowledge = () => {
                   ))}
                 </div>
               )}
-              
+
               {value.principles && (
                 <List>
                   {value.principles.map((principle, index) => (
@@ -350,7 +350,7 @@ const Knowledge = () => {
                   ))}
                 </List>
               )}
-              
+
               {value.risk_levels && (
                 <List>
                   {value.risk_levels.map((level, index) => (
@@ -370,7 +370,7 @@ const Knowledge = () => {
                   ))}
                 </List>
               )}
-              
+
               {(value.short_term || value.medium_term || value.long_term) && (
                 <div>
                   {value.short_term && (
@@ -393,7 +393,7 @@ const Knowledge = () => {
                   )}
                 </div>
               )}
-              
+
               {(value.conservative || value.moderate || value.aggressive) && (
                 <div>
                   {value.conservative && (
@@ -416,7 +416,7 @@ const Knowledge = () => {
                   )}
                 </div>
               )}
-              
+
               {(value.frequency || value.trigger || value.method) && (
                 <div>
                   {value.frequency && (
@@ -439,7 +439,7 @@ const Knowledge = () => {
                   )}
                 </div>
               )}
-              
+
               {value.example && (
                 <div style={{ 
                   background: theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : '#e8f5e8', 
@@ -451,7 +451,7 @@ const Knowledge = () => {
                   <div style={{ marginTop: '0.5rem', fontFamily: 'monospace' }}>{value.example}</div>
                 </div>
               )}
-              
+
               {(value.rule_25 || value.withdrawal_rate || value.protection) && (
                 <div>
                   {value.rule_25 && (
@@ -488,7 +488,7 @@ const Knowledge = () => {
         <BackButton theme={theme} onClick={() => setActiveSection(null)}>
           ← {language === 'it' ? 'Torna alle sezioni' : 'Back to sections'}
         </BackButton>
-        
+
         <ContentArea theme={theme}>
           <ContentTitle theme={theme}>
             {sectionIcons[activeSection]}
@@ -497,7 +497,7 @@ const Knowledge = () => {
           <p style={{ fontSize: '1.1rem', opacity: 0.8, marginBottom: '2rem' }}>
             {section.subtitle}
           </p>
-          
+
           {renderContent(section.content, activeSection)}
         </ContentArea>
       </KnowledgeContainer>
@@ -507,13 +507,13 @@ const Knowledge = () => {
   return (
     <KnowledgeContainer theme={theme} isMobile={isMobileScreen}>
       <Header>
-        <Title theme={theme} isMobile={isMobileScreen}>
+        <StandardPageTitle theme={theme}>
           {knowledge.title}
-        </Title>
+        </StandardPageTitle>
         <Subtitle isMobile={isMobileScreen}>
           {knowledge.subtitle}
         </Subtitle>
-        
+
         <Disclaimer>
           <InfoIcon style={{ fontSize: '20px', marginTop: '2px' }} />
           <span>{knowledge.disclaimer}</span>

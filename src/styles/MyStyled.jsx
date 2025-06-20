@@ -112,6 +112,45 @@ export const MyCloseButton = styled.span`
   cursor: pointer;
 `;
 
+// Standard Page Title - White/Text Color
+export const StandardPageTitle = styled.h1`
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    color: ${(props) => (props.theme.textColor)};
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+    text-align: center;
+    margin: 2rem auto;
+    margin-bottom: 2rem;
+    max-width: 1200px;
+
+    @media (max-width: 768px) {
+      margin: 1.5rem auto;
+      margin-bottom: 1.5rem;
+    }
+`;
+
+// Standard Page Title - Green/Primary Color
+export const StandardPageTitleGreen = styled.h1`
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    color: ${(props) => (props.theme.buttonBackgroundColor)};
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+    text-align: center;
+    margin: 2rem auto;
+    margin-bottom: 2rem;
+    max-width: 1200px;
+
+    @media (max-width: 768px) {
+      margin: 1.5rem auto;
+      margin-bottom: 1.5rem;
+    }
+`;
+
+// Deprecated - use StandardPageTitle instead
 export const TitleDashboard = styled.h1 `
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
     color: ${(props) => (props.theme.textColor)};
@@ -127,6 +166,7 @@ export const TitleDashboard = styled.h1 `
     }
 `;
 
+// Deprecated - use StandardPageTitle instead
 export const TitleStatsCharts = styled.h1 `
   color: ${(props) => (props.theme.textColor)};
   font-size: 2rem;
@@ -508,7 +548,8 @@ export const SignUp = styled.div`
     margin-top: 1.5em;
   `;
 
-  export const ModifiedTitleDashboard = styled(TitleDashboard)`
+  // Deprecated - use StandardPageTitle instead
+export const ModifiedTitleDashboard = styled(TitleDashboard)`
     font-size: 2rem;
     font-weight: bold;
     text-align: left; 
@@ -1875,6 +1916,7 @@ export const CenteredInfo = styled.div`
   }
 `;
 
+// Deprecated - use StandardPageTitleGreen instead
 export const RankingsTitle = styled.h1`
   text-align: center;
   color: ${themes.dark.buttonBackgroundColor};
@@ -1884,6 +1926,7 @@ export const RankingsTitle = styled.h1`
   margin-bottom: 1.5em;
 `;
 
+// Deprecated - use StandardPageTitleGreen instead
 export const InfoTitle = styled.h1`
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   text-align: center;

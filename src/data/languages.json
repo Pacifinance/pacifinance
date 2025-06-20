@@ -258,7 +258,7 @@
         },
         "sidebar": {
             "dashboard": "Dashboard",
-            "graphs": "I tuoi grafici",
+            "graphs": "Grafici e Statistiche",
             "insert": "Inserimento dati",
             "check": "Controlla i mercati",
             "leaderboard": "Classifica",
@@ -396,6 +396,7 @@
             "noData2": "Inserire i valori <br></br>cliccando qui: "
         },
         "graphs": {
+            "title": "Grafici e Statistiche",
             "Title": "Le tue statistiche",
             "statsBalance": {
                 "title": "Statistiche bilancio",
@@ -1138,7 +1139,7 @@
         },
         "sidebar": {
             "dashboard": "Dashboard",
-            "graphs": "Your graphs",
+            "graphs": "Charts & Statistics",
             "insert": "Insert data",
             "check": "Check markets",
             "leaderboard": "Leaderboard",
@@ -1279,6 +1280,7 @@
         },
 
         "graphs": {
+            "title": "Charts & Statistics", 
             "Title": "Your statistics",
             "statsBalance": {
                 "title": "Balance statistics",

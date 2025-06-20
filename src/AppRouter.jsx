@@ -14,9 +14,7 @@ import CheckPrices from "./pages/CheckPricesPage";
 import Leaderboard from "./pages/LeaderboardPage";
 import Knowledge from "./pages/KnowledgePage";
 import Info from "./pages/InfoPage";
-import SignInPage from "./pages/SignInPage";
 import LandingPage from "./pages/LandingPage";
-import SignUpPage from "./pages/SignUpPage";
 import AuthPage from "./pages/AuthPage";
 import FAQPage from "./pages/FAQPage";
 import PricingPage from "./pages/PricingPage";
@@ -113,22 +111,7 @@ function AppRouter() {
           </PublicRoute>
         }
       />
-      <Route
-        path="/signin"
-        element={
-          <PublicRoute>
-            <SignInPage />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          <PublicRoute>
-            <SignUpPage />
-          </PublicRoute>
-        }
-      />
+      
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

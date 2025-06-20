@@ -35,6 +35,8 @@ import {
     LowerSection,
     SectionDashboard,
     TitleLastAdds,
+    CapitalValue,
+    GraphsSection,
 } from "../styles/MyStyled";
 
 function Dashboard({ theme, userData, isHidden, CustomTick }) {

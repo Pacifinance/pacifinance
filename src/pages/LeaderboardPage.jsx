@@ -43,7 +43,7 @@ function LeaderboardPage() {
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       <div style={{ 
         marginLeft: isMobileScreen ? '0' : '5.5rem', 
-        paddingTop: isMobileScreen ? '80px' : '0',
+        paddingTop: isMobileScreen ? '70px' : '0',
         width: '100%' 
       }}>
         <Leaderboard theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>

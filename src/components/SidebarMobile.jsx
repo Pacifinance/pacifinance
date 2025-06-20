@@ -34,13 +34,13 @@ const SidebarMobile = ({
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSideBarMenuOpen(!isSideBarMenuOpen);
+                }}
             >
                 <FontAwesomeIcon
                     icon={faBars}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsSideBarMenuOpen(!isSideBarMenuOpen);
-                    }}
                 />
             </div>
             {isSideBarMenuOpen ? (

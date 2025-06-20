@@ -42,7 +42,7 @@ function InfoPage() {
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
       <div style={{ 
         marginLeft: isMobileScreen ? '0' : '5.5rem', 
-        paddingTop: isMobileScreen ? '80px' : '0',
+        paddingTop: isMobileScreen ? '70px' : '0',
         width: '100%' 
       }}>
         <Info theme={theme}/>

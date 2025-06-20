@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -12,6 +12,7 @@ function KnowledgePage() {
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
+  const [isMobileScreenLocal, setIsMobileScreenLocal] = useState(window.innerWidth <= 768);
 
   const { mode } = theme;
 
@@ -22,15 +23,27 @@ function KnowledgePage() {
 
   useEffect(() => {
     loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+    
+    const handleResize = () => {
+      setIsMobileScreenLocal(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
     <Div>
-      {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
-      <div style={{ marginLeft: isMobileScreen ? '0' : '5.5rem', width: '100%' }}>
+      {!isMobileScreenLocal && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+      <div style={{ 
+        marginLeft: isMobileScreenLocal ? '0' : '5.5rem', 
+        paddingTop: isMobileScreenLocal ? '80px' : '0',
+        width: '100%',
+        minHeight: '100vh'
+      }}>
         <Knowledge />
       </div>
-      {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
+      {isMobileScreenLocal && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
     </Div>
   );
 }

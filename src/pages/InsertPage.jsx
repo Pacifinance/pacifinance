@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PageWrapper } from '../styles/MyStyled';
@@ -10,6 +10,7 @@ function InsertPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
   const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
@@ -19,6 +20,13 @@ function InsertPage() {
 
   useEffect(() => {
     loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+    
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Matomo Tag Manager
@@ -30,10 +38,17 @@ function InsertPage() {
   // }, [])
 
   return (
-    <PageWrapper>
+    <div style={{ display: 'flex', height: '100vh' }}>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
-    </PageWrapper>
+      <div style={{ 
+        marginLeft: isMobileScreen ? '0' : '5.5rem', 
+        paddingTop: isMobileScreen ? '80px' : '0',
+        width: '100%',
+        minHeight: '100vh'
+      }}>
+        <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
+      </div>
+    </div>
   );
 }
 

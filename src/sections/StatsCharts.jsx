@@ -71,7 +71,6 @@ export default function StatsCharts() {
 
     return (
         <StyledSectionStats theme={theme}>
-            <StandardPageTitle theme={theme}>{languages[language].graphs.title}</StandardPageTitle>
             <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
               <MySectionButton
                 theme={theme}

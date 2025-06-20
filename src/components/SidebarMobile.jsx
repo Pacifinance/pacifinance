@@ -94,7 +94,7 @@ const SidebarMobile = ({
                             e.target.style.color = theme.textColor;
                         }}
                         onClick={() => {
-                            navigate("/your-charts");
+                            navigate("/charts-statistics");
                             setIsSideBarMenuOpen(false);
                         }}
                     >

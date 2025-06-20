@@ -80,7 +80,7 @@ function AppRouter() {
             <Route path="/dashboard" exact element={<Dashboard />} />
             {/* <UnauthenticatedRoute path="/" element={<LandingPage />} />
             <AuthenticatedRoute path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/your-charts" element={<StatsCharts />} />
+            <Route path="/charts-statistics" element={<StatsCharts />} />
             <Route path="/insert-values" element={<InsertValues />} />
             <Route path="/check-prices" element={<CheckPrices />} />
             <Route path="/leaderboard" element={<Leaderboard />} />

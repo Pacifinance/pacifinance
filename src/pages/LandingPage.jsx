@@ -3,7 +3,8 @@ import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import { Header, Footer } from '../sections/HeaderFooter';
+import { Header } from '../sections/HeaderFooter';
+import LandingFooter from '../components/LandingFooter';
 import NewLandingContent from '../sections/LandingContent';
 
 export default function NewLandingPage() {
@@ -26,7 +27,7 @@ export default function NewLandingPage() {
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
         <NewLandingContent theme={theme} language={language} isMobileScreen={isMobileScreen}/>
-        <Footer theme={theme}/>
+        <LandingFooter theme={theme}/>
       </div>
     </>
   );

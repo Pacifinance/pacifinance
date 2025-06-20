@@ -21,12 +21,18 @@ const SidebarMobile = ({
     const HamburgerMenu = () => (
         <div onClick={() => setIsSideBarMenuOpen(false)}>
             <div
-                className={`hamburger-menu ${isSideBarMenuOpen ? "open" : ""} cursor-pointer p-2 ml-4 absolute top-3 right-4 flex flex-col`}
+                className={`hamburger-menu ${isSideBarMenuOpen ? "open" : ""} cursor-pointer flex flex-col`}
                 style={{
                     zIndex: 10000,
                     backgroundColor: theme.buttonBackgroundColor,
                     borderRadius: "8px",
                     color: "white",
+                    padding: '10px',
+                    width: '40px',
+                    height: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
             >
                 <FontAwesomeIcon
@@ -210,7 +216,12 @@ const SidebarMobile = ({
     );
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '1.2rem',
+            height: '48px' // Ensure consistent height for proper alignment
+        }}>
             <div className="account-container">
                 <div className="account-image-wrapper" style={{
                     width: '40px',

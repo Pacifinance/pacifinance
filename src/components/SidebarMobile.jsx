@@ -210,21 +210,35 @@ const SidebarMobile = ({
     );
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div className="account-container">
-                <div className="account-image-wrapper">
+                <div className="account-image-wrapper" style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'white',
+                    border: `2px solid ${theme.buttonBackgroundColor}`,
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
+                }}>
                     <img
                         src={avatarImage}
                         title={languages[language].sidebar.account.title}
-                        width="40px"
-                        height="40px"
+                        width="100%"
+                        height="100%"
                         alt="Account"
                         className="account-image"
                         onClick={() => setShowDropdown(!showDropdown)}
                         onContextMenu={(e) => e.preventDefault()}
                         style={{
                             borderRadius: '50%',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            objectFit: 'cover'
                         }}
                     />
                 </div>

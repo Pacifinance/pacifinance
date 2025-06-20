@@ -988,32 +988,6 @@ export const Container = styled.div`
   padding-bottom: 5.25em;
 `;
 
-export const GraphsSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-top: 2rem;
-  padding: 0 1rem;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-  }
-
-  .bar-chart-section,
-  .pie-chart-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-    h2 {
-      margin-bottom: 1rem;
-      color: ${(props) => (props.theme.textColor)};
-    }
-  }
-`;
-
 export const SectionADashboard = styled.section`
     font-family: Roboto, sans-serif;
     // display: flex; // questo risolve il problema del bianco ma bisogna incolonnare bene i contenuti

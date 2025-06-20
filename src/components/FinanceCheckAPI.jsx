@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import MarketDataService from '../services/MarketDataService';
+//import MarketDataService from '../services/MarketDataService';
 import styled from 'styled-components';
 import { TrendingUpIcon, TrendingDownIcon } from '@mui/icons-material';
 
@@ -102,9 +102,9 @@ function FinanceCheckAPI() {
     setLoading(true);
     try {
       const [stocks, crypto, indices] = await Promise.all([
-        MarketDataService.getStockData(),
-        MarketDataService.getCryptoData(),
-        MarketDataService.getMarketIndices()
+        // MarketDataService.getStockData(),
+        // MarketDataService.getCryptoData(),
+        // MarketDataService.getMarketIndices()
       ]);
 
       setMarketData({

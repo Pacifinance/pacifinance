@@ -4,7 +4,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { Section } from '../styles/MyStyled';
-import MarketDataService from '../services/MarketDataService';
+//import MarketDataService from '../services/MarketDataService';
 import styled from 'styled-components';
 import { 
   TrendingUpIcon, 
@@ -312,11 +312,11 @@ function CheckPrice() {
     setLoading(true);
     try {
       const [stocks, etfs, crypto, indices, exchangeRates] = await Promise.all([
-        MarketDataService.getStockData(),
-        MarketDataService.getETFData(),
-        MarketDataService.getCryptoData(),
-        MarketDataService.getMarketIndices(),
-        MarketDataService.getExchangeRates()
+        // MarketDataService.getStockData(),
+        // MarketDataService.getETFData(),
+        // MarketDataService.getCryptoData(),
+        // MarketDataService.getMarketIndices(),
+        // MarketDataService.getExchangeRates()
       ]);
 
       setData({

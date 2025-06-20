@@ -35,14 +35,7 @@ function StatsChartsPage() {
   return (
     <Div>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <div style={{ 
-        marginLeft: '0', 
-        marginTop: '80px',
-        '@media (min-width: 768px)': {
-          marginLeft: '16.666667%',
-          marginTop: '0'
-        }
-      }}>
+      <ContentWrapper theme={theme}>
         <StandardPageTitle theme={theme} style={{ 
           textAlign: 'center', 
           marginBottom: '2rem',
@@ -51,12 +44,26 @@ function StatsChartsPage() {
           {languages[language].graphs.title}
         </StandardPageTitle>
         <StatsCharts />
-      </div>
+      </ContentWrapper>
     </Div>
   );
 }
 
 export default StatsChartsPage;
+
 const Div = styled.div `
   position: relative;
+`;
+
+const ContentWrapper = styled.div `
+  background-color: ${(props) => props.theme.backgroundColor};
+  min-height: 100vh;
+  margin-left: 0;
+  margin-top: 80px;
+  padding: 0;
+
+  @media (min-width: 768px) {
+    margin-left: 16.666667%;
+    margin-top: 0;
+  }
 `;

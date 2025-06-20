@@ -2,15 +2,18 @@ import React, {useEffect, useContext} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
+import { LanguageContext } from '../contexts/LanguageContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import Dashboard from '../sections/Dashboard';
+import SEOHead from '../components/SEOHead';
 import { CustomTick } from '../utils/customGraphsInfo';
 
 function DashboardPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { language } = useContext(LanguageContext);
   const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
@@ -26,6 +29,11 @@ function DashboardPage() {
 
   return (
     <Div>
+      <SEOHead 
+        title={language === 'it' ? 'Dashboard | PaciFinance' : 'Dashboard | PaciFinance'}
+        description={language === 'it' ? 'La tua dashboard personale per gestire finanze, bilanci e statistiche su PaciFinance.' : 'Your personal dashboard to manage finances, budgets and statistics on PaciFinance.'}
+        noindex={true}
+      />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       <Dashboard theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
     </Div>

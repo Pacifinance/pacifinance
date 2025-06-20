@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { UserContext } from './contexts/UserContext';
 import Dashboard from './pages/DashboardPage';
 import StatsCharts from './pages/StatsChartsPage';
@@ -22,6 +22,18 @@ import DisclaimerPage from './pages/DisclaimerPage';
 import ContactPage from './pages/ContactPage';
 import AccountPage from './pages/AccountPage';
 import SettingsPage from './pages/SettingsPage';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useContext(UserContext);
+  return isAuthenticated ? children : <Navigate to="/auth" replace />;
+};
+
+// Public Route Component (redirects to dashboard if already authenticated)
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated } = useContext(UserContext);
+  return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
+};
 
 
 function AppRouter() {
@@ -76,22 +88,11 @@ function AppRouter() {
 
   return (
         <Routes>
-            <Route path="/" exact element={<LandingPage />} />
-            <Route path="/dashboard" exact element={<Dashboard />} />
-            {/* <UnauthenticatedRoute path="/" element={<LandingPage />} />
-            <AuthenticatedRoute path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/charts-statistics" element={<StatsCharts />} />
-            <Route path="/insert-values" element={<InsertValues />} />
-            <Route path="/check-prices" element={<CheckPrices />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/knowledge" element={<Knowledge />} />
-            <Route path="/info" element={<Info />} />
-            {/* <Route path="/sign-up" exact element={<SignUp />} />
-            <Route path="/sign-in" exact element={<SignIn />} /> */}
-            {/* <Route path="*" element={<NotFound />} /> */}
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+            <Route path="/signin" element={<PublicRoute><SignInPage /></PublicRoute>} />
+            <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -100,8 +101,20 @@ function AppRouter() {
             <Route path="/disclaimer" element={<DisclaimerPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
-            <Route path="/account" element={<AccountPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/charts-statistics" element={<ProtectedRoute><StatsCharts /></ProtectedRoute>} />
+            <Route path="/insert-values" element={<ProtectedRoute><InsertValues /></ProtectedRoute>} />
+            <Route path="/check-prices" element={<ProtectedRoute><CheckPrices /></ProtectedRoute>} />
+            <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+            <Route path="/knowledge" element={<ProtectedRoute><Knowledge /></ProtectedRoute>} />
+            <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
+            <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
   );
 }

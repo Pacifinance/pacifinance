@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -6,6 +5,7 @@ import { Header } from '../sections/HeaderFooter';
 import LandingFooter from '../components/LandingFooter';
 import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
 import languages from '../data/languages.json';
+import SEOHead from '../components/SEOHead';
 
 export default function ContactPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -14,12 +14,16 @@ export default function ContactPage() {
 
   return (
     <>
-      <title>Contact - PaciFinance</title>
-      <meta name="description" content="Contact PaciFinance - Get in touch with our support team for help with your personal finance management." />
-      
+      <SEOHead 
+        title={language === 'it' ? 'Contatti | PaciFinance' : 'Contact Us | PaciFinance'}
+        description={language === 'it' ? 'Contatta il team di PaciFinance per supporto, domande o suggerimenti sulla nostra piattaforma di gestione finanziaria.' : 'Contact the PaciFinance team for support, questions or suggestions about our financial management platform.'}
+        keywords={language === 'it' ? 'contatti, supporto, aiuto, PaciFinance' : 'contact, support, help, PaciFinance'}
+        canonical="/contact"
+      />
+
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
-        
+
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>

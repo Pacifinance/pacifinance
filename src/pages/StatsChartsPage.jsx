@@ -6,6 +6,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import StatsCharts from '../sections/StatsCharts';
+import SEOHead from '../components/SEOHead';
 import { StandardPageTitle } from '../styles/MyStyled';
 import languages from '../data/languages.json';
 
@@ -34,6 +35,11 @@ function StatsChartsPage() {
 
   return (
     <Div>
+      <SEOHead 
+        title={language === 'it' ? 'Grafici e Statistiche | PaciFinance' : 'Charts & Statistics | PaciFinance'}
+        description={language === 'it' ? 'Visualizza grafici dettagliati e statistiche delle tue finanze personali su PaciFinance.' : 'View detailed charts and statistics of your personal finances on PaciFinance.'}
+        noindex={true}
+      />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       <ContentWrapper theme={theme}>
         <StandardPageTitle theme={theme} style={{ 

@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { Header } from '../sections/HeaderFooter';
-import LandingFooter from '../components/LandingFooter';
-import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
+import { Header, Footer } from '../sections/HeaderFooter';
+import SEOHead from '../components/SEOHead';
+import { PolicyContainer, PolicyTitle, PolicySection, PolicyText } from '../styles/PolicyPages';
 import languages from '../data/languages.json';
 
 export default function PrivacyPolicyPage() {
@@ -12,19 +12,32 @@ export default function PrivacyPolicyPage() {
   const { mode } = theme;
 
   return (
-    <>
-      <title>Privacy Policy - PaciFinance</title>
-      <meta name="description" content="Privacy Policy for PaciFinance - Learn how we protect your privacy and handle your data on our personal finance platform." />
+    <div
+      style={{
+        backgroundColor: theme.backgroundColor,
+        color: theme.textColor,
+        minHeight: '100vh',
+      }}
+    >
+      <SEOHead 
+        title={language === 'it' ? 'Privacy Policy | PaciFinance' : 'Privacy Policy | PaciFinance'}
+        description={language === 'it' ? 'Leggi la Privacy Policy di PaciFinance per capire come proteggiamo e utilizziamo i tuoi dati personali.' : 'Read PaciFinance Privacy Policy to understand how we protect and use your personal data.'}
+        keywords={language === 'it' ? 'privacy policy, protezione dati, GDPR, PaciFinance' : 'privacy policy, data protection, GDPR, PaciFinance'}
+        canonical="/privacy-policy"
+      />
+      <Header
+        theme={theme}
+        mode={mode}
+        toggleMode={toggleMode}
+        toggleLanguage={toggleLanguage}
+      />
 
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
-        <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
-
-        <PolicyContainer theme={theme}>
+      <PolicyContainer theme={theme}>
       <div className="max-w-4xl mx-auto">
-        <PolicyHeader theme={theme}>
+        <PolicyTitle theme={theme}>
           <h1>Privacy Policy</h1>
           <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
-        </PolicyHeader>
+        </PolicyTitle>
 
         <div className="space-y-6">
             <section>
@@ -82,6 +95,5 @@ export default function PrivacyPolicyPage() {
 
         <LandingFooter theme={theme}/>
       </div>
-    </>
   );
 }

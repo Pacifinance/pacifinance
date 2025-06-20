@@ -45,12 +45,12 @@ function UserProvider({ children }) {
 
             //get the date of the previous month
             const preMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
-          
+
             //get the date of the current month of the previous year
             const preYearSameMonthDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
 
             //CALL API TO GET DATA
-            
+
             /***************************** TAGS ********************************/
 
             const allTags  = await axios.post('/tags/get', null, { withCredentials: true });
@@ -85,8 +85,8 @@ function UserProvider({ children }) {
             const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
 
 
-          
-            
+
+
             //************************************* BALANCES **********************************************/
 
             const balancesResponse = await axios.post('/balances/get', null, { withCredentials: true });
@@ -108,7 +108,7 @@ function UserProvider({ children }) {
                   }
                 }    
             } 
-            
+
             const balancesPreMonth = (balancesResponse.data[1] || 0).balance || 0;  //Using ?? 0, if the value is undefined or empty, set it to 0
             const balancesPreYearSameMonth = (balancesResponse.data[12] || 0).balance || 0;      
 

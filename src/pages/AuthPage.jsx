@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -12,6 +11,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SecurityIcon from '@mui/icons-material/Security';
 import WarningIcon from '@mui/icons-material/Warning';
 import languages from '../data/languages.json';
+import SEOHead from '../components/SEOHead';
 
 export default function AuthPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -27,19 +27,23 @@ export default function AuthPage() {
   return (
     <>
       {/* SEO Meta Tags */}
-      <title>{isSignUp ? 'Register' : 'Login'} - PaciFinance | Secure Access</title>
-      <meta name="description" content="Access your PaciFinance account securely. Login or register to manage your personal finances with complete privacy." />
-      <meta name="keywords" content="login, register, secure access, personal finance, privacy" />
-      
+      <SEOHead 
+        title={isSignUp ? 'Register - PaciFinance | Secure Access' : 'Login - PaciFinance | Secure Access'}
+        description="Access your PaciFinance account securely. Login or register to manage your personal finances with complete privacy."
+        keywords="login, register, secure access, personal finance, privacy"
+        canonical="/auth"
+        noindex={false}
+      />
+
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
-        
+
         <div 
           className="flex-1 w-full flex items-center justify-center px-4 py-8"
           style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
         >
           <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
+
             {/* Left Column - Information and Security Notice */}
             <div className="space-y-8">
               {/* Welcome Section */}
@@ -73,7 +77,7 @@ export default function AuthPage() {
                   <SecurityIcon style={{ color: theme.secondaryColor }} className="mr-3" />
                   {language === 'it' ? 'La Tua Privacy e Sicurezza' : 'Your Privacy & Security'}
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div 
                     className="p-4 rounded-lg border"
@@ -93,7 +97,7 @@ export default function AuthPage() {
                       }
                     </p>
                   </div>
-                  
+
                   <div 
                     className="p-4 rounded-lg border"
                     style={{ 

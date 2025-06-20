@@ -2,15 +2,12 @@ import React, { useState, useContext, useEffect } from "react";
 import ToggleModeButton from "../components/ToggleModeButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import LogoPaci from '../components/Logo';
-import { LanguageContext } from '../contexts/LanguageContext';
-import { UserContext } from '../contexts/UserContext';
-import languages from '../data/languages.json';
+import LogoPaci from "../components/Logo";
+import { LanguageContext } from "../contexts/LanguageContext";
+import { UserContext } from "../contexts/UserContext";
+import languages from "../data/languages.json";
 // import MyStyled from '../contexts/MyStyled';
-import {
-  MyButton,
-  ButtonContainer,
-} from "../styles/MyStyled";
+import { MyButton, ButtonContainer } from "../styles/MyStyled";
 
 function Header({
   theme,
@@ -76,7 +73,7 @@ function Header({
           {showDemoButton && (
             <button
               data-umami-event="tryDemo"
-              className={`animate-slide-down border border-white rounded-lg md:rounded items-center cursor-pointer bg-paciGreen text-white px-2 py-1 text-xs md:text-lg md:px-4 md:py-2 md:border-2 shadow-xl mr-2 md:mr-20`}
+              className={`animate-slide-down border border-white rounded-lg md:rounded items-center cursor-pointer bg-paciGreen text-white text-xs px-1 py-1 text-xs md:text-base md:px-1 md:py-1 md:border shadow-xl mr-2 md:mr-20`}
               onClick={DemoLogin}
             >
               {languages[language].header.demo.titleButton}

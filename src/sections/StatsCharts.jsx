@@ -7,7 +7,7 @@ import InOutCharts from '../components/InOutChart';
 import PercentageOutflowsChart from '../components/PercentageOutflowsChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { ModifiedTitleDashboard, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../styles/MyStyled';
+import { StandardPageTitle, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../styles/MyStyled';
 import InOutStatsMonth from '../components/InOutStatsMonth';
 import InOutStatsYear from '../components/InOutStatsYear';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -71,7 +71,7 @@ export default function StatsCharts() {
 
     return (
         <StyledSectionStats theme={theme}>
-            <ModifiedTitleDashboard theme={theme} >Le tue Statistiche</ModifiedTitleDashboard>
+            <StandardPageTitle theme={theme}>Le tue Statistiche</StandardPageTitle>
             <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
               <MySectionButton
                 theme={theme}

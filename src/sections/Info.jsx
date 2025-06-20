@@ -8,6 +8,7 @@ import {
     FAQQuestionButton,
     FAQAnswerContainer,
     FAQAnswerContent,
+    StandardPageTitle,
     StandardPageTitleGreen,
 } from "../styles/MyStyled";
 import languages from "../data/languages.json";
@@ -142,17 +143,11 @@ function Info({ theme }) {
     return (
         <Section theme={theme}>
             <div className="grid">
-                <TitleDashboard
-                    theme={theme}
-                    style={{
-                        marginLeft: isMobileScreen ? "5%" : "2rem",
-                        textAlign: isMobileScreen ? "center" : "left",
-                    }}
-                >
-                    {languages[language].info.title}
-                </TitleDashboard>
 
                 <StyledInfoPage theme={theme}>
+                    <StandardPageTitle theme={theme}>
+                        {languages[language].info.title}
+                    </StandardPageTitle>
                     <StandardPageTitleGreen theme={theme}>
                         {languages[language].info.title2}
                     </StandardPageTitleGreen>

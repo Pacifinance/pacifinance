@@ -1825,10 +1825,10 @@ export const SidebarSection = styled.section`
       }
     `;
 
-  export const StyledRankingsSection = styled.div`
-    h2{
-      color: ${(props) => props.theme.textColor} !important;
-    }
+export const StyledRankingsSection = styled.div`
+  h2{
+    color: #ffffff !important;
+  }
 
     p{
       color: ${(props) => props.theme.textColor} !important;
@@ -1991,7 +1991,8 @@ export const StyledComingSoon = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  ```text
+align-items: center;
   min-height: 100vh;
   background-color: ${themes.light.backgroundColor};
 

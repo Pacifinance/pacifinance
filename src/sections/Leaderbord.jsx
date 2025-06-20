@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { TitleDashboard, Section } from '../styles/MyStyled';
-import { StyledSelectContainer,StyledMonth, StyledLabel, StyledRankingsSection, StandardPageTitleGreen, StyledRankingPage, CenteredRankings } from '../styles/MyStyled';
+import { Section } from '../styles/MyStyled';
+import { StyledMonth, StyledLabel, StyledRankingsSection, StandardPageTitleGreen, StyledRankingPage, CenteredRankings } from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 import languages from '../data/languages.json';

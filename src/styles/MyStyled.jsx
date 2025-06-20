@@ -542,11 +542,28 @@ export const SignUp = styled.div`
 
   `;
 
-  export const SignUpButton = styled(MyButton)`
-    margin-right: auto;
-    margin-left: auto;
-    margin-top: 1.5em;
-  `;
+  export const SignUpButton = styled.button`
+  background-color: ${(props) => (props.theme.secondaryColor)};
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+
+  &:hover {
+    background-color: ${(props) => (props.theme.secondaryColor)}dd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
 
   // Deprecated - use StandardPageTitle instead
 export const ModifiedTitleDashboard = styled(TitleDashboard)`

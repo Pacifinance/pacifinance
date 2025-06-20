@@ -139,7 +139,7 @@ export default function SignInForm() {
                         />
                         <div className="button-wrapper">
                           <SignInButton theme={theme} type="submit" $fullWidth>
-                            {languages[language].header.login.titleButton}
+                            Sign In
                           </SignInButton>
                         </div>
 

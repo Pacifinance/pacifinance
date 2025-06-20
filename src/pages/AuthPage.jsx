@@ -28,9 +28,9 @@ export default function AuthPage() {
     <>
       {/* SEO Meta Tags */}
       <SEOHead 
-        title={isSignUp ? 'Register - PaciFinance | Secure Access' : 'Login - PaciFinance | Secure Access'}
-        description="Access your PaciFinance account securely. Login or register to manage your personal finances with complete privacy."
-        keywords="login, register, secure access, personal finance, privacy"
+        title={isSignUp ? 'Sign Up - PaciFinance | Secure Access' : 'Sign In - PaciFinance | Secure Access'}
+        description="Access your PaciFinance account securely. Sign in or sign up to manage your personal finances with complete privacy."
+        keywords="sign in, sign up, secure access, personal finance, privacy"
         canonical="/auth"
         noindex={false}
       />
@@ -93,7 +93,7 @@ export default function AuthPage() {
                     }}
                   >
                     <LockIcon className="mr-1" fontSize="small" />
-                    {languages[language].header.login.titleButton}
+                    Sign In
                   </button>
                   <button
                     onClick={() => setIsSignUp(true)}
@@ -108,7 +108,7 @@ export default function AuthPage() {
                     }}
                   >
                     <PersonAddIcon className="mr-1" fontSize="small" />
-                    {languages[language].header.register.titleButton}
+                    Sign Up
                   </button>
                 </div>
 
@@ -124,7 +124,7 @@ export default function AuthPage() {
                   ) : (
                     <div>
                       <h2 className="text-xl font-bold mb-4 text-center">
-                        {languages[language].header.login.titleButton}
+                        Sign In
                       </h2>
                       <SignInForm />
                     </div>
@@ -383,7 +383,7 @@ export default function AuthPage() {
                       }}
                     >
                       <LockIcon className="mr-2" fontSize="small" />
-                      {languages[language].header.login.titleButton}
+                      Sign In
                     </button>
                     <button
                       onClick={() => setIsSignUp(true)}
@@ -398,7 +398,7 @@ export default function AuthPage() {
                       }}
                     >
                       <PersonAddIcon className="mr-2" fontSize="small" />
-                      {languages[language].header.register.titleButton}
+                      Sign Up
                     </button>
                   </div>
 
@@ -414,7 +414,7 @@ export default function AuthPage() {
                     ) : (
                       <div>
                         <h2 className="text-2xl font-bold mb-6 text-center">
-                          {languages[language].header.login.titleButton}
+                          Sign In
                         </h2>
                         <SignInForm />
                       </div>

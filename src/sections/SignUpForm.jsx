@@ -174,7 +174,7 @@ export default function SignUpForm() {
                                 }}
                             />
                         <div className="button-wrapper">
-                            <SignUpButton theme={theme} data-umami-event="newUser" type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>{languages[language].header.register.titleButton}</SignUpButton>
+                            <SignUpButton theme={theme} data-umami-event="newUser" type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Sign Up</SignUpButton>
                         </div>
 
                     </form>

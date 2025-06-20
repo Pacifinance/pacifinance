@@ -193,9 +193,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
             <StandardPageTitle theme={theme}>
                 {languages[language].dashboard.title}
             </StandardPageTitle>
-            <CapitalValue theme={theme} style={{ 
-                marginLeft: isMobileScreen ? "3%" : "6rem"
-            }}>
+            <CapitalValue theme={theme}>
                 {languages[language].dashboard.totalBalance}{" "}
                 <span style={{ color: primaryColor }}>
                     {isHidden ? "****" : totalReal.toLocaleString("it-IT")} €

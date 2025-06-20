@@ -971,12 +971,13 @@ export const CapitalValue = styled.h1 `
     font-size: 2rem;
     color: ${(props) => (props.theme.textColor)};
     margin-top: 1rem;
-    margin-left: 3%;
+    margin-left: 8rem;
     margin-bottom: 1rem;
 
     /* For screens with a maximum width of 768px (e.g. mobile devices) */
     @media (max-width: 768px) {
       font-size: 1rem;
+      margin-left: 3%;
     }
 `;
 
@@ -1991,8 +1992,7 @@ export const StyledComingSoon = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  ```text
-align-items: center;
+  align-items: center;
   min-height: 100vh;
   background-color: ${themes.light.backgroundColor};
 

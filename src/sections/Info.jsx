@@ -142,15 +142,9 @@ function Info({ theme }) {
     return (
         <Section theme={theme}>
             <div className="grid">
-                <TitleDashboard
-                    theme={theme}
-                    style={{
-                        marginLeft: isMobileScreen ? "5%" : "2rem",
-                        textAlign: isMobileScreen ? "center" : "left",
-                    }}
-                >
+                <StandardPageTitle theme={theme}>
                     {languages[language].info.title}
-                </TitleDashboard>
+                </StandardPageTitle>
 
                 <StyledInfoPage theme={theme}>
                     <StandardPageTitleGreen theme={theme}>

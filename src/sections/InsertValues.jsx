@@ -608,39 +608,44 @@ export default function InsertValue({
       <StandardPageTitle theme={theme}>
         {languages[language].insert.title}
       </StandardPageTitle>
-      <ButtonGroup aria-label="outlined primary button group">
-        <MySectionButton
-          theme={theme}
-          onClick={() => setActivePage("bilancio")}
-          style={{
-            backgroundColor: activePage === "bilancio" ? "" : "#222831",
-            marginLeft: "6vw",
-            marginRight: "1vw",
-          }}
-        >
-          {languages[language].insert.buttonBalance}
-        </MySectionButton>
-        <MySectionButton
-          theme={theme}
-          onClick={() => setActivePage("income")}
-          style={{
-            backgroundColor: activePage === "income" ? "" : "#222831",
-            marginRight: "1vw",
-          }}
-        >
-          {languages[language].insert.buttonIncome}
-        </MySectionButton>
-        <MySectionButton
-          theme={theme}
-          onClick={() => setActivePage("outflows")}
-          style={{
-            backgroundColor: activePage === "outflows" ? "" : "#222831",
-            marginRight: "1vw",
-          }}
-        >
-          {languages[language].insert.buttonOutflow}
-        </MySectionButton>
-      </ButtonGroup>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "2rem"
+      }}>
+        <ButtonGroup aria-label="outlined primary button group">
+          <MySectionButton
+            theme={theme}
+            onClick={() => setActivePage("bilancio")}
+            style={{
+              backgroundColor: activePage === "bilancio" ? "" : "#222831",
+              marginRight: "1vw",
+            }}
+          >
+            {languages[language].insert.buttonBalance}
+          </MySectionButton>
+          <MySectionButton
+            theme={theme}
+            onClick={() => setActivePage("income")}
+            style={{
+              backgroundColor: activePage === "income" ? "" : "#222831",
+              marginRight: "1vw",
+            }}
+          >
+            {languages[language].insert.buttonIncome}
+          </MySectionButton>
+          <MySectionButton
+            theme={theme}
+            onClick={() => setActivePage("outflows")}
+            style={{
+              backgroundColor: activePage === "outflows" ? "" : "#222831",
+              marginRight: "1vw",
+            }}
+          >
+            {languages[language].insert.buttonOutflow}
+          </MySectionButton>
+        </ButtonGroup>
+      </div>
 
       {renderPage()}
 

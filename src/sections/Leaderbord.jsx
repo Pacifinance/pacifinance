@@ -150,3 +150,26 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
 }
 
 export default Leaderboard;
+
+import styled from 'styled-components';
+
+export const StyledRankingsSection = styled.div`
+    h2{
+      color: #ffffff !important;
+    }
+
+    p{
+      color: ${(props) => props.theme.textColor} !important;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    ol {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      color: #ffffff;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+  `;

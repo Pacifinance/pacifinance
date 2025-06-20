@@ -73,10 +73,11 @@ function Header({
           {showDemoButton && (
             <button
               data-umami-event="tryDemo"
-              className={`animate-slide-down border border-white rounded-lg md:rounded items-center cursor-pointer bg-paciGreen text-white text-xs px-1 py-1 text-xs md:text-base md:px-1 md:py-1 md:border shadow-xl mr-2 md:mr-20`}
+              className={`animate-slide-down border border-white rounded items-center cursor-pointer bg-paciGreen text-white px-1.5 py-0.5 text-xs md:text-lg md:px-4 md:py-2 md:border-2 md:rounded-lg shadow-xl mr-2 md:mr-20`}
               onClick={DemoLogin}
             >
-              {languages[language].header.demo.titleButton}
+              <span className="md:hidden">Demo</span>
+              <span className="hidden md:inline">{languages[language].header.demo.titleButton}</span>
             </button>
           )}
           <ButtonContainer>

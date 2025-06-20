@@ -646,29 +646,38 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     }
 
     return (
-        <SidebarSection theme={theme} style={{ 
-            ...(isMobileScreen && {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                width: '100%',
-                height: '70px',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '0 1rem',
-                zIndex: 1001
-            })
-        }}>
-            <Top style={{
-                ...(isMobileScreen && {
-                    width: '100%',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                })
-            }}>
+        <SidebarSection
+          theme={theme}
+          style={{
+            ...(isMobileScreen
+              ? {
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  width: '100%',
+                  height: '70px',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '0 1rem',
+                  zIndex: 1001,
+                }
+              : {}),
+          }}
+        >
+            <Top
+              style={{
+                ...(isMobileScreen
+                  ? {
+                      width: '100%',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }
+                  : {}),
+              }}
+            >
                 <LogoPaci />
                 {isMobileScreen ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -2106,10 +2115,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         />
                     </ToggleButton>
                 )}
-            </Top>
-            {/* <BuyMeACoffeeWidget isMobileScreen={isMobileScreen}/> */}
+            </Top>    
         </SidebarSection>
-
     );
 }
 

@@ -1,0 +1,276 @@
+
+import React from 'react';
+import { Select, MenuItem, Typography } from '@mui/material';
+import languages from '../data/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
+import {
+  MuiCustomDialog,
+  MuiCustomButton,
+  MuiCustomDialogTitle,
+  MuiCustomDialogContent,
+  MuiCustomDialogContentText,
+  MuiCustomDialogActions,
+} from '../styles/MyStyled';
+
+export default function InsertModals({
+  isConfirmBalanceOpen,
+  setIsConfirmBalanceOpen,
+  isConfirmIncomeOpen,
+  setIsConfirmIncomeOpen,
+  isConfirmOutflowOpen,
+  setIsConfirmOutflowOpen,
+  showConfirmationDeleteIncome,
+  setShowConfirmationDeleteIncome,
+  showConfirmationDeleteOutflow,
+  setShowConfirmationDeleteOutflow,
+  balanceDate,
+  bankReal,
+  cashReal,
+  digitalServicesReal,
+  stocksReal,
+  etfReal,
+  bitcoinReal,
+  cryptoReal,
+  categoryIncome,
+  income,
+  noteIncomeAreaValue,
+  incomeDate,
+  categoryOutflow,
+  typoOutflow,
+  outflow,
+  noteOutflowAreaValue,
+  outflowDate,
+  selectedOption,
+  setSelectedOption,
+  options,
+  onConfirmBalance,
+  onConfirmIncome,
+  onConfirmOutflow,
+  onConfirmDeleteIncome,
+  onConfirmDeleteOutflow,
+}) {
+  const { language } = React.useContext(LanguageContext);
+
+  const handleExitConfirm = (setModalState) => {
+    setModalState(false);
+  };
+
+  return (
+    <>
+      {isConfirmBalanceOpen && (
+        <MuiCustomDialog
+          open={isConfirmBalanceOpen}
+          onClose={() => handleExitConfirm(setIsConfirmBalanceOpen)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <MuiCustomDialogTitle>
+            {languages[language].insert.balanceSection.confirmUpdate}
+          </MuiCustomDialogTitle>
+          <MuiCustomDialogContent>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.bank}: {bankReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.cash}: {cashReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.digitalServices}:{' '}
+              {digitalServicesReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.stocks}: {stocksReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.etf}: {etfReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.bitcoin}: {bitcoinReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.crypto}: {cryptoReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.selectedDate}: {balanceDate}
+            </MuiCustomDialogContentText>
+          </MuiCustomDialogContent>
+          <MuiCustomDialogActions>
+            <MuiCustomButton
+              data-umami-event="balanceUpdate"
+              onClick={onConfirmBalance}
+            >
+              {languages[language].general.confirm}
+            </MuiCustomButton>
+            <MuiCustomButton
+              onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}
+            >
+              {languages[language].general.cancel}
+            </MuiCustomButton>
+          </MuiCustomDialogActions>
+        </MuiCustomDialog>
+      )}
+
+      {isConfirmIncomeOpen && (
+        <MuiCustomDialog
+          open={isConfirmIncomeOpen}
+          onClose={() => handleExitConfirm(setIsConfirmIncomeOpen)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <MuiCustomDialogTitle>
+            {languages[language].insert.incomeSection.confirmUpdate}
+          </MuiCustomDialogTitle>
+          <MuiCustomDialogContent>
+            <MuiCustomDialogContentText>
+              {languages[language].general.category}: {categoryIncome.value}
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.value}: {income}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.note}: {noteIncomeAreaValue}
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.selectedDate}: {incomeDate}
+            </MuiCustomDialogContentText>
+            <Typography variant="body1" style={{ marginTop: '1em' }}>
+              {languages[language].insert.incomeSection.increaseWhichBalance}:{' '}
+            </Typography>
+            <Select
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+            >
+              <MenuItem value="">
+                {languages[language].general.selectAnOption}
+              </MenuItem>
+              {Object.keys(options).map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </MuiCustomDialogContent>
+          <MuiCustomDialogActions>
+            <MuiCustomButton
+              data-umami-event="incomeUpdate"
+              onClick={onConfirmIncome}
+            >
+              {languages[language].general.confirm}
+            </MuiCustomButton>
+            <MuiCustomButton
+              onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}
+            >
+              {languages[language].general.cancel}
+            </MuiCustomButton>
+          </MuiCustomDialogActions>
+        </MuiCustomDialog>
+      )}
+
+      {isConfirmOutflowOpen && (
+        <MuiCustomDialog
+          open={isConfirmOutflowOpen}
+          onClose={() => handleExitConfirm(setIsConfirmOutflowOpen)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <MuiCustomDialogTitle>
+            {languages[language].insert.outflowSection.confirmUpdate}
+          </MuiCustomDialogTitle>
+          <MuiCustomDialogContent>
+            <MuiCustomDialogContentText>
+              {languages[language].general.category}: {categoryOutflow.value}
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].insert.outflowSection.paymentType}:{' '}
+              {typoOutflow.value}
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.value}: {outflow}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.note}: {noteOutflowAreaValue}
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.selectedDate}: {outflowDate}
+            </MuiCustomDialogContentText>
+            <Typography variant="body2" style={{ marginTop: '1em' }}>
+              {languages[language].insert.outflowSection.decreaseWhichBalance}:{' '}
+            </Typography>
+            <Select
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+            >
+              <MenuItem value="">
+                {languages[language].general.selectAnOption}
+              </MenuItem>
+              {Object.keys(options).map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </MuiCustomDialogContent>
+          <MuiCustomDialogActions>
+            <MuiCustomButton
+              data-umami-event="outflowUpdate"
+              onClick={onConfirmOutflow}
+            >
+              {languages[language].general.confirm}
+            </MuiCustomButton>
+            <MuiCustomButton
+              onClick={() => handleExitConfirm(setIsConfirmOutflowOpen)}
+            >
+              {languages[language].general.cancel}
+            </MuiCustomButton>
+          </MuiCustomDialogActions>
+        </MuiCustomDialog>
+      )}
+
+      {showConfirmationDeleteIncome && (
+        <MuiCustomDialog
+          open={showConfirmationDeleteIncome}
+          onClose={() => setShowConfirmationDeleteIncome(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <MuiCustomDialogTitle>
+            {languages[language].insert.incomeSection.confirmDelete}
+          </MuiCustomDialogTitle>
+          <MuiCustomDialogActions>
+            <MuiCustomButton onClick={onConfirmDeleteIncome}>
+              {languages[language].general.confirm}
+            </MuiCustomButton>
+            <MuiCustomButton
+              onClick={() => setShowConfirmationDeleteIncome(false)}
+            >
+              {languages[language].general.cancel}
+            </MuiCustomButton>
+          </MuiCustomDialogActions>
+        </MuiCustomDialog>
+      )}
+
+      {showConfirmationDeleteOutflow && (
+        <MuiCustomDialog
+          open={showConfirmationDeleteOutflow}
+          onClose={() => setShowConfirmationDeleteOutflow(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <MuiCustomDialogTitle>
+            {languages[language].insert.outflowSection.confirmDelete}
+          </MuiCustomDialogTitle>
+          <MuiCustomDialogActions>
+            <MuiCustomButton onClick={onConfirmDeleteOutflow}>
+              {languages[language].general.confirm}
+            </MuiCustomButton>
+            <MuiCustomButton
+              onClick={() => setShowConfirmationDeleteOutflow(false)}
+            >
+              {languages[language].general.cancel}
+            </MuiCustomButton>
+          </MuiCustomDialogActions>
+        </MuiCustomDialog>
+      )}
+    </>
+  );
+}

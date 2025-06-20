@@ -2109,6 +2109,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             </Top>
             {/* <BuyMeACoffeeWidget isMobileScreen={isMobileScreen}/> */}
         </SidebarSection>
+
     );
 }
 

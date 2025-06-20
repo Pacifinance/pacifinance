@@ -5,8 +5,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 
-//import CheckPrice from './sections/CheckPrice';
-import ComingSoon from '../components/ComingSoon';
+import CheckPrice from '../sections/CheckPrice';
 
 function CheckPricesPage() {
   // const { theme } = useContext(ThemeContext);
@@ -33,8 +32,7 @@ function CheckPricesPage() {
   return (
     <Div>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      {/* <CheckPrice /> */}
-      <ComingSoon />
+      <CheckPrice />
     </Div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { Header } from '../sections/HeaderFooter';
+import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../components/LandingFooter';
 import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
 

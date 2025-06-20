@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { Header, Footer } from '../sections/HeaderFooter';
+import { Header } from '../sections/LandingHeader';
 import SEOHead from '../components/SEOHead';
 import { PageWrapper } from '../styles/MyStyled';
 import languages from '../data/languages.json';
@@ -251,7 +251,6 @@ export default function PricingPage() {
         </div>
       </main>
 
-      <Footer theme={theme} />
     </PageWrapper>
   );
 }

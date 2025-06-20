@@ -170,6 +170,7 @@
         },
         "header": {
             "signIn": "Accedi",
+            "signUp": "Registrati",
             "login": {
                 "title": "Accedi",
                 "titleButton": "Accedi",
@@ -1033,6 +1034,7 @@
         },
         "header": {
             "signIn": "Sign In",
+            "signUp": "Sign Up",
             "login": {
                 "title": "Login",
                 "titleButton": "Login",

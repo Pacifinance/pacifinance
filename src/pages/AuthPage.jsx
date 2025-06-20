@@ -124,7 +124,7 @@ export default function AuthPage() {
                   ) : (
                     <div>
                       <h2 className="text-xl font-bold mb-4 text-center">
-                        Sign In
+                        {languages[language].header.login.title}
                       </h2>
                       <SignInForm />
                     </div>
@@ -414,7 +414,7 @@ export default function AuthPage() {
                     ) : (
                       <div>
                         <h2 className="text-2xl font-bold mb-6 text-center">
-                          Sign In
+                          {languages[language].header.login.title}
                         </h2>
                         <SignInForm />
                       </div>

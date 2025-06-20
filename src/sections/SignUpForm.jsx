@@ -125,7 +125,7 @@ export default function SignUpForm() {
                         <MuiCustomTextField
                             theme={theme}
                             id="passwordSignUp"
-                            label="Password"
+                            label={languages[language].header.register.password}
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={handlePasswordChange}
@@ -150,7 +150,7 @@ export default function SignUpForm() {
                             <MuiCustomTextField
                                 theme={theme}
                                 id="confirmPassword"    
-                                label="Conferma Password"
+                                label={languages[language].header.register.confirmPassword}
                                 type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}
                                 onChange={handleConfirmPasswordChange}
@@ -174,7 +174,7 @@ export default function SignUpForm() {
                                 }}
                             />
                         <div className="button-wrapper">
-                            <SignUpButton theme={theme} data-umami-event="newUser" type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>Sign Up</SignUpButton>
+                            <SignUpButton theme={theme} data-umami-event="newUser" type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>{languages[language].header.register.titleButton}</SignUpButton>
                         </div>
 
                     </form>

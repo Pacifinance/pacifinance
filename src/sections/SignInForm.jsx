@@ -91,7 +91,7 @@ export default function SignInForm() {
                     <form id="signIn-IdPassword" className="space-y-4" onSubmit={handleSubmit}>
                         <MuiCustomTextField theme={theme}
                           id = "username"
-                          label="Id o Username"
+                          label={languages[language].header.login.username}
                           type={showUsername ? 'text' : 'password'}
                           value={username}
                           onChange={(event) => setUsername(event.target.value)}
@@ -115,7 +115,7 @@ export default function SignInForm() {
                         />
                         <MuiCustomTextField theme={theme}
                           id = "passwordSignIn"
-                          label="Password"
+                          label={languages[language].header.login.password}
                           type={showPassword ? 'text' : 'password'}
                           value={password}
                           onChange={(event) => setPassword(event.target.value)}
@@ -139,7 +139,7 @@ export default function SignInForm() {
                         />
                         <div className="button-wrapper">
                           <SignInButton theme={theme} type="submit" $fullWidth>
-                            Sign In
+                            {languages[language].header.login.titleButton}
                           </SignInButton>
                         </div>
 

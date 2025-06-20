@@ -137,7 +137,7 @@ export default function OutflowSection({
       const r = match[1],
         g = match[2],
         b = match[3];
-      return `linear-gradient(90deg, rgba(${r},${g},${b},0.18) 0%, rgba(${r},${g},${b},0.38) 100%)`;
+      return `linear-gradient(90deg, rgba(${r},${g},${b},0.15) 0%, rgba(${r},${g},${b},0.25) 100%)`;
     }
     return baseColor;
   }
@@ -353,19 +353,18 @@ export default function OutflowSection({
     const rows = [
       ...filtered.map((add, index) => {
         let colorKey = undefined;
-        if (add.categoryTag && add.categoryTag.label) {
-          colorKey = add.categoryTag.label;
-        } else if (
-          add.categoryTag &&
-          add.categoryTag.translations &&
-          add.categoryTag.translations['en']
-        ) {
+        
+        // First try to get the English translation as it matches the keys in categoryColors.js
+        if (add.categoryTag && add.categoryTag.translations && add.categoryTag.translations['en']) {
           colorKey = add.categoryTag.translations['en'];
+        } else if (add.categoryTag && add.categoryTag.label) {
+          colorKey = add.categoryTag.label;
         } else if (add.categoryTag && add.categoryTag.translations) {
           const keys = Object.keys(add.categoryTag.translations);
           if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
         }
-        const baseColor = outflowCategoryColors[colorKey] || '#ffcfcf';
+        
+        const baseColor = outflowCategoryColors[colorKey] || 'rgba(255, 207, 207, 0.32)';
         const rowGradient = getGradientForCategory(baseColor);
         return (
           <tr key={index} style={{ background: rowGradient }}>

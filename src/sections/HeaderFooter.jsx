@@ -91,7 +91,7 @@ function Header({
               {language === "it" ? "IT" : "EN"}
             </MyButton>
             <MyButton theme={theme} onClick={handleAuthNavigation}>
-              Access Account
+              {languages[language].header.signIn}
             </MyButton>
           </ButtonContainer>
         </div>

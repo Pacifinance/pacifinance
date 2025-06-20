@@ -78,25 +78,6 @@
         },
 
         "landing": {
-            "title": "PaciFinance",
-            "subtitle": "Personale, Privacy, Pacify",
-            "sectionTitle": "Privacy, Sicurezza e Confronto",
-            "descriptionRow1": "La piattaforma sicura e privacy oriented per la finanza personale.",
-            "descriptionRow2": "Potrai confrontarti con altri utenti sia nel tuo settore che non, nel tuo paese o all'estero.",
-            "descriptionRow3": "Check del portafoglio, delle entrate e delle spese nel tempo.",
-            "discoverButton": "Scopri di più",
-            "point1": {
-                "title": "Facile da usare",
-                "description": "Controlla i tuoi risparmi e i tuoi investimenti in modo semplice e intuitivo."
-            },
-            "point2": {
-                "title": "Sicurezza garantita",
-                "description": "Dati sicuri, anonimi e non sensibili.La privacy dell'utente è la nostra priorità. "
-            },
-            "point3": {
-                "title": "Professionale e affidabile",
-                "description": "Servizi di confronto personale e con altri<br></br> utenti, mantenendo la tua privacy."
-            },
             "new": {
                 "hero": {
                     "title": "Prendi il Controllo",
@@ -188,6 +169,7 @@
             }
         },
         "header": {
+            "signIn": "Accedi",
             "login": {
                 "title": "Accedi",
                 "titleButton": "Accedi",
@@ -959,25 +941,6 @@
         },
 
         "landing": {
-            "title": "PaciFinance",
-            "subtitle": "Personal, Privacy, Pacify",
-            "sectionTitle": "Privacy, Security and Comparison",
-            "descriptionRow1": "The secure and privacy oriented platform for personal finance.",
-            "descriptionRow2": "You can compare yourself with other users both in your sector that not, in your country or abroad.",
-            "descriptionRow3": "Check the portfolio, income and outflows over time.",
-            "discoverButton": "Discover more",
-            "point1": {
-                "title": "Easy to use",
-                "description": "Check your savings and investments in a simple and intuitive way."
-            },
-            "point2": {
-                "title": "Guaranteed security",
-                "description": "Secure, anonymous and non-sensitive data. User privacy is our priority."
-            },
-            "point3": {
-                "title": "Professional and reliable",
-                "description": "Personal and with other users comparison services, maintaining your privacy."
-            },
             "new": {
                 "hero": {
                     "title": "Take Control",
@@ -1069,6 +1032,7 @@
             }
         },
         "header": {
+            "signIn": "Sign In",
             "login": {
                 "title": "Login",
                 "titleButton": "Login",

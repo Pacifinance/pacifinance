@@ -76,10 +76,9 @@ function Header({
           {showDemoButton && (
             <button
               data-umami-event="tryDemo"
-              className={`animate-slide-down border-2 border-white rounded-xl md:rounded items-center text-base cursor-pointer bg-paciGreen text-white p-0.5 text-xs md:text-lg md:px-4 shadow-xl mr-2 md:mr-20`}
+              className={`animate-slide-down border border-white rounded-lg md:rounded items-center cursor-pointer bg-paciGreen text-white px-2 py-1 text-xs md:text-lg md:px-4 md:py-2 md:border-2 shadow-xl mr-2 md:mr-20`}
               onClick={DemoLogin}
             >
-              {" "}
               {languages[language].header.demo.titleButton}
             </button>
           )}

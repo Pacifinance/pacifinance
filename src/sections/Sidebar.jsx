@@ -2115,7 +2115,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         />
                     </ToggleButton>
                 )}
-            </Top>    
+            
         </SidebarSection>
     );
 }

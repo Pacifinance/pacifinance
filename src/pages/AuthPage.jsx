@@ -44,8 +44,8 @@ export default function AuthPage() {
         >
           <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-            {/* Left Column - Information and Security Notice */}
-            <div className="space-y-8">
+            {/* Mobile: Form First, Desktop: Information First */}
+            <div className={`space-y-8 ${isMobileScreen ? 'order-2' : 'order-1'}`}>
               {/* Welcome Section */}
               <div className="text-center lg:text-left">
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -169,8 +169,8 @@ export default function AuthPage() {
               </div>
             </div>
 
-            {/* Right Column - Authentication Form */}
-            <div className="flex justify-center">
+            {/* Mobile: Form First, Desktop: Authentication Form Second */}
+            <div className={`flex justify-center ${isMobileScreen ? 'order-1' : 'order-2'}`}>
               <div 
                 className="w-full max-w-md p-8 rounded-2xl shadow-2xl"
                 style={{ 

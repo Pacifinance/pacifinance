@@ -31,6 +31,7 @@ const SidebarModals = ({
     mode,
     toggleMode,
     toggleHidden,
+    toggleLanguage,
     // Account Modal
     showAccountModal,
     userId,

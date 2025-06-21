@@ -3,7 +3,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { Header } from '../sections/LandingHeader';
-import LandingFooter from '../components/LandingFooter';
+import LandingFooter from '../sections/LandingFooter';
 import SignInForm from '../sections/SignInForm';
 import SignUpForm from '../sections/SignUpForm';
 import LockIcon from '@mui/icons-material/Lock';

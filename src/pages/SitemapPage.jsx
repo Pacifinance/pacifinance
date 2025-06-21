@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { Header } from "../sections/LandingHeader";
-import LandingFooter from "../components/LandingFooter";
+import LandingFooter from "../sections/LandingFooter";
 
 export default function SitemapPage() {
   const { theme, toggleMode } = useContext(ThemeContext);

@@ -4,7 +4,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { Header } from '../sections/LandingHeader';
-import LandingFooter from '../components/LandingFooter';
+import LandingFooter from '../sections/LandingFooter';
 import NewLandingContent from '../sections/LandingContent';
 
 export default function NewLandingPage() {

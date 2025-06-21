@@ -5,6 +5,7 @@ import { Header } from '../sections/LandingHeader';
 import SEOHead from '../components/SEOHead';
 import { PageWrapper } from '../styles/MyStyled';
 import languages from '../data/languages.json';
+import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 
 export default function PricingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);

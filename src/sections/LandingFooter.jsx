@@ -2,8 +2,8 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { LanguageContext } from '../contexts/LanguageContext';
-import LogoPaci from './Logo';
-import BuyMeACoffeeWidget from './BuyMeACoffeeWidget';
+import LogoPaci from '../components/Logo';
+import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import languages from '../data/languages.json';
 
 export default function LandingFooter({ theme }) {

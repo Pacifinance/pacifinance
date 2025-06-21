@@ -151,7 +151,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const getActivePageIndex = () => {
         const path = location.pathname;
         if (path === "/dashboard") return 0;
-        if (path === "/your-charts") return 1;
+        if (path === "/charts-statistics") return 1;
         if (path === "/insert-values") return 2;
         if (path === "/check-prices") return 3;
         if (path === "/leaderboard") return 4;
@@ -415,7 +415,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 },
                                 {
                                     icon: AiOutlineDotChart,
-                                    route: "/your-charts",
+                                    route: "/charts-statistics",
                                     tooltip: languages[language].sidebar.graphs,
                                     index: 1,
                                 },

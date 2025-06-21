@@ -53,7 +53,7 @@ export default function StatsCharts() {
           return (
 
             <>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.title}</SecondaryTitle>
                 <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph2}</SecondaryTitle>
                 <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
@@ -66,7 +66,7 @@ export default function StatsCharts() {
         } else if (activePage === "statsIncomesOutflows") {
           return (
             <>
-                <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph}</SecondaryTitle>
+                <SecondaryTitle theme={theme}>{languages[language].graphs.title}</SecondaryTitle>
                 <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 <SecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph2}</SecondaryTitle>
                 <PercentageOutflowsChart theme={theme} userData={userData} isHidden={isHidden}/>

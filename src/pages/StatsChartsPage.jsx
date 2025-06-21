@@ -41,16 +41,16 @@ function StatsChartsPage() {
         noindex={true}
       />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <ContentWrapper theme={theme}>
-        <StandardPageTitle theme={theme} style={{ 
+      {/* <ContentWrapper theme={theme}> */}
+        {/* <StandardPageTitle theme={theme} style={{ 
           textAlign: 'center', 
           marginBottom: '2rem',
           marginTop: '2rem'
         }}>
           {languages[language].graphs.title}
-        </StandardPageTitle>
-        <StatsCharts />
-      </ContentWrapper>
+        </StandardPageTitle> */}
+      <StatsCharts />
+      {/* </ContentWrapper> */}
     </Div>
   );
 }

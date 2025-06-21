@@ -30,7 +30,7 @@ export const UserProvider = ({ children }) => {
       } catch (err) {
         setIsAuthenticated(false);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     checkSession();
@@ -342,10 +342,10 @@ export const UserProvider = ({ children }) => {
     setIsUpdated(value);
   };
 
-  if (loading) return null; // oppure uno spinner
+  if (isLoading) return null; // oppure uno spinner
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, isAuthenticated, isUpdated, handleSetIsAuthenticated, handleSetIsUpdated, loading }}>
+    <UserContext.Provider value={{ userData, setUserData, isAuthenticated, isUpdated, handleSetIsAuthenticated, handleSetIsUpdated, isLoading }}>
       {children}
     </UserContext.Provider>
   );

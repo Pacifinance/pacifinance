@@ -333,19 +333,19 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     };
 
     // Filter and sort tags
-    const otherNationalityOption = nationalityTags.find(tag => tag.index === 9999);
-    const otherNationalityTags = nationalityTags.filter(tag => tag.index !== 9999);
+    const otherNationalityOption = nationalityTags?.find(tag => tag.index === 9999);
+    const otherNationalityTags = nationalityTags?.filter(tag => tag.index !== 9999) || [];
     const sortedNationalityTags = otherNationalityTags.sort((a, b) =>
-        a.translations.it.localeCompare(b.translations.it)
+        a.translations?.it?.localeCompare(b.translations?.it) || 0
     );
     if (otherNationalityOption) {
         sortedNationalityTags.push(otherNationalityOption);
     }
 
-    const otherJobOption = jobTags.find(tag => tag.index === 9999);
-    const otherJobTags = jobTags.filter(tag => tag.index !== 9999);
+    const otherJobOption = jobTags?.find(tag => tag.index === 9999);
+    const otherJobTags = jobTags?.filter(tag => tag.index !== 9999) || [];
     const sortedJobTags = otherJobTags.sort((a, b) =>
-        a.translations.it.localeCompare(b.translations.it)
+        a.translations?.it?.localeCompare(b.translations?.it) || 0
     );
     if (otherJobOption) {
         sortedJobTags.push(otherJobOption);

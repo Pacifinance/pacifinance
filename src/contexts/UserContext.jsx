@@ -13,7 +13,9 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   // Development mode bypass
-  const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
+  const isDevelopment = process.env.NODE_ENV === 'development' || 
+                       window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('replit.dev');
 
   // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
   useEffect(() => {

@@ -91,10 +91,10 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
         fetchData();
     }, [userData]);
 
-    //commented to work in local on the dashboard
-    // if (isLoading) {
-    //     return <div>Caricamento...</div>; // Mostra un indicatore di caricamento durante il recupero dei dati
-    // }
+    // Show loading indicator if userData is not available
+    if (isLoading || !userData) {
+        return <div>Caricamento...</div>;
+    }
 
     const capitalData = [
         {
@@ -196,7 +196,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
             <CapitalValue theme={theme}>
                 {languages[language].dashboard.totalBalance}{" "}
                 <span style={{ color: primaryColor }}>
-                    {isHidden ? "****" : totalReal.toLocaleString("it-IT")} €
+                    {isHidden ? "****" : (totalReal || 0).toLocaleString("it-IT")} €
                 </span>
             </CapitalValue>
             <UpperSection theme={theme}>
@@ -232,7 +232,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                         <h5 className="text-xs md:text-base">
                             {isHidden
                                 ? "****"
-                                : bankReal.toLocaleString("it-IT")}{" "}
+                                : (bankReal || 0).toLocaleString("it-IT")}{" "}
                             €
                         </h5>
                     </div>
@@ -266,7 +266,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                         <h5 className="text-xs md:text-base">
                             {isHidden
                                 ? "****"
-                                : cashReal.toLocaleString("it-IT")}{" "}
+                                : (cashReal || 0).toLocaleString("it-IT")}{" "}
                             €
                         </h5>
                     </div>
@@ -306,7 +306,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                         <h5 className="text-xs md:text-base">
                             {isHidden
                                 ? "****"
-                                : digitalServicesReal.toLocaleString(
+                                : (digitalServicesReal || 0).toLocaleString(
                                       "it-IT",
                                   )}{" "}
                             €
@@ -345,7 +345,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             <h5 className="text-xs md:text-base">
                                 {isHidden
                                     ? "****"
-                                    : stocksReal.toLocaleString("it-IT")}{" "}
+                                    : (stocksReal || 0).toLocaleString("it-IT")}{" "}
                                 €
                             </h5>
                         </div>
@@ -381,7 +381,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             <h5 className="text-xs md:text-base">
                                 {isHidden
                                     ? "****"
-                                    : etfReal.toLocaleString("it-IT")}{" "}
+                                    : (etfReal || 0).toLocaleString("it-IT")}{" "}
                                 €
                             </h5>
                         </div>
@@ -418,7 +418,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             <h5 className="text-xs md:text-base">
                                 {isHidden
                                     ? "****"
-                                    : bitcoinReal.toLocaleString("it-IT")}{" "}
+                                    : (bitcoinReal || 0).toLocaleString("it-IT")}{" "}
                                 €
                             </h5>
                         </div>
@@ -454,7 +454,7 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
                             <h5 className="text-xs md:text-base">
                                 {isHidden
                                     ? "****"
-                                    : cryptoReal.toLocaleString("it-IT")}{" "}
+                                    : (cryptoReal || 0).toLocaleString("it-IT")}{" "}
                                 €
                             </h5>
                         </div>

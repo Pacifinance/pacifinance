@@ -41,16 +41,9 @@ function StatsChartsPage() {
         noindex={true}
       />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      {/* <ContentWrapper theme={theme}> */}
-        {/* <StandardPageTitle theme={theme} style={{ 
-          textAlign: 'center', 
-          marginBottom: '2rem',
-          marginTop: '2.5rem'
-        }}>
-          {languages[language].graphs.title}
-        </StandardPageTitle> */}
-      <StatsCharts />
-      {/* </ContentWrapper> */}
+      <MobileOffset>
+        <StatsCharts />
+      </MobileOffset>
     </Div>
   );
 }
@@ -59,6 +52,12 @@ export default StatsChartsPage;
 
 const Div = styled.div `
   position: relative;
+`;
+
+const MobileOffset = styled.div`
+  @media (max-width: 768px) {
+    padding-top: 80px;
+  }
 `;
 
 const ContentWrapper = styled.div `

@@ -44,8 +44,8 @@ function StatsChartsPage() {
       {/* <ContentWrapper theme={theme}> */}
         {/* <StandardPageTitle theme={theme} style={{ 
           textAlign: 'center', 
-          marginBottom: '1rem',
-          marginTop: '1rem'
+          marginBottom: '2rem',
+          marginTop: '2.5rem'
         }}>
           {languages[language].graphs.title}
         </StandardPageTitle> */}

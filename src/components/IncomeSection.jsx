@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -331,7 +330,7 @@ export default function IncomeSection({
     const rows = [
       ...filtered.map((add, index) => {
         let colorKey = undefined;
-        
+
         // First try to get the English translation as it matches the keys in categoryColors.js
         if (add.categoryTag && add.categoryTag.translations && add.categoryTag.translations['en']) {
           colorKey = add.categoryTag.translations['en'];
@@ -341,7 +340,7 @@ export default function IncomeSection({
           const keys = Object.keys(add.categoryTag.translations);
           if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
         }
-        
+
         const baseColor = incomeCategoryColors[colorKey] || 'rgba(181, 222, 209, 0.35)';
         const rowGradient = getGradientForCategory(baseColor);
         return (
@@ -680,7 +679,5 @@ export default function IncomeSection({
             }
           }
         `}</style>
-      </div>
-    </div>
-  );
-}
+       </div>
+     </div>

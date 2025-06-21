@@ -9,6 +9,12 @@ import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { StandardPageTitle, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../styles/MyStyled';
 import styled from 'styled-components';
+import InOutStatsMonth from '../components/InOutStatsMonth';
+import InOutStatsYear from '../components/InOutStatsYear';
+import { PrivacyContext } from '../contexts/PrivacyContext';
+import { CustomTick } from '../utils/customGraphsInfo';
+import languages from '../data/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 const StatsContainer = styled.div`
   background: ${props => props.theme.backgroundColor};
@@ -22,14 +28,6 @@ const StatsTitle = styled(StandardPageTitle)`
   margin-top: 2rem;
   margin-bottom: 2rem;
 `;
-import InOutStatsMonth from '../components/InOutStatsMonth';
-import InOutStatsYear from '../components/InOutStatsYear';
-import { PrivacyContext } from '../contexts/PrivacyContext';
-import { CustomTick } from '../utils/customGraphsInfo';
-import languages from '../data/languages.json';
-import { LanguageContext } from '../contexts/LanguageContext';
-
-
 
 export default function StatsCharts() {
     const { userData } = useContext(UserContext);

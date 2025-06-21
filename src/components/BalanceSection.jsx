@@ -1,4 +1,3 @@
-
 import React from 'react';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -115,303 +114,132 @@ export default function BalanceSection({
 
   return (
     <>
-      {/*TitleSection used to create a distance TO UPGRADE */}
       <TitleSection theme={theme}>
-        {' '}
-        {languages[language].insert.balanceSection.titleLiquidity}{' '}
+        {languages[language].insert.balanceSection.titleLiquidity}
       </TitleSection>
-      <StyledInputs theme={theme}>
-        <Column>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+      <StyledInputs theme={theme} style={{flexDirection: 'column', width: '100%'}}>
+        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '1.5rem'}}>
+          {/* Bank */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.bank}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setBankReal)}
+                onBlur={(e) => handleInputBlur(e, setBankReal)}
+                placeholder={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+          {/* Cash */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.cash}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setCashReal)}
+                onBlur={(e) => handleInputBlur(e, setCashReal)}
+                placeholder={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+          {/* Digital Services */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.digitalServices}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setDigitalServicesReal)}
+                onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)}
+                placeholder={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-        </Column>
-        <Column>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setBankReal)}
-              onBlur={(e) => handleInputBlur(e, setBankReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : bankReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setCashReal)}
-              onBlur={(e) => handleInputBlur(e, setCashReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : cashReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setDigitalServicesReal)}
-              onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : digitalServicesReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-        </Column>
+        </div>
       </StyledInputs>
       <TitleSection theme={theme}>
-        {' '}
-        {languages[language].insert.balanceSection.titleInvestments}{' '}
+        {languages[language].insert.balanceSection.titleInvestments}
       </TitleSection>
-      <StyledInputs theme={theme}>
-        <Column>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+      <StyledInputs theme={theme} style={{flexDirection: 'column', width: '100%'}}>
+        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '1.5rem'}}>
+          {/* Stocks */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.stocks}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setStocksReal)}
+                onBlur={(e) => handleInputBlur(e, setStocksReal)}
+                placeholder={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+          {/* ETF */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.etf}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setETFReal)}
+                onBlur={(e) => handleInputBlur(e, setETFReal)}
+                placeholder={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+          {/* Bitcoin */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.bitcoin}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setBitcoinReal)}
+                onBlur={(e) => handleInputBlur(e, setBitcoinReal)}
+                placeholder={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px 16px',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-            borderRadius: '12px',
-            color: theme.textColor,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '1rem',
-            fontWeight: '500',
-            minHeight: '48px',
-            width: '100%',
-            maxWidth: '400px',
-            marginBottom: '8px',
-            transition: 'all 0.3s ease'
-          }}>
-            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
+          {/* Crypto */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
               {languages[language].assets.crypto}
             </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setCryptoReal)}
+                onBlur={(e) => handleInputBlur(e, setCryptoReal)}
+                placeholder={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
           </div>
-        </Column>
-        <Column>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setStocksReal)}
-              onBlur={(e) => handleInputBlur(e, setStocksReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : stocksReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setETFReal)}
-              onBlur={(e) => handleInputBlur(e, setETFReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : etfReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setBitcoinReal)}
-              onBlur={(e) => handleInputBlur(e, setBitcoinReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : bitcoinReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange(e, setCryptoReal)}
-              onBlur={(e) => handleInputBlur(e, setCryptoReal)}
-              placeholder={
-                isHidden
-                  ? '****'
-                  : cryptoReal.toLocaleString('it-IT', {
-                      minimumFractionDigits: 2,
-                    })
-              }
-              style={inputWithCurrency}
-            />
-          </div>
-          {/* Responsive: riduci larghezza e font su mobile */}
-          <style>{`
-            @media (max-width: 600px) {
-              .labelContainer { min-width: 0 !important; width: 100% !important; }
-              .labelStyle { font-size: 0.90em !important; }
-              input[type='text'] { font-size: 0.98em !important; height: 34px !important; }
-              .MuiInputBase-root, .MuiSelect-root { font-size: 0.98em !important; }
-            }
-          `}</style>
-        </Column>
+        </div>
       </StyledInputs>
-
       <StyledCalendarInput>
         <StyledDateInput
           type="date"
@@ -420,7 +248,6 @@ export default function BalanceSection({
           max={currentDate}
         />
       </StyledCalendarInput>
-
       <StyledInputs theme={theme}>
         <MySecondaryButton theme={theme} onClick={onUpdateBalance}>
           {languages[language].insert.balanceSection.updateButton}

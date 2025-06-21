@@ -99,6 +99,7 @@ export default function BalanceSection({
     background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
     boxSizing: 'border-box',
     transition: 'all 0.3s ease',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   };
   const currencySymbolStyle = {
     position: 'absolute',

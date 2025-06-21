@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -360,7 +359,7 @@ export default function OutflowSection({
     const rows = [
       ...filtered.map((add, index) => {
         let colorKey = undefined;
-        
+
         // First try to get the English translation as it matches the keys in categoryColors.js
         if (add.categoryTag && add.categoryTag.translations && add.categoryTag.translations['en']) {
           colorKey = add.categoryTag.translations['en'];
@@ -370,7 +369,7 @@ export default function OutflowSection({
           const keys = Object.keys(add.categoryTag.translations);
           if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
         }
-        
+
         const baseColor = outflowCategoryColors[colorKey] || 'rgba(255, 207, 207, 0.32)';
         const rowGradient = getGradientForCategory(baseColor);
         return (
@@ -499,7 +498,13 @@ export default function OutflowSection({
                 });
               }
             }}
-            style={{ backgroundColor: 'white' }}
+            style={{ 
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              minHeight: '48px'
+            }}
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
@@ -538,7 +543,13 @@ export default function OutflowSection({
                 setTypoOutflow({ key: selectedKey, value: selectedValue });
               }
             }}
-            style={{ backgroundColor: 'white' }}
+            style={{ 
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              minHeight: '48px'
+            }}
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
@@ -668,3 +679,8 @@ export default function OutflowSection({
     </>
   );
 }
+```
+
+```text
+The code has been modified to improve the styling of the Select components, ensuring they have rounded corners, consistent styling, and appropriate box shadows.
+</text>

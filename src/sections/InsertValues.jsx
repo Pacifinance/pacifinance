@@ -78,13 +78,21 @@ const ModernSectionButton = styled.button`
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
+  position: relative;
+  
+  ${(props) => props.$isActive && `
+    box-shadow: 0 0 0 3px ${props.theme.buttonBackgroundColor}40;
+    transform: scale(1.02);
+  `}
   
   &:hover {
     background: ${(props) => props.$isActive 
       ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}dd 0%, ${props.theme.buttonBackgroundColor}bb 100%)`
       : `${props.theme.buttonBackgroundColor}15`};
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: ${(props) => props.$isActive ? 'scale(1.02) translateY(-2px)' : 'translateY(-2px)'};
+    box-shadow: ${(props) => props.$isActive 
+      ? `0 0 0 3px ${props.theme.buttonBackgroundColor}40, 0 8px 25px rgba(0, 0, 0, 0.15)`
+      : '0 8px 25px rgba(0, 0, 0, 0.15)'};
   }
   
   @media (max-width: 768px) {
@@ -104,7 +112,7 @@ const SectionContainer = styled.div`
     : '#e2e8f0'};
   border-radius: 20px;
   padding: 2rem;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem auto;
   backdrop-filter: blur(10px);
   box-shadow: ${(props) => props.theme.mode === 'dark' 
     ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
@@ -114,6 +122,8 @@ const SectionContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  max-width: 1000px;
   
   &:hover {
     transform: translateY(-4px);
@@ -126,95 +136,52 @@ const SectionContainer = styled.div`
     padding: 1.5rem;
     border-radius: 16px;
     margin-bottom: 1.5rem;
+    max-width: 95%;
   }
 
-  /* Override any global styles that might interfere */
+  /* Ensure all direct children are properly centered */
   & > * {
-    width: 100%;
-    max-width: none;
-  }
-
-  /* Center form elements */
-  form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-  }
-
-  /* Style inputs, selects, and buttons consistently */
-  input, select, button {
-    min-height: 48px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 2px solid ${(props) => props.theme.mode === 'dark' 
-      ? `${props.theme.buttonBackgroundColor}30`
-      : '#e2e8f0'};
-    background: ${(props) => props.theme.mode === 'dark' 
-      ? 'rgba(255,255,255,0.05)' 
-      : 'white'};
-    color: ${(props) => props.theme.textColor};
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin: 8px;
-    width: 100%;
-    max-width: 400px;
-
-    &:focus {
-      outline: none;
-      border-color: ${(props) => props.theme.buttonBackgroundColor};
-      box-shadow: 0 0 0 3px ${(props) => props.theme.buttonBackgroundColor}20;
-    }
-
-    &:hover {
-      border-color: ${(props) => props.theme.buttonBackgroundColor}60;
-    }
-  }
-
-  button {
-    background: ${(props) => props.theme.buttonBackgroundColor};
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: ${(props) => props.theme.buttonBackgroundColor}dd;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
-
-  /* Grid layouts for form sections */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    width: 100%;
-    max-width: 800px;
-    margin: 1rem 0;
-  }
-
-  .form-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-
-  .form-actions {
-    display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  /* Center form elements and override any conflicting styles */
+  form {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  /* Style for all form sections to center content */
+  & [class*="StyledAddSection"],
+  & [class*="StyledInputs"],
+  & [class*="TitleSection"],
+  & [class*="TitleLastAdds"],
+  & [class*="StyledCalendarInput"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  /* Ensure table titles are centered */
+  & h3, & h4 {
+    text-align: center !important;
+    width: 100% !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* Center table wrapper */
+  & > div[style*="overflowX"] {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
   }
 `;
 

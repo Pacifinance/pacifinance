@@ -369,6 +369,25 @@ export default function IncomeSection({
               <button
                 data-umami-event="deleteIncome"
                 onClick={() => onDeleteIncome(add.date, add.amount)}
+                style={{
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '6px 8px',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 4px rgba(255, 107, 107, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 4px 8px rgba(255, 107, 107, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 2px 4px rgba(255, 107, 107, 0.3)';
+                }}
               >
                 <FontAwesomeIcon icon={faTimes} />
               </button>
@@ -463,7 +482,13 @@ export default function IncomeSection({
                 });
               }
             }}
-            style={{ backgroundColor: 'white' }}
+            style={{ 
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              minHeight: '48px'
+            }}
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
@@ -530,10 +555,16 @@ export default function IncomeSection({
         </MySecondaryButton>
       </StyledAddSection>
 
-      <TitleLastAdds theme={theme}>
-        {languages[language].insert.incomeSection.titleListing}
+      <TitleLastAdds theme={theme} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', width: '100%' }}>
+        <span style={{ marginRight: '0.5rem' }}>{languages[language].insert.incomeSection.titleListing}</span>
         <select
-          className="text-black text-center font-normal mx-2 text-base px-2 py-1 rounded-md"
+          className="text-black text-center font-normal text-base px-2 py-1 rounded-md"
+          style={{ 
+            borderRadius: '8px',
+            border: '1px solid #ccc',
+            padding: '6px 12px',
+            fontSize: '0.9rem'
+          }}
           value={selectedIncomesMonth}
           onChange={handleIncomesMonthChange}
         >
@@ -570,19 +601,26 @@ export default function IncomeSection({
         <style>{`
           @media (max-width: 600px) {
             table, .StyledTable, .StyledTable th, .StyledTable td {
-              font-size: 0.92em !important;
-              padding: 4px 2px !important;
-              min-width: 60px !important;
+              font-size: 0.7em !important;
+              padding: 2px 1px !important;
+              min-width: 40px !important;
             }
             .StyledTable th, .StyledTable td {
-              line-height: 1.1 !important;
+              line-height: 1.0 !important;
+              word-break: break-word !important;
             }
-            .StyledTable select, .StyledTable input, .StyledTable button {
-              font-size: 0.95em !important;
-              padding: 4px 2px !important;
+            .StyledTable select, .StyledTable input {
+              font-size: 0.7em !important;
+              padding: 2px 4px !important;
+              min-width: 80px !important;
+            }
+            .StyledTable button {
+              font-size: 0.7em !important;
+              padding: 2px 4px !important;
+              min-width: 25px !important;
             }
             .StyledTable .MuiInputBase-root, .StyledTable .MuiSelect-root {
-              font-size: 0.95em !important;
+              font-size: 0.7em !important;
             }
           }
         `}</style>

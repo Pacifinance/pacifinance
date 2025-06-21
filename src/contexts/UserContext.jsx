@@ -5,8 +5,12 @@ const UserContext = React.createContext();
 
 export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const [error, setError] = useState(null);
+  const [isDemo, setIsDemo] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Development mode bypass
   const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
@@ -339,7 +343,7 @@ export const UserProvider = ({ children }) => {
   if (loading) return null; // oppure uno spinner
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, isAuthenticated, isUpdated, handleSetIsAuthenticated, handleSetIsUpdated }}>
+    <UserContext.Provider value={{ userData, setUserData, isAuthenticated, isUpdated, handleSetIsAuthenticated, handleSetIsUpdated, loading }}>
       {children}
     </UserContext.Provider>
   );

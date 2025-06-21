@@ -757,6 +757,6 @@ export default function OutflowSection({
           }
         `}</style>
       </div>
-    </>
+    </div>
   );
 }

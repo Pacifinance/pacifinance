@@ -70,36 +70,86 @@ const ModernSectionButton = styled.button`
     : 'transparent'};
   color: ${(props) => props.$isActive ? 'white' : props.theme.textColor};
   border: 2px solid ${(props) => props.theme.buttonBackgroundColor};
-  padding: 0.875rem 1.5rem;
+  padding: ${(props) => props.$isActive ? '1rem 2rem' : '0.875rem 1.5rem'};
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: ${(props) => props.$isActive ? '1.1rem' : '1rem'};
+  font-weight: ${(props) => props.$isActive ? '700' : '600'};
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   position: relative;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   ${(props) => props.$isActive && `
-    box-shadow: 0 0 0 3px ${props.theme.buttonBackgroundColor}40;
-    transform: scale(1.02);
+    box-shadow: 0 0 0 4px ${props.theme.buttonBackgroundColor}30, 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: scale(1.05) translateY(-3px);
+    z-index: 10;
+    border-width: 3px;
+    
+    &:before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, ${props.theme.buttonBackgroundColor}80, ${props.theme.buttonBackgroundColor}40);
+      border-radius: 14px;
+      z-index: -1;
+      opacity: 0.6;
+      filter: blur(4px);
+    }
   `}
   
   &:hover {
     background: ${(props) => props.$isActive 
       ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}dd 0%, ${props.theme.buttonBackgroundColor}bb 100%)`
-      : `${props.theme.buttonBackgroundColor}15`};
-    transform: ${(props) => props.$isActive ? 'scale(1.02) translateY(-2px)' : 'translateY(-2px)'};
+      : `${props.theme.buttonBackgroundColor}20`};
+    transform: ${(props) => props.$isActive 
+      ? 'scale(1.05) translateY(-4px)' 
+      : 'scale(1.02) translateY(-2px)'};
     box-shadow: ${(props) => props.$isActive 
-      ? `0 0 0 3px ${props.theme.buttonBackgroundColor}40, 0 8px 25px rgba(0, 0, 0, 0.15)`
-      : '0 8px 25px rgba(0, 0, 0, 0.15)'};
+      ? `0 0 0 4px ${props.theme.buttonBackgroundColor}40, 0 12px 40px rgba(0, 0, 0, 0.25)`
+      : '0 6px 20px rgba(0, 0, 0, 0.15)'};
+    border-color: ${(props) => props.theme.buttonBackgroundColor};
   }
   
+  /* Indicatore visivo per il pulsante attivo */
+  ${(props) => props.$isActive && `
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background: ${props.theme.buttonBackgroundColor};
+      border-radius: 2px;
+      box-shadow: 0 2px 8px ${props.theme.buttonBackgroundColor}60;
+    }
+  `}
+  
   @media (max-width: 768px) {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    padding: ${(props) => props.$isActive ? '0.875rem 1.25rem' : '0.75rem 1rem'};
+    font-size: ${(props) => props.$isActive ? '1rem' : '0.9rem'};
     flex: 1;
     min-width: 100px;
+    min-height: 48px;
+    
+    ${(props) => props.$isActive && `
+      &:after {
+        bottom: -6px;
+        width: 30px;
+        height: 2px;
+      }
+    `}
   }
 `;
 

@@ -681,6 +681,6 @@ export default function IncomeSection({
           }
         `}</style>
       </div>
-    </>
+    </div>
   );
 }

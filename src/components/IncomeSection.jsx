@@ -375,7 +375,7 @@ export default function IncomeSection({
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
-                  padding: '6px 8px',
+                  padding: '4px 6px',
                   fontSize: '0.8rem',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',

@@ -679,8 +679,3 @@ export default function OutflowSection({
     </>
   );
 }
-```
-
-```text
-The code has been modified to improve the styling of the Select components, ensuring they have rounded corners, consistent styling, and appropriate box shadows.
-</text>

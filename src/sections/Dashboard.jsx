@@ -91,9 +91,30 @@ function Dashboard({ theme, userData, isHidden, CustomTick }) {
         fetchData();
     }, [userData]);
 
-    // Show loading indicator if userData is not available
+    // Show Dashboard with default values if userData is not available yet
     if (isLoading || !userData) {
-        return <div>Caricamento...</div>;
+        // Return Dashboard with empty/default state instead of loading screen
+        return (
+            <SectionDashboard
+                theme={theme}
+                className="font-roboto pt-8 bg-paciGray px-4 overflow-hidden"
+                style={{ 
+                    paddingBottom: "2rem",
+                    maxWidth: "100vw",
+                    boxSizing: "border-box",
+                    paddingTop: isMobileScreen ? "90px" : "2rem"
+                }}
+            >
+                <StandardPageTitle theme={theme}>
+                    {languages[language].dashboard.title}
+                </StandardPageTitle>
+                <CapitalValue theme={theme}>
+                    {languages[language].dashboard.totalBalance}{" "}
+                    <span style={{ color: primaryColor }}>0 €</span>
+                </CapitalValue>
+                {/* Placeholder content while loading */}
+            </SectionDashboard>
+        );
     }
 
     const capitalData = [

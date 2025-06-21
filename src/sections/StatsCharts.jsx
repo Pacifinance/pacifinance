@@ -25,8 +25,8 @@ const StatsContainer = styled.div`
 `;
 
 const StatsTitle = styled(StandardPageTitle)`
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 `;
 
 export default function StatsCharts() {

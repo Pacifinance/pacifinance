@@ -110,6 +110,10 @@ const SectionContainer = styled.div`
     ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
     : '0 4px 20px rgba(0, 0, 0, 0.08)'};
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
     transform: translateY(-4px);
@@ -122,6 +126,95 @@ const SectionContainer = styled.div`
     padding: 1.5rem;
     border-radius: 16px;
     margin-bottom: 1.5rem;
+  }
+
+  /* Override any global styles that might interfere */
+  & > * {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* Center form elements */
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Style inputs, selects, and buttons consistently */
+  input, select, button {
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid ${(props) => props.theme.mode === 'dark' 
+      ? `${props.theme.buttonBackgroundColor}30`
+      : '#e2e8f0'};
+    background: ${(props) => props.theme.mode === 'dark' 
+      ? 'rgba(255,255,255,0.05)' 
+      : 'white'};
+    color: ${(props) => props.theme.textColor};
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 8px;
+    width: 100%;
+    max-width: 400px;
+
+    &:focus {
+      outline: none;
+      border-color: ${(props) => props.theme.buttonBackgroundColor};
+      box-shadow: 0 0 0 3px ${(props) => props.theme.buttonBackgroundColor}20;
+    }
+
+    &:hover {
+      border-color: ${(props) => props.theme.buttonBackgroundColor}60;
+    }
+  }
+
+  button {
+    background: ${(props) => props.theme.buttonBackgroundColor};
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: ${(props) => props.theme.buttonBackgroundColor}dd;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  /* Grid layouts for form sections */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    width: 100%;
+    max-width: 800px;
+    margin: 1rem 0;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
   }
 `;
 

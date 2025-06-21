@@ -254,13 +254,13 @@ const Knowledge = () => {
               {value.pros && value.cons && (
                 <ProsCons isMobile={isMobileScreen}>
                   <ProsConsBox type="pros">
-                    <ProsConsTitle type="pros">✅ Vantaggi</ProsConsTitle>
+                    <ProsConsTitle type="pros">✅ {knowledge.advantages}</ProsConsTitle>
                     <div style={{ whiteSpace: 'pre-line', fontSize: '0.9rem', color: '#155724' }}>
                       {value.pros}
                     </div>
                   </ProsConsBox>
                   <ProsConsBox type="cons">
-                    <ProsConsTitle type="cons">❌ Svantaggi</ProsConsTitle>
+                    <ProsConsTitle type="cons">❌ {knowledge.disadvantages}</ProsConsTitle>
                     <div style={{ whiteSpace: 'pre-line', fontSize: '0.9rem', color: '#721c24' }}>
                       {value.cons}
                     </div>

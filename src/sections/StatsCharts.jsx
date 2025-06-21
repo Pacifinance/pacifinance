@@ -8,6 +8,20 @@ import PercentageOutflowsChart from '../components/PercentageOutflowsChart';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { StandardPageTitle, StyledSectionStats, ButtonGroup, MySectionButton, SecondaryTitle } from '../styles/MyStyled';
+import styled from 'styled-components';
+
+const StatsContainer = styled.div`
+  background: ${props => props.theme.backgroundColor};
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  border: none;
+`;
+
+const StatsTitle = styled(StandardPageTitle)`
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+`;
 import InOutStatsMonth from '../components/InOutStatsMonth';
 import InOutStatsYear from '../components/InOutStatsYear';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -70,31 +84,38 @@ export default function StatsCharts() {
       };
 
     return (
-        <StyledSectionStats theme={theme}>
-            <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
-              <MySectionButton
-                theme={theme}
-                onClick={() => handlePageChange("statsBilancio")}
-                style={{
-                  backgroundColor:
-                    activePage === "statsBilancio" ? "" : "#222831",
-                  marginLeft: "6vw",
-                }}
-              >
-                {languages[language].graphs.statsBalance.title}
-              </MySectionButton>
-              <MySectionButton
-                theme={theme}
-                onClick={() => handlePageChange("statsIncomesOutflows")}
-                style={{
-                  backgroundColor:
-                    activePage === "statsIncomesOutflows" ? "" : "#222831",
-                }}
-              >
-                {languages[language].graphs.statsOutflows.title}
-              </MySectionButton>
-            </ButtonGroup>
-            {renderPage()}
-        </StyledSectionStats>
+        <StatsContainer theme={theme}>
+            <StatsTitle theme={theme}>
+                {activePage === "statsBilancio" 
+                    ? languages[language].graphs.statsBalance.title 
+                    : languages[language].graphs.statsOutflows.title}
+            </StatsTitle>
+            <StyledSectionStats theme={theme}>
+                <ButtonGroup theme={theme} variant="contained" aria-label="outlined primary button group">
+                  <MySectionButton
+                    theme={theme}
+                    onClick={() => handlePageChange("statsBilancio")}
+                    style={{
+                      backgroundColor:
+                        activePage === "statsBilancio" ? "" : "#222831",
+                      marginLeft: "6vw",
+                    }}
+                  >
+                    {languages[language].graphs.statsBalance.title}
+                  </MySectionButton>
+                  <MySectionButton
+                    theme={theme}
+                    onClick={() => handlePageChange("statsIncomesOutflows")}
+                    style={{
+                      backgroundColor:
+                        activePage === "statsIncomesOutflows" ? "" : "#222831",
+                    }}
+                  >
+                    {languages[language].graphs.statsOutflows.title}
+                  </MySectionButton>
+                </ButtonGroup>
+                {renderPage()}
+            </StyledSectionStats>
+        </StatsContainer>
       );
 }

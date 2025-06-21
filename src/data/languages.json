@@ -496,6 +496,8 @@
             "title": "Conoscenze Finanziarie",
             "subtitle": "Impara a gestire meglio le tue finanze personali",
             "disclaimer": "⚠️ Le informazioni fornite sono a scopo educativo e non costituiscono consigli finanziari personalizzati. Consulta sempre un consulente finanziario qualificato per decisioni importanti.",
+            "advantages": "Vantaggi",
+            "disadvantages": "Svantaggi",
             "sections": {
                 "investments": {
                     "title": "Investimenti",
@@ -1427,6 +1429,8 @@
             "title": "Financial Knowledge",
             "subtitle": "Learn to better manage your personal finances",
             "disclaimer": "⚠️ The information provided is for educational purposes and does not constitute personalized financial advice. Always consult a qualified financial advisor for important decisions.",
+            "advantages": "Advantages",
+            "disadvantages": "Disadvantages",
             "sections": {
                 "investments": {
                     "title": "Investments",

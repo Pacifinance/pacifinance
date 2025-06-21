@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { ButtonGroup } from "@mui/material";
 import axios from "axios";
@@ -13,8 +14,116 @@ import BalanceSection from "../components/BalanceSection";
 import IncomeSection from "../components/IncomeSection";
 import OutflowSection from "../components/OutflowSection";
 import InsertModals from "../components/InsertModals";
+import styled from 'styled-components';
 
 const currentDate = new Date().toISOString().split("T")[0];
+
+// Modern styled components for the redesigned page
+const ModernContainer = styled.div`
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  background: ${(props) => props.theme.backgroundColor};
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  width: 100%;
+  
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+`;
+
+const ModernTitle = styled.h1`
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  color: ${(props) => props.theme.textColor};
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 3rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+  }
+`;
+
+const ModernButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+    gap: 0.25rem;
+  }
+`;
+
+const ModernSectionButton = styled.button`
+  background: ${(props) => props.$isActive 
+    ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor} 0%, ${props.theme.buttonBackgroundColor}dd 100%)`
+    : 'transparent'};
+  color: ${(props) => props.$isActive ? 'white' : props.theme.textColor};
+  border: 2px solid ${(props) => props.theme.buttonBackgroundColor};
+  padding: 0.875rem 1.5rem;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    background: ${(props) => props.$isActive 
+      ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}dd 0%, ${props.theme.buttonBackgroundColor}bb 100%)`
+      : `${props.theme.buttonBackgroundColor}15`};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 100px;
+  }
+`;
+
+const SectionContainer = styled.div`
+  background: ${(props) => props.theme.mode === 'dark' 
+    ? `linear-gradient(135deg, ${props.theme.backgroundColor}f0 0%, ${props.theme.backgroundColor}f8 100%)`
+    : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`};
+  border: 1px solid ${(props) => props.theme.mode === 'dark' 
+    ? `${props.theme.buttonBackgroundColor}30`
+    : '#e2e8f0'};
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: ${(props) => props.theme.mode === 'dark' 
+    ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
+    : '0 4px 20px rgba(0, 0, 0, 0.08)'};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${(props) => props.theme.mode === 'dark' 
+      ? '0 12px 40px rgba(0, 0, 0, 0.4)' 
+      : '0 8px 30px rgba(0, 0, 0, 0.12)'};
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+  }
+`;
 
 export default function InsertValue({
   theme,
@@ -507,180 +616,179 @@ export default function InsertValue({
   const renderPage = () => {
     if (activePage === "bilancio") {
       return (
-        <BalanceSection
-          theme={theme}
-          isHidden={isHidden}
-          bankReal={bankReal}
-          setBankReal={setBankReal}
-          cashReal={cashReal}
-          setCashReal={setCashReal}
-          digitalServicesReal={digitalServicesReal}
-          setDigitalServicesReal={setDigitalServicesReal}
-          stocksReal={stocksReal}
-          setStocksReal={setStocksReal}
-          etfReal={etfReal}
-          setETFReal={setETFReal}
-          bitcoinReal={bitcoinReal}
-          setBitcoinReal={setBitcoinReal}
-          cryptoReal={cryptoReal}
-          setCryptoReal={setCryptoReal}
-          balanceDate={balanceDate}
-          setBalanceDate={setBalanceDate}
-          onUpdateBalance={handleUpdateBalance}
-        />
+        <SectionContainer theme={theme}>
+          <BalanceSection
+            theme={theme}
+            isHidden={isHidden}
+            bankReal={bankReal}
+            setBankReal={setBankReal}
+            cashReal={cashReal}
+            setCashReal={setCashReal}
+            digitalServicesReal={digitalServicesReal}
+            setDigitalServicesReal={setDigitalServicesReal}
+            stocksReal={stocksReal}
+            setStocksReal={setStocksReal}
+            etfReal={etfReal}
+            setETFReal={setETFReal}
+            bitcoinReal={bitcoinReal}
+            setBitcoinReal={setBitcoinReal}
+            cryptoReal={cryptoReal}
+            setCryptoReal={setCryptoReal}
+            balanceDate={balanceDate}
+            setBalanceDate={setBalanceDate}
+            onUpdateBalance={handleUpdateBalance}
+          />
+        </SectionContainer>
       );
     } else if (activePage === "income") {
       return (
-        <IncomeSection
-          theme={theme}
-          isHidden={isHidden}
-          categoryIncome={categoryIncome}
-          setCategoryIncome={setCategoryIncome}
-          income={income}
-          setIncome={setIncome}
-          incomeDate={incomeDate}
-          setIncomeDate={setIncomeDate}
-          noteIncomeAreaValue={noteIncomeAreaValue}
-          setNoteIncomeAreaValue={setNoteIncomeAreaValue}
-          incomesTags={incomesTags}
-          selectedIncomesMonth={selectedIncomesMonth}
-          setSelectedIncomesMonth={setSelectedIncomesMonth}
-          incomeMonthOptions={incomeMonthOptions}
-          allIncomesAdds={allIncomesAdds}
-          selectedIncomeMonthKey={selectedIncomeMonthKey}
-          incomeCategoryFilter={incomeCategoryFilter}
-          setIncomeCategoryFilter={setIncomeCategoryFilter}
-          incomeNoteFilter={incomeNoteFilter}
-          setIncomeNoteFilter={setIncomeNoteFilter}
-          incomeDateFilter={incomeDateFilter}
-          setIncomeDateFilter={setIncomeDateFilter}
-          showIncomeNoteInput={showIncomeNoteInput}
-          setShowIncomeNoteInput={setShowIncomeNoteInput}
-          showIncomeDatePicker={showIncomeDatePicker}
-          setShowIncomeDatePicker={setShowIncomeDatePicker}
-          onAddIncome={handleAddIncome}
-          onDeleteIncome={handleDeleteIncome}
-        />
+        <SectionContainer theme={theme}>
+          <IncomeSection
+            theme={theme}
+            isHidden={isHidden}
+            categoryIncome={categoryIncome}
+            setCategoryIncome={setCategoryIncome}
+            income={income}
+            setIncome={setIncome}
+            incomeDate={incomeDate}
+            setIncomeDate={setIncomeDate}
+            noteIncomeAreaValue={noteIncomeAreaValue}
+            setNoteIncomeAreaValue={setNoteIncomeAreaValue}
+            incomesTags={incomesTags}
+            selectedIncomesMonth={selectedIncomesMonth}
+            setSelectedIncomesMonth={setSelectedIncomesMonth}
+            incomeMonthOptions={incomeMonthOptions}
+            allIncomesAdds={allIncomesAdds}
+            selectedIncomeMonthKey={selectedIncomeMonthKey}
+            incomeCategoryFilter={incomeCategoryFilter}
+            setIncomeCategoryFilter={setIncomeCategoryFilter}
+            incomeNoteFilter={incomeNoteFilter}
+            setIncomeNoteFilter={setIncomeNoteFilter}
+            incomeDateFilter={incomeDateFilter}
+            setIncomeDateFilter={setIncomeDateFilter}
+            showIncomeNoteInput={showIncomeNoteInput}
+            setShowIncomeNoteInput={setShowIncomeNoteInput}
+            showIncomeDatePicker={showIncomeDatePicker}
+            setShowIncomeDatePicker={setShowIncomeDatePicker}
+            onAddIncome={handleAddIncome}
+            onDeleteIncome={handleDeleteIncome}
+          />
+        </SectionContainer>
       );
     } else if (activePage === "outflows") {
       return (
-        <OutflowSection
-          theme={theme}
-          isHidden={isHidden}
-          categoryOutflow={categoryOutflow}
-          setCategoryOutflow={setCategoryOutflow}
-          typoOutflow={typoOutflow}
-          setTypoOutflow={setTypoOutflow}
-          outflow={outflow}
-          setOutflow={setOutflow}
-          outflowDate={outflowDate}
-          setOutflowDate={setOutflowDate}
-          noteOutflowAreaValue={noteOutflowAreaValue}
-          setNoteOutflowAreaValue={setNoteOutflowAreaValue}
-          OutflowsTags={OutflowsTags}
-          paymentTags={paymentTags}
-          selectedOutflowsMonth={selectedOutflowsMonth}
-          setSelectedOutflowsMonth={setSelectedOutflowsMonth}
-          outflowMonthOptions={outflowMonthOptions}
-          allOutflowsAdds={allOutflowsAdds}
-          selectedOutflowMonthKey={selectedOutflowMonthKey}
-          outflowCategoryFilter={outflowCategoryFilter}
-          setOutflowCategoryFilter={setOutflowCategoryFilter}
-          outflowTypologyFilter={outflowTypologyFilter}
-          setOutflowTypologyFilter={setOutflowTypologyFilter}
-          outflowNoteFilter={outflowNoteFilter}
-          setOutflowNoteFilter={setOutflowNoteFilter}
-          outflowDateFilter={outflowDateFilter}
-          setOutflowDateFilter={setOutflowDateFilter}
-          showOutflowNoteInput={showOutflowNoteInput}
-          setShowOutflowNoteInput={setShowOutflowNoteInput}
-          showOutflowDatePicker={showOutflowDatePicker}
-          setShowOutflowDatePicker={setShowOutflowDatePicker}
-          onAddOutflow={handleAddOutflow}
-          onDeleteOutflow={handleDeleteOutflow}
-        />
+        <SectionContainer theme={theme}>
+          <OutflowSection
+            theme={theme}
+            isHidden={isHidden}
+            categoryOutflow={categoryOutflow}
+            setCategoryOutflow={setCategoryOutflow}
+            typoOutflow={typoOutflow}
+            setTypoOutflow={setTypoOutflow}
+            outflow={outflow}
+            setOutflow={setOutflow}
+            outflowDate={outflowDate}
+            setOutflowDate={setOutflowDate}
+            noteOutflowAreaValue={noteOutflowAreaValue}
+            setNoteOutflowAreaValue={setNoteOutflowAreaValue}
+            OutflowsTags={OutflowsTags}
+            paymentTags={paymentTags}
+            selectedOutflowsMonth={selectedOutflowsMonth}
+            setSelectedOutflowsMonth={setSelectedOutflowsMonth}
+            outflowMonthOptions={outflowMonthOptions}
+            allOutflowsAdds={allOutflowsAdds}
+            selectedOutflowMonthKey={selectedOutflowMonthKey}
+            outflowCategoryFilter={outflowCategoryFilter}
+            setOutflowCategoryFilter={setOutflowCategoryFilter}
+            outflowTypologyFilter={outflowTypologyFilter}
+            setOutflowTypologyFilter={setOutflowTypologyFilter}
+            outflowNoteFilter={outflowNoteFilter}
+            setOutflowNoteFilter={setOutflowNoteFilter}
+            outflowDateFilter={outflowDateFilter}
+            setOutflowDateFilter={setOutflowDateFilter}
+            showOutflowNoteInput={showOutflowNoteInput}
+            setShowOutflowNoteInput={setShowOutflowNoteInput}
+            showOutflowDatePicker={showOutflowDatePicker}
+            setShowOutflowDatePicker={setShowOutflowDatePicker}
+            onAddOutflow={handleAddOutflow}
+            onDeleteOutflow={handleDeleteOutflow}
+          />
+        </SectionContainer>
       );
     }
   };
 
   return (
-    <StyledSection theme={theme}>
-      <StandardPageTitle theme={theme}>
-        {languages[language].insert.title}
-      </StandardPageTitle>
-      <ButtonGroup aria-label="outlined primary button group">
-        <MySectionButton
-          theme={theme}
-          onClick={() => setActivePage("bilancio")}
-          style={{
-            backgroundColor: activePage === "bilancio" ? "" : "#222831",
-            marginLeft: "6vw",
-            marginRight: "1vw",
-          }}
-        >
-          {languages[language].insert.buttonBalance}
-        </MySectionButton>
-        <MySectionButton
-          theme={theme}
-          onClick={() => setActivePage("income")}
-          style={{
-            backgroundColor: activePage === "income" ? "" : "#222831",
-            marginRight: "1vw",
-          }}
-        >
-          {languages[language].insert.buttonIncome}
-        </MySectionButton>
-        <MySectionButton
-          theme={theme}
-          onClick={() => setActivePage("outflows")}
-          style={{
-            backgroundColor: activePage === "outflows" ? "" : "#222831",
-            marginRight: "1vw",
-          }}
-        >
-          {languages[language].insert.buttonOutflow}
-        </MySectionButton>
-      </ButtonGroup>
+    <ModernContainer theme={theme}>
+      <ContentWrapper>
+        <ModernTitle theme={theme}>
+          {languages[language].insert.title}
+        </ModernTitle>
+        
+        <ModernButtonGroup>
+          <ModernSectionButton
+            theme={theme}
+            $isActive={activePage === "bilancio"}
+            onClick={() => setActivePage("bilancio")}
+          >
+            {languages[language].insert.buttonBalance}
+          </ModernSectionButton>
+          <ModernSectionButton
+            theme={theme}
+            $isActive={activePage === "income"}
+            onClick={() => setActivePage("income")}
+          >
+            {languages[language].insert.buttonIncome}
+          </ModernSectionButton>
+          <ModernSectionButton
+            theme={theme}
+            $isActive={activePage === "outflows"}
+            onClick={() => setActivePage("outflows")}
+          >
+            {languages[language].insert.buttonOutflow}
+          </ModernSectionButton>
+        </ModernButtonGroup>
 
-      {renderPage()}
+        {renderPage()}
 
-      <InsertModals
-        isConfirmBalanceOpen={isConfirmBalanceOpen}
-        setIsConfirmBalanceOpen={setIsConfirmBalanceOpen}
-        isConfirmIncomeOpen={isConfirmIncomeOpen}
-        setIsConfirmIncomeOpen={setIsConfirmIncomeOpen}
-        isConfirmOutflowOpen={isConfirmOutflowOpen}
-        setIsConfirmOutflowOpen={setIsConfirmOutflowOpen}
-        showConfirmationDeleteIncome={showConfirmationDeleteIncome}
-        setShowConfirmationDeleteIncome={setShowConfirmationDeleteIncome}
-        showConfirmationDeleteOutflow={showConfirmationDeleteOutflow}
-        setShowConfirmationDeleteOutflow={setShowConfirmationDeleteOutflow}
-        balanceDate={balanceDate}
-        bankReal={bankReal}
-        cashReal={cashReal}
-        digitalServicesReal={digitalServicesReal}
-        stocksReal={stocksReal}
-        etfReal={etfReal}
-        bitcoinReal={bitcoinReal}
-        cryptoReal={cryptoReal}
-        categoryIncome={categoryIncome}
-        income={income}
-        noteIncomeAreaValue={noteIncomeAreaValue}
-        incomeDate={incomeDate}
-        categoryOutflow={categoryOutflow}
-        typoOutflow={typoOutflow}
-        outflow={outflow}
-        noteOutflowAreaValue={noteOutflowAreaValue}
-        outflowDate={outflowDate}
-        selectedOption={selectedOption}
-        setSelectedOption={setSelectedOption}
-        options={options}
-        onConfirmBalance={handleConfirmBalance}
-        onConfirmIncome={() => handleConfirmInEx(false)}
-        onConfirmOutflow={() => handleConfirmInEx(true)}
-        onConfirmDeleteIncome={handleIncomesDelete}
-        onConfirmDeleteOutflow={handleOutflowsDelete}
-      />
-    </StyledSection>
+        <InsertModals
+          isConfirmBalanceOpen={isConfirmBalanceOpen}
+          setIsConfirmBalanceOpen={setIsConfirmBalanceOpen}
+          isConfirmIncomeOpen={isConfirmIncomeOpen}
+          setIsConfirmIncomeOpen={setIsConfirmIncomeOpen}
+          isConfirmOutflowOpen={isConfirmOutflowOpen}
+          setIsConfirmOutflowOpen={setIsConfirmOutflowOpen}
+          showConfirmationDeleteIncome={showConfirmationDeleteIncome}
+          setShowConfirmationDeleteIncome={setShowConfirmationDeleteIncome}
+          showConfirmationDeleteOutflow={showConfirmationDeleteOutflow}
+          setShowConfirmationDeleteOutflow={setShowConfirmationDeleteOutflow}
+          balanceDate={balanceDate}
+          bankReal={bankReal}
+          cashReal={cashReal}
+          digitalServicesReal={digitalServicesReal}
+          stocksReal={stocksReal}
+          etfReal={etfReal}
+          bitcoinReal={bitcoinReal}
+          cryptoReal={cryptoReal}
+          categoryIncome={categoryIncome}
+          income={income}
+          noteIncomeAreaValue={noteIncomeAreaValue}
+          incomeDate={incomeDate}
+          categoryOutflow={categoryOutflow}
+          typoOutflow={typoOutflow}
+          outflow={outflow}
+          noteOutflowAreaValue={noteOutflowAreaValue}
+          outflowDate={outflowDate}
+          selectedOption={selectedOption}
+          setSelectedOption={setSelectedOption}
+          options={options}
+          onConfirmBalance={handleConfirmBalance}
+          onConfirmIncome={() => handleConfirmInEx(false)}
+          onConfirmOutflow={() => handleConfirmInEx(true)}
+          onConfirmDeleteIncome={handleIncomesDelete}
+          onConfirmDeleteOutflow={handleOutflowsDelete}
+        />
+      </ContentWrapper>
+    </ModernContainer>
   );
 }

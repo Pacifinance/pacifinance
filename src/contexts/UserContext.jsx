@@ -3,11 +3,13 @@ import axios from 'axios';
 
 const UserContext = React.createContext();
 
-function UserProvider({ children }) {
+export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
-  const [loading, setLoading] = useState(true); // per evitare flicker
+
+  // Development mode bypass
+  const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
 
   // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
   useEffect(() => {
@@ -36,6 +38,32 @@ function UserProvider({ children }) {
         return;
       }
       try {
+        // Bypass authentication in development mode
+        if (isDevelopment) {
+          const mockUserData = {
+            _id: 'dev-user',
+            username: 'dev-user',
+            email: 'dev@example.com',
+            bankReal: 1000,
+            cashReal: 500,
+            digitalServicesReal: 200,
+            stocksReal: 1500,
+            etfReal: 800,
+            bitcoinReal: 600,
+            cryptoReal: 400,
+            expensesTags: ['Food', 'Transport', 'Entertainment'],
+            incomesTags: ['Salary', 'Freelance', 'Investment'],
+            paymentTags: ['Cash', 'Card', 'Transfer'],
+            allExpenses: [],
+            allIncomes: [],
+            preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+            preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()
+          };
+          setUserData(mockUserData);
+          setIsAuthenticated(true);
+          return;
+        }
+
         //check if user is authenticated
         if (isAuthenticated && !isUpdated) { // && !isUpdated
             // console.log('Sono loggato e ora faccio le chiamate API in UserContext.js')
@@ -291,7 +319,10 @@ function UserProvider({ children }) {
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);
-        setUserData(null);
+        if (!isDevelopment) {
+          setIsAuthenticated(false);
+          setUserData(null);
+        }
       }
     };
     fetchUserData();
@@ -314,4 +345,4 @@ function UserProvider({ children }) {
   );
 }
 
-export { UserContext, UserProvider };
+export { UserContext };

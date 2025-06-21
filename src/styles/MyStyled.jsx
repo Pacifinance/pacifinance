@@ -681,10 +681,11 @@ export const StyledSectionStats = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   background-color: ${(props) => (props.theme.backgroundColor)};
-  overflow-x: hidden; // to hide the scroll bar
-  overflow-y: hidden; // to hide the scroll bar
+  padding: 0;
+  margin: 0;
+  
   .grid{ 
     margin-top: 2rem;
     z-index: 2;
@@ -696,8 +697,8 @@ export const StyledSectionStats = styled.div`
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-
-
+    padding: 0;
+    margin: 0;
   }
 `;
 

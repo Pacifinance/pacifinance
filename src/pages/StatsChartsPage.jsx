@@ -67,9 +67,11 @@ const ContentWrapper = styled.div `
   margin-left: 0;
   margin-top: 80px;
   padding: 0;
+  width: 100%;
 
   @media (min-width: 768px) {
-    margin-left: 16.666667%;
+    margin-left: 5.5rem;
     margin-top: 0;
+    width: calc(100% - 5.5rem);
   }
 `;

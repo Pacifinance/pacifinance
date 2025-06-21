@@ -2,10 +2,6 @@ import React from 'react';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import {
-  TitleSection,
-  StyledInputs,
-  Column,
-  StyledCalendarInput,
   StyledDateInput,
   MySecondaryButton,
 } from '../styles/MyStyled';
@@ -81,7 +77,7 @@ export default function BalanceSection({
     marginBottom: '0.5em',
     minWidth: 0,
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '280px', // Ridotto da 400px a 280px
   };
   const inputWithCurrency = {
     textAlign: 'center',
@@ -113,15 +109,15 @@ export default function BalanceSection({
   };
 
   return (
-    <>
-      <TitleSection theme={theme}>
-        {languages[language].insert.balanceSection.titleLiquidity}
-      </TitleSection>
-      <StyledInputs theme={theme} style={{flexDirection: 'column', width: '100%'}}>
-        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '1.5rem'}}>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
+      <div style={{textAlign: 'center', width: '100%', marginBottom: '2rem'}}>
+        <h3 style={{color: theme.textColor, fontSize: '1.5rem', fontWeight: '600', margin: '0 0 1.5rem 0'}}>
+          {languages[language].insert.balanceSection.titleLiquidity}
+        </h3>
+        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '0'}}>
           {/* Bank */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.bank}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -136,8 +132,8 @@ export default function BalanceSection({
             </div>
           </div>
           {/* Cash */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.cash}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -152,8 +148,8 @@ export default function BalanceSection({
             </div>
           </div>
           {/* Digital Services */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.digitalServices}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -168,15 +164,16 @@ export default function BalanceSection({
             </div>
           </div>
         </div>
-      </StyledInputs>
-      <TitleSection theme={theme}>
-        {languages[language].insert.balanceSection.titleInvestments}
-      </TitleSection>
-      <StyledInputs theme={theme} style={{flexDirection: 'column', width: '100%'}}>
-        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '1.5rem'}}>
+      </div>
+
+      <div style={{textAlign: 'center', width: '100%', marginBottom: '2rem'}}>
+        <h3 style={{color: theme.textColor, fontSize: '1.5rem', fontWeight: '600', margin: '0 0 1.5rem 0'}}>
+          {languages[language].insert.balanceSection.titleInvestments}
+        </h3>
+        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '0'}}>
           {/* Stocks */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.stocks}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -191,8 +188,8 @@ export default function BalanceSection({
             </div>
           </div>
           {/* ETF */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.etf}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -207,8 +204,8 @@ export default function BalanceSection({
             </div>
           </div>
           {/* Bitcoin */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.bitcoin}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -223,8 +220,8 @@ export default function BalanceSection({
             </div>
           </div>
           {/* Crypto */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, flex: 1}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 6, fontWeight: 500}}>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.crypto}
             </label>
             <div style={inputCurrencyWrapper}>
@@ -239,20 +236,33 @@ export default function BalanceSection({
             </div>
           </div>
         </div>
-      </StyledInputs>
-      <StyledCalendarInput>
-        <StyledDateInput
-          type="date"
-          value={balanceDate}
-          onChange={handleBalanceDateChange}
-          max={currentDate}
-        />
-      </StyledCalendarInput>
-      <StyledInputs theme={theme}>
-        <MySecondaryButton theme={theme} onClick={onUpdateBalance}>
-          {languages[language].insert.balanceSection.updateButton}
-        </MySecondaryButton>
-      </StyledInputs>
-    </>
+      </div>
+
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%'}}>
+        <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+          <StyledDateInput
+            type="date"
+            value={balanceDate}
+            onChange={handleBalanceDateChange}
+            max={currentDate}
+            style={{
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '1rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+              color: theme.textColor,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              minHeight: '48px'
+            }}
+          />
+        </div>
+        <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+          <MySecondaryButton theme={theme} onClick={onUpdateBalance}>
+            {languages[language].insert.balanceSection.updateButton}
+          </MySecondaryButton>
+        </div>
+      </div>
+    </div>
   );
 }

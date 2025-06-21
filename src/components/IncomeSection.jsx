@@ -99,7 +99,7 @@ export default function IncomeSection({
     marginBottom: '0.5em',
     minWidth: 0,
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '280px', // Ridotto da 400px a 280px
   };
   const inputWithCurrency = {
     textAlign: 'center',
@@ -116,6 +116,7 @@ export default function IncomeSection({
     background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
     boxSizing: 'border-box',
     transition: 'all 0.3s ease',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   };
   const currencySymbolStyle = {
     position: 'absolute',
@@ -463,9 +464,24 @@ export default function IncomeSection({
   }
 
   return (
-    <>
-      <StyledAddSection theme={theme}>
-        <label>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
+      {/* Form Fields Container - Desktop responsive */}
+      <div style={{
+        display: 'flex', 
+        flexDirection: window.innerWidth > 768 ? 'row' : 'column',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: window.innerWidth > 768 ? '2rem' : '1rem',
+        width: '100%',
+        marginBottom: '2rem',
+        padding: '0 1rem'
+      }}>
+        {/* Category Select */}
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
+          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
+            Categoria
+          </label>
           <Select
             value={categoryIncome.value}
             onChange={(event) => {
@@ -487,7 +503,8 @@ export default function IncomeSection({
               borderRadius: '12px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-              minHeight: '48px'
+              minHeight: '48px',
+              width: '100%'
             }}
             displayEmpty
             renderValue={(value) => {
@@ -512,32 +529,54 @@ export default function IncomeSection({
               </MenuItem>
             ))}
           </Select>
-        </label>
-
-        <div style={inputCurrencyWrapper}>
-          <span style={currencySymbolStyle}>€</span>
-          <input
-            type="text"
-            value={income}
-            onChange={(e) => handleInputChange(e, setIncome)}
-            onBlur={(e) => handleInputBlur(e, setIncome)}
-            placeholder="0"
-            style={inputWithCurrency}
-          />
         </div>
 
-        <div>
+        {/* Amount Input */}
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
+          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
+            Importo
+          </label>
+          <div style={inputCurrencyWrapper}>
+            <span style={currencySymbolStyle}>€</span>
+            <input
+              type="text"
+              value={income}
+              onChange={(e) => handleInputChange(e, setIncome)}
+              onBlur={(e) => handleInputBlur(e, setIncome)}
+              placeholder="0"
+              style={inputWithCurrency}
+            />
+          </div>
+        </div>
+
+        {/* Date Input */}
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
+          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
+            Data
+          </label>
           <StyledDateInput
             type="date"
             value={incomeDate}
             onChange={handleIncomeDateChange}
             max={currentDate}
+            style={{
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '1rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+              color: theme.textColor,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              minHeight: '48px',
+              width: '100%'
+            }}
           />
         </div>
-      </StyledAddSection>
+      </div>
 
-      <StyledAddSection theme={theme}>
-        <label>
+      {/* Note and Button Container */}
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '600px'}}>
+        <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
           <StyledTextArea
             value={noteIncomeAreaValue}
             onChange={(e) => setNoteIncomeAreaValue(e.target.value)}
@@ -545,15 +584,27 @@ export default function IncomeSection({
             placeholder={
               languages[language].insert.incomeSection.placeholderNote
             }
+            style={{
+              width: '100%',
+              maxWidth: '400px',
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '1rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+              color: theme.textColor,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              minHeight: '80px',
+              resize: 'vertical'
+            }}
           />
-        </label>
-      </StyledAddSection>
-
-      <StyledAddSection theme={theme}>
-        <MySecondaryButton theme={theme} onClick={onAddIncome}>
-          {languages[language].insert.incomeSection.updateButton}
-        </MySecondaryButton>
-      </StyledAddSection>
+        </div>
+        <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+          <MySecondaryButton theme={theme} onClick={onAddIncome}>
+            {languages[language].insert.incomeSection.updateButton}
+          </MySecondaryButton>
+        </div>
+      </div>
 
       <TitleLastAdds theme={theme} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', width: '100%' }}>
         <span style={{ marginRight: '0.5rem' }}>{languages[language].insert.incomeSection.titleListing}</span>
@@ -586,8 +637,13 @@ export default function IncomeSection({
       <div
         style={{
           overflowX: 'auto',
-          maxWidth: '100vw',
+          maxWidth: '100%',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
           WebkitOverflowScrolling: 'touch',
+          margin: '0',
+          padding: '0'
         }}
       >
         <StyledTable theme={theme} style={{ minWidth: 600 }}>

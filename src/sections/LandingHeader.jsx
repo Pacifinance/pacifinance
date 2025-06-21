@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, useEffect } from "react";
 import ToggleModeButton from "../components/ToggleModeButton";
 import axios from "axios";
@@ -34,6 +33,19 @@ function Header({
 
   const DemoLogin = async (event) => {
     event.preventDefault();
+
+    // Check if we're on Replit or localhost for automatic bypass
+    const isReplit = window.location.hostname.includes('replit.dev');
+    const isLocalhost = window.location.hostname === 'localhost';
+
+    if (isReplit || isLocalhost) {
+      // Development/testing environment: bypass authentication
+      handleSetIsAuthenticated(true);
+      navigate("/dashboard");
+      return;
+    }
+
+    // Production environment: use original demo login logic
     try {
       handleSetIsAuthenticated(false);
       const response = await axios.post(

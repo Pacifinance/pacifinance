@@ -73,36 +73,43 @@ export default function BalanceSection({
     setBalanceDate(inputDate);
   };
 
-  // Wrapper e stile per input con simbolo valuta
+  // Wrapper e stile per input con simbolo valuta - updated for modern design
   const inputCurrencyWrapper = {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: '0.5em',
     minWidth: 0,
+    width: '100%',
+    maxWidth: '400px',
   };
   const inputWithCurrency = {
     textAlign: 'center',
-    padding: '8px 8px 8px 2em', // spazio a sinistra per il simbolo
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    color: '#333',
+    padding: '12px 16px 12px 2.5em',
+    border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+    borderRadius: '12px',
+    color: theme.textColor,
     outline: 'none',
-    width: '140px', // larghezza uniforme
-    height: '40px', // altezza uniforme
-    fontSize: '1.05em',
-    background: 'white',
+    width: '100%',
+    minHeight: '48px',
+    fontSize: '1rem',
+    fontFamily: "'Inter', sans-serif",
+    fontWeight: '500',
+    background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
     boxSizing: 'border-box',
+    transition: 'all 0.3s ease',
   };
   const currencySymbolStyle = {
     position: 'absolute',
-    left: '0.7em',
+    left: '1em',
     color: '#888',
-    fontSize: '0.95em', // più piccolo
+    fontSize: '1rem',
     pointerEvents: 'none',
     top: '50%',
-    transform: 'translateY(-52%)', // leggermente più su per centratura visiva
+    transform: 'translateY(-50%)',
     lineHeight: 1,
+    fontWeight: '500',
   };
 
   return (
@@ -114,18 +121,69 @@ export default function BalanceSection({
       </TitleSection>
       <StyledInputs theme={theme}>
         <Column>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.bank}
             </label>
           </div>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.cash}
             </label>
           </div>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.digitalServices}
             </label>
           </div>
@@ -187,23 +245,91 @@ export default function BalanceSection({
       </TitleSection>
       <StyledInputs theme={theme}>
         <Column>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.stocks}
             </label>
           </div>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.etf}
             </label>
           </div>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.bitcoin}
             </label>
           </div>
-          <div className="labelContainer text-center p-1 bg-white border-2 border-paciGreen rounded-md outline-none w-32 md:w-60 mb-2 md:mb-4">
-            <label className="labelStyle flex items-center justify-center text-black h-full text-xs md:text-base">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '12px 16px',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+            borderRadius: '12px',
+            color: theme.textColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            fontWeight: '500',
+            minHeight: '48px',
+            width: '100%',
+            maxWidth: '400px',
+            marginBottom: '8px',
+            transition: 'all 0.3s ease'
+          }}>
+            <label style={{color: theme.textColor, textAlign: 'center', width: '100%'}}>
               {languages[language].assets.crypto}
             </label>
           </div>

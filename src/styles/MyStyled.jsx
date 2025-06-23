@@ -970,7 +970,6 @@ export const StyledLastAdds = styled.div`
     width: 100%;
   }
 
-```text
   li {
     display: flex;
     justify-content: space-between;

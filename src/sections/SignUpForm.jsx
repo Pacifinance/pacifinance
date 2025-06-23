@@ -1,4 +1,4 @@
-import React, {useState, useRef, useContext} from 'react';
+import React, {useState, useRef, useContext, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -27,6 +27,9 @@ import {
 
 var generated_user_id = '';
 
+// Cloudflare Turnstile configuration
+const TURNSTILE_SITE_KEY = process.env.REACT_APP_TURNSTILE_SITE_KEY || 'your-site-key-here';
+
 // export { generated_user_id };
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
@@ -37,10 +40,91 @@ export default function SignUpForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState('');
+    const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const inputRef = useRef(null);
+    const turnstileRef = useRef(null);
 
     const navigate = useNavigate();
 
+    // Turnstile callback functions
+    const onTurnstileSuccess = (token) => {
+        setTurnstileToken(token);
+        setIsTurnstileLoaded(true);
+    };
+
+    const onTurnstileError = () => {
+        showError(`
+            <div>
+                <strong>Errore di Sicurezza</strong><br/>
+                Si è verificato un errore nella verifica di sicurezza. Riprova.
+            </div>
+        `, 3000);
+        setTurnstileToken('');
+        setIsTurnstileLoaded(false);
+    };
+
+    const onTurnstileExpired = () => {
+        setTurnstileToken('');
+        setIsTurnstileLoaded(false);
+        // Automatically refresh the challenge
+        if (window.turnstile && turnstileRef.current) {
+            window.turnstile.reset(turnstileRef.current);
+        }
+    };
+
+    // Initialize Turnstile when component mounts
+    useEffect(() => {
+        const initTurnstile = () => {
+            if (window.turnstile && turnstileRef.current) {
+                window.turnstile.render(turnstileRef.current, {
+                    sitekey: TURNSTILE_SITE_KEY,
+                    callback: onTurnstileSuccess,
+                    'error-callback': onTurnstileError,
+                    'expired-callback': onTurnstileExpired,
+                    size: 'invisible',
+                    theme: theme.mode === 'dark' ? 'dark' : 'light'
+                });
+            }
+        };
+
+        // Check if Turnstile is already loaded
+        if (window.turnstile) {
+            initTurnstile();
+        } else {
+            // Wait for Turnstile to load
+            const checkTurnstile = setInterval(() => {
+                if (window.turnstile) {
+                    clearInterval(checkTurnstile);
+                    initTurnstile();
+                }
+            }, 100);
+
+            // Cleanup interval after 10 seconds
+            setTimeout(() => {
+                clearInterval(checkTurnstile);
+                if (!window.turnstile) {
+                    showError(`
+                        <div>
+                            <strong>Errore di Caricamento</strong><br/>
+                            Impossibile caricare il sistema di sicurezza. Ricarica la pagina.
+                        </div>
+                    `, 5000);
+                }
+            }, 10000);
+        }
+
+        return () => {
+            // Cleanup on unmount
+            if (window.turnstile && turnstileRef.current) {
+                try {
+                    window.turnstile.remove(turnstileRef.current);
+                } catch (error) {
+                    console.warn('Error removing Turnstile widget:', error);
+                }
+            }
+        };
+    }, [theme.mode]);
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -73,8 +157,28 @@ export default function SignUpForm() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        // Check if Turnstile verification is complete
+        if (!turnstileToken) {
+            showError(`
+                <div>
+                    <strong>Verifica di Sicurezza Richiesta</strong><br/>
+                    Attendi il completamento della verifica di sicurezza.
+                </div>
+            `, 3000);
+            
+            // Try to execute the challenge if not already done
+            if (window.turnstile && turnstileRef.current) {
+                window.turnstile.execute(turnstileRef.current);
+            }
+            return;
+        }
+
         try {
-          const response = await axios.post('/registration', { user_pwd: password, repeated_pwd: confirmPassword }, { withCredentials: true });
+          const response = await axios.post('/registration', { 
+            user_pwd: password, 
+            repeated_pwd: confirmPassword,
+            turnstile_token: turnstileToken
+          }, { withCredentials: true });
           if(response.status === 200) {
             generated_user_id = response.data.user_id;
             const successMessage = `
@@ -106,6 +210,14 @@ export default function SignUpForm() {
             // console.error(error);
             setPassword('');
             setConfirmPassword('');
+            setTurnstileToken('');
+            setIsTurnstileLoaded(false);
+            
+            // Reset Turnstile widget
+            if (window.turnstile && turnstileRef.current) {
+                window.turnstile.reset(turnstileRef.current);
+            }
+            
             showError(`
                 <div>
                     <strong>${languages[language].header.register.errorPopup.title}</strong><br/>
@@ -173,8 +285,27 @@ export default function SignUpForm() {
                                     ),
                                 }}
                             />
+                        {/* Invisible Turnstile widget */}
+                        <div ref={turnstileRef} style={{ display: 'none' }}></div>
+                        
                         <div className="button-wrapper">
-                            <SignUpButton theme={theme} data-umami-event="newUser" type="submit" style={{ marginTop: '20px', alignSelf: 'center' }}>{languages[language].header.register.titleButton}</SignUpButton>
+                            <SignUpButton 
+                                theme={theme} 
+                                data-umami-event="newUser" 
+                                type="submit" 
+                                disabled={!isTurnstileLoaded}
+                                style={{ 
+                                    marginTop: '20px', 
+                                    alignSelf: 'center',
+                                    opacity: isTurnstileLoaded ? 1 : 0.7,
+                                    cursor: isTurnstileLoaded ? 'pointer' : 'not-allowed'
+                                }}
+                            >
+                                {!isTurnstileLoaded ? 
+                                    (language === 'it' ? 'Verifica sicurezza...' : 'Security check...') : 
+                                    languages[language].header.register.titleButton
+                                }
+                            </SignUpButton>
                         </div>
 
                     </form>

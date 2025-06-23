@@ -11,7 +11,7 @@ import Dashboard from "./pages/DashboardPage";
 import StatsCharts from "./pages/StatsChartsPage";
 import InsertValues from "./pages/InsertPage";
 import CheckPrices from "./pages/CheckPricesPage";
-import Leaderboard from "./pages/LeaderboardPage";
+import ComparisonPage from "./pages/ComparisonPage";
 import Knowledge from "./pages/KnowledgePage";
 import Info from "./pages/InfoPage";
 import LandingPage from "./pages/LandingPage";
@@ -111,7 +111,7 @@ function AppRouter() {
           </PublicRoute>
         }
       />
-      
+
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -158,7 +158,7 @@ function AppRouter() {
         path="/leaderboard"
         element={
           <ProtectedRoute>
-            <Leaderboard />
+            <ComparisonPage />
           </ProtectedRoute>
         }
       />

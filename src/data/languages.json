@@ -1685,7 +1685,7 @@
                                 "envelope": "Envelope method: Assign cash to specific categories",
                                 "zero_based": "Zero-based budget: Every dollar must have a purpose",
                                 "pay_yourself_first": "Pay yourself first: Save before spending"
-                            ]
+                            }
                         },
                         "expense_tracking": {
                             "title": "Expense Tracking",

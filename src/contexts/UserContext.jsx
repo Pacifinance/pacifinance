@@ -13,9 +13,9 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   // Development mode bypass
-  const isDevelopment = process.env.NODE_ENV === 'development' || 
-                       window.location.hostname === 'localhost' || 
-                       window.location.hostname.includes('replit.dev');
+  // const isDevelopment = process.env.NODE_ENV === 'development' || 
+  //                      window.location.hostname === 'localhost' || 
+  //                      window.location.hostname.includes('replit.dev');
 
   // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
   useEffect(() => {
@@ -45,30 +45,30 @@ export const UserProvider = ({ children }) => {
       }
       try {
         // Bypass authentication in development mode
-        if (isDevelopment) {
-          const mockUserData = {
-            _id: 'dev-user',
-            username: 'dev-user',
-            email: 'dev@example.com',
-            bankReal: 1000,
-            cashReal: 500,
-            digitalServicesReal: 200,
-            stocksReal: 1500,
-            etfReal: 800,
-            bitcoinReal: 600,
-            cryptoReal: 400,
-            expensesTags: ['Food', 'Transport', 'Entertainment'],
-            incomesTags: ['Salary', 'Freelance', 'Investment'],
-            paymentTags: ['Cash', 'Card', 'Transfer'],
-            allExpenses: [],
-            allIncomes: [],
-            preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-            preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()
-          };
-          setUserData(mockUserData);
-          setIsAuthenticated(true);
-          return;
-        }
+        // if (isDevelopment) {
+        //   const mockUserData = {
+        //     _id: 'dev-user',
+        //     username: 'dev-user',
+        //     email: 'dev@example.com',
+        //     bankReal: 1000,
+        //     cashReal: 500,
+        //     digitalServicesReal: 200,
+        //     stocksReal: 1500,
+        //     etfReal: 800,
+        //     bitcoinReal: 600,
+        //     cryptoReal: 400,
+        //     expensesTags: ['Food', 'Transport', 'Entertainment'],
+        //     incomesTags: ['Salary', 'Freelance', 'Investment'],
+        //     paymentTags: ['Cash', 'Card', 'Transfer'],
+        //     allExpenses: [],
+        //     allIncomes: [],
+        //     preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        //     preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()
+        //   };
+        //   setUserData(mockUserData);
+        //   setIsAuthenticated(true);
+        //   return;
+        // }
 
         //check if user is authenticated
         if (isAuthenticated && !isUpdated) { // && !isUpdated

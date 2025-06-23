@@ -3,8 +3,6 @@ import session, { SessionData } from "express-session";
 import cookieParser from "cookie-parser";
 import path from "path";
 
-require("dotenv").config();
-
 import db from "./db/mongo.js";
 import cache from "./cache/cache.js";
 import jobs from "./jobs/jobs.js";
@@ -73,30 +71,47 @@ app.get("/health", (req, res) => {
     res.status(200).send("OK")
 })
 
-// app.post("/registration", async (req, res) => {
-//     // Sanitize user input. Send status code 400 (Bad Request)
-//     // in case of invalid data (empty strings after sanitization)
-//     // or if the two passwords don't match
-//     let user_pwd = req.body.user_pwd;
-//     let repeated_pwd = req.body.repeated_pwd;
-//     user_pwd = utils.sanitizeInput(user_pwd);
-//     repeated_pwd = utils.sanitizeInput(repeated_pwd);
-//     if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd)
-//     {
-//         res.status(400);
-//         res.send();
-//         return;
-//     }
-//     // Generate a random user ID
-//     const user_id = await generateUserId();
-//     // Hash the password
-//     const hashed_password = utils.hashPassword(user_pwd, process.env.SALT_ROUNDS);
-//     // Add the user to the DB
-//     await db.users.insertNew(user_id, hashed_password);
-//     // Send the user ID to the client with status code 200 (OK)
-//     res.status(200);
-//     res.json({user_id: user_id});
-// });
+app.post("/registration", async (req, res) => {
+    // Sanitize user input. Send status code 400 (Bad Request)
+    // in case of invalid data (empty strings after sanitization)
+    // or if the two passwords don't match
+    let user_pwd = req.body.user_pwd;
+    let repeated_pwd = req.body.repeated_pwd;
+    let turnstile_token = req.body.turnstile_token;
+    user_pwd = utils.sanitizeInput(user_pwd);
+    repeated_pwd = utils.sanitizeInput(repeated_pwd);
+    if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd || turnstile_token == undefined)
+    {
+        res.status(400);
+        res.send();
+        return;
+    }
+    // Verify Cloudflare Turnstile token. Send status code 500 (Internal Server
+    // Error) if no response is received, or 401 (Unauthorized) if the token
+    // verification failed
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: 'POST',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            secret: process.env.CF_KEY,
+            response: turnstile_token
+        })
+    });
+    if (response.status != 200)
+        res.status(500).send()
+    const verification = await response.json()
+    if (!verification.success)
+        res.status(401).send()
+    // Generate a random user ID
+    const user_id = await generateUserId();
+    // Hash the password
+    const hashed_password = utils.hashPassword(user_pwd, Number.parseInt(process.env.SALT_ROUNDS || "0"));
+    // Add the user to the DB
+    await db.users.insertNew(user_id, hashed_password);
+    // Send the user ID to the client with status code 200 (OK)
+    res.status(200);
+    res.json({user_id: user_id});
+});
 
 app.post("/login", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)

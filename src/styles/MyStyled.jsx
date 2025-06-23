@@ -965,8 +965,7 @@ export const StyledLastAdds = styled.div`
 
   ul {
     list-style: none;
-    ```text
-padding: 0;
+    padding: 0;
     margin: 0;
     width: 100%;
   }

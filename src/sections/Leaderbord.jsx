@@ -131,13 +131,13 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                               </span>
                             )}
                         </StyledLabel>
-                        {/* <RankingsTitle>{languages[language].leaderboard.generalRanking} </RankingsTitle> */}
+                        <RankingsTitle>{languages[language].leaderboard.generalRanking} </RankingsTitle>
                         <CenteredRankings theme={theme}>
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={expenseRank} isHidden={isHidden} />
                         </CenteredRankings>
-                        {/* <RankingsTitle>{languages[language].leaderboard.similarRanking} </RankingsTitle > */}
+                        <RankingsTitle>{languages[language].leaderboard.similarRanking} </RankingsTitle > 
                         <CenteredRankings theme={theme}>
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
                             <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />

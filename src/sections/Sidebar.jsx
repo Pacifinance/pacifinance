@@ -417,7 +417,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 {
                                     icon: AiOutlineDotChart,
                                     route: "/charts-statistics",
-                                    tooltip: languages[language].sidebar.graphs,
+                                    tooltip: languages[language].sidebar.chartsStatistics,
                                     index: 1,
                                 },
                                 {
@@ -434,7 +434,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 },
                                 {
                                     icon: CompareArrowsIcon,
-                                    route: "/leaderboard",
+                                    route: "/comparison",
                                     tooltip: languages[language].sidebar.comparison,
                                     index: 4,
                                 },

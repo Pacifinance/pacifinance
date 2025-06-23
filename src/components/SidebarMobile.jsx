@@ -98,7 +98,7 @@ const SidebarMobile = ({
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.graphs}
+                        {languages[language].sidebar.chartsStatistics}
                     </button>
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
@@ -160,11 +160,11 @@ const SidebarMobile = ({
                             e.target.style.color = theme.textColor;
                         }}
                         onClick={() => {
-                            navigate("/leaderboard");
+                            navigate("/comparison");
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.leaderboard}
+                        {languages[language].sidebar.comparison}
                     </button>
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"

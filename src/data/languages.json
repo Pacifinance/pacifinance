@@ -238,135 +238,136 @@
             "forPrivacy": "per la tua privacy"
         },
         "sidebar": {
-            "graphs": "Grafici",
+            "chartsStatistics": "Grafici e Statistiche",
             "insert": "Inserisci",
             "check": "Controlla Prezzi",
             "leaderboard": "Classifica",
             "comparison": "Confronto",
             "knowledge": "Conoscenza",
             "info": "Info",
-            "logout": "Esci"
-        },
-        "account": {
-            "title": "Il tuo Profilo",
-            "id": "ID utente: ",
-            "userType": "Tipo utente: ",
-            "nationality": "Nazionalità: ",
-            "selectNationality": "Seleziona una nazionalità",
-            "whereWork": "Dove lavori: ",
-            "work": "Lavoro: ",
-            "workType": "Tipo di lavoro: ",
-            "selectWork": "Seleziona il tuo lavoro",
-            "selectWhereWork": "Seleziona dove lavori",
-            "selectWorkType": "Seleziona il tipo di lavoro",
-            "hoursContract": "Part-time | Full-time",
-            "selectHoursContract": "Seleziona il tuo orario di lavoro",
-            "remoteWork": "Lavoro da remoto",
-            "selectRemoteWork": "Seleziona se lavori da remoto",
-            "saveButton": "Salva profilo",
-            "errorPopup": {
-                "title": "Errore in fase di salvataggio profilo",
-                "message": "Si è verificato un errore nel salvataggio del tuo profilo.",
-                "message2": "Per favore riprova tra un istante.",
-                "okButton": "ok va bene"
+            "logout": "Esci",
+            "privacy": "Privacy",
+            "account": {
+                "title": "Il tuo Profilo",
+                "id": "ID utente: ",
+                "userType": "Tipo utente: ",
+                "nationality": "Nazionalità: ",
+                "selectNationality": "Seleziona una nazionalità",
+                "whereWork": "Dove lavori: ",
+                "work": "Lavoro: ",
+                "workType": "Tipo di lavoro: ",
+                "selectWork": "Seleziona il tuo lavoro",
+                "selectWhereWork": "Seleziona dove lavori",
+                "selectWorkType": "Seleziona il tipo di lavoro",
+                "hoursContract": "Part-time | Full-time",
+                "selectHoursContract": "Seleziona il tuo orario di lavoro",
+                "remoteWork": "Lavoro da remoto",
+                "selectRemoteWork": "Seleziona se lavori da remoto",
+                "saveButton": "Salva profilo",
+                "errorPopup": {
+                    "title": "Errore in fase di salvataggio profilo",
+                    "message": "Si è verificato un errore nel salvataggio del tuo profilo.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Profilo aggiornato con successo",
+                    "message": "Le informazioni del tuo profilo sono state aggiornate e salvate correttamente.",
+                    "okButton": "ok va bene"
+                }
             },
-            "successPopup": {
-                "title": "Profilo aggiornato con successo",
-                "message": "Le informazioni del tuo profilo sono state aggiornate e salvate correttamente.",
-                "okButton": "ok va bene"
+            "deleteAccount": {
+                "title": "Elimina account",
+                "info": "Sei sicuro di voler eliminare il tuo account? tutti i dati andranno persi.",
+                "deleteButton": "Elimina Account",
+                "confirmButton": "Si voglio eliminare il mio account",
+                "cancelButton": "Annulla",
+                "errorPopup": {
+                    "title": "Errore in fase di eliminazione account",
+                    "message": "Si è verificato un errore nell'eliminazione del tuo account.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Account eliminato con successo",
+                    "message": "Verrai reindirizzato alla pagina di registrazione. L'eliminazione effettiva dell'account avverrà tra 30 giorni, a partire da oggi. Per annullare la cancellazione, ti basterà loggare anche solo una volta all'interno di questi 30 giorni.",
+                    "okButton": "ok va bene"
+                }
+            },
+            "changeUsername": {
+                "title": "Genera username",
+                "info": "Il sistema genererà per te un username univoco e casuale",
+                "username": "Username",
+                "confirmButton": "Voglio cambiare il mio username",
+                "errorPopup": {
+                    "title": "Errore in fase di generazione username",
+                    "message": "Si è verificato un errore nella generazione del tuo username.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Generazione avvenuta con successo",
+                    "message": "Il tuo username è: ",
+                    "securityMessage": "Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.",
+                    "redirectMessage": "Verrai reindirizzato alla pagina di accesso.",
+                    "copied": "Copiato negli appunti!",
+                    "toCopy": "Copia il tuo username",
+                    "okButton": "ok va bene"
+                }
+            },
+            "changeID": {
+                "title": "Cambia ID",
+                "info": "Il sistema genererà per te un id univoco e casuale",
+                "username": "ID",
+                "confirmButton": "Voglio cambiare il mio ID",
+                "errorPopup": {
+                    "title": "Errore in fase di generazione ID",
+                    "message": "Si è verificato un errore nella generazione del tuo ID.",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "Generazione avvenuta con successo",
+                    "message": "Il tuo nuovo ID è: ",
+                    "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>",
+                    "copied": "Copiato negli appunti!",
+                    "toCopy": "Copia il tuo ID",
+                    "okButton": "ok va bene"
+                }
+            },
+            "changePassword": {
+                "title": "Cambio password",
+                "info": "Inserisci la tua vecchia password e la nuova password",
+                "oldPassword": "Vecchia password",
+                "newPassword": "Nuova password",
+                "confirmPassword": "Conferma password",
+                "confirmButton": "Cambia password",
+                "errorPopup": {
+                    "title": "Errore in fase di cambio password",
+                    "message": "Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br>",
+                    "message2": "Per favore riprova tra un istante.",
+                    "okButton": "ok va bene"
+                },
+                "successPopup": {
+                    "title": "La tua password è stata reimpostata correttamente",
+                    "message": "Verrai renderizzato alla pagina di accesso.",
+                    "okButton": "ok va bene"
+                }
+            },
+            "settings": {
+                "title": "Impostazioni",
+                "light": "Modalità chiara/scura",
+                "privacy": "Modalità privacy",
+                "language": "Cambia Lingua",
+                "deleteAccount": "Elimina account (!)",
+                "saveSettings": "Salva impostazioni",
+                "themeSection": "Tema e Aspetto",
+                "securitySection": "Sicurezza",
+                "dangerZone": "Zona Pericolosa",
+                "backToDashboard": "Torna alla Dashboard"
             }
         },
-        "deleteAccount": {
-            "title": "Elimina account",
-            "info": "Sei sicuro di voler eliminare il tuo account? tutti i dati andranno persi.",
-            "deleteButton": "Elimina Account",
-            "confirmButton": "Si voglio eliminare il mio account",
-            "cancelButton": "Annulla",
-            "errorPopup": {
-                "title": "Errore in fase di eliminazione account",
-                "message": "Si è verificato un errore nell'eliminazione del tuo account.",
-                "message2": "Per favore riprova tra un istante.",
-                "okButton": "ok va bene"
-            },
-            "successPopup": {
-                "title": "Account eliminato con successo",
-                "message": "Verrai reindirizzato alla pagina di registrazione. L'eliminazione effettiva dell'account avverrà tra 30 giorni, a partire da oggi. Per annullare la cancellazione, ti basterà loggare anche solo una volta all'interno di questi 30 giorni.",
-                "okButton": "ok va bene"
-            }
-        },
-        "changeUsername": {
-            "title": "Genera username",
-            "info": "Il sistema genererà per te un username univoco e casuale",
-            "username": "Username",
-            "confirmButton": "Voglio cambiare il mio username",
-            "errorPopup": {
-                "title": "Errore in fase di generazione username",
-                "message": "Si è verificato un errore nella generazione del tuo username.",
-                "message2": "Per favore riprova tra un istante.",
-                "okButton": "ok va bene"
-            },
-            "successPopup": {
-                "title": "Generazione avvenuta con successo",
-                "message": "Il tuo username è: ",
-                "securityMessage": "Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.",
-                "redirectMessage": "Verrai reindirizzato alla pagina di accesso.",
-                "copied": "Copiato negli appunti!",
-                "toCopy": "Copia il tuo username",
-                "okButton": "ok va bene"
-            }
-        },
-        "changeID": {
-            "title": "Cambia ID",
-            "info": "Il sistema genererà per te un id univoco e casuale",
-            "username": "ID",
-            "confirmButton": "Voglio cambiare il mio ID",
-            "errorPopup": {
-                "title": "Errore in fase di generazione ID",
-                "message": "Si è verificato un errore nella generazione del tuo ID.",
-                "message2": "Per favore riprova tra un istante.",
-                "okButton": "ok va bene"
-            },
-            "successPopup": {
-                "title": "Generazione avvenuta con successo",
-                "message": "Il tuo nuovo ID è: ",
-                "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>",
-                "copied": "Copiato negli appunti!",
-                "toCopy": "Copia il tuo ID",
-                "okButton": "ok va bene"
-            }
-        },
-        "changePassword": {
-            "title": "Cambio password",
-            "info": "Inserisci la tua vecchia password e la nuova password",
-            "oldPassword": "Vecchia password",
-            "newPassword": "Nuova password",
-            "confirmPassword": "Conferma password",
-            "confirmButton": "Cambia password",
-            "errorPopup": {
-                "title": "Errore in fase di cambio password",
-                "message": "Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br>",
-                "message2": "Per favore riprova tra un istante.",
-                "okButton": "ok va bene"
-            },
-            "successPopup": {
-                "title": "La tua password è stata reimpostata correttamente",
-                "message": "Verrai renderizzato alla pagina di accesso.",
-                "okButton": "ok va bene"
-            }
-        },
-        "settings": {
-            "title": "Impostazioni",
-            "light": "Modalità chiara/scura",
-            "privacy": "Modalità privacy",
-            "language": "Cambia Lingua",
-            "deleteAccount": "Elimina account (!)",
-            "saveSettings": "Salva impostazioni",
-            "themeSection": "Tema e Aspetto",
-            "securitySection": "Sicurezza",
-            "dangerZone": "Zona Pericolosa",
-            "backToDashboard": "Torna alla Dashboard"
-        },
-        "logout": "Esci",
+        
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Il tuo patrimonio totale è: ",
@@ -1170,136 +1171,137 @@
             "forPrivacy": "for your privacy"
         },
         "sidebar": {
-            "graphs": "Charts",
+            "chartsStatistics": "Charts and Statistics",
             "insert": "Insert",
             "check": "Check Prices",
             "leaderboard": "Leaderboard",
             "comparison": "Comparison",
             "knowledge": "Knowledge",
             "info": "Info",
-            "logout": "Logout"
-        },
-        "account": {
-            "title": "Your Account",
-            "id": "User ID: ",
-            "userType": "User Type: ",
-            "nationality": "Nationality: ",
-            "selectNationality": "Select a nationality",
-            "whereWork": "Where do you work: ",
-            "work": "Work: ",
-            "workType": "Work type: ",
-            "selectWork": "Select your work",
-            "selectWhereWork": "Select where you work",
-            "selectWorkType": "Select the type of work",
-            "hoursContract": "Part-time | Full-time",
-            "selectHoursContract": "Select your working hours",
-            "remoteWork": "Remote work",
-            "selectRemoteWork": "Select if you work remotely",
-            "saveButton": "Save profile",
-            "errorPopup": {
-                "title": "Error during profile saving",
-                "message": "An error occurred while saving your profile.",
-                "message2": "Please try again in a moment.",
-                "okButton": "ok fine"
+            "logout": "Logout",
+            "privacy": "Privacy",
+            "account": {
+                "title": "Your Account",
+                "id": "User ID: ",
+                "userType": "User Type: ",
+                "nationality": "Nationality: ",
+                "selectNationality": "Select a nationality",
+                "whereWork": "Where do you work: ",
+                "work": "Work: ",
+                "workType": "Work type: ",
+                "selectWork": "Select your work",
+                "selectWhereWork": "Select where you work",
+                "selectWorkType": "Select the type of work",
+                "hoursContract": "Part-time | Full-time",
+                "selectHoursContract": "Select your working hours",
+                "remoteWork": "Remote work",
+                "selectRemoteWork": "Select if you work remotely",
+                "saveButton": "Save profile",
+                "errorPopup": {
+                    "title": "Error during profile saving",
+                    "message": "An error occurred while saving your profile.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Profile updated successfully",
+                    "message": "Your profile information has been updated and saved correctly.",
+                    "okButton": "ok fine"
+                }
             },
-            "successPopup": {
-                "title": "Profile updated successfully",
-                "message": "Your profile information has been updated and saved correctly.",
-                "okButton": "ok fine"
+            "deleteAccount": {
+                "title": "Delete account",
+                "info": "Are you sure you want to delete your account? all data will be lost.",
+                "deleteButton": "Delete Account",
+                "confirmButton": "I want delete my account",
+                "cancelButton": "Cancel",
+                "errorPopup": {
+                    "title": "Error during account deletion",
+                    "message": "An error occurred while deleting your account.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Account deleted successfully",
+                    "message": "You will be redirected to the registration page. The actual deletion of the account will take place in 30 days, starting from today. To cancel the deletion, you just need to log in even once within these 30 days.",
+                    "okButton": "ok fine"
+                }
+            },
+            "changeUsername": {
+                "title": "Change username",
+                "info": "The system will generate a unique and random username for you",
+                "username": "Username",
+                "confirmButton": "I want to change my username",
+                "errorPopup": {
+                    "title": "Error during username generation",
+                    "message": "An error occurred while generating your username.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Generation successful",
+                    "message": "Your username is: ",
+                    "securityMessage": "We recommend that you save it in a safe place for future access.",
+                    "redirectMessage": "You will be redirected to the login page.",
+                    "copied": "Copied to clipboard!",
+                    "toCopy": "Copy your username",
+                    "okButton": "ok fine"
+                }
+            },
+            "changeID": {
+                "title": "Change ID",
+                "info": "The system will generate a unique and random id for you",
+                "username": "ID",
+                "confirmButton": "I want to change my ID",
+                "errorPopup": {
+                    "title": "Error during ID generation",
+                    "message": "An error occurred while generating your ID.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Generation successful",
+                    "message": "Your new ID is: ",
+                    "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>",
+                    "copied": "Copied to clipboard!",
+                    "toCopy": "Copy your ID",
+                    "okButton": "ok fine"
+                },
+                "errorCopy": "Error during copy to clipboard: "
+            },
+            "changePassword": {
+                "title": "Change password",
+                "info": "Enter your old password and new password",
+                "oldPassword": "Old password",
+                "newPassword": "New password",
+                "confirmPassword": "Confirm password",
+                "confirmButton": "Change password",
+                "errorPopup": {
+                    "title": "Error during password change",
+                    "message": "An error occurred while changing your password.",
+                    "message2": "Please try again in a moment.",
+                    "okButton": "ok fine"
+                },
+                "successPopup": {
+                    "title": "Your password has been changed successfully.",
+                    "message": "You will be redirected to the login page.",
+                    "okButton": "ok fine"
+                }
+            },
+            "settings": {
+                "title": "Settings",
+                "light": "Light/Dark mode",
+                "privacy": "Privacy mode",
+                "language": "Change Language",
+                "deleteAccount": "Delete account (!)",
+                "saveSettings": "Save settings",
+                "themeSection": "Theme and Appearance",
+                "securitySection": "Security",
+                "dangerZone": "Danger Zone",
+                "backToDashboard": "Back to Dashboard"
             }
         },
-        "deleteAccount": {
-            "title": "Delete account",
-            "info": "Are you sure you want to delete your account? all data will be lost.",
-            "deleteButton": "Delete Account",
-            "confirmButton": "I want delete my account",
-            "cancelButton": "Cancel",
-            "errorPopup": {
-                "title": "Error during account deletion",
-                "message": "An error occurred while deleting your account.",
-                "message2": "Please try again in a moment.",
-                "okButton": "ok fine"
-            },
-            "successPopup": {
-                "title": "Account deleted successfully",
-                "message": "You will be redirected to the registration page. The actual deletion of the account will take place in 30 days, starting from today. To cancel the deletion, you just need to log in even once within these 30 days.",
-                "okButton": "ok fine"
-            }
-        },
-        "changeUsername": {
-            "title": "Change username",
-            "info": "The system will generate a unique and random username for you",
-            "username": "Username",
-            "confirmButton": "I want to change my username",
-            "errorPopup": {
-                "title": "Error during username generation",
-                "message": "An error occurred while generating your username.",
-                "message2": "Please try again in a moment.",
-                "okButton": "ok fine"
-            },
-            "successPopup": {
-                "title": "Generation successful",
-                "message": "Your username is: ",
-                "securityMessage": "We recommend that you save it in a safe place for future access.",
-                "redirectMessage": "You will be redirected to the login page.",
-                "copied": "Copied to clipboard!",
-                "toCopy": "Copy your username",
-                "okButton": "ok fine"
-            }
-        },
-        "changeID": {
-            "title": "Change ID",
-            "info": "The system will generate a unique and random id for you",
-            "username": "ID",
-            "confirmButton": "I want to change my ID",
-            "errorPopup": {
-                "title": "Error during ID generation",
-                "message": "An error occurred while generating your ID.",
-                "message2": "Please try again in a moment.",
-                "okButton": "ok fine"
-            },
-            "successPopup": {
-                "title": "Generation successful",
-                "message": "Your new ID is: ",
-                "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>",
-                "copied": "Copied to clipboard!",
-                "toCopy": "Copy your ID",
-                "okButton": "ok fine"
-            },
-            "errorCopy": "Error during copy to clipboard: "
-        },
-        "changePassword": {
-            "title": "Change password",
-            "info": "Enter your old password and new password",
-            "oldPassword": "Old password",
-            "newPassword": "New password",
-            "confirmPassword": "Confirm password",
-            "confirmButton": "Change password",
-            "errorPopup": {
-                "title": "Error during password change",
-                "message": "An error occurred while changing your password.",
-                "message2": "Please try again in a moment.",
-                "okButton": "ok fine"
-            },
-            "successPopup": {
-                "title": "Your password has been changed successfully.",
-                "message": "You will be redirected to the login page.",
-                "okButton": "ok fine"
-            }
-        },
-        "settings": {
-            "title": "Settings",
-            "light": "Light/Dark mode",
-            "privacy": "Privacy mode",
-            "language": "Change Language",
-            "deleteAccount": "Delete account (!)",
-            "saveSettings": "Save settings",
-            "themeSection": "Theme and Appearance",
-            "securitySection": "Security",
-            "dangerZone": "Danger Zone",
-            "backToDashboard": "Back to Dashboard"
-        },
-        "logout": "Logout",
+
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Your total balance is: ",

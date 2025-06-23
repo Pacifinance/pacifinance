@@ -155,7 +155,7 @@ function AppRouter() {
         }
       />
       <Route
-        path="/leaderboard"
+        path="/comparison"
         element={
           <ProtectedRoute>
             <ComparisonPage />

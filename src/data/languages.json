@@ -1,3 +1,4 @@
+
 {
     "it": {
         "assets": {
@@ -36,7 +37,6 @@
             "weAreWorking": "Stiamo lavorando a questa funzionalità",
             "selectAnOption": "Seleziona un'opzione"
         },
-
         "months": {
             "january": "Gennaio",
             "february": "Febbraio",
@@ -51,7 +51,6 @@
             "november": "Novembre",
             "december": "Dicembre"
         },
-
         "cookie": {
             "title": "Utilizziamo i cookie",
             "description": "Utilizziamo i cookie per migliorare la tua esperienza, analizzare il traffico del sito e per scopi di marketing. Puoi scegliere quali cookie accettare.",
@@ -76,7 +75,6 @@
             },
             "footer": "Puoi modificare le tue preferenze in qualsiasi momento nella nostra Politica sulla Privacy"
         },
-
         "landing": {
             "new": {
                 "hero": {
@@ -368,425 +366,425 @@
             "dangerZone": "Zona Pericolosa",
             "backToDashboard": "Torna alla Dashboard"
         },
-        "logout": "Esci"
-    },
-    "dashboard": {
-        "title": "Dashboard",
-        "totalBalance": "Il tuo patrimonio totale è: ",
-        "titleGraph": "Distribuzione Investimenti",
-        "titleGraph2": "Distribuzione Capitale",
-        "titleGraph3": "Entrate | Uscite",
-        "updateValue": "Aggiorna valore",
-        "noData": "Assenza di dati:",
-        "noData2": "Inserire i valori <br></br>cliccando qui: "
-    },
-    "graphs": {
-        "title": "Grafici e Statistiche",
-        "Title": "Le tue statistiche",
-        "statsBalance": {
-            "title": "Statistiche bilancio",
-            "titleGraph": "Andamento del tuo bilancio negli ultimi 12 mesi",
-            "titleGraph2": "Distribuzione del tuo bilancio negli ultimi 12 mesi",
-            "detailedVision": "Visione dettagliata",
-            "titleDetailsMonth": "Il tuo patrimonio rispetto al mese scorso è variato di: ",
-            "variation": "Variazione ",
-            "titleDetailsYear": "Il tuo patrimonio rispetto ad un anno fa è variato di: "
+        "logout": "Esci",
+        "dashboard": {
+            "title": "Dashboard",
+            "totalBalance": "Il tuo patrimonio totale è: ",
+            "titleGraph": "Distribuzione Investimenti",
+            "titleGraph2": "Distribuzione Capitale",
+            "titleGraph3": "Entrate | Uscite",
+            "updateValue": "Aggiorna valore",
+            "noData": "Assenza di dati:",
+            "noData2": "Inserire i valori <br></br>cliccando qui: "
         },
-        "statsOutflows": {
-            "title": "Statistiche Entrate e Uscite",
-            "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
-            "titleGraph2": "Distribuzione delle tue spese per categoria",
-            "detailedVision": "Visione dettagliata",
-            "titleDetailsMonth": "Variazione entrate, spese e risparmi rispetto al mese scorso: ",
-            "variation": "Variazione ",
-            "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: "
-        }
-    },
-    "insert": {
-        "title": "Inserimento Dati",
-        "buttonBalance": "Aggiorna Bilancio",
-        "buttonIncome": "Aggiungi Entrate",
-        "buttonOutflow": "Aggiungi Uscite",
-        "buttonInvestment": "Aggiungi Investimenti",
-        "balanceSection": {
-            "titleLiquidity": "Liquidità",
-            "titleInvestments": "Investimenti",
-            "updateButton": "Aggiorna il tuo bilancio",
-            "confirmUpdate": "Conferma aggiornamento bilancio",
-            "successUpdate": "Bilancio aggiornato con successo",
-            "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo"
-        },
-        "incomeSection": {
-            "placeholderCategory": "Seleziona una categoria",
-            "placeholderNote": "Inserisci una nota (opzionale)",
-            "updateButton": "Aggiungi entrata",
-            "titleListing": "Le entrate del mese selezionato",
-            "tableColumns": {
-                "category": "Categoria",
-                "value": "Valore",
-                "note": "Nota",
-                "date": "Data Entrata"
+        "graphs": {
+            "title": "Grafici e Statistiche",
+            "Title": "Le tue statistiche",
+            "statsBalance": {
+                "title": "Statistiche bilancio",
+                "titleGraph": "Andamento del tuo bilancio negli ultimi 12 mesi",
+                "titleGraph2": "Distribuzione del tuo bilancio negli ultimi 12 mesi",
+                "detailedVision": "Visione dettagliata",
+                "titleDetailsMonth": "Il tuo patrimonio rispetto al mese scorso è variato di: ",
+                "variation": "Variazione ",
+                "titleDetailsYear": "Il tuo patrimonio rispetto ad un anno fa è variato di: "
             },
-            "confirmUpdate": "Conferma inserimento entrata",
-            "successUpdate": "Entrata inserita con successo",
-            "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
-            "successDelete": "Entrata eliminata con successo",
-            "increaseWhichBalance": "Seleziona dove aggiungere l'entrata: "
+            "statsOutflows": {
+                "title": "Statistiche Entrate e Uscite",
+                "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
+                "titleGraph2": "Distribuzione delle tue spese per categoria",
+                "detailedVision": "Visione dettagliata",
+                "titleDetailsMonth": "Variazione entrate, spese e risparmi rispetto al mese scorso: ",
+                "variation": "Variazione ",
+                "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: "
+            }
         },
-        "outflowSection": {
-            "placeholderCategory": "Seleziona una categoria",
-            "placeholderTypology": "Seleziona una tipologia",
-            "placeholderNote": "Inserisci una nota (opzionale)",
-            "updateButton": "Aggiungi uscita",
-            "titleListing": "Le uscite del mese selezionato",
-            "paymentType": "Tipologia pagamento",
-            "tableColumns": {
-                "category": "Categoria",
-                "typology": "Tipologia",
-                "value": "Valore",
-                "note": "Nota",
-                "date": "Data Uscita"
+        "insert": {
+            "title": "Inserimento Dati",
+            "buttonBalance": "Aggiorna Bilancio",
+            "buttonIncome": "Aggiungi Entrate",
+            "buttonOutflow": "Aggiungi Uscite",
+            "buttonInvestment": "Aggiungi Investimenti",
+            "balanceSection": {
+                "titleLiquidity": "Liquidità",
+                "titleInvestments": "Investimenti",
+                "updateButton": "Aggiorna il tuo bilancio",
+                "confirmUpdate": "Conferma aggiornamento bilancio",
+                "successUpdate": "Bilancio aggiornato con successo",
+                "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo"
             },
-            "confirmUpdate": "Conferma inserimento uscita",
-            "successUpdate": "Uscita inserita con successo",
-            "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
-            "successDelete": "Uscita eliminata con successo",
-            "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: "
+            "incomeSection": {
+                "placeholderCategory": "Seleziona una categoria",
+                "placeholderNote": "Inserisci una nota (opzionale)",
+                "updateButton": "Aggiungi entrata",
+                "titleListing": "Le entrate del mese selezionato",
+                "tableColumns": {
+                    "category": "Categoria",
+                    "value": "Valore",
+                    "note": "Nota",
+                    "date": "Data Entrata"
+                },
+                "confirmUpdate": "Conferma inserimento entrata",
+                "successUpdate": "Entrata inserita con successo",
+                "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
+                "successDelete": "Entrata eliminata con successo",
+                "increaseWhichBalance": "Seleziona dove aggiungere l'entrata: "
+            },
+            "outflowSection": {
+                "placeholderCategory": "Seleziona una categoria",
+                "placeholderTypology": "Seleziona una tipologia",
+                "placeholderNote": "Inserisci una nota (opzionale)",
+                "updateButton": "Aggiungi uscita",
+                "titleListing": "Le uscite del mese selezionato",
+                "paymentType": "Tipologia pagamento",
+                "tableColumns": {
+                    "category": "Categoria",
+                    "typology": "Tipologia",
+                    "value": "Valore",
+                    "note": "Nota",
+                    "date": "Data Uscita"
+                },
+                "confirmUpdate": "Conferma inserimento uscita",
+                "successUpdate": "Uscita inserita con successo",
+                "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
+                "successDelete": "Uscita eliminata con successo",
+                "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: "
+            },
+            "investmentSection": {
+                "placeholderCategory": "Seleziona una categoria",
+                "placeholderNote": "Inserisci una nota (opzionale)",
+                "updateButton": "Aggiungi investimento",
+                "titleListing": "Gli investimenti del mese selezionato",
+                "tableColumns": {
+                    "category": "Categoria",
+                    "value": "Valore",
+                    "note": "Nota",
+                    "date": "Data Investimento"
+                },
+                "confirmUpdate": "Conferma inserimento investimento",
+                "successUpdate": "Investimento inserito con successo",
+                "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
+                "successDelete": "Investimento eliminato con successo",
+                "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
+            }
         },
-        "investmentSection": {
-            "placeholderCategory": "Seleziona una categoria",
-            "placeholderNote": "Inserisci una nota (opzionale)",
-            "updateButton": "Aggiungi investimento",
-            "titleListing": "Gli investimenti del mese selezionato",
-            "tableColumns": {
-                "category": "Categoria",
-                "value": "Valore",
-                "note": "Nota",
-                "date": "Data Investimento"
+        "comparison": {
+            "title": "Confronto Anonimo",
+            "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
+            "sections": {
+                "rankings": {
+                    "title": "Classifiche",
+                    "description": "Vedi come ti posizioni rispetto ad altri utenti"
+                },
+                "insights": {
+                    "title": "Analisi Finanziarie",
+                    "description": "Scopri pattern e opportunità"
+                },
+                "spending": {
+                    "title": "Analisi Spese",
+                    "description": "Confronta le tue abitudini di spesa"
+                },
+                "benchmarks": {
+                    "title": "Benchmark",
+                    "description": "Confronti per settore e demografia"
+                }
             },
-            "confirmUpdate": "Conferma inserimento investimento",
-            "successUpdate": "Investimento inserito con successo",
-            "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
-            "successDelete": "Investimento eliminato con successo",
-            "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
-        }
-    },
-    "comparison": {
-        "title": "Confronto Anonimo",
-        "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
-        "sections": {
-            "rankings": {
-                "title": "Classifiche",
-                "description": "Vedi come ti posizioni rispetto ad altri utenti"
+            "cards": {
+                "avgBalance": {
+                    "title": "Patrimonio Medio",
+                    "description": "Confronta il tuo patrimonio con utenti simili",
+                    "yourBalance": "Il Tuo Patrimonio",
+                    "avgSimilar": "Media Utenti Simili",
+                    "avgAll": "Media Tutti gli Utenti"
+                },
+                "avgIncome": {
+                    "title": "Entrate Mensili",
+                    "description": "Confronta le tue entrate mensili",
+                    "yourIncome": "Le Tue Entrate",
+                    "avgSimilar": "Media Utenti Simili",
+                    "avgAll": "Media Tutti gli Utenti"
+                },
+                "avgExpenses": {
+                    "title": "Spese Mensili",
+                    "description": "Confronta le tue spese mensili",
+                    "yourExpenses": "Le Tue Spese",
+                    "avgSimilar": "Media Utenti Simili",
+                    "avgAll": "Media Tutti gli Utenti"
+                },
+                "savingsRate": {
+                    "title": "Tasso di Risparmio",
+                    "description": "I tuoi risparmi come percentuale delle entrate",
+                    "comingSoon": "Prossimamente"
+                },
+                "assetAllocation": {
+                    "title": "Allocazione Asset",
+                    "description": "Come distribuisci la tua ricchezza",
+                    "comingSoon": "Prossimamente"
+                },
+                "spendingCategories": {
+                    "title": "Spese per Categoria",
+                    "description": "Dove spendi i tuoi soldi",
+                    "comingSoon": "Prossimamente"
+                }
             },
             "insights": {
-                "title": "Analisi Finanziarie",
-                "description": "Scopri pattern e opportunità"
+                "betterThan": "Stai andando meglio del",
+                "worseThan": "C'è margine di miglioramento rispetto al",
+                "average": "Stai performando nella media",
+                "ofUsers": "degli utenti",
+                "inCategory": "nella tua categoria"
             },
-            "spending": {
-                "title": "Analisi Spese",
-                "description": "Confronta le tue abitudini di spesa"
-            },
-            "benchmarks": {
-                "title": "Benchmark",
-                "description": "Confronti per settore e demografia"
+            "tips": {
+                "title": "Suggerimenti Personalizzati",
+                "highExpenses": "Considera di rivedere le tue spese - sono sopra la media per il tuo livello di reddito",
+                "lowSavings": "Prova ad aumentare il tuo tasso di risparmio per una migliore salute finanziaria",
+                "goodBalance": "Ottimo lavoro! Il tuo equilibrio finanziario è sopra la media",
+                "diversify": "Considera di diversificare i tuoi asset per una migliore gestione del rischio"
             }
         },
-        "cards": {
-            "avgBalance": {
-                "title": "Patrimonio Medio",
-                "description": "Confronta il tuo patrimonio con utenti simili",
-                "yourBalance": "Il Tuo Patrimonio",
-                "avgSimilar": "Media Utenti Simili",
-                "avgAll": "Media Tutti gli Utenti"
-            },
-            "avgIncome": {
-                "title": "Entrate Mensili",
-                "description": "Confronta le tue entrate mensili",
-                "yourIncome": "Le Tue Entrate",
-                "avgSimilar": "Media Utenti Simili",
-                "avgAll": "Media Tutti gli Utenti"
-            },
-            "avgExpenses": {
-                "title": "Spese Mensili",
-                "description": "Confronta le tue spese mensili",
-                "yourExpenses": "Le Tue Spese",
-                "avgSimilar": "Media Utenti Simili",
-                "avgAll": "Media Tutti gli Utenti"
-            },
-            "savingsRate": {
-                "title": "Tasso di Risparmio",
-                "description": "I tuoi risparmi come percentuale delle entrate",
-                "comingSoon": "Prossimamente"
-            },
-            "assetAllocation": {
-                "title": "Allocazione Asset",
-                "description": "Come distribuisci la tua ricchezza",
-                "comingSoon": "Prossimamente"
-            },
-            "spendingCategories": {
-                "title": "Spese per Categoria",
-                "description": "Dove spendi i tuoi soldi",
-                "comingSoon": "Prossimamente"
-            }
+        "leaderboard": {
+            "title": "Classifica nel tempo",
+            "monthRanking": "Classifica relativa al mese: ",
+            "yearRanking": "Classifica relativa all'anno: ",
+            "generalRanking": "Classifiche generali : ",
+            "similarRanking": "Classifiche utenti simili: ",
+            "balanceRanking": "Classifica Patrimonio ",
+            "incomeRanking": "Classifica Entrate ",
+            "expenseRanking": "Classifica Uscite ",
+            "infoExpenseRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
+            "noRank": "Rankings non disponibili",
+            "compliments": "Complimenti! Sei nella top ",
+            "superCompliments": "Incredibile!! Sei nella top ",
+            "top": "Sei nella top ",
+            "users": " degli utenti!",
+            "lowerExpense": " Sei tra gli utenti che spendono di meno!",
+            "higherExpense": " Attenzione! Sei tra gli utenti che spendono di più!",
+            "higherIncome": " Sei tra gli utenti che guadagnano di più!",
+            "mediumRank": "Sei nella media degli utenti!",
+            "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
         },
-        "insights": {
-            "betterThan": "Stai andando meglio del",
-            "worseThan": "C'è margine di miglioramento rispetto al",
-            "average": "Stai performando nella media",
-            "ofUsers": "degli utenti",
-            "inCategory": "nella tua categoria"
-        },
-        "tips": {
-            "title": "Suggerimenti Personalizzati",
-            "highExpenses": "Considera di rivedere le tue spese - sono sopra la media per il tuo livello di reddito",
-            "lowSavings": "Prova ad aumentare il tuo tasso di risparmio per una migliore salute finanziaria",
-            "goodBalance": "Ottimo lavoro! Il tuo equilibrio finanziario è sopra la media",
-            "diversify": "Considera di diversificare i tuoi asset per una migliore gestione del rischio"
-        }
-    },
-    "leaderboard": {
-        "title": "Classifica nel tempo",
-        "monthRanking": "Classifica relativa al mese: ",
-        "yearRanking": "Classifica relativa all'anno: ",
-        "generalRanking": "Classifiche generali : ",
-        "similarRanking": "Classifiche utenti simili: ",
-        "balanceRanking": "Classifica Patrimonio ",
-        "incomeRanking": "Classifica Entrate ",
-        "outflowRanking": "Classifica Uscite ",
-        "infoOutflowRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
-        "noRank": "Rankings non disponibili",
-        "compliments": "Complimenti! Sei nella top ",
-        "superCompliments": "Incredibile!! Sei nella top ",
-        "top": "Sei nella top ",
-        "users": " degli utenti!",
-        "lowerOutflow": " Sei tra gli utenti che spendono di meno!",
-        "higherOutflow": " Attenzione! Sei tra gli utenti che spendono di più!",
-        "higherIncome": " Sei tra gli utenti che guadagnano di più!",
-        "mediumRank": "Sei nella media degli utenti!",
-        "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
-    },
-    "knowledge": {
-        "title": "Conoscenze Finanziarie",
-        "subtitle": "Impara a gestire meglio le tue finanze personali",
-        "disclaimer": "⚠️ Le informazioni fornite sono a scopo educativo e non costituiscono consigli finanziari personalizzati. Consulta sempre un consulente finanziario qualificato per decisioni importanti.",
-        "advantages": "Vantaggi",
-        "disadvantages": "Svantaggi",
-        "sections": {
-            "investments": {
-                "title": "Investimenti",
-                "subtitle": "Guida agli strumenti di investimento",
-                "content": {
-                    "intro": "Investire significa mettere i propri soldi in strumenti finanziari con l'obiettivo di ottenere un rendimento nel tempo. È importante diversificare e comprendere i rischi.",
-                    "etf": {
-                        "title": "ETF (Exchange Traded Fund)",
-                        "description": "Gli ETF sono fondi che replicano un indice (es. FTSE MIB) e si possono comprare/vendere in borsa come azioni. Permettono di diversificare con piccole somme.",
-                        "pros": "• Diversificazione automatica\n• Costi bassi\n• Liquidi (vendibili in qualsiasi momento)\n• Trasparenti",
-                        "cons": "• Seguono il mercato (anche nelle discese)\n• Non battono mai l'indice di riferimento"
-                    },
-                    "stocks": {
-                        "title": "Azioni",
-                        "description": "Le azioni rappresentano quote di proprietà di un'azienda. Il loro valore dipende dalle performance dell'azienda e dal sentiment del mercato.",
-                        "pros": "• Potenziali rendimenti elevati\n• Dividendi possibili\n• Diritti di voto in assemblea",
-                        "cons": "• Rischio elevato\n• Serve tempo per analisi\n• Volatilità alta"
-                    },
-                    "bonds": {
-                        "title": "Obbligazioni",
-                        "description": "Le obbligazioni sono prestiti che fai a enti (stati, aziende). In cambio ricevi interessi periodici e il capitale a scadenza.",
-                        "pros": "• Rendimento più prevedibile\n• Rischio generalmente più basso\n• Diversificazione dal mercato azionario",
-                        "cons": "• Rendimenti più bassi\n• Rischio inflazione\n• Rischio tasso di interesse"
-                    },
-                    "crypto": {
-                        "title": "Criptovalute",
-                        "description": "Valute digitali decentralizzate. Bitcoin è la più conosciuta, ma esistono migliaia di criptovalute diverse.",
-                        "pros": "• Potenziali rendimenti molto elevati\n• Decentralizzazione\n• Innovazione tecnologica",
-                        "cons": "• Estrema volatilità\n• Regolamentazione incerta\n• Rischio tecnologico alto"
-                    },
-                    "government_bonds": {
-                        "title": "Titoli di Stato",
-                        "description": "Obbligazioni emesse dallo Stato. I BTP italiani, Bund tedeschi, Treasury USA sono esempi. Sono considerati tra gli investimenti più sicuri.",
-                        "pros": "• Sicurezza elevata\n• Garanzia dello Stato\n• Rendimento fisso",
-                        "cons": "• Rendimenti bassi\n• Rischio inflazione\n• Rischio paese (per stati meno stabili)"
-                    },
-                    "beginner_tips": {
-                        "title": "Consigli per Principianti",
-                        "tips": [
-                            "Inizia con ETF diversificati su indici mondiali",
-                            "Non investire mai soldi che ti servono a breve termine",
-                            "Investi regolarmente piccole somme (PAC - Piano di Accumulo)",
-                            "Non cercare di 'battere il mercato' all'inizio",
-                            "Studia prima di investire in singole azioni",
-                            "Tieni massimo 5-10% in criptovalute",
-                            "Diversifica sempre: mai tutto su un singolo investimento"
-                        ]
-                    }
-                }
-            },
-            "saving": {
-                "title": "Risparmio",
-                "subtitle": "Come mettere da parte i tuoi soldi",
-                "content": {
-                    "intro": "Il risparmio è la base della salute finanziaria. Prima di investire, è fondamentale avere un fondo di emergenza e obiettivi chiari.",
-                    "emergency_fund": {
-                        "title": "Fondo di Emergenza",
-                        "description": "Un fondo di emergenza dovrebbe coprire 3-6 mesi di spese. Va tenuto in conti deposito o conti correnti facilmente accessibili.",
-                        "tips": [
-                            "Calcola le tue spese mensili essenziali",
-                            "Moltiplica per 3-6 mesi",
-                            "Tieni questi soldi in conti sicuri e liquidi",
-                            "Non toccare tranne per vere emergenze"
-                        ]
-                    },
-                    "savings_goals": {
-                        "title": "Obiettivi di Risparmio",
-                        "description": "Avere obiettivi chiari aiuta a rimanere motivati. Distingui tra obiettivi a breve, medio e lungo termine.",
-                        "short_term": "Breve termine (1-2 anni): Vacanze, elettrodomestici, corso di formazione",
-                        "medium_term": "Medio termine (2-5 anni): Auto, matrimonio, ristrutturazione casa",
-                        "long_term": "Lungo termine (5+ anni): Casa, pensione, educazione figli"
-                    },
-                    "saving_strategies": {
-                        "title": "Strategie di Risparmio",
-                        "strategies": [
-                            "Regola del 50/30/20: 50% bisogni, 30% desideri, 20% risparmio",
-                            "Paga te stesso per primo: risparmia appena ricevi lo stipendio",
-                            "Automatizza i risparmi con bonifici automatici",
-                            "Traccia tutte le spese per 1 mese per capire dove vanno i soldi",
-                            "Elimina abbonamenti non utilizzati",
-                            "Confronta prezzi prima di acquisti importanti"
-                        ]
-                    }
-                }
-            },
-            "budgeting": {
-                "title": "Gestione Budget",
-                "subtitle": "Come pianificare e controllare le tue spese",
-                "content": {
-                    "intro": "Un budget ti aiuta a controllare dove vanno i tuoi soldi e a raggiungere i tuoi obiettivi finanziari. Non deve essere rigido, ma una guida flessibile.",
-                    "budget_creation": {
-                        "title": "Come Creare un Budget",
-                        "steps": [
-                            "1. Calcola il tuo reddito netto mensile",
-                            "2. Elenca tutte le spese fisse (affitto, utenze, assicurazioni)",
-                            "3. Stima le spese variabili (cibo, trasporti, svago)",
-                            "4. Assegna una percentuale al risparmio",
-                            "5. Monitora mensilmente e aggiusta se necessario"
-                        ]
-                    },
-                    "budget_methods": {
-                        "title": "Metodi di Budgeting",
-                        "methods": {
-                            "50_30_20": "50/30/20: 50% bisogni essenziali, 30% desideri, 20% risparmio e investimenti",
-                            "envelope": "Metodo delle buste: Assegna contanti a categorie specifiche",
-                            "zero_based": "Budget a base zero: Ogni euro deve avere uno scopo",
-                            "pay_yourself_first": "Paga te stesso per primo: Risparmia prima di spendere"
+        "knowledge": {
+            "title": "Conoscenze Finanziarie",
+            "subtitle": "Impara a gestire meglio le tue finanze personali",
+            "disclaimer": "⚠️ Le informazioni fornite sono a scopo educativo e non costituiscono consigli finanziari personalizzati. Consulta sempre un consulente finanziario qualificato per decisioni importanti.",
+            "advantages": "Vantaggi",
+            "disadvantages": "Svantaggi",
+            "sections": {
+                "investments": {
+                    "title": "Investimenti",
+                    "subtitle": "Guida agli strumenti di investimento",
+                    "content": {
+                        "intro": "Investire significa mettere i propri soldi in strumenti finanziari con l'obiettivo di ottenere un rendimento nel tempo. È importante diversificare e comprendere i rischi.",
+                        "etf": {
+                            "title": "ETF (Exchange Traded Fund)",
+                            "description": "Gli ETF sono fondi che replicano un indice (es. FTSE MIB) e si possono comprare/vendere in borsa come azioni. Permettono di diversificare con piccole somme.",
+                            "pros": "• Diversificazione automatica\n• Costi bassi\n• Liquidi (vendibili in qualsiasi momento)\n• Trasparenti",
+                            "cons": "• Seguono il mercato (anche nelle discese)\n• Non battono mai l'indice di riferimento"
+                        },
+                        "stocks": {
+                            "title": "Azioni",
+                            "description": "Le azioni rappresentano quote di proprietà di un'azienda. Il loro valore dipende dalle performance dell'azienda e dal sentiment del mercato.",
+                            "pros": "• Potenziali rendimenti elevati\n• Dividendi possibili\n• Diritti di voto in assemblea",
+                            "cons": "• Rischio elevato\n• Serve tempo per analisi\n• Volatilità alta"
+                        },
+                        "bonds": {
+                            "title": "Obbligazioni",
+                            "description": "Le obbligazioni sono prestiti che fai a enti (stati, aziende). In cambio ricevi interessi periodici e il capitale a scadenza.",
+                            "pros": "• Rendimento più prevedibile\n• Rischio generalmente più basso\n• Diversificazione dal mercato azionario",
+                            "cons": "• Rendimenti più bassi\n• Rischio inflazione\n• Rischio tasso di interesse"
+                        },
+                        "crypto": {
+                            "title": "Criptovalute",
+                            "description": "Valute digitali decentralizzate. Bitcoin è la più conosciuta, ma esistono migliaia di criptovalute diverse.",
+                            "pros": "• Potenziali rendimenti molto elevati\n• Decentralizzazione\n• Innovazione tecnologica",
+                            "cons": "• Estrema volatilità\n• Regolamentazione incerta\n• Rischio tecnologico alto"
+                        },
+                        "government_bonds": {
+                            "title": "Titoli di Stato",
+                            "description": "Obbligazioni emesse dallo Stato. I BTP italiani, Bund tedeschi, Treasury USA sono esempi. Sono considerati tra gli investimenti più sicuri.",
+                            "pros": "• Sicurezza elevata\n• Garanzia dello Stato\n• Rendimento fisso",
+                            "cons": "• Rendimenti bassi\n• Rischio inflazione\n• Rischio paese (per stati meno stabili)"
+                        },
+                        "beginner_tips": {
+                            "title": "Consigli per Principianti",
+                            "tips": [
+                                "Inizia con ETF diversificati su indici mondiali",
+                                "Non investire mai soldi che ti servono a breve termine",
+                                "Investi regolarmente piccole somme (PAC - Piano di Accumulo)",
+                                "Non cercare di 'battere il mercato' all'inizio",
+                                "Studia prima di investire in singole azioni",
+                                "Tieni massimo 5-10% in criptovalute",
+                                "Diversifica sempre: mai tutto su un singolo investimento"
+                            ]
                         }
-                    },
-                    "expense_tracking": {
-                        "title": "Tracciamento Spese",
-                        "tips": [
-                            "Usa app come PaciFinance per monitorare automaticamente",
-                            "Controlla il conto almeno settimanalmente",
-                            "Categorizza le spese per identificare pattern",
-                            "Fai foto degli scontrini per spese in contanti",
-                            "Rivedi mensilmente e identifica aree di miglioramento"
-                        ]
                     }
-                }
-            },
-            "salary_management": {
-                "title": "Gestione Stipendio",
-                "subtitle": "Come ottimizzare il tuo reddito",
-                "content": {
-                    "intro": "La gestione dello stipendio non riguarda solo come spenderlo, ma anche come ottimizzarlo e farlo crescere nel tempo.",
-                    "salary_allocation": {
-                        "title": "Allocazione dello Stipendio",
-                        "breakdown": {
-                            "needs": "Bisogni Essenziali (50-60%): Affitto, cibo, utenze, trasporti, minimo vestiario",
-                            "wants": "Desideri (20-30%): Ristoranti, hobby, shopping, intrattenimento",
-                            "savings": "Risparmio e Investimenti (20%): Fondo emergenza, investimenti, pensione integrativa"
+                },
+                "saving": {
+                    "title": "Risparmio",
+                    "subtitle": "Come mettere da parte i tuoi soldi",
+                    "content": {
+                        "intro": "Il risparmio è la base della salute finanziaria. Prima di investire, è fondamentale avere un fondo di emergenza e obiettivi chiari.",
+                        "emergency_fund": {
+                            "title": "Fondo di Emergenza",
+                            "description": "Un fondo di emergenza dovrebbe coprire 3-6 mesi di spese. Va tenuto in conti deposito o conti correnti facilmente accessibili.",
+                            "tips": [
+                                "Calcola le tue spese mensili essenziali",
+                                "Moltiplica per 3-6 mesi",
+                                "Tieni questi soldi in conti sicuri e liquidi",
+                                "Non toccare tranne per vere emergenze"
+                            ]
+                        },
+                        "savings_goals": {
+                            "title": "Obiettivi di Risparmio",
+                            "description": "Avere obiettivi chiari aiuta a rimanere motivati. Distingui tra obiettivi a breve, medio e lungo termine.",
+                            "short_term": "Breve termine (1-2 anni): Vacanze, elettrodomestici, corso di formazione",
+                            "medium_term": "Medio termine (2-5 anni): Auto, matrimonio, ristrutturazione casa",
+                            "long_term": "Lungo termine (5+ anni): Casa, pensione, educazione figli"
+                        },
+                        "saving_strategies": {
+                            "title": "Strategie di Risparmio",
+                            "strategies": [
+                                "Regola del 50/30/20: 50% bisogni, 30% desideri, 20% risparmio",
+                                "Paga te stesso per primo: risparmia appena ricevi lo stipendio",
+                                "Automatizza i risparmi con bonifici automatici",
+                                "Traccia tutte le spese per 1 mese per capire dove vanno i soldi",
+                                "Elimina abbonamenti non utilizzati",
+                                "Confronta prezzi prima di acquisti importanti"
+                            ]
                         }
-                    },
-                    "tax_optimization": {
-                        "title": "Ottimizzazione Fiscale",
-                        "tips": [
-                            "Sfrutta detrazioni per spese mediche e istruzione",
-                            "Considera fondi pensione per ridurre il carico fiscale",
-                            "Valuta benefits aziendali (buoni pasto, auto aziendali)",
-                            "Tieni traccia di tutte le spese detraibili",
-                            "Consulta un commercialista per situazioni complesse"
-                        ]
-                    },
-                    "income_growth": {
-                        "title": "Far Crescere il Reddito",
-                        "strategies": [
-                            "Investi in formazione per aumentare le competenze",
-                            "Chiedi aumenti quando appropriato",
-                            "Considera lavori extra o freelancing",
-                            "Sviluppa fonti di reddito passive",
-                            "Network professionale per nuove opportunità"
-                        ]
                     }
-                }
-            },
-            "portfolio_management": {
-                "title": "Gestione Portafoglio",
-                "subtitle": "Come bilanciare i tuoi investimenti",
-                "content": {
-                    "intro": "Un portafoglio diversificato riduce i rischi e ottimizza i rendimenti. La chiave è l'allocazione tra diverse classi di investimento.",
-                    "asset_allocation": {
-                        "title": "Allocazione degli Asset",
-                        "description": "Distribuisci i tuoi investimenti tra diverse categorie per ridurre il rischio complessivo.",
-                        "conservative": "Conservativo (20-30 anni): 70% obbligazioni, 30% azioni",
-                        "moderate": "Moderato (30-50 anni): 50% azioni, 40% obbligazioni, 10% alternative",
-                        "aggressive": "Aggressivo (giovani): 80% azioni, 15% obbligazioni, 5% alternative"
-                    },
-                    "diversification": {
-                        "title": "Diversificazione",
-                        "principles": [
-                            "Non mettere tutto in un singolo investimento",
-                            "Diversifica per area geografica (Italia, Europa, USA, Mercati Emergenti)",
-                            "Diversifica per settore (tecnologia, sanità, energia, ecc.)",
-                            "Diversifica per dimensione azienda (large cap, mid cap, small cap)",
-                            "Considera diverse classi di asset (azioni, obbligazioni, immobili, materie prime)"
-                        ]
-                    },
-                    "rebalancing": {
-                        "title": "Ribilanciamento",
-                        "description": "Periodicamente aggiusta il portafoglio per mantenere l'allocazione desiderata.",
-                        "frequency": "Controlla ogni 6-12 mesi e ribilancia se necessario",
-                        "trigger": "Ribilancia quando una categoria si discosta >5% dall'obiettivo",
-                        "method": "Vendi asset che hanno performato bene, compra quelli che hanno performato male"
+                },
+                "budgeting": {
+                    "title": "Gestione Budget",
+                    "subtitle": "Come pianificare e controllare le tue spese",
+                    "content": {
+                        "intro": "Un budget ti aiuta a controllare dove vanno i tuoi soldi e a raggiungere i tuoi obiettivi finanziari. Non deve essere rigido, ma una guida flessibile.",
+                        "budget_creation": {
+                            "title": "Come Creare un Budget",
+                            "steps": [
+                                "1. Calcola il tuo reddito netto mensile",
+                                "2. Elenca tutte le spese fisse (affitto, utenze, assicurazioni)",
+                                "3. Stima le spese variabili (cibo, trasporti, svago)",
+                                "4. Assegna una percentuale al risparmio",
+                                "5. Monitora mensilmente e aggiusta se necessario"
+                            ]
+                        },
+                        "budget_methods": {
+                            "title": "Metodi di Budgeting",
+                            "methods": {
+                                "50_30_20": "50/30/20: 50% bisogni essenziali, 30% desideri, 20% risparmio e investimenti",
+                                "envelope": "Metodo delle buste: Assegna contanti a categorie specifiche",
+                                "zero_based": "Budget a base zero: Ogni euro deve avere uno scopo",
+                                "pay_yourself_first": "Paga te stesso per primo: Risparmia prima di spendere"
+                            }
+                        },
+                        "expense_tracking": {
+                            "title": "Tracciamento Spese",
+                            "tips": [
+                                "Usa app come PaciFinance per monitorare automaticamente",
+                                "Controlla il conto almeno settimanalmente",
+                                "Categorizza le spese per identificare pattern",
+                                "Fai foto degli scontrini per spese in contanti",
+                                "Rivedi mensilmente e identifica aree di miglioramento"
+                            ]
+                        }
                     }
-                }
-            },
-            "general_knowledge": {
-                "title": "Conoscenze Generali",
-                "subtitle": "Concetti fondamentali della finanza",
-                "content": {
-                    "compound_interest": {
-                        "title": "Interesse Composto",
-                        "description": "L'interesse composto è 'l'ottava meraviglia del mondo'. Significa guadagnare interesse sull'interesse già maturato.",
-                        "example": "Con 1000€ al 5% annuo: Anno 1: 1050€, Anno 2: 1102€, Anno 10: 1629€, Anno 30: 4322€"
-                    },
-                    "risk_return": {
-                        "title": "Rapporto Rischio-Rendimento",
-                        "description": "Maggiore è il potenziale rendimento, maggiore è il rischio. È importante capire il proprio profilo di rischio.",
-                        "risk_levels": [
-                            "Basso rischio: Conti deposito, titoli di stato (1-3% annuo)",
-                            "Medio rischio: ETF diversificati, fondi bilanciati (4-7% annuo)",
-                            "Alto rischio: Azioni singole, criptovalute (possibili grandi guadagni o perdite)"
-                        ]
-                    },
-                    "inflation": {
-                        "title": "Inflazione",
-                        "description": "L'inflazione erode il potere d'acquisto nel tempo. 100€ oggi valgono meno di 100€ tra 10 anni.",
-                        "protection": "Proteggi i risparmi dall'inflazione investendo in asset che crescono più dell'inflazione"
-                    },
-                    "financial_independence": {
-                        "title": "Indipendenza Finanziaria",
-                        "description": "L'obiettivo finale: avere abbastanza investimenti da vivere dei rendimenti senza lavorare.",
-                        "rule_25": "Regola del 25: Accumula 25 volte le tue spese annuali in investimenti",
-                        "withdrawal_rate": "Regola del 4%: Preleva max 4% all'anno dal portafoglio per mantenerlo nel tempo"
+                },
+                "salary_management": {
+                    "title": "Gestione Stipendio",
+                    "subtitle": "Come ottimizzare il tuo reddito",
+                    "content": {
+                        "intro": "La gestione dello stipendio non riguarda solo come spenderlo, ma anche come ottimizzarlo e farlo crescere nel tempo.",
+                        "salary_allocation": {
+                            "title": "Allocazione dello Stipendio",
+                            "breakdown": {
+                                "needs": "Bisogni Essenziali (50-60%): Affitto, cibo, utenze, trasporti, minimo vestiario",
+                                "wants": "Desideri (20-30%): Ristoranti, hobby, shopping, intrattenimento",
+                                "savings": "Risparmio e Investimenti (20%): Fondo emergenza, investimenti, pensione integrativa"
+                            }
+                        },
+                        "tax_optimization": {
+                            "title": "Ottimizzazione Fiscale",
+                            "tips": [
+                                "Sfrutta detrazioni per spese mediche e istruzione",
+                                "Considera fondi pensione per ridurre il carico fiscale",
+                                "Valuta benefits aziendali (buoni pasto, auto aziendali)",
+                                "Tieni traccia di tutte le spese detraibili",
+                                "Consulta un commercialista per situazioni complesse"
+                            ]
+                        },
+                        "income_growth": {
+                            "title": "Far Crescere il Reddito",
+                            "strategies": [
+                                "Investi in formazione per aumentare le competenze",
+                                "Chiedi aumenti quando appropriato",
+                                "Considera lavori extra o freelancing",
+                                "Sviluppa fonti di reddito passive",
+                                "Network professionale per nuove opportunità"
+                            ]
+                        }
+                    }
+                },
+                "portfolio_management": {
+                    "title": "Gestione Portafoglio",
+                    "subtitle": "Come bilanciare i tuoi investimenti",
+                    "content": {
+                        "intro": "Un portafoglio diversificato riduce i rischi e ottimizza i rendimenti. La chiave è l'allocazione tra diverse classi di investimento.",
+                        "asset_allocation": {
+                            "title": "Allocazione degli Asset",
+                            "description": "Distribuisci i tuoi investimenti tra diverse categorie per ridurre il rischio complessivo.",
+                            "conservative": "Conservativo (20-30 anni): 70% obbligazioni, 30% azioni",
+                            "moderate": "Moderato (30-50 anni): 50% azioni, 40% obbligazioni, 10% alternative",
+                            "aggressive": "Aggressivo (giovani): 80% azioni, 15% obbligazioni, 5% alternative"
+                        },
+                        "diversification": {
+                            "title": "Diversificazione",
+                            "principles": [
+                                "Non mettere tutto in un singolo investimento",
+                                "Diversifica per area geografica (Italia, Europa, USA, Mercati Emergenti)",
+                                "Diversifica per settore (tecnologia, sanità, energia, ecc.)",
+                                "Diversifica per dimensione azienda (large cap, mid cap, small cap)",
+                                "Considera diverse classi di asset (azioni, obbligazioni, immobili, materie prime)"
+                            ]
+                        },
+                        "rebalancing": {
+                            "title": "Ribilanciamento",
+                            "description": "Periodicamente aggiusta il portafoglio per mantenere l'allocazione desiderata.",
+                            "frequency": "Controlla ogni 6-12 mesi e ribilancia se necessario",
+                            "trigger": "Ribilancia quando una categoria si discosta >5% dall'obiettivo",
+                            "method": "Vendi asset che hanno performato bene, compra quelli che hanno performato male"
+                        }
+                    }
+                },
+                "general_knowledge": {
+                    "title": "Conoscenze Generali",
+                    "subtitle": "Concetti fondamentali della finanza",
+                    "content": {
+                        "compound_interest": {
+                            "title": "Interesse Composto",
+                            "description": "L'interesse composto è 'l'ottava meraviglia del mondo'. Significa guadagnare interesse sull'interesse già maturato.",
+                            "example": "Con 1000€ al 5% annuo: Anno 1: 1050€, Anno 2: 1102€, Anno 10: 1629€, Anno 30: 4322€"
+                        },
+                        "risk_return": {
+                            "title": "Rapporto Rischio-Rendimento",
+                            "description": "Maggiore è il potenziale rendimento, maggiore è il rischio. È importante capire il proprio profilo di rischio.",
+                            "risk_levels": [
+                                "Basso rischio: Conti deposito, titoli di stato (1-3% annuo)",
+                                "Medio rischio: ETF diversificati, fondi bilanciati (4-7% annuo)",
+                                "Alto rischio: Azioni singole, criptovalute (possibili grandi guadagni o perdite)"
+                            ]
+                        },
+                        "inflation": {
+                            "title": "Inflazione",
+                            "description": "L'inflazione erode il potere d'acquisto nel tempo. 100€ oggi valgono meno di 100€ tra 10 anni.",
+                            "protection": "Proteggi i risparmi dall'inflazione investendo in asset che crescono più dell'inflazione"
+                        },
+                        "financial_independence": {
+                            "title": "Indipendenza Finanziaria",
+                            "description": "L'obiettivo finale: avere abbastanza investimenti da vivere dei rendimenti senza lavorare.",
+                            "rule_25": "Regola del 25: Accumula 25 volte le tue spese annuali in investimenti",
+                            "withdrawal_rate": "Regola del 4%: Preleva max 4% all'anno dal portafoglio per mantenerlo nel tempo"
+                        }
                     }
                 }
             }
@@ -827,7 +825,6 @@
                 "contact": "Contattaci"
             }
         },
-
         "legal": {
             "privacy": {
                 "title": "Privacy Policy",
@@ -947,7 +944,6 @@
             "crypto": "Crypto",
             "bond": "Bond"
         },
-
         "general": {
             "ok": "ok",
             "month": "Month",
@@ -973,7 +969,6 @@
             "weAreWorking": "We are working on this feature",
             "selectAnOption": "Select an option"
         },
-
         "cookie": {
             "title": "We use cookies",
             "description": "We use cookies to enhance your experience, analyze site traffic, and for marketing purposes. You can choose which cookies to accept.",
@@ -998,7 +993,6 @@
             },
             "footer": "You can change your preferences at any time in our Privacy Policy"
         },
-
         "months": {
             "january": "January",
             "february": "February",
@@ -1013,7 +1007,6 @@
             "november": "November",
             "december": "December"
         },
-
         "landing": {
             "new": {
                 "hero": {
@@ -1186,7 +1179,6 @@
             "info": "Info",
             "logout": "Logout"
         },
-
         "account": {
             "title": "Your Account",
             "id": "User ID: ",
@@ -1307,9 +1299,7 @@
             "dangerZone": "Danger Zone",
             "backToDashboard": "Back to Dashboard"
         },
-        "logout": "Logout"
-    },
-
+        "logout": "Logout",
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Your total balance is: ",
@@ -1320,7 +1310,6 @@
             "noData": "No data:",
             "noData2": "Enter the values <br></br> clicking here: "
         },
-
         "graphs": {
             "title": "Charts & Statistics",
             "Title": "Your statistics",
@@ -1343,7 +1332,6 @@
                 "titleDetailsYear": "Your income, outflows and savings compared to last year "
             }
         },
-
         "insert": {
             "title": "Insert Data",
             "buttonBalance": "Update Balance",
@@ -1358,7 +1346,6 @@
                 "successUpdate": "Balance updated successfully",
                 "successFullUpdate": "Balance and income/outflow update successful"
             },
-
             "incomeSection": {
                 "placeholderCategory": "Select a category",
                 "placeholderNote": "Insert a note (optional)",
@@ -1376,7 +1363,6 @@
                 "successDelete": "Income deleted successfully",
                 "increaseWhichBalance": "Select where to add the income"
             },
-
             "outflowSection": {
                 "placeholderCategory": "Select a category",
                 "placeholderTypology": "Select a typology",
@@ -1397,7 +1383,6 @@
                 "successDelete": "Outflow deleted successfully",
                 "decreaseWhichBalance": "Select where to subtract the outflow"
             },
-
             "investmentSection": {
                 "placeholderCategory": "Select a category",
                 "placeholderTypology": "Select a typology",
@@ -1500,15 +1485,15 @@
             "similarRanking": "Similar users rankings: ",
             "balanceRanking": "Balance Ranking ",
             "incomeRanking": "Income Ranking ",
-            "OutflowRanking": "Outflow Ranking ",
-            "infoOutflowRank": "This rank shows in the high positions who spends the most.",
+            "expenseRanking": "Expense Ranking ",
+            "infoExpenseRank": "This rank shows in the high positions who spends the most.",
             "noRank": "Rankings not available",
             "compliments": "Congratulations! You are in the top ",
             "superCompliments": "Incredible!! You are in the top ",
             "top": "You are in the top ",
             "users": " of users!",
-            "lowerOutflow": " You are among the users who spend the least!",
-            "higherOutflow": " Attention! You are among the users who spend the most!",
+            "lowerExpense": " You are among the users who spend the least!",
+            "higherExpense": " Attention! You are among the users who spend the most!",
             "higherIncome": " You are among the users who earn the most!",
             "mediumRank": "You are in the average of users!",
             "demoWarning": "Warning! Random and not relevant values, used as an example."
@@ -1544,7 +1529,6 @@
                 "lastUpdated": "Last updated"
             }
         },
-
         "faq": {
             "title": "Frequently Asked Questions",
             "questions": [

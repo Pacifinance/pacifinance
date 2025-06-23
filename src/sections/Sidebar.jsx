@@ -32,6 +32,7 @@ import {
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {
     SidebarToggleModeButton,
     SettingsToggleButton,
@@ -432,9 +433,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     index: 3,
                                 },
                                 {
-                                    icon: AiOutlineTrophy,
+                                    icon: CompareArrowsIcon,
                                     route: "/leaderboard",
-                                    tooltip: languages[language].sidebar.leaderboard,
+                                    tooltip: languages[language].sidebar.comparison,
                                     index: 4,
                                 },
                                 {

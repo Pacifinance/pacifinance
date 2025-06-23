@@ -116,7 +116,7 @@ const GridContainer = styled.div`
 `;
 
 const ComparisonCard = styled.div`
-  background: ${props => props.theme.cardBackgroundColor};
+  background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'};
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 8px 25px rgba(0,0,0,0.1);
@@ -124,6 +124,8 @@ const ComparisonCard = styled.div`
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-weight: 500;
   
   &:hover {
     transform: translateY(-4px);
@@ -167,15 +169,16 @@ const MetricRow = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
-  border-bottom: 1px solid ${props => props.theme.borderColor || '#eee'};
+  border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'};
   
   &:last-child {
     border-bottom: none;
   }
   
   .label {
-    color: ${props => props.theme.textColor}99;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
     font-size: 0.9rem;
+    font-weight: 500;
   }
   
   .value {
@@ -195,7 +198,18 @@ const ComingSoonCard = styled(ComparisonCard)`
   justify-content: center;
   text-align: center;
   min-height: 200px;
-  background: linear-gradient(135deg, ${props => props.theme.cardBackgroundColor} 0%, ${props => props.theme.buttonBackgroundColor}15 100%);
+  background: linear-gradient(135deg, ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'} 0%, ${props => props.theme.buttonBackgroundColor}15 100%);
+  
+  h3 {
+    color: ${props => props.theme.textColor};
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+  
+  p {
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
+    font-weight: 500;
+  }
   
   .coming-soon-text {
     color: ${props => props.theme.buttonBackgroundColor};
@@ -211,6 +225,7 @@ const InsightCard = styled.div`
   padding: 1.5rem;
   margin: 1rem 0;
   border-left: 4px solid ${props => props.theme.buttonBackgroundColor};
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   
   h4 {
     color: ${props => props.theme.textColor};
@@ -218,12 +233,14 @@ const InsightCard = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-weight: 600;
   }
   
   p {
-    color: ${props => props.theme.textColor}99;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)'};
     margin: 0;
     line-height: 1.5;
+    font-weight: 500;
   }
 `;
 

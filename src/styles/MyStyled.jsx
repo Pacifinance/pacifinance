@@ -965,7 +965,8 @@ export const StyledLastAdds = styled.div`
 
   ul {
     list-style: none;
-    padding: 0;
+    ```text
+padding: 0;
     margin: 0;
     width: 100%;
   }
@@ -1939,31 +1940,68 @@ export const SidebarSection = styled.section`
     `;
 
 export const StyledRankingsSection = styled.div`
-  h2{
-    color: #ffffff !important;
+  background-color: ${(props) => props.theme.mode === 'light' ? props.theme.buttonBackgroundColor : props.theme.buttonBackgroundColor};
+  color: ${(props) => props.theme.mode === 'light' ? 'white' : 'white'};
+  border-radius: 0.2em;
+  width: 25em;
+  height: 5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1em;
+  box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+
+  h2 {
+    font-size: 1em;
+    margin-bottom: 0.2em;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    font-weight: 600;
   }
 
-    p{
-      color: ${(props) => props.theme.textColor} !important;
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
+  p {
+    font-size: 0.9em;
+    margin: 0;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    width: 20em; 
+    height: 4.5em;
+    margin: 0.5em;
+
+    h2 {
+      font-size: 0.9em;
     }
-    ol {
-      list-style: none;
-      padding-left: 0;
+
+    p {
+      font-size: 0.8em;
     }
-    li {
-      color: #ffffff;
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-    }
-  `;
+  }
+`;
 
 export const StyledRankingPage = styled.div`
-  // text-align: center;
-  height: 100%;
-  padding: 3.8rem;
-  background-color: ${(props) => props.theme.rankingInfoBackgroundColor};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2em;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  min-height: calc(100vh - 4em);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+
+  /* For screens with a maximum width of 768px (e.g. mobile devices) */
+  @media (max-width: 768px) {
+    padding: 1em;
+    min-height: calc(100vh - 2em);
+  }
 `;
 
 export const StyledInfoPage = styled.div`
@@ -2062,17 +2100,19 @@ export const StyledSelectContainer = styled.div`
   align-items: center;
 `;
 
-export const StyledLabel = styled.label`
-  text-align: left;
-  font-size: 1em;
+export const StyledLabel = styled.h1`
   color: ${(props) => (props.theme.textColor)};
-  margin-right: 0.5em;
-  display: inline-block; 
-  vertical-align: middle; /* Facoltativo: per allineare verticalmente */
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  text-align: center;
+  margin-bottom: 2em;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
-    text-align: center;
+    font-size: clamp(1.2rem, 5vw, 2rem);
+    margin-bottom: 1.5em;
   }
 `;
 

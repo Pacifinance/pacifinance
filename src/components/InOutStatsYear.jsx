@@ -98,18 +98,13 @@ function InOutStatsYear({ theme, userData, isHidden}) {
     // ];
       
     return (
-        
-        <div className="wrapper">
-        {/* <h1>Il tuo patrimonio è cresciuto di: {((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100} % </h1> */}
+        <div className="wrapper" style={{ width: '100%', padding: '0 0.5rem' }}>
         <SectionAMonth theme={theme}>
-            <div className="analytic ">
+            <div className="analytic">
                 <div className="design">
                     <div className="logo" style={{ color: '#079164' }}>
                         <GiReceiveMoney />
                     </div>
-                    {/* <div className="action">
-                        <AiOutlineMore />
-                    </div> */}
                 </div>
                 <div className="transfer">
                     <h6>{languages[language].graphs.statsOutflows.variation}</h6>
@@ -125,18 +120,15 @@ function InOutStatsYear({ theme, userData, isHidden}) {
                 </div>
             </div>
 
-            <div className="analytic ">
+            <div className="analytic">
                 <div className="design">
                     <div className="logo" style={{ color: '#ff3838' }}>
                         <GiExpense />
                     </div>
-                    {/* <div className="action">
-                        <AiOutlineMore />
-                    </div> */}
                 </div>
                 <div className="transfer">
                     <h6>{languages[language].graphs.statsOutflows.variation}</h6>
-                    <h6>{languages[language].general.Outflows}</h6>
+                    <h6>{languages[language].general.outflows}</h6>
                 </div>
                 <div className="money">
                     <h5>
@@ -148,14 +140,11 @@ function InOutStatsYear({ theme, userData, isHidden}) {
                 </div>
             </div>
             
-            <div className="analytic ">
+            <div className="analytic">
                 <div className="design">
                     <div className="logo" style={{ color: '#33d9b2' }}>
-                        < MdOutlineSavings />
+                        <MdOutlineSavings />
                     </div>
-                    {/* <div className="action">
-                        <AiOutlineMore />
-                    </div> */}
                 </div>
                 <div className="transfer">
                     <h6>{languages[language].graphs.statsOutflows.variation}</h6>

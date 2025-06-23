@@ -1,3 +1,4 @@
+
 import React, {useState, useContext} from 'react';
 import BalancesStatsMonth from '../components/BalancesStatsMonth';
 import BalancesStatsYear from '../components/BalancesStatsYear';
@@ -35,11 +36,18 @@ const StatsTitle = styled(StandardPageTitle)`
   margin-top: 2rem;
   margin-bottom: 2rem;
   padding: 0 1rem;
+  text-align: center;
+  font-weight: 700;
+  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.secondaryColor || '#047857'});
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   
   @media (max-width: 768px) {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
     font-size: 1.75rem;
+    padding: 0 0.5rem;
   }
 `;
 
@@ -54,6 +62,8 @@ const ModernButtonGroup = styled.div`
     gap: 0.5rem;
     margin: 1.5rem 0;
     padding: 0 0.5rem;
+    flex-direction: column;
+    align-items: center;
   }
 `;
 
@@ -102,14 +112,17 @@ const ModernButton = styled.button`
   }
   
   @media (max-width: 768px) {
-    padding: 10px 16px;
-    font-size: 0.85rem;
-    max-width: none;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    max-width: 280px;
+    width: 100%;
   }
 `;
 
 const ContentSection = styled.div`
   padding: 0 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
   
   @media (max-width: 768px) {
     padding: 0 0.5rem;
@@ -132,10 +145,30 @@ const ModernSecondaryTitle = styled(SecondaryTitle)`
   padding: 0 1rem;
   font-size: clamp(1.25rem, 2.5vw, 1.75rem);
   font-weight: 600;
+  color: ${props => props.theme.textColor};
   
   @media (max-width: 768px) {
     margin: 2rem 0 1rem 0;
     padding: 0 0.5rem;
+  }
+`;
+
+const ChartContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0;
+  overflow-x: auto;
+  
+  @media (max-width: 768px) {
+    padding: 0 0.5rem;
+    
+    > div {
+      min-width: 100%;
+      display: flex;
+      justify-content: center;
+    }
   }
 `;
 
@@ -153,7 +186,6 @@ export default function StatsCharts() {
       ? new Date(userData.preYearSameMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
       : "";
 
-
     const handlePageChange = (page) => {
         setActivePage(page);
     };
@@ -163,9 +195,13 @@ export default function StatsCharts() {
           return (
             <>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.title}</ModernSecondaryTitle>
-                <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                <ChartContainer>
+                  <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph2}</ModernSecondaryTitle>
-                <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                <ChartContainer>
+                  <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.detailedVision}</ModernSecondaryTitle>
                 <BalancesStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
                 <BalancesStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
@@ -175,9 +211,13 @@ export default function StatsCharts() {
           return (
             <>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.title}</ModernSecondaryTitle>
-                <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                <ChartContainer>
+                  <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph2}</ModernSecondaryTitle>
-                <PercentageOutflowsChart theme={theme} userData={userData} isHidden={isHidden}/>
+                <ChartContainer>
+                  <PercentageOutflowsChart theme={theme} userData={userData} isHidden={isHidden}/>
+                </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.detailedVision}</ModernSecondaryTitle>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleDetailsMonth} - {formattedPreMonthDate}</ModernSecondaryTitle>
                 <InOutStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
@@ -191,9 +231,7 @@ export default function StatsCharts() {
     return (
         <StatsContainer theme={theme}>
             <StatsTitle theme={theme}>
-                {activePage === "statsBilancio" 
-                    ? languages[language].graphs.statsBalance.title 
-                    : languages[language].graphs.statsOutflows.title}
+                Charts and Statistics
             </StatsTitle>
             
             <ModernButtonGroup>

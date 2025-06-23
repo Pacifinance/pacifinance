@@ -73,54 +73,62 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const data = lastTwelveMonths.reverse(); // Inverti l'ordine
 
   return (
-    <SectionInOut style={{ position: 'relative' }}>
-      {/* <button onClick={downloadPNG}>Download PNG</button> */}
-      <CSVLink data={data} headers={headers}
-        filename={`incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
-        className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100"
-      >
-        <BsFiletypeCsv className="text-paciGreen text-xl" />
-      </CSVLink>
-
-      <button
-          disabled
-          onClick={() => downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-          className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200"
+    <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '100%', maxWidth: '800px' }}>
+        <CSVLink data={data} headers={headers}
+          filename={`incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
+          className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 z-10"
         >
-          <RiFileExcel2Line className="text-paciGreen text-xl" />
-      </button>
+          <BsFiletypeCsv className="text-paciGreen text-xl" />
+        </CSVLink>
 
+        <button
+            disabled
+            onClick={() => downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+            className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200 z-10"
+          >
+            <RiFileExcel2Line className="text-paciGreen text-xl" />
+        </button>
 
-      <LineChart
-        width={600}
-        height={400}
-        data={data}
-        margin={{
-          top: 5,
-          left: 35,
-          bottom: 40
-        }}
-      >
-      <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
-        <XAxis tick={{fontSize: 9, fill: theme.textColor}} interval={1} dataKey="name" />
-        <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={11} dx={-10}/>} />
-        <Tooltip
-          contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-          labelStyle={{ color: 'black', fontWeight: 'bold' }}
-          formatter={(value, name, entry) => {
-            return isHidden ? ['****'] : [`${name}: ${new Intl.NumberFormat('it-IT', {
-              style: 'currency',
-              currency: 'EUR',
-              maximumFractionDigits: 0,
-            }).format(value)}`];
-          }}
-        />
-        <Legend />
-        <Line type="monotone" dataKey={languages[language].general.incomes} stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey={languages[language].general.outflows} stroke={isHidden ? greyColor2 : "#ff3838"} />
-        
-        {/* <Brush dataKey='name' height={10} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
-      </LineChart>
+        <div style={{ width: '100%', overflowX: 'auto' }}>
+          <LineChart
+            width={Math.max(600, window.innerWidth > 768 ? 700 : Math.min(window.innerWidth - 40, 600))}
+            height={400}
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 40
+            }}
+          >
+          <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
+            <XAxis 
+              tick={{fontSize: window.innerWidth > 768 ? 10 : 8, fill: theme.textColor}} 
+              interval={window.innerWidth > 768 ? 0 : 1} 
+              dataKey="name" 
+              angle={window.innerWidth > 768 ? 0 : -45}
+              textAnchor={window.innerWidth > 768 ? 'middle' : 'end'}
+              height={window.innerWidth > 768 ? 60 : 80}
+            />
+            <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={window.innerWidth > 768 ? 11 : 9} dx={-10}/>} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px', fontSize: '12px' }}
+              labelStyle={{ color: 'black', fontWeight: 'bold' }}
+              formatter={(value, name, entry) => {
+                return isHidden ? ['****'] : [`${name}: ${new Intl.NumberFormat('it-IT', {
+                  style: 'currency',
+                  currency: 'EUR',
+                  maximumFractionDigits: 0,
+                }).format(value)}`];
+              }}
+            />
+            <Legend wrapperStyle={{ fontSize: window.innerWidth > 768 ? '14px' : '12px' }} />
+            <Line type="monotone" dataKey={languages[language].general.incomes} stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
+            <Line type="monotone" dataKey={languages[language].general.outflows} stroke={isHidden ? greyColor2 : "#ff3838"} strokeWidth={2} />
+          </LineChart>
+        </div>
+      </div>
     </SectionInOut>
   );
 }

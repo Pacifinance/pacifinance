@@ -685,7 +685,7 @@ export const StyledSectionStats = styled.div`
   background-color: ${(props) => (props.theme.backgroundColor)};
   padding: 0;
   margin: 0;
-  
+
   .grid{ 
     margin-top: 2rem;
     z-index: 2;
@@ -970,6 +970,7 @@ export const StyledLastAdds = styled.div`
     width: 100%;
   }
 
+```text
   li {
     display: flex;
     justify-content: space-between;
@@ -1659,70 +1660,164 @@ export const SidebarSection = styled.section`
   `;
 
   export const SectionAMonth = styled.section`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-left: 6vw;
-    margin-bottom: 1em;
+  color: ${(props) => (props.theme.textColor)};
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  padding: 1rem;
+  margin: 1rem auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  width: 100%;
 
-    .analytic {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+
+  .analytic {
+    background: ${(props) => (props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)')};
+    border: 1px solid ${(props) => (props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)')};
+    border-radius: 12px;
+    padding: 1.5rem;
+    flex: 1;
+    min-width: 280px;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .design {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .logo {
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: ${(props) => (props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)')};
+      }
+    }
+
+    .transfer {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      gap: 0.25rem;
+
+      h6 {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: ${(props) => (props.theme.textColor)};
+        opacity: 0.8;
+      }
+    }
+
+    .money {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      h5 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: ${(props) => (props.theme.textColor)};
+      }
+
+      h6 {
+        margin: 0;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: ${(props) => (props.theme.textColor)};
+        opacity: 0.7;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 0.5rem;
+    margin: 0.75rem auto;
+    gap: 0.75rem;
+    width: calc(100% - 1rem);
+
+    .analytic {
+      min-width: 100%;
+      max-width: 100%;
+      padding: 1rem;
+      flex-direction: row;
       align-items: center;
-      padding: 0.5rem 1rem;
-      border-radius: 1rem;
-      margin-right: 1rem;
-      color: black;
-      background-color: white;
-      transition: 0.5s ease-in-out;
-      height: 7.5em;
-      width: 7.5em;
-      border: 0.15em solid ${(props) => props.theme.buttonBackgroundColor};
-      overflow: hidden; /* Impedisce al contenuto di strabordare */
 
       .design {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        flex-shrink: 0;
 
         .logo {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          svg {
-            font-size: 1.5rem;
-          }
+          font-size: 1.5rem;
+          width: 40px;
+          height: 40px;
         }
       }
+
       .transfer {
-          font-size: 0.8em;
-      }
-      .transfer, .money {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: ${secondaryColor};
-      }
-    }
+        flex: 1;
+        margin-left: 1rem;
 
-    @media (max-width: 768px) {
-      justify-content: center; /* Centra gli elementi .analytic orizzontalmente */
-      flex-wrap: wrap; /* Permette agli elementi .analytic di andare a capo */
-      .analytic {
-        height: 8em;
-        margin: 0.5em; /* Aggiunge spazio intorno per evitare che gli elementi si tocchino */
-        padding: 0.5rem 1rem;
-        width: 45%; /* Imposta la larghezza per far stare due elementi per riga */
-        max-width: 20em; /* Opzionale: limita la larghezza massima per evitare che gli elementi diventino troppo grandi */
+        h6 {
+          font-size: 0.8rem;
+        }
+      }
 
-        .design .logo svg {
-          font-size: 1.2rem;
+      .money {
+        flex-shrink: 0;
+        text-align: right;
+
+        h5 {
+          font-size: 1.25rem;
+        }
+
+        h6 {
+          font-size: 0.7rem;
         }
       }
     }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+    width: calc(100% - 1rem);
+
+    .analytic {
+      padding: 0.75rem;
+
+      .transfer {
+        margin-left: 0.75rem;
+
+        h6 {
+          font-size: 0.75rem;
+        }
+      }
+
+      .money {
+        h5 {
+          font-size: 1.1rem;
+        }
+
+        h6 {
+          font-size: 0.65rem;
+        }
+      }
+    }
+  }
 `;
 
 
@@ -1912,7 +2007,7 @@ export const CenteredInfo = styled.div`
 
   p{
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-    color: ${(props) => props.theme.textColor} !important;
+    color:${(props) => props.theme.textColor} !important;
     font-size: clamp(1rem, 2vw, 1.125rem);
     font-weight: 400;
     line-height: 1.7;

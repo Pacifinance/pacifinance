@@ -93,15 +93,21 @@ app.post("/registration", async (req, res) => {
         method: 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
         body: JSON.stringify({
-            secret: process.env.CF_KEY,
+            secret: process.env.TURNSTILE_SECRET_KEY,
             response: turnstile_token
         })
     });
     if (response.status != 200)
-        res.status(500).send()
+    {
+        res.status(500).send();
+        return;
+    }
     const verification = await response.json()
     if (!verification.success)
-        res.status(401).send()
+    {
+        res.status(401).send();
+        return;
+    }
     // Generate a random user ID
     const user_id = await generateUserId();
     // Hash the password

@@ -325,10 +325,10 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);
-        if (!isDevelopment) {
-          setIsAuthenticated(false);
-          setUserData(null);
-        }
+        // if (!isDevelopment) {
+        //   setIsAuthenticated(false);
+        //   setUserData(null);
+        // }
       }
     };
     fetchUserData();

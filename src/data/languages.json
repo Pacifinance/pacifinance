@@ -1314,7 +1314,6 @@
         },
         "graphs": {
             "title": "Charts & Statistics",
-            "Title": "Your statistics",
             "statsBalance": {
                 "title": "Balance statistics",
                 "titleGraph": "Trend of your balance in the last 12 months",

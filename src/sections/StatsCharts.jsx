@@ -1,4 +1,3 @@
-
 import React, {useState, useContext} from 'react';
 import BalancesStatsMonth from '../components/BalancesStatsMonth';
 import BalancesStatsYear from '../components/BalancesStatsYear';
@@ -22,7 +21,8 @@ const StatsContainer = styled.div`
   min-height: 100vh;
   padding: 0;
   margin: 0;
-  border: none;
+  border: none !important;
+  box-shadow: none !important;
   width: 100%;
   margin-left: 0;
   
@@ -194,7 +194,7 @@ export default function StatsCharts() {
         if (activePage === "statsBilancio") {
           return (
             <>
-                <ModernSecondaryTitle theme={theme}>{languages[language].graphs.title}</ModernSecondaryTitle>
+                <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph}</ModernSecondaryTitle>
                 <ChartContainer>
                   <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 </ChartContainer>
@@ -210,7 +210,7 @@ export default function StatsCharts() {
         } else if (activePage === "statsIncomesOutflows") {
           return (
             <>
-                <ModernSecondaryTitle theme={theme}>{languages[language].graphs.title}</ModernSecondaryTitle>
+                <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph}</ModernSecondaryTitle>
                 <ChartContainer>
                   <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
                 </ChartContainer>
@@ -230,9 +230,7 @@ export default function StatsCharts() {
 
     return (
         <StatsContainer theme={theme}>
-            <StatsTitle theme={theme}>
-                Charts and Statistics
-            </StatsTitle>
+            <StandardPageTitle theme={theme}>{languages[language].graphs.title}</StandardPageTitle>
             
             <ModernButtonGroup>
                 <ModernButton

@@ -1,6 +1,4 @@
-
-
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Section } from '../styles/MyStyled';
 import { 
   StyledMonth, 
@@ -25,7 +23,7 @@ import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
-import Leaderboard from '../sections/Leaderbord';
+import Leaderboard from './Leaderboard';
 
 const ComparisonContainer = styled.div`
   display: flex;
@@ -57,7 +55,7 @@ const SectionHeader = styled.div`
   }
   
   p {
-    color: ${props => props.theme.textColor}99;
+    color: ${props => props.theme.textColor};
     font-size: 1.1rem;
     
     @media (max-width: 768px) {
@@ -66,18 +64,24 @@ const SectionHeader = styled.div`
   }
 `;
 
-const SectionTabs = styled.div`
+export const SectionTabs = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   background: ${props => props.theme.cardBackgroundColor};
   border-radius: 12px;
   padding: 0.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  
+  width: fit-content;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+
   @media (max-width: 768px) {
     flex-wrap: wrap;
     gap: 0.5rem;
+    width: 100%;
+    max-width: 100%;
   }
 `;
 
@@ -244,61 +248,6 @@ const InsightCard = styled.div`
   }
 `;
 
-// Component for the rankings section (reuse existing one)
-function RankingsSection({ theme, language, title, rankings, isHidden }) {
-    const safeTitle = title || '';
-    const isExpenseTitle = safeTitle.toLowerCase().includes("uscite") || safeTitle.toLowerCase().includes("expenses");
-    const isRankingsAbove50 = rankings > 50;
-    const isRankingBelow20 = rankings < 20;
-
-    let textToDisplay = "";
-    if (!isNaN(parseFloat(rankings))) {
-      if (isHidden) {
-        textToDisplay = '****';
-      } else {
-        if (isExpenseTitle) {
-          if (isRankingsAbove50) {
-            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.lowerExpense}`;
-          } else if (isRankingBelow20) {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherExpense}`;
-          } else {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.mediumRank}`;
-          }
-        } else {
-          if (!isRankingsAbove50) {
-            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
-          } else if (isRankingBelow20) {
-            textToDisplay = `${languages[language].leaderboard.superCompliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherIncome}`;
-          } else {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
-          }
-        }
-      }
-    } else {
-        textToDisplay = languages[language].leaderboard.noRank;
-    }
-
-    const areNotEmpty = (typeof rankings === 'string' && rankings.length > 0) || (typeof rankings === 'number' && rankings > 0);
-
-    return (
-      <StyledRankingsSection theme={theme}>
-        <h2>
-          {safeTitle}
-          {isExpenseTitle && (
-            <Tooltip title={languages[language].leaderboard.infoExpenseRank} arrow>
-              <InfoIcon style={{ color: 'white' }} />
-            </Tooltip>
-          )}
-        </h2>
-        {areNotEmpty ? (
-          <p>{textToDisplay}</p>
-        ) : (
-          <p>{languages[language].general.noData}</p>
-        )}
-      </StyledRankingsSection>
-    );
-}
-
 function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const { language } = useContext(LanguageContext);
     const [activeTab, setActiveTab] = useState('insights');
@@ -368,7 +317,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><AccountBalanceIcon /> {languages[language].comparison.cards.avgBalance.title}</h3>
                         <Tooltip title={languages[language].comparison.cards.avgBalance.description}>
-                            <InfoIcon style={{ color: theme.textColor + '99' }} />
+                            <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
@@ -397,7 +346,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><MonetizationOnIcon /> {languages[language].comparison.cards.avgIncome.title}</h3>
                         <Tooltip title={languages[language].comparison.cards.avgIncome.description}>
-                            <InfoIcon style={{ color: theme.textColor + '99' }} />
+                            <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
@@ -426,7 +375,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><TrendingDownIcon /> {languages[language].comparison.cards.avgExpenses.title}</h3>
                         <Tooltip title={languages[language].comparison.cards.avgExpenses.description}>
-                            <InfoIcon style={{ color: theme.textColor + '99' }} />
+                            <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
@@ -483,28 +432,12 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     );
 
     const renderRankingsTab = () => (
-        <div>
-            <StyledRankingPage theme={theme}>
-                <StyledLabel theme={theme}>
-                    {languages[language].leaderboard.monthRanking} <StyledMonth>{userData?.preMonthDate ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' }) : ""}</StyledMonth>
-                    {userData?.userType === 'demo' && (
-                        <span className="block bg-red-400 border border-black rounded-xl p-2 mt-2">
-                            {languages[language].leaderboard.demoWarning}
-                        </span>
-                    )}
-                </StyledLabel>
-                <CenteredRankings theme={theme}>
-                    <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={userData?.percentageRankOnBalance} isHidden={isHidden} />
-                    <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={userData?.percentageRankOnIncomes} isHidden={isHidden} />
-                    <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={userData?.percentageRankOnExpenses} isHidden={isHidden} />
-                </CenteredRankings>
-                <CenteredRankings theme={theme}>
-                    <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={userData?.percentageRankOnBalanceSimilar} isHidden={isHidden} />
-                    <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={userData?.percentageRankOnIncomesSimilar} isHidden={isHidden} />
-                    <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={userData?.percentageRankOnExpensesSimilar} isHidden={isHidden} />
-                </CenteredRankings>
-            </StyledRankingPage>
-        </div>
+        <Leaderboard 
+          theme={theme} 
+          userData={userData} 
+          handleSetIsUpdated={handleSetIsUpdated} 
+          isHidden={isHidden} 
+        />
     );
 
     return (

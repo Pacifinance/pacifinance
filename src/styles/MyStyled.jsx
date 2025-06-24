@@ -468,6 +468,7 @@ export const FooterText = styled.p`
 `;
 
 export const SignUp = styled.div`
+
       font-family: Roboto, sans-serif;
 
       .signUp-page {
@@ -1941,14 +1942,14 @@ export const SidebarSection = styled.section`
 export const StyledRankingsSection = styled.div`
   background-color: ${(props) => props.theme.mode === 'light' ? props.theme.buttonBackgroundColor : props.theme.buttonBackgroundColor};
   color: ${(props) => props.theme.mode === 'light' ? 'white' : 'white'};
-  border-radius: 0.2em;
+  border-radius: 0.5em;
   width: 25em;
   height: 5em;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1em;
+  margin: 0.1em;
   box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
 
@@ -1974,7 +1975,7 @@ export const StyledRankingsSection = styled.div`
   @media (max-width: 768px) {
     width: 20em; 
     height: 4.5em;
-    margin: 0.5em;
+    margin: 0.em;
 
     h2 {
       font-size: 0.9em;
@@ -2069,11 +2070,11 @@ export const CenteredInfo = styled.div`
 // Deprecated - use StandardPageTitleGreen instead
 export const RankingsTitle = styled.h1`
   text-align: center;
-  color: ${themes.dark.buttonBackgroundColor};
-  font-size: 1.2em;
+  color: ${(props) => (props.theme.textColor)};
+  font-size: 1.5em;
   font-weight: bold;
-  margin-top: 1.5em;
-  margin-bottom: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
 `;
 
 // Deprecated - use StandardPageTitleGreen instead
@@ -2101,11 +2102,11 @@ export const StyledSelectContainer = styled.div`
 
 export const StyledLabel = styled.h1`
   color: ${(props) => (props.theme.textColor)};
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-size: clamp(1rem, 2vw, 1.5rem);
   text-align: center;
-  margin-bottom: 2em;
+  margin-bottom: 1.5em;
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  font-weight: 600;
+  font-weight: 200;
   letter-spacing: -0.025em;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
@@ -2172,6 +2173,22 @@ export const StyledComingSoon = styled.div`
       text-align: center;
     }
   }
+`;
+
+// StyledLabel moderno e con bordo evidenziato SOLO per ranking
+export const ModernStyledLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  background: ${({ theme }) => theme.mode === 'dark' ? '#23272f' : '#e6f4ea'};
+  border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
+  border-radius: 1.2em;
+  padding: 0.7em 1.3em;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: ${({ theme }) => theme.textColor};
+  margin: 0.5em auto 1.2em auto;
+  box-shadow: 0 2px 12px 0 ${({ theme }) => theme.buttonBackgroundColor}22;
 `;
 
 export const slideIn = keyframes`
@@ -2305,7 +2322,15 @@ const FAQAnswerContent = styled.div`
   }
 `;
 
-  //****************************************************** MUI CUSTOM STYLED ******************************************************************* *//
+export const RankingPageSection = styled.section`
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  margin-left: 0;
+  min-height: 100vh;
+  background-color: ${(props) => (props.theme.backgroundColor)};
+  line-height: 1.6;
+`;
+
+//****************************************************** MUI CUSTOM STYLED ******************************************************************* *//
 
 
 export const MuiCustomDialog = styled(Dialog)`
@@ -2412,5 +2437,4 @@ export const SignInButton = styled(MyButton)`
   margin-top: 1.5em;
   width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'auto'};
 `;
-
 export { FAQContainer, FAQItem, FAQQuestionButton, FAQAnswerContainer, FAQAnswerContent };

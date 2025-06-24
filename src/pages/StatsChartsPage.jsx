@@ -41,9 +41,7 @@ function StatsChartsPage() {
         noindex={true}
       />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <MobileOffset>
-        <StatsCharts />
-      </MobileOffset>
+      <StatsCharts />
     </Div>
   );
 }

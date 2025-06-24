@@ -10,6 +10,8 @@ import utils from "./utils.js";
 
 const day_ms = 24 * 60 * 60 * 1000;
 
+let registrationTokensCache = new Set<string>()
+
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:\n', err);
@@ -65,6 +67,41 @@ async function checkUserSession(session: session.Session & Partial<session.Sessi
     return true;
 }
 
+async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
+    const token_lifetime = 3 * 60 * 1000;
+    const expected_hostnames = process.env.NODE_ENV === "production"
+        ? ["pacifinance.com", "www.pacifinance.com"]
+        : ["localhost", "127.0.0.1"]
+
+    // Check if the token has already been used
+    if (registrationTokensCache.has(token))
+        return [false, 401]
+
+    // Add token to cache and schedule its deletion after few minutes
+    registrationTokensCache.add(token)
+    setTimeout(() => registrationTokensCache.delete(token), token_lifetime)
+
+    // Verify the token via the Cloudflare Turnstile API
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: 'POST',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            secret: process.env.TURNSTILE_SECRET_KEY,
+            response: token
+        })
+    });
+    if (response.status != 200) // Bad request
+        return [false, 500]
+
+    const verification = await response.json()
+    if (!verification.success) // Cloudflare didn't authenticate the token
+        return [false, 401]
+    if (!expected_hostnames.includes(verification.hostname))
+        return [false, 401]
+
+    return [true, 200]
+}
+
 /* ============================ Express.js routes ============================ */
 
 app.get("/health", (req, res) => {
@@ -86,26 +123,12 @@ app.post("/registration", async (req, res) => {
         res.send();
         return;
     }
-    // Verify Cloudflare Turnstile token. Send status code 500 (Internal Server
-    // Error) if no response is received, or 401 (Unauthorized) if the token
-    // verification failed
-    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-        method: 'POST',
-        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            secret: process.env.TURNSTILE_SECRET_KEY,
-            response: turnstile_token
-        })
-    });
-    if (response.status != 200)
-    {
-        res.status(500).send();
-        return;
-    }
-    const verification = await response.json()
-    if (!verification.success)
-    {
-        res.status(401).send();
+    // Verify Cloudflare Turnstile token. Send status code 401 (Unauthorized) if
+    // the verification failed, or 500 (Internal Server Error) if Cloudflare
+    // responded with an error status code
+    const [verified, response_code] = await verifyTurnstileToken(turnstile_token)
+    if (!verified) {
+        res.status(response_code).send();
         return;
     }
     // Generate a random user ID

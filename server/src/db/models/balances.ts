@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+
 import users from "./users"
-import utils from "../../utils";
+import common from "../../routes/common"
 
 const balanceSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
@@ -186,8 +187,8 @@ async function getYearlyBalanceByUserId(user_id: string) {
         const balance = (res !== null) ? res : {};
         balances.push({date: month_start, balance: balance});
         // Decrease the month start and end by one month for the next iteration
-        month_start = utils.decrementDateByOneMonth(month_start);
-        month_end = utils.decrementDateByOneMonth(month_end);
+        month_start = common.decrementDateByOneMonth(month_start);
+        month_end = common.decrementDateByOneMonth(month_end);
     }
     return balances;
 }

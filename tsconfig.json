@@ -113,6 +113,7 @@
     "server/src",
     "server/src/cache", "server/src/cache/items",
     "server/src/db", "server/src/db/models",
-    "server/src/jobs", "server/src/jobs/functions"
+    "server/src/jobs", "server/src/jobs/functions",
+    "server/src/routes", "server/src/routes/public", "server/src/routes/private",
   ]
 }

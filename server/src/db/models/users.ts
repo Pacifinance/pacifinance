@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
 import tags from "./tags"
-import utils from "../../utils";
 
 const userIdLength = 6;
 const sessionIdLength = 32;
+
+/**
+ * Creates a new invalid ObjectID for mongoDB
+ * @returns A new mongoDB ObjectID
+ */
+function newNullObjectId() {
+    return new mongoose.Types.ObjectId(NaN);
+}
 
 const UserType = {
     regular: {name: "regular", value: 0},
@@ -112,12 +119,12 @@ async function insertNew(user_id: string, password: string, type: number = UserT
         creationDate: new Date(Date.now()),
         type: type,
         nickname: "",
-        country: utils.newNullObjectId(),
-        job: utils.newNullObjectId(),
-        jobType: utils.newNullObjectId(),
-        jobCountry: utils.newNullObjectId(),
-        workTime: utils.newNullObjectId(),
-        remoteType: utils.newNullObjectId(),
+        country: newNullObjectId(),
+        job: newNullObjectId(),
+        jobType: newNullObjectId(),
+        jobCountry: newNullObjectId(),
+        workTime: newNullObjectId(),
+        remoteType: newNullObjectId(),
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
             expirationDate: new Date(0)

@@ -1,5 +1,4 @@
-import mongoose, { TagSet } from "mongoose";
-import utils from "../../utils";
+import mongoose from "mongoose";
 
 const TagType = {
     expense: {name: "expense", value: 0},
@@ -21,6 +20,16 @@ const tagsSchema = new mongoose.Schema({
         it: {type: String}
     }, required: true}
 });
+
+/**
+ * Capitalizes the first character of a string
+ * @param str Target string
+ * @returns The same string but with the first character capitalized
+ */
+function capitalizeFirst(str: string) {
+    str = str.toLowerCase()
+    return str[0].toUpperCase() + str.slice(1)
+}
 
 /* ==================== Template queries ==================== */
 
@@ -79,7 +88,7 @@ async function insertNew(label: string, index: number, type: typeof TagType) {
         index: index,
         type: type,
         translations: {
-            en: utils.capitalizeFirst(label)
+            en: capitalizeFirst(label)
         }
     }
     return await addOne(data);

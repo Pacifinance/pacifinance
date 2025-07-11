@@ -94,6 +94,10 @@ function generateRandomString(length: number, alpha: boolean = true) {
     return characters.join('')
 }
 
+/**
+ * Generates a random unique user ID
+ * @returns A new user ID
+ */
 async function generateUserId() {
     // Get the list of all user IDs
     const users = await db.users.getAllUsersIds()
@@ -107,7 +111,7 @@ async function generateUserId() {
 }
 
 /**
- * 
+ * Hashes a password
  * @param password Password to hash
  * @param salt_rounds Number of salt rounds
  * @returns Hashed password
@@ -128,6 +132,11 @@ function checkPassword(plain_password: string, hashed_password: string) {
     return bcrypt.compareSync(plain_password, hashed_password)
 }
 
+/**
+ * Checks if a user session is valid
+ * @param session The session to check
+ * @returns true if the session is valid, false otherwise
+ */
 async function checkUserSession(session: session.Session & Partial<session.SessionData>) {
     const now = new Date(Date.now());
     // Check if the session in the cookie is valid
@@ -145,6 +154,13 @@ async function checkUserSession(session: session.Session & Partial<session.Sessi
     return true;
 }
 
+/**
+ * Express middleware for checking the validity of a user session, to be used
+ * before all private routes
+ * @param req HTTP request
+ * @param res HTTP response
+ * @param next Express function to go to the next middleware in the chain
+ */
 async function checkSessionMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid

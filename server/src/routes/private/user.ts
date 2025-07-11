@@ -81,10 +81,18 @@ userRouter.post("/set-id", async (req, res) => {
     await db.users.setSessionOfUserId(curr_user_id, curr_user_id, new Date(0))
     // Destroy the session
     req.session.destroy((err: any) => {})
-    // Generate a new random user ID and update the corresponding User document
+    // Generate a new random user ID and update the corresponding User document.
+    // Send status code 500 (Internal Server Error) in case of failure
     const new_user_id = await common.generateUserId()
-    await db.users.setUserIdByUserId(curr_user_id, new_user_id)
+    const result = await db.users.setUserIdByUserId(curr_user_id, new_user_id)
+    if (result === null)
+    {
+        console.log(`Failed to change ID of user ${curr_user_id} to ${new_user_id}`)
+        res.status(500).send()
+        return
+    }
     // Send the new user ID to the cliend with status code 200 (OK)
+    console.log(`Changed ID of user ${curr_user_id} to ${new_user_id}`)
     res.status(200)
     res.json({new_id: new_user_id})
 })

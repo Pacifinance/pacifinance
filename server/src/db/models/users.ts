@@ -42,10 +42,13 @@ const userSchema = new mongoose.Schema({
 /**
  * Adds a user
  * @param data Data of the new User document 
- * @returns User document
+ * @returns User document, or null in case of error
  */
 async function addOne(data: object) {
-    return (await User.create(data)).toJSON();
+    const user = await User.create(data).catch(() => null)
+    if (!user || !user._id)
+        return null
+    return user.toJSON()
 }
 
 /**

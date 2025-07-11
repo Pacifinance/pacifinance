@@ -88,8 +88,15 @@ publicRouter.post("/registration", async (req, res) => {
     const user_id = await common.generateUserId()
     // Hash the password
     const hashed_password = common.hashPassword(user_pwd, Number.parseInt(process.env.SALT_ROUNDS || "0"))
-    // Add the user to the DB
-    await db.users.insertNew(user_id, hashed_password)
+    // Add the user to the DB. Send status code 500 (Internal Server Error) in
+    // case of error
+    const insertion = await db.users.insertNew(user_id, hashed_password)
+    if (insertion === null)
+    {
+        console.log("Error while trying to insert a new user in the database")
+        res.status(500).send()
+        return
+    }
     console.log(`User ${user_id} registered`)
     // Send the user ID to the client with status code 200 (OK)
     res.status(200)

@@ -17,6 +17,11 @@ function incrementDateByOneDay(date: Date) {
     return new_date
 }
 
+/**
+ * Checks if a Turnstile token is valid
+ * @param token The token to check
+ * @returns A tuple with a boolean verification result and the HTTP status code to use for the response
+ */
 async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
     const token_lifetime = 3 * 60 * 1000
     const expected_hostnames = process.env.NODE_ENV === "production"
@@ -85,6 +90,7 @@ publicRouter.post("/registration", async (req, res) => {
     const hashed_password = common.hashPassword(user_pwd, Number.parseInt(process.env.SALT_ROUNDS || "0"))
     // Add the user to the DB
     await db.users.insertNew(user_id, hashed_password)
+    console.log(`User ${user_id} registered`)
     // Send the user ID to the client with status code 200 (OK)
     res.status(200)
     res.json({user_id: user_id})

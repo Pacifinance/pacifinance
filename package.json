@@ -5,7 +5,7 @@
     "pacifinance.com",
     "www.pacifinance.com"
   ],
-  "version": "0.5.1",
+  "version": "0.9.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",

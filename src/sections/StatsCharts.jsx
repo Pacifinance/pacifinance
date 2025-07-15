@@ -25,6 +25,7 @@ const StatsContainer = styled.div`
   box-shadow: none !important;
   width: 100%;
   margin-left: 0;
+  padding-top: 0;
   
   @media (min-width: 768px) {
     margin-left: 5.5rem;
@@ -33,8 +34,8 @@ const StatsContainer = styled.div`
 `;
 
 const StatsTitle = styled(StandardPageTitle)`
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   padding: 0 1rem;
   text-align: center;
   font-weight: 700;
@@ -44,8 +45,8 @@ const StatsTitle = styled(StandardPageTitle)`
   background-clip: text;
   
   @media (max-width: 768px) {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
     font-size: 1.75rem;
     padding: 0 0.5rem;
   }
@@ -158,17 +159,52 @@ const ChartContainer = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
   overflow-x: auto;
   
   @media (max-width: 768px) {
     padding: 0 0.5rem;
+    margin: 1rem 0;
     
     > div {
       min-width: 100%;
       display: flex;
       justify-content: center;
     }
+  }
+`;
+
+const ModernChartCard = styled.div`
+  background: ${props => props.theme.mode === 'dark' 
+    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)'
+    : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  border: 1px solid ${props => props.theme.mode === 'dark' 
+    ? 'rgba(255, 255, 255, 0.1)' 
+    : 'rgba(0, 0, 0, 0.08)'
+  };
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 0 1rem;
+  box-shadow: ${props => props.theme.mode === 'dark' 
+    ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
+    : '0 4px 20px rgba(0, 0, 0, 0.08)'
+  };
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${props => props.theme.mode === 'dark' 
+      ? '0 12px 40px rgba(0, 0, 0, 0.4)' 
+      : '0 8px 30px rgba(0, 0, 0, 0.12)'
+    };
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin: 0 0.5rem;
+    border-radius: 12px;
   }
 `;
 
@@ -196,11 +232,15 @@ export default function StatsCharts() {
             <>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph}</ModernSecondaryTitle>
                 <ChartContainer>
-                  <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                  <ModernChartCard theme={theme}>
+                    <BalancesLinesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                  </ModernChartCard>
                 </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.titleGraph2}</ModernSecondaryTitle>
                 <ChartContainer>
-                  <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                  <ModernChartCard theme={theme}>
+                    <BalancesCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                  </ModernChartCard>
                 </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsBalance.detailedVision}</ModernSecondaryTitle>
                 <BalancesStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
@@ -212,11 +252,15 @@ export default function StatsCharts() {
             <>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph}</ModernSecondaryTitle>
                 <ChartContainer>
-                  <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                  <ModernChartCard theme={theme}>
+                    <InOutCharts theme={theme} userData={userData} isHidden={isHidden} CustomTick={CustomTick}/>
+                  </ModernChartCard>
                 </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleGraph2}</ModernSecondaryTitle>
                 <ChartContainer>
-                  <PercentageOutflowsChart theme={theme} userData={userData} isHidden={isHidden}/>
+                  <ModernChartCard theme={theme}>
+                    <PercentageOutflowsChart theme={theme} userData={userData} isHidden={isHidden}/>
+                  </ModernChartCard>
                 </ChartContainer>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.detailedVision}</ModernSecondaryTitle>
                 <ModernSecondaryTitle theme={theme}>{languages[language].graphs.statsOutflows.titleDetailsMonth} - {formattedPreMonthDate}</ModernSecondaryTitle>
@@ -230,7 +274,7 @@ export default function StatsCharts() {
 
     return (
         <StatsContainer theme={theme}>
-            <StandardPageTitle theme={theme}>{languages[language].graphs.title}</StandardPageTitle>
+            <StatsTitle theme={theme}>{languages[language].graphs.title}</StatsTitle>
             
             <ModernButtonGroup>
                 <ModernButton

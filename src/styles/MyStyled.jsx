@@ -599,14 +599,15 @@ export const SecondaryTitle = styled.h2 `
     font-size: 1.5rem;
     color: ${(props) => (props.theme.textColor)};
     margin-left: 5rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    padding: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
 
     /* For screens with a maximum width of 768px (e.g. mobile devices) */
     @media (max-width: 768px) {
       font-size: 0.75rem;
       margin-left: 0rem;
+      margin-top: 1rem;
     }
 `;
 

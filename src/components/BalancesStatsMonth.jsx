@@ -7,6 +7,7 @@ import { MdOutlineAutoGraph } from "react-icons/md";
 import { BsCoin } from "react-icons/bs";
 import { AiOutlineStock } from "react-icons/ai";
 import {SecondaryTitle, SectionAMonth, TitleStatsCharts}from '../styles/MyStyled';
+import styled from 'styled-components';
 import { primaryColor, secondaryColor } from '../styles/Themes';
 import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
 import languages from '../data/languages.json';
@@ -17,6 +18,41 @@ import { LanguageContext } from '../contexts/LanguageContext';
 
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
+const ModernStatsCard = styled.div`
+  background: ${props => props.theme.mode === 'dark' 
+    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)'
+    : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  border: 1px solid ${props => props.theme.mode === 'dark' 
+    ? 'rgba(255, 255, 255, 0.1)' 
+    : 'rgba(0, 0, 0, 0.08)'
+  };
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  max-width: 1200px;
+  box-shadow: ${props => props.theme.mode === 'dark' 
+    ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
+    : '0 4px 20px rgba(0, 0, 0, 0.08)'
+  };
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${props => props.theme.mode === 'dark' 
+      ? '0 12px 40px rgba(0, 0, 0, 0.4)' 
+      : '0 8px 30px rgba(0, 0, 0, 0.12)'
+    };
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    margin: 0.75rem auto;
+    border-radius: 12px;
+  }
+`;
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
@@ -128,7 +164,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
             </span>
             {" - "}({formattedPreMonthDate})
         </SecondaryTitle>
-        <SectionAMonth theme={theme}>
+        <ModernStatsCard theme={theme}>
+          <SectionAMonth theme={theme}>
             
             <div className="analytic ">
                 <div className="design">
@@ -271,6 +308,7 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                 </div>
             </div>
         </SectionAMonth>
+        </ModernStatsCard>
     </div>
     )
 }

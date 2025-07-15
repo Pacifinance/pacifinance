@@ -570,6 +570,16 @@
             "disclaimer": "⚠️ Le informazioni fornite sono a scopo educativo e non costituiscono consigli finanziari personalizzati. Consulta sempre un consulente finanziario qualificato per decisioni importanti.",
             "advantages": "Vantaggi",
             "disadvantages": "Svantaggi",
+            "frequency": "Frequenza",
+            "trigger": "Trigger",
+            "method": "Metodo",
+            "example": "Esempio",
+            "protection": "Protezione",
+            "riskLevels": {
+                "low": "BASSO",
+                "medium": "MEDIO",
+                "high": "ALTO"
+            },
             "sections": {
                 "investments": {
                     "title": "Investimenti",
@@ -1563,6 +1573,16 @@
             "disclaimer": "⚠️ The information provided is for educational purposes and does not constitute personalized financial advice. Always consult a qualified financial advisor for important decisions.",
             "advantages": "Advantages",
             "disadvantages": "Disadvantages",
+            "frequency": "Frequency",
+            "trigger": "Trigger",
+            "method": "Method",
+            "example": "Example",
+            "protection": "Protection",
+            "riskLevels": {
+                "low": "LOW",
+                "medium": "MEDIUM",
+                "high": "HIGH"
+            },
             "sections": {
                 "investments": {
                     "title": "Investments",

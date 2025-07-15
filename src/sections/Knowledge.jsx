@@ -363,7 +363,7 @@ const Knowledge = () => {
                         fontSize: '12px',
                         fontWeight: 'bold'
                       }}>
-                        {index === 0 ? 'BASSO' : index === 1 ? 'MEDIO' : 'ALTO'}
+                        {index === 0 ? knowledge.riskLevels.low : index === 1 ? knowledge.riskLevels.medium : knowledge.riskLevels.high}
                       </span>
                       <span>{level}</span>
                     </ListItem>
@@ -421,19 +421,19 @@ const Knowledge = () => {
                 <div>
                   {value.frequency && (
                     <div style={{ marginBottom: '1rem' }}>
-                      <strong style={{ color: theme.buttonBackgroundColor }}>📅 Frequenza:</strong>
+                      <strong style={{ color: theme.buttonBackgroundColor }}>📅 {knowledge.frequency}:</strong>
                       <span> {value.frequency}</span>
                     </div>
                   )}
                   {value.trigger && (
                     <div style={{ marginBottom: '1rem' }}>
-                      <strong style={{ color: theme.buttonBackgroundColor }}>🎯 Trigger:</strong>
+                      <strong style={{ color: theme.buttonBackgroundColor }}>🎯 {knowledge.trigger}:</strong>
                       <span> {value.trigger}</span>
                     </div>
                   )}
                   {value.method && (
                     <div style={{ marginBottom: '1rem' }}>
-                      <strong style={{ color: theme.buttonBackgroundColor }}>🔄 Metodo:</strong>
+                      <strong style={{ color: theme.buttonBackgroundColor }}>🔄 {knowledge.method}:</strong>
                       <span> {value.method}</span>
                     </div>
                   )}
@@ -447,7 +447,7 @@ const Knowledge = () => {
                   borderRadius: '6px', 
                   marginTop: '1rem' 
                 }}>
-                  <strong style={{ color: theme.buttonBackgroundColor }}>💡 Esempio:</strong>
+                  <strong style={{ color: theme.buttonBackgroundColor }}>💡 {knowledge.example}:</strong>
                   <div style={{ marginTop: '0.5rem', fontFamily: 'monospace' }}>{value.example}</div>
                 </div>
               )}
@@ -468,7 +468,7 @@ const Knowledge = () => {
                   )}
                   {value.protection && (
                     <div style={{ marginBottom: '1rem' }}>
-                      <strong style={{ color: theme.buttonBackgroundColor }}>🛡️ Protezione:</strong>
+                      <strong style={{ color: theme.buttonBackgroundColor }}>🛡️ {knowledge.protection}:</strong>
                       <span> {value.protection}</span>
                     </div>
                   )}

@@ -31,8 +31,8 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
         try {
 
           setLast12MonthsData(userData ? userData.last12MonthsData : []);
-            
-    
+
+
         } catch (error) {
           console.error('Error:', error);
         }
@@ -44,15 +44,15 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
 
   const headers = [
     { label: languages[language].general.month, key: 'name' },
-    { label: languages[language].assets.cash, key: languages[language].assets.cash },
-    { label: languages[language].assets.digitalServices, key: languages[language].assets.digitalServices },
-    { label: languages[language].assets.stocks, key: languages[language].assets.stocks },
-    { label: languages[language].assets.bank, key: languages[language].assets.bank },
-    { label: languages[language].assets.crypto, key: languages[language].assets.crypto },
-    { label: languages[language].assets.etf, key: languages[language].assets.etf },
-    { label: languages[language].assets.bitcoin, key: languages[language].assets.bitcoin },
-    { label: languages[language].assets.total, key: languages[language].assets.total },
-    
+    { label: languages[language].assets.cash, key: 'cash' },
+    { label: languages[language].assets.digitalServices, key: 'digitalServices' },
+    { label: languages[language].assets.stocks, key: 'stocks' },
+    { label: languages[language].assets.bank, key: 'bank' },
+    { label: languages[language].assets.crypto, key: 'crypto' },
+    { label: languages[language].assets.etf, key: 'etf' },
+    { label: languages[language].assets.bitcoin, key: 'bitcoin' },
+    { label: languages[language].assets.total, key: 'total' },
+
   ];
 
   const today = new Date();
@@ -60,17 +60,16 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
 
   const data = last12MonthsData.map((monthData) => {
     const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal;
-
     return {
       name: monthData.month,
-      [languages[language].assets.cash]: monthData.cashReal,
-      [languages[language].assets.digitalServices]: monthData.digitalServicesReal,
-      [languages[language].assets.stocks]: monthData.stocksReal,
-      [languages[language].assets.bank]: monthData.bankReal,
-      [languages[language].assets.crypto]: monthData.cryptoReal,
-      [languages[language].assets.etf]: monthData.etfReal,
-      [languages[language].assets.bitcoin]: monthData.bitcoinReal,
-      [languages[language].assets.total]: total,
+      cash: monthData.cashReal,
+      digitalServices: monthData.digitalServicesReal,
+      stocks: monthData.stocksReal,
+      bank: monthData.bankReal,
+      crypto: monthData.cryptoReal,
+      etf: monthData.etfReal,
+      bitcoin: monthData.bitcoinReal,
+      total: total,
       amt: 2400, 
     };
   }).reverse(); //reverse() to have the last month on the right
@@ -103,7 +102,7 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
         }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
-      
+
         <Tooltip
           contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
           labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
@@ -114,32 +113,39 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
               maximumFractionDigits: 0,
             }).format(isHidden ? '****' : value);
 
-            // Include the total sum in the legend
-            if (name === 'Totale') {
-              return [`${name}: ${formattedValue}`];
-            }
+            // Map the simple keys back to translated names
+            const nameMap = {
+              'cash': languages[language].assets.cash,
+              'digitalServices': languages[language].assets.digitalServices,
+              'stocks': languages[language].assets.stocks,
+              'bank': languages[language].assets.bank,
+              'crypto': languages[language].assets.crypto,
+              'etf': languages[language].assets.etf,
+              'bitcoin': languages[language].assets.bitcoin,
+              'total': languages[language].assets.total
+            };
 
-            return [`${name}: ${formattedValue}`];
+            const translatedName = nameMap[name] || name;
+
+            return [formattedValue, translatedName];
           }}
         />
         {/* <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
         <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%' }}/>
 
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.bank} stackId="a" fill={isHidden ? theme.textColor : "#0D579B"} />
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.cash} stackId="a" fill={isHidden ? theme.textColor : "#329239"} />
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.digitalServices} stackId="a" fill={isHidden ? theme.textColor : "#74b9ff"} />
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.stocks} stackId="a" fill={isHidden ? theme.textColor : "#FF6600"} />
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.etf} stackId="a" fill={isHidden ? theme.textColor : "#a29bfe"} />
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.bitcoin} stackId="a" fill={isHidden ? theme.textColor : "#F7B510"} />
-        <Bar dataKey={isHidden ? '****' : languages[language].assets.crypto} stackId="a" fill={isHidden ? theme.textColor : "#d63031"} />
-        
+        <Bar dataKey="cash" stackId="a" fill={theme.mode === 'dark' ? '#059669' : '#047857'} />
+        <Bar dataKey="digitalServices" stackId="a" fill={theme.mode === 'dark' ? '#0891b2' : '#0369a1'} />
+        <Bar dataKey="stocks" stackId="a" fill={theme.mode === 'dark' ? '#7c3aed' : '#6b21a8'} />
+        <Bar dataKey="bank" stackId="a" fill={theme.mode === 'dark' ? '#dc2626' : '#b91c1c'} />
+        <Bar dataKey="crypto" stackId="a" fill={theme.mode === 'dark' ? '#ea580c' : '#c2410c'} />
+        <Bar dataKey="etf" stackId="a" fill={theme.mode === 'dark' ? '#65a30d' : '#4d7c0f'} />
+        <Bar dataKey="bitcoin" stackId="a" fill={theme.mode === 'dark' ? '#facc15' : '#eab308'} />
+
         <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9} />} />
         <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
-        
+
 
       </BarChart>
     </SectionBalancesCharts>
   );
 }
-
-

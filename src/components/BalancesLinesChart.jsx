@@ -28,8 +28,8 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
         try {
 
           setLast12MonthsData(userData ? userData.last12MonthsData : []);
-            
-    
+
+
         } catch (error) {
           console.error('Errore durante le operazioni:', error);
         }
@@ -41,15 +41,15 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
 
   const headers = [
     { label: languages[language].general.month, key: 'name' },
-    { label: languages[language].assets.cash, key: languages[language].assets.cash },
-    { label: languages[language].assets.digitalServices, key: languages[language].assets.digitalServices },
-    { label: languages[language].assets.stocks, key: languages[language].assets.stocks },
-    { label: languages[language].assets.bank, key: languages[language].assets.bank },
-    { label: languages[language].assets.crypto, key: languages[language].assets.crypto },
-    { label: languages[language].assets.etf, key: languages[language].assets.etf },
-    { label: languages[language].assets.bitcoin, key: languages[language].assets.bitcoin },
-    { label: languages[language].assets.total, key: languages[language].assets.total },
-    
+    { label: languages[language].assets.cash, key: 'cash' },
+    { label: languages[language].assets.digitalServices, key: 'digitalServices' },
+    { label: languages[language].assets.stocks, key: 'stocks' },
+    { label: languages[language].assets.bank, key: 'bank' },
+    { label: languages[language].assets.crypto, key: 'crypto' },
+    { label: languages[language].assets.etf, key: 'etf' },
+    { label: languages[language].assets.bitcoin, key: 'bitcoin' },
+    { label: languages[language].assets.total, key: 'total' },
+
   ];
 
   const today = new Date();
@@ -58,14 +58,14 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
     const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal;
     return {
       name: monthData.month,
-      [languages[language].assets.cash]: monthData.cashReal,
-      [languages[language].assets.digitalServices]: monthData.digitalServicesReal,
-      [languages[language].assets.stocks]: monthData.stocksReal,
-      [languages[language].assets.bank]: monthData.bankReal,
-      [languages[language].assets.crypto]: monthData.cryptoReal,
-      [languages[language].assets.etf]: monthData.etfReal,
-      [languages[language].assets.bitcoin]: monthData.bitcoinReal,
-      [languages[language].assets.total]: total,
+      cash: monthData.cashReal,
+      digitalServices: monthData.digitalServicesReal,
+      stocks: monthData.stocksReal,
+      bank: monthData.bankReal,
+      crypto: monthData.cryptoReal,
+      etf: monthData.etfReal,
+      bitcoin: monthData.bitcoinReal,
+      total: total,
       amt: 2400, 
       };
   }).reverse(); //reverse() to have the last month on the right
@@ -117,27 +117,38 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
                         maximumFractionDigits: 0,
                     }).format(value);
 
-                    // Include the total sum in the legend
-                    return [`${name}: ${formattedValue}`];
+                    // Map the simple keys back to translated names
+                    const nameMap = {
+                      'cash': languages[language].assets.cash,
+                      'digitalServices': languages[language].assets.digitalServices,
+                      'stocks': languages[language].assets.stocks,
+                      'bank': languages[language].assets.bank,
+                      'crypto': languages[language].assets.crypto,
+                      'etf': languages[language].assets.etf,
+                      'bitcoin': languages[language].assets.bitcoin,
+                      'total': languages[language].assets.total
+                    };
+
+                    const translatedName = nameMap[name] || name;
+
+                    return [`${translatedName}: ${formattedValue}`];
                 }}
             />
             {/* <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
             <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%'}}/>
 
-            {data.every(item => item[languages[language].assets.total] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.total} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />}
-            {data.every(item => item[languages[language].assets.bank] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.bank} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />}
-            {data.every(item => item[languages[language].assets.cash] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.cash} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />}
-            {data.every(item => item[languages[language].assets.digitalServices]=== 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.digitalServices} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />}
-            {data.every(item => item[languages[language].assets.stocks] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.stocks} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />}
-            {data.every(item => item[languages[language].assets.etf] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.etf} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />}
-            {data.every(item => item[languages[language].assets.bitcoin] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.bitcoin} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />}
-            {data.every(item => item[languages[language].assets.crypto] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : languages[language].assets.crypto} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />}
-            
-            
-            
+            {data.every(item => item['total'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'total'} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />}
+            {data.every(item => item['bank'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bank'} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />}
+            {data.every(item => item['cash'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'cash'} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />}
+            {data.every(item => item['digitalServices']=== 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'digitalServices'} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />}
+            {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'stocks'} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />}
+            {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'etf'} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />}
+            {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bitcoin'} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />}
+            {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'crypto'} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />}
+
+
+
         </AreaChart>
     </SectionBalancesCharts>
   );
 }
-
-

@@ -42,6 +42,7 @@ export default function SignUpForm() {
     const [isCopied, setIsCopied] = useState(false);
     const [turnstileToken, setTurnstileToken] = useState("");
     const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const inputRef = useRef(null);
     const turnstileRef = useRef(null);
 
@@ -160,6 +161,18 @@ export default function SignUpForm() {
         setIsCopied(true);
     };
 
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        navigate('/sign-in');
+    };
+
+    const handleCopyAndClose = () => {
+        copyToClipboard();
+        setTimeout(() => {
+            handleCloseSuccessModal();
+        }, 1000);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -194,18 +207,8 @@ export default function SignUpForm() {
             );
             if (response.status === 200) {
                 generated_user_id = response.data.user_id;
-                const successMessage = `
-                    <div>
-                        <strong>${languages[language].header.register.successPopup.title}</strong><br/>
-                        ${languages[language].header.register.successPopup.message} ${generated_user_id}.<br/>
-                         ${languages[language].header.register.successPopup.securityMessage}
-                    </div>
-                `;
-                showSuccess(successMessage, 6000);
+                setShowSuccessModal(true);
                 //window.umami.trackEvent('SignUp');
-                // openSuccessModal();
-                // alert("Ti sei registrato con successo, Grazie.\n Ora puoi effettuare il login.\n Il tuo id utente è: " + generated_user_id + ".\n Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi. ");
-                // navigate('/sign-in');
             } else {
                 // alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
                 showError(
@@ -351,6 +354,43 @@ export default function SignUpForm() {
                     </div>
                 </form>
             </div>
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <MuiCustomDialog
+                    theme={theme}
+                    open={showSuccessModal}
+                    onClose={() => {}} // Prevent closing by clicking outside
+                    aria-labelledby="success-dialog-title"
+                    aria-describedby="success-dialog-description"
+                    maxWidth="sm"
+                    fullWidth
+                >
+                    <MuiCustomDialogTitle id="success-dialog-title">
+                        {languages[language].header.register.successPopup.title}
+                    </MuiCustomDialogTitle>
+                    <MuiCustomDialogContent theme={theme}>
+                        <MuiCustomDialogContentText id="success-dialog-description">
+                            {languages[language].header.register.successPopup.message} <strong>{generated_user_id}</strong>
+                            <br /><br />
+                            <div dangerouslySetInnerHTML={{
+                                __html: languages[language].header.register.successPopup.securityMessage
+                            }} />
+                        </MuiCustomDialogContentText>
+                    </MuiCustomDialogContent>
+                    <MuiCustomDialogActions>
+                        <MuiCustomButton onClick={handleCopyAndClose} autoFocus>
+                            {isCopied ? 
+                                (language === "it" ? "Copiato!" : "Copied!") : 
+                                (language === "it" ? "Copia ID" : "Copy ID")
+                            }
+                        </MuiCustomButton>
+                        <MuiCustomButton onClick={handleCloseSuccessModal}>
+                            {language === "it" ? "Chiudi" : "Close"}
+                        </MuiCustomButton>
+                    </MuiCustomDialogActions>
+                </MuiCustomDialog>
+            )}
         </div>
     );
 }

@@ -1,4 +1,3 @@
-
 {
     "it": {
         "assets": {
@@ -367,7 +366,7 @@
                 "backToDashboard": "Torna alla Dashboard"
             }
         },
-        
+
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Il tuo patrimonio totale è: ",
@@ -802,7 +801,7 @@
         },
         "info": {
             "title": "Informazioni e FAQ",
-            "title2": "Progetto - Pacifinance",
+            "title2": "Progetto Pacifinance",
             "description": "Pacifinance è una piattaforma di finanza personale e di confronto che si pone come obiettivo principale la privacy e permettere la comprensione della propria situazione finanziaria.",
             "description2": "Il confronto con altri utenti è possibile in modo anonimo e non sensibile.",
             "descriptiopn3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
@@ -1805,7 +1804,7 @@
         },
         "info": {
             "title": "Information and FAQ",
-            "title2": "Project - Pacifinance",
+            "title2": "Pacifinance Project ",
             "description": "Pacifinance is a personal finance and comparison platform that has as its main objective privacy and allows you to understand your financial situation.",
             "description2": "Comparison with other users is possible anonymously and not sensitively.",
             "descriptiopn3": "The data entered by the user is anonymous, protected and not accessible by third parties.",

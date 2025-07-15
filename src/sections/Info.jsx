@@ -59,7 +59,7 @@ const InfoText = styled.p`
     font-weight: 400;
     line-height: 1.7;
     letter-spacing: 0.01em;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.2rem;
     text-align: left;
 
     @media (max-width: 768px) {

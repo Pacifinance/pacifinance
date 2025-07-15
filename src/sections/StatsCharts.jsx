@@ -161,13 +161,14 @@ const ChartContainer = styled.div`
   width: 100%;
   margin: 1.5rem 0;
   overflow-x: auto;
+  padding: 0 1rem;
   
   @media (max-width: 768px) {
     padding: 0 0.5rem;
     margin: 1rem 0;
     
     > div {
-      min-width: 100%;
+      width: 100%;
       display: flex;
       justify-content: center;
     }
@@ -192,6 +193,11 @@ const ModernChartCard = styled.div`
   };
   backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
 
   &:hover {
     transform: translateY(-4px);
@@ -205,6 +211,7 @@ const ModernChartCard = styled.div`
     padding: 1.5rem;
     margin: 0 0.5rem;
     border-radius: 12px;
+    max-width: calc(100vw - 2rem);
   }
 `;
 

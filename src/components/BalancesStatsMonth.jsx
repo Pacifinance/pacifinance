@@ -105,13 +105,13 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
     const formattedPreMonthDate = userData?.preMonthDate
       ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
       : "";
-    
+
 
     useEffect(() => {
         const fetchData = async () => {
           if (userData) {
             try {
-                
+
                 //CURRENT MONTH
                 setStocksReal(userData ? userData.stocksReal : 0);
                 setETFReal(userData ? userData.etfReal : 0);
@@ -131,13 +131,13 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                 setCashRealPreMonth(userData ? userData.cashRealPreMonth : 0);
                 setDigitalServicesRealPreMonth(userData ? userData.digitalServicesRealPreMonth : 0);
                 setTotalRealPreMonth(userData ? userData.totalRealPreMonth : 0);
-                
+
             } catch (error) {
               console.error('Errore durante le operazioni:', error);
             }
           }
         };
-    
+
     fetchData();
     }, [userData]);
 
@@ -148,8 +148,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
         { name: "Crypto", value: cryptoReal }
     ];
 
-    
-      
+
+
     return (
         // Il tuo patrimonio rispetto ad un anno fa è variato di:{" "}
         //     <span style={{ color: (((totalReal - totalRealPreYearSameMonth) / totalRealPreYearSameMonth) * 100) > 0 ? primaryColor : "inherit" }}>
@@ -164,9 +164,8 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
             </span>
             {" - "}({formattedPreMonthDate})
         </SecondaryTitle>
-        <ModernStatsCard theme={theme}>
           <SectionAMonth theme={theme}>
-            
+
             <div className="analytic ">
                 <div className="design">
                     <div className="logo" style={{ color: '#0D579B'}}>
@@ -308,7 +307,6 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                 </div>
             </div>
         </SectionAMonth>
-        </ModernStatsCard>
     </div>
     )
 }

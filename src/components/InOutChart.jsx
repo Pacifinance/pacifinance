@@ -36,7 +36,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
         try {
             setIncomesArray(userData.incomesArray);
             setOutflowsArray(userData.expensesArray);  
-            
+
         } catch (error) {
           console.error('Error', error);
         }
@@ -47,9 +47,9 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   }, [userData]);
 
   const headers = [
-    { label: languages[language].general.month, key: 'name' },
-    { label: languages[language].general.outflows, key: languages[language].general.outflows },
-    { label: languages[language].general.incomes, key: languages[language].general.incomes },
+    { label: languages[language]?.graphs?.statsOutflows?.titleGraph || 'Month', key: 'name' },
+    { label: languages[language]?.general?.incomes || 'Inflows', key: 'incomes' },
+    { label: languages[language]?.general?.outflows || 'Outflows', key: 'outflows' },
   ];
 
   const today = new Date();
@@ -132,4 +132,3 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
     </SectionInOut>
   );
 }
-

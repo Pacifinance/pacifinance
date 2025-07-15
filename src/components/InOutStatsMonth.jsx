@@ -91,13 +91,13 @@ export default function InOutStatsMonth({ theme, userData, isHidden}) {
     //     SectionAMonth,
     //     WrapperAMonth,
     //   } = MyStyled()
-    
+
 
     useEffect(() => {
         const fetchData = async () => {
           if (userData) {
             try {
-                
+
                 //CURRENT MONTH
                 setOutflowsMonth(userData ? userData.expensesArray[0] : 0);
                 setIncomesMonth(userData ? userData.incomesArray[0] : 0);
@@ -107,29 +107,28 @@ export default function InOutStatsMonth({ theme, userData, isHidden}) {
                 setIncomesPreMonth(userData ? userData.incomesArray[0] : 0);
                 setSavedPreMonth(userData ? (userData.incomesArray[1] - userData.expensesArray[1]) : 0);
                 setOutflowsPreMonth(userData ? userData.expensesArray[1] : 0);
-                
-        
+
+
             } catch (error) {
               console.error('Error:', error);
             }
           }
         };
-    
+
     fetchData();
     }, [userData]);
 
     // const data = [
     //     { name: "Stocks", value: stocksReal },
     //     { name: "Bank", value: bankReal },
-    //     { name: "Cash", value: cashReal },
+    //     { name: "Cash", value: cryptoReal },
     //     { name: "Crypto", value: cryptoReal }
     // ];
 
-    
-      
+
+
     return (
         <div className="wrapper" style={{ width: '100%', padding: '0 0.5rem' }}>
-        <ModernStatsCard theme={theme}>
           <SectionAMonth theme={theme}>
             <div className="analytic">
                 <div className="design">
@@ -191,8 +190,6 @@ export default function InOutStatsMonth({ theme, userData, isHidden}) {
                 </div>
             </div>
         </SectionAMonth>
-        </ModernStatsCard>
     </div>
     )
 }
-

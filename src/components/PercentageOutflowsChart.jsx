@@ -129,32 +129,32 @@ export default function PercentageOutflowsChart({theme, userData, isHidden}) {
     11: [languages[language].months.november],
     12: [languages[language].months.december]
   };
-  
+
   // Get the current month and year
   const currentMonth = new Date().getMonth() + 1; // JavaScript months are 0-based, so add 1
   const currentYear = new Date().getFullYear();
-  
+
   // Initialize monthOptions as an empty array
   let monthOptions = [];
   let year = currentYear;
-  
+
   // Iterate over totalOutflowsPerCategoryPerMonth
   for (let i = 0; i < Object.keys(totalOutflowsPerCategoryPerMonth).length; i++) {
     // Calculate the month and year for the current index
     let month = ((currentMonth - i - 1 + 12) % 12) + 1; // Subtract 1 before the modulo operation and add 1 after
-    
+
 
     if (month === 12 && i !== 0) {
       year--;
     }
-  
+
     // Add an object with value and label properties to monthOptions
     monthOptions.push({ value: i, label: `${monthNames[month]} ${year}` });
   }
 
   // Now monthOptions contains the month names and years for the indices in totalOutflowsPerCategoryPerMonth
   // console.log(monthOptions);
-
+  
   return (
     <PercentageOutflowsChartContainer>
       <div>

@@ -155,7 +155,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         if (path === "/charts-statistics") return 1;
         if (path === "/insert-values") return 2;
         if (path === "/check-prices") return 3;
-        if (path === "/leaderboard") return 4;
+        if (path === "/comparison") return 4;
         if (path === "/knowledge") return 5;
         if (path === "/info") return 6;
         return -1;

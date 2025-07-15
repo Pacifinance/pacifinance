@@ -177,10 +177,10 @@ export default function BalancesStatsMonth({theme, userData, isHidden}) {
                     <h6>{languages[language].assets.bank}</h6>
                 </div>
                 <div className="money">
-                    <h5 style={{ color: secondaryColor}}>
+                    <h5>
                         {isHidden ? '****' : calculateDifference(bankReal, bankRealPreMonth)}
                     </h5>
-                    <h6 style={{ color: secondaryColor}} className="text-xs">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPreMonth)}
                     </h6>
                 </div>

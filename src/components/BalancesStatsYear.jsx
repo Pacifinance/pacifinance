@@ -156,10 +156,10 @@ function BalancesStatsYear({theme, userData, isHidden}) {
                     <h6 className="text-xs">{languages[language].assets.digitalServices}</h6>
                 </div>
                 <div className="money">
-                    <h5 style={{ color: secondaryColor}}>
+                    <h5>
                         {isHidden ? '****' : calculateDifference(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h5>
-                    <h6 style={{ color: secondaryColor}} className="text-xs">
+                    <h6 className="text-xs">
                         {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPreYearSameMonth)}
                     </h6>
                 </div>

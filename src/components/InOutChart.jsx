@@ -34,8 +34,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
     const fetchData = async () => {
       if (userData) {
         try {
-            setIncomesArray(userData.incomesArray);
-            setOutflowsArray(userData.expensesArray);  
+            setIncomesArray(userData.incomesArray || []);
+            setOutflowsArray(userData.expensesArray || []);  
 
         } catch (error) {
           console.error('Error', error);
@@ -64,8 +64,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
 
     lastTwelveMonths.push({
       name: monthName,
-      [languages[language].general.outflows]: outflowsArray[i] || 0, // Usa 0 se non ci sono dati
-      [languages[language].general.incomes]: incomesArray[i] || 0, // Usa 0 se non ci sono dati
+      [languages[language].general.outflows]: Math.abs(outflowsArray[i] || 0), // Usa valore assoluto
+      [languages[language].general.incomes]: Math.abs(incomesArray[i] || 0), // Usa valore assoluto
       amt: 0, // Aggiungi eventuali dati aggiuntivi
     });
   }

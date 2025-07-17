@@ -40,19 +40,20 @@ export default function PricingPage() {
 
         <p
           className="text-xl text-center mb-12 opacity-80"
-          style={{ color: mode === "dark" ? "#000000" : theme.textColor }}
+          style={{ color: theme.textColor }}
         >
           {languages[language].pricing.subtitle}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 max-w-7xl mx-auto">
           {/* Free Plan (Only Plan) */}
-          <div className="relative">
+          <div className="relative lg:col-start-2">
             <div
-              className="border-2 rounded-lg p-8 text-center h-full"
+              className="border-2 rounded-lg p-8 text-center h-full min-h-[500px] flex flex-col justify-between"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor: theme.primaryColor,
+                color: theme.textColor,
               }}
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -81,20 +82,24 @@ export default function PricingPage() {
                 >
                   {languages[language].pricing.freePlan.price}
                 </span>
-                <span className="text-lg opacity-60">
+                <span 
+                  className="text-lg opacity-60"
+                  style={{ color: theme.textColor }}
+                >
                   {languages[language].pricing.freePlan.period}
                 </span>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 {languages[language].pricing.freePlan.features.map(
                   (feature, index) => (
                     <li
                       key={index}
                       className="flex items-center justify-center"
+                      style={{ color: theme.textColor }}
                     >
                       <span className="text-green-500 mr-2">✓</span>
-                      {feature}
+                      <span>{feature}</span>
                     </li>
                   ),
                 )}
@@ -113,9 +118,9 @@ export default function PricingPage() {
           </div>
 
           {/* "Premium" Plan (Joke) */}
-          <div>
+          <div className="hidden lg:block">
             <div
-              className="border rounded-lg p-8 text-center h-full opacity-50"
+              className="border rounded-lg p-8 text-center h-full opacity-50 min-h-[500px] flex flex-col justify-between"
               style={{
                 borderColor: theme.borderColor,
                 backgroundColor: theme.backgroundColor,
@@ -135,12 +140,15 @@ export default function PricingPage() {
                 >
                   {languages[language].pricing.premiumPlan.price}
                 </span>
-                <span className="text-lg opacity-60">
+                <span 
+                  className="text-lg opacity-60"
+                  style={{ color: theme.textColor }}
+                >
                   {languages[language].pricing.premiumPlan.period}
                 </span>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 {languages[language].pricing.premiumPlan.features.map(
                   (feature, index) => (
                     <li
@@ -148,7 +156,7 @@ export default function PricingPage() {
                       className="flex items-center justify-center opacity-60"
                     >
                       <span className="text-red-500 mr-2">✗</span>
-                      {feature}
+                      <span style={{ color: theme.textColor }}>{feature}</span>
                     </li>
                   ),
                 )}
@@ -168,9 +176,9 @@ export default function PricingPage() {
           </div>
 
           {/* "Enterprise" Plan (Another Joke) */}
-          <div>
+          <div className="hidden lg:block">
             <div
-              className="border rounded-lg p-8 text-center h-full opacity-50"
+              className="border rounded-lg p-8 text-center h-full opacity-50 min-h-[500px] flex flex-col justify-between"
               style={{
                 borderColor: theme.borderColor,
                 backgroundColor: theme.backgroundColor,
@@ -190,12 +198,15 @@ export default function PricingPage() {
                 >
                   {languages[language].pricing.enterprisePlan.price}
                 </span>
-                <span className="text-lg opacity-60">
+                <span 
+                  className="text-lg opacity-60"
+                  style={{ color: theme.textColor }}
+                >
                   {languages[language].pricing.enterprisePlan.period}
                 </span>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 {languages[language].pricing.enterprisePlan.features.map(
                   (feature, index) => (
                     <li
@@ -203,7 +214,7 @@ export default function PricingPage() {
                       className="flex items-center justify-center opacity-60"
                     >
                       <span className="text-red-500 mr-2">✗</span>
-                      {feature}
+                      <span style={{ color: theme.textColor }}>{feature}</span>
                     </li>
                   ),
                 )}
@@ -234,19 +245,28 @@ export default function PricingPage() {
           >
             {languages[language].pricing.donation.title}
           </h2>
-          <p className="text-lg mb-6 opacity-80">
+          <p 
+            className="text-lg mb-6 opacity-80"
+            style={{ color: theme.textColor }}
+          >
             {languages[language].pricing.donation.description}
           </p>
           <div className="flex flex-col items-center space-y-4 mb-5">
             <BuyMeACoffeeWidget />
-            <p className="text-sm opacity-70 text-center max-w-md">
+            <p 
+              className="text-sm opacity-70 text-center max-w-md"
+              style={{ color: theme.textColor }}
+            >
               {language === "it"
                 ? "Il tuo supporto ci aiuta a mantenere PaciFinance gratuito per tutti. Ogni donazione, anche piccola, fa la differenza!"
                 : "Your support helps us keep PaciFinance free for everyone. Every donation, no matter how small, makes a difference!"}
             </p>
           </div>
           <BuyMeACoffeeWidget showLink={true} />
-          <p className="text-xs mt-4 opacity-60">
+          <p 
+            className="text-xs mt-4 opacity-60"
+            style={{ color: theme.textColor }}
+          >
             {languages[language].pricing.donation.disclaimer}
           </p>
         </div>

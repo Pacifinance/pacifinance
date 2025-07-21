@@ -1660,16 +1660,15 @@ export const SidebarSection = styled.section`
       }
   `;
 
-  export const SectionAMonth = styled.section`
+export const SectionAMonth = styled.section`
   color: ${(props) => (props.theme.textColor)};
   background-color: ${(props) => (props.theme.backgroundColor)};
-  padding: 1rem;
-  margin: 1rem auto;
+  padding: 0.5rem 0.5rem 1.2rem 0.5rem;
+  margin: 1.5rem auto 1.5rem auto;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  max-width: 700px;
   width: 100%;
-
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -1679,32 +1678,35 @@ export const SidebarSection = styled.section`
     background: ${(props) => (props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)')};
     border: 1px solid ${(props) => (props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)')};
     border-radius: 12px;
-    padding: 1.5rem;
-    flex: 1;
-    min-width: 280px;
-    max-width: 350px;
+    padding: 1rem 0.5rem;
+    flex: 1 1 180px;
+    min-width: 160px;
+    max-width: 210px;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
     transition: all 0.3s ease;
+    text-align: center;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
     }
 
     .design {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
 
       .logo {
-        font-size: 2rem;
+        font-size: 1.7rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 50px;
-        height: 50px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: ${(props) => (props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)')};
       }
@@ -1713,11 +1715,11 @@ export const SidebarSection = styled.section`
     .transfer {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.15rem;
 
       h6 {
         margin: 0;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: ${(props) => (props.theme.textColor)};
         opacity: 0.8;
@@ -1727,18 +1729,18 @@ export const SidebarSection = styled.section`
     .money {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.15rem;
 
       h5 {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.15rem;
         font-weight: 700;
         color: ${(props) => (props.theme.textColor)};
       }
 
       h6 {
         margin: 0;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 500;
         color: ${(props) => (props.theme.textColor)};
         opacity: 0.7;
@@ -1747,34 +1749,36 @@ export const SidebarSection = styled.section`
   }
 
   @media (max-width: 768px) {
-    padding: 0.75rem 0.5rem;
-    margin: 0.75rem auto;
-    gap: 0.75rem;
-    width: calc(100% - 1rem);
+    padding: 0.5rem 0.2rem 1rem 0.2rem;
+    margin: 1rem auto;
+    gap: 0.5rem;
+    max-width: 98vw;
 
     .analytic {
       min-width: 100%;
       max-width: 100%;
-      padding: 1rem;
+      padding: 0.7rem 0.2rem;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
 
       .design {
         flex-shrink: 0;
 
         .logo {
-          font-size: 1.5rem;
-          width: 40px;
-          height: 40px;
+          font-size: 1.2rem;
+          width: 30px;
+          height: 30px;
         }
       }
 
       .transfer {
         flex: 1;
-        margin-left: 1rem;
+        margin-left: 0.7rem;
 
         h6 {
-          font-size: 0.8rem;
+          font-size: 0.75rem;
         }
       }
 
@@ -1783,38 +1787,38 @@ export const SidebarSection = styled.section`
         text-align: right;
 
         h5 {
-          font-size: 1.25rem;
+          font-size: 1rem;
         }
 
         h6 {
-          font-size: 0.7rem;
+          font-size: 0.6rem;
         }
       }
     }
   }
 
   @media (max-width: 480px) {
-    padding: 0.5rem;
-    width: calc(100% - 1rem);
+    padding: 0.3rem 0.1rem 0.7rem 0.1rem;
+    max-width: 100vw;
 
     .analytic {
-      padding: 0.75rem;
+      padding: 0.5rem 0.1rem;
 
       .transfer {
-        margin-left: 0.75rem;
+        margin-left: 0.4rem;
 
         h6 {
-          font-size: 0.75rem;
+          font-size: 0.7rem;
         }
       }
 
       .money {
         h5 {
-          font-size: 1.1rem;
+          font-size: 0.85rem;
         }
 
         h6 {
-          font-size: 0.65rem;
+          font-size: 0.5rem;
         }
       }
     }
@@ -2396,7 +2400,10 @@ export const MuiCustomDialogActions = styled(DialogActions)`
 
 export const MuiCustomTextField = styled(TextField)`
   && {
-
+      label {
+        color: ${({ theme }) => theme.mode === 'dark' ? theme.buttonBackgroundColor : theme.textColor};
+        opacity: 0.95;
+      }
       label.Mui-focused {
         color: ${(props) => (props.theme.buttonBackgroundColor)};
       }
@@ -2405,6 +2412,13 @@ export const MuiCustomTextField = styled(TextField)`
       }
       .Mui-focused .MuiInput-underline:after {
         border-bottom-color: ${(props) => (props.theme.buttonBackgroundColor)};
+      }
+      input {
+        color: ${({ theme }) => theme.mode === 'dark' ? '#f3f3f3' : theme.textColor};
+      }
+      input::placeholder {
+        color: ${({ theme }) => theme.mode === 'dark' ? '#bdbdbd' : '#888'};
+        opacity: 1;
       }
   }
   & input:-webkit-autofill {

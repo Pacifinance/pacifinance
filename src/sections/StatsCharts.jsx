@@ -19,14 +19,16 @@ import { LanguageContext } from '../contexts/LanguageContext';
 const StatsContainer = styled.div`
   background: ${props => props.theme.backgroundColor};
   min-height: 100vh;
-  padding: 0;
+  padding: 2.5rem 0 0 0;
   margin: 0;
   border: none !important;
   box-shadow: none !important;
   width: 100%;
   margin-left: 0;
-  padding-top: 0;
   
+  @media (max-width: 768px) {
+    padding-top: 1.5rem;
+  }
   @media (min-width: 768px) {
     margin-left: 5.5rem;
     width: calc(100% - 5.5rem);
@@ -34,8 +36,8 @@ const StatsContainer = styled.div`
 `;
 
 const StatsTitle = styled(StandardPageTitle)`
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
   padding: 0 1rem;
   text-align: center;
   font-weight: 700;
@@ -45,7 +47,7 @@ const StatsTitle = styled(StandardPageTitle)`
   background-clip: text;
   
   @media (max-width: 768px) {
-    margin-top: 0.5rem;
+    margin-top: 0;
     margin-bottom: 1rem;
     font-size: 1.75rem;
     padding: 0 0.5rem;
@@ -280,9 +282,8 @@ export default function StatsCharts() {
       };
 
     return (
-        <StatsContainer theme={theme}>
+        <StatsContainer theme={theme} style={{paddingTop: 0, marginTop: 0}}>
             <StatsTitle theme={theme}>{languages[language].graphs.title}</StatsTitle>
-            
             <ModernButtonGroup>
                 <ModernButton
                     theme={theme}
@@ -299,7 +300,6 @@ export default function StatsCharts() {
                     {languages[language].graphs.statsOutflows.title}
                 </ModernButton>
             </ModernButtonGroup>
-            
             <ModernStyledSectionStats theme={theme}>
                 <ContentSection>
                     {renderPage()}

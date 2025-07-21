@@ -1,6 +1,8 @@
+
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, MenuItem } from "@mui/material";
+import { Edit, Save, ArrowBack, User, MapPin, Briefcase, Clock, Home } from 'lucide-react';
 import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -11,10 +13,8 @@ import Sidebar from '../sections/Sidebar';
 import languages from '../data/languages.json';
 import {
     Section,
-    TitleDashboard,
     MyButton,
-    StyledSection,
-    TitleSection
+    StyledSection
 } from '../styles/MyStyled';
 
 const AccountPage = () => {
@@ -25,6 +25,7 @@ const AccountPage = () => {
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useNavigate();
 
+    const [isEditMode, setIsEditMode] = useState(false);
     const [userId, setUserId] = useState('');
     const [userType, setUserType] = useState('');
     const [userNationality, setUserNationality] = useState({ key: "", value: "" });
@@ -73,6 +74,7 @@ const AccountPage = () => {
             if (response.status === 200) {
                 handleSetIsUpdated(false);
                 setShowUpdateSuccess(true);
+                setIsEditMode(false);
                 setTimeout(() => setShowUpdateSuccess(false), 3000);
             } else {
                 alert(languages[language].sidebar.account.errorUpdateProfile);
@@ -98,6 +100,98 @@ const AccountPage = () => {
         sortedJobTags.push(otherJobOption);
     }
 
+    const InfoCard = ({ icon, title, value, placeholder }) => (
+        <div style={{
+            backgroundColor: 'white',
+            border: `2px solid ${theme.buttonBackgroundColor}20`,
+            borderRadius: '12px',
+            padding: isMobileScreen ? '1rem' : '1.5rem',
+            marginBottom: '1rem',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+            transition: 'all 0.3s ease',
+            ':hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+            }
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <div style={{
+                    backgroundColor: theme.buttonBackgroundColor,
+                    borderRadius: '8px',
+                    padding: '8px',
+                    marginRight: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    {React.cloneElement(icon, { size: 16, color: 'white' })}
+                </div>
+                <h3 style={{
+                    margin: 0,
+                    fontSize: isMobileScreen ? '0.9rem' : '1rem',
+                    fontWeight: '600',
+                    color: theme.textColor
+                }}>
+                    {title}
+                </h3>
+            </div>
+            <p style={{
+                margin: 0,
+                fontSize: isMobileScreen ? '0.85rem' : '0.95rem',
+                color: value ? theme.textColor : '#999',
+                fontWeight: value ? '500' : '400',
+                marginLeft: '40px'
+            }}>
+                {isHidden ? '****' : (value || placeholder)}
+            </p>
+        </div>
+    );
+
+    const SelectField = ({ label, value, onChange, options, placeholder, icon }) => (
+        <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <div style={{
+                    backgroundColor: theme.buttonBackgroundColor,
+                    borderRadius: '6px',
+                    padding: '6px',
+                    marginRight: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    {React.cloneElement(icon, { size: 14, color: 'white' })}
+                </div>
+                <label style={{
+                    fontWeight: '600',
+                    color: theme.textColor,
+                    fontSize: isMobileScreen ? '0.9rem' : '1rem'
+                }}>
+                    {label}
+                </label>
+            </div>
+            <Select
+                value={isHidden ? '****' : value}
+                onChange={onChange}
+                style={{
+                    backgroundColor: 'white',
+                    width: '100%',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem'
+                }}
+                displayEmpty
+                renderValue={(val) => val === "" ? placeholder : val}
+            >
+                <MenuItem value="">
+                    <em>{placeholder}</em>
+                </MenuItem>
+                {options.map((tag) => (
+                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
+                        {tag.translations[language]}
+                    </MenuItem>
+                ))}
+            </Select>
+        </div>
+    );
+
     return (
         <div style={{ display: 'flex', height: '100vh' }}>
             {!isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
@@ -105,222 +199,296 @@ const AccountPage = () => {
             <Section theme={theme} style={{ marginLeft: '0', width: '100%' }}>
                 {isMobileScreen && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
 
-                <StyledSection theme={theme}>
-                    <TitleDashboard theme={theme} style={{ fontSize: isMobileScreen ? '1.2rem' : '1.5rem' }}>
-                        {languages[language].sidebar.account.title}
-                    </TitleDashboard>
+                <StyledSection theme={theme} style={{ 
+                    padding: isMobileScreen ? '1rem' : '2rem',
+                    paddingTop: isMobileScreen ? '80px' : '2rem'
+                }}>
+                    {/* Header */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: isMobileScreen ? '1.5rem' : '2rem',
+                        flexDirection: isMobileScreen ? 'column' : 'row',
+                        gap: isMobileScreen ? '1rem' : '0'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <div style={{
+                                backgroundColor: theme.buttonBackgroundColor,
+                                borderRadius: '12px',
+                                padding: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <User size={24} color="white" />
+                            </div>
+                            <h1 style={{
+                                margin: 0,
+                                fontSize: isMobileScreen ? '1.5rem' : '2rem',
+                                fontWeight: '700',
+                                color: theme.textColor,
+                                textAlign: isMobileScreen ? 'center' : 'left'
+                            }}>
+                                {languages[language].sidebar.account.title}
+                            </h1>
+                        </div>
 
+                        <div style={{ display: 'flex', gap: '0.5rem', flexDirection: isMobileScreen ? 'column' : 'row' }}>
+                            {!isEditMode ? (
+                                <MyButton
+                                    theme={theme}
+                                    onClick={() => setIsEditMode(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        fontSize: isMobileScreen ? '0.9rem' : '1rem'
+                                    }}
+                                >
+                                    <Edit size={16} />
+                                    Modifica
+                                </MyButton>
+                            ) : (
+                                <MyButton
+                                    theme={theme}
+                                    onClick={() => setIsEditMode(false)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        fontSize: isMobileScreen ? '0.9rem' : '1rem',
+                                        backgroundColor: '#6b7280'
+                                    }}
+                                >
+                                    <ArrowBack size={16} />
+                                    Annulla
+                                </MyButton>
+                            )}
+                            <MyButton
+                                theme={theme}
+                                onClick={() => navigate('/dashboard')}
+                                style={{
+                                    fontSize: isMobileScreen ? '0.9rem' : '1rem',
+                                    backgroundColor: '#6b7280'
+                                }}
+                            >
+                                Dashboard
+                            </MyButton>
+                        </div>
+                    </div>
+
+                    {/* Success Message */}
                     {showUpdateSuccess && (
                         <div style={{
                             backgroundColor: theme.buttonBackgroundColor,
                             color: 'white',
-                            padding: '0.8rem',
-                            borderRadius: '8px',
-                            margin: '0.8rem 0',
-                            textAlign: 'center'
+                            padding: '1rem',
+                            borderRadius: '12px',
+                            margin: '0 0 2rem 0',
+                            textAlign: 'center',
+                            fontSize: isMobileScreen ? '0.9rem' : '1rem'
                         }}>
                             {languages[language].sidebar.account.successPopup.message}
                         </div>
                     )}
 
+                    {/* Main Content */}
                     <div style={{
-                        maxWidth: isMobileScreen ? '95%' : '600px',
-                        margin: '0 auto',
-                        padding: isMobileScreen ? '1rem' : '1.5rem',
-                        backgroundColor: 'white',
-                        borderRadius: '8px',
-                        border: `2px solid ${theme.buttonBackgroundColor}`,
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        maxWidth: isMobileScreen ? '100%' : '800px',
+                        margin: '0 auto'
                     }}>
-                        <TitleSection theme={theme} style={{ fontSize: isMobileScreen ? '1rem' : '1.2rem', marginBottom: '1rem' }}>
-                            {languages[language].sidebar.account.title}
-                        </TitleSection>
-
-                        <div style={{ marginBottom: '1rem', fontSize: isMobileScreen ? '0.9rem' : '1rem', color: '#333' }}>
-                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.id}</strong> {isHidden ? '****' : userId}</p>
-                            <p style={{ marginBottom: '0.5rem' }}><strong>{languages[language].sidebar.account.userType}</strong> {userType}</p>
-                        </div>
-
-                    <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '1.2rem' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.nationality}
-                                </label>
-                            <Select
-                                value={isHidden ? '****' : userNationality.value}
-                                onChange={(event) => {
-                                    setUserNationality({key: event.target.value.key, value: event.target.value.label});
-                                }}
-                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
-                                displayEmpty
-                                renderValue={(value) => {
-                                    if (value === "") {
-                                        return `${languages[language].sidebar.account.selectNationality}`;
-                                    }
-                                    return value;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>{languages[language].sidebar.account.selectNationality}</em>
-                                </MenuItem>
-                                {sortedNationalityTags.map((tag) => (
-                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
-                                        {tag.translations[language]}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        <div>
-                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.whereWork}
-                                </label>
-                            <Select
-                                value={isHidden ? '****' : userWhereWorks.value}
-                                onChange={(event) => {
-                                    setUserWhereWorks({key: event.target.value.key, value: event.target.value.label});
-                                }}
-                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
-                                displayEmpty
-                                renderValue={(value) => {
-                                    if (value === "") {
-                                        return `${languages[language].sidebar.account.selectWhereWork}`;
-                                    }
-                                    return value;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>{languages[language].sidebar.account.selectWhereWork}</em>
-                                </MenuItem>
-                                {sortedNationalityTags.map((tag) => (
-                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
-                                        {tag.translations[language]}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        <div>
-                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.work}
-                                </label>
-                            <Select
-                                value={isHidden ? '****' : userJob.value}
-                                onChange={(event) => {
-                                    setUserJob({key: event.target.value.key, value: event.target.value.label});
-                                }}
-                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
-                                displayEmpty
-                                renderValue={(value) => {
-                                    if (value === "") {
-                                        return `${languages[language].sidebar.account.selectWork}`;
-                                    }
-                                    return value;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>{languages[language].sidebar.account.selectWork}</em>
-                                </MenuItem>
-                                {sortedJobTags.map((tag) => (
-                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
-                                        {tag.translations[language]}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        <div>
-                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.workType}
-                                </label>
-                            <Select
-                                value={isHidden ? '****' : userJobType.value}
-                                onChange={(event) => {
-                                    setUserJobType({key: event.target.value.key, value: event.target.value.label});
-                                }}
-                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
-                                displayEmpty
-                                renderValue={(value) => {
-                                    if (value === "") {
-                                        return `${languages[language].sidebar.account.selectWorkType}`;
-                                    }
-                                    return value;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>{languages[language].sidebar.account.selectWorkType}</em>
-                                </MenuItem>
-                                {jobTypeTags.map((tag) => (
-                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
-                                        {tag.translations[language]}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        <div>
-                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.hoursContract}
-                                </label>
-                            <Select
-                                value={isHidden ? '****' : userWorkTime.value}
-                                onChange={(event) => {
-                                    setUserWorkTime({key: event.target.value.key, value: event.target.value.label});
-                                }}
-                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
-                                displayEmpty
-                                renderValue={(value) => {
-                                    if (value === "") return `${languages[language].sidebar.account.selectHoursContract}`;
-                                    return value;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>{languages[language].sidebar.account.selectHoursContract}</em>
-                                </MenuItem>
-                                {workTimeTags.map((tag) => (
-                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
-                                        {tag.translations[language]}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        <div>
-                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 'bold', color: '#333', fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.remoteWork}
-                                </label>
-                            <Select
-                                value={isHidden ? '****' : userRemoteType.value}
-                                onChange={(event) => {
-                                    setUserRemoteType({key: event.target.value.key, value: event.target.value.label});
-                                }}
-                                style={{ backgroundColor: 'white', width: '100%', height: '2.5rem', fontSize: '0.9rem' }}
-                                displayEmpty
-                                renderValue={(value) => {
-                                    if (value === "") return `${languages[language].sidebar.account.selectRemoteWork}`;
-                                    return value;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>{languages[language].sidebar.account.selectRemoteWork}</em>
-                                </MenuItem>
-                                {remoteTypeTags.map((tag) => (
-                                    <MenuItem key={tag.index} value={{ key: tag.index, label: tag.translations[language] }}>
-                                        {tag.translations[language]}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: isMobileScreen ? '0.5rem' : '1rem', justifyContent: 'center', marginTop: isMobileScreen ? '1.5rem' : '2rem', flexDirection: isMobileScreen ? 'column' : 'row' }}>
-                                <MyButton type="submit" theme={theme} style={{ fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.account.saveButton}
-                                </MyButton>
-                                <MyButton type="button" theme={theme} onClick={() => navigate('/dashboard')} style={{ fontSize: isMobileScreen ? '0.9rem' : '1rem' }}>
-                                    {languages[language].sidebar.settings.backToDashboard || 'Torna alla Dashboard'}
-                                </MyButton>
+                        {/* Basic Info Card */}
+                        <div style={{
+                            backgroundColor: 'white',
+                            border: `2px solid ${theme.buttonBackgroundColor}`,
+                            borderRadius: '16px',
+                            padding: isMobileScreen ? '1.5rem' : '2rem',
+                            marginBottom: '2rem',
+                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+                        }}>
+                            <h2 style={{
+                                margin: '0 0 1.5rem 0',
+                                fontSize: isMobileScreen ? '1.2rem' : '1.4rem',
+                                fontWeight: '600',
+                                color: theme.textColor,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <User size={20} color={theme.buttonBackgroundColor} />
+                                Informazioni Base
+                            </h2>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobileScreen ? '1fr' : '1fr 1fr',
+                                gap: '1rem'
+                            }}>
+                                <div>
+                                    <p style={{ margin: '0 0 0.3rem 0', fontWeight: '600', color: '#666', fontSize: '0.85rem' }}>
+                                        {languages[language].sidebar.account.id}
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: '1rem', color: theme.textColor }}>
+                                        {isHidden ? '****' : userId}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p style={{ margin: '0 0 0.3rem 0', fontWeight: '600', color: '#666', fontSize: '0.85rem' }}>
+                                        {languages[language].sidebar.account.userType}
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: '1rem', color: theme.textColor }}>
+                                        {userType}
+                                    </p>
+                                </div>
                             </div>
-                        </form>
+                        </div>
+
+                        {/* Profile Data */}
+                        {!isEditMode ? (
+                            <div>
+                                <h2 style={{
+                                    margin: '0 0 1.5rem 0',
+                                    fontSize: isMobileScreen ? '1.2rem' : '1.4rem',
+                                    fontWeight: '600',
+                                    color: theme.textColor
+                                }}>
+                                    I Tuoi Dati
+                                </h2>
+                                <InfoCard
+                                    icon={<MapPin />}
+                                    title={languages[language].sidebar.account.nationality}
+                                    value={userNationality.value}
+                                    placeholder={languages[language].sidebar.account.selectNationality}
+                                />
+                                <InfoCard
+                                    icon={<Home />}
+                                    title={languages[language].sidebar.account.whereWork}
+                                    value={userWhereWorks.value}
+                                    placeholder={languages[language].sidebar.account.selectWhereWork}
+                                />
+                                <InfoCard
+                                    icon={<Briefcase />}
+                                    title={languages[language].sidebar.account.work}
+                                    value={userJob.value}
+                                    placeholder={languages[language].sidebar.account.selectWork}
+                                />
+                                <InfoCard
+                                    icon={<Briefcase />}
+                                    title={languages[language].sidebar.account.workType}
+                                    value={userJobType.value}
+                                    placeholder={languages[language].sidebar.account.selectWorkType}
+                                />
+                                <InfoCard
+                                    icon={<Clock />}
+                                    title={languages[language].sidebar.account.hoursContract}
+                                    value={userWorkTime.value}
+                                    placeholder={languages[language].sidebar.account.selectHoursContract}
+                                />
+                                <InfoCard
+                                    icon={<Home />}
+                                    title={languages[language].sidebar.account.remoteWork}
+                                    value={userRemoteType.value}
+                                    placeholder={languages[language].sidebar.account.selectRemoteWork}
+                                />
+                            </div>
+                        ) : (
+                            <form onSubmit={handleUpdateProfile}>
+                                <div style={{
+                                    backgroundColor: 'white',
+                                    border: `2px solid ${theme.buttonBackgroundColor}20`,
+                                    borderRadius: '16px',
+                                    padding: isMobileScreen ? '1.5rem' : '2rem'
+                                }}>
+                                    <h2 style={{
+                                        margin: '0 0 2rem 0',
+                                        fontSize: isMobileScreen ? '1.2rem' : '1.4rem',
+                                        fontWeight: '600',
+                                        color: theme.textColor,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
+                                    }}>
+                                        <Edit size={20} color={theme.buttonBackgroundColor} />
+                                        Modifica i Tuoi Dati
+                                    </h2>
+
+                                    <SelectField
+                                        label={languages[language].sidebar.account.nationality}
+                                        value={userNationality.value}
+                                        onChange={(event) => setUserNationality({key: event.target.value.key, value: event.target.value.label})}
+                                        options={sortedNationalityTags}
+                                        placeholder={languages[language].sidebar.account.selectNationality}
+                                        icon={<MapPin />}
+                                    />
+
+                                    <SelectField
+                                        label={languages[language].sidebar.account.whereWork}
+                                        value={userWhereWorks.value}
+                                        onChange={(event) => setUserWhereWorks({key: event.target.value.key, value: event.target.value.label})}
+                                        options={sortedNationalityTags}
+                                        placeholder={languages[language].sidebar.account.selectWhereWork}
+                                        icon={<Home />}
+                                    />
+
+                                    <SelectField
+                                        label={languages[language].sidebar.account.work}
+                                        value={userJob.value}
+                                        onChange={(event) => setUserJob({key: event.target.value.key, value: event.target.value.label})}
+                                        options={sortedJobTags}
+                                        placeholder={languages[language].sidebar.account.selectWork}
+                                        icon={<Briefcase />}
+                                    />
+
+                                    <SelectField
+                                        label={languages[language].sidebar.account.workType}
+                                        value={userJobType.value}
+                                        onChange={(event) => setUserJobType({key: event.target.value.key, value: event.target.value.label})}
+                                        options={jobTypeTags}
+                                        placeholder={languages[language].sidebar.account.selectWorkType}
+                                        icon={<Briefcase />}
+                                    />
+
+                                    <SelectField
+                                        label={languages[language].sidebar.account.hoursContract}
+                                        value={userWorkTime.value}
+                                        onChange={(event) => setUserWorkTime({key: event.target.value.key, value: event.target.value.label})}
+                                        options={workTimeTags}
+                                        placeholder={languages[language].sidebar.account.selectHoursContract}
+                                        icon={<Clock />}
+                                    />
+
+                                    <SelectField
+                                        label={languages[language].sidebar.account.remoteWork}
+                                        value={userRemoteType.value}
+                                        onChange={(event) => setUserRemoteType({key: event.target.value.key, value: event.target.value.label})}
+                                        options={remoteTypeTags}
+                                        placeholder={languages[language].sidebar.account.selectRemoteWork}
+                                        icon={<Home />}
+                                    />
+
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        marginTop: '2rem'
+                                    }}>
+                                        <MyButton
+                                            type="submit"
+                                            theme={theme}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem',
+                                                fontSize: isMobileScreen ? '0.9rem' : '1rem',
+                                                padding: '12px 24px'
+                                            }}
+                                        >
+                                            <Save size={16} />
+                                            {languages[language].sidebar.account.saveButton}
+                                        </MyButton>
+                                    </div>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </StyledSection>
             </Section>

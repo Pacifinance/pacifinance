@@ -205,14 +205,9 @@ const AccountPage = () => {
                 }}>
                     {/* Header */}
                     <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: isMobileScreen ? '1.5rem' : '2rem',
-                        flexDirection: isMobileScreen ? 'column' : 'row',
-                        gap: isMobileScreen ? '1rem' : '0'
+                        marginBottom: isMobileScreen ? '1.5rem' : '2rem'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                             <div style={{
                                 backgroundColor: theme.buttonBackgroundColor,
                                 borderRadius: '12px',
@@ -227,8 +222,7 @@ const AccountPage = () => {
                                 margin: 0,
                                 fontSize: isMobileScreen ? '1.5rem' : '2rem',
                                 fontWeight: '700',
-                                color: theme.textColor,
-                                textAlign: isMobileScreen ? 'center' : 'left'
+                                color: theme.textColor
                             }}>
                                 {languages[language].sidebar.account.title}
                             </h1>
@@ -243,10 +237,11 @@ const AccountPage = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '0.5rem',
-                                        fontSize: isMobileScreen ? '0.9rem' : '1rem'
+                                        fontSize: isMobileScreen ? '0.9rem' : '0.85rem',
+                                        padding: isMobileScreen ? '10px 20px' : '8px 16px'
                                     }}
                                 >
-                                    <Edit size={16} />
+                                    <Edit size={14} />
                                     Modifica
                                 </MyButton>
                             ) : (
@@ -257,24 +252,15 @@ const AccountPage = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '0.5rem',
-                                        fontSize: isMobileScreen ? '0.9rem' : '1rem',
+                                        fontSize: isMobileScreen ? '0.9rem' : '0.85rem',
+                                        padding: isMobileScreen ? '10px 20px' : '8px 16px',
                                         backgroundColor: '#6b7280'
                                     }}
                                 >
-                                    <ArrowBack size={16} />
+                                    <ArrowBack size={14} />
                                     Annulla
                                 </MyButton>
                             )}
-                            <MyButton
-                                theme={theme}
-                                onClick={() => navigate('/dashboard')}
-                                style={{
-                                    fontSize: isMobileScreen ? '0.9rem' : '1rem',
-                                    backgroundColor: '#6b7280'
-                                }}
-                            >
-                                Dashboard
-                            </MyButton>
                         </div>
                     </div>
 

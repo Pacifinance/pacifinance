@@ -228,7 +228,12 @@ const AccountPage = () => {
                             </h1>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.5rem', flexDirection: isMobileScreen ? 'column' : 'row' }}>
+                        <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'center',
+                            gap: '0.5rem', 
+                            flexDirection: isMobileScreen ? 'column' : 'row' 
+                        }}>
                             {!isEditMode ? (
                                 <MyButton
                                     theme={theme}
@@ -236,9 +241,12 @@ const AccountPage = () => {
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
+                                        justifyContent: 'center',
                                         gap: '0.5rem',
-                                        fontSize: isMobileScreen ? '0.9rem' : '0.85rem',
-                                        padding: isMobileScreen ? '10px 20px' : '8px 16px'
+                                        fontSize: isMobileScreen ? '0.8rem' : '0.85rem',
+                                        padding: isMobileScreen ? '8px 16px' : '8px 16px',
+                                        width: isMobileScreen ? 'auto' : 'auto',
+                                        maxWidth: isMobileScreen ? '150px' : 'auto'
                                     }}
                                 >
                                     <Edit size={14} />
@@ -251,10 +259,13 @@ const AccountPage = () => {
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
+                                        justifyContent: 'center',
                                         gap: '0.5rem',
-                                        fontSize: isMobileScreen ? '0.9rem' : '0.85rem',
-                                        padding: isMobileScreen ? '10px 20px' : '8px 16px',
-                                        backgroundColor: '#6b7280'
+                                        fontSize: isMobileScreen ? '0.8rem' : '0.85rem',
+                                        padding: isMobileScreen ? '8px 16px' : '8px 16px',
+                                        backgroundColor: '#6b7280',
+                                        width: isMobileScreen ? 'auto' : 'auto',
+                                        maxWidth: isMobileScreen ? '150px' : 'auto'
                                     }}
                                 >
                                     <ArrowBack size={14} />

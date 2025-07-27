@@ -115,6 +115,23 @@ async function expensesExistByUserRef(user_ref: mongoose.Types.ObjectId) {
 }
 
 /**
+ * Gets all the expenses of a user
+ * @param user_id ID of the user
+ * @returns List of Expense documents
+ */
+async function getAllByUserId(user_id: string) {
+    const user = await users.getReferenceByUserId(user_id)
+    if (user === null)
+        return null
+    // Get all the expenses of the user, sorted by date
+    return await getSorted(
+        {userRef: user._id},
+        "-_id -__v -userRef -paymentType.translations -categoryTag.translations",
+        {date: 1}
+    )
+}
+
+/**
  * Gets the expenses of a user for the month
  * @param user_id ID of the user
  * @param reference_date Date object containing the year and month to look for
@@ -192,6 +209,7 @@ const Expense = mongoose.model("Expense", expenseSchema);
 export default {
     insertNew,
     expensesExistByUserRef,
+    getAllByUserId,
     getMonthlyExpensesByUserId,
     getTotalMonthlyExpensesByUserId,
     deleteExpenseByData,

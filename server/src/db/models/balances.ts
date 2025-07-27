@@ -40,7 +40,7 @@ async function addOne(data: object) {
 }
 
 /**
- * Gets a list of balances that match a filter
+ * Gets a balance that matches a filter
  * @param where Filter to match
  * @param select Fields to return
  * @param sort Fields to sort by and their order
@@ -51,6 +51,17 @@ async function getOneSorted(where: object, select: string, sort: any) {
     if (res.length === 0)
         return null;
     return res[0];
+}
+
+/**
+ * Gets a list of balances that match a filter
+ * @param where Filter to match
+ * @param select Fields to return
+ * @param sort Fields to sort by and their order
+ * @returns List of Balance documents
+ */
+async function getSorted(where: object, select: string, sort: any) {
+    return await Balance.find(where, select).sort(sort).lean().exec()
 }
 
 /**
@@ -123,6 +134,19 @@ async function insertNew(
 async function balancesExistByUserRef(user_ref: mongoose.Types.ObjectId) {
     const balance = await getOneSorted({userRef: user_ref}, "", {});
     return balance !== null;
+}
+
+/**
+ * Gets all the balances of a user, sorted by user-insterted date
+ * @param user_id ID of the user
+ * @returns List of Balance documents
+ */
+async function getAllByUserId(user_id: string) {
+    const user = await users.getReferenceByUserId(user_id)
+    if (user === null)
+        return null
+    // Get all the balances of the user, sorted by date
+    return await getSorted({userRef: user._id}, "-_id -__v -userRef", {userDate: 1})
 }
 
 /**
@@ -210,6 +234,7 @@ const Balance = mongoose.model("Balance", balanceSchema);
 export default {
     insertNew,
     balancesExistByUserRef,
+    getAllByUserId,
     getLatestByUserId,
     getTotalLatestByUserId,
     getYearlyBalanceByUserId,

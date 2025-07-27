@@ -184,4 +184,58 @@ userRouter.post("/set", async(req, res) => {
     res.send()
 })
 
+userRouter.post("/alldata", async (req, res) => {
+    const session = req.session as SessionData
+    // Get all user's data. Return status 500 (Internal Server Error) if any
+    // of the query fails
+    const user = await db.users.getPublicInfoByUserId(session.userId)
+    const balances = await db.balances.getAllByUserId(session.userId)
+    const expenses = await db.expenses.getAllByUserId(session.userId)
+    if (user === null || balances === null || expenses === null)
+    {
+        res.status(500).send()
+        return
+    }
+    // Build the final object
+    const userData = {
+        user: {
+            userId: user.userId,
+            creationDate: user.creationDate,
+            country: (user.country as any).label,
+            job: (user.job as any).label,
+            jobType: (user.jobType as any).label,
+            jobCountry: (user.jobCountry as any).label,
+            workTime: (user.workTime as any).label,
+            remoteType: (user.remoteType as any).label
+        },
+
+        balances: balances.map((balance) => {
+            return {
+                date: balance.date,
+                userDate: balance.userDate,
+                bank: balance.bank,
+                cash: balance.cash,
+                digitalServices: balance.digitalServices,
+                stocks: balance.stocks.real,
+                etf: balance.etf.real,
+                bitcoin: balance.bitcoin.real,
+                crypto: balance.crypto.real
+            }
+        }),
+
+        expenses: expenses.map((expense) => {
+            return {
+                date: expense.date,
+                amount: expense.amount,
+                isExpense: expense.isExpense,
+                notes: expense.notes,
+                paymentType: (expense.paymentType as any).label,
+                categoryTag: (expense.categoryTag as any).label
+            }
+        })
+    }
+    // Send the data with status code 200 (OK)
+    res.status(200).json(userData)
+})
+
 export default userRouter

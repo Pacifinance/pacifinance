@@ -1,6 +1,6 @@
 services:
   database:
-    image: mongo:6
+    image: mongo:6.0.26-jammy
     restart: unless-stopped
     volumes:
       - /var/lib/mongodb:/data/db # Only works on the VPS

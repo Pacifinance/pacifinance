@@ -16,10 +16,10 @@ WORKDIR /usr/src/pacifinance
 RUN npx tsc
 
 # Production image
-FROM node:22
+FROM node:22 AS runner
 WORKDIR /usr/src/pacifinance
 COPY package*.json .
-RUN npm ci --production
+RUN npm ci --omit=dev
 COPY --from=react-builder /usr/src/pacifinance/build ./build
 COPY --from=ts-builder /usr/src/pacifinance/server/build ./server/build
 EXPOSE 3000

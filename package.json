@@ -1,8 +1,12 @@
 {
-  "name": "package",
+  "name": "pacifinance.com",
+  "subdomain": "",
+  "domains": [
+    "pacifinance.com",
+    "www.pacifinance.com"
+  ],
+  "version": "0.9.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

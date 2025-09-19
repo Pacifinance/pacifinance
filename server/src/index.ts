@@ -48,7 +48,7 @@ app.use("/rank", routes.rankRouter)
 app.use("/prices", routes.pricesRouter)
 
 // Refresh handler
-app.get("/*", (req, res) => {
+app.get("/*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "../../build/index.html"));
 });
 

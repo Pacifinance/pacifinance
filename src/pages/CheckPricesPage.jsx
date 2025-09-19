@@ -5,7 +5,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 
-import CheckPrice from '../sections/CheckPrice';
+// import CheckPrice from '../sections/CheckPrice';
 import ComingSoon from '../components/ComingSoon';
 
 function CheckPricesPage() {

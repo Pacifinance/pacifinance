@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
-import {BrowserRouter as Router}  from "react-router-dom";
-import './index.css';
+import { createRoot } from 'react-dom/client'
+import './index.css'
 import AppRouter from './AppRouter';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
@@ -11,60 +9,24 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { MediaQueryProvider } from './contexts/MediaQueryContext';
 import { ToastProvider } from './contexts/ToastContext';
 
-const container = document.getElementById('root');
-const root = createRoot(container);
-
-root.render(
+createRoot(document.getElementById('root')).render(
   <MediaQueryProvider>
-    <LanguageProvider>
-      <ThemeProvider>
-        <UserProvider>
-          <PageProvider>
-            <PrivacyProvider>
-              <ToastProvider>
-                <React.StrictMode>
-                  <Router>
-                    <AppRouter />
-                  </Router>
-                </React.StrictMode>
-              </ToastProvider>
-            </PrivacyProvider>
-          </PageProvider>
-        </UserProvider>
-      </ThemeProvider>
-    </LanguageProvider>
-  </MediaQueryProvider>
-);
-
-// const MatomoTagManager = () => {
-//   useEffect(() => {
-//     var _mtm = window._mtm = window._mtm || [];
-//     _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-//     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-//     g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-//   }, []);
-
-
-
-//   return null;
-// };
-
-{/* <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head> */}
-
-{/* <script>
-      {`
-        var _mtm = window._mtm = window._mtm || [];
-        _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src='container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-      `}
-</script> */}
-
-
-//SPUNTO DI RIFLESSIONE:
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-//reportWebVitals();
+      <LanguageProvider>
+        <ThemeProvider>
+          <UserProvider>
+            <PageProvider>
+              <PrivacyProvider>
+                <ToastProvider>
+                  <React.StrictMode>
+                    <Router>
+                      <AppRouter />
+                    </Router>
+                  </React.StrictMode>
+                </ToastProvider>
+              </PrivacyProvider>
+            </PageProvider>
+          </UserProvider>
+        </ThemeProvider>
+      </LanguageProvider>
+    </MediaQueryProvider>
+)

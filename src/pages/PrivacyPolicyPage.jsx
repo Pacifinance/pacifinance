@@ -4,7 +4,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import SEOHead from '../components/SEOHead';
-import { PolicyContainer, PolicyTitle, PolicySection, PolicyText } from '../styles/PolicyPages';
+import { PolicyContainer, PolicyTitle, /* PolicySection, PolicyText */ } from '../styles/PolicyPages';
 import languages from '../data/languages.json';
 
 

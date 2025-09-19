@@ -85,7 +85,7 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
 
       <button
           disabled
-          onClick={() => downloadExcel(data, headers, `incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+          onClick={async () => await downloadExcel(data, headers, `incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
           className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200"
         >
           <RiFileExcel2Line className="text-paciGreen text-xl" />

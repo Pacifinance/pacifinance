@@ -428,6 +428,7 @@
                 "successUpdate": "Entrata inserita con successo",
                 "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
                 "successDelete": "Entrata eliminata con successo",
+                "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
                 "increaseWhichBalance": "Seleziona dove aggiungere l'entrata: "
             },
             "outflowSection": {
@@ -448,6 +449,7 @@
                 "successUpdate": "Uscita inserita con successo",
                 "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
                 "successDelete": "Uscita eliminata con successo",
+                "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
                 "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: "
             },
             "investmentSection": {
@@ -1371,6 +1373,7 @@
                 "successUpdate": "Income inserted successfully",
                 "confirmDelete": "Are you sure you want to delete this income?",
                 "successDelete": "Income deleted successfully",
+                "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
                 "increaseWhichBalance": "Select where to add the income"
             },
             "outflowSection": {
@@ -1391,6 +1394,7 @@
                 "successUpdate": "Outflow inserted successfully",
                 "confirmDelete": "Are you sure you want to delete this outflow?",
                 "successDelete": "Outflow deleted successfully",
+                "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
                 "decreaseWhichBalance": "Select where to subtract the outflow"
             },
             "investmentSection": {

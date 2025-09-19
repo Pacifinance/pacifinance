@@ -10,9 +10,9 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@fortawesome/fontawesome-svg-core": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@fortawesome/fontawesome-svg-core": "^7.0.1",
+    "@fortawesome/free-solid-svg-icons": "^7.0.1",
+    "@fortawesome/react-fontawesome": "^3.0.2",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@testing-library/jest-dom": "^6.4.2",
@@ -32,6 +32,7 @@
     "cron": "^3.1.7",
     "dom-to-image": "^2.6.0",
     "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "lucide-react": "^0.525.0",
@@ -56,9 +57,7 @@
     "recharts": "^2.12.5",
     "scrollreveal": "^4.0.9",
     "styled-components": "^6.1.8",
-    "typescript": "^4.9.5",
-    "web-vitals": "^3.5.2",
-    "xlsx": "^0.18.5"
+    "web-vitals": "^3.5.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -84,8 +83,16 @@
       "last 1 safari version"
     ]
   },
+  "overrides": {
+    "nth-check": ">=2.0.1",
+    "postcss": ">=8.4.31",
+    "form-data": ">=4.0.4",
+    "on-headers": ">=1.1.0",
+    "brace-expansion": "^1.1.11"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "typescript": "^4.9.5"
   }
 }

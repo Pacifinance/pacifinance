@@ -286,7 +286,7 @@ export default function InsertValue({
   const [incomeDate, setIncomeDate] = useState(currentDate);
   const [outflowDate, setOutflowDate] = useState(currentDate);
   const [balanceDate, setBalanceDate] = useState(currentDate);
-  const [activePage, setActivePage] = useState("bilancio");
+  const [activePage, setActivePage] = useState("outflows");
   const [OutflowsTags, setOutflowsTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
@@ -665,6 +665,7 @@ export default function InsertValue({
     }
   };
 
+
   const handleIncomesDelete = async () => {
     const data = {
       expense: {
@@ -677,7 +678,59 @@ export default function InsertValue({
       withCredentials: true,
     });
 
+    // If user selected a balance to adjust, subtract the deleted income from that balance
     if (incomesDelete.status === 200) {
+      if (selectedOption) {
+        // Find the current value for the selected balance
+        const balanceOptions = {
+          [languages[language].assets.bank]: bankReal,
+          [languages[language].assets.cash]: cashReal,
+          [languages[language].assets.digitalServices]: digitalServicesReal,
+          [languages[language].assets.stocks]: stocksReal,
+          [languages[language].assets.etf]: etfReal,
+          [languages[language].assets.bitcoin]: bitcoinReal,
+          [languages[language].assets.crypto]: cryptoReal,
+        };
+        const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+        const incomeNumber = parseFloat(deleteIncomeAmount);
+        const newValue = valueBalanceSelected - incomeNumber;
+        // Build balancesJson for update
+        const balancesJson = {
+          balance: {
+            date: currentDate,
+            bank: selectedOption.includes(languages[language].assets.bank)
+              ? newValue
+              : bankReal,
+            cash: selectedOption.includes(languages[language].assets.cash)
+              ? newValue
+              : cashReal,
+            digital_services: selectedOption.includes(languages[language].assets.digitalServices)
+              ? newValue
+              : digitalServicesReal,
+            stocks: {
+              real: selectedOption.includes(languages[language].assets.stocks)
+                ? newValue
+                : stocksReal,
+            },
+            etf: {
+              real: selectedOption.includes(languages[language].assets.etf)
+                ? newValue
+                : etfReal,
+            },
+            bitcoin: {
+              real: selectedOption.includes(languages[language].assets.bitcoin)
+                ? newValue
+                : bitcoinReal,
+            },
+            crypto: {
+              real: selectedOption.includes(languages[language].assets.crypto)
+                ? newValue
+                : cryptoReal,
+            },
+          },
+        };
+        await axios.post("/balances/add", balancesJson, { withCredentials: true });
+      }
       handleSetIsUpdated(false);
       setDeleteIncomesSuccess(true);
       fetchData();
@@ -699,7 +752,57 @@ export default function InsertValue({
       withCredentials: true,
     });
 
+    // If user selected a balance to adjust, add the deleted outflow back to that balance
     if (outflowsDelete.status === 200) {
+      if (selectedOption) {
+        const balanceOptions = {
+          [languages[language].assets.bank]: bankReal,
+          [languages[language].assets.cash]: cashReal,
+          [languages[language].assets.digitalServices]: digitalServicesReal,
+          [languages[language].assets.stocks]: stocksReal,
+          [languages[language].assets.etf]: etfReal,
+          [languages[language].assets.bitcoin]: bitcoinReal,
+          [languages[language].assets.crypto]: cryptoReal,
+        };
+        const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+        const outflowNumber = parseFloat(deleteOutflowAmount);
+        const newValue = valueBalanceSelected + outflowNumber;
+        const balancesJson = {
+          balance: {
+            date: currentDate,
+            bank: selectedOption.includes(languages[language].assets.bank)
+              ? newValue
+              : bankReal,
+            cash: selectedOption.includes(languages[language].assets.cash)
+              ? newValue
+              : cashReal,
+            digital_services: selectedOption.includes(languages[language].assets.digitalServices)
+              ? newValue
+              : digitalServicesReal,
+            stocks: {
+              real: selectedOption.includes(languages[language].assets.stocks)
+                ? newValue
+                : stocksReal,
+            },
+            etf: {
+              real: selectedOption.includes(languages[language].assets.etf)
+                ? newValue
+                : etfReal,
+            },
+            bitcoin: {
+              real: selectedOption.includes(languages[language].assets.bitcoin)
+                ? newValue
+                : bitcoinReal,
+            },
+            crypto: {
+              real: selectedOption.includes(languages[language].assets.crypto)
+                ? newValue
+                : cryptoReal,
+            },
+          },
+        };
+        await axios.post("/balances/add", balancesJson, { withCredentials: true });
+      }
       handleSetIsUpdated(false);
       setDeleteOutflowsSuccess(true);
       fetchData();

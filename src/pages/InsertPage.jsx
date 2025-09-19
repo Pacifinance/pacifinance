@@ -1,10 +1,13 @@
 import React, {useEffect, useContext, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PageWrapper } from '../styles/MyStyled';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import Sidebar from '../sections/Sidebar';
 import InsertValues from '../sections/InsertValues';
+import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
+import { useScrollNavigation } from '../hooks/useScrollNavigation';
 
 function InsertPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -12,6 +15,16 @@ function InsertPage() {
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
   const { mode } = theme;
+  const navigate = useNavigate();
+
+  // Hook per la navigazione con scroll
+  const { 
+    isNavigating, 
+    currentPageIndex, 
+    totalPages, 
+    nextPage, 
+    prevPage 
+  } = useScrollNavigation(true);
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
@@ -28,6 +41,12 @@ function InsertPage() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Gestisce il click sui punti di navigazione
+  const handlePageClick = (pageIndex) => {
+    const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
+    navigate(pages[pageIndex]);
+  };
 
   // Matomo Tag Manager
   // React.useEffect(() => {
@@ -48,6 +67,16 @@ function InsertPage() {
       }}>
         <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
       </div>
+      
+      <ScrollNavigationIndicator
+        theme={theme}
+        isNavigating={isNavigating}
+        currentPageIndex={currentPageIndex}
+        totalPages={totalPages}
+        nextPage={nextPage}
+        prevPage={prevPage}
+        onPageClick={handlePageClick}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, MenuItem } from "@mui/material";
-import { Edit, Save, ArrowBack, User, MapPin, Briefcase, Clock, Home } from 'lucide-react';
+import { Edit, Save, ArrowLeft, User, MapPin, Briefcase, Clock, Home } from 'lucide-react';
 import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -109,9 +109,6 @@ const AccountPage = () => {
             marginBottom: '1rem',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
             transition: 'all 0.3s ease',
-            ':hover': {
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
-            }
         }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <div style={{
@@ -129,7 +126,7 @@ const AccountPage = () => {
                     margin: 0,
                     fontSize: isMobileScreen ? '0.9rem' : '1rem',
                     fontWeight: '600',
-                    color: theme.textColor
+                    color: 'black'
                 }}>
                     {title}
                 </h3>
@@ -137,7 +134,7 @@ const AccountPage = () => {
             <p style={{
                 margin: 0,
                 fontSize: isMobileScreen ? '0.85rem' : '0.95rem',
-                color: value ? theme.textColor : '#999',
+                color: isHidden ? 'black' : (value ? 'black' : '#999'),
                 fontWeight: value ? '500' : '400',
                 marginLeft: '40px'
             }}>
@@ -162,7 +159,7 @@ const AccountPage = () => {
                 </div>
                 <label style={{
                     fontWeight: '600',
-                    color: theme.textColor,
+                    color: 'black',
                     fontSize: isMobileScreen ? '0.9rem' : '1rem'
                 }}>
                     {label}
@@ -268,7 +265,7 @@ const AccountPage = () => {
                                         maxWidth: isMobileScreen ? '150px' : 'auto'
                                     }}
                                 >
-                                    <ArrowBack size={14} />
+                                    <ArrowLeft size={14} />
                                     Annulla
                                 </MyButton>
                             )}
@@ -308,7 +305,7 @@ const AccountPage = () => {
                                 margin: '0 0 1.5rem 0',
                                 fontSize: isMobileScreen ? '1.2rem' : '1.4rem',
                                 fontWeight: '600',
-                                color: theme.textColor,
+                                color: 'black',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem'
@@ -325,16 +322,26 @@ const AccountPage = () => {
                                     <p style={{ margin: '0 0 0.3rem 0', fontWeight: '600', color: '#666', fontSize: '0.85rem' }}>
                                         {languages[language].sidebar.account.id}
                                     </p>
-                                    <p style={{ margin: 0, fontSize: '1rem', color: theme.textColor }}>
-                                        {isHidden ? '****' : userId}
+                                    <p style={{
+                                        margin: 0,
+                                        fontSize: '1rem',
+                                        color: isHidden ? 'black' : (userId ? 'black' : '#999'),
+                                        fontWeight: userId ? '500' : '400'
+                                    }}>
+                                        {isHidden ? '****' : (userId || '-')}
                                     </p>
                                 </div>
                                 <div>
                                     <p style={{ margin: '0 0 0.3rem 0', fontWeight: '600', color: '#666', fontSize: '0.85rem' }}>
                                         {languages[language].sidebar.account.userType}
                                     </p>
-                                    <p style={{ margin: 0, fontSize: '1rem', color: theme.textColor }}>
-                                        {userType}
+                                    <p style={{
+                                        margin: 0,
+                                        fontSize: '1rem',
+                                        color: isHidden ? 'black' : (userType ? 'black' : '#999'),
+                                        fontWeight: userType ? '500' : '400'
+                                    }}>
+                                        {isHidden ? '****' : (userType || '-')}
                                     </p>
                                 </div>
                             </div>

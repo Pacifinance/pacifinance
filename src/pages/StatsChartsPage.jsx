@@ -1,4 +1,5 @@
 import React, {useEffect, useContext} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -7,6 +8,8 @@ import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import StatsCharts from '../sections/StatsCharts';
 import SEOHead from '../components/SEOHead';
+import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
+import { useScrollNavigation } from '../hooks/useScrollNavigation';
 import { StandardPageTitle } from '../styles/MyStyled';
 import languages from '../data/languages.json';
 
@@ -16,6 +19,17 @@ function StatsChartsPage() {
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { language } = useContext(LanguageContext);
   const { mode } = theme;
+  const navigate = useNavigate();
+
+  // Hook per la navigazione con scroll
+  const { 
+    isNavigating, 
+    currentPageIndex, 
+    totalPages, 
+    nextPage, 
+    prevPage 
+  } = useScrollNavigation(true);
+
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
@@ -24,6 +38,12 @@ function StatsChartsPage() {
   useEffect(() => {
     loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
   }, []);
+
+  // Gestisce il click sui punti di navigazione
+  const handlePageClick = (pageIndex) => {
+    const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
+    navigate(pages[pageIndex]);
+  };
 
   // Matomo Tag Manager
   // React.useEffect(() => {
@@ -42,6 +62,16 @@ function StatsChartsPage() {
       />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       <StatsCharts />
+      
+      <ScrollNavigationIndicator
+        theme={theme}
+        isNavigating={isNavigating}
+        currentPageIndex={currentPageIndex}
+        totalPages={totalPages}
+        nextPage={nextPage}
+        prevPage={prevPage}
+        onPageClick={handlePageClick}
+      />
     </Div>
   );
 }

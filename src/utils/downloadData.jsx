@@ -1,6 +1,6 @@
 // import React, { useContext } from "react";
 // import { PrivacyContext } from "../contexts/PrivacyContext";
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import domtoimage from 'dom-to-image';
 
 export const downloadPNG = () => {
@@ -14,19 +14,46 @@ export const downloadPNG = () => {
       });
   };
 
-  export const downloadExcel = (data, headers, fileName = 'report.xlsx') => {
-    // Create a new workbook
-    const wb = XLSX.utils.book_new();
+  export const downloadExcel = async (data, headers, fileName = 'report.xlsx') => {
+    // Create a new workbook and worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Report');
   
-    // Prepare the worksheet data with headers
-    const ws = XLSX.utils.json_to_sheet(data, {header: headers.map(header => header.key), skipHeader: true});
+    // Add headers
+    const headerRow = headers.map(header => header.label);
+    worksheet.addRow(headerRow);
+    
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' }
+    };
   
-    // Optionally, you can manually set the headers in the first row
-    XLSX.utils.sheet_add_aoa(ws, [headers.map(header => header.label)], {origin: 'A1'});
-  
-    // Add the sheet to the workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Report");
+    // Add data rows
+    data.forEach(row => {
+      const rowData = headers.map(header => row[header.key] || '');
+      worksheet.addRow(rowData);
+    });
+    
+    // Auto-size columns
+    headers.forEach((header, index) => {
+      const column = worksheet.getColumn(index + 1);
+      column.width = Math.max(header.label.length, 15);
+    });
   
     // Generate the file and download it
-    XLSX.writeFile(wb, fileName);
+    try {
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating Excel file:', error);
+    }
   };

@@ -236,6 +236,27 @@ export default function InsertModals({
           <MuiCustomDialogTitle>
             {languages[language].insert.incomeSection.confirmDelete}
           </MuiCustomDialogTitle>
+          <MuiCustomDialogContent>
+            <MuiCustomDialogContentText>
+              {languages[language].insert.incomeSection.deleteBalanceRestore ||
+                'Se vuoi, puoi scegliere da quale bilancio togliere i soldi per mantenere il saldo corretto. (Opzionale)'}
+            </MuiCustomDialogContentText>
+            <Select
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+              displayEmpty
+              style={{ marginTop: '1em', minWidth: 200 }}
+            >
+              <MenuItem value="">
+                {languages[language].general.selectAnOption}
+              </MenuItem>
+              {Object.keys(options).map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </MuiCustomDialogContent>
           <MuiCustomDialogActions>
             <MuiCustomButton onClick={onConfirmDeleteIncome}>
               {languages[language].general.confirm}
@@ -259,6 +280,27 @@ export default function InsertModals({
           <MuiCustomDialogTitle>
             {languages[language].insert.outflowSection.confirmDelete}
           </MuiCustomDialogTitle>
+          <MuiCustomDialogContent>
+            <MuiCustomDialogContentText>
+              {languages[language].insert.outflowSection.deleteBalanceRestore ||
+                'Se vuoi, puoi scegliere dove riaggiungere i soldi per mantenere il saldo corretto. (Opzionale)'}
+            </MuiCustomDialogContentText>
+            <Select
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+              displayEmpty
+              style={{ marginTop: '1em', minWidth: 200 }}
+            >
+              <MenuItem value="">
+                {languages[language].general.selectAnOption}
+              </MenuItem>
+              {Object.keys(options).map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </MuiCustomDialogContent>
           <MuiCustomDialogActions>
             <MuiCustomButton onClick={onConfirmDeleteOutflow}>
               {languages[language].general.confirm}

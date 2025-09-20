@@ -42,7 +42,7 @@ rankRouter.post("/balances", async (req, res) => {
     }
     // Check if the ranking is requested among all users or only similar users
     let reference_user = undefined;
-    if (req.body.similar)
+    if (req.body && req.body.similar)
         reference_user = target_user;
     // Get the list of all/similar users IDs
     const users = await db.users.getAllUsersIds(reference_user, true);
@@ -80,7 +80,7 @@ rankRouter.post("/expenses", async (req, res) => {
     }
     // Check if the ranking is requested among all users or only similar users
     let reference_user = undefined;
-    if (req.body.similar)
+    if (req.body && req.body.similar)
         reference_user = target_user;
     // Get the list of all/similar users IDs
     const users = await db.users.getAllUsersIds(reference_user, true);

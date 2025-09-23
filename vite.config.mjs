@@ -1,14 +1,30 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    tailwindcss()
+    react({
+      babel: {
+        plugins: [
+          [
+            'babel-plugin-styled-components',
+            {
+              displayName: true,
+              fileName: false
+            }
+          ]
+        ]
+      }
+    })
   ],
+  css: {
+    postcss: './postcss.config.js'
+  },
   build: {
     outDir: 'build'
+  },
+  define: {
+    'process.env': 'import.meta.env'
   }
 })

@@ -6,7 +6,7 @@ import { themes } from '../styles/Themes';
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../data/languages.json';
 
-function CookieBanner() {
+function ConsentBanner() {
   const [showBanner, setShowBanner] = useState(false);
   const [preferences, setPreferences] = useState({
     necessary: true, // Always true, can't be disabled
@@ -179,7 +179,7 @@ function CookieBanner() {
   );
 }
 
-export default CookieBanner;
+export default ConsentBanner;
 
 const CookieBannerContainer = styled.div`
   position: fixed;

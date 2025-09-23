@@ -11,7 +11,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import StarIcon from "@mui/icons-material/Star";
 import LandingPageImage from "../assets/LandingPage/PacifinanceArt2NoBg.webp";
 import Logo from "../assets/Brand/PacifinanceLogoPNG3NoBg.webp";
-import CookieBanner from "../components/CookieBanner";
+import ConsentBanner from "../components/ConsentBanner";
 import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
 import { LanguageContext } from "../contexts/LanguageContext";
 import languages from "../data/languages.json";
@@ -33,7 +33,7 @@ export default function NewLandingContent({ theme }) {
       className="relative left-0 w-full overflow-y-hidden"
       style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
     >
-      <CookieBanner />
+      <ConsentBanner />
 
       {/* Hero Section */}
       <section

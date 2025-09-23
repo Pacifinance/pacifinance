@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 // Animazioni
 const slideIn = keyframes`
@@ -50,7 +50,7 @@ const PageDot = styled.div`
   cursor: pointer;
   position: relative;
   
-  ${props => props.$isActive && `
+  ${props => props.$isActive && css`
     box-shadow: 0 0 0 4px ${props.theme.buttonBackgroundColor}30;
     animation: ${pulse} 2s infinite;
   `}

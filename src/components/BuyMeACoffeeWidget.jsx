@@ -45,7 +45,7 @@ export default function Buymeacoffee({ isMobileScreen, showLink = false }) {
           href="https://www.buymeacoffee.com/pacifinance" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="inline-flex items-center px-4 py-2 bg-paciGreen text-white rounded-lg hover:opacity-80 transition-opacity"
+          className="inline-flex items-center px-4 py-2 bg-paci-green text-white rounded-lg hover:opacity-80 transition-opacity"
         >
           ☕ Support PaciFinance
         </a>

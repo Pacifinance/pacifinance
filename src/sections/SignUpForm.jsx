@@ -28,7 +28,7 @@ import {
 var generated_user_id = "";
 
 // Cloudflare Turnstile configuration
-const TURNSTILE_SITE_KEY = process.env.REACT_APP_TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.meta.env.REACT_APP_TURNSTILE_SITE_KEY;
 
 // export { generated_user_id };
 export default function SignUpForm() {

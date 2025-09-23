@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
 import Dashboard from "./pages/DashboardPage";
+import ModernDashboardPage from "./pages/ModernDashboardPage";
 import StatsCharts from "./pages/StatsChartsPage";
 import InsertValues from "./pages/InsertPage";
 import CheckPrices from "./pages/CheckPricesPage";
@@ -127,6 +128,14 @@ function AppRouter() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/old-dashboard"
+        element={
+          <ProtectedRoute>
+            <ModernDashboardPage />
           </ProtectedRoute>
         }
       />

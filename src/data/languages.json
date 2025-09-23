@@ -375,7 +375,20 @@
             "titleGraph3": "Entrate | Uscite",
             "updateValue": "Aggiorna valore",
             "noData": "Assenza di dati:",
-            "noData2": "Inserire i valori <br></br>cliccando qui: "
+            "noData2": "Inserire i valori <br></br>cliccando qui: ",
+            "liquidity": "Liquidità",
+            "liquidityAvailability": "Liquidità & Disponibilità",
+            "portfolioInvestments": "Portfolio Investimenti",
+            "patrimonialAnalysis": "Analisi Patrimoniale",
+            "capitalAt": "Il tuo capitale al",
+            "ofTotal": "del totale",
+            "ofPortfolio": "Del portafoglio",
+            "saved": "Risparmiato",
+            "thisMonth": "Questo mese",
+            "stockDescription": "Azioni individuali",
+            "etfDescription": "Fondi diversificati",
+            "bitcoinDescription": "Bitcoin",
+            "cryptoDescription": "Crypto"
         },
         "graphs": {
             "title": "Grafici e Statistiche",
@@ -1321,7 +1334,20 @@
             "titleGraph3": "Income | Outflows",
             "updateValue": "Update value",
             "noData": "No data:",
-            "noData2": "Enter the values <br></br> clicking here: "
+            "noData2": "Enter the values <br></br> clicking here: ",
+            "liquidity": "Liquidity",
+            "liquidityAvailability": "Liquidity & Availability",
+            "portfolioInvestments": "Investment Portfolio",
+            "patrimonialAnalysis": "Patrimonial Analysis",
+            "capitalAt": "Your capital at",
+            "ofTotal": "of total",
+            "ofPortfolio": "Of portfolio",
+            "saved": "Saved",
+            "thisMonth": "This month",
+            "stockDescription": "Individual stocks",
+            "etfDescription": "Diversified funds",
+            "bitcoinDescription": "Bitcoin",
+            "cryptoDescription": "Crypto"
         },
         "graphs": {
             "title": "Charts & Statistics",

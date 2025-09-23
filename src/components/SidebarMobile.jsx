@@ -36,6 +36,10 @@ const SidebarMobile = ({
                 }}
                 onClick={(e) => {
                     e.stopPropagation();
+                    // Chiudi l'account dropdown se aperto
+                    if (showDropdown) {
+                        setShowDropdown(false);
+                    }
                     setIsSideBarMenuOpen(!isSideBarMenuOpen);
                 }}
             >
@@ -244,7 +248,13 @@ const SidebarMobile = ({
                         height="100%"
                         alt="Account"
                         className="account-image"
-                        onClick={() => setShowDropdown(!showDropdown)}
+                        onClick={() => {
+                            // Chiudi l'hamburger menu se aperto
+                            if (isSideBarMenuOpen) {
+                                setIsSideBarMenuOpen(false);
+                            }
+                            setShowDropdown(!showDropdown);
+                        }}
                         onContextMenu={(e) => e.preventDefault()}
                         style={{
                             borderRadius: '50%',

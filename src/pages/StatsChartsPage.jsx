@@ -23,7 +23,11 @@ function StatsChartsPage() {
 
   // Hook per la navigazione con scroll
   const { 
-    isNavigating, 
+    isNavigating,
+    isLoading,
+    loadingDirection,
+    loadingProgress,
+    pageHasScrollableContent,
     currentPageIndex, 
     totalPages, 
     nextPage, 
@@ -66,6 +70,10 @@ function StatsChartsPage() {
       <ScrollNavigationIndicator
         theme={theme}
         isNavigating={isNavigating}
+        isLoading={isLoading}
+        loadingDirection={loadingDirection}
+        loadingProgress={loadingProgress}
+        pageHasScrollableContent={pageHasScrollableContent}
         currentPageIndex={currentPageIndex}
         totalPages={totalPages}
         nextPage={nextPage}

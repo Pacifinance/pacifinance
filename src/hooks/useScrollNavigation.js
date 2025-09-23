@@ -9,28 +9,38 @@ const PAGE_ORDER = [
   '/comparison'
 ];
 
-// Soglia di scroll (80% della pagina)
-const SCROLL_THRESHOLD = 0.8;
+// Soglia di scroll per iniziare il "caricamento" (98% della pagina - più spazio per l'utente)
+const SCROLL_THRESHOLD_START = 0.98;
+// Soglia per scroll verso l'alto (3% dall'alto)
+const SCROLL_THRESHOLD_UP = 0.03;
 
-// Velocità minima di scroll per attivare la navigazione (px/ms)
-const MIN_SCROLL_SPEED = 0.5;
+// Tempo di attesa prima del cambio pagina (ms) - più tempo per dare controllo all'utente
+const LOADING_DURATION = 2000;
 
 // Debounce time per evitare cambi pagina troppo frequenti
-const DEBOUNCE_TIME = 1000;
+const DEBOUNCE_TIME = 500;
+
+// Altezza minima per abilitare scroll navigation
+const MIN_PAGE_HEIGHT = 600;
 
 export const useScrollNavigation = (enabled = true) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingDirection, setLoadingDirection] = useState(null); // 'up' | 'down'
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [lastScrollTime, setLastScrollTime] = useState(0);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [scrollStartTime, setScrollStartTime] = useState(null);
+  const [canScroll, setCanScroll] = useState(true);
+  const [pageHasScrollableContent, setPageHasScrollableContent] = useState(true);
 
   const getCurrentPageIndex = useCallback(() => {
     return PAGE_ORDER.indexOf(location.pathname);
   }, [location.pathname]);
 
   const navigateToPage = useCallback((direction) => {
-    if (!enabled || isNavigating) return;
+    if (!enabled || isNavigating || isLoading) return;
 
     const currentIndex = getCurrentPageIndex();
     if (currentIndex === -1) return; // Pagina non nel ciclo di scroll
@@ -43,49 +53,96 @@ export const useScrollNavigation = (enabled = true) => {
       setIsNavigating(true);
       navigate(PAGE_ORDER[nextIndex]);
       
+      // Scroll verso l'alto quando navighiamo a una nuova pagina
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100); // Piccolo delay per permettere il render della nuova pagina
+      
       // Reset dello stato dopo un delay
       setTimeout(() => {
         setIsNavigating(false);
       }, 1500);
     }
-  }, [enabled, isNavigating, getCurrentPageIndex, navigate]);
+  }, [enabled, isNavigating, isLoading, getCurrentPageIndex, navigate]);
+
+  const startLoading = useCallback((direction) => {
+    if (isLoading || isNavigating) return;
+    
+    setIsLoading(true);
+    setLoadingDirection(direction);
+    setLoadingProgress(0);
+    setScrollStartTime(Date.now());
+
+    // Animazione progress bar
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        const newProgress = prev + (100 / (LOADING_DURATION / 50));
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          navigateToPage(direction);
+          setIsLoading(false);
+          setLoadingDirection(null);
+          setLoadingProgress(0);
+          return 100;
+        }
+        return newProgress;
+      });
+    }, 50);
+  }, [isLoading, isNavigating, navigateToPage]);
+
+  const stopLoading = useCallback(() => {
+    setIsLoading(false);
+    setLoadingDirection(null);
+    setLoadingProgress(0);
+    setScrollStartTime(null);
+  }, []);
 
   const handleScroll = useCallback(() => {
-    if (!enabled || isNavigating) return;
+    if (!enabled || isNavigating || !pageHasScrollableContent) return;
 
     const now = Date.now();
     const currentScrollY = window.scrollY;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     
+    // Se la pagina non ha contenuto scrollabile, disabilita la navigazione
+    if (documentHeight <= windowHeight + 50) {
+      if (pageHasScrollableContent) {
+        setPageHasScrollableContent(false);
+      }
+      return;
+    } else if (!pageHasScrollableContent) {
+      setPageHasScrollableContent(true);
+    }
+    
     // Calcola la percentuale di scroll
     const scrollPercentage = (currentScrollY + windowHeight) / documentHeight;
+    const scrollFromTop = currentScrollY / Math.max(documentHeight - windowHeight, 1);
     
-    // Calcola la velocità di scroll
-    const timeDiff = now - lastScrollTime;
-    const scrollDiff = currentScrollY - lastScrollY;
-    const scrollSpeed = Math.abs(scrollDiff) / timeDiff;
-
     // Debounce per evitare troppi trigger
-    if (timeDiff < DEBOUNCE_TIME) return;
+    if (now - lastScrollTime < DEBOUNCE_TIME) return;
 
-    // Check se la velocità è sufficiente
-    if (scrollSpeed < MIN_SCROLL_SPEED) return;
+    const currentIndex = getCurrentPageIndex();
 
     // Scroll verso il basso - vai alla pagina successiva
-    if (scrollDiff > 0 && scrollPercentage >= SCROLL_THRESHOLD) {
-      setLastScrollTime(now);
-      navigateToPage('down');
-    }
-    
+    if (scrollPercentage >= SCROLL_THRESHOLD_START && currentIndex < PAGE_ORDER.length - 1) {
+      if (!isLoading && loadingDirection !== 'down') {
+        startLoading('down');
+        setLastScrollTime(now);
+      }
+    } 
     // Scroll verso l'alto - vai alla pagina precedente  
-    if (scrollDiff < 0 && currentScrollY <= windowHeight * 0.2) {
-      setLastScrollTime(now);
-      navigateToPage('up');
+    else if (scrollFromTop <= SCROLL_THRESHOLD_UP && currentIndex > 0) {
+      if (!isLoading && loadingDirection !== 'up') {
+        startLoading('up');
+        setLastScrollTime(now);
+      }
     }
-
-    setLastScrollY(currentScrollY);
-  }, [enabled, isNavigating, lastScrollTime, lastScrollY, navigateToPage]);
+    // Se non siamo nella zona di trigger, ferma il loading
+    else if (isLoading) {
+      stopLoading();
+    }
+  }, [enabled, isNavigating, isLoading, loadingDirection, lastScrollTime, pageHasScrollableContent, getCurrentPageIndex, startLoading, stopLoading]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -94,25 +151,113 @@ export const useScrollNavigation = (enabled = true) => {
       requestAnimationFrame(handleScroll);
     };
 
+    // Gestione scroll wheel per pagine senza scroll verticale
+    const handleWheel = (event) => {
+      if (!enabled || isNavigating || pageHasScrollableContent) return;
+      
+      const now = Date.now();
+      if (now - lastScrollTime < DEBOUNCE_TIME * 2) return; // Debounce più lungo per wheel
+      
+      const currentIndex = getCurrentPageIndex();
+      
+      if (event.deltaY > 50 && currentIndex < PAGE_ORDER.length - 1) {
+        // Scroll verso il basso
+        if (!isLoading && loadingDirection !== 'down') {
+          startLoading('down');
+          setLastScrollTime(now);
+        }
+      } else if (event.deltaY < -50 && currentIndex > 0) {
+        // Scroll verso l'alto
+        if (!isLoading && loadingDirection !== 'up') {
+          startLoading('up');
+          setLastScrollTime(now);
+        }
+      }
+    };
+
+    // Gestione key navigation per pagine senza scroll
+    const handleKeyDown = (event) => {
+      if (!enabled || isNavigating || pageHasScrollableContent) return;
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+      
+      const now = Date.now();
+      if (now - lastScrollTime < DEBOUNCE_TIME * 2) return;
+      
+      const currentIndex = getCurrentPageIndex();
+      
+      if ((event.key === 'ArrowDown' || event.key === 'PageDown') && currentIndex < PAGE_ORDER.length - 1) {
+        event.preventDefault();
+        if (!isLoading && loadingDirection !== 'down') {
+          startLoading('down');
+          setLastScrollTime(now);
+        }
+      } else if ((event.key === 'ArrowUp' || event.key === 'PageUp') && currentIndex > 0) {
+        event.preventDefault();
+        if (!isLoading && loadingDirection !== 'up') {
+          startLoading('up');
+          setLastScrollTime(now);
+        }
+      }
+    };
+
     window.addEventListener('scroll', throttledHandleScroll, { passive: true });
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
     
     return () => {
       window.removeEventListener('scroll', throttledHandleScroll);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [enabled, handleScroll]);
+  }, [enabled, handleScroll, pageHasScrollableContent, isNavigating, isLoading, loadingDirection, lastScrollTime, getCurrentPageIndex, startLoading]);
 
   // Reset quando cambia pagina
   useEffect(() => {
-    setLastScrollY(0);
     setLastScrollTime(Date.now());
-  }, [location.pathname]);
+    stopLoading();
+    
+    // Verifica se la pagina ha contenuto scrollabile dopo un breve delay
+    setTimeout(() => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setPageHasScrollableContent(documentHeight > windowHeight + 50);
+    }, 500);
+  }, [location.pathname, stopLoading]);
+
+  // Controlla periodicamente se la pagina diventa scrollabile (per contenuto dinamico)
+  useEffect(() => {
+    if (!enabled) return;
+
+    const checkScrollable = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const isScrollable = documentHeight > windowHeight + 50;
+      
+      if (isScrollable !== pageHasScrollableContent) {
+        setPageHasScrollableContent(isScrollable);
+      }
+    };
+
+    const interval = setInterval(checkScrollable, 2000);
+    return () => clearInterval(interval);
+  }, [enabled, pageHasScrollableContent]);
 
   return {
     isNavigating,
-    isScrollNavigationEnabled: enabled && getCurrentPageIndex() !== -1,
+    isLoading,
+    loadingDirection,
+    loadingProgress,
+    isScrollNavigationEnabled: enabled && getCurrentPageIndex() !== -1 && pageHasScrollableContent,
+    pageHasScrollableContent,
     currentPageIndex: getCurrentPageIndex(),
     totalPages: PAGE_ORDER.length,
-    nextPage: getCurrentPageIndex() < PAGE_ORDER.length - 1 ? PAGE_ORDER[getCurrentPageIndex() + 1] : null,
-    prevPage: getCurrentPageIndex() > 0 ? PAGE_ORDER[getCurrentPageIndex() - 1] : null
+    nextPage: () => {
+      const currentIndex = getCurrentPageIndex();
+      return currentIndex < PAGE_ORDER.length - 1 ? navigateToPage('down') : null;
+    },
+    prevPage: () => {
+      const currentIndex = getCurrentPageIndex();
+      return currentIndex > 0 ? navigateToPage('up') : null;
+    }
   };
 };

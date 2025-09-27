@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { ButtonGroup } from "@mui/material";
 import axios from "axios";
 import languages from "../data/languages.json";
@@ -39,8 +40,11 @@ const ContentWrapper = styled.div`
 
 const ModernTitle = styled.h1`
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  color: ${(props) => props.theme.textColor};
-  font-size: clamp(2rem, 5vw, 3rem);
+  background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   text-align: center;
@@ -240,9 +244,12 @@ export default function InsertValue({
   userData,
   handleSetIsUpdated,
   isHidden,
+  initialSection,
 }) {
   const { language } = React.useContext(LanguageContext);
   const { showSuccess } = useToast();
+  const location = useLocation();
+  const initialSectionApplied = useRef(false);
 
   // Modal states
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
@@ -342,6 +349,31 @@ export default function InsertValue({
   useEffect(() => {
     fetchData();
   }, [userData]);
+
+  // Imposta la sezione iniziale basata sul parametro URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const sectionParam = urlParams.get('section');
+    
+    if (sectionParam) {
+      // Piccolo delay per assicurarsi che il componente sia montato
+      setTimeout(() => {
+        switch (sectionParam) {
+          case 'balance':
+            setActivePage('bilancio');
+            break;
+          case 'income':
+            setActivePage('income');
+            break;
+          case 'outflow':
+            setActivePage('outflows');
+            break;
+          default:
+            setActivePage('outflows');
+        }
+      }, 100);
+    }
+  }, [location, activePage]);
 
   // Auto-hide success notifications with toast
   useEffect(() => {

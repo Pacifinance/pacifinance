@@ -20,11 +20,12 @@ import { StandardPageTitle, StyledSection } from '../styles/MyStyled';
 
 const KnowledgeContainer = styled.div`
   flex: 1;
-  padding: ${props => props.isMobile ? '1rem' : '2rem'};
+  padding: ${props => props.isMobile ? '1.5rem' : '3rem'};
   background: ${props => props.theme.backgroundColor};
   color: ${props => props.theme.textColor};
   min-height: 100vh;
   overflow-y: auto;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
 `;
 
 const Header = styled.div`
@@ -33,16 +34,24 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: ${props => props.isMobile ? '1.8rem' : '2.5rem'};
-  font-weight: bold;
-  color: ${props => props.theme.buttonBackgroundColor};
-  margin-bottom: 0.5rem;
+  font-size: ${props => props.isMobile ? '2.2rem' : '3rem'};
+  font-weight: 700;
+  background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  text-align: center;
+  letter-spacing: -0.02em;
 `;
 
 const Subtitle = styled.p`
-  font-size: ${props => props.isMobile ? '1rem' : '1.2rem'};
-  opacity: 0.8;
-  margin-bottom: 1.5rem;
+  font-size: ${props => props.isMobile ? '1.1rem' : '1.3rem'};
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: ${props => props.theme.textColor};
+  line-height: 1.6;
 `;
 
 const Disclaimer = styled.div`

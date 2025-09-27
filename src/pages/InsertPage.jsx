@@ -1,5 +1,5 @@
 import React, {useEffect, useContext, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PageWrapper } from '../styles/MyStyled';
@@ -17,6 +17,8 @@ function InsertPage() {
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
   const { mode } = theme;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [initialSection, setInitialSection] = useState(null);
 
   // Hook per la navigazione con scroll
   const { 
@@ -41,13 +43,19 @@ function InsertPage() {
   useEffect(() => {
     loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
     
+    // Gestisce il parametro section dall'URL
+    const section = searchParams.get('section');
+    if (section) {
+      setInitialSection(section);
+    }
+    
     const handleResize = () => {
       setIsMobileScreen(window.innerWidth <= 768);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [searchParams]);
 
   // Gestisce il click sui punti di navigazione
   const handlePageClick = (pageIndex) => {

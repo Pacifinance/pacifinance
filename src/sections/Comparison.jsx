@@ -44,7 +44,10 @@ const SectionHeader = styled.div`
   margin-bottom: 2rem;
   
   h1 {
-    color: ${props => props.theme.textColor};
+    background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;

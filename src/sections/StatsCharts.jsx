@@ -36,18 +36,18 @@ const StatsContainer = styled.div`
 `;
 
 const StatsTitle = styled(StandardPageTitle)`
-  margin-top: 0;
+  margin-top: 2rem;
   margin-bottom: 1.5rem;
   padding: 0 1rem;
   text-align: center;
   font-weight: 700;
-  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.secondaryColor || '#047857'});
+  background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   
   @media (max-width: 768px) {
-    margin-top: 0;
+    margin-top: 1.5rem;
     margin-bottom: 1rem;
     font-size: 1.75rem;
     padding: 0 0.5rem;

@@ -116,22 +116,15 @@ export const ModernDashboardTitle = styled.h1`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.theme.textColor};
+  background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: clamp(1.8rem, 3.5vw, 2.5rem); /* Dimensione ridotta */
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 1.5rem; /* Margine ridotto */
   text-align: center;
-  
-  background: ${props => props.theme.mode === 'dark' 
-    ? 'linear-gradient(135deg, #079164 0%, #27ae60 50%, #2ecc71 100%)'
-    : 'linear-gradient(135deg, #079164 0%, #16a085 50%, #1abc9c 100%)'
-  }; /* Sfumature verdi della piattaforma */
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: ${gradientShift} 3s ease-in-out infinite;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -739,6 +732,30 @@ export const ModernIncomeExpenseCard = styled.div`
       font-size: 0.9rem;
       color: ${props => props.theme.mode === 'dark' ? '#ffffff' : props.theme.textColor + '80'};
       font-style: italic;
+      margin-bottom: 1rem;
+    }
+
+    .income-outflow-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: ${props => props.itemColor}20;
+      color: ${props => props.itemColor};
+      border: 1px solid ${props => props.itemColor}40;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
+
+      &:hover {
+        background: ${props => props.itemColor}30;
+        border-color: ${props => props.itemColor}60;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px ${props => props.itemColor}20;
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 import React, {useEffect, useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../contexts/UserContext';
+import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -15,7 +15,8 @@ import languages from '../data/languages.json';
 
 function StatsChartsPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const auth = useAuth();
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { language } = useContext(LanguageContext);
   const { mode } = theme;
@@ -31,7 +32,9 @@ function StatsChartsPage() {
     currentPageIndex, 
     totalPages, 
     nextPage, 
-    prevPage 
+    prevPage,
+    cancelLoading,
+    isAutoScrolling
   } = useScrollNavigation(true);
 
   // Chiamata per caricare i dati dell'utente
@@ -79,6 +82,8 @@ function StatsChartsPage() {
         nextPage={nextPage}
         prevPage={prevPage}
         onPageClick={handlePageClick}
+        cancelLoading={cancelLoading}
+        isAutoScrolling={isAutoScrolling}
       />
     </Div>
   );

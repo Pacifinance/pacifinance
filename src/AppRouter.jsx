@@ -7,8 +7,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
+import { useAuth } from "./hooks/useAuth";
 import Dashboard from "./pages/DashboardPage";
-import ModernDashboardPage from "./pages/ModernDashboardPage";
 import StatsCharts from "./pages/StatsChartsPage";
 import InsertValues from "./pages/InsertPage";
 import CheckPrices from "./pages/CheckPricesPage";
@@ -30,25 +30,22 @@ import SettingsPage from "./pages/SettingsPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useContext(UserContext);
-  return isAuthenticated ? children : <Navigate to="/auth" replace />;
+  const auth = useAuth();
+  return auth.isAuthenticated ? children : <Navigate to="/auth" replace />;
 };
 
 // Public Route Component (redirects to dashboard if already authenticated)
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated } = useContext(UserContext);
-  return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
+  const auth = useAuth();
+  return !auth.isAuthenticated ? children : <Navigate to="/dashboard" replace />;
 };
 
 function AppRouter() {
-  const {
-    handleSetIsUpdated,
-    isAuthenticated,
-    setIsAuthenticated,
-    userData,
-    setUserData,
-  } = useContext(UserContext);
+  const auth = useAuth();
   const navigate = useNavigate();
+  
+  // Estrai le proprietà dal nostro hook unificato
+  const { isAuthenticated, handleSetIsAuthenticated, handleSetIsUpdated, userData, setUserData } = auth;
 
   useEffect(() => {
     var _mtm = (window._mtm = window._mtm || []);
@@ -128,14 +125,6 @@ function AppRouter() {
         element={
           <ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/old-dashboard"
-        element={
-          <ProtectedRoute>
-            <ModernDashboardPage />
           </ProtectedRoute>
         }
       />

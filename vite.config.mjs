@@ -22,7 +22,33 @@ export default defineConfig({
     postcss: './postcss.config.js'
   },
   build: {
-    outDir: 'build'
+    outDir: 'build',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Chunk per le librerie principali React
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Chunk per le librerie di grafici (molto pesanti)
+          'charts': ['recharts'],
+          // Chunk per le icone (molto pesanti)
+          'icons': ['react-icons'],
+          // Chunk per styled-components
+          'styled': ['styled-components'],
+          // Chunk per le utility UI
+          'ui-utils': ['react-calendar', 'react-csv', 'dom-to-image'],
+          // Chunk per Emotion (se usato)
+          'emotion': ['@emotion/react', '@emotion/styled']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000, // Aumenta il limite per evitare warning
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Rimuove console.log in produzione
+        drop_debugger: true
+      }
+    }
   },
   define: {
     'process.env': 'import.meta.env'

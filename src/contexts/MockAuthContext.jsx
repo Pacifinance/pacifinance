@@ -1,0 +1,313 @@
+import React, { createContext, useContext, useState } from 'react';
+
+const MockAuthContext = createContext();
+
+// Mock data compatibili con UserContext structure
+export const mockDashboardData = {
+    // Dati balance attuali
+    cashReal: 500,
+    bankReal: 20000,
+    digitalServicesReal: 0,
+    stocksReal: 8000,
+    etfReal: 25000,
+    bitcoinReal: 0,
+    cryptoReal: 0,
+    totalReal: 53500,
+    
+    // Dati balance mese precedente
+    cashRealPreMonth: 450,
+    bankRealPreMonth: 18500,
+    digitalServicesRealPreMonth: 0,
+    stocksRealPreMonth: 7500,
+    etfRealPreMonth: 24000,
+    bitcoinRealPreMonth: 0,
+    cryptoRealPreMonth: 0,
+    totalRealPreMonth: 50450,
+    
+    // Dati balance anno precedente stesso mese
+    cashRealPreYearSameMonth: 300,
+    bankRealPreYearSameMonth: 15000,
+    digitalServicesRealPreYearSameMonth: 0,
+    stocksRealPreYearSameMonth: 5000,
+    etfRealPreYearSameMonth: 20000,
+    bitcoinRealPreYearSameMonth: 0,
+    cryptoRealPreYearSameMonth: 0,
+    totalRealPreYearSameMonth: 40300,
+    
+    // Date
+    currentDate: new Date().toISOString().split('T')[0],
+    preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    
+    // Arrays per spese e entrate (formato compatibile con Dashboard)
+    expensesArray: [1250], // Totale spese del mese
+    incomesArray: [3000], // Totale entrate del mese
+    
+    // Arrays dettagliati per altri componenti
+    allExpenses: [
+        { name: 'Affitto', value: 800 },
+        { name: 'Spesa', value: 300 },
+        { name: 'Trasporti', value: 150 }
+    ],
+    allIncomes: [
+        { name: 'Stipendio', value: 2500 },
+        { name: 'Freelance', value: 500 }
+    ],
+    
+    // Ranking mock (ora gestito più sotto con valori dinamici)
+    
+    // User info
+    userId: 'dev-user-123',
+    userType: 'premium',
+    username: 'Developer User',
+    userNationality: 'Italy',
+    userWhereWorks: 'Technology',
+    userJob: 'Developer',
+    userJobType: 'Full-time',
+    userWorkTime: '40',
+    userRemoteType: 'Remote',
+    
+    // Dati per grafici ultimi 12 mesi (mock) - più dettagliati
+    last12MonthsData: Array.from({ length: 12 }, (_, i) => {
+        const baseDate = new Date();
+        baseDate.setMonth(baseDate.getMonth() - (11 - i));
+        return {
+            month: baseDate.toISOString().split('T')[0].slice(0, 7),
+            totalReal: 40000 + Math.sin(i * 0.5) * 10000 + Math.random() * 5000,
+            totalExpenses: 1000 + Math.sin(i * 0.3) * 300 + Math.random() * 200,
+            totalIncomes: 2800 + Math.sin(i * 0.4) * 500 + Math.random() * 300,
+            cashReal: 400 + Math.random() * 200,
+            bankReal: 18000 + Math.sin(i * 0.6) * 5000,
+            stocksReal: 7000 + Math.sin(i * 0.7) * 2000,
+            etfReal: 23000 + Math.sin(i * 0.8) * 3000,
+            bitcoinReal: Math.random() * 1000,
+            cryptoReal: Math.random() * 500,
+            digitalServicesReal: Math.random() * 100
+        };
+    }),
+    
+    // Dati storici per grafici e confronti
+    balances: Array.from({ length: 24 }, (_, i) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        return {
+            date: date.toISOString().split('T')[0],
+            month: date.toISOString().split('T')[0].slice(0, 7),
+            totalReal: 35000 + Math.sin(i * 0.3) * 8000 + Math.random() * 3000,
+            cashReal: 300 + Math.random() * 400,
+            bankReal: 15000 + Math.sin(i * 0.4) * 4000,
+            stocksReal: 6000 + Math.sin(i * 0.5) * 2000,
+            etfReal: 20000 + Math.sin(i * 0.6) * 3000,
+            bitcoinReal: Math.random() * 1500,
+            cryptoReal: Math.random() * 800,
+            digitalServicesReal: Math.random() * 200
+        };
+    }),
+    
+    balancesPreMonth: Array.from({ length: 12 }, (_, i) => ({
+        month: new Date(Date.now() - (i + 1) * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0].slice(0, 7),
+        totalReal: 48000 + Math.sin(i * 0.4) * 7000
+    })),
+    
+    balancesPreYearSameMonth: Array.from({ length: 12 }, (_, i) => ({
+        month: new Date(Date.now() - (365 + i * 30) * 24 * 60 * 60 * 1000).toISOString().split('T')[0].slice(0, 7),
+        totalReal: 35000 + Math.sin(i * 0.3) * 6000
+    })),
+
+    // Tags e categorie per entrate/uscite (con traduzioni)
+    expensesTags: [
+        { 
+            index: 0,
+            name: 'Casa', 
+            total: 1200, 
+            percentage: 45,
+            translations: { it: 'Casa', en: 'Home' }
+        },
+        { 
+            index: 1,
+            name: 'Alimentari', 
+            total: 400, 
+            percentage: 15,
+            translations: { it: 'Alimentari', en: 'Food' }
+        },
+        { 
+            index: 2,
+            name: 'Trasporti', 
+            total: 300, 
+            percentage: 11,
+            translations: { it: 'Trasporti', en: 'Transport' }
+        },
+        { 
+            index: 3,
+            name: 'Intrattenimento', 
+            total: 200, 
+            percentage: 7,
+            translations: { it: 'Intrattenimento', en: 'Entertainment' }
+        },
+        { 
+            index: 4,
+            name: 'Salute', 
+            total: 150, 
+            percentage: 6,
+            translations: { it: 'Salute', en: 'Health' }
+        },
+        { 
+            index: 5,
+            name: 'Abbigliamento', 
+            total: 100, 
+            percentage: 4,
+            translations: { it: 'Abbigliamento', en: 'Clothing' }
+        },
+        { 
+            index: 6,
+            name: 'Altri', 
+            total: 300, 
+            percentage: 12,
+            translations: { it: 'Altri', en: 'Other' }
+        }
+    ],
+    
+    incomesTags: [
+        { 
+            index: 0,
+            name: 'Stipendio', 
+            total: 2500, 
+            percentage: 83,
+            translations: { it: 'Stipendio', en: 'Salary' }
+        },
+        { 
+            index: 1,
+            name: 'Freelance', 
+            total: 400, 
+            percentage: 13,
+            translations: { it: 'Freelance', en: 'Freelance' }
+        },
+        { 
+            index: 2,
+            name: 'Investimenti', 
+            total: 100, 
+            percentage: 3,
+            translations: { it: 'Investimenti', en: 'Investments' }
+        },
+        { 
+            index: 3,
+            name: 'Altri', 
+            total: 50, 
+            percentage: 1,
+            translations: { it: 'Altri', en: 'Other' }
+        }
+    ],
+    
+    paymentTags: [
+        { 
+            index: 0,
+            name: 'Carta di Credito', 
+            total: 1500, 
+            percentage: 55,
+            translations: { it: 'Carta di Credito', en: 'Credit Card' }
+        },
+        { 
+            index: 1,
+            name: 'Bonifico', 
+            total: 800, 
+            percentage: 30,
+            translations: { it: 'Bonifico', en: 'Bank Transfer' }
+        },
+        { 
+            index: 2,
+            name: 'Contanti', 
+            total: 300, 
+            percentage: 11,
+            translations: { it: 'Contanti', en: 'Cash' }
+        },
+        { 
+            index: 3,
+            name: 'PayPal', 
+            total: 100, 
+            percentage: 4,
+            translations: { it: 'PayPal', en: 'PayPal' }
+        }
+    ],
+
+    // Dati demografici mock
+    nationalityTags: ['Italy', 'Germany', 'France', 'Spain', 'UK'],
+    jobTags: ['Developer', 'Designer', 'Manager', 'Analyst', 'Engineer'],
+    jobTypeTags: ['Full-time', 'Part-time', 'Contract', 'Freelance'],
+    workTimeTags: ['40', '35', '30', '25', '20'],
+    remoteTypeTags: ['Remote', 'Hybrid', 'Office'],
+    
+    // Spese per categoria per mese (per grafici dettagliati)
+    totalExpensesPerCategoryPerMonth: Array.from({ length: 12 }, (_, monthIndex) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - monthIndex);
+        return {
+            month: date.toISOString().split('T')[0].slice(0, 7),
+            categories: [
+                { name: 'Casa', value: 1000 + Math.random() * 400 },
+                { name: 'Alimentari', value: 300 + Math.random() * 200 },
+                { name: 'Trasporti', value: 200 + Math.random() * 150 },
+                { name: 'Intrattenimento', value: 150 + Math.random() * 100 },
+                { name: 'Salute', value: 100 + Math.random() * 100 },
+                { name: 'Abbigliamento', value: 50 + Math.random() * 150 },
+                { name: 'Altri', value: 200 + Math.random() * 200 }
+            ]
+        };
+    }),
+
+    // Dati per confronti e benchmark
+    percentageRankOnBalance: Math.floor(Math.random() * 40) + 60, // 60-100%
+    percentageRankOnIncomes: Math.floor(Math.random() * 35) + 55, // 55-90%
+    percentageRankOnExpenses: Math.floor(Math.random() * 50) + 25, // 25-75%
+    percentageRankOnBalanceSimilar: Math.floor(Math.random() * 30) + 65,
+    percentageRankOnIncomesSimilar: Math.floor(Math.random() * 25) + 60,
+    percentageRankOnExpensesSimilar: Math.floor(Math.random() * 40) + 30
+};
+
+export const MockAuthProvider = ({ children }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isUpdated, setIsUpdated] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [userData, setUserData] = useState(mockDashboardData);
+
+    const handleSetIsAuthenticated = (value) => {
+        setIsAuthenticated(value);
+        console.log('MockAuth - setIsAuthenticated:', value);
+    };
+
+    const handleSetIsUpdated = (value) => {
+        setIsUpdated(value);
+        console.log('MockAuth - setIsUpdated:', value);
+    };
+
+    // Mock functions per compatibilità con AppRouter
+    const loadUserData = () => {
+        console.log('MockAuth - loadUserData called');
+        handleSetIsUpdated(false);
+    };
+
+    const value = {
+        userData,
+        setUserData,
+        isAuthenticated,
+        isUpdated,
+        handleSetIsAuthenticated,
+        handleSetIsUpdated,
+        isLoading,
+        loadUserData,
+        isDevelopment: true // Flag per distinguere mock da produzione
+    };
+
+    return (
+        <MockAuthContext.Provider value={value}>
+            {children}
+        </MockAuthContext.Provider>
+    );
+};
+
+export const useMockAuth = () => {
+    const context = useContext(MockAuthContext);
+    if (!context) {
+        throw new Error('useMockAuth must be used within a MockAuthProvider');
+    }
+    return context;
+};

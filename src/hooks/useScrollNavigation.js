@@ -34,6 +34,8 @@ export const useScrollNavigation = (enabled = true) => {
   const [scrollStartTime, setScrollStartTime] = useState(null);
   const [canScroll, setCanScroll] = useState(true);
   const [pageHasScrollableContent, setPageHasScrollableContent] = useState(true);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [loadingIntervalId, setLoadingIntervalId] = useState(null);
 
   const getCurrentPageIndex = useCallback(() => {
     return PAGE_ORDER.indexOf(location.pathname);
@@ -51,11 +53,17 @@ export const useScrollNavigation = (enabled = true) => {
 
     if (nextIndex >= 0 && nextIndex < PAGE_ORDER.length) {
       setIsNavigating(true);
+      setIsAutoScrolling(true); // Flag per indicare scroll automatico
       navigate(PAGE_ORDER[nextIndex]);
       
       // Scroll verso l'alto quando navighiamo a una nuova pagina
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Disabilita il flag dopo che lo scroll automatico è completato
+        setTimeout(() => {
+          setIsAutoScrolling(false);
+        }, 1000); // Tempo per completare lo scroll smooth
       }, 100); // Piccolo delay per permettere il render della nuova pagina
       
       // Reset dello stato dopo un delay
@@ -66,7 +74,7 @@ export const useScrollNavigation = (enabled = true) => {
   }, [enabled, isNavigating, isLoading, getCurrentPageIndex, navigate]);
 
   const startLoading = useCallback((direction) => {
-    if (isLoading || isNavigating) return;
+    if (isLoading || isNavigating || isAutoScrolling) return;
     
     setIsLoading(true);
     setLoadingDirection(direction);
@@ -79,6 +87,7 @@ export const useScrollNavigation = (enabled = true) => {
         const newProgress = prev + (100 / (LOADING_DURATION / 50));
         if (newProgress >= 100) {
           clearInterval(interval);
+          setLoadingIntervalId(null);
           navigateToPage(direction);
           setIsLoading(false);
           setLoadingDirection(null);
@@ -88,17 +97,24 @@ export const useScrollNavigation = (enabled = true) => {
         return newProgress;
       });
     }, 50);
-  }, [isLoading, isNavigating, navigateToPage]);
+    
+    setLoadingIntervalId(interval);
+  }, [isLoading, isNavigating, isAutoScrolling, navigateToPage]);
 
   const stopLoading = useCallback(() => {
+    if (loadingIntervalId) {
+      clearInterval(loadingIntervalId);
+      setLoadingIntervalId(null);
+    }
     setIsLoading(false);
     setLoadingDirection(null);
     setLoadingProgress(0);
     setScrollStartTime(null);
-  }, []);
+  }, [loadingIntervalId]);
 
   const handleScroll = useCallback(() => {
-    if (!enabled || isNavigating || !pageHasScrollableContent) return;
+    // Ignora gli eventi di scroll se è in corso uno scroll automatico
+    if (!enabled || isNavigating || !pageHasScrollableContent || isAutoScrolling) return;
 
     const now = Date.now();
     const currentScrollY = window.scrollY;
@@ -138,11 +154,11 @@ export const useScrollNavigation = (enabled = true) => {
         setLastScrollTime(now);
       }
     }
-    // Se non siamo nella zona di trigger, ferma il loading
+    // IMPORTANTE: Se non siamo nella zona di trigger, ferma il loading per permettere cancellazione
     else if (isLoading) {
       stopLoading();
     }
-  }, [enabled, isNavigating, isLoading, loadingDirection, lastScrollTime, pageHasScrollableContent, getCurrentPageIndex, startLoading, stopLoading]);
+  }, [enabled, isNavigating, isLoading, loadingDirection, lastScrollTime, pageHasScrollableContent, isAutoScrolling, getCurrentPageIndex, startLoading, stopLoading]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -153,7 +169,7 @@ export const useScrollNavigation = (enabled = true) => {
 
     // Gestione scroll wheel per pagine senza scroll verticale
     const handleWheel = (event) => {
-      if (!enabled || isNavigating || pageHasScrollableContent) return;
+      if (!enabled || isNavigating || pageHasScrollableContent || isAutoScrolling) return;
       
       const now = Date.now();
       if (now - lastScrollTime < DEBOUNCE_TIME * 2) return; // Debounce più lungo per wheel
@@ -177,7 +193,7 @@ export const useScrollNavigation = (enabled = true) => {
 
     // Gestione key navigation per pagine senza scroll
     const handleKeyDown = (event) => {
-      if (!enabled || isNavigating || pageHasScrollableContent) return;
+      if (!enabled || isNavigating || pageHasScrollableContent || isAutoScrolling) return;
       if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
       
       const now = Date.now();
@@ -197,6 +213,10 @@ export const useScrollNavigation = (enabled = true) => {
           startLoading('up');
           setLastScrollTime(now);
         }
+      } else if (event.key === 'Escape' && isLoading) {
+        // Permetti di cancellare il loading con ESC
+        event.preventDefault();
+        stopLoading();
       }
     };
 
@@ -215,6 +235,7 @@ export const useScrollNavigation = (enabled = true) => {
   useEffect(() => {
     setLastScrollTime(Date.now());
     stopLoading();
+    setIsAutoScrolling(false); // Reset flag di auto-scroll
     
     // Verifica se la pagina ha contenuto scrollabile dopo un breve delay
     setTimeout(() => {
@@ -251,6 +272,8 @@ export const useScrollNavigation = (enabled = true) => {
     pageHasScrollableContent,
     currentPageIndex: getCurrentPageIndex(),
     totalPages: PAGE_ORDER.length,
+    isAutoScrolling,
+    cancelLoading: stopLoading, // Funzione per cancellare il loading manualmente
     nextPage: () => {
       const currentIndex = getCurrentPageIndex();
       return currentIndex < PAGE_ORDER.length - 1 ? navigateToPage('down') : null;

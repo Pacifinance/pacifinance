@@ -54,6 +54,12 @@ export const MainDashboardLayout = styled.div`
   background: ${props => props.theme.backgroundColor};
   position: relative;
   overflow-x: hidden;
+  
+  /* Gestione sidebar desktop */
+  @media (min-width: 769px) {
+    margin-left: 5.5rem;
+    width: calc(100% - 5.5rem);
+  }
 `;
 
 export const DashboardContent = styled.div`
@@ -76,12 +82,12 @@ export const ModernDashboardContainer = styled.div`
   position: relative;
   min-height: 100vh;
   background: ${props => props.theme.backgroundColor};
-  padding: 2rem;
+  padding: 2rem 2rem 2rem 0; /* Rimuoviamo padding a sinistra per attaccarsi alla sidebar */
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   overflow-x: auto;
 
   @media (max-width: 768px) {
-    padding: 1rem;
+    padding: 1rem; /* Su mobile manteniamo padding normale */
   }
 `;
 
@@ -111,16 +117,16 @@ export const ModernDashboardTitle = styled.h1`
   align-items: center;
   justify-content: center;
   color: ${props => props.theme.textColor};
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem); /* Dimensione ridotta */
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; /* Margine ridotto */
   text-align: center;
   
   background: ${props => props.theme.mode === 'dark' 
-    ? 'linear-gradient(135deg, #079164 0%, #74b9ff 50%, #FFD700 100%)'
-    : 'linear-gradient(135deg, #079164 0%, #2980b9 50%, #FF6600 100%)'
-  };
+    ? 'linear-gradient(135deg, #079164 0%, #27ae60 50%, #2ecc71 100%)'
+    : 'linear-gradient(135deg, #079164 0%, #16a085 50%, #1abc9c 100%)'
+  }; /* Sfumature verdi della piattaforma */
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -130,6 +136,7 @@ export const ModernDashboardTitle = styled.h1`
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 0.5rem;
+    font-size: 1.5rem; /* Più piccolo su mobile */
   }
 `;
 
@@ -147,9 +154,9 @@ export const ModernBalanceOverview = styled.div`
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(7, 145, 100, 0.2)'
   };
-  border-radius: 2rem;
-  padding: 3rem 2rem;
-  margin-bottom: 3rem;
+  border-radius: 1.5rem; /* Bordi meno arrotondati */
+  padding: 2rem 1.5rem; /* Padding ridotto */
+  margin-bottom: 2rem; /* Margine ridotto */
   box-shadow: ${props => props.theme.mode === 'dark' 
     ? '0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(7, 145, 100, 0.1)'
     : '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 30px rgba(7, 145, 100, 0.1)'
@@ -175,17 +182,17 @@ export const ModernBalanceOverview = styled.div`
 
     h2 {
       color: ${props => props.theme.textColor};
-      font-size: 1.5rem;
+      font-size: 1.2rem; /* Dimensione ridotta */
       font-weight: 600;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem; /* Margine ridotto */
       opacity: 0.8;
     }
 
     .balance-value {
-      font-size: clamp(3rem, 6vw, 4.5rem);
+      font-size: clamp(2.5rem, 5vw, 3.5rem); /* Dimensione ridotta */
       font-weight: 800;
       color: #079164;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem; /* Margine ridotto */
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
@@ -194,7 +201,7 @@ export const ModernBalanceOverview = styled.div`
       align-items: center;
       justify-content: center;
       color: ${props => props.theme.textColor};
-      font-size: 1.1rem;
+      font-size: 0.95rem; /* Dimensione ridotta */
       opacity: 0.7;
     }
   }
@@ -294,8 +301,8 @@ export const ModernInvestmentsGrid = styled.div`
 // Card per i bilanci tradizionali
 export const ModernAssetCard = styled.div`
   background: ${props => props.gradient || 'linear-gradient(135deg, #079164 0%, #27ae60 100%)'};
-  border-radius: 1.5rem;
-  padding: 2rem;
+  border-radius: 1.2rem;
+  padding: 1.2rem;
   color: white;
   position: relative;
   overflow: hidden;
@@ -367,21 +374,21 @@ export const ModernAssetCard = styled.div`
     margin-bottom: 1.5rem;
 
     .asset-name {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       opacity: 0.9;
     }
 
     .asset-value {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       font-weight: 800;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .asset-percentage {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       opacity: 0.8;
     }
   }
@@ -415,8 +422,8 @@ export const ModernInvestmentCard = styled.div`
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(0, 0, 0, 0.1)'
   };
-  border-radius: 1.5rem;
-  padding: 2rem;
+  border-radius: 1.2rem;
+  padding: 1.2rem;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -482,17 +489,17 @@ export const ModernInvestmentCard = styled.div`
     margin-bottom: 1.5rem;
 
     .investment-name {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: ${props => props.theme.textColor};
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.6rem;
     }
 
     .investment-value {
-      font-size: 2rem;
+      font-size: 1.6rem;
       font-weight: 800;
       color: ${props => props.theme.textColor};
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
 
     .investment-stats {
@@ -730,7 +737,7 @@ export const ModernIncomeExpenseCard = styled.div`
 
     .expense-description {
       font-size: 0.9rem;
-      color: ${props => props.theme.textColor}80;
+      color: ${props => props.theme.mode === 'dark' ? '#ffffff' : props.theme.textColor + '80'};
       font-style: italic;
     }
   }

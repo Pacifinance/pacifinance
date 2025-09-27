@@ -5,7 +5,7 @@ import BalancesCharts from '../components/BalancesCharts';
 import BalancesLinesCharts from '../components/BalancesLinesChart';
 import InOutCharts from '../components/InOutChart';
 import PercentageOutflowsChart from '../components/PercentageOutflowsChart';
-import { UserContext } from '../contexts/UserContext';
+import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { StandardPageTitle, StyledSectionStats, SecondaryTitle } from '../styles/MyStyled';
 import styled from 'styled-components';
@@ -218,7 +218,8 @@ const ModernChartCard = styled.div`
 `;
 
 export default function StatsCharts() {
-    const { userData } = useContext(UserContext);
+    const auth = useAuth();
+    const { userData } = auth;
     const { theme } = useContext(ThemeContext);
     const { language } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);

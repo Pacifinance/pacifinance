@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
-import { UserContext } from "../contexts/UserContext";
+import { useAuth } from "../hooks/useAuth";
 import languages from "../data/languages.json";
 // import MyStyled from '../contexts/MyStyled';
 import { MyButton, ButtonContainer } from "../styles/MyStyled";
@@ -15,7 +15,8 @@ function Header({
   toggleMode,
   toggleLanguage: propToggleLanguage,
 }) {
-  const { handleSetIsAuthenticated } = useContext(UserContext);
+  const auth = useAuth();
+  const { handleSetIsAuthenticated } = auth;
   const [showDemoButton, setShowDemoButton] = useState(false);
   const { language, toggleLanguage } = useContext(LanguageContext);
   const handleLanguageToggle = propToggleLanguage || toggleLanguage;

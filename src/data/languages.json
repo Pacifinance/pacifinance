@@ -819,10 +819,40 @@
             "title2": "Progetto Pacifinance",
             "description": "Pacifinance è una piattaforma di finanza personale e di confronto che si pone come obiettivo principale la privacy e permettere la comprensione della propria situazione finanziaria.",
             "description2": "Il confronto con altri utenti è possibile in modo anonimo e non sensibile.",
-            "descriptiopn3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
+            "description3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
             "description4": "Il progetto è no-profit ed è unicamente sostenuto da donazioni volontarie.",
             "description5": "La piattaforma è in continuo sviluppo e nuove funzionalità verranno aggiunte in futuro.",
             "calltoaction": "Supporta il progetto",
+            "features": {
+                "title": "Caratteristiche Principali",
+                "security": {
+                    "title": "Privacy e Sicurezza",
+                    "description": "I tuoi dati sono completamente anonimi e protetti. Nessuna informazione personale viene mai condivisa."
+                },
+                "analytics": {
+                    "title": "Analisi Avanzate",
+                    "description": "Grafici e statistiche dettagliate per comprendere meglio le tue finanze personali."
+                },
+                "responsive": {
+                    "title": "Design Responsivo",
+                    "description": "Piattaforma ottimizzata per tutti i dispositivi: desktop, tablet e smartphone."
+                },
+                "customization": {
+                    "title": "Personalizzazione",
+                    "description": "Tema scuro/chiaro, modalità privacy e personalizzazione dell'interfaccia."
+                },
+                "insights": {
+                    "title": "Insights Finanziari",
+                    "description": "Confronti anonimi con altri utenti per migliorare la tua gestione finanziaria."
+                },
+                "support": {
+                    "title": "Supporto Continuo",
+                    "description": "Sviluppo costante di nuove funzionalità basate sui feedback degli utenti."
+                }
+            },
+            "about": {
+                "title": "Il Nostro Impegno"
+            },
             "faq": {
                 "title": "Domande frequenti",
                 "question1": "Come posso aggiungere un'entrata o un'uscita?",
@@ -1837,10 +1867,40 @@
             "title2": "Pacifinance Project ",
             "description": "Pacifinance is a personal finance and comparison platform that has as its main objective privacy and allows you to understand your financial situation.",
             "description2": "Comparison with other users is possible anonymously and not sensitively.",
-            "descriptiopn3": "The data entered by the user is anonymous, protected and not accessible by third parties.",
+            "description3": "The data entered by the user is anonymous, protected and not accessible by third parties.",
             "description4": "The project is ad-free and non-profit and is solely supported by voluntary donations.",
             "description5": "The platform is in continuous development and new features will be added in the future.",
             "calltoaction": "Support the project",
+            "features": {
+                "title": "Key Features",
+                "security": {
+                    "title": "Privacy & Security",
+                    "description": "Your data is completely anonymous and protected. No personal information is ever shared."
+                },
+                "analytics": {
+                    "title": "Advanced Analytics",
+                    "description": "Detailed charts and statistics to better understand your personal finances."
+                },
+                "responsive": {
+                    "title": "Responsive Design",
+                    "description": "Platform optimized for all devices: desktop, tablet and smartphone."
+                },
+                "customization": {
+                    "title": "Customization",
+                    "description": "Dark/light theme, privacy mode and interface personalization."
+                },
+                "insights": {
+                    "title": "Financial Insights",
+                    "description": "Anonymous comparisons with other users to improve your financial management."
+                },
+                "support": {
+                    "title": "Continuous Support",
+                    "description": "Constant development of new features based on user feedback."
+                }
+            },
+            "about": {
+                "title": "Our Commitment"
+            },
             "faq": {
                 "title": "Frequently asked questions",
                 "question1": "How can I add an income or an outflow?",

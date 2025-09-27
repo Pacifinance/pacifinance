@@ -22,8 +22,8 @@ export const themes = {
     textColor: 'white',
     borderColor: 'white',
     backgroundColor: '#222831', //#222831 o #3d3d3d 
-    buttonBackgroundColor: '#079164 ',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
-    iconBackgroundColor: '#079164 ',
+    buttonBackgroundColor: '#079164',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
+    iconBackgroundColor: '#079164',
     rankingInfoBackgroundColor: '#1a1a1a',
   },
 };

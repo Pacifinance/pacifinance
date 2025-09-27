@@ -1,104 +1,37 @@
 import React, { useState, useContext } from "react";
-import { TitleDashboard, Section } from "../styles/MyStyled";
-import {
-    StyledInfoPage,
-    CenteredInfo,
-    FAQContainer,
-    FAQItem,
-    FAQQuestionButton,
-    FAQAnswerContainer,
-    FAQAnswerContent,
-    StandardPageTitle,
-    StandardPageTitleGreen,
-} from "../styles/MyStyled";
 import languages from "../data/languages.json";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
-import styled from "styled-components";
+import {
+    ModernInfoContainer,
+    ModernInfoContent,
+    ModernInfoHeader,
+    ModernInfoTitle,
+    ModernInfoSubtitle,
+    ModernInfoDescription,
+    ModernInfoSection,
+    ModernSectionCard,
+    ModernSectionTitle,
+    ModernSectionText,
+    ModernSupportSection,
+    ModernSupportTitle,
+    ModernSupportText,
+    ModernCoffeeButton,
+    ModernFAQContainer,
+    ModernFAQItem,
+    ModernFAQQuestion,
+    ModernFAQAnswer,
+    ModernFAQAnswerContent,
+    ModernFeaturesGrid,
+    ModernFeatureCard,
+    ModernFeatureIcon,
+    ModernFeatureTitle,
+    ModernFeatureText,
+} from "../styles/ModernInfoStyled";
+import { BsShield, BsBarChart, BsPhone, BsGear, BsHeart, BsLightbulb } from 'react-icons/bs';
 
-const InfoSection = styled.section`
-    margin: 1.5rem 0;
-
-    @media (max-width: 768px) {
-        margin: 1rem 0;
-    }
-`;
-
-const InfoSubtitle = styled.h2`
-    font-family:
-        "Inter",
-        "Segoe UI",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Roboto",
-        sans-serif;
-    color: ${({ theme }) => theme.buttonBackgroundColor};
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.3;
-    text-align: center;
-    margin: 1.5rem 0 1rem 0;
-
-    @media (max-width: 768px) {
-        margin: 1rem 0 0.75rem 0;
-    }
-`;
-
-const InfoText = styled.p`
-    font-family:
-        "Inter",
-        "Segoe UI",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Roboto",
-        sans-serif;
-    color: ${({ theme }) => theme.textColor};
-    font-size: clamp(1rem, 2vw, 1.125rem);
-    font-weight: 400;
-    line-height: 1.7;
-    letter-spacing: 0.01em;
-    margin-bottom: 0.2rem;
-    text-align: left;
-
-    @media (max-width: 768px) {
-        margin-bottom: 0.5rem;
-        line-height: 1.6;
-    }
-`;
-
-const FAQAnswer = styled.p`
-    font-family:
-        "Inter",
-        "Segoe UI",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Roboto",
-        sans-serif;
-    color: ${({ theme }) => theme.textColor};
-    font-size: clamp(0.95rem, 2vw, 1.1rem);
-    font-weight: 400;
-    line-height: 1.7;
-    letter-spacing: 0.01em;
-    margin: 0;
-    opacity: 0.9;
-
-    @media (max-width: 768px) {
-        line-height: 1.6;
-    }
-`;
-
-const CoffeeContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1.5rem 0;
-
-    @media (max-width: 768px) {
-        margin: 1rem 0;
-    }
-`;
+// I styled components sono ora nel file ModernInfoStyled.jsx
 
 function Info({ theme }) {
     const { language } = useContext(LanguageContext);
@@ -109,165 +42,226 @@ function Info({ theme }) {
         setOpenFAQ(openFAQ === index ? null : index);
     };
 
-    const faqData = [
+    // Gestione più robusta dei testi da languages.json
+    const getTranslation = (path) => {
+        const keys = path.split('.');
+        let result = languages[language];
+        
+        for (const key of keys) {
+            if (result && typeof result === 'object' && result[key] !== undefined) {
+                result = result[key];
+            } else {
+                console.warn(`Translation not found for path: ${path}`);
+                return path; // Fallback al path originale
+            }
+        }
+        
+        return result || path;
+    };
+
+    // Dati FAQ con gestione sicura delle traduzioni
+    const faqData = Array.from({ length: 7 }, (_, index) => {
+        const questionKey = `info.faq.question${index + 1}`;
+        const answerKey = `info.faq.answer${index + 1}`;
+        const question = getTranslation(questionKey);
+        const answer = getTranslation(answerKey);
+        
+        return {
+            question,
+            answer
+        };
+    }).filter(item => !item.question.startsWith('info.faq.question')); // Filtra se la traduzione non è stata trovata
+
+    // Features della piattaforma
+    const features = [
         {
-            question: languages[language].info.faq.question1,
-            answer: languages[language].info.faq.answer1,
+            icon: BsShield,
+            title: getTranslation('info.features.security.title'),
+            description: getTranslation('info.features.security.description'),
+            delay: '0.1s'
         },
         {
-            question: languages[language].info.faq.question2,
-            answer: languages[language].info.faq.answer2,
+            icon: BsBarChart,
+            title: getTranslation('info.features.analytics.title'),
+            description: getTranslation('info.features.analytics.description'),
+            delay: '0.2s'
         },
         {
-            question: languages[language].info.faq.question3,
-            answer: languages[language].info.faq.answer3,
+            icon: BsPhone,
+            title: getTranslation('info.features.responsive.title'),
+            description: getTranslation('info.features.responsive.description'),
+            delay: '0.3s'
         },
         {
-            question: languages[language].info.faq.question4,
-            answer: languages[language].info.faq.answer4,
+            icon: BsGear,
+            title: getTranslation('info.features.customization.title'),
+            description: getTranslation('info.features.customization.description'),
+            delay: '0.4s'
         },
         {
-            question: languages[language].info.faq.question5,
-            answer: languages[language].info.faq.answer5,
+            icon: BsLightbulb,
+            title: getTranslation('info.features.insights.title'),
+            description: getTranslation('info.features.insights.description'),
+            delay: '0.5s'
         },
         {
-            question: languages[language].info.faq.question6,
-            answer: languages[language].info.faq.answer6,
-        },
-        {
-            question: languages[language].info.faq.question7,
-            answer: languages[language].info.faq.answer7,
-        },
+            icon: BsHeart,
+            title: getTranslation('info.features.support.title'),
+            description: getTranslation('info.features.support.description'),
+            delay: '0.6s'
+        }
     ];
 
     return (
-        <Section theme={theme}>
-            <div className="grid">
+        <ModernInfoContainer theme={theme}>
+            <ModernInfoContent>
+                {/* Header Principal */}
+                <ModernInfoHeader>
+                    <ModernInfoTitle>
+                        {getTranslation('info.title')}
+                    </ModernInfoTitle>
+                    <ModernInfoSubtitle theme={theme}>
+                        {getTranslation('info.title2')}
+                    </ModernInfoSubtitle>
+                    <ModernInfoDescription theme={theme}>
+                        {getTranslation('info.description')}
+                    </ModernInfoDescription>
+                </ModernInfoHeader>
 
-                <StyledInfoPage theme={theme}>
-                    <StandardPageTitle theme={theme}>
-                        {languages[language].info.title}
-                    </StandardPageTitle>
-                    <StandardPageTitleGreen theme={theme}>
-                        {languages[language].info.title2}
-                    </StandardPageTitleGreen>
+                {/* Sezione Caratteristiche */}
+                <ModernInfoSection delay="0.2s">
+                    <ModernSectionCard theme={theme}>
+                        <ModernSectionTitle theme={theme}>
+                            {getTranslation('info.features.title') || 'Caratteristiche Principali'}
+                        </ModernSectionTitle>
+                        
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.description2')}
+                        </ModernSectionText>
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.description3')}
+                        </ModernSectionText>
 
-                    <CenteredInfo theme={theme}>
-                        <InfoText theme={theme}>
-                            {languages[language].info.description}
-                        </InfoText>
-                        <InfoText theme={theme}>
-                            {languages[language].info.description2}
-                        </InfoText>
-                        <InfoText theme={theme}>
-                            {languages[language].info.description3}
-                        </InfoText>
-                        <InfoText theme={theme}>
-                            {languages[language].info.description4}
-                        </InfoText>
-                        <InfoText theme={theme}>
-                            {languages[language].info.description5}
-                        </InfoText>
-                    </CenteredInfo>
-
-                    <InfoSection>
-                        <InfoSubtitle theme={theme}>
-                            {languages[language].info.developers.title}
-                        </InfoSubtitle>
-
-                        <CenteredInfo theme={theme}>
-                            <InfoText theme={theme}>
-                                {
-                                    languages[language].info.developers
-                                        .description
-                                }
-                            </InfoText>
-                            <InfoText theme={theme}>
-                                {
-                                    languages[language].info.developers
-                                        .description2
-                                }
-                            </InfoText>
-                            <InfoText theme={theme}>
-                                {
-                                    languages[language].info.developers
-                                        .description3
-                                }
-                            </InfoText>
-                            <InfoText theme={theme}>
-                                {
-                                    languages[language].info.developers
-                                        .calltoaction
-                                }
-                            </InfoText>
-
-                            <CoffeeContainer>
-                                <a
-                                    href="https://buymeacoffee.com/pacifinance"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                        <ModernFeaturesGrid>
+                            {features.map((feature, index) => (
+                                <ModernFeatureCard 
+                                    key={index} 
+                                    theme={theme} 
+                                    delay={feature.delay}
                                 >
-                                    <BuyMeACoffeeWidget showLink={true} />
-                                </a>
-                            </CoffeeContainer>
-                        </CenteredInfo>
-                    </InfoSection>
+                                    <ModernFeatureIcon>
+                                        <feature.icon />
+                                    </ModernFeatureIcon>
+                                    <ModernFeatureTitle theme={theme}>
+                                        {feature.title}
+                                    </ModernFeatureTitle>
+                                    <ModernFeatureText theme={theme}>
+                                        {feature.description}
+                                    </ModernFeatureText>
+                                </ModernFeatureCard>
+                            ))}
+                        </ModernFeaturesGrid>
+                    </ModernSectionCard>
+                </ModernInfoSection>
 
-                    <InfoSection>
-                        <InfoSubtitle theme={theme}>
-                            {languages[language].info.faq.title}
-                        </InfoSubtitle>
+                {/* Sezione Supporta il Progetto */}
+                <ModernInfoSection delay="0.4s">
+                    <ModernSupportSection>
+                        <ModernSupportTitle>
+                            {getTranslation('info.developers.title')}
+                        </ModernSupportTitle>
+                        
+                        <ModernSupportText>
+                            {getTranslation('info.developers.description')}
+                        </ModernSupportText>
+                        <ModernSupportText>
+                            {getTranslation('info.developers.calltoaction')}
+                        </ModernSupportText>
+                        
+                        <a
+                            href="https://buymeacoffee.com/pacifinance"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}
+                        >
+                            <ModernCoffeeButton>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '0.5rem',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: '1.1rem'
+                                }}>
+                                    ☕ Support PaciFinance
+                                </div>
+                                <BuyMeACoffeeWidget showLink={false} />
+                            </ModernCoffeeButton>
+                        </a>
+                    </ModernSupportSection>
+                </ModernInfoSection>
 
-                        <CenteredInfo theme={theme}>
-                            <FAQContainer>
-                                {faqData.map((faq, index) => (
-                                    <FAQItem key={index} theme={theme}>
-                                        <FAQQuestionButton
-                                            theme={theme}
+                {/* Sezione Informazioni Aggiuntive */}
+                <ModernInfoSection delay="0.6s">
+                    <ModernSectionCard theme={theme}>
+                        <ModernSectionTitle theme={theme}>
+                            {getTranslation('info.about.title') || 'Maggiori Informazioni'}
+                        </ModernSectionTitle>
+                        
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.description4')}
+                        </ModernSectionText>
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.description5')}
+                        </ModernSectionText>
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.developers.description2')}
+                        </ModernSectionText>
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.developers.description3')}
+                        </ModernSectionText>
+                    </ModernSectionCard>
+                </ModernInfoSection>
+
+                {/* Sezione FAQ */}
+                <ModernInfoSection delay="0.8s">
+                    <ModernSectionCard theme={theme}>
+                        <ModernSectionTitle theme={theme}>
+                            {getTranslation('info.faq.title')}
+                        </ModernSectionTitle>
+
+                        <ModernFAQContainer>
+                            {faqData.map((faq, index) => (
+                                <ModernFAQItem key={index} theme={theme}>
+                                    <ModernFAQQuestion
+                                        theme={theme}
+                                        $isOpen={openFAQ === index}
+                                        onClick={() => toggleFAQ(index)}
+                                    >
+                                        <span>{faq.question}</span>
+                                        <span className="icon">+</span>
+                                    </ModernFAQQuestion>
+
+                                    <ModernFAQAnswer $isOpen={openFAQ === index}>
+                                        <ModernFAQAnswerContent 
                                             $isOpen={openFAQ === index}
-                                            onClick={() => toggleFAQ(index)}
-                                        >
-                                            <span>{faq.question}</span>
-                                            <span className="icon">+</span>
-                                        </FAQQuestionButton>
-
-                                        <FAQAnswerContainer
-                                            $isOpen={openFAQ === index}
                                             theme={theme}
                                         >
-                                            <FAQAnswerContent
-                                                $isOpen={openFAQ === index}
-                                            >
-                                                <FAQAnswer theme={theme}>
-                                                    {faq.answer}
-                                                </FAQAnswer>
-                                                {index === 5 &&
-                                                    openFAQ === index && (
-                                                        <FAQAnswer
-                                                            theme={theme}
-                                                            style={{
-                                                                marginTop:
-                                                                    "0.75rem",
-                                                            }}
-                                                        >
-                                                            {
-                                                                languages[
-                                                                    language
-                                                                ].info.faq
-                                                                    .answer6CallToAction
-                                                            }
-                                                        </FAQAnswer>
-                                                    )}
-                                            </FAQAnswerContent>
-                                        </FAQAnswerContainer>
-                                    </FAQItem>
-                                ))}
-                            </FAQContainer>
-                        </CenteredInfo>
-                    </InfoSection>
-                </StyledInfoPage>
-            </div>
-        </Section>
+                                            {faq.answer}
+                                            {index === 5 && openFAQ === index && (
+                                                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(7, 145, 100, 0.2)' }}>
+                                                    {getTranslation('info.faq.answer6CallToAction')}
+                                                </div>
+                                            )}
+                                        </ModernFAQAnswerContent>
+                                    </ModernFAQAnswer>
+                                </ModernFAQItem>
+                            ))}
+                        </ModernFAQContainer>
+                    </ModernSectionCard>
+                </ModernInfoSection>
+            </ModernInfoContent>
+        </ModernInfoContainer>
     );
 }
 

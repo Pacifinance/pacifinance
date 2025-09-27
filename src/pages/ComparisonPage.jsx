@@ -1,7 +1,7 @@
 
 import React, {useEffect, useContext, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../contexts/UserContext';
+import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import styled from 'styled-components';
@@ -12,7 +12,8 @@ import { useScrollNavigation } from '../hooks/useScrollNavigation';
 
 function ComparisonPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const auth = useAuth();
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { mode } = theme;
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
@@ -28,7 +29,9 @@ function ComparisonPage() {
     currentPageIndex, 
     totalPages, 
     nextPage, 
-    prevPage 
+    prevPage,
+    cancelLoading,
+    isAutoScrolling
   } = useScrollNavigation(true);
 
   // Chiamata per caricare i dati dell'utente
@@ -76,6 +79,8 @@ function ComparisonPage() {
         nextPage={nextPage}
         prevPage={prevPage}
         onPageClick={handlePageClick}
+        cancelLoading={cancelLoading}
+        isAutoScrolling={isAutoScrolling}
       />
     </div>
   );

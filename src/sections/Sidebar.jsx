@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { Select, MenuItem } from "@mui/material";
-import { BiHomeAlt } from "react-icons/bi";
+import { BiTrendingUp } from "react-icons/bi";
 import {
     AiOutlineFundProjectionScreen,
     AiOutlineTrophy,
@@ -409,7 +409,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         >
                             {[
                                 {
-                                    icon: BiHomeAlt,
+                                    icon: BiTrendingUp,
                                     route: "/dashboard",
                                     tooltip: "Dashboard",
                                     index: 0,

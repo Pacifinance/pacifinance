@@ -17,6 +17,11 @@ const SidebarMobile = ({
     handleLogout
 }) => {
     const navigate = useNavigate();
+    
+    // Guardia per verificare che il theme sia disponibile
+    if (!theme) {
+        return null;
+    }
 
     const HamburgerMenu = () => (
         <div onClick={() => setIsSideBarMenuOpen(false)}>

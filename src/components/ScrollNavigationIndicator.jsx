@@ -289,8 +289,15 @@ const ScrollNavigationIndicator = ({
   nextPage, 
   prevPage,
   onPageClick,
-  pageHasScrollableContent = true
+  pageHasScrollableContent = true,
+  cancelLoading,
+  isAutoScrolling = false
 }) => {
+  // Guardia per verificare che il theme sia disponibile
+  if (!theme) {
+    return null;
+  }
+
   const pageNames = [
     'Dashboard',
     'Grafici',
@@ -357,9 +364,34 @@ const ScrollNavigationIndicator = ({
                 style={{ width: `${loadingProgress}%` }}
               />
             </LoadingProgressBar>
-            <SubText theme={theme}>
-              Torna indietro per annullare
-            </SubText>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+              <SubText theme={theme}>
+                Scorri via per annullare
+              </SubText>
+              {cancelLoading && (
+                <button
+                  onClick={cancelLoading}
+                  style={{
+                    background: 'rgba(231, 76, 60, 0.2)',
+                    border: '1px solid #e74c3c',
+                    borderRadius: '8px',
+                    color: '#e74c3c',
+                    padding: '4px 12px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(231, 76, 60, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(231, 76, 60, 0.2)';
+                  }}
+                >
+                  ✕ Annulla
+                </button>
+              )}
+            </div>
           </LoadingContent>
         </BottomLoadingIndicator>
       </>

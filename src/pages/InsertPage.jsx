@@ -1,6 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../contexts/UserContext';
+import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PageWrapper } from '../styles/MyStyled';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -12,7 +12,8 @@ import { useScrollNavigation } from '../hooks/useScrollNavigation';
 function InsertPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
+  const auth = useAuth();
+  const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
   const { mode } = theme;
   const navigate = useNavigate();
@@ -27,7 +28,9 @@ function InsertPage() {
     currentPageIndex, 
     totalPages, 
     nextPage, 
-    prevPage 
+    prevPage,
+    cancelLoading,
+    isAutoScrolling 
   } = useScrollNavigation(true);
 
   // Chiamata per caricare i dati dell'utente
@@ -84,6 +87,8 @@ function InsertPage() {
         nextPage={nextPage}
         prevPage={prevPage}
         onPageClick={handlePageClick}
+        cancelLoading={cancelLoading}
+        isAutoScrolling={isAutoScrolling}
       />
     </div>
   );

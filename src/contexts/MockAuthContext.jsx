@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { LanguageContext } from './LanguageContext';
+import { sortTagsByLanguage } from '../utils/sortingUtils';
 
 const MockAuthContext = createContext();
 
@@ -235,6 +237,24 @@ export const mockDashboardData = {
     jobTypeTags: ['Full-time', 'Part-time', 'Contract', 'Freelance'],
     workTimeTags: ['40', '35', '30', '25', '20'],
     remoteTypeTags: ['Remote', 'Hybrid', 'Office'],
+    yearsExperienceTags: ['0-1', '2-3', '4-5', '6-10', '11-15', '16-20', '20+'],
+    ageTags: ['18-25', '26-30', '31-35', '36-40', '41-45', '46-50', '51-55', '56-60', '60+'],
+    livingStatusTags: [
+        { key: 'alone', value: { it: 'Vivo da solo', en: 'Living alone' } },
+        { key: 'others', value: { it: 'Vivo con altre persone', en: 'Living with others' } },
+        { key: 'partner', value: { it: 'Vivo con il partner', en: 'Living with partner' } },
+        { key: 'family', value: { it: 'Vivo con la famiglia', en: 'Living with family' } }
+    ],
+    housingTypeTags: [
+        { key: 'rent', value: { it: 'Affitto', en: 'Rent' } },
+        { key: 'mortgage', value: { it: 'Mutuo', en: 'Mortgage' } },
+        { key: 'owned', value: { it: 'Di proprietà', en: 'Owned' } },
+        { key: 'family', value: { it: 'Casa di famiglia', en: 'Family home' } }
+    ],
+    hasChildrenTags: [
+        { key: 'yes', value: { it: 'Sì', en: 'Yes' } },
+        { key: 'no', value: { it: 'No', en: 'No' } }
+    ],
     
     // Spese per categoria per mese (per grafici dettagliati)
     totalExpensesPerCategoryPerMonth: Array.from({ length: 12 }, (_, monthIndex) => {
@@ -267,6 +287,13 @@ export const MockAuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isUpdated, setIsUpdated] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    const { language } = useContext(LanguageContext);
+    
+    // Funzione helper per ordinare i tags mock
+    const getSortedTags = (tags) => {
+        return sortTagsByLanguage(tags, language);
+    };
+
     const [userData, setUserData] = useState(mockDashboardData);
 
     const handleSetIsAuthenticated = (value) => {
@@ -286,7 +313,24 @@ export const MockAuthProvider = ({ children }) => {
     };
 
     const value = {
-        userData,
+        userData: {
+            ...userData,
+            // Tags ordinati alfabeticamente in base alla lingua
+            expensesTags: getSortedTags(userData.expensesTags),
+            incomesTags: getSortedTags(userData.incomesTags), 
+            paymentTags: getSortedTags(userData.paymentTags),
+            // I tags demografici rimangono così come sono (stringhe semplici)
+            nationalityTags: userData.nationalityTags.sort(),
+            jobTags: userData.jobTags.sort(),
+            jobTypeTags: userData.jobTypeTags.sort(),
+            workTimeTags: userData.workTimeTags.sort(),
+            remoteTypeTags: userData.remoteTypeTags.sort(),
+            yearsExperienceTags: userData.yearsExperienceTags.sort(),
+            ageTags: userData.ageTags.sort(),
+            livingStatusTags: userData.livingStatusTags,
+            housingTypeTags: userData.housingTypeTags,
+            hasChildrenTags: userData.hasChildrenTags
+        },
         setUserData,
         isAuthenticated,
         isUpdated,

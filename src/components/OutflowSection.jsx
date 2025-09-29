@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
   MySecondaryButton,
   StyledDateInput,
@@ -558,7 +559,7 @@ export default function OutflowSection({
                 }
               </em>
             </MenuItem>
-            {OutflowsTags.map((item) => (
+            {sortTagsByLanguage(OutflowsTags, language).map((item) => (
               <MenuItem key={item.index} value={item.index}>
                 {item.translations[language]}
               </MenuItem>
@@ -609,7 +610,7 @@ export default function OutflowSection({
                 }
               </em>
             </MenuItem>
-            {paymentTags.map(
+            {sortTagsByLanguage(paymentTags, language).map(
               (item) =>
                 // check if the item is not none because we don't want to show it
                 item.label !== 'none' && (

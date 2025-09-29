@@ -4,6 +4,7 @@ import { Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import languages from "../data/languages.json";
+import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
     MuiCustomDialog,
     MuiFixedDimDialog,
@@ -302,7 +303,7 @@ const SidebarModals = ({
                                         }
                                     </em>
                                 </MenuItem>
-                                {jobTypeTags.map((tag) => (
+                                {sortTagsByLanguage(jobTypeTags, language).map((tag) => (
                                     <MenuItem
                                         key={tag.index}
                                         value={{
@@ -354,7 +355,7 @@ const SidebarModals = ({
                                         }
                                     </em>
                                 </MenuItem>
-                                {workTimeTags.map((tag) => (
+                                {sortTagsByLanguage(workTimeTags, language).map((tag) => (
                                     <MenuItem
                                         key={tag.index}
                                         value={{
@@ -406,7 +407,7 @@ const SidebarModals = ({
                                         }
                                     </em>
                                 </MenuItem>
-                                {remoteTypeTags.map((tag) => (
+                                {sortTagsByLanguage(remoteTypeTags, language).map((tag) => (
                                     <MenuItem
                                         key={tag.index}
                                         value={{

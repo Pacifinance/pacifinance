@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
   MySecondaryButton,
   StyledDateInput,
@@ -522,7 +523,7 @@ export default function IncomeSection({
                 }
               </em>
             </MenuItem>
-            {incomesTags.map((item) => (
+            {sortTagsByLanguage(incomesTags, language).map((item) => (
               <MenuItem key={item.index} value={item.index}>
                 {item.translations[language]}
               </MenuItem>

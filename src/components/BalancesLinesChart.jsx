@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
-import { Tooltip } from "recharts/lib/component/Tooltip"; 
+import { Tooltip } from "recharts/lib/component/Tooltip";
 import { XAxis } from "recharts/lib/cartesian/XAxis";
 import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { AreaChart } from "recharts/lib/chart/AreaChart";
@@ -14,13 +14,29 @@ import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
-
-
+import { assetColors, getAssetColor } from '../data/assetColors.js';
 export default function BalancesLinesChart({theme, userData, isHidden, CustomTick}) {
   const { language } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
+  const [containerWidth, setContainerWidth] = useState(800);
 
-  // const { SectionBalancesCharts } = MyStyled();
+  // Gestione responsive
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setContainerWidth(Math.min(width - 60, 400));
+      } else if (width < 1024) {
+        setContainerWidth(Math.min(width - 120, 600));
+      } else {
+        setContainerWidth(Math.min(width - 200, 800));
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,8 +107,17 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
           <RiFileExcel2Line className="text-paciGreen text-xl" />
         </button>
 
+        <div style={{ 
+          width: '100%', 
+          height: '450px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: '2rem',
+          overflow: 'hidden'
+        }}>
         <AreaChart
-            width={600}
+            width={containerWidth}
             height={400}
             data={data}
             margin={{
@@ -101,9 +126,48 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
               bottom: 40
             }}
         >
-            <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/> 
-            <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9}/>} />
-            <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} 
+              vertical={false}
+            /> 
+            <XAxis 
+              dataKey="name" 
+              interval={containerWidth < 500 ? 1 : 0}
+              tick={(props) => <CustomTick 
+                {...props} 
+                textAnchor="middle" 
+                fill={theme.textColor} 
+                angle={containerWidth < 500 ? -45 : 0} 
+                fontSize={containerWidth < 500 ? 9 : 11}
+                fontWeight={500}
+              />}
+              height={containerWidth < 500 ? 80 : 60}
+              axisLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                strokeWidth: 1
+              }}
+              tickLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+              }}
+            />
+            <YAxis 
+              tick={(props) => <CustomTick 
+                {...props} 
+                textAnchor="end" 
+                fill={theme.textColor} 
+                fontSize={containerWidth < 500 ? 10 : 12}
+                fontWeight={500}
+                dx={-5}
+              />}
+              axisLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                strokeWidth: 1
+              }}
+              tickLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+              }}
+            />
             <Tooltip
                 contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
                 labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
@@ -137,18 +201,17 @@ export default function BalancesLinesChart({theme, userData, isHidden, CustomTic
             {/* <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
             <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%'}}/>
 
-            {data.every(item => item['total'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'total'} stroke={isHidden ? theme.textColor : "#000000"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#000000"} />}
-            {data.every(item => item['bank'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bank'} stroke={isHidden ? theme.textColor : "#0D579B"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#0D579B"} />}
-            {data.every(item => item['cash'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'cash'} stroke={isHidden ? theme.textColor : "#329239"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#329239"} />}
-            {data.every(item => item['digitalServices']=== 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'digitalServices'} stroke={isHidden ? theme.textColor : "#74b9ff"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#74b9ff"} />}
-            {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'stocks'} stroke={isHidden ? theme.textColor : "#FF6600"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#FF6600"} />}
-            {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'etf'} stroke={isHidden ? theme.textColor : "#a29bfe"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#a29bfe"} />}
-            {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bitcoin'} stroke={isHidden ? theme.textColor : "#F7B510"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#F7B510"} />}
-            {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'crypto'} stroke={isHidden ? theme.textColor : "#d63031"} fillOpacity={0.3} fill={isHidden ? theme.textColor : "#d63031"} />}
-
-
+            {data.every(item => item['total'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'total'} stroke={isHidden ? theme.textColor : assetColors.totalBalance} fillOpacity={0.3} fill={isHidden ? theme.textColor : assetColors.totalBalance} />}
+            {data.every(item => item['bank'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bank'} stroke={isHidden ? theme.textColor : getAssetColor('bank', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('bank', theme.mode)} />}
+            {data.every(item => item['cash'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'cash'} stroke={isHidden ? theme.textColor : getAssetColor('cash', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('cash', theme.mode)} />}
+            {data.every(item => item['digitalServices']=== 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'digitalServices'} stroke={isHidden ? theme.textColor : getAssetColor('digitalServices', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('digitalServices', theme.mode)} />}
+            {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'stocks'} stroke={isHidden ? theme.textColor : getAssetColor('stocks', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('stocks', theme.mode)} />}
+            {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'etf'} stroke={isHidden ? theme.textColor : getAssetColor('etf', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('etf', theme.mode)} />}
+            {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bitcoin'} stroke={isHidden ? theme.textColor : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('bitcoin', theme.mode)} />}
+            {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'crypto'} stroke={isHidden ? theme.textColor : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('crypto', theme.mode)} />}
 
         </AreaChart>
+        </div>
     </SectionBalancesCharts>
   );
 }

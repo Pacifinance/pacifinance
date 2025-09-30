@@ -4,14 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
+import { LanguageContext } from '../contexts/LanguageContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import Comparison from '../sections/Comparison';
 import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
+import SEOHead from '../components/SEOHead';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
+import languages from '../data/languages.json';
 
 function ComparisonPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
+  const { language } = useContext(LanguageContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
@@ -57,32 +61,40 @@ function ComparisonPage() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
-      <div style={{ 
-        marginLeft: isMobileScreen ? '0' : '5.5rem', 
-        paddingTop: isMobileScreen ? '70px' : '0',
-        width: '100%' 
-      }}>
-        <Comparison theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
-      </div>
-      
-      <ScrollNavigationIndicator
-        theme={theme}
-        isNavigating={isNavigating}
-        isLoading={isLoading}
-        loadingDirection={loadingDirection}
-        loadingProgress={loadingProgress}
-        pageHasScrollableContent={pageHasScrollableContent}
-        currentPageIndex={currentPageIndex}
-        totalPages={totalPages}
-        nextPage={nextPage}
-        prevPage={prevPage}
-        onPageClick={handlePageClick}
-        cancelLoading={cancelLoading}
-        isAutoScrolling={isAutoScrolling}
+    <>
+      <SEOHead 
+        title={`${languages[language].comparison.title} - Pacifinance`}
+        description={`${languages[language].comparison.subtitle} - Confronta le tue finanze con utenti simili in modo anonimo e sicuro`}
+        keywords="confronto finanziario, benchmark finanze personali, comparazione stipendi, analisi finanziaria, confronto budget"
+        canonicalUrl="https://pacifinance.com/comparison"
       />
-    </div>
+      <div style={{ display: 'flex', height: '100vh' }}>
+        <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+        <div style={{ 
+          marginLeft: isMobileScreen ? '0' : '5.5rem', 
+          paddingTop: isMobileScreen ? '70px' : '0',
+          width: '100%' 
+        }}>
+          <Comparison theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
+        </div>
+      
+        <ScrollNavigationIndicator
+          theme={theme}
+          isNavigating={isNavigating}
+          isLoading={isLoading}
+          loadingDirection={loadingDirection}
+          loadingProgress={loadingProgress}
+          pageHasScrollableContent={pageHasScrollableContent}
+          currentPageIndex={currentPageIndex}
+          totalPages={totalPages}
+          nextPage={nextPage}
+          prevPage={prevPage}
+          onPageClick={handlePageClick}
+          cancelLoading={cancelLoading}
+          isAutoScrolling={isAutoScrolling}
+        />
+      </div>
+    </>
   );
 }
 

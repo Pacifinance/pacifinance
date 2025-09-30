@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Section } from '../styles/MyStyled';
 import { 
   StyledMonth, 
@@ -19,6 +20,16 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import SavingsIcon from '@mui/icons-material/Savings';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import PersonIcon from '@mui/icons-material/Person';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import GroupIcon from '@mui/icons-material/Group';
+import PublicIcon from '@mui/icons-material/Public';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import StarIcon from '@mui/icons-material/Star';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import languages from '../data/languages.json';
@@ -251,9 +262,443 @@ const InsightCard = styled.div`
   }
 `;
 
+const ProfileBanner = styled.div`
+  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}20 0%, ${props => props.theme.buttonBackgroundColor}10 100%);
+  border: 2px solid ${props => props.theme.buttonBackgroundColor}40;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px ${props => props.theme.buttonBackgroundColor}30;
+    border-color: ${props => props.theme.buttonBackgroundColor}60;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}aa);
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+`;
+
+const BannerIcon = styled.div`
+  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
+  border-radius: 50%;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px ${props => props.theme.buttonBackgroundColor}40;
+  min-width: 80px;
+  height: 80px;
+`;
+
+const BannerContent = styled.div`
+  flex: 1;
+  
+  h3 {
+    color: ${props => props.theme.textColor};
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    
+    @media (max-width: 768px) {
+      font-size: 1.2rem;
+    }
+  }
+  
+  p {
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+    
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+    }
+  }
+`;
+
+const BannerAction = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: ${props => props.theme.buttonBackgroundColor};
+  font-weight: 600;
+  font-size: 1rem;
+  
+  @media (max-width: 768px) {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+`;
+
+// Modern Rankings Components
+const RankingsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: none;
+  
+  @media (max-width: 768px) {
+    gap: 1.5rem;
+  }
+`;
+
+const RankingsHeader = styled.div`
+  text-align: center;
+  background: linear-gradient(135deg, ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.9)'} 0%, ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.9)' : '#f8fafc'} 100%);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
+  box-shadow: ${props => props.theme.mode === 'dark' ? '0 10px 15px -3px rgba(0, 0, 0, 0.4)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)'};
+  
+  h2 {
+    color: ${props => props.theme.textColor};
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+  
+  .month-indicator {
+    background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}cc);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem auto 0;
+    width: fit-content;
+    box-shadow: 0 4px 12px ${props => props.theme.buttonBackgroundColor}40;
+  }
+`;
+
+const RankingsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+`;
+
+const RankingGroup = styled.div`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.6)' : 'rgba(255, 255, 255, 0.8)'};
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${props => props.theme.mode === 'dark' ? '0 20px 25px -5px rgba(0, 0, 0, 0.6)' : '0 10px 25px -3px rgba(0, 0, 0, 0.1)'};
+  }
+  
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
+    
+    .icon-container {
+      background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
+      border-radius: 50%;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 16px ${props => props.theme.buttonBackgroundColor}30;
+    }
+    
+    h3 {
+      color: ${props => props.theme.textColor};
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+`;
+
+const RankingCard = styled.div`
+  background: ${props => {
+    if (props.isTop) return `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}20, ${props.theme.buttonBackgroundColor}10)`;
+    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.05)';
+    return props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.2)' : 'rgba(243, 244, 246, 0.8)';
+  }};
+  border: 2px solid ${props => {
+    if (props.isTop) return props.theme.buttonBackgroundColor + '40';
+    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)';
+    return 'transparent';
+  }};
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: ${props => {
+      if (props.isTop) return `linear-gradient(180deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}cc)`;
+      if (props.isLow) return 'linear-gradient(180deg, #6366f1, #4f46e5)';
+      return 'linear-gradient(180deg, #6b7280, #4b5563)';
+    }};
+  }
+  
+  .rank-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    
+    h4 {
+      color: ${props => props.theme.textColor};
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .rank-badge {
+      background: ${props => {
+        if (props.isTop) return `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}dd)`;
+        if (props.isLow) return 'linear-gradient(135deg, #6366f1, #4f46e5)';
+        return 'linear-gradient(135deg, #6b7280, #4b5563)';
+      }};
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+  
+  .rank-description {
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+`;
+
+const MotivationalPopup = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
+  box-shadow: ${props => props.theme.mode === 'dark' ? '0 25px 50px -12px rgba(0, 0, 0, 0.8)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'};
+  z-index: 1000;
+  text-align: center;
+  animation: popupSlideIn 0.3s ease-out;
+  
+  @keyframes popupSlideIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -60%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  .popup-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    color: ${props => props.theme.textColor};
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+  
+  p {
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 2rem 0;
+  }
+  
+  button {
+    background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px ${props => props.theme.buttonBackgroundColor}40;
+    }
+  }
+`;
+
+const PopupOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+`;
+
 function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const { language } = useContext(LanguageContext);
     const [activeTab, setActiveTab] = useState('insights');
+    const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
+    const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
+    const navigate = useNavigate();
+
+    // Controllo se il profilo è completo
+    const isProfileComplete = () => {
+        if (!userData) return false;
+        
+        const profileFields = [
+            userData.nationality,
+            userData.whereWorks,
+            userData.job,
+            userData.jobType,
+            userData.workTime,
+            userData.remoteType,
+            userData.yearsExperience,
+            userData.age,
+            userData.livingStatus,
+            userData.housingType,
+            userData.hasChildren
+        ];
+        
+        // Considera completo se almeno il 70% dei campi è compilato
+        const completedFields = profileFields.filter(field => field && field !== "").length;
+        const completionPercentage = (completedFields / profileFields.length) * 100;
+        
+        return completionPercentage >= 70;
+    };
+
+    // Funzioni helper per Rankings
+    const getRankLevel = (rank) => {
+        if (!rank || rank === '' || isNaN(rank)) return 'none';
+        const numRank = parseFloat(rank);
+        if (numRank <= 20) return 'top';
+        if (numRank >= 70) return 'low';
+        return 'medium';
+    };
+
+    const getRankDescription = (rank, category, isExpense = false) => {
+        if (!rank || rank === '' || isNaN(rank)) return languages[language].leaderboard.rankings.noData;
+        
+        const numRank = Math.min(parseFloat(rank), 99);
+        const level = getRankLevel(numRank);
+        
+        const categoryKey = isExpense ? 'expenses' : category;
+        const descriptions = languages[language].leaderboard.rankings.descriptions[categoryKey];
+        
+        if (descriptions) {
+            return descriptions[level] || descriptions.medium;
+        }
+        
+        // Fallback generico
+        if (level === 'top') return `${languages[language].leaderboard.rankings.topPerformance} Top ${numRank}%`;
+        if (level === 'low') return `${languages[language].leaderboard.rankings.canImprove} Top ${numRank}%`;
+        return `${languages[language].leaderboard.rankings.goodPerformance} Top ${numRank}%`;
+    };
+
+    const showMotivationalMessage = (rank, category, isExpense = false) => {
+        if (!rank || rank === '' || isNaN(rank)) return;
+        
+        const numRank = parseFloat(rank);
+        const level = getRankLevel(numRank);
+        
+        const categoryKey = isExpense ? 'expenses' : category;
+        const motivationalTexts = languages[language].leaderboard.rankings.motivational[level];
+        
+        let content = {
+            type: level,
+            title: motivationalTexts.title,
+            message: motivationalTexts[categoryKey] || motivationalTexts.balance,
+            icon: level === 'top' ? '🏆' : level === 'medium' ? '⭐' : '💪'
+        };
+        
+        setPopupContent(content);
+        setShowMotivationalPopup(true);
+    };
+
+    const getCurrentMonth = () => {
+        const monthDate = userData?.preMonthDate || new Date();
+        return new Date(monthDate).toLocaleDateString('it-IT', { 
+            year: 'numeric', 
+            month: 'long' 
+        });
+    };
 
     // Mock data for comparisons - in a real app, this would come from API
     const mockComparisonData = {
@@ -313,8 +758,31 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         return insights;
     };
 
+    const renderProfileBanner = () => (
+        <ProfileBanner 
+            theme={theme} 
+            onClick={() => navigate('/account')}
+        >
+            <BannerIcon theme={theme}>
+                <PersonIcon style={{ fontSize: '2rem', color: 'white' }} />
+            </BannerIcon>
+            <BannerContent theme={theme}>
+                <h3>🚀 Sblocca confronti personalizzati!</h3>
+                <p>
+                    Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati 
+                    con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!
+                </p>
+            </BannerContent>
+            <BannerAction theme={theme}>
+                Completa profilo
+                <ArrowForwardIcon />
+            </BannerAction>
+        </ProfileBanner>
+    );
+
     const renderInsightsTab = () => (
         <>
+            {!isProfileComplete() && renderProfileBanner()}
             <GridContainer>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
@@ -434,14 +902,155 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         </>
     );
 
-    const renderRankingsTab = () => (
-        <Leaderboard 
-          theme={theme} 
-          userData={userData} 
-          handleSetIsUpdated={handleSetIsUpdated} 
-          isHidden={isHidden} 
-        />
-    );
+    const renderRankingsTab = () => {
+        const balanceRank = userData?.percentageRankOnBalance || '';
+        const incomeRank = userData?.percentageRankOnIncomes || '';
+        const expenseRank = userData?.percentageRankOnExpenses || '';
+        const balanceSimilarRank = userData?.percentageRankOnBalanceSimilar || '';
+        const incomeSimilarRank = userData?.percentageRankOnIncomesSimilar || '';
+        const expenseSimilarRank = userData?.percentageRankOnExpensesSimilar || '';
+
+        const RankCard = ({ title, rank, icon, isExpense = false, category }) => (
+            <RankingCard 
+                theme={theme} 
+                isTop={getRankLevel(rank) === 'top'}
+                isLow={getRankLevel(rank) === 'low'}
+                onClick={() => showMotivationalMessage(rank, category, isExpense)}
+            >
+                <div className="rank-header">
+                    <h4>
+                        {icon}
+                        {title}
+                    </h4>
+                    <div className="rank-badge">
+                        {getRankLevel(rank) === 'top' && <EmojiEventsIcon style={{ fontSize: '1rem' }} />}
+                        {getRankLevel(rank) === 'low' && <TrendingDownIcon style={{ fontSize: '1rem' }} />}
+                        {getRankLevel(rank) === 'medium' && <TrendingUpIcon style={{ fontSize: '1rem' }} />}
+                        {rank && !isNaN(rank) ? `Top ${Math.min(parseFloat(rank), 99)}%` : 'N/A'}
+                    </div>
+                </div>
+                <p className="rank-description">
+                    {isHidden ? '****' : getRankDescription(rank, category, isExpense)}
+                </p>
+            </RankingCard>
+        );
+
+        return (
+            <RankingsContainer>
+                {!isProfileComplete() && renderProfileBanner()}
+                
+                <RankingsHeader theme={theme}>
+                    <h2>
+                        <EmojiEventsIcon style={{ fontSize: '2.5rem', color: theme.buttonBackgroundColor }} />
+                        {languages[language].leaderboard.rankings.title}
+                    </h2>
+                    <div className="month-indicator">
+                        <CalendarTodayIcon style={{ fontSize: '1rem' }} />
+                        {languages[language].leaderboard.rankings.monthData} {getCurrentMonth()}
+                    </div>
+                </RankingsHeader>
+
+                <RankingsGrid>
+                    {/* Classifica Generale */}
+                    <RankingGroup theme={theme}>
+                        <div className="group-header">
+                            <div className="icon-container">
+                                <PublicIcon style={{ fontSize: '1.5rem', color: 'white' }} />
+                            </div>
+                            <div>
+                                <h3>{languages[language].leaderboard.rankings.generalRanking}</h3>
+                                <p style={{ 
+                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', 
+                                    margin: 0, 
+                                    fontSize: '0.9rem' 
+                                }}>
+                                    {languages[language].leaderboard.rankings.generalSubtitle}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <RankCard 
+                            title={languages[language].leaderboard.rankings.balance} 
+                            rank={balanceRank}
+                            icon={<AccountBalanceIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
+                            category="balance"
+                        />
+                        
+                        <RankCard 
+                            title={languages[language].leaderboard.rankings.income} 
+                            rank={incomeRank}
+                            icon={<MonetizationOnIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
+                            category="income"
+                        />
+                        
+                        <RankCard 
+                            title={languages[language].leaderboard.rankings.expenses} 
+                            rank={expenseRank}
+                            icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
+                            category="expenses"
+                            isExpense={true}
+                        />
+                    </RankingGroup>
+
+                    {/* Classifica Utenti Simili */}
+                    <RankingGroup theme={theme}>
+                        <div className="group-header">
+                            <div className="icon-container">
+                                <GroupIcon style={{ fontSize: '1.5rem', color: 'white' }} />
+                            </div>
+                            <div>
+                                <h3>{languages[language].leaderboard.rankings.similarRanking}</h3>
+                                <p style={{ 
+                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', 
+                                    margin: 0, 
+                                    fontSize: '0.9rem' 
+                                }}>
+                                    {languages[language].leaderboard.rankings.similarSubtitle}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <RankCard 
+                            title={languages[language].leaderboard.rankings.balance} 
+                            rank={balanceSimilarRank}
+                            icon={<AccountBalanceIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
+                            category="balance"
+                        />
+                        
+                        <RankCard 
+                            title={languages[language].leaderboard.rankings.income} 
+                            rank={incomeSimilarRank}
+                            icon={<MonetizationOnIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
+                            category="income"
+                        />
+                        
+                        <RankCard 
+                            title={languages[language].leaderboard.rankings.expenses} 
+                            rank={expenseSimilarRank}
+                            icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
+                            category="expenses"
+                            isExpense={true}
+                        />
+                    </RankingGroup>
+                </RankingsGrid>
+
+                {/* Popup Motivazionale */}
+                {showMotivationalPopup && (
+                    <>
+                        <PopupOverlay onClick={() => setShowMotivationalPopup(false)} />
+                        <MotivationalPopup theme={theme}>
+                            <div className="popup-icon">{popupContent.icon}</div>
+                            <h3>{popupContent.title}</h3>
+                            <p>{popupContent.message}</p>
+                            <button onClick={() => setShowMotivationalPopup(false)}>
+                                {languages[language].leaderboard.rankings.popup.close}
+                            </button>
+                        </MotivationalPopup>
+                    </>
+                )}
+            </RankingsContainer>
+        );
+    };
 
     return (
         <Section theme={theme}>

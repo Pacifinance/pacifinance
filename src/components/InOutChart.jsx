@@ -23,13 +23,32 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const { language } = React.useContext(LanguageContext);
   const [incomesArray, setIncomesArray] = useState([]);
   const [outflowsArray, setOutflowsArray] = useState([]);
+  const [containerWidth, setContainerWidth] = useState(800);
 
   const greyScale1 = Math.floor(Math.random() * 256);
   const greyColor1 = `rgb(${greyScale1}, ${greyScale1}, ${greyScale1})`;
   const greyScale2 = Math.floor(Math.random() * 256);
   const greyColor2 = `rgb(${greyScale2}, ${greyScale2}, ${greyScale2})`;
 
-  //impostare i dati presi dell'utente per le spese e le entrate TODO
+  // Gestione responsive
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setContainerWidth(Math.min(width - 60, 400));
+      } else if (width < 1024) {
+        setContainerWidth(Math.min(width - 120, 600));
+      } else {
+        setContainerWidth(Math.min(width - 200, 800));
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  //impostare i dati presi dell'utente per le spese e le entrate
   useEffect(() => {
     const fetchData = async () => {
       if (userData) {
@@ -73,59 +92,185 @@ export default function InOutChart({theme, userData, isHidden, CustomTick}) {
   const data = lastTwelveMonths.reverse(); // Inverti l'ordine
 
   return (
-    <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '800px' }}>
-        <CSVLink data={data} headers={headers}
-          filename={`incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
-          className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 z-10"
-        >
-          <BsFiletypeCsv className="text-paciGreen text-xl" />
-        </CSVLink>
+    <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: '100%' }}>
+        {/* Export buttons */}
+        <div className="absolute top-0 right-0 flex gap-2 z-10">
+          <CSVLink 
+            data={data} 
+            headers={headers}
+            filename={`incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
+            className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+            style={{
+              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+              borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            <BsFiletypeCsv className="text-paciGreen text-lg" />
+          </CSVLink>
 
-        <button
+          <button
             disabled
             onClick={async () => await downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-            className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200 z-10"
+            className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+              borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              backdropFilter: 'blur(10px)'
+            }}
           >
-            <RiFileExcel2Line className="text-paciGreen text-xl" />
-        </button>
+            <RiFileExcel2Line className="text-paciGreen text-lg" />
+          </button>
+        </div>
 
-        <div style={{ width: '100%', overflowX: 'auto' }}>
+        {/* Responsive chart container */}
+        <div style={{ 
+          width: '100%', 
+          height: '450px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: '2rem'
+        }}>
           <LineChart
-            width={Math.max(600, window.innerWidth > 768 ? 700 : Math.min(window.innerWidth - 40, 600))}
+            width={containerWidth}
             height={400}
             data={data}
             margin={{
               top: 20,
               right: 30,
               left: 20,
-              bottom: 40
+              bottom: 60
             }}
           >
-          <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
-            <XAxis 
-              tick={{fontSize: window.innerWidth > 768 ? 10 : 8, fill: theme.textColor}} 
-              interval={window.innerWidth > 768 ? 0 : 1} 
-              dataKey="name" 
-              angle={window.innerWidth > 768 ? 0 : -45}
-              textAnchor={window.innerWidth > 768 ? 'middle' : 'end'}
-              height={window.innerWidth > 768 ? 60 : 80}
+            <defs>
+              <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#079164" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#079164" stopOpacity={0.1}/>
+              </linearGradient>
+              <linearGradient id="outflowGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ff3838" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#ff3838" stopOpacity={0.1}/>
+              </linearGradient>
+            </defs>
+            
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} 
+              vertical={false}
             />
-            <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={window.innerWidth > 768 ? 11 : 9} dx={-10}/>} />
+            
+            <XAxis 
+              dataKey="name"
+              tick={{
+                fontSize: containerWidth < 500 ? 10 : 12, 
+                fill: theme.textColor,
+                fontWeight: 500
+              }} 
+              interval={containerWidth < 500 ? 1 : 0} 
+              angle={containerWidth < 500 ? -45 : 0}
+              textAnchor={containerWidth < 500 ? 'end' : 'middle'}
+              height={containerWidth < 500 ? 80 : 60}
+              axisLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                strokeWidth: 1
+              }}
+              tickLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+              }}
+            />
+            
+            <YAxis 
+              tick={(props) => <CustomTick 
+                {...props} 
+                textAnchor="end" 
+                fill={theme.textColor} 
+                fontSize={containerWidth < 500 ? 10 : 12}
+                fontWeight={500}
+                dx={-5}
+              />}
+              axisLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                strokeWidth: 1
+              }}
+              tickLine={{ 
+                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+              }}
+            />
+            
             <Tooltip
-              contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px', fontSize: '12px' }}
-              labelStyle={{ color: 'black', fontWeight: 'bold' }}
+              contentStyle={{ 
+                backgroundColor: theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)', 
+                color: theme.textColor,
+                borderRadius: '12px', 
+                padding: '12px',
+                fontSize: '13px',
+                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(10px)'
+              }}
+              labelStyle={{ 
+                color: theme.textColor, 
+                fontWeight: 'bold',
+                marginBottom: '4px'
+              }}
               formatter={(value, name, entry) => {
-                return isHidden ? ['****'] : [`${name}: ${new Intl.NumberFormat('it-IT', {
+                if (isHidden) return ['****'];
+                
+                const formattedValue = new Intl.NumberFormat('it-IT', {
                   style: 'currency',
                   currency: 'EUR',
                   maximumFractionDigits: 0,
-                }).format(value)}`];
+                }).format(value);
+                
+                return [formattedValue, name];
               }}
             />
-            <Legend wrapperStyle={{ fontSize: window.innerWidth > 768 ? '14px' : '12px' }} />
-            <Line type="monotone" dataKey={languages[language].general.incomes} stroke={isHidden ? greyColor1 : "#079164"} strokeWidth={3} activeDot={{ r: 8 }} />
-            <Line type="monotone" dataKey={languages[language].general.outflows} stroke={isHidden ? greyColor2 : "#ff3838"} strokeWidth={2} />
+            
+            <Legend 
+              wrapperStyle={{ 
+                fontSize: containerWidth < 500 ? '12px' : '14px',
+                fontWeight: 500,
+                paddingTop: '10px'
+              }} 
+            />
+            
+            <Line 
+              type="monotone" 
+              dataKey={languages[language].general.incomes} 
+              stroke={isHidden ? greyColor1 : "#079164"} 
+              strokeWidth={3} 
+              dot={{ 
+                fill: isHidden ? greyColor1 : "#079164", 
+                strokeWidth: 2, 
+                r: 4 
+              }}
+              activeDot={{ 
+                r: 6, 
+                fill: isHidden ? greyColor1 : "#079164",
+                stroke: '#fff',
+                strokeWidth: 2
+              }} 
+            />
+            
+            <Line 
+              type="monotone" 
+              dataKey={languages[language].general.outflows} 
+              stroke={isHidden ? greyColor2 : "#ff3838"} 
+              strokeWidth={3}
+              dot={{ 
+                fill: isHidden ? greyColor2 : "#ff3838", 
+                strokeWidth: 2, 
+                r: 4 
+              }}
+              activeDot={{ 
+                r: 6, 
+                fill: isHidden ? greyColor2 : "#ff3838",
+                stroke: '#fff',
+                strokeWidth: 2
+              }}
+            />
           </LineChart>
         </div>
       </div>

@@ -13,7 +13,9 @@ import {
     Calendar,
     Users,
     Baby,
-    Star
+    Star,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react';
 import axios from 'axios';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -120,6 +122,7 @@ const AccountPage = () => {
     const navigate = useNavigate();
 
     const [isEditMode, setIsEditMode] = useState(false);
+    const [showBenefitsInfo, setShowBenefitsInfo] = useState(false);
     const [userId, setUserId] = useState('');
     const [userType, setUserType] = useState('');
     const [userNationality, setUserNationality] = useState({ key: "", value: "" });
@@ -469,8 +472,8 @@ const AccountPage = () => {
                 style={{
                     background: cardBg,
                     border: `1px solid ${borderColor}`,
-                    borderRadius: '24px',
-                    padding: isMobileScreen ? '1.5rem' : '2rem',
+                    borderRadius: isMobileScreen ? '16px' : '24px',
+                    padding: isMobileScreen ? '1rem' : '2rem',
                     boxShadow: theme.mode === 'dark' 
                         ? isFocused 
                             ? '0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)' 
@@ -507,15 +510,15 @@ const AccountPage = () => {
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '1rem',
-                    marginBottom: '1.5rem',
+                    gap: isMobileScreen ? '0.75rem' : '1rem',
+                    marginBottom: isMobileScreen ? '1rem' : '1.5rem',
                     position: 'relative',
                     zIndex: 2
                 }}>
                     <div style={{
                         background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}cc)`,
-                        borderRadius: '16px',
-                        padding: '1rem',
+                        borderRadius: isMobileScreen ? '12px' : '16px',
+                        padding: isMobileScreen ? '0.75rem' : '1rem',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -525,12 +528,12 @@ const AccountPage = () => {
                         transition: 'all 0.3s ease',
                         transform: isHovered || isFocused ? 'scale(1.1) rotate(3deg)' : 'scale(1) rotate(0deg)'
                     }}>
-                        {React.cloneElement(icon, { size: 20, color: 'white' })}
+                        {React.cloneElement(icon, { size: isMobileScreen ? 16 : 20, color: 'white' })}
                     </div>
                     <label style={{
                         fontWeight: '600',
                         color: textColor,
-                        fontSize: isMobileScreen ? '1.05rem' : '1.1rem',
+                        fontSize: isMobileScreen ? '0.95rem' : '1.1rem',
                         background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}aa)`,
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
@@ -549,8 +552,8 @@ const AccountPage = () => {
                             backgroundColor: theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.95)',
                             color: textColor,
                             width: '100%',
-                            borderRadius: '12px',
-                            fontSize: '0.95rem',
+                            borderRadius: isMobileScreen ? '8px' : '12px',
+                            fontSize: isMobileScreen ? '0.9rem' : '0.95rem',
                             boxShadow: theme.mode === 'dark' 
                                 ? isFocused 
                                     ? '0 8px 15px -3px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)' 
@@ -559,7 +562,7 @@ const AccountPage = () => {
                                     ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                                     : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
                             transition: 'all 0.3s ease',
-                            minHeight: '3.5rem',
+                            minHeight: isMobileScreen ? '2.8rem' : '3.5rem',
                             backdropFilter: theme.mode === 'dark' ? 'blur(12px)' : 'none'
                         }}
                         displayEmpty
@@ -591,7 +594,14 @@ const AccountPage = () => {
                                             fontSize: '1rem',
                                             padding: '1rem 1.25rem',
                                             transition: 'background-color 0.2s ease',
-                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                            color: '#1f2937 !important',
+                                            backgroundColor: 'transparent'
+                                        }}
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: theme.mode === 'dark' ? 'rgba(55, 65, 81, 0.8) !important' : 'rgba(243, 244, 246, 0.8) !important'
+                                            },
+                                            color: '#1f2937 !important'
                                         }}
                                     >
                                         {item}
@@ -607,7 +617,14 @@ const AccountPage = () => {
                                             fontSize: '1rem',
                                             padding: '1rem 1.25rem',
                                             transition: 'background-color 0.2s ease',
-                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                            color: '#1f2937 !important',
+                                            backgroundColor: 'transparent'
+                                        }}
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: theme.mode === 'dark' ? 'rgba(55, 65, 81, 0.8) !important' : 'rgba(243, 244, 246, 0.8) !important'
+                                            },
+                                            color: '#1f2937 !important'
                                         }}
                                     >
                                         {item.value[language]}
@@ -622,7 +639,14 @@ const AccountPage = () => {
                                         fontSize: '1rem',
                                         padding: '1rem 1.25rem',
                                         transition: 'background-color 0.2s ease',
-                                        color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                        color: '#1f2937 !important',
+                                        backgroundColor: 'transparent'
+                                    }}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: theme.mode === 'dark' ? 'rgba(55, 65, 81, 0.8) !important' : 'rgba(243, 244, 246, 0.8) !important'
+                                        },
+                                        color: '#1f2937 !important'
                                     }}
                                 >
                                     {item.translations ? item.translations[language] : item}
@@ -648,18 +672,23 @@ const AccountPage = () => {
             />
 
             <div style={{ 
-                marginLeft: isMobileScreen ? '0' : '280px',
-                width: isMobileScreen ? '100%' : 'calc(100% - 280px)',
+                width: isMobileScreen ? '100%' : 'calc(100% - 5.5rem)',
                 minHeight: '100vh',
-                backgroundColor: theme.mode === 'dark' ? theme.primaryDarkBackgroundColor : theme.primaryLightBackgroundColor
+                backgroundColor: theme.mode === 'dark' ? theme.primaryDarkBackgroundColor : theme.primaryLightBackgroundColor,
+                marginLeft: isMobileScreen ? '0' : '5.5rem',
+                maxWidth: '100vw',
+                overflowX: 'hidden'
             }}>
-                <StyledSection theme={theme} style={{ 
-                    padding: isMobileScreen ? '1rem' : '2rem',
-                    paddingTop: isMobileScreen ? '100px' : '2rem',
-                    backgroundColor: theme.mode === 'dark' ? theme.primaryDarkBackgroundColor : theme.primaryLightBackgroundColor,
-                    maxWidth: '1600px',
-                    margin: '0 auto'
-                }}>
+                <StyledSection 
+                    theme={theme} 
+                    className="account-page-section"
+                    style={{ 
+                        padding: isMobileScreen ? '1rem' : '2rem',
+                        paddingTop: isMobileScreen ? '100px' : '2rem',
+                        backgroundColor: theme.mode === 'dark' ? theme.primaryDarkBackgroundColor : theme.primaryLightBackgroundColor,
+                        width: '100%',
+                        alignItems: 'stretch'
+                    }}>
                         <style>
                             {`
                                 @keyframes slideIn {
@@ -690,10 +719,83 @@ const AccountPage = () => {
                                         opacity: 0.7;
                                     }
                                 }
+                                
+                                /* Force multicolumn layout on desktop */
+                                @media (min-width: 768px) {
+                                    .form-grid {
+                                        display: grid !important;
+                                        grid-template-columns: repeat(3, 1fr) !important;
+                                        gap: 1.5rem !important;
+                                        width: 100% !important;
+                                        max-width: none !important;
+                                    }
+                                }
+                                
+                                @media (min-width: 1024px) {
+                                    .form-grid {
+                                        grid-template-columns: repeat(3, 1fr) !important;
+                                        gap: 2rem !important;
+                                    }
+                                }
+                                
+                                @media (min-width: 1440px) {
+                                    .form-grid {
+                                        grid-template-columns: repeat(4, 1fr) !important;
+                                    }
+                                }
+                                
+                                /* Override StyledSection center alignment */
+                                .account-page-section {
+                                    align-items: center !important;
+                                    width: 100% !important;
+                                    max-width: none !important;
+                                }
+                                
+                                /* Center basic info sections */
+                                .basic-info-section {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    width: 100%;
+                                }
+                                
+                                /* Stretch profile details for multicolumn layout */
+                                .profile-details-section {
+                                    align-self: stretch !important;
+                                    width: 100% !important;
+                                    max-width: none !important;
+                                }
+                                
+                                .profile-grid {
+                                    display: grid !important;
+                                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+                                    gap: 1rem !important;
+                                    width: 100% !important;
+                                }
+                                
+                                @media (min-width: 768px) {
+                                    .profile-grid {
+                                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+                                        gap: 1.5rem !important;
+                                    }
+                                }
+                                
+                                @media (min-width: 1024px) {
+                                    .profile-grid {
+                                        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+                                        gap: 2rem !important;
+                                    }
+                                }
+                                
+                                @media (min-width: 1440px) {
+                                    .profile-grid {
+                                        grid-template-columns: repeat(4, 1fr) !important;
+                                    }
+                                }
                             `}
                         </style>
                         {/* Header */}
-                        <div style={{
+                        <div className="basic-info-section" style={{
                             marginBottom: '3rem',
                             textAlign: 'center'
                         }}>
@@ -786,7 +888,7 @@ const AccountPage = () => {
                         )}
 
                         {/* Basic Information */}
-                        <div style={{ marginBottom: '3rem' }}>
+                        <div className="basic-info-section" style={{ marginBottom: '3rem' }}>
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -812,7 +914,7 @@ const AccountPage = () => {
                                     }}>
                                         <User size={20} color="white" />
                                     </div>
-                                    Informazioni Base
+                                    {languages[language].sidebar.account.sections.basicInfo}
                                 </h2>
                                 
                                 <MyButton
@@ -843,7 +945,7 @@ const AccountPage = () => {
                                     }}
                                 >
                                     <Edit size={18} />
-                                    {isEditMode ? 'Annulla Modifica' : 'Modifica Profilo'}
+                                    {isEditMode ? languages[language].sidebar.account.buttons.cancelEdit : languages[language].sidebar.account.buttons.editProfile}
                                 </MyButton>
                             </div>
                             
@@ -865,44 +967,83 @@ const AccountPage = () => {
                             </div>
                         </div>
 
-                        {/* Info Benefits Section */}
-                        <div style={{
+                        {/* Info Benefits Section - Collapsible */}
+                        <div className="basic-info-section" style={{
                             background: theme.mode === 'dark' 
                                 ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)'
                                 : 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%)',
                             border: `1px solid ${theme.mode === 'dark' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.15)'}`,
                             borderRadius: '20px',
-                            padding: isMobileScreen ? '1.5rem' : '2rem',
                             marginBottom: '3rem',
-                            backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none'
+                            backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none',
+                            overflow: 'hidden'
                         }}>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: '1.5rem',
-                                flexDirection: isMobileScreen ? 'column' : 'row'
-                            }}>
-                                <div style={{
-                                    background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-                                    borderRadius: '16px',
-                                    padding: '1rem',
+                            {/* Header clickable */}
+                            <div 
+                                onClick={() => setShowBenefitsInfo(!showBenefitsInfo)}
+                                style={{
+                                    padding: isMobileScreen ? '1.5rem' : '2rem',
+                                    cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: '0 10px 15px -3px rgba(34, 197, 94, 0.3)',
-                                    minWidth: '60px'
+                                    justifyContent: 'space-between',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1.5rem',
+                                    flex: 1
                                 }}>
-                                    <Users size={24} color="white" />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <h3 style={{
-                                        margin: '0 0 0.75rem 0',
-                                        fontSize: isMobileScreen ? '1.2rem' : '1.4rem',
-                                        fontWeight: '700',
-                                        color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                                        borderRadius: '16px',
+                                        padding: '1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        boxShadow: '0 10px 15px -3px rgba(34, 197, 94, 0.3)',
+                                        minWidth: '60px'
                                     }}>
-                                        💡 {languages[language].sidebar.account.benefits.title}
-                                    </h3>
+                                        <Users size={24} color="white" />
+                                    </div>
+                                    <div>
+                                        <h3 style={{
+                                            margin: 0,
+                                            fontSize: isMobileScreen ? '1.2rem' : '1.4rem',
+                                            fontWeight: '700',
+                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                        }}>
+                                            💡 {languages[language].sidebar.account.benefits.title}
+                                        </h3>
+                                        <p style={{
+                                            margin: '0.5rem 0 0 0',
+                                            fontSize: '0.9rem',
+                                            color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280'
+                                        }}>
+                                            {showBenefitsInfo ? 'Clicca per nascondere' : 'Clicca per saperne di più'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style={{
+                                    background: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                                    borderRadius: '50%',
+                                    padding: '0.5rem',
+                                    transition: 'transform 0.3s ease',
+                                    transform: showBenefitsInfo ? 'rotate(180deg)' : 'rotate(0deg)'
+                                }}>
+                                    <ChevronDown size={20} color={theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'} />
+                                </div>
+                            </div>
+                            
+                            {/* Content collapsible */}
+                            {showBenefitsInfo && (
+                                <div style={{
+                                    padding: `0 ${isMobileScreen ? '1.5rem' : '2rem'} ${isMobileScreen ? '1.5rem' : '2rem'} ${isMobileScreen ? '1.5rem' : '2rem'}`,
+                                    borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                                    animation: 'slideIn 0.3s ease-out'
+                                }}>
                                     <p style={{
                                         margin: '0 0 1rem 0',
                                         fontSize: '0.95rem',
@@ -928,57 +1069,57 @@ const AccountPage = () => {
                                         🔒 <em>{languages[language].sidebar.account.benefits.anonymousNote}</em>
                                     </p>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Profile Data */}
                         {!isEditMode ? (
                             <div>
                                 {/* Profile Completion Indicator */}
-                                <ProfileCompletionIndicator 
-                                    userNationality={userNationality}
-                                    userWhereWorks={userWhereWorks}
-                                    userJob={userJob}
-                                    userJobType={userJobType}
-                                    userWorkTime={userWorkTime}
-                                    userRemoteType={userRemoteType}
-                                    userYearsExperience={userYearsExperience}
-                                    userAge={userAge}
-                                    userLivingStatus={userLivingStatus}
-                                    userHousingType={userHousingType}
-                                    userHasChildren={userHasChildren}
-                                    theme={theme}
-                                    isMobileScreen={isMobileScreen}
-                                    language={language}
-                                />
+                                <div className="basic-info-section">
+                                    <ProfileCompletionIndicator 
+                                        userNationality={userNationality}
+                                        userWhereWorks={userWhereWorks}
+                                        userJob={userJob}
+                                        userJobType={userJobType}
+                                        userWorkTime={userWorkTime}
+                                        userRemoteType={userRemoteType}
+                                        userYearsExperience={userYearsExperience}
+                                        userAge={userAge}
+                                        userLivingStatus={userLivingStatus}
+                                        userHousingType={userHousingType}
+                                        userHasChildren={userHasChildren}
+                                        theme={theme}
+                                        isMobileScreen={isMobileScreen}
+                                        language={language}
+                                    />
+                                </div>
                                 
-                                <h2 style={{
-                                    margin: '0 0 2rem 0',
-                                    fontSize: isMobileScreen ? '1.5rem' : '1.8rem',
-                                    fontWeight: '700',
-                                    color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '1rem'
-                                }}>
-                                    <div style={{
-                                        background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`,
-                                        borderRadius: '12px',
-                                        padding: '0.75rem',
-                                        boxShadow: `0 8px 15px -3px ${theme.buttonBackgroundColor}30`
-                                    }}>
-                                        <Briefcase size={20} color="white" />
+                                <div className="profile-details-section">
+                                    <div className="basic-info-section">
+                                        <h2 style={{
+                                            margin: '0 0 2rem 0',
+                                            fontSize: isMobileScreen ? '1.5rem' : '1.8rem',
+                                            fontWeight: '700',
+                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '1rem'
+                                        }}>
+                                            <div style={{
+                                                background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`,
+                                                borderRadius: '12px',
+                                                padding: '0.75rem',
+                                                boxShadow: `0 8px 15px -3px ${theme.buttonBackgroundColor}30`
+                                            }}>
+                                                <Briefcase size={20} color="white" />
+                                            </div>
+                                            {languages[language].sidebar.account.sections.profileDetails}
+                                        </h2>
                                     </div>
-                                    Dettagli Profilo
-                                </h2>
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: isMobileScreen 
-                                        ? '1fr' 
-                                        : 'repeat(auto-fit, minmax(220px, 1fr))',
-                                    gap: '1rem',
-                                    marginBottom: '2rem'
-                                }}>
+                                    <div className="profile-grid" style={{
+                                        marginBottom: '2rem'
+                                    }}>
                                     <InfoCard
                                         icon={<MapPin />}
                                         title={languages[language].sidebar.account.nationality}
@@ -1034,6 +1175,7 @@ const AccountPage = () => {
                                         title={languages[language].sidebar.account.hasChildren}
                                         value={userHasChildren.value}
                                     />
+                                    </div>
                                 </div>
                             </div>
                         ) : (
@@ -1059,16 +1201,22 @@ const AccountPage = () => {
                                     }}>
                                         <Edit size={20} color="white" />
                                     </div>
-                                    Modalità Modifica Attiva
+                                    {languages[language].sidebar.account.sections.editMode}
                                 </h2>
                                 
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: isMobileScreen 
-                                        ? '1fr' 
-                                        : 'repeat(auto-fit, minmax(250px, 1fr))',
-                                    gap: '1rem'
-                                }}>
+                                <div 
+                                    className="form-grid"
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: isMobileScreen 
+                                            ? '1fr' 
+                                            : 'repeat(3, 1fr)',
+                                        gap: isMobileScreen ? '1rem' : '2rem',
+                                        width: '100%',
+                                        maxWidth: 'none',
+                                        justifyItems: 'stretch',
+                                        alignItems: 'start'
+                                    }}>
                                     <SelectField
                                         label={languages[language].sidebar.account.nationality}
                                         value={userNationality.value}
@@ -1198,7 +1346,7 @@ const AccountPage = () => {
                                         }}
                                     >
                                         <ArrowLeft size={18} />
-                                        Annulla
+                                        {languages[language].sidebar.account.buttons.cancel}
                                     </MyButton>
                                     
                                     <MyButton
@@ -1219,7 +1367,7 @@ const AccountPage = () => {
                                         }}
                                     >
                                         <Save size={20} />
-                                        Salva Modifiche
+                                        {languages[language].sidebar.account.buttons.saveChanges}
                                     </MyButton>
                                 </div>
                             </form>

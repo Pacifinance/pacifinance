@@ -36,6 +36,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
+import { assetColors, getAssetColor } from '../data/assetColors.js';
 import { 
     ModernDashboardContainer,
     ModernDashboardHeader,
@@ -107,22 +108,22 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             name: languages[language].assets.bank, 
             value: bankReal >= 0 ? bankReal : 0,
             icon: BsBank,
-            color: '#0D579B',
-            gradient: 'linear-gradient(135deg, #0D579B 0%, #2980b9 100%)'
+            color: assetColors.bank.primary,
+            gradient: assetColors.bank.gradient
         },
         { 
             name: languages[language].assets.cash, 
             value: cashReal >= 0 ? cashReal : 0,
             icon: BsCashCoin,
-            color: '#329239',
-            gradient: 'linear-gradient(135deg, #329239 0%, #27ae60 100%)'
+            color: assetColors.cash.primary,
+            gradient: assetColors.cash.gradient
         },
         { 
             name: languages[language].assets.digitalServices, 
             value: digitalServicesReal >= 0 ? digitalServicesReal : 0,
             icon: SiMoneygram,
-            color: '#74b9ff',
-            gradient: 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)'
+            color: assetColors.digitalServices.primary,
+            gradient: assetColors.digitalServices.gradient
         },
     ];
 
@@ -132,32 +133,32 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             name: languages[language].assets.stocks, 
             value: stocksReal >= 0 ? stocksReal : 0,
             icon: MdOutlineAutoGraph,
-            color: '#FF6600',
-            gradient: 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)',
+            color: assetColors.stocks.primary,
+            gradient: assetColors.stocks.gradient,
             description: languages[language].dashboard.stockDescription
         },
         { 
             name: languages[language].assets.etf, 
             value: etfReal >= 0 ? etfReal : 0,
             icon: AiOutlineStock,
-            color: '#a29bfe',
-            gradient: 'linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)',
+            color: assetColors.etf.primary,
+            gradient: assetColors.etf.gradient,
             description: languages[language].dashboard.etfDescription
         },
         { 
             name: languages[language].assets.bitcoin, 
             value: bitcoinReal >= 0 ? bitcoinReal : 0,
             icon: FaBitcoin,
-            color: '#F7B510',
-            gradient: 'linear-gradient(135deg, #F7B510 0%, #fdcb6e 100%)',
+            color: assetColors.bitcoin.primary,
+            gradient: assetColors.bitcoin.gradient,
             description: languages[language].dashboard.bitcoinDescription
         },
         { 
             name: languages[language].assets.crypto, 
             value: cryptoReal >= 0 ? cryptoReal : 0,
             icon: BsCoin,
-            color: '#d63031',
-            gradient: 'linear-gradient(135deg, #d63031 0%, #e17055 100%)',
+            color: assetColors.crypto.primary,
+            gradient: assetColors.crypto.gradient,
             description: languages[language].dashboard.cryptoDescription
         },
     ];
@@ -168,8 +169,8 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
     // Dati per i grafici patrimoniali
     const pieData = [
-        { name: languages[language].dashboard.liquidity, value: totalTraditional, color: '#079164' },
-        { name: languages[language].general.investments, value: totalInvestments, color: '#FF6600' }
+        { name: languages[language].dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
+        { name: languages[language].general.investments, value: totalInvestments, color: assetColors.totalInvestments }
     ];
 
     const detailedPieData = [
@@ -190,17 +191,17 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         { 
             name: languages[language].general.incomes, 
             value: incomesMonth >= 0 ? incomesMonth : 0,
-            color: '#27ae60' // Verde per le entrate
+            color: assetColors.income
         },
         { 
             name: languages[language].general.outflows, 
             value: expensesMonth >= 0 ? expensesMonth : 0,
-            color: '#e74c3c' // Rosso chiaro per le uscite
+            color: assetColors.expense
         },
         { 
             name: languages[language].general.saved, 
             value: savedMonth >= 0 ? savedMonth : 0,
-            color: '#079164' // Verde principale per i risparmi
+            color: assetColors.savings
         },
     ];
 
@@ -236,13 +237,13 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     border: `2px solid ${data.payload.color}`,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                 }}>
-                    <p style={{ color: '#333', fontWeight: 'bold', margin: '0 0 4px 0' }}>
+                    <p style={{ color: assetColors.textPrimary, fontWeight: 'bold', margin: '0 0 4px 0' }}>
                         {isHidden ? '****' : data.payload.name}
                     </p>
                     <p style={{ color: data.payload.color, fontWeight: 'bold', margin: 0 }}>
                         {formatCurrency(data.payload.value)}
                     </p>
-                    <p style={{ color: '#666', fontSize: '12px', margin: '4px 0 0 0' }}>
+                    <p style={{ color: assetColors.textSecondary, fontSize: '12px', margin: '4px 0 0 0' }}>
                         {formatPercentage(data.payload.value, totalBalance)}
                     </p>
                 </div>
@@ -265,7 +266,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                 {formatCurrency(totalBalance)}
                             </div>
                             <div className="balance-subtitle">
-                                <BiTrendingUp style={{ marginRight: '8px', color: '#27ae60' }} />
+                                <BiTrendingUp style={{ marginRight: '8px', color: assetColors.income }} />
                                 {isHidden ? '****' : `${languages[language].dashboard.capitalAt} ${new Date().toLocaleDateString('it-IT')}`}
                             </div>
                         </div>
@@ -296,7 +297,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     {/* Sezione Bilanci Tradizionali */}
                     <div style={{ flex: '1' }}>
                         <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
-                            <MdAccountBalance style={{ marginRight: '8px', color: '#079164' }} />
+                            <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
                             {languages[language].dashboard.liquidityAvailability}
                         </h3>
                         <ModernAssetsGrid theme={theme}>
@@ -343,7 +344,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     {/* Sezione Investimenti */}
                     <div style={{ flex: '1' }}>
                         <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
-                            <FaChartLine style={{ marginRight: '8px', color: '#FF6600' }} />
+                            <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
                             {languages[language].dashboard.portfolioInvestments}
                         </h3>
                         <ModernInvestmentsGrid theme={theme}>
@@ -393,7 +394,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 {/* Sezione Entrate e Uscite */}
                 <ModernIncomeExpenseSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '600', textAlign: 'center' }}>
-                        <FaEuroSign style={{ marginRight: '12px', color: '#079164' }} />
+                        <FaEuroSign style={{ marginRight: '12px', color: assetColors.savings }} />
                         {languages[language].dashboard.titleGraph3}
                     </h3>
                     
@@ -441,7 +442,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 {/* Sezione Grafici */}
                 <ModernChartsSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '600', textAlign: 'center' }}>
-                        <BsGraphUpArrow style={{ marginRight: '12px', color: '#079164' }} />
+                        <BsGraphUpArrow style={{ marginRight: '12px', color: assetColors.savings }} />
                         {languages[language].dashboard.patrimonialAnalysis}
                     </h3>
                     
@@ -463,7 +464,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                         labelLine={false}
                                         label={renderCustomizedLabel}
                                         outerRadius={120}
-                                        fill="#8884d8"
+                                        fill={assetColors.totalBalance}
                                         dataKey="value"
                                     >
                                         {(isHidden ? detailedPieDataShuffle : detailedPieData).map((entry, index) => {
@@ -507,7 +508,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                         labelLine={false}
                                         label={renderCustomizedLabel}
                                         outerRadius={120}
-                                        fill="#8884d8"
+                                        fill={assetColors.totalBalance}
                                         dataKey="value"
                                     >
                                         {(isHidden ? investmentsShuffle?.filter(inv => inv?.value > 0) || [] : investments?.filter(inv => inv?.value > 0) || []).map((entry, index) => {
@@ -552,7 +553,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                         label={renderCustomizedLabel}
                                         outerRadius={120}
                                         innerRadius={60}
-                                        fill="#8884d8"
+                                        fill={assetColors.totalBalance}
                                         dataKey="value"
                                         startAngle={90}
                                         endAngle={450}
@@ -571,12 +572,12 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             </ResponsiveContainer>
                             <div className="chart-legend">
                                 <div className="legend-item">
-                                    <div className="legend-color" style={{ backgroundColor: '#079164' }} />
+                                    <div className="legend-color" style={{ backgroundColor: assetColors.totalLiquidity }} />
                                     <span>{isHidden ? '****' : languages[language].dashboard.liquidity}</span>
                                     <span className="legend-value">{formatCurrency(totalTraditional)} ({formatPercentage(totalTraditional, totalBalance)})</span>
                                 </div>
                                 <div className="legend-item">
-                                    <div className="legend-color" style={{ backgroundColor: '#FF6600' }} />
+                                    <div className="legend-color" style={{ backgroundColor: assetColors.totalInvestments }} />
                                     <span>{isHidden ? '****' : languages[language].general.investments}</span>
                                     <span className="legend-value">{formatCurrency(totalInvestments)} ({formatPercentage(totalInvestments, totalBalance)})</span>
                                 </div>

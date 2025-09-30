@@ -9,9 +9,27 @@ import { outflowCategoryColors } from '../data/categoryColors';
 
 export default function PercentageOutflowsChart({theme, userData, isHidden}) {
   const { language } = useContext(LanguageContext);
-  //const { expensesTags } = useContext(UserContext);
   const [totalOutflowsPerCategoryPerMonth, setTotalOutflowsPerCategoryPerMonth] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(0); // Set default selected month as the first month
+  const [selectedMonth, setSelectedMonth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(800);
+
+  // Gestione responsive
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setContainerWidth(Math.min(width - 60, 350));
+      } else if (width < 1024) {
+        setContainerWidth(Math.min(width - 120, 500));
+      } else {
+        setContainerWidth(Math.min(width - 200, 700));
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,72 +63,64 @@ export default function PercentageOutflowsChart({theme, userData, isHidden}) {
 
     const totalExpenseData = expensePerCategoryData.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0); 
 
+    const chartHeight = containerWidth < 500 ? 350 : 400;
+    const pieRadius = containerWidth < 500 ? 80 : 120;
+
     return (
-      <PieChart width={800} height={500}>
-        <Pie
-          data={expensePerCategoryData}
-          cx={430}
-          cy={250}
-          label={renderCustomizedLabel}
-          labelLine={false}
-          outerRadius={200}
-          dataKey="value"
-        >
-          {expensePerCategoryData.map((entry, index) => {
-            if(entry.value === 0) {
-              return <Cell key={entry.name} fill="transparent" />;
-            }
-            const fallbackColor = 'rgba(200,200,200,0.18)';
-            const color = outflowCategoryColors[entry.name] || fallbackColor;
-            const greyScale = Math.floor(Math.random() * 256);
-            const greyColor = `rgb(${greyScale}, ${greyScale}, ${greyScale})`;
-            return <Cell key={`cell-${index}`} fill={isHidden ? greyColor : color} />
-          })}
-        </Pie>
-        <Tooltip
-            content={({ payload, active }) => {
-                if (active) {
-                const data = payload[0].payload;
-                const value = isHidden ? '****' : data.value;
-                const percentage = isHidden ? '****' : ((value / totalExpenseData) * 100).toFixed(0);
-
-                    // Format the value with thousands and euro symbol
-                    const formattedValue = new Intl.NumberFormat('it-IT', {
-                        style: 'currency',
-                        currency: 'EUR',
-                        maximumFractionDigits: 0,
-                    }).format(value);
-
-                    return (
-                        <div className="custom-tooltip" style={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}>
-                            <p>{isHidden ? '****' : data.name}</p>
-                            <p style={{ color: 'black' }}>{formattedValue}({percentage}%)</p>
-                        </div>
-                    );
-                }
-                return null;
+      <div style={{ 
+        width: '100%', 
+        height: `${chartHeight + 100}px`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}>
+        <PieChart width={containerWidth} height={chartHeight}>
+          <Pie
+            data={expensePerCategoryData}
+            cx={containerWidth / 2}
+            cy={chartHeight / 2}
+            labelLine={false}
+            label={isHidden ? null : renderCustomizedLabel}
+            outerRadius={pieRadius}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {expensePerCategoryData.map((entry, index) => (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={isHidden ? '#cccccc' : (outflowCategoryColors[entry.name] || '#8884d8')} 
+              />
+            ))}
+          </Pie>
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)', 
+              color: theme.textColor,
+              borderRadius: '12px', 
+              padding: '12px',
+              border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+              backdropFilter: 'blur(10px)'
             }}
-            contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-        />
-        <Legend
-          content={props => {
-            const { payload } = props;
-            if (isHidden) {
-              return '****';
-            }
-            return (
-              <ul>
-                {payload.map((entry, index) => (
-                  <li key={`item-${index}`} style={{ fontSize: '14px', color: theme.textColor }}>
-                    <span style={{ color: entry.color }}>&#9679;</span>
-                    {` ${entry.value}`}
-                  </li>
-                ))}
-              </ul>
-            );
-          }}
-        />
-      </PieChart>
+            formatter={(value, name, entry) => {
+              if (isHidden) return ['****'];
+              const formattedValue = new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR',
+                maximumFractionDigits: 0,
+              }).format(value);
+              return [formattedValue, name];
+            }} 
+          />
+          <Legend 
+            wrapperStyle={{ 
+              fontSize: containerWidth < 500 ? '12px' : '14px',
+              fontWeight: 500
+            }}
+          />
+        </PieChart>
+      </div>
     );
   };
 

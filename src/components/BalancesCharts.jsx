@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
-import { Tooltip } from "recharts/lib/component/Tooltip"; 
+import { Tooltip } from "recharts/lib/component/Tooltip";
 import { XAxis } from "recharts/lib/cartesian/XAxis";
 import { YAxis } from "recharts/lib/cartesian/YAxis";
 import { BarChart } from "recharts/lib/chart/BarChart";
@@ -14,6 +14,7 @@ import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
+import { assetColors, getAssetColor } from '../data/assetColors.js';
 // import { }
 
 
@@ -22,17 +23,31 @@ import { downloadExcel } from '../utils/downloadData.jsx';
 export default function BalancesCharts({ theme, userData, isHidden, CustomTick }) {
   const { language } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
+  const [containerWidth, setContainerWidth] = useState(800);
 
-  // const { SectionBalancesCharts } = MyStyled();
+  // Gestione responsive
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setContainerWidth(Math.min(width - 60, 400));
+      } else if (width < 1024) {
+        setContainerWidth(Math.min(width - 120, 600));
+      } else {
+        setContainerWidth(Math.min(width - 200, 800));
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       if (userData) {
         try {
-
           setLast12MonthsData(userData ? userData.last12MonthsData : []);
-
-
         } catch (error) {
           console.error('Error:', error);
         }
@@ -75,77 +90,199 @@ export default function BalancesCharts({ theme, userData, isHidden, CustomTick }
   }).reverse(); //reverse() to have the last month on the right
 
   return (
-    <SectionBalancesCharts theme={theme} style={{ position: 'relative' }}>
-      <CSVLink data={data} headers={headers}
-        filename={`incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
-        className="absolute top-[-30px] right-0 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100"
-      >
-        <BsFiletypeCsv className="text-paciGreen text-xl" />
-      </CSVLink>
-
-      <button
-          disabled
-          onClick={async () => await downloadExcel(data, headers, `incomesExpenses_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-          className="absolute top-[-30px] right-8 px-1 py-1 border border-black shadow-md bg-white text-black no-underline rounded cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-200"
-        >
-          <RiFileExcel2Line className="text-paciGreen text-xl" />
-      </button>
-
-      <BarChart
-        width={600}
-        height={400}
-        data={data}
-        margin={{
-          top: 5,
-          left: 35,
-          bottom: 40
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="transparent" vertical={false}/>
-
-        <Tooltip
-          contentStyle={{ backgroundColor: '#fff', color: '#079164', borderRadius: '4px', padding: '8px' }}
-          labelStyle={{ color: 'black', fontWeight: 'bold', textTransform: 'capitalize' }}
-          formatter={(value, name, entry, index) => {
-            const formattedValue = new Intl.NumberFormat('it-IT', {
-              style: 'currency',
-              currency: 'EUR',
-              maximumFractionDigits: 0,
-            }).format(isHidden ? '****' : value);
-
-            // Map the simple keys back to translated names
-            const nameMap = {
-              'cash': languages[language].assets.cash,
-              'digitalServices': languages[language].assets.digitalServices,
-              'stocks': languages[language].assets.stocks,
-              'bank': languages[language].assets.bank,
-              'crypto': languages[language].assets.crypto,
-              'etf': languages[language].assets.etf,
-              'bitcoin': languages[language].assets.bitcoin,
-              'total': languages[language].assets.total
-            };
-
-            const translatedName = nameMap[name] || name;
-
-            return [formattedValue, translatedName];
+    <SectionBalancesCharts theme={theme} style={{ position: 'relative', padding: '1rem' }}>
+      {/* Export buttons */}
+      <div className="absolute top-0 right-0 flex gap-2 z-10">
+        <CSVLink 
+          data={data} 
+          headers={headers}
+          filename={`distributionAssets_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
+          className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+          style={{
+            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+            borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+            backdropFilter: 'blur(10px)'
           }}
-        />
-        {/* <Brush dataKey='name' height={15} stroke={theme.textColor} fill={theme.buttonBackgroundColor} /> */}
-        <Legend iconSize={12} wrapperStyle={{ fontSize: '10px', marginLeft: '5%', marginTop: '5%' }}/>
+        >
+          <BsFiletypeCsv className="text-paciGreen text-lg" />
+        </CSVLink>
 
-        <Bar dataKey="cash" stackId="a" fill={theme.mode === 'dark' ? '#059669' : '#047857'} />
-        <Bar dataKey="digitalServices" stackId="a" fill={theme.mode === 'dark' ? '#0891b2' : '#0369a1'} />
-        <Bar dataKey="stocks" stackId="a" fill={theme.mode === 'dark' ? '#7c3aed' : '#6b21a8'} />
-        <Bar dataKey="bank" stackId="a" fill={theme.mode === 'dark' ? '#dc2626' : '#b91c1c'} />
-        <Bar dataKey="crypto" stackId="a" fill={theme.mode === 'dark' ? '#ea580c' : '#c2410c'} />
-        <Bar dataKey="etf" stackId="a" fill={theme.mode === 'dark' ? '#65a30d' : '#4d7c0f'} />
-        <Bar dataKey="bitcoin" stackId="a" fill={theme.mode === 'dark' ? '#facc15' : '#eab308'} />
+        <button
+          disabled
+          onClick={async () => await downloadExcel(data, headers, `distributionAssets_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+          className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+            borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+            backdropFilter: 'blur(10px)'
+          }}
+        >
+          <RiFileExcel2Line className="text-paciGreen text-lg" />
+        </button>
+      </div>
 
-        <XAxis dataKey="name" interval={1} tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} angle={0} fontSize={9} />} />
-        <YAxis tick={(props) => <CustomTick {...props} textAnchor="middle" fill={theme.textColor} fontSize={12} dx={-10}/>} />
+      {/* Responsive chart container */}
+      <div style={{ 
+        width: '100%', 
+        height: '450px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: '2rem',
+        overflow: 'hidden'
+      }}>
+        <BarChart
+          width={containerWidth}
+          height={400}
+          data={data}
+          margin={{
+            top: 20,
+            left: 35,
+            right: 20,
+            bottom: 60
+          }}
+        >
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} 
+            vertical={false}
+          />
 
+          <Tooltip
+            contentStyle={{ 
+              backgroundColor: theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)', 
+              color: theme.textColor,
+              borderRadius: '12px', 
+              padding: '12px',
+              border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+              backdropFilter: 'blur(10px)'
+            }}
+            labelStyle={{ 
+              color: theme.textColor, 
+              fontWeight: 'bold', 
+              textTransform: 'capitalize',
+              marginBottom: '4px'
+            }}
+            formatter={(value, name, entry, index) => {
+              if (isHidden) return ['****'];
+              
+              const formattedValue = new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR',
+                maximumFractionDigits: 0,
+              }).format(value);
 
-      </BarChart>
+              // Map the simple keys back to translated names
+              const nameMap = {
+                'cash': languages[language].assets.cash,
+                'digitalServices': languages[language].assets.digitalServices,
+                'stocks': languages[language].assets.stocks,
+                'bank': languages[language].assets.bank,
+                'crypto': languages[language].assets.crypto,
+                'etf': languages[language].assets.etf,
+                'bitcoin': languages[language].assets.bitcoin,
+                'total': languages[language].assets.total
+              };
+
+              const translatedName = nameMap[name] || name;
+              return [formattedValue, translatedName];
+            }}
+          />
+          
+          <Legend 
+            iconSize={12} 
+            wrapperStyle={{ 
+              fontSize: containerWidth < 500 ? '10px' : '12px',
+              fontWeight: 500,
+              paddingTop: '15px'
+            }}
+          />
+
+          {/* Styled bars with centralized colors */}
+          <Bar 
+            dataKey="cash" 
+            stackId="a" 
+            fill={getAssetColor('cash', theme.mode)}
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar 
+            dataKey="digitalServices" 
+            stackId="a" 
+            fill={getAssetColor('digitalServices', theme.mode)}
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar 
+            dataKey="stocks" 
+            stackId="a" 
+            fill={getAssetColor('stocks', theme.mode)}
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar 
+            dataKey="bank" 
+            stackId="a" 
+            fill={getAssetColor('bank', theme.mode)}
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar 
+            dataKey="crypto" 
+            stackId="a" 
+            fill={getAssetColor('crypto', theme.mode)}
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar 
+            dataKey="etf" 
+            stackId="a" 
+            fill={getAssetColor('etf', theme.mode)}
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar 
+            dataKey="bitcoin" 
+            stackId="a" 
+            fill={getAssetColor('bitcoin', theme.mode)}
+            radius={[2, 2, 0, 0]}
+          />
+
+          <XAxis 
+            dataKey="name" 
+            interval={containerWidth < 500 ? 1 : 0}
+            tick={(props) => <CustomTick 
+              {...props} 
+              textAnchor="middle" 
+              fill={theme.textColor} 
+              angle={containerWidth < 500 ? -45 : 0} 
+              fontSize={containerWidth < 500 ? 9 : 11}
+              fontWeight={500}
+            />}
+            height={containerWidth < 500 ? 80 : 60}
+            axisLine={{ 
+              stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+              strokeWidth: 1
+            }}
+            tickLine={{ 
+              stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+            }}
+          />
+          
+          <YAxis 
+            tick={(props) => <CustomTick 
+              {...props} 
+              textAnchor="end" 
+              fill={theme.textColor} 
+              fontSize={containerWidth < 500 ? 10 : 12}
+              fontWeight={500}
+              dx={-5}
+            />}
+            axisLine={{ 
+              stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+              strokeWidth: 1
+            }}
+            tickLine={{ 
+              stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+            }}
+          />
+        </BarChart>
+      </div>
     </SectionBalancesCharts>
   );
 }

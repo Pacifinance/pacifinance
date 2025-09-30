@@ -1,16 +1,12 @@
 import React, {useState, useContext, useEffect} from 'react';
-import BalancesStatsMonth from '../components/BalancesStatsMonth';
-import BalancesStatsYear from '../components/BalancesStatsYear';
-import BalancesCharts from '../components/BalancesCharts';
-import BalancesLinesCharts from '../components/BalancesLinesChart';
+import BalancesStats from '../components/BalancesStats';
+import BalancesChart from '../components/BalancesChart';
 import InOutCharts from '../components/InOutChart';
-import PercentageOutflowsChart from '../components/PercentageOutflowsChart';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { StandardPageTitle, StyledSectionStats, SecondaryTitle } from '../styles/MyStyled';
 import styled from 'styled-components';
-import InOutStatsMonth from '../components/InOutStatsMonth';
-import InOutStatsYear from '../components/InOutStatsYear';
+import InOutStats from '../components/InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
@@ -298,7 +294,8 @@ const ChartCard = styled.div`
     : 'rgba(0, 0, 0, 0.06)'
   };
   border-radius: 24px;
-  padding: 2.5rem;
+  padding: 2rem;
+  min-height: 650px;
   box-shadow: ${props => props.theme.mode === 'dark' 
     ? '0 10px 40px rgba(0, 0, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2)' 
     : '0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 15px rgba(0, 0, 0, 0.04)'
@@ -456,7 +453,7 @@ export default function StatsCharts() {
                             animation: 'spin 1s linear infinite',
                             margin: '0 auto 1rem auto'
                         }}></div>
-                        <p>Caricamento grafici dei bilanci...</p>
+                        <p>{languages[language].graphs.loading.balance}</p>
                     </div>
                 </LoadingContainer>
             );
@@ -465,10 +462,9 @@ export default function StatsCharts() {
         if (!hasData) {
             return (
                 <EmptyStateContainer theme={theme}>
-                    <h3>Nessun dato disponibile</h3>
+                    <h3>{languages[language].graphs.emptyState.title}</h3>
                     <p>
-                        Inizia ad inserire i tuoi dati finanziari per visualizzare 
-                        grafici e statistiche dettagliate dei tuoi asset.
+                        {languages[language].graphs.emptyState.balanceDescription}
                     </p>
                 </EmptyStateContainer>
             );
@@ -482,13 +478,14 @@ export default function StatsCharts() {
                             {languages[language].graphs.statsBalance.titleGraph}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            Visualizza l'andamento dei tuoi asset nel tempo con grafici interattivi
+                            {languages[language].graphs.descriptions.balanceOverview}
                         </SectionDescription>
                     </SectionHeader>
                     
                     <ChartGrid columns={2}>
                         <ChartCard theme={theme} className="slide-in-left">
-                            <BalancesLinesCharts 
+                            <BalancesChart 
+                                type="area"
                                 theme={theme} 
                                 userData={userData} 
                                 isHidden={isHidden} 
@@ -496,7 +493,8 @@ export default function StatsCharts() {
                             />
                         </ChartCard>
                         <ChartCard theme={theme} className="slide-in-right">
-                            <BalancesCharts 
+                            <BalancesChart 
+                                type="bar"
                                 theme={theme} 
                                 userData={userData} 
                                 isHidden={isHidden} 
@@ -512,16 +510,16 @@ export default function StatsCharts() {
                             {languages[language].graphs.statsBalance.detailedVision}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            Analisi dettagliata delle variazioni mensili e annuali
+                            {languages[language].graphs.descriptions.balanceDetails}
                         </SectionDescription>
                     </SectionHeader>
                     
                     <StatsGrid>
                         <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <BalancesStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
+                            <BalancesStats theme={theme} userData={userData} isHidden={isHidden} period="month"/>
                         </div>
                         <div className="fade-in-up" style={{ animationDelay: '0.4s' }}>
-                            <BalancesStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
+                            <BalancesStats theme={theme} userData={userData} isHidden={isHidden} period="year"/>
                         </div>
                     </StatsGrid>
                 </SectionContainer>
@@ -583,10 +581,11 @@ export default function StatsCharts() {
                             />
                         </ChartCard>
                         <ChartCard theme={theme} className="slide-in-right">
-                            <PercentageOutflowsChart 
+                            <InOutCharts 
                                 theme={theme} 
                                 userData={userData} 
                                 isHidden={isHidden}
+                                type="pie"
                             />
                         </ChartCard>
                     </ChartGrid>
@@ -615,7 +614,7 @@ export default function StatsCharts() {
                                 {languages[language].graphs.statsOutflows.titleDetailsMonth}
                                 {formattedPreMonthDate && ` - ${formattedPreMonthDate}`}
                             </h3>
-                            <InOutStatsMonth theme={theme} userData={userData} isHidden={isHidden}/>
+                            <InOutStats period="month" theme={theme} userData={userData} isHidden={isHidden}/>
                         </div>
                         <div className="fade-in-up" style={{ animationDelay: '0.4s' }}>
                             <h3 style={{ 
@@ -629,7 +628,7 @@ export default function StatsCharts() {
                                 {languages[language].graphs.statsOutflows.titleDetailsYear}
                                 {formattedPreYearSameMonthDate && ` - ${formattedPreYearSameMonthDate}`}
                             </h3>
-                            <InOutStatsYear theme={theme} userData={userData} isHidden={isHidden}/>
+                            <InOutStats period="year" theme={theme} userData={userData} isHidden={isHidden}/>
                         </div>
                     </StatsGrid>
                 </SectionContainer>
@@ -644,7 +643,7 @@ export default function StatsCharts() {
                     {languages[language].graphs.title}
                 </StatsTitle>
                 <StatsSubtitle theme={theme}>
-                    Analizza i tuoi dati finanziari con grafici avanzati e statistiche dettagliate
+                    {languages[language].graphs.subtitle}
                 </StatsSubtitle>
                 
                 <NavigationTabs>

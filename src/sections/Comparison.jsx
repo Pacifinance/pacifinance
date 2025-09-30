@@ -767,14 +767,13 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 <PersonIcon style={{ fontSize: '2rem', color: 'white' }} />
             </BannerIcon>
             <BannerContent theme={theme}>
-                <h3>🚀 Sblocca confronti personalizzati!</h3>
+                <h3>{languages[language].comparison.profileBanner?.title || '🚀 Sblocca confronti personalizzati!'}</h3>
                 <p>
-                    Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati 
-                    con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!
+                    {languages[language].comparison.profileBanner?.description || 'Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!'}
                 </p>
             </BannerContent>
             <BannerAction theme={theme}>
-                Completa profilo
+                {languages[language].comparison.profileBanner?.action || 'Completa profilo'}
                 <ArrowForwardIcon />
             </BannerAction>
         </ProfileBanner>

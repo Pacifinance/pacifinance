@@ -436,6 +436,22 @@
         "graphs": {
             "title": "Grafici e Statistiche",
             "Title": "Le tue statistiche",
+            "subtitle": "Analizza i tuoi dati finanziari con grafici avanzati e statistiche dettagliate",
+            "loading": {
+                "balance": "Caricamento grafici dei bilanci...",
+                "incomeOutflow": "Caricamento grafici entrate e uscite..."
+            },
+            "emptyState": {
+                "title": "Nessun dato disponibile",
+                "balanceDescription": "Inizia ad inserire i tuoi dati finanziari per visualizzare grafici e statistiche dettagliate dei tuoi asset.",
+                "incomeOutflowDescription": "Aggiungi le tue entrate e uscite mensili per visualizzare grafici dettagliati e analisi comparative."
+            },
+            "descriptions": {
+                "balanceOverview": "Visualizza l'andamento dei tuoi asset nel tempo con grafici interattivi",
+                "balanceDetails": "Analisi dettagliata delle variazioni mensili e annuali",
+                "incomeOutflowOverview": "Monitora entrate e uscite per una gestione finanziaria ottimale",
+                "incomeOutflowDetails": "Confronta i dati attuali con i periodi precedenti"
+            },
             "statsBalance": {
                 "title": "Statistiche bilancio",
                 "titleGraph": "Andamento del tuo bilancio negli ultimi 12 mesi",
@@ -591,6 +607,11 @@
                 "average": "Stai performando nella media",
                 "ofUsers": "degli utenti",
                 "inCategory": "nella tua categoria"
+            },
+            "profileBanner": {
+                "title": "🚀 Sblocca confronti personalizzati!",
+                "description": "Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!",
+                "action": "Completa profilo"
             },
             "tips": {
                 "title": "Suggerimenti Personalizzati",
@@ -1522,6 +1543,22 @@
         },
         "graphs": {
             "title": "Charts & Statistics",
+            "subtitle": "Analyze your financial data with advanced charts and detailed statistics",
+            "loading": {
+                "balance": "Loading balance charts...",
+                "incomeOutflow": "Loading income and outflow charts..."
+            },
+            "emptyState": {
+                "title": "No data available",
+                "balanceDescription": "Start entering your financial data to view detailed charts and statistics of your assets.",
+                "incomeOutflowDescription": "Add your monthly income and expenses to view detailed charts and comparative analysis."
+            },
+            "descriptions": {
+                "balanceOverview": "Visualize the evolution of your assets over time with interactive charts",
+                "balanceDetails": "Detailed analysis of monthly and yearly variations",
+                "incomeOutflowOverview": "Monitor income and expenses for optimal financial management",
+                "incomeOutflowDetails": "Compare current data with previous periods"
+            },
             "statsBalance": {
                 "title": "Balance statistics",
                 "titleGraph": "Trend of your balance in the last 12 months",
@@ -1679,6 +1716,11 @@
                 "average": "You're performing around average",
                 "ofUsers": "of users",
                 "inCategory": "in your category"
+            },
+            "profileBanner": {
+                "title": "🚀 Unlock personalized comparisons!",
+                "description": "Complete your profile in the Account page to get anonymous and automated comparisons with similar users. Discover how you position compared to other professionals!",
+                "action": "Complete profile"
             },
             "tips": {
                 "title": "Personalized Tips",

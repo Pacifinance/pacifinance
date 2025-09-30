@@ -2,33 +2,27 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { 
-    BsBank, 
-    BsCashCoin, 
-    BsCoin,
     BsGraphUpArrow,
     BsWallet2,
     BsArrowUpRight,
     BsArrowDownLeft
 } from "react-icons/bs";
 import { 
-    FaBitcoin, 
     FaChartLine, 
     FaCoins,
     FaRocket,
     FaEuroSign
 } from "react-icons/fa";
 import { 
-    AiOutlineStock, 
     AiOutlinePlusCircle,
     AiOutlineEuro
 } from "react-icons/ai";
 import { 
-    MdOutlineAutoGraph, 
     MdAccountBalance,
     MdTrendingUp,
     MdDashboard
 } from "react-icons/md";
-import { SiMoneygram } from "react-icons/si";
+import { assetIcons } from '../data/assetIcons';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { BiTrendingUp, BiWallet } from 'react-icons/bi';
 import { primaryColor, secondaryColor, getColorsBalances, getColorsIncExp } from '../styles/Themes';
@@ -107,21 +101,21 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         { 
             name: languages[language].assets.bank, 
             value: bankReal >= 0 ? bankReal : 0,
-            icon: BsBank,
+            icon: assetIcons.bank,
             color: assetColors.bank.primary,
             gradient: assetColors.bank.gradient
         },
         { 
             name: languages[language].assets.cash, 
             value: cashReal >= 0 ? cashReal : 0,
-            icon: BsCashCoin,
+            icon: assetIcons.cash,
             color: assetColors.cash.primary,
             gradient: assetColors.cash.gradient
         },
         { 
             name: languages[language].assets.digitalServices, 
             value: digitalServicesReal >= 0 ? digitalServicesReal : 0,
-            icon: SiMoneygram,
+            icon: assetIcons.digitalServices,
             color: assetColors.digitalServices.primary,
             gradient: assetColors.digitalServices.gradient
         },
@@ -132,7 +126,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         { 
             name: languages[language].assets.stocks, 
             value: stocksReal >= 0 ? stocksReal : 0,
-            icon: MdOutlineAutoGraph,
+            icon: assetIcons.stocks,
             color: assetColors.stocks.primary,
             gradient: assetColors.stocks.gradient,
             description: languages[language].dashboard.stockDescription
@@ -140,7 +134,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         { 
             name: languages[language].assets.etf, 
             value: etfReal >= 0 ? etfReal : 0,
-            icon: AiOutlineStock,
+            icon: assetIcons.etf,
             color: assetColors.etf.primary,
             gradient: assetColors.etf.gradient,
             description: languages[language].dashboard.etfDescription
@@ -148,7 +142,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         { 
             name: languages[language].assets.bitcoin, 
             value: bitcoinReal >= 0 ? bitcoinReal : 0,
-            icon: FaBitcoin,
+            icon: assetIcons.bitcoin,
             color: assetColors.bitcoin.primary,
             gradient: assetColors.bitcoin.gradient,
             description: languages[language].dashboard.bitcoinDescription
@@ -156,7 +150,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         { 
             name: languages[language].assets.crypto, 
             value: cryptoReal >= 0 ? cryptoReal : 0,
-            icon: BsCoin,
+            icon: assetIcons.crypto,
             color: assetColors.crypto.primary,
             gradient: assetColors.crypto.gradient,
             description: languages[language].dashboard.cryptoDescription

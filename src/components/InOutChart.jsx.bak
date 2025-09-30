@@ -1,16 +1,12 @@
 import React, {useState, useEffect, useContext} from "react";
-import { 
-  CartesianGrid, 
-  Tooltip, 
-  XAxis, 
-  YAxis, 
-  LineChart, 
-  Line, 
-  Legend, 
-  PieChart, 
-  Pie, 
-  Cell 
-} from 'recharts';
+import { CartesianGrid } from "recharts/lib/cartesian/CartesianGrid";
+import { Tooltip } from "recharts/lib/component/Tooltip";
+import { XAxis } from "recharts/lib/cartesian/XAxis";
+import { YAxis } from "recharts/lib/cartesian/YAxis";
+import { LineChart } from "recharts/lib/chart/LineChart";
+import { Line } from "recharts/lib/cartesian/Line";
+import { Legend } from "recharts/lib/component/Legend";
+import { PieChart, Pie, Cell } from 'recharts';
 import { SectionInOut, PercentageOutflowsChartContainer } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
@@ -39,7 +35,6 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
   
   // Common state
   const [containerWidth, setContainerWidth] = useState(800);
-  const [selectedPeriod, setSelectedPeriod] = useState('6m');
 
   const greyScale1 = Math.floor(Math.random() * 256);
   const greyColor1 = `rgb(${greyScale1}, ${greyScale1}, ${greyScale1})`;
@@ -51,24 +46,12 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     const handleResize = () => {
       const width = window.innerWidth;
       if (type === "line") {
-        const dataLength = getFilteredData().length;
-        
-        let baseWidth;
         if (width < 768) {
-          baseWidth = Math.min(width - 40, 500);
+          setContainerWidth(Math.min(width - 40, 500));
         } else if (width < 1024) {
-          baseWidth = Math.min(width - 80, 750);
+          setContainerWidth(Math.min(width - 80, 750));
         } else {
-          baseWidth = Math.min(width - 120, 1000);
-        }
-        
-        // Riduci la larghezza per periodi più corti per una migliore visualizzazione
-        if (dataLength <= 3) {
-          setContainerWidth(Math.min(baseWidth * 0.7, 500));
-        } else if (dataLength <= 6) {
-          setContainerWidth(Math.min(baseWidth * 0.85, 650));
-        } else {
-          setContainerWidth(baseWidth);
+          setContainerWidth(Math.min(width - 120, 1000));
         }
       } else {
         if (width < 768) {
@@ -84,7 +67,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [type, selectedPeriod, incomesArray, outflowsArray]);
+  }, [type]);
 
   //impostare i dati presi dell'utente per le spese e le entrate
   useEffect(() => {
@@ -113,203 +96,31 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
   ];
 
   const today = new Date();
-  
-  // Funzione per filtrare i dati in base al periodo selezionato
-  const getFilteredData = () => {
-    const lastTwelveMonths = [];
+  const lastTwelveMonths = [];
 
-    // Crea array da 11 mesi fa al mese corrente (ordine cronologico corretto)
-    for (let i = 11; i >= 0; i--) {
-      const month = today.getMonth() - i;
-      const year = today.getFullYear();
-      const date = new Date(year, month, 1);
+  // Crea array da 11 mesi fa al mese corrente (ordine cronologico corretto)
+  for (let i = 11; i >= 0; i--) {
+    const month = today.getMonth() - i;
+    const year = today.getFullYear();
+    const date = new Date(year, month, 1);
 
-      const monthName = date.toLocaleDateString('it-IT', { month: 'long' });
+    const monthName = date.toLocaleDateString('it-IT', { month: 'long' });
 
-      lastTwelveMonths.push({
-        name: monthName,
-        [languages[language].general.outflows]: Math.abs(outflowsArray[i] || 0), // Usa valore assoluto
-        [languages[language].general.incomes]: Math.abs(incomesArray[i] || 0), // Usa valore assoluto
-        amt: 0, // Aggiungi eventuali dati aggiuntivi
-      });
-    }
-
-    // Filtra in base al periodo selezionato
-    switch(selectedPeriod) {
-      case '3m':
-        return lastTwelveMonths.slice(-3); // Ultimi 3 mesi
-      case '6m':
-        return lastTwelveMonths.slice(-6); // Ultimi 6 mesi
-      case '1y':
-        return lastTwelveMonths; // Tutti i 12 mesi
-      case '2y':
-      case 'all':
-        return lastTwelveMonths; // Per ora stesso dei 12 mesi
-      default:
-        return lastTwelveMonths;
-    }
-  };
-
-  const data = getFilteredData();
-
-  // Pie Chart Functions
-  const renderPieChart = () => {
-    let pieData = [];
-    
-    if (totalOutflowsPerCategoryPerMonth[selectedMonth]) {
-      pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
-        .filter(([key, value]) => value > 0)
-        .map(([key, value]) => ({
-          name: languages[language].categories[key] || key,
-          value: isHidden ? Math.floor(Math.random() * 1000) : value,
-          fill: outflowCategoryColors[key] || '#8884d8'
-        }));
-    }
-
-    return (
-      <div style={{ 
-        width: '100%', 
-        height: '500px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <PieChart width={containerWidth} height={500}>
-          <Pie
-            data={pieData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            outerRadius={containerWidth < 500 ? 120 : 160}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {pieData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
-            ))}
-          </Pie>
-          <Tooltip 
-            formatter={(value, name) => {
-              if (isHidden) return ['****', name];
-              const formattedValue = new Intl.NumberFormat('it-IT', {
-                style: 'currency',
-                currency: 'EUR',
-                maximumFractionDigits: 0,
-              }).format(value);
-              return [formattedValue, name];
-            }}
-          />
-          <Legend 
-            wrapperStyle={{ 
-              fontSize: containerWidth < 500 ? '12px' : '14px',
-              fontWeight: 500
-            }}
-          />
-        </PieChart>
-      </div>
-    );
-  };
-
-  const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
-  };
-
-  const renderMonthSelector = () => {
-    const monthNames = {
-      1: [languages[language].months.january],
-      2: [languages[language].months.february],
-      3: [languages[language].months.march],
-      4: [languages[language].months.april],
-      5: [languages[language].months.may],
-      6: [languages[language].months.june],
-      7: [languages[language].months.july],
-      8: [languages[language].months.august],
-      9: [languages[language].months.september],
-      10: [languages[language].months.october],
-      11: [languages[language].months.november],
-      12: [languages[language].months.december]
-    };
-
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    let monthOptions = [];
-    let year = currentYear;
-
-    for (let i = 0; i < Object.keys(totalOutflowsPerCategoryPerMonth).length; i++) {
-      let month = ((currentMonth - i - 1 + 12) % 12) + 1;
-      if (month === 12 && i !== 0) {
-        year--;
-      }
-      monthOptions.push({ value: i, label: `${monthNames[month]} ${year}` });
-    }
-
-    return (
-      <div>
-        <select value={selectedMonth} onChange={handleMonthChange} style={{ padding: '1em' }}>
-          {monthOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  };
-
-  // Conditional rendering based on type
-  if (type === "pie") {
-    return (
-      <PercentageOutflowsChartContainer>
-        {renderMonthSelector()}
-        {renderPieChart()}
-      </PercentageOutflowsChartContainer>
-    );
+    lastTwelveMonths.push({
+      name: monthName,
+      [languages[language].general.outflows]: Math.abs(outflowsArray[i] || 0), // Usa valore assoluto
+      [languages[language].general.incomes]: Math.abs(incomesArray[i] || 0), // Usa valore assoluto
+      amt: 0, // Aggiungi eventuali dati aggiuntivi
+    });
   }
 
-  // Default LineChart rendering
+  const data = lastTwelveMonths; // Ordine corretto, non serve più reverse
+
   return (
     <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Time Period Selector */}
-        <div className="absolute top-0 left-0 flex gap-1 z-10 p-2">
-          {['3m', '6m', '1y', '2y', 'all'].map((period) => {
-            const isDisabled = period === '2y' || period === 'all';
-            const isActive = selectedPeriod === period;
-            
-            return (
-              <button
-                key={period}
-                onClick={() => !isDisabled && setSelectedPeriod(period)}
-                disabled={isDisabled}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
-                  isDisabled 
-                    ? 'cursor-not-allowed opacity-50' 
-                    : 'hover:scale-105'
-                }`}
-                style={{
-                  backgroundColor: isActive 
-                    ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
-                    : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                  color: isActive 
-                    ? '#ffffff' 
-                    : (isDisabled 
-                      ? (theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)')
-                      : (theme.mode === 'dark' ? '#ffffff' : '#333333')),
-                  border: `1px solid ${isActive 
-                    ? 'rgba(7, 145, 100, 0.8)' 
-                    : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                {period.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Export buttons */}
-        <div className="absolute top-0 right-0 flex gap-2 z-10 p-2">
+        <div className="absolute top-0 right-0 flex gap-2 z-10">
           <CSVLink 
             data={data}
             headers={headers}
@@ -378,7 +189,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               dataKey="name"
               tick={{
                 fontSize: containerWidth < 500 ? 10 : 12, 
-                fill: theme.mode === 'dark' ? '#fff' : '#333',
+                fill: theme.textColor,
                 fontWeight: 500
               }} 
               interval={containerWidth < 500 ? 1 : 0} 
@@ -396,22 +207,32 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             
                         <YAxis 
               tick={{
-                fontSize: containerWidth < 500 ? 14 : 16,
-                fill: theme.mode === 'dark' ? '#fff' : '#333'
+                fontSize: containerWidth < 500 ? 14 : 16
               }}
-              axisLine={{ 
-                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
-                strokeWidth: 1 
-              }}
-              tickLine={{ 
-                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
-                strokeWidth: 1 
-              }}
+              axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
+              tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
             />
             
                         <Tooltip
-              formatter={(value, name) => {
-                if (isHidden) return ['****', name];
+              position={{ x: undefined, y: undefined }}
+              allowEscapeViewBox={{ x: false, y: false }}
+              contentStyle={{
+                backgroundColor: theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)',
+                color: theme.textColor,
+                borderRadius: '12px',
+                padding: '12px',
+                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(10px)',
+                fontSize: '15px'
+              }}
+              labelStyle={{ 
+                color: theme.textColor, 
+                fontWeight: 'bold',
+                marginBottom: '4px'
+              }}
+              formatter={(value, name, entry) => {
+                if (isHidden) return ['****'];
                 
                 const formattedValue = new Intl.NumberFormat('it-IT', {
                   style: 'currency',

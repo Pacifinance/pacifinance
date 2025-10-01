@@ -243,21 +243,41 @@ export const ModernCoffeeButton = styled.div`
   justify-content: center;
   background: linear-gradient(135deg, #079164, #0ba374);
   backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.4);
   border-radius: 1rem;
-  padding: 1rem 2rem;
+  padding: 1.2rem 2.5rem;
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
   z-index: 1;
-  box-shadow: 0 4px 15px rgba(7, 145, 100, 0.3);
+  box-shadow: 0 6px 20px rgba(7, 145, 100, 0.4);
+  font-weight: bold;
+  
+  /* Miglior contrasto e effetto glow */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #079164, #0ba374, #079164);
+    border-radius: 1rem;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
   
   &:hover {
-    background: linear-gradient(135deg, #0ba374, #079164);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-    animation: ${pulse} 2s infinite;
-    box-shadow: 0 6px 20px rgba(7, 145, 100, 0.4);
+    background: linear-gradient(135deg, #0ba374, #0dd186);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-3px) scale(1.05);
+    animation: ${pulse} 1.5s infinite;
+    box-shadow: 0 8px 30px rgba(7, 145, 100, 0.6);
+    
+    &::before {
+      opacity: 0.3;
+    }
   }
   
   /* Nascondi il widget BMC se presente per evitare duplicazioni */
@@ -266,7 +286,8 @@ export const ModernCoffeeButton = styled.div`
   }
   
   @media (max-width: 768px) {
-    padding: 0.8rem 1.5rem;
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
 `;
 

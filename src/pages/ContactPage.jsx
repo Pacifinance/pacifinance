@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
@@ -21,7 +22,7 @@ export default function ContactPage() {
         canonical="/contact"
       />
 
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col" style={{ backgroundColor: theme.backgroundColor }}>
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
 
         <PolicyContainer theme={theme}>
@@ -69,13 +70,13 @@ export default function ContactPage() {
                     : 'Before contacting us, check our FAQ section where you might find the answer to your question.'
                   }
                 </p>
-                <a 
-                  href="/faq" 
-                  className="inline-block px-4 py-2 rounded-lg font-semibold transition-opacity hover:opacity-80"
+                <Link 
+                  to="/faq" 
+                  className="inline-block px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   style={{ backgroundColor: '#079164', color: 'white' }}
                 >
                   {language === 'it' ? 'Visita le FAQ' : 'Visit FAQ'}
-                </a>
+                </Link>
               </section>
 
               <section>

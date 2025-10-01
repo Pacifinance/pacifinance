@@ -5,6 +5,7 @@ import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
 import languages from '../data/languages.json';
+import SEOHead from '../components/SEOHead';
 
 export default function CookiePolicyPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -13,10 +14,14 @@ export default function CookiePolicyPage() {
 
   return (
     <>
-      <title>Cookie Policy - PaciFinance</title>
-      <meta name="description" content="Cookie Policy for PaciFinance - Learn about how we use cookies on our privacy-focused personal finance platform." />
+      <SEOHead 
+        title={language === 'it' ? 'Politica sui Cookie | PaciFinance' : 'Cookie Policy | PaciFinance'}
+        description={language === 'it' ? 'Politica sui Cookie per PaciFinance - Scopri come utilizziamo i cookie sulla nostra piattaforma finanziaria.' : 'Cookie Policy for PaciFinance - Learn about how we use cookies on our privacy-focused personal finance platform.'}
+        keywords={language === 'it' ? 'politica cookie, privacy, gestione cookie, PaciFinance' : 'cookie policy, privacy, cookie management, PaciFinance'}
+        canonical="/cookie-policy"
+      />
 
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col" style={{ backgroundColor: theme.backgroundColor }}>
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
 
         <PolicyContainer theme={theme}>

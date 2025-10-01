@@ -4,6 +4,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
+import SEOHead from '../components/SEOHead';
 
 export default function TermsOfServicePage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -12,10 +13,14 @@ export default function TermsOfServicePage() {
 
   return (
     <>
-      <title>Terms of Service - PaciFinance</title>
-      <meta name="description" content="Terms of Service for PaciFinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform." />
+      <SEOHead 
+        title={language === 'it' ? 'Termini di Servizio | PaciFinance' : 'Terms of Service | PaciFinance'}
+        description={language === 'it' ? 'Termini di Servizio per PaciFinance - Comprendi i tuoi diritti e responsabilità utilizzando la nostra piattaforma finanziaria.' : 'Terms of Service for PaciFinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform.'}
+        keywords={language === 'it' ? 'termini di servizio, condizioni, diritti, PaciFinance' : 'terms of service, conditions, rights, PaciFinance'}
+        canonical="/terms-of-service"
+      />
 
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col" style={{ backgroundColor: theme.backgroundColor }}>
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage}/>
 
         <PolicyContainer theme={theme}>
@@ -27,12 +32,20 @@ export default function TermsOfServicePage() {
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
             </PolicyHeader>
 
-          <div className="space-y-6">
-              <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+          <div className="space-y-8">
+              <section 
+                className="p-6 rounded-xl"
+                style={{
+                  background: theme.mode === 'dark' 
+                    ? 'rgba(7, 145, 100, 0.1)'
+                    : 'rgba(7, 145, 100, 0.05)',
+                  border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
+                }}
+              >
+                <h2 className="text-3xl font-bold mb-6" style={{ color: '#079164' }}>
                   {language === 'it' ? '1. Accettazione dei Termini' : '1. Acceptance of Terms'}
                 </h2>
-                <p className="mb-4 leading-relaxed">
+                <p className="mb-4 leading-relaxed text-lg">
                   {language === 'it' 
                     ? 'Utilizzando PaciFinance, accetti questi termini di servizio. Se non accetti questi termini, non utilizzare la piattaforma.'
                     : 'By using PaciFinance, you accept these terms of service. If you do not accept these terms, do not use the platform.'

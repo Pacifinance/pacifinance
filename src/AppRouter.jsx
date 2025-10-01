@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,25 +8,64 @@ import {
 } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
 import { useAuth } from "./hooks/useAuth";
-import Dashboard from "./pages/DashboardPage";
-import StatsCharts from "./pages/StatsChartsPage";
-import InsertValues from "./pages/InsertPage";
-import CheckPrices from "./pages/CheckPricesPage";
-import ComparisonPage from "./pages/ComparisonPage";
-import Knowledge from "./pages/KnowledgePage";
-import Info from "./pages/InfoPage";
-import LandingPage from "./pages/LandingPage";
-import AuthPage from "./pages/AuthPage";
-import FAQPage from "./pages/FAQPage";
-import PricingPage from "./pages/PricingPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsOfServicePage from "./pages/TermsOfServicePage";
-import SitemapPage from "./pages/SitemapPage";
-import CookiePolicyPage from "./pages/CookiePolicyPage";
-import DisclaimerPage from "./pages/DisclaimerPage";
-import ContactPage from "./pages/ContactPage";
-import AccountPage from "./pages/AccountPage";
-import SettingsPage from "./pages/SettingsPage";
+import { usePreloadCriticalComponents, useIntelligentPreloading } from "./hooks/usePreloading";
+
+// Componente di loading centralizzato
+const PageLoader = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '50vh',
+    fontSize: '1.2rem',
+    color: '#666'
+  }}>
+    <div style={{
+      width: '40px',
+      height: '40px',
+      border: '3px solid #f3f3f3',
+      borderTop: '3px solid #079164',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+      marginRight: '1rem'
+    }}></div>
+    Caricamento...
+    <style>{`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `}</style>
+  </div>
+);
+
+// Code splitting dinamico per tutte le pagine
+// Pagine principali dell'app (caricate solo quando necessarie)
+const Dashboard = React.lazy(() => import("./pages/DashboardPage"));
+const StatsCharts = React.lazy(() => import("./pages/StatsChartsPage"));
+const InsertValues = React.lazy(() => import("./pages/InsertPage"));
+const ComparisonPage = React.lazy(() => import("./pages/ComparisonPage"));
+
+// Pagine utility (caricate solo quando necessarie)
+const CheckPrices = React.lazy(() => import("./pages/CheckPricesPage"));
+const Knowledge = React.lazy(() => import("./pages/KnowledgePage"));
+const Info = React.lazy(() => import("./pages/InfoPage"));
+const AccountPage = React.lazy(() => import("./pages/AccountPage"));
+const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
+
+// Pagine pubbliche (possono essere precaricate insieme)
+const LandingPage = React.lazy(() => import("./pages/LandingPage"));
+const AuthPage = React.lazy(() => import("./pages/AuthPage"));
+
+// Pagine legali/info (bundle separato)
+const FAQPage = React.lazy(() => import("./pages/FAQPage"));
+const PricingPage = React.lazy(() => import("./pages/PricingPage"));
+const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsOfServicePage = React.lazy(() => import("./pages/TermsOfServicePage"));
+const SitemapPage = React.lazy(() => import("./pages/SitemapPage"));
+const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
+const DisclaimerPage = React.lazy(() => import("./pages/DisclaimerPage"));
+const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -46,6 +85,10 @@ function AppRouter() {
   
   // Estrai le proprietà dal nostro hook unificato
   const { isAuthenticated, handleSetIsAuthenticated, handleSetIsUpdated, userData, setUserData } = auth;
+  
+  // Attiva preloading intelligente
+  usePreloadCriticalComponents(isAuthenticated);
+  useIntelligentPreloading();
 
   useEffect(() => {
     var _mtm = (window._mtm = window._mtm || []);
@@ -98,104 +141,106 @@ function AppRouter() {
   // };
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<LandingPage />} />
-      <Route
-        path="/auth"
-        element={
-          <PublicRoute>
-            <AuthPage />
-          </PublicRoute>
-        }
-      />
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/auth"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
 
-      <Route path="/faq" element={<FAQPage />} />
-      <Route path="/pricing" element={<PricingPage />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-      <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-      <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-      <Route path="/disclaimer" element={<DisclaimerPage />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="/sitemap" element={<SitemapPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        <Route path="/disclaimer" element={<DisclaimerPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/sitemap" element={<SitemapPage />} />
 
-      {/* Protected Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/charts-statistics"
-        element={
-          <ProtectedRoute>
-            <StatsCharts />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/insert-values"
-        element={
-          <ProtectedRoute>
-            <InsertValues />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/check-prices"
-        element={
-          <ProtectedRoute>
-            <CheckPrices />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/comparison"
-        element={
-          <ProtectedRoute>
-            <ComparisonPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/knowledge"
-        element={
-          <ProtectedRoute>
-            <Knowledge />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/info"
-        element={
-          <ProtectedRoute>
-            <Info />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/account"
-        element={
-          <ProtectedRoute>
-            <AccountPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <SettingsPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/charts-statistics"
+          element={
+            <ProtectedRoute>
+              <StatsCharts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/insert-values"
+          element={
+            <ProtectedRoute>
+              <InsertValues />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/check-prices"
+          element={
+            <ProtectedRoute>
+              <CheckPrices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/comparison"
+          element={
+            <ProtectedRoute>
+              <ComparisonPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/knowledge"
+          element={
+            <ProtectedRoute>
+              <Knowledge />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/info"
+          element={
+            <ProtectedRoute>
+              <Info />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <AccountPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Catch all route */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 

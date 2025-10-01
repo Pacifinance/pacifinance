@@ -2192,32 +2192,69 @@ export const StyledComingSoon = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: ${themes.light.backgroundColor};
+  background: ${(props) => props.theme.mode === 'dark' 
+    ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+    : 'linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)'
+  };
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  
+  /* Effetto decorativo di sfondo */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 300px;
+    background: ${(props) => props.theme.mode === 'dark'
+      ? 'radial-gradient(ellipse at top, rgba(7, 145, 100, 0.15) 0%, transparent 70%)'
+      : 'radial-gradient(ellipse at top, rgba(7, 145, 100, 0.08) 0%, transparent 70%)'
+    };
+    pointer-events: none;
+    z-index: 0;
+  }
 
   .coming-soon-title {
-    font-size: 4rem;
-    font-weight: bold;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
     text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+    background: ${(props) => props.theme.mode === 'dark'
+      ? 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 30%, #079164 70%, #065f46 100%)'
+      : 'linear-gradient(135deg, #1e293b 0%, #475569 30%, #079164 70%, #065f46 100%)'
+    };
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
 
   .coming-soon-subtitle {
-    font-size: 1.5rem;
-    font-weight: normal;
+    font-size: clamp(1.125rem, 3vw, 1.5rem);
+    font-weight: 400;
     text-align: center;
+    color: ${(props) => props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)'};
+    max-width: 600px;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
   }
 
   @media (max-width: 768px) {
+    padding: 1.5rem;
+    
     .coming-soon-title {
-      font-size: 4rem;
-      font-weight: bold;
-      text-align: center;
+      margin-bottom: 1rem;
     }
-
-    .coming-soon-subtitle {
-      font-size: 1rem;
-      font-weight: normal;
-      text-align: center;
-    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
   }
 `;
 

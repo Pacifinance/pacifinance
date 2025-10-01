@@ -805,7 +805,7 @@ export default function OutflowSection({
           justifyContent: 'center',
           width: '100%'
         }}>
-        <StyledTable theme={theme} style={{ minWidth: 700 }}>
+        <StyledTable theme={theme} className="outflow-table">
           <thead>{renderTableHeader()}</thead>
           <tbody>
             {renderOutflowItems(

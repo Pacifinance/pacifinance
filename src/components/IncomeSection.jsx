@@ -715,7 +715,7 @@ export default function IncomeSection({
           justifyContent: 'center',
           width: '100%'
         }}>
-        <StyledTable theme={theme} style={{ minWidth: 600 }}>
+        <StyledTable theme={theme} className="income-table">
           <thead>{renderTableHeader()}</thead>
           <tbody>
             {renderIncomeItems(

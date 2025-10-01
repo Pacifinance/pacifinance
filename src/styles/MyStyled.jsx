@@ -827,15 +827,23 @@ export const LabelStyle = styled.label`{
 export const StyledTable = styled.table`
   border-collapse: separate;
   border-spacing: 0;
-  width: 50%;
+  width: 100%;
+  min-width: 600px;
+  max-width: 1200px;
   color: ${(props) => props.theme.textColor};
-  margin-bottom: 5em;
-  margin-left: 6vw;
+  margin: 0 auto 2rem auto;
+
+  /* Specific styling for outflow tables */
+  &.outflow-table {
+    min-width: 700px;
+  }
 
   th {
     background-color: ${(props) => props.theme.buttonBackgroundColor};
     color: white;
-    padding: 0.3em;
+    padding: 0.75rem 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
     &:first-child {
       border-top-left-radius: 10px;
     }
@@ -847,29 +855,62 @@ export const StyledTable = styled.table`
   td, th {
     border: 1px solid ${(props) => props.theme.borderColor};
     text-align: center;
-    padding: 0.3em;
+    padding: 0.5rem;
   }
 
   tbody tr:hover {
     background-color: ${(props) => props.theme.jollyColor};
+    transition: background-color 0.2s ease;
+  }
+
+  /* Responsive styles for tablets */
+  @media (max-width: 768px) {
+    min-width: 500px;
+    
+    &.outflow-table {
+      min-width: 580px;
+    }
+    
+    th, td {
+      padding: 0.4rem 0.3rem;
+      font-size: 0.85rem;
+    }
   }
 
   /* Responsive styles for mobile */
   @media (max-width: 600px) {
-    width: 100% !important;
-    min-width: 360px !important;
+    min-width: 400px !important;
+    
+    &.outflow-table {
+      min-width: 450px !important;
+    }
+    
     th, td {
-      font-size: 0.92em !important;
-      padding: 4px 2px !important;
+      font-size: 0.75rem !important;
+      padding: 0.3rem 0.2rem !important;
       min-width: 60px !important;
-      line-height: 1.1 !important;
+      line-height: 1.2 !important;
     }
     select, input, button {
-      font-size: 0.95em !important;
-      padding: 4px 2px !important;
+      font-size: 0.75rem !important;
+      padding: 0.2rem 0.3rem !important;
     }
     .MuiInputBase-root, .MuiSelect-root {
-      font-size: 0.95em !important;
+      font-size: 0.75rem !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    min-width: 360px !important;
+    
+    &.outflow-table {
+      min-width: 400px !important;
+    }
+    
+    th, td {
+      font-size: 0.7rem !important;
+      padding: 0.25rem 0.15rem !important;
+      min-width: 50px !important;
     }
   }
 `;

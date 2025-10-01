@@ -424,7 +424,7 @@ export default function NewLandingContent({ theme }) {
                 className="text-3xl font-bold"
                 style={{ color: theme.secondaryColor }}
               >
-                256-bit
+                480-bit
               </div>
               <div className="text-sm">{languages[language].landing.new.trust.encryption}</div>
             </div>

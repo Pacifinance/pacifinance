@@ -9,16 +9,16 @@ const PAGE_ORDER = [
   '/comparison'
 ];
 
-// Soglia di scroll per iniziare il "caricamento" (98% della pagina - più spazio per l'utente)
-const SCROLL_THRESHOLD_START = 0.98;
-// Soglia per scroll verso l'alto (3% dall'alto)
-const SCROLL_THRESHOLD_UP = 0.03;
+// Soglia di scroll per mostrare la zona trigger (96% della pagina)
+const SCROLL_THRESHOLD_TRIGGER_ZONE = 0.96;
+// Soglia per scroll verso l'alto per la zona trigger (5% dall'alto)
+const SCROLL_THRESHOLD_UP_TRIGGER = 0.05;
 
-// Tempo di attesa prima del cambio pagina (ms) - più tempo per dare controllo all'utente
-const LOADING_DURATION = 2000;
+// Tempo di permanenza nella zona trigger prima del cambio pagina (3 secondi per sicurezza)
+const TRIGGER_ZONE_DURATION = 3000;
 
-// Debounce time per evitare cambi pagina troppo frequenti
-const DEBOUNCE_TIME = 500;
+// Debounce time per check della zona trigger
+const TRIGGER_CHECK_DEBOUNCE = 100;
 
 // Altezza minima per abilitare scroll navigation
 const MIN_PAGE_HEIGHT = 600;
@@ -27,22 +27,20 @@ export const useScrollNavigation = (enabled = true) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingDirection, setLoadingDirection] = useState(null); // 'up' | 'down'
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [lastScrollTime, setLastScrollTime] = useState(0);
-  const [scrollStartTime, setScrollStartTime] = useState(null);
-  const [canScroll, setCanScroll] = useState(true);
+  const [showTriggerZone, setShowTriggerZone] = useState(false);
+  const [triggerDirection, setTriggerDirection] = useState(null); // 'up' | 'down'
+  const [triggerProgress, setTriggerProgress] = useState(0);
+  const [triggerStartTime, setTriggerStartTime] = useState(null);
   const [pageHasScrollableContent, setPageHasScrollableContent] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
-  const [loadingIntervalId, setLoadingIntervalId] = useState(null);
+  const [triggerIntervalId, setTriggerIntervalId] = useState(null);
 
   const getCurrentPageIndex = useCallback(() => {
     return PAGE_ORDER.indexOf(location.pathname);
   }, [location.pathname]);
 
   const navigateToPage = useCallback((direction) => {
-    if (!enabled || isNavigating || isLoading) return;
+    if (!enabled || isNavigating) return;
 
     const currentIndex = getCurrentPageIndex();
     if (currentIndex === -1) return; // Pagina non nel ciclo di scroll
@@ -71,60 +69,46 @@ export const useScrollNavigation = (enabled = true) => {
         setIsNavigating(false);
       }, 1500);
     }
-  }, [enabled, isNavigating, isLoading, getCurrentPageIndex, navigate]);
+  }, [enabled, isNavigating, getCurrentPageIndex, navigate]);
 
-  const startLoading = useCallback((direction) => {
-    if (isLoading || isNavigating || isAutoScrolling) return;
+  // Funzione per navigare manualmente tramite pulsante
+  const navigateToPageManually = useCallback((direction) => {
+    if (isNavigating || isAutoScrolling) return;
     
-    setIsLoading(true);
-    setLoadingDirection(direction);
-    setLoadingProgress(0);
-    setScrollStartTime(Date.now());
-
-    // Animazione progress bar
-    const interval = setInterval(() => {
-      setLoadingProgress(prev => {
-        const newProgress = prev + (100 / (LOADING_DURATION / 50));
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setLoadingIntervalId(null);
-          navigateToPage(direction);
-          setIsLoading(false);
-          setLoadingDirection(null);
-          setLoadingProgress(0);
-          return 100;
-        }
-        return newProgress;
-      });
-    }, 50);
+    // Nascondi il pulsante immediatamente
+    setShowTriggerZone(false);
+    setTriggerDirection(null);
     
-    setLoadingIntervalId(interval);
-  }, [isLoading, isNavigating, isAutoScrolling, navigateToPage]);
+    // Naviga alla pagina
+    navigateToPage(direction);
+  }, [isNavigating, isAutoScrolling, navigateToPage]);
 
-  const stopLoading = useCallback(() => {
-    if (loadingIntervalId) {
-      clearInterval(loadingIntervalId);
-      setLoadingIntervalId(null);
+  const stopTriggerZone = useCallback(() => {
+    if (triggerIntervalId) {
+      clearInterval(triggerIntervalId);
+      setTriggerIntervalId(null);
     }
-    setIsLoading(false);
-    setLoadingDirection(null);
-    setLoadingProgress(0);
-    setScrollStartTime(null);
-  }, [loadingIntervalId]);
+    setShowTriggerZone(false);
+    setTriggerDirection(null);
+    setTriggerProgress(0);
+    setTriggerStartTime(null);
+  }, [triggerIntervalId]);
 
   const handleScroll = useCallback(() => {
     // Ignora gli eventi di scroll se è in corso uno scroll automatico
     if (!enabled || isNavigating || !pageHasScrollableContent || isAutoScrolling) return;
 
-    const now = Date.now();
     const currentScrollY = window.scrollY;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     
-    // Se la pagina non ha contenuto scrollabile, disabilita la navigazione
-    if (documentHeight <= windowHeight + 50) {
+    // Se la pagina non ha contenuto scrollabile, non mostrare pulsanti
+    if (documentHeight <= windowHeight + 100) {
       if (pageHasScrollableContent) {
         setPageHasScrollableContent(false);
+      }
+      if (showTriggerZone) {
+        stopTriggerZone();
       }
       return;
     } else if (!pageHasScrollableContent) {
@@ -135,30 +119,24 @@ export const useScrollNavigation = (enabled = true) => {
     const scrollPercentage = (currentScrollY + windowHeight) / documentHeight;
     const scrollFromTop = currentScrollY / Math.max(documentHeight - windowHeight, 1);
     
-    // Debounce per evitare troppi trigger
-    if (now - lastScrollTime < DEBOUNCE_TIME) return;
-
     const currentIndex = getCurrentPageIndex();
+    
+    // Mostra pulsante per andare alla pagina successiva quando si è vicini al fondo
+    const showDownButton = scrollPercentage >= SCROLL_THRESHOLD_TRIGGER_ZONE && currentIndex < PAGE_ORDER.length - 1;
+    // Mostra pulsante per andare alla pagina precedente quando si è vicini all'inizio
+    const showUpButton = scrollFromTop <= SCROLL_THRESHOLD_UP_TRIGGER && currentIndex > 0;
 
-    // Scroll verso il basso - vai alla pagina successiva
-    if (scrollPercentage >= SCROLL_THRESHOLD_START && currentIndex < PAGE_ORDER.length - 1) {
-      if (!isLoading && loadingDirection !== 'down') {
-        startLoading('down');
-        setLastScrollTime(now);
-      }
-    } 
-    // Scroll verso l'alto - vai alla pagina precedente  
-    else if (scrollFromTop <= SCROLL_THRESHOLD_UP && currentIndex > 0) {
-      if (!isLoading && loadingDirection !== 'up') {
-        startLoading('up');
-        setLastScrollTime(now);
-      }
+    if (showDownButton && (!showTriggerZone || triggerDirection !== 'down')) {
+      setShowTriggerZone(true);
+      setTriggerDirection('down');
+    } else if (showUpButton && (!showTriggerZone || triggerDirection !== 'up')) {
+      setShowTriggerZone(true);
+      setTriggerDirection('up');
+    } else if (!showDownButton && !showUpButton && showTriggerZone) {
+      // L'utente è uscito dalla zona, nascondi i pulsanti
+      stopTriggerZone();
     }
-    // IMPORTANTE: Se non siamo nella zona di trigger, ferma il loading per permettere cancellazione
-    else if (isLoading) {
-      stopLoading();
-    }
-  }, [enabled, isNavigating, isLoading, loadingDirection, lastScrollTime, pageHasScrollableContent, isAutoScrolling, getCurrentPageIndex, startLoading, stopLoading]);
+  }, [enabled, isNavigating, pageHasScrollableContent, isAutoScrolling, showTriggerZone, triggerDirection, getCurrentPageIndex, stopTriggerZone]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -167,83 +145,31 @@ export const useScrollNavigation = (enabled = true) => {
       requestAnimationFrame(handleScroll);
     };
 
-    // Gestione scroll wheel per pagine senza scroll verticale
-    const handleWheel = (event) => {
-      if (!enabled || isNavigating || pageHasScrollableContent || isAutoScrolling) return;
-      
-      const now = Date.now();
-      if (now - lastScrollTime < DEBOUNCE_TIME * 2) return; // Debounce più lungo per wheel
-      
-      const currentIndex = getCurrentPageIndex();
-      
-      if (event.deltaY > 50 && currentIndex < PAGE_ORDER.length - 1) {
-        // Scroll verso il basso
-        if (!isLoading && loadingDirection !== 'down') {
-          startLoading('down');
-          setLastScrollTime(now);
-        }
-      } else if (event.deltaY < -50 && currentIndex > 0) {
-        // Scroll verso l'alto
-        if (!isLoading && loadingDirection !== 'up') {
-          startLoading('up');
-          setLastScrollTime(now);
-        }
-      }
-    };
-
-    // Gestione key navigation per pagine senza scroll
-    const handleKeyDown = (event) => {
-      if (!enabled || isNavigating || pageHasScrollableContent || isAutoScrolling) return;
-      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-      
-      const now = Date.now();
-      if (now - lastScrollTime < DEBOUNCE_TIME * 2) return;
-      
-      const currentIndex = getCurrentPageIndex();
-      
-      if ((event.key === 'ArrowDown' || event.key === 'PageDown') && currentIndex < PAGE_ORDER.length - 1) {
-        event.preventDefault();
-        if (!isLoading && loadingDirection !== 'down') {
-          startLoading('down');
-          setLastScrollTime(now);
-        }
-      } else if ((event.key === 'ArrowUp' || event.key === 'PageUp') && currentIndex > 0) {
-        event.preventDefault();
-        if (!isLoading && loadingDirection !== 'up') {
-          startLoading('up');
-          setLastScrollTime(now);
-        }
-      } else if (event.key === 'Escape' && isLoading) {
-        // Permetti di cancellare il loading con ESC
-        event.preventDefault();
-        stopLoading();
-      }
-    };
+    // Disabilitiamo wheel e keyboard navigation per essere meno aggressivi
+    // Solo scroll tradizionale per pagine scrollabili
 
     window.addEventListener('scroll', throttledHandleScroll, { passive: true });
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('keydown', handleKeyDown);
     
     return () => {
       window.removeEventListener('scroll', throttledHandleScroll);
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [enabled, handleScroll, pageHasScrollableContent, isNavigating, isLoading, loadingDirection, lastScrollTime, getCurrentPageIndex, startLoading]);
+  }, [enabled, handleScroll]);
 
   // Reset quando cambia pagina
   useEffect(() => {
-    setLastScrollTime(Date.now());
-    stopLoading();
+    stopTriggerZone();
     setIsAutoScrolling(false); // Reset flag di auto-scroll
+    
+    // Scroll automatico all'inizio della pagina
+    window.scrollTo({ top: 0, behavior: 'auto' });
     
     // Verifica se la pagina ha contenuto scrollabile dopo un breve delay
     setTimeout(() => {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      setPageHasScrollableContent(documentHeight > windowHeight + 50);
+      setPageHasScrollableContent(documentHeight > windowHeight + 100);
     }, 500);
-  }, [location.pathname, stopLoading]);
+  }, [location.pathname, stopTriggerZone]);
 
   // Controlla periodicamente se la pagina diventa scrollabile (per contenuto dinamico)
   useEffect(() => {
@@ -265,15 +191,16 @@ export const useScrollNavigation = (enabled = true) => {
 
   return {
     isNavigating,
-    isLoading,
-    loadingDirection,
-    loadingProgress,
+    showTriggerZone,
+    triggerDirection,
+    triggerProgress,
     isScrollNavigationEnabled: enabled && getCurrentPageIndex() !== -1 && pageHasScrollableContent,
     pageHasScrollableContent,
     currentPageIndex: getCurrentPageIndex(),
     totalPages: PAGE_ORDER.length,
     isAutoScrolling,
-    cancelLoading: stopLoading, // Funzione per cancellare il loading manualmente
+    cancelTrigger: stopTriggerZone, // Funzione per nascondere il pulsante
+    navigateManually: navigateToPageManually, // Funzione per navigare con il pulsante
     nextPage: () => {
       const currentIndex = getCurrentPageIndex();
       return currentIndex < PAGE_ORDER.length - 1 ? navigateToPage('down') : null;

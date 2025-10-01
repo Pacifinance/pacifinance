@@ -18,12 +18,13 @@ const StatsContainer = styled.div`
     ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
     : 'linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)'
   };
-  min-height: 100vh;
+  min-height: 150vh;
   padding: 0;
   margin: 0;
   width: 100%;
   position: relative;
   overflow-x: hidden;
+  padding-bottom: 60vh;
   
   &::before {
     content: '';

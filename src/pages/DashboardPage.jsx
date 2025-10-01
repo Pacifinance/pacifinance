@@ -26,18 +26,25 @@ const DashboardPage = () => {
 
     const {
         isNavigating,
-        isLoading,
-        loadingDirection,
-        loadingProgress,
+        showTriggerZone,
+        triggerDirection,
+        triggerProgress,
         pageHasScrollableContent,
-        cancelLoading,
+        currentPageIndex,
+        totalPages,
+        nextPage,
+        prevPage,
+        cancelTrigger,
+        navigateManually,
         isAutoScrolling
-    } = useScrollNavigation([
-        '/dashboard',
-        '/charts-statistics',
-        '/insert-values',
-        '/comparison'
-    ]);
+    } = useScrollNavigation(true);
+
+    const handlePageClick = (pageIndex) => {
+        const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
+        if (pageIndex >= 0 && pageIndex < pages.length) {
+            window.location.href = pages[pageIndex];
+        }
+    };
 
     if (!userData) {
         return (
@@ -76,13 +83,17 @@ const DashboardPage = () => {
             <ScrollNavigationIndicator
                 theme={theme}
                 isNavigating={isNavigating}
-                isLoading={isLoading}
-                loadingDirection={loadingDirection}
-                loadingProgress={loadingProgress}
+                showTriggerZone={showTriggerZone}
+                triggerDirection={triggerDirection}
+                triggerProgress={triggerProgress}
                 pageHasScrollableContent={pageHasScrollableContent}
-                currentPageIndex={0}
-                totalPages={4}
-                cancelLoading={cancelLoading}
+                currentPageIndex={currentPageIndex}
+                totalPages={totalPages}
+                nextPage={nextPage}
+                prevPage={prevPage}
+                onPageClick={handlePageClick}
+                cancelTrigger={cancelTrigger}
+                navigateManually={navigateManually}
                 isAutoScrolling={isAutoScrolling}
             />
         </>

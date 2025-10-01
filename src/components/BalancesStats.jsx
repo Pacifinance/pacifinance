@@ -5,12 +5,80 @@ import languages from '../data/languages.json';
 import { assetIcons } from '../data/assetIcons';
 import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
 
-const SecondaryTitle = styled.h3`
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: ${({ theme }) => (theme === "light" ? "#333" : "#fff")};
-  margin-bottom: 1rem;
-  text-align: center;
+const ComparisonHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  background: ${({ theme }) => theme === "light" 
+    ? "linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(96, 165, 250, 0.08) 100%)" 
+    : "linear-gradient(135deg, rgba(96, 165, 250, 0.12) 0%, rgba(79, 70, 229, 0.12) 100%)"};
+  border: 1px solid ${({ theme }) => theme === "light" 
+    ? "rgba(79, 70, 229, 0.15)" 
+    : "rgba(96, 165, 250, 0.2)"};
+  backdrop-filter: blur(10px);
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+`;
+
+const ComparisonPeriod = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  .period-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: ${({ theme }) => theme === "light" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.6)"};
+    margin-bottom: 0.25rem;
+  }
+  
+  .period-date {
+    font-size: 1rem;
+    font-weight: 600;
+    color: ${({ theme }) => theme === "light" ? "#333" : "#fff"};
+  }
+  
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+`;
+
+const ComparisonValue = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  
+  .change-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: ${props => props.$isPositive ? "#27ae60" : "#e74c3c"};
+    margin-bottom: 0.25rem;
+  }
+  
+  .change-percentage {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: ${props => props.$isPositive ? "#27ae60" : "#e74c3c"};
+    background: ${props => props.$isPositive 
+      ? "rgba(39, 174, 96, 0.1)" 
+      : "rgba(231, 76, 60, 0.1)"};
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    border: 1px solid ${props => props.$isPositive 
+      ? "rgba(39, 174, 96, 0.2)" 
+      : "rgba(231, 76, 60, 0.2)"};
+  }
+  
+  @media (max-width: 768px) {
+    align-items: center;
+  }
 `;
 
 const Section = styled.section`
@@ -171,13 +239,31 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
 
     return (
         <div className="wrapper">
-            <SecondaryTitle theme={theme}>
-                {languages[language].graphs.statsBalance[titleKey]}{" "}
-                <span style={{ color: isPositiveChange ? primaryColor : "inherit" }}>
-                    {isHidden ? '****' : totalChange} {isHidden ? '****' : totalPercentage}
-                </span>
-                {" - "}({formattedPrevDate})
-            </SecondaryTitle>
+            <ComparisonHeader theme={theme}>
+                <ComparisonPeriod theme={theme}>
+                    <div className="period-label">
+                        {period === "month" 
+                            ? (language === 'it' ? 'Confronto con' : 'Compared to')
+                            : (language === 'it' ? 'Confronto con' : 'Compared to')
+                        }
+                    </div>
+                    <div className="period-date">
+                        {formattedPrevDate || (period === "month" 
+                            ? (language === 'it' ? 'Mese precedente' : 'Previous month')
+                            : (language === 'it' ? 'Anno precedente' : 'Previous year')
+                        )}
+                    </div>
+                </ComparisonPeriod>
+                
+                <ComparisonValue theme={theme} $isPositive={isPositiveChange}>
+                    <div className="change-amount">
+                        {isHidden ? '****' : totalChange}
+                    </div>
+                    <div className="change-percentage">
+                        {isHidden ? '****' : totalPercentage}
+                    </div>
+                </ComparisonValue>
+            </ComparisonHeader>
             
             <Section theme={theme}>
                 <div className="analytic">

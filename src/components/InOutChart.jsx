@@ -20,7 +20,7 @@ import languages from '../data/languages.json';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
-import { outflowCategoryColors } from '../data/categoryColors';
+import { getCategoryColor } from '../data/categoryColors';
 
 
 
@@ -124,12 +124,16 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
       const year = today.getFullYear();
       const date = new Date(year, month, 1);
 
-      const monthName = date.toLocaleDateString('it-IT', { month: 'long' });
+      // Usa formato anno-mese per coerenza con BalancesChart
+      const displayName = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      // L'indice per gli array dovrebbe essere 11-i perché gli array sono già stati invertiti
+      const arrayIndex = 11 - i;
 
       lastTwelveMonths.push({
-        name: monthName,
-        [languages[language].general.outflows]: Math.abs(outflowsArray[i] || 0), // Usa valore assoluto
-        [languages[language].general.incomes]: Math.abs(incomesArray[i] || 0), // Usa valore assoluto
+        name: displayName,
+        [languages[language].general.outflows]: Math.abs(outflowsArray[arrayIndex] || 0), // Usa valore assoluto
+        [languages[language].general.incomes]: Math.abs(incomesArray[arrayIndex] || 0), // Usa valore assoluto
         amt: 0, // Aggiungi eventuali dati aggiuntivi
       });
     }
@@ -162,25 +166,34 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
         .map(([key, value]) => ({
           name: languages[language]?.categories?.[key] || key,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,
-          fill: outflowCategoryColors[key] || '#8884d8'
+          fill: getCategoryColor(key)
         }));
     }
 
     return (
       <div style={{ 
         width: '100%', 
-        height: '500px',
+        height: '100%',
+        minHeight: '500px',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        padding: '1rem 0'
       }}>
-        <PieChart width={containerWidth} height={500}>
+        <PieChart width={containerWidth} height={Math.min(550, containerWidth + 50)}>
           <Pie
             data={pieData}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={renderCustomizedLabel}
+            label={(entry) => {
+              if (isHidden) return '***';
+              // Calcola il totale di tutti i valori nel dataset
+              const total = pieData.reduce((sum, item) => sum + item.value, 0);
+              const percentage = ((entry.value / total) * 100).toFixed(1);
+              return `${entry.name}: ${percentage}%`;
+            }}
             outerRadius={containerWidth < 500 ? 120 : 160}
             fill="#8884d8"
             dataKey="value"
@@ -190,6 +203,16 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             ))}
           </Pie>
           <Tooltip 
+            contentStyle={{
+              backgroundColor:'rgba(255,255,255,0.95)',
+              border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+              borderRadius: '8px',
+              padding: '12px',
+              fontSize: '14px',
+              fontWeight: '500',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              color: theme.mode === 'dark' ? '#fff' : '#333'
+            }}
             formatter={(value, name) => {
               if (isHidden) return ['****', name];
               const formattedValue = new Intl.NumberFormat('it-IT', {
@@ -199,11 +222,10 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               }).format(value);
               return [formattedValue, name];
             }}
-          />
-          <Legend 
-            wrapperStyle={{ 
-              fontSize: containerWidth < 500 ? '12px' : '14px',
-              fontWeight: 500
+            labelStyle={{
+              color: '#333',
+              fontWeight: 'bold',
+              marginBottom: '4px'
             }}
           />
         </PieChart>
@@ -245,8 +267,29 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     }
 
     return (
-      <div>
-        <select value={selectedMonth} onChange={handleMonthChange} style={{ padding: '1em' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span style={{ 
+          color: theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+          fontWeight: '500',
+          fontSize: '0.9rem'
+        }}>
+          {language === 'it' ? 'Mese:' : 'Month:'}
+        </span>
+        <select 
+          value={selectedMonth} 
+          onChange={handleMonthChange} 
+          style={{ 
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+            background: 'rgba(255,255,255,0.95)',
+            color: '#333',
+            fontSize: '0.9rem',
+            fontWeight: '500',
+            cursor: 'pointer',
+            outline: 'none'
+          }}
+        >
           {monthOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -260,9 +303,17 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
   // Conditional rendering based on type
   if (type === "pie") {
     return (
-      <PercentageOutflowsChartContainer>
-        {renderMonthSelector()}
-        {renderPieChart()}
+      <PercentageOutflowsChartContainer style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ 
+          padding: '1rem', 
+          textAlign: 'center', 
+          borderBottom: theme.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
+        }}>
+          {renderMonthSelector()}
+        </div>
+        <div style={{ flex: 1, minHeight: 0 }}>
+          {renderPieChart()}
+        </div>
       </PercentageOutflowsChartContainer>
     );
   }
@@ -340,11 +391,12 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
         {/* Responsive chart container */}
         <div style={{ 
           width: '100%', 
-          height: '550px',
+          height: '500px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginTop: '1rem'
+          marginTop: '3.5rem',
+          // padding: '0 1rem'
         }}>
           <LineChart
             width={containerWidth}

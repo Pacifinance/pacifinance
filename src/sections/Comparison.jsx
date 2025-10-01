@@ -43,10 +43,14 @@ const ComparisonContainer = styled.div`
   padding: 1rem;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 150vh;
+  padding-bottom: 60vh;
   
   @media (max-width: 768px) {
     padding: 0.5rem;
     gap: 1.5rem;
+    min-height: 130vh;
+    padding-bottom: 50vh;
   }
 `;
 

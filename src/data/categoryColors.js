@@ -30,3 +30,23 @@ export const outflowCategoryColors = {
   'Transports': 'rgba(52, 73, 94, 0.22)', // grigio scuro: spostamenti
   'Other': 'rgba(127, 140, 141, 0.22)', // grigio: altro
 };
+
+// Mapping dalle chiavi italiane (usate nei dati) alle chiavi inglesi (usate per i colori)
+export const categoryKeyMapping = {
+  'Casa': 'House',
+  'Alimentari': 'Food',
+  'Trasporti': 'Transports',
+  'Intrattenimento': 'Free time',
+  'Salute': 'Health',
+  'Abbigliamento': 'Shopping',
+  'Altri': 'Other',
+  'Viaggi': 'Travelling',
+  'Digital': 'Digital service',
+  'Auto': 'Vehicle'
+};
+
+// Funzione helper per ottenere il colore dalla chiave italiana
+export const getCategoryColor = (italianKey) => {
+  const englishKey = categoryKeyMapping[italianKey];
+  return outflowCategoryColors[englishKey] || outflowCategoryColors['Other'] || '#8884d8';
+};

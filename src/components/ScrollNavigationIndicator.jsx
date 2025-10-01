@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled, { keyframes, css } from 'styled-components';
+import { LanguageContext } from '../contexts/LanguageContext';
 
 // Animazioni
 const slideIn = keyframes`
@@ -281,24 +282,32 @@ const KeyIcon = styled.span`
 const ScrollNavigationIndicator = ({ 
   theme, 
   isNavigating,
-  isLoading,
-  loadingDirection,
-  loadingProgress,
+  showTriggerZone,
+  triggerDirection,
+  triggerProgress,
   currentPageIndex, 
   totalPages, 
   nextPage, 
   prevPage,
   onPageClick,
   pageHasScrollableContent = true,
-  cancelLoading,
+  cancelTrigger,
+  navigateManually,
   isAutoScrolling = false
 }) => {
+  const { language } = useContext(LanguageContext);
+  
   // Guardia per verificare che il theme sia disponibile
   if (!theme) {
     return null;
   }
 
-  const pageNames = [
+  const pageNames = language === 'en' ? [
+    'Dashboard',
+    'Charts',
+    'Insert', 
+    'Comparison'
+  ] : [
     'Dashboard',
     'Grafici',
     'Inserimenti', 
@@ -319,11 +328,27 @@ const ScrollNavigationIndicator = ({
     );
   }
 
-  // Mostra indicatore di caricamento in fondo alla pagina durante lo scroll
-  if (isLoading && loadingDirection && pageHasScrollableContent) {
-    const directionText = loadingDirection === 'down' ? 'Prossima pagina' : 'Pagina precedente';
-    const directionIcon = loadingDirection === 'down' ? '↓' : '↑';
-    const targetPage = loadingDirection === 'down' 
+    // Mostra pulsante quando l'utente è nella zona appropriata
+  if (showTriggerZone && triggerDirection && pageHasScrollableContent) {
+    // Traduzioni per i testi
+    const translations = {
+      it: {
+        goToNext: 'Vai alla prossima pagina',
+        goToPrev: 'Torna alla pagina precedente',
+        hide: 'Nascondi'
+      },
+      en: {
+        goToNext: 'Go to next page',
+        goToPrev: 'Go to previous page', 
+        hide: 'Hide'
+      }
+    };
+    
+    const t = translations[language] || translations.it;
+    
+    const directionText = triggerDirection === 'down' ? t.goToNext : t.goToPrev;
+    const directionIcon = triggerDirection === 'down' ? '↓' : '↑';
+    const targetPage = triggerDirection === 'down' 
       ? pageNames[currentPageIndex + 1] 
       : pageNames[currentPageIndex - 1];
     
@@ -344,51 +369,67 @@ const ScrollNavigationIndicator = ({
           </NavigationIndicator>
         )}
         
-        {/* Indicatore di caricamento in fondo */}
+        {/* Pulsante per navigare */}
         <BottomLoadingIndicator theme={theme}>
           <LoadingContent>
             <DirectionIcon theme={theme}>
               {directionIcon}
             </DirectionIcon>
             <LoadingText theme={theme}>
-              {directionText}
+              {targetPage}
             </LoadingText>
-            {targetPage && (
-              <SubText theme={theme}>
-                Andando a: {targetPage}
-              </SubText>
-            )}
-            <LoadingProgressBar theme={theme}>
-              <ProgressFill 
-                theme={theme} 
-                style={{ width: `${loadingProgress}%` }}
-              />
-            </LoadingProgressBar>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
-              <SubText theme={theme}>
-                Scorri via per annullare
-              </SubText>
-              {cancelLoading && (
+            <SubText theme={theme} style={{ marginBottom: '1rem' }}>
+              {directionText}
+            </SubText>
+            
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <button
+                onClick={() => navigateManually && navigateManually(triggerDirection)}
+                style={{
+                  background: theme.buttonBackgroundColor,
+                  border: 'none',
+                  borderRadius: '12px',
+                  color: 'white',
+                  padding: '12px 24px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                }}
+              >
+                {directionIcon} {targetPage}
+              </button>
+              
+              {cancelTrigger && (
                 <button
-                  onClick={cancelLoading}
+                  onClick={cancelTrigger}
                   style={{
-                    background: 'rgba(231, 76, 60, 0.2)',
-                    border: '1px solid #e74c3c',
+                    background: 'transparent',
+                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}`,
                     borderRadius: '8px',
-                    color: '#e74c3c',
-                    padding: '4px 12px',
-                    fontSize: '12px',
+                    color: theme.textColor,
+                    padding: '8px 16px',
+                    fontSize: '14px',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(231, 76, 60, 0.3)';
+                    e.target.style.background = theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(231, 76, 60, 0.2)';
+                    e.target.style.background = 'transparent';
                   }}
                 >
-                  ✕ Annulla
+                  ✕ {t.hide}
                 </button>
               )}
             </div>
@@ -415,17 +456,7 @@ const ScrollNavigationIndicator = ({
         ))}
       </NavigationIndicator>
       
-      {/* Mostra hint di navigazione per pagine senza scroll */}
-      {!pageHasScrollableContent && currentPageIndex !== -1 && (
-        <NavigationHint theme={theme}>
-          <div>Usa scroll o frecce per navigare</div>
-          <NavigationKeys>
-            <KeyIcon theme={theme}>↑</KeyIcon>
-            <KeyIcon theme={theme}>↓</KeyIcon>
-            <KeyIcon theme={theme}>WHEEL</KeyIcon>
-          </NavigationKeys>
-        </NavigationHint>
-      )}
+      {/* Rimosso l'hint di navigazione fastidioso */}
     </>
   );
 };

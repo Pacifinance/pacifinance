@@ -183,7 +183,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       wrapperStyle={{ 
         fontSize: containerWidth < 500 ? '16px' : '18px',
         fontWeight: 500,
-        paddingTop: type === 'bar' ? '20px' : '15px',
+        paddingTop: type === 'bar' ? '10px' : '5px',
         textAlign: 'center'
       }}
     />
@@ -196,10 +196,10 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       height={550}
       data={data}
       margin={{
-        top: 30,
-        left: 40,
-        right: 30,
-        bottom: 90
+        top: 60,
+        left: containerWidth < 768 ? 20 : 40,
+        right: containerWidth < 768 ? 20 : 30,
+        bottom: containerWidth < 768 ? 5 : 10
       }}
     >
       <CartesianGrid 
@@ -234,7 +234,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
           {...props} 
           textAnchor="end" 
           fill={theme.textColor} 
-          fontSize={containerWidth < 500 ? 20 : 25}
+          fontSize={containerWidth < 500 ? 14 : 16}
           fontWeight={500}
           dx={-5}
         />}
@@ -269,10 +269,10 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       height={550}
       data={data}
       margin={{
-        top: 20,
-        left: 40,
-        right: 30,
-        bottom: 70
+        top: 50,
+        left: containerWidth < 768 ? 20 : 40,
+        right: containerWidth < 768 ? 20 : 30,
+        bottom: containerWidth < 768 ? 15 : 20
       }}
     >
       <CartesianGrid 
@@ -408,7 +408,8 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: '1rem',
+        marginTop: '0.5rem',
+        padding: '0 1rem',
         overflow: 'hidden'
       }}>
         {type === 'bar' ? renderBarChart() : renderAreaChart()}

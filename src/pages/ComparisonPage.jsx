@@ -26,15 +26,16 @@ function ComparisonPage() {
   // Hook per la navigazione con scroll
   const { 
     isNavigating,
-    isLoading,
-    loadingDirection,
-    loadingProgress,
+    showTriggerZone,
+    triggerDirection,
+    triggerProgress,
     pageHasScrollableContent,
     currentPageIndex, 
     totalPages, 
     nextPage, 
     prevPage,
-    cancelLoading,
+    cancelTrigger,
+    navigateManually,
     isAutoScrolling
   } = useScrollNavigation(true);
 
@@ -73,7 +74,9 @@ function ComparisonPage() {
         <div style={{ 
           marginLeft: isMobileScreen ? '0' : '5.5rem', 
           paddingTop: isMobileScreen ? '70px' : '0',
-          width: '100%' 
+          width: '100%',
+          backgroundColor: theme.backgroundColor,
+          minHeight: '100vh'
         }}>
           <Comparison theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
         </div>
@@ -81,16 +84,17 @@ function ComparisonPage() {
         <ScrollNavigationIndicator
           theme={theme}
           isNavigating={isNavigating}
-          isLoading={isLoading}
-          loadingDirection={loadingDirection}
-          loadingProgress={loadingProgress}
+          showTriggerZone={showTriggerZone}
+          triggerDirection={triggerDirection}
+          triggerProgress={triggerProgress}
           pageHasScrollableContent={pageHasScrollableContent}
           currentPageIndex={currentPageIndex}
           totalPages={totalPages}
           nextPage={nextPage}
           prevPage={prevPage}
           onPageClick={handlePageClick}
-          cancelLoading={cancelLoading}
+          cancelTrigger={cancelTrigger}
+          navigateManually={navigateManually}
           isAutoScrolling={isAutoScrolling}
         />
       </div>

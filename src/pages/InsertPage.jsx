@@ -23,15 +23,16 @@ function InsertPage() {
   // Hook per la navigazione con scroll
   const { 
     isNavigating,
-    isLoading,
-    loadingDirection,
-    loadingProgress,
+    showTriggerZone,
+    triggerDirection,
+    triggerProgress,
     pageHasScrollableContent,
     currentPageIndex, 
     totalPages, 
     nextPage, 
     prevPage,
-    cancelLoading,
+    cancelTrigger,
+    navigateManually,
     isAutoScrolling 
   } = useScrollNavigation(true);
 
@@ -78,7 +79,9 @@ function InsertPage() {
         marginLeft: isMobileScreen ? '0' : '5.5rem', 
         paddingTop: isMobileScreen ? '80px' : '0',
         width: '100%',
-        minHeight: '100vh'
+        minHeight: '150vh',
+        paddingBottom: '60vh',
+        backgroundColor: theme.backgroundColor
       }}>
         <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
       </div>
@@ -86,16 +89,17 @@ function InsertPage() {
       <ScrollNavigationIndicator
         theme={theme}
         isNavigating={isNavigating}
-        isLoading={isLoading}
-        loadingDirection={loadingDirection}
-        loadingProgress={loadingProgress}
+        showTriggerZone={showTriggerZone}
+        triggerDirection={triggerDirection}
+        triggerProgress={triggerProgress}
         pageHasScrollableContent={pageHasScrollableContent}
         currentPageIndex={currentPageIndex}
         totalPages={totalPages}
         nextPage={nextPage}
         prevPage={prevPage}
         onPageClick={handlePageClick}
-        cancelLoading={cancelLoading}
+        cancelTrigger={cancelTrigger}
+        navigateManually={navigateManually}
         isAutoScrolling={isAutoScrolling}
       />
     </div>

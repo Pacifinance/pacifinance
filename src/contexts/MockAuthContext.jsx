@@ -41,9 +41,36 @@ export const mockDashboardData = {
     preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     
-    // Arrays per spese e entrate (formato compatibile con Dashboard)
-    expensesArray: [1250], // Totale spese del mese
-    incomesArray: [3000], // Totale entrate del mese
+    // Arrays per spese e entrate per ultimi 12 mesi (dinamici)
+    expensesArray: (() => {
+        const today = new Date();
+        return Array.from({ length: 12 }, (_, i) => {
+            const baseExpense = 1200;
+            const variation = Math.sin((today.getMonth() - i) * 0.5) * 300;
+            const randomFactor = (Math.random() - 0.5) * 200;
+            return Math.abs(baseExpense + variation + randomFactor);
+        });
+    })(),
+    
+    incomesArray: (() => {
+        const today = new Date();
+        return Array.from({ length: 12 }, (_, i) => {
+            const baseSalary = 2800;
+            const variation = Math.sin((today.getMonth() - i) * 0.3) * 400;
+            const randomBonus = Math.random() * 300;
+            return baseSalary + variation + randomBonus;
+        });
+    })(),
+    
+    outflowsArray: (() => {
+        const today = new Date();
+        return Array.from({ length: 12 }, (_, i) => {
+            const baseExpense = 1200;
+            const variation = Math.sin((today.getMonth() - i) * 0.5) * 300;
+            const randomFactor = (Math.random() - 0.5) * 200;
+            return Math.abs(baseExpense + variation + randomFactor);
+        });
+    })(),
     
     // Arrays dettagliati per altri componenti
     allExpenses: [
@@ -256,23 +283,25 @@ export const mockDashboardData = {
         { key: 'no', value: { it: 'No', en: 'No' } }
     ],
     
-    // Spese per categoria per mese (per grafici dettagliati)
-    totalExpensesPerCategoryPerMonth: Array.from({ length: 12 }, (_, monthIndex) => {
-        const date = new Date();
-        date.setMonth(date.getMonth() - monthIndex);
-        return {
-            month: date.toISOString().split('T')[0].slice(0, 7),
-            categories: [
-                { name: 'Casa', value: 1000 + Math.random() * 400 },
-                { name: 'Alimentari', value: 300 + Math.random() * 200 },
-                { name: 'Trasporti', value: 200 + Math.random() * 150 },
-                { name: 'Intrattenimento', value: 150 + Math.random() * 100 },
-                { name: 'Salute', value: 100 + Math.random() * 100 },
-                { name: 'Abbigliamento', value: 50 + Math.random() * 150 },
-                { name: 'Altri', value: 200 + Math.random() * 200 }
-            ]
-        };
-    }),
+    // Spese per categoria per mese (per PieChart - struttura compatibile con InOutChart)
+    totalExpensesPerCategoryPerMonth: (() => {
+        const today = new Date();
+        return Array.from({ length: 12 }, (_, monthIndex) => {
+            return {
+                // Categorie con chiavi italiane (compatibili con languages.json) - i colori verranno gestiti dal mapping
+                'Casa': 800 + Math.sin((today.getMonth() - monthIndex) * 0.4) * 200 + Math.random() * 150,
+                'Alimentari': 350 + Math.sin((today.getMonth() - monthIndex) * 0.6) * 100 + Math.random() * 100,
+                'Trasporti': 200 + Math.sin((today.getMonth() - monthIndex) * 0.8) * 80 + Math.random() * 60,
+                'Intrattenimento': 180 + Math.sin((today.getMonth() - monthIndex) * 0.5) * 70 + Math.random() * 50,
+                'Salute': 120 + Math.sin((today.getMonth() - monthIndex) * 0.3) * 60 + Math.random() * 40,
+                'Abbigliamento': 100 + Math.sin((today.getMonth() - monthIndex) * 0.7) * 80 + Math.random() * 60,
+                'Altri': 150 + Math.sin((today.getMonth() - monthIndex) * 1.0) * 100 + Math.random() * 80,
+                'Viaggi': 250 + Math.sin((today.getMonth() - monthIndex) * 0.9) * 200 + Math.random() * 100,
+                'Digital': 80 + Math.sin((today.getMonth() - monthIndex) * 0.2) * 50 + Math.random() * 30,
+                'Auto': 120 + Math.sin((today.getMonth() - monthIndex) * 0.1) * 60 + Math.random() * 40
+            };
+        });
+    })(),
 
     // Dati per confronti e benchmark
     percentageRankOnBalance: Math.floor(Math.random() * 40) + 60, // 60-100%

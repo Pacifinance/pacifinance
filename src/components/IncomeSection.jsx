@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faSearch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSearch, faCalendarAlt, faPen } from '@fortawesome/free-solid-svg-icons';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -367,31 +367,57 @@ export default function IncomeSection({
                   })()}
             </td>
             <td>
-              <button
-                data-umami-event="deleteIncome"
-                onClick={() => onDeleteIncome(add.date, add.amount)}
-                style={{
-                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '4px 6px',
-                  fontSize: '0.8rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 4px rgba(255, 107, 107, 0.3)'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'scale(1.05)';
-                  e.target.style.boxShadow = '0 4px 8px rgba(255, 107, 107, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'scale(1)';
-                  e.target.style.boxShadow = '0 2px 4px rgba(255, 107, 107, 0.3)';
-                }}
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
+              <div style={{
+                display: 'flex',
+                gap: '6px',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {/* Edit button - disabled for future functionality */}
+                <button
+                  disabled
+                  title="Funzionalità in arrivo - Modifica entrata"
+                  style={{
+                    background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '4px 6px',
+                    fontSize: '0.8rem',
+                    cursor: 'not-allowed',
+                    opacity: 0.6,
+                    boxShadow: '0 2px 4px rgba(156, 163, 175, 0.3)'
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPen} />
+                </button>
+                {/* Delete button */}
+                <button
+                  data-umami-event="deleteIncome"
+                  onClick={() => onDeleteIncome(add.date, add.amount)}
+                  style={{
+                    background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '4px 6px',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 4px rgba(255, 107, 107, 0.3)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.05)';
+                    e.target.style.boxShadow = '0 4px 8px rgba(255, 107, 107, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.boxShadow = '0 2px 4px rgba(255, 107, 107, 0.3)';
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </div>
             </td>
           </tr>
         );
@@ -606,15 +632,51 @@ export default function IncomeSection({
         </div>
       </div>
 
-      <TitleLastAdds theme={theme} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', width: '100%' }}>
-        <span style={{ marginRight: '0.5rem' }}>{languages[language].insert.incomeSection.titleListing}</span>
+      {/* Month Selection Container - Consistent with card styling */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        marginBottom: '2rem',
+        padding: '1.5rem',
+        background: theme.mode === 'dark' 
+          ? `linear-gradient(135deg, ${theme.backgroundColor}f0 0%, ${theme.backgroundColor}f8 100%)`
+          : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`,
+        border: `1px solid ${theme.mode === 'dark' 
+          ? `${theme.buttonBackgroundColor}30`
+          : '#e2e8f0'}`,
+        borderRadius: '16px',
+        backdropFilter: 'blur(10px)',
+        boxShadow: theme.mode === 'dark' 
+          ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
+          : '0 2px 12px rgba(0, 0, 0, 0.06)'
+      }}>
+        <h3 style={{
+          color: theme.textColor,
+          fontSize: '1.2rem',
+          fontWeight: '600',
+          marginBottom: '1rem',
+          textAlign: 'center',
+          letterSpacing: '-0.01em'
+        }}>
+          {languages[language].insert.incomeSection.titleListing}
+        </h3>
         <select
-          className="text-black text-center font-normal text-base px-2 py-1 rounded-md"
+          className="text-black text-center font-medium"
           style={{ 
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-            padding: '6px 12px',
-            fontSize: '0.9rem'
+            borderRadius: '12px',
+            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}40` : '#e2e8f0'}`,
+            padding: '12px 20px',
+            fontSize: '1rem',
+            background: 'white',
+            color: '#374151',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            minWidth: '200px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
           }}
           value={selectedIncomesMonth}
           onChange={handleIncomesMonthChange}
@@ -631,9 +693,9 @@ export default function IncomeSection({
               </option>
             ))}
         </select>
-      </TitleLastAdds>
+      </div>
 
-      {/* Wrapper responsive per tabella income */}
+      {/* Table Container - Consistent with card styling */}
       <div
         style={{
           overflowX: 'auto',
@@ -642,8 +704,18 @@ export default function IncomeSection({
           display: 'flex',
           justifyContent: 'center',
           WebkitOverflowScrolling: 'touch',
-          margin: '0',
-          padding: '0'
+          padding: '1rem',
+          background: theme.mode === 'dark' 
+            ? `linear-gradient(135deg, ${theme.backgroundColor}f0 0%, ${theme.backgroundColor}f8 100%)`
+            : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`,
+          border: `1px solid ${theme.mode === 'dark' 
+            ? `${theme.buttonBackgroundColor}30`
+            : '#e2e8f0'}`,
+          borderRadius: '16px',
+          backdropFilter: 'blur(10px)',
+          boxShadow: theme.mode === 'dark' 
+            ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
+            : '0 2px 12px rgba(0, 0, 0, 0.06)'
         }}
       >
         <StyledTable theme={theme} style={{ minWidth: 600 }}>
@@ -655,28 +727,46 @@ export default function IncomeSection({
           </tbody>
         </StyledTable>
         <style>{`
-          @media (max-width: 600px) {
+          @media (max-width: 768px) {
             table, .StyledTable, .StyledTable th, .StyledTable td {
-              font-size: 0.7em !important;
-              padding: 2px 1px !important;
-              min-width: 40px !important;
+              font-size: 0.8em !important;
+              padding: 6px 4px !important;
+              min-width: 50px !important;
             }
             .StyledTable th, .StyledTable td {
-              line-height: 1.0 !important;
+              line-height: 1.2 !important;
               word-break: break-word !important;
+            }
+            .StyledTable select, .StyledTable input {
+              font-size: 0.8em !important;
+              padding: 4px 6px !important;
+              min-width: 90px !important;
+              border-radius: 4px !important;
+            }
+            .StyledTable button {
+              font-size: 0.75em !important;
+              padding: 3px 5px !important;
+              min-width: 28px !important;
+              border-radius: 4px !important;
+            }
+            .StyledTable .MuiInputBase-root, .StyledTable .MuiSelect-root {
+              font-size: 0.8em !important;
+            }
+          }
+          @media (max-width: 480px) {
+            table, .StyledTable, .StyledTable th, .StyledTable td {
+              font-size: 0.7em !important;
+              padding: 4px 2px !important;
             }
             .StyledTable select, .StyledTable input {
               font-size: 0.7em !important;
               padding: 2px 4px !important;
-              min-width: 80px !important;
+              min-width: 70px !important;
             }
             .StyledTable button {
               font-size: 0.7em !important;
-              padding: 2px 4px !important;
-              min-width: 25px !important;
-            }
-            .StyledTable .MuiInputBase-root, .StyledTable .MuiSelect-root {
-              font-size: 0.7em !important;
+              padding: 2px 3px !important;
+              min-width: 24px !important;
             }
           }
         `}</style>

@@ -153,23 +153,28 @@ const StatLabel = styled.div`
 `;
 
 const PercentageChange = styled.div`
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: ${props => props.$isPositive ? '#27ae60' : '#e74c3c'};
   background: ${props => props.$isPositive 
     ? 'rgba(39, 174, 96, 0.1)' 
     : 'rgba(231, 76, 60, 0.1)'
   };
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
   border: 1px solid ${props => props.$isPositive 
     ? 'rgba(39, 174, 96, 0.2)' 
     : 'rgba(231, 76, 60, 0.2)'
   };
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   
   @media (max-width: 768px) {
-    font-size: 1rem;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
   }
 `;
 
@@ -254,8 +259,9 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
             });
             
             return {
-                vsText: `${languages[language]?.graphs?.comparison?.vsLastMonth || "vs mese precedente"} (${prevMonthFormatted})`,
-                periodLabel: languages[language]?.graphs?.comparison?.monthlyComparison || "Confronto mensile"
+                vsText: `${languages[language]?.graphs?.comparison?.vsLastMonth || "vs mese precedente"}`,
+                periodLabel: languages[language]?.graphs?.comparison?.monthlyComparison || "Confronto mensile",
+                comparisonDate: prevMonthFormatted
             };
         } else {
             // Anno precedente, stesso mese
@@ -266,8 +272,9 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
             });
             
             return {
-                vsText: `${languages[language]?.graphs?.comparison?.vsLastYear || "vs anno precedente"} (${prevYearFormatted})`,
-                periodLabel: languages[language]?.graphs?.comparison?.yearlyComparison || "Confronto annuale"
+                vsText: `${languages[language]?.graphs?.comparison?.vsLastYear || "vs anno precedente"}`,
+                periodLabel: languages[language]?.graphs?.comparison?.yearlyComparison || "Confronto annuale",
+                comparisonDate: prevYearFormatted
             };
         }
     };
@@ -289,9 +296,17 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                     <p style={{ 
                         color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
                         fontSize: '1rem',
+                        margin: '0 0 0.25rem 0'
+                    }}>
+                        {periodText.vsText}
+                    </p>
+                    <p style={{ 
+                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)',
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
                         margin: 0
                     }}>
-                        {periodText.vsText} 
+                        {periodText.comparisonDate}
                     </p>
                 </div>
 

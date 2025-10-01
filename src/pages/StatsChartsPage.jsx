@@ -25,15 +25,16 @@ function StatsChartsPage() {
   // Hook per la navigazione con scroll
   const { 
     isNavigating,
-    isLoading,
-    loadingDirection,
-    loadingProgress,
+    showTriggerZone,
+    triggerDirection,
+    triggerProgress,
     pageHasScrollableContent,
     currentPageIndex, 
     totalPages, 
     nextPage, 
     prevPage,
-    cancelLoading,
+    cancelTrigger,
+    navigateManually,
     isAutoScrolling
   } = useScrollNavigation(true);
 
@@ -70,21 +71,22 @@ function StatsChartsPage() {
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       <StatsCharts />
       
-      <ScrollNavigationIndicator
-        theme={theme}
-        isNavigating={isNavigating}
-        isLoading={isLoading}
-        loadingDirection={loadingDirection}
-        loadingProgress={loadingProgress}
-        pageHasScrollableContent={pageHasScrollableContent}
-        currentPageIndex={currentPageIndex}
-        totalPages={totalPages}
-        nextPage={nextPage}
-        prevPage={prevPage}
-        onPageClick={handlePageClick}
-        cancelLoading={cancelLoading}
-        isAutoScrolling={isAutoScrolling}
-      />
+              <ScrollNavigationIndicator
+          theme={theme}
+          isNavigating={isNavigating}
+          showTriggerZone={showTriggerZone}
+          triggerDirection={triggerDirection}
+          triggerProgress={triggerProgress}
+          pageHasScrollableContent={pageHasScrollableContent}
+          currentPageIndex={currentPageIndex}
+          totalPages={totalPages}
+          nextPage={nextPage}
+          prevPage={prevPage}
+          onPageClick={handlePageClick}
+          cancelTrigger={cancelTrigger}
+          navigateManually={navigateManually}
+          isAutoScrolling={isAutoScrolling}
+        />
     </Div>
   );
 }

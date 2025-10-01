@@ -632,79 +632,13 @@ export default function IncomeSection({
         </div>
       </div>
 
-      {/* Month Selection Container - Consistent with card styling */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: theme.mode === 'dark' 
-          ? `linear-gradient(135deg, ${theme.backgroundColor}f0 0%, ${theme.backgroundColor}f8 100%)`
-          : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`,
-        border: `1px solid ${theme.mode === 'dark' 
-          ? `${theme.buttonBackgroundColor}30`
-          : '#e2e8f0'}`,
-        borderRadius: '16px',
-        backdropFilter: 'blur(10px)',
-        boxShadow: theme.mode === 'dark' 
-          ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
-          : '0 2px 12px rgba(0, 0, 0, 0.06)'
-      }}>
-        <h3 style={{
-          color: theme.textColor,
-          fontSize: '1.2rem',
-          fontWeight: '600',
-          marginBottom: '1rem',
-          textAlign: 'center',
-          letterSpacing: '-0.01em'
-        }}>
-          {languages[language].insert.incomeSection.titleListing}
-        </h3>
-        <select
-          className="text-black text-center font-medium"
-          style={{ 
-            borderRadius: '12px',
-            border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}40` : '#e2e8f0'}`,
-            padding: '12px 20px',
-            fontSize: '1rem',
-            background: 'white',
-            color: '#374151',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            minWidth: '200px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-          value={selectedIncomesMonth}
-          onChange={handleIncomesMonthChange}
-        >
-          {incomeMonthOptions &&
-            incomeMonthOptions.length > 0 &&
-            incomeMonthOptions.map((option) => (
-              <option
-                className="text-center"
-                key={option.value}
-                value={option.value}
-              >
-                {option.label}
-              </option>
-            ))}
-        </select>
-      </div>
 
-      {/* Table Container - Consistent with card styling */}
+
+      {/* Unified Table Container with Month Selection */}
       <div
         style={{
-          overflowX: 'auto',
-          maxWidth: '100%',
           width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          WebkitOverflowScrolling: 'touch',
-          padding: '1rem',
+          maxWidth: '100%',
           background: theme.mode === 'dark' 
             ? `linear-gradient(135deg, ${theme.backgroundColor}f0 0%, ${theme.backgroundColor}f8 100%)`
             : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`,
@@ -718,6 +652,69 @@ export default function IncomeSection({
             : '0 2px 12px rgba(0, 0, 0, 0.06)'
         }}
       >
+        {/* Header with Title and Month Selection */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1.5rem 1rem 1rem 1rem',
+          borderBottom: `1px solid ${theme.mode === 'dark' 
+            ? `${theme.buttonBackgroundColor}20`
+            : '#e2e8f0'}`,
+          gap: '1rem'
+        }}>
+          <h3 style={{
+            color: theme.textColor,
+            fontSize: '1.2rem',
+            fontWeight: '600',
+            textAlign: 'center',
+            letterSpacing: '-0.01em',
+            margin: 0
+          }}>
+            {languages[language].insert.incomeSection.titleListing}
+          </h3>
+          <select
+            className="text-black text-center font-medium"
+            style={{ 
+              borderRadius: '12px',
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}40` : '#e2e8f0'}`,
+              padding: '12px 20px',
+              fontSize: '1rem',
+              background: 'white',
+              color: '#374151',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              minWidth: '200px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            value={selectedIncomesMonth}
+            onChange={handleIncomesMonthChange}
+          >
+            {incomeMonthOptions &&
+              incomeMonthOptions.length > 0 &&
+              incomeMonthOptions.map((option) => (
+                <option
+                  className="text-center"
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+          </select>
+        </div>
+        
+        {/* Table Container */}
+        <div style={{
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          padding: '1rem',
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%'
+        }}>
         <StyledTable theme={theme} style={{ minWidth: 600 }}>
           <thead>{renderTableHeader()}</thead>
           <tbody>
@@ -770,7 +767,8 @@ export default function IncomeSection({
             }
           }
         `}</style>
-       </div>
-     </div>
-   );
+        </div>
+      </div>
+    </div>
+  );
 }

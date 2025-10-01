@@ -72,16 +72,130 @@ export const mockDashboardData = {
         });
     })(),
     
-    // Arrays dettagliati per altri componenti
-    allExpenses: [
-        { name: 'Affitto', value: 800 },
-        { name: 'Spesa', value: 300 },
-        { name: 'Trasporti', value: 150 }
-    ],
-    allIncomes: [
-        { name: 'Stipendio', value: 2500 },
-        { name: 'Freelance', value: 500 }
-    ],
+    // Arrays dettagliati per tabelle insert-values (sempre del mese corrente)
+    allExpenses: (() => {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentYear = currentDate.getFullYear();
+        
+        // Array di transazioni per il mese corrente
+        const transactions = [];
+        const monthKey = `${currentMonth}-${currentYear}`;
+        
+        // Genera 15-25 transazioni casuali per il mese corrente
+        const numTransactions = Math.floor(Math.random() * 11) + 15; // 15-25 transazioni
+        
+        for (let i = 0; i < numTransactions; i++) {
+            const day = Math.floor(Math.random() * 28) + 1; // 1-28 per sicurezza
+            const transactionDate = new Date(currentYear, currentMonth - 1, day);
+            
+            // Categoria casuale
+            const categories = [
+                { index: 0, translations: { it: 'Casa', en: 'Home' }},
+                { index: 1, translations: { it: 'Alimentari', en: 'Food' }},
+                { index: 2, translations: { it: 'Trasporti', en: 'Transport' }},
+                { index: 3, translations: { it: 'Intrattenimento', en: 'Entertainment' }},
+                { index: 4, translations: { it: 'Salute', en: 'Health' }},
+                { index: 5, translations: { it: 'Abbigliamento', en: 'Clothing' }},
+                { index: 6, translations: { it: 'Altri', en: 'Other' }}
+            ];
+            
+            // Tipo pagamento casuale
+            const paymentTypes = [
+                { index: 0, translations: { it: 'Carta di Credito', en: 'Credit Card' }},
+                { index: 1, translations: { it: 'Bonifico', en: 'Bank Transfer' }},
+                { index: 2, translations: { it: 'Contanti', en: 'Cash' }},
+                { index: 3, translations: { it: 'PayPal', en: 'PayPal' }}
+            ];
+            
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            const randomPaymentType = paymentTypes[Math.floor(Math.random() * paymentTypes.length)];
+            
+            // Importo basato sulla categoria
+            let amount;
+            switch (randomCategory.index) {
+                case 0: amount = Math.floor(Math.random() * 400) + 600; break; // Casa: 600-1000
+                case 1: amount = Math.floor(Math.random() * 80) + 20; break; // Alimentari: 20-100
+                case 2: amount = Math.floor(Math.random() * 100) + 15; break; // Trasporti: 15-115
+                case 3: amount = Math.floor(Math.random() * 150) + 25; break; // Intrattenimento: 25-175
+                case 4: amount = Math.floor(Math.random() * 200) + 30; break; // Salute: 30-230
+                case 5: amount = Math.floor(Math.random() * 120) + 25; break; // Abbigliamento: 25-145
+                default: amount = Math.floor(Math.random() * 80) + 10; break; // Altri: 10-90
+            }
+            
+            const notes = [
+                'Spesa mensile', 'Acquisto necessario', 'Pagamento regolare', 
+                'Spesa imprevista', 'Acquisto online', 'Pagamento bolletta',
+                'Spesa alimentare', 'Carburante', 'Medicina', 'Regalo',
+                'Abbonamento', 'Riparazione', ''
+            ];
+            
+            transactions.push({
+                date: transactionDate.toISOString().split('T')[0],
+                amount,
+                categoryTag: randomCategory,
+                paymentType: randomPaymentType,
+                notes: notes[Math.floor(Math.random() * notes.length)],
+                is_expense: true
+            });
+        }
+        
+        // Raggruppa per mese
+        return [transactions];
+    })(),
+    
+    allIncomes: (() => {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentYear = currentDate.getFullYear();
+        
+        // Array di entrate per il mese corrente
+        const transactions = [];
+        
+        // Genera 3-8 entrate per il mese corrente
+        const numTransactions = Math.floor(Math.random() * 6) + 3; // 3-8 entrate
+        
+        for (let i = 0; i < numTransactions; i++) {
+            const day = Math.floor(Math.random() * 28) + 1; // 1-28 per sicurezza  
+            const transactionDate = new Date(currentYear, currentMonth - 1, day);
+            
+            // Categoria entrata casuale
+            const incomeCategories = [
+                { index: 0, translations: { it: 'Stipendio', en: 'Salary' }},
+                { index: 1, translations: { it: 'Freelance', en: 'Freelance' }},
+                { index: 2, translations: { it: 'Investimenti', en: 'Investments' }},
+                { index: 3, translations: { it: 'Altri', en: 'Other' }}
+            ];
+            
+            const randomCategory = incomeCategories[Math.floor(Math.random() * incomeCategories.length)];
+            
+            // Importo basato sulla categoria
+            let amount;
+            switch (randomCategory.index) {
+                case 0: amount = Math.floor(Math.random() * 1000) + 2000; break; // Stipendio: 2000-3000
+                case 1: amount = Math.floor(Math.random() * 800) + 200; break; // Freelance: 200-1000
+                case 2: amount = Math.floor(Math.random() * 300) + 50; break; // Investimenti: 50-350
+                default: amount = Math.floor(Math.random() * 200) + 25; break; // Altri: 25-225
+            }
+            
+            const notes = [
+                'Stipendio mensile', 'Progetto freelance', 'Dividendi',
+                'Rendita investimenti', 'Bonus', 'Rimborso',
+                'Vendita oggetti', 'Regalo monetario', ''
+            ];
+            
+            transactions.push({
+                date: transactionDate.toISOString().split('T')[0],
+                amount,
+                categoryTag: randomCategory,
+                notes: notes[Math.floor(Math.random() * notes.length)],
+                is_expense: false
+            });
+        }
+        
+        // Raggruppa per mese
+        return [transactions];
+    })(),
     
     // Ranking mock (ora gestito più sotto con valori dinamici)
     

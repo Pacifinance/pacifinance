@@ -442,7 +442,7 @@ export default function InsertValue({
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  // Build the last 12 months (including current)
+  // Build the last 12 months (including current) - newest first, oldest last
   let monthsArray = [];
   for (let i = 0; i < 12; i++) {
     let d = new Date(currentYear, currentMonth - 1 - i, 1);
@@ -451,7 +451,7 @@ export default function InsertValue({
       year: d.getFullYear(),
     });
   }
-  monthsArray.reverse(); // so oldest first, newest last
+  // Non serve più reverse() - così il mese corrente sarà all'indice 0
 
   // Build monthOptions
   let monthOptions = monthsArray.map((obj, idx) => ({
@@ -474,8 +474,8 @@ export default function InsertValue({
         setSelectedIncomesMonth(currentMonthIdx);
         setSelectedOutflowsMonth(currentMonthIdx);
       } else {
-        setSelectedIncomesMonth(monthOptions.length - 1);
-        setSelectedOutflowsMonth(monthOptions.length - 1);
+        setSelectedIncomesMonth(0); // Default al primo mese (corrente)
+        setSelectedOutflowsMonth(0);
       }
     }
   }, [userData, currentMonthIdx, monthOptions.length]);

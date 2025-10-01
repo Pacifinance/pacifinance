@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,30 +8,48 @@ import {
 } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
 import { useAuth } from "./hooks/useAuth";
-// import { usePreloadCriticalComponents, useIntelligentPreloading } from "./hooks/usePreloading";
+import { useAuthenticatedPreloading, usePublicPreloading } from "./hooks/useSimplePreloading";
 
-// PageLoader rimosso - non necessario senza lazy loading
+// Componente di loading semplice e affidabile
+const SimpleLoader = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '200px',
+    fontSize: '1rem',
+    color: '#666'
+  }}>
+    Caricamento...
+  </div>
+);
 
-// Importazioni dirette per debugging (rimuovi lazy loading temporaneamente)
+// Importazioni dirette per pagine critiche (sempre disponibili)
 import Dashboard from "./pages/DashboardPage";
-import StatsCharts from "./pages/StatsChartsPage";
-import InsertValues from "./pages/InsertPage";
-import ComparisonPage from "./pages/ComparisonPage";
-import CheckPrices from "./pages/CheckPricesPage";
-import Knowledge from "./pages/KnowledgePage";
-import Info from "./pages/InfoPage";
-import AccountPage from "./pages/AccountPage";
-import SettingsPage from "./pages/SettingsPage";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
-import FAQPage from "./pages/FAQPage";
-import PricingPage from "./pages/PricingPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsOfServicePage from "./pages/TermsOfServicePage";
-import SitemapPage from "./pages/SitemapPage";
-import CookiePolicyPage from "./pages/CookiePolicyPage";
-import DisclaimerPage from "./pages/DisclaimerPage";
-import ContactPage from "./pages/ContactPage";
+
+// Lazy loading per pagine principali dell'app (caricate quando necessarie)
+const StatsCharts = React.lazy(() => import("./pages/StatsChartsPage"));
+const InsertValues = React.lazy(() => import("./pages/InsertPage"));
+const ComparisonPage = React.lazy(() => import("./pages/ComparisonPage"));
+
+// Lazy loading per pagine utility (raramente usate)
+const CheckPrices = React.lazy(() => import("./pages/CheckPricesPage"));
+const Knowledge = React.lazy(() => import("./pages/KnowledgePage"));
+const Info = React.lazy(() => import("./pages/InfoPage"));
+const AccountPage = React.lazy(() => import("./pages/AccountPage"));
+const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
+
+// Lazy loading per pagine legali/info (raramente visitate)
+const FAQPage = React.lazy(() => import("./pages/FAQPage"));
+const PricingPage = React.lazy(() => import("./pages/PricingPage"));
+const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsOfServicePage = React.lazy(() => import("./pages/TermsOfServicePage"));
+const SitemapPage = React.lazy(() => import("./pages/SitemapPage"));
+const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
+const DisclaimerPage = React.lazy(() => import("./pages/DisclaimerPage"));
+const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -52,9 +70,9 @@ function AppRouter() {
   // Estrai le proprietà dal nostro hook unificato
   const { isAuthenticated, handleSetIsAuthenticated, handleSetIsUpdated, userData, setUserData } = auth;
   
-  // Attiva preloading intelligente (temporaneamente disabilitato)
-  // usePreloadCriticalComponents(isAuthenticated);
-  // useIntelligentPreloading();
+  // Attiva preloading semplice e sicuro
+  useAuthenticatedPreloading(isAuthenticated);
+  usePublicPreloading();
 
   useEffect(() => {
     var _mtm = (window._mtm = window._mtm || []);
@@ -107,6 +125,7 @@ function AppRouter() {
   // };
 
   return (
+    <Suspense fallback={<SimpleLoader />}>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -205,6 +224,7 @@ function AppRouter() {
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </Suspense>
   );
 }
 

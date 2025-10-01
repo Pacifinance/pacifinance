@@ -304,7 +304,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                 <div className="icon-container">
                                                     <IconComponent className="asset-icon" />
                                                 </div>
-                                                <Link to="/insert-values?section=balance" className="action-button">
+                                                <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
                                                     <AiOutlinePlusCircle />
                                                 </Link>
                                             </div>
@@ -372,7 +372,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                             </div>
                                             
                                             <div className="card-footer">
-                                                <Link to="/insert-values?section=balance" className="update-button">
+                                                <Link to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
                                                     <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
                                                     {languages[language].dashboard.updateValue}
                                                 </Link>
@@ -415,13 +415,13 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                             {item.name === languages[language].general.saved && languages[language].dashboard.saved}
                                         </div>
                                         {item.name === languages[language].general.incomes && (
-                                            <Link to="/insert-values?section=income" className="income-outflow-button">
+                                            <Link to="/insert-values?section=income" className="income-outflow-button" data-umami-event="dashboard-add-income">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
                                                 {languages[language].dashboard.addIncome || 'Add Income'}
                                             </Link>
                                         )}
                                         {item.name === languages[language].general.outflows && (
-                                            <Link to="/insert-values?section=outflow" className="income-outflow-button">
+                                            <Link to="/insert-values?section=outflow" className="income-outflow-button" data-umami-event="dashboard-add-outflow">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
                                                 {languages[language].dashboard.addOutflow || 'Add Outflow'}
                                             </Link>

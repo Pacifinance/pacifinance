@@ -766,6 +766,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         <ProfileBanner 
             theme={theme} 
             onClick={() => navigate('/account')}
+            data-umami-event="comparison-complete-profile"
         >
             <BannerIcon theme={theme}>
                 <PersonIcon style={{ fontSize: '2rem', color: 'white' }} />
@@ -1068,6 +1069,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         theme={theme} 
                         active={activeTab === 'insights'} 
                         onClick={() => setActiveTab('insights')}
+                        data-umami-event="comparison-tab-insights"
                     >
                         <BarChartIcon />
                         {languages[language].comparison.sections.insights.title}
@@ -1076,6 +1078,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         theme={theme} 
                         active={activeTab === 'rankings'} 
                         onClick={() => setActiveTab('rankings')}
+                        data-umami-event="comparison-tab-rankings"
                     >
                         <CompareArrowsIcon />
                         {languages[language].comparison.sections.rankings.title}

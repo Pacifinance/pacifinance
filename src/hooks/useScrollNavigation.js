@@ -52,6 +52,16 @@ export const useScrollNavigation = (enabled = true) => {
     if (nextIndex >= 0 && nextIndex < PAGE_ORDER.length) {
       setIsNavigating(true);
       setIsAutoScrolling(true); // Flag per indicare scroll automatico
+      
+      // Track page navigation with Umami
+      if (window.umami) {
+        window.umami.track('scroll-navigation', {
+          from: location.pathname,
+          to: PAGE_ORDER[nextIndex],
+          direction: direction
+        });
+      }
+      
       navigate(PAGE_ORDER[nextIndex]);
       
       // Scroll verso l'alto quando navighiamo a una nuova pagina

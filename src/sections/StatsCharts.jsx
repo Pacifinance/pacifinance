@@ -295,6 +295,7 @@ const ChartCard = styled.div`
   };
   border-radius: 24px;
   padding: 2rem;
+  padding-top: 4rem;
   min-height: 650px;
   box-shadow: ${props => props.theme.mode === 'dark' 
     ? '0 10px 40px rgba(0, 0, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2)' 
@@ -541,7 +542,7 @@ export default function StatsCharts() {
                             animation: 'spin 1s linear infinite',
                             margin: '0 auto 1rem auto'
                         }}></div>
-                        <p>Caricamento grafici entrate e uscite...</p>
+                        <p>{languages[language].graphs.loading.incomeOutflow}</p>
                     </div>
                 </LoadingContainer>
             );
@@ -550,10 +551,9 @@ export default function StatsCharts() {
         if (!hasData) {
             return (
                 <EmptyStateContainer theme={theme}>
-                    <h3>Nessun dato disponibile</h3>
+                    <h3>{languages[language].graphs.emptyState.title}</h3>
                     <p>
-                        Aggiungi le tue entrate e uscite mensili per visualizzare 
-                        grafici dettagliati e analisi comparative.
+                        {languages[language].graphs.emptyState.incomeOutflowDescription}
                     </p>
                 </EmptyStateContainer>
             );
@@ -567,7 +567,7 @@ export default function StatsCharts() {
                             {languages[language].graphs.statsOutflows.titleGraph}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            Monitora entrate e uscite per una gestione finanziaria ottimale
+                            {languages[language].graphs.descriptions.incomeOutflowOverview}
                         </SectionDescription>
                     </SectionHeader>
                     
@@ -597,37 +597,15 @@ export default function StatsCharts() {
                             {languages[language].graphs.statsOutflows.detailedVision}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            Confronta i dati attuali con i periodi precedenti
+                            {languages[language].graphs.descriptions.incomeOutflowDetails}
                         </SectionDescription>
                     </SectionHeader>
                     
                     <StatsGrid>
                         <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <h3 style={{ 
-                                textAlign: 'center', 
-                                color: theme.textColor, 
-                                marginBottom: '1.5rem',
-                                fontSize: '1.25rem',
-                                fontWeight: '600',
-                                opacity: 0.9
-                            }}>
-                                {languages[language].graphs.statsOutflows.titleDetailsMonth}
-                                {formattedPreMonthDate && ` - ${formattedPreMonthDate}`}
-                            </h3>
                             <InOutStats period="month" theme={theme} userData={userData} isHidden={isHidden}/>
                         </div>
                         <div className="fade-in-up" style={{ animationDelay: '0.4s' }}>
-                            <h3 style={{ 
-                                textAlign: 'center', 
-                                color: theme.textColor, 
-                                marginBottom: '1.5rem',
-                                fontSize: '1.25rem',
-                                fontWeight: '600',
-                                opacity: 0.9
-                            }}>
-                                {languages[language].graphs.statsOutflows.titleDetailsYear}
-                                {formattedPreYearSameMonthDate && ` - ${formattedPreYearSameMonthDate}`}
-                            </h3>
                             <InOutStats period="year" theme={theme} userData={userData} isHidden={isHidden}/>
                         </div>
                     </StatsGrid>

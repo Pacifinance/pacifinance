@@ -441,6 +441,12 @@
                 "balance": "Caricamento grafici dei bilanci...",
                 "incomeOutflow": "Caricamento grafici entrate e uscite..."
             },
+            "comparison": {
+                "vsLastMonth": "vs mese precedente",
+                "vsLastYear": "vs anno precedente", 
+                "monthlyComparison": "Confronto mensile",
+                "yearlyComparison": "Confronto annuale"
+            },
             "emptyState": {
                 "title": "Nessun dato disponibile",
                 "balanceDescription": "Inizia ad inserire i tuoi dati finanziari per visualizzare grafici e statistiche dettagliate dei tuoi asset.",
@@ -469,6 +475,16 @@
                 "titleDetailsMonth": "Variazione entrate, spese e risparmi rispetto al mese scorso: ",
                 "variation": "Variazione ",
                 "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: "
+            },
+            "dashboard": {
+                "vsLastMonth": "vs mese precedente",
+                "vsLastYear": "vs anno precedente",
+                "monthlyComparison": "Confronto mensile", 
+                "yearlyComparison": "Confronto annuale",
+                "loadingStats": "Caricamento statistiche...",
+                "loadingCharts": "Caricamento grafici...",
+                "noDataAvailable": "Nessun dato disponibile",
+                "addDataFirst": "Aggiungi i tuoi dati per visualizzare le statistiche"
             }
         },
         "insert": {
@@ -1104,6 +1120,20 @@
                 "description": "Se PaciFinance ti è utile, considera una donazione per aiutarci a mantenere la piattaforma online e sviluppare nuove funzionalità. Ogni contributo è molto apprezzato!",
                 "disclaimer": "Le donazioni sono completamente volontarie e non sbloccano funzionalità aggiuntive."
             }
+        },
+        "categories": {
+            "Casa": "Casa",
+            "Alimentari": "Alimentari", 
+            "Trasporti": "Trasporti",
+            "Intrattenimento": "Intrattenimento",
+            "Salute": "Salute",
+            "Abbigliamento": "Abbigliamento",
+            "Altri": "Altri",
+            "Stipendio": "Stipendio",
+            "Freelance": "Freelance",
+            "Entrate extra": "Entrate extra",
+            "Regalo": "Regalo",
+            "Pensione": "Pensione"
         }
     },
     "en": {
@@ -1548,6 +1578,12 @@
                 "balance": "Loading balance charts...",
                 "incomeOutflow": "Loading income and outflow charts..."
             },
+            "comparison": {
+                "vsLastMonth": "vs previous month",
+                "vsLastYear": "vs previous year",
+                "monthlyComparison": "Monthly comparison", 
+                "yearlyComparison": "Yearly comparison"
+            },
             "emptyState": {
                 "title": "No data available",
                 "balanceDescription": "Start entering your financial data to view detailed charts and statistics of your assets.",
@@ -1576,6 +1612,16 @@
                 "titleDetailsMonth": "Your income, outflows and savings compared to last month ",
                 "variation": "Variation ",
                 "titleDetailsYear": "Your income, outflows and savings compared to last year "
+            },
+            "dashboard": {
+                "vsLastMonth": "vs previous month",
+                "vsLastYear": "vs previous year", 
+                "monthlyComparison": "Monthly comparison",
+                "yearlyComparison": "Yearly comparison",
+                "loadingStats": "Loading statistics...",
+                "loadingCharts": "Loading charts...",
+                "noDataAvailable": "No data available",
+                "addDataFirst": "Add your data to view statistics"
             }
         },
         "insert": {
@@ -2213,6 +2259,20 @@
                 "description": "If PaciFinance is useful to you, consider a donation to help us keep the platform online and develop new features. Every contribution is highly appreciated!",
                 "disclaimer": "Donations are completely voluntary and do not unlock additional features."
             }
+        },
+        "categories": {
+            "Casa": "Home",
+            "Alimentari": "Food", 
+            "Trasporti": "Transport",
+            "Intrattenimento": "Entertainment",
+            "Salute": "Health",
+            "Abbigliamento": "Clothing",
+            "Altri": "Other",
+            "Stipendio": "Salary",
+            "Freelance": "Freelance",
+            "Entrate extra": "Extra income",
+            "Regalo": "Gift",
+            "Pensione": "Retirement"
         }
     }
 }

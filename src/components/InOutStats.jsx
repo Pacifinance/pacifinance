@@ -241,17 +241,33 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
         }
     };
 
-    // Testi dinamici basati sul periodo
+    // Testi dinamici basati sul periodo con date formattate
     const getPeriodText = () => {
+        const currentDate = new Date();
+        
         if (period === "month") {
+            // Mese precedente
+            const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+            const prevMonthFormatted = prevMonth.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
             return {
-                vsText: languages[language]?.dashboard?.vsLastMonth || "vs mese precedente",
-                periodLabel: languages[language]?.dashboard?.monthlyComparison || "Confronto mensile"
+                vsText: `${languages[language]?.graphs?.comparison?.vsLastMonth || "vs mese precedente"} (${prevMonthFormatted})`,
+                periodLabel: languages[language]?.graphs?.comparison?.monthlyComparison || "Confronto mensile"
             };
         } else {
+            // Anno precedente, stesso mese
+            const prevYear = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
+            const prevYearFormatted = prevYear.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
             return {
-                vsText: languages[language]?.dashboard?.vsLastYear || "vs anno precedente",
-                periodLabel: languages[language]?.dashboard?.yearlyComparison || "Confronto annuale"
+                vsText: `${languages[language]?.graphs?.comparison?.vsLastYear || "vs anno precedente"} (${prevYearFormatted})`,
+                periodLabel: languages[language]?.graphs?.comparison?.yearlyComparison || "Confronto annuale"
             };
         }
     };
@@ -275,7 +291,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         fontSize: '1rem',
                         margin: 0
                     }}>
-                        {periodText.vsText}
+                        {periodText.vsText} 
                     </p>
                 </div>
 

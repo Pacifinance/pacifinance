@@ -160,7 +160,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
       pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
         .filter(([key, value]) => value > 0)
         .map(([key, value]) => ({
-          name: languages[language].categories[key] || key,
+          name: languages[language]?.categories?.[key] || key,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,
           fill: outflowCategoryColors[key] || '#8884d8'
         }));

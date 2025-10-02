@@ -95,7 +95,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             setIncomesArray(userData.incomesArray ? [...userData.incomesArray].reverse() : []);
             setOutflowsArray(userData.outflowsArray ? [...userData.outflowsArray].reverse() : []);
           } else {
-            setTotalOutflowsPerCategoryPerMonth(userData.totalExpensesPerCategoryPerMonth || []);
+            setTotalOutflowsPerCategoryPerMonth(userData.totalOutflowsPerCategoryPerMonth || []);
           }
         } catch (error) {
           console.error('Error during operations:', error);

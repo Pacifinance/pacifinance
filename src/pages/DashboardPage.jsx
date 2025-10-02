@@ -34,12 +34,11 @@ const DashboardPage = () => {
         totalPages,
         nextPage,
         prevPage,
-        cancelTrigger,
-        navigateManually,
-        isAutoScrolling
-    } = useScrollNavigation(true);
-
-    const handlePageClick = (pageIndex) => {
+      cancelTrigger,
+      dismissTrigger,
+      navigateManually,
+      isAutoScrolling
+    } = useScrollNavigation(true);    const handlePageClick = (pageIndex) => {
         const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
         if (pageIndex >= 0 && pageIndex < pages.length) {
             window.location.href = pages[pageIndex];

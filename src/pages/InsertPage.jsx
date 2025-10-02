@@ -32,6 +32,7 @@ function InsertPage() {
     nextPage, 
     prevPage,
     cancelTrigger,
+    dismissTrigger,
     navigateManually,
     isAutoScrolling 
   } = useScrollNavigation(true);
@@ -99,6 +100,7 @@ function InsertPage() {
         prevPage={prevPage}
         onPageClick={handlePageClick}
         cancelTrigger={cancelTrigger}
+        dismissTrigger={dismissTrigger}
         navigateManually={navigateManually}
         isAutoScrolling={isAutoScrolling}
       />

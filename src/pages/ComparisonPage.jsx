@@ -35,11 +35,10 @@ function ComparisonPage() {
     nextPage, 
     prevPage,
     cancelTrigger,
+    dismissTrigger,
     navigateManually,
-    isAutoScrolling
-  } = useScrollNavigation(true);
-
-  // Chiamata per caricare i dati dell'utente
+    isAutoScrolling 
+  } = useScrollNavigation(true);  // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {
     handleSetIsUpdated(false); // Forza il re-render di UserProvider
   };
@@ -94,6 +93,7 @@ function ComparisonPage() {
           prevPage={prevPage}
           onPageClick={handlePageClick}
           cancelTrigger={cancelTrigger}
+          dismissTrigger={dismissTrigger}
           navigateManually={navigateManually}
           isAutoScrolling={isAutoScrolling}
         />

@@ -335,10 +335,10 @@ export default function InsertValue({
         setBankReal(userData ? userData.bankReal : 0);
         setCashReal(userData ? userData.cashReal : 0);
         setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-        setOutflowsTags(userData ? userData.expensesTags : []);
+        setOutflowsTags(userData ? userData.outflowsTags : []);
         setIncomesTags(userData ? userData.incomesTags : []);
         setPaymentTags(userData ? userData.paymentTags : []);
-        setAllOutflowsAdds(userData ? userData.allExpenses : []);
+        setAllOutflowsAdds(userData ? userData.allOutflows : []);
         setAllIncomesAdds(userData ? userData.allIncomes : []);
       } catch (error) {
         console.error("Error: ", error);
@@ -1019,6 +1019,9 @@ export default function InsertValue({
           onConfirmDeleteIncome={handleIncomesDelete}
           onConfirmDeleteOutflow={handleOutflowsDelete}
         />
+        
+        {/* Spacer per evitare che il popup di navigazione appaia troppo presto su mobile */}
+        <div style={{ height: '400px' }}></div>
       </ContentWrapper>
     </ModernContainer>
   );

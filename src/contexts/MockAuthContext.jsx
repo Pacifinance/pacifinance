@@ -41,29 +41,45 @@ export const mockDashboardData = {
     preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     
-    // Arrays per spese e entrate per ultimi 12 mesi (dinamici)
+    // Arrays per spese e entrate per ultimi 13 mesi (indice 12 = anno precedente stesso mese)
     outflowsArray: (() => {
         const today = new Date();
-        return Array.from({ length: 12 }, (_, i) => {
+        // Usiamo un seed fisso per valori consistenti
+        const seed = 123456789;
+        let seedValue = seed;
+        const seededRandom = () => {
+            seedValue = (seedValue * 9301 + 49297) % 233280;
+            return seedValue / 233280;
+        };
+        
+        return Array.from({ length: 13 }, (_, i) => {
             const baseExpense = 1200;
             const variation = Math.sin((today.getMonth() - i) * 0.5) * 300;
-            const randomFactor = (Math.random() - 0.5) * 200;
-            return Math.abs(baseExpense + variation + randomFactor);
+            const randomFactor = (seededRandom() - 0.5) * 200;
+            return Math.max(500, Math.abs(baseExpense + variation + randomFactor)); // Min 500€
         });
     })(),
     
     incomesArray: (() => {
         const today = new Date();
-        return Array.from({ length: 12 }, (_, i) => {
+        // Usiamo un seed fisso per valori consistenti
+        const seed = 987654321;
+        let seedValue = seed;
+        const seededRandom = () => {
+            seedValue = (seedValue * 9301 + 49297) % 233280;
+            return seedValue / 233280;
+        };
+        
+        return Array.from({ length: 13 }, (_, i) => {
             const baseSalary = 2800;
             const variation = Math.sin((today.getMonth() - i) * 0.3) * 400;
-            const randomBonus = Math.random() * 300;
-            return baseSalary + variation + randomBonus;
+            const randomBonus = seededRandom() * 300;
+            return Math.max(1500, baseSalary + variation + randomBonus); // Min 1500€
         });
     })(),
     
     // Arrays dettagliati per tabelle insert-values (sempre del mese corrente)
-    allExpenses: (() => {
+    allOutflows: (() => {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth() + 1;
         const currentYear = currentDate.getFullYear();
@@ -248,7 +264,7 @@ export const mockDashboardData = {
     })),
 
     // Tags e categorie per entrate/uscite (con traduzioni)
-    expensesTags: [
+    outflowsTags: [
         { 
             index: 0,
             name: 'Casa', 
@@ -388,7 +404,7 @@ export const mockDashboardData = {
     ],
     
     // Spese per categoria per mese (per PieChart - struttura compatibile con InOutChart)
-    totalExpensesPerCategoryPerMonth: (() => {
+    totalOutflowsPerCategoryPerMonth: (() => {
         const today = new Date();
         return Array.from({ length: 12 }, (_, monthIndex) => {
             return {
@@ -449,7 +465,7 @@ export const MockAuthProvider = ({ children }) => {
         userData: {
             ...userData,
             // Tags ordinati alfabeticamente in base alla lingua
-            expensesTags: getSortedTags(userData.expensesTags),
+            outflowsTags: getSortedTags(userData.outflowsTags),
             incomesTags: getSortedTags(userData.incomesTags), 
             paymentTags: getSortedTags(userData.paymentTags),
             // I tags demografici rimangono così come sono (stringhe semplici)

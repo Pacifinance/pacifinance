@@ -57,10 +57,10 @@ export const UserProvider = ({ children }) => {
         //     etfReal: 800,
         //     bitcoinReal: 600,
         //     cryptoReal: 400,
-        //     expensesTags: ['Food', 'Transport', 'Entertainment'],
+        //     outflowsTags: ['Food', 'Transport', 'Entertainment'],
         //     incomesTags: ['Salary', 'Freelance', 'Investment'],
         //     paymentTags: ['Cash', 'Card', 'Transfer'],
-        //     allExpenses: [],
+        //     allOutflows: [],
         //     allIncomes: [],
         //     preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         //     preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()
@@ -88,7 +88,7 @@ export const UserProvider = ({ children }) => {
             /***************************** TAGS ********************************/
 
             const allTags  = await axios.post('/tags/get', null, { withCredentials: true });
-            const expensesTags = allTags.data.expense;
+            const outflowsTags = allTags.data.expense;
             const incomesTags = allTags.data.income;
             const paymentTags = allTags.data.payment;
             const nationalityTags = allTags.data.country; //used also for the country where the user works
@@ -176,22 +176,22 @@ export const UserProvider = ({ children }) => {
             const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth;
             //************************************* EXPENSES AND INCOMES **********************************************/
 
-            const allExpensesIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all expenses and incomes
-            // console.log('Response completa  SPESE e GUADAGNI: ', allExpensesIncomesResponse);
+            const allOutflowsIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all outflows and incomes
+            // console.log('Response completa  SPESE e GUADAGNI: ', allOutflowsIncomesResponse);
 
-            const allExpensesIncomesArray = allExpensesIncomesResponse.data;
+            const allOutflowsIncomesArray = allOutflowsIncomesResponse.data;
 
-            // console.log('Array completo SPESE e GUADAGNI: ', allExpensesIncomesArray[0]);
+            // console.log('Array completo SPESE e GUADAGNI: ', allOutflowsIncomesArray[0]);
 
-            // Assuming you have access to allExpensesIncomesArray as described in your code
+            // Assuming you have access to allOutflowsIncomesArray as described in your code
 
-            // Initialize an empty object to hold the total expenses per category for each month
-            let totalExpensesPerCategoryPerMonth = {};
+            // Initialize an empty object to hold the total outflows per category for each month
+            let totalOutflowsPerCategoryPerMonth = {};
 
-            // Iterate through each month in allExpensesIncomesArray
-            allExpensesIncomesArray.forEach((month, index) => {
-              // Initialize an empty object to hold the total expenses per category for the current month
-              let totalExpensesPerCategory = {};
+            // Iterate through each month in allOutflowsIncomesArray
+            allOutflowsIncomesArray.forEach((month, index) => {
+              // Initialize an empty object to hold the total outflows per category for the current month
+              let totalOutflowsPerCategory = {};
 
               // Iterate through each entry in the current month
               month.forEach((entry) => {
@@ -200,29 +200,29 @@ export const UserProvider = ({ children }) => {
                   // Use English category name for consistency across the application
                   const categoryKey = entry.categoryTag.translations.en;
                   // If the category exists, add the current value
-                  if (totalExpensesPerCategory[categoryKey]) {
-                    totalExpensesPerCategory[categoryKey] += entry.amount;
+                  if (totalOutflowsPerCategory[categoryKey]) {
+                    totalOutflowsPerCategory[categoryKey] += entry.amount;
                   } else {
                     // Otherwise, initialize the category with the current value
-                    totalExpensesPerCategory[categoryKey] = entry.amount;
+                    totalOutflowsPerCategory[categoryKey] = entry.amount;
                   }
                 }
               });
 
-              // Save the total expenses per category for the current month
-              totalExpensesPerCategoryPerMonth[index] = totalExpensesPerCategory;
+              // Save the total outflows per category for the current month
+              totalOutflowsPerCategoryPerMonth[index] = totalOutflowsPerCategory;
             });
 
-            // Now totalExpensesPerCategoryPerMonth contains the total expenses for each category for each month
-            // console.log(totalExpensesPerCategoryPerMonth);
+            // Now totalOutflowsPerCategoryPerMonth contains the total outflows for each category for each month
+            // console.log(totalOutflowsPerCategoryPerMonth);
 
 
             // Crea un array di oggetti per le entrate e un array di oggetti per le spese, inizializzati con valori iniziali a 0
             const incomesArray = Array(13).fill(0);
             const outflowsArray = Array(13).fill(0);
 
-            // Itera su ciascun elemento dell'array allExpensesIncomesArray
-            allExpensesIncomesArray.forEach((outerItem, index) => {
+            // Itera su ciascun elemento dell'array allOutflowsIncomesArray
+            allOutflowsIncomesArray.forEach((outerItem, index) => {
               // Cicla sugli elementi interni di outerItem
               outerItem.forEach((innerItem) => {
                 // Aggiungi l'importo all'array corrispondente, a seconda se è un'entrata o una spesa
@@ -238,10 +238,10 @@ export const UserProvider = ({ children }) => {
             // console.log('Somma delle spese per ciascun mese:', outflowsArray);
 
             // qua potrei aggiungere un controllo che se non ci sono spese ed entrate del mese corrente, allora prendo i dati del mese precedente
-            // const lastExpenses = allExpensesIncomesArray[0].filter(data => data.isExpense);
-            // const lastIncomes = allExpensesIncomesArray[0].filter(data => !data.isExpense);
-            const allExpenses = allExpensesIncomesArray.map(monthData => monthData.filter(data => data.isExpense));
-            const allIncomes = allExpensesIncomesArray.map(monthData => monthData.filter(data => !data.isExpense));
+            // const lastOutflows = allOutflowsIncomesArray[0].filter(data => data.isExpense);
+            // const lastIncomes = allOutflowsIncomesArray[0].filter(data => !data.isExpense);
+            const allOutflows = allOutflowsIncomesArray.map(monthData => monthData.filter(data => data.isExpense));
+            const allIncomes = allOutflowsIncomesArray.map(monthData => monthData.filter(data => !data.isExpense));
 
             // let count = 1;
             // Print to test the amount of the expenses
@@ -316,13 +316,13 @@ export const UserProvider = ({ children }) => {
             // console.log('percentageRankOnExpense:', percentageRankOnExpenses);
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, expensesTags, incomesTags, paymentTags, 
+            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, outflowsTags, incomesTags, paymentTags, 
               cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, totalReal, cashRealPreMonth, 
               bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, 
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
-              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, outflowsArray, incomesArray, allExpenses, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
-              percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalExpensesPerCategoryPerMonth,
+              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, outflowsArray, incomesArray, allOutflows, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
+              percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalOutflowsPerCategoryPerMonth,
               userId, userType, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });
             handleSetIsUpdated(true);

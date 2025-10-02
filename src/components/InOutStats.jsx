@@ -3,7 +3,7 @@ import { GiReceiveMoney, GiExpense } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import { SectionAMonth } from '../styles/MyStyled';
 import styled from 'styled-components';
-import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
+import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
@@ -228,14 +228,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
         fetchData();
     }, [userData, period]);
 
-    // Funzione per formattare la valuta
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('it-IT', {
-            style: 'currency',
-            currency: 'EUR',
-            maximumFractionDigits: 0,
-        }).format(Math.abs(value));
-    };
+
 
     // Funzione per determinare se un cambiamento è positivo
     const isPositiveChange = (current, comparison, isIncome = false) => {
@@ -320,7 +313,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </IconContainer>
                         
                         <StatValue theme={theme}>
-                            {isHidden ? '****' : formatCurrency(incomesCurrent)}
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(incomesCurrent, incomesComparison))}
                         </StatValue>
                         
                         <StatLabel theme={theme}>
@@ -343,7 +336,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </IconContainer>
                         
                         <StatValue theme={theme}>
-                            {isHidden ? '****' : formatCurrency(outflowsCurrent)}
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(outflowsCurrent, outflowsComparison))}
                         </StatValue>
                         
                         <StatLabel theme={theme}>
@@ -366,7 +359,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </IconContainer>
                         
                         <StatValue theme={theme}>
-                            {isHidden ? '****' : formatCurrency(savedCurrent)}
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(savedCurrent, savedComparison))}
                         </StatValue>
                         
                         <StatLabel theme={theme}>

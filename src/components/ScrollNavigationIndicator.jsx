@@ -292,6 +292,7 @@ const ScrollNavigationIndicator = ({
   onPageClick,
   pageHasScrollableContent = true,
   cancelTrigger,
+  dismissTrigger,
   navigateManually,
   isAutoScrolling = false
 }) => {
@@ -409,9 +410,9 @@ const ScrollNavigationIndicator = ({
                 {directionIcon} {targetPage}
               </button>
               
-              {cancelTrigger && (
+              {(cancelTrigger || dismissTrigger) && (
                 <button
-                  onClick={cancelTrigger}
+                  onClick={dismissTrigger || cancelTrigger}
                   style={{
                     background: 'transparent',
                     border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}`,

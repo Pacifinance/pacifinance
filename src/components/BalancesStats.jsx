@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../data/languages.json';
 import { assetIcons } from '../data/assetIcons';
-import { calculatePercentageChange, calculateDifference } from '../utils/calculations';
+import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 
 const ComparisonHeader = styled.div`
   display: flex;
@@ -79,6 +79,14 @@ const ComparisonValue = styled.div`
   @media (max-width: 768px) {
     align-items: center;
   }
+`;
+
+const ColoredValue = styled.div`
+  color: ${props => {
+    if (props.$isPositive === null) return props.theme === "light" ? "#333" : "#fff";
+    return props.$isPositive ? "#27ae60" : "#e74c3c";
+  }};
+  font-weight: ${props => props.$isPositive !== null ? "700" : "bold"};
 `;
 
 const Section = styled.section`
@@ -257,7 +265,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                 
                 <ComparisonValue theme={theme} $isPositive={isPositiveChange}>
                     <div className="change-amount">
-                        {isHidden ? '****' : totalChange}
+                        {isHidden ? '****' : formatCurrencyDifference(totalChange)}
                     </div>
                     <div className="change-percentage">
                         {isHidden ? '****' : totalPercentage}
@@ -277,12 +285,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.bank}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(bankReal, bankRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={bankReal !== bankRealPrev ? (bankReal > bankRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(bankReal, bankRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={bankReal !== bankRealPrev ? (bankReal > bankRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
 
@@ -297,12 +314,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.cash}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(cashReal, cashRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={cashReal !== cashRealPrev ? (cashReal > cashRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(cashReal, cashRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={cashReal !== cashRealPrev ? (cashReal > cashRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(cashReal, cashRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
 
@@ -317,12 +343,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.bitcoin}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(bitcoinReal, bitcoinRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={bitcoinReal !== bitcoinRealPrev ? (bitcoinReal > bitcoinRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(bitcoinReal, bitcoinRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={bitcoinReal !== bitcoinRealPrev ? (bitcoinReal > bitcoinRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(bitcoinReal, bitcoinRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
 
@@ -337,12 +372,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.crypto}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(cryptoReal, cryptoRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={cryptoReal !== cryptoRealPrev ? (cryptoReal > cryptoRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(cryptoReal, cryptoRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={cryptoReal !== cryptoRealPrev ? (cryptoReal > cryptoRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(cryptoReal, cryptoRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
 
@@ -357,12 +401,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.digitalServices}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(digitalServicesReal, digitalServicesRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={digitalServicesReal !== digitalServicesRealPrev ? (digitalServicesReal > digitalServicesRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(digitalServicesReal, digitalServicesRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={digitalServicesReal !== digitalServicesRealPrev ? (digitalServicesReal > digitalServicesRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
 
@@ -377,12 +430,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.stocks}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(stocksReal, stocksRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={stocksReal !== stocksRealPrev ? (stocksReal > stocksRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(stocksReal, stocksRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={stocksReal !== stocksRealPrev ? (stocksReal > stocksRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(stocksReal, stocksRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
 
@@ -397,12 +459,21 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         <h6>{languages[language].assets.etf}</h6>
                     </div>
                     <div className="money">
-                        <h5>
-                            {isHidden ? '****' : calculateDifference(etfReal, etfRealPrev)}
-                        </h5>
-                        <h6 className="text-xs">
+                        <ColoredValue 
+                            as="h5" 
+                            theme={theme} 
+                            $isPositive={etfReal !== etfRealPrev ? (etfReal > etfRealPrev) : null}
+                        >
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(etfReal, etfRealPrev))}
+                        </ColoredValue>
+                        <ColoredValue 
+                            as="h6" 
+                            className="text-xs" 
+                            theme={theme} 
+                            $isPositive={etfReal !== etfRealPrev ? (etfReal > etfRealPrev) : null}
+                        >
                             {isHidden ? '****' : calculatePercentageChange(etfReal, etfRealPrev)}
-                        </h6>
+                        </ColoredValue>
                     </div>
                 </div>
             </Section>

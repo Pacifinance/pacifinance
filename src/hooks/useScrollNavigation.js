@@ -9,13 +9,23 @@ const PAGE_ORDER = [
   '/comparison'
 ];
 
-// Soglia di scroll per mostrare la zona trigger (96% della pagina)
-const SCROLL_THRESHOLD_TRIGGER_ZONE = 0.96;
+// Soglia di scroll per mostrare la zona trigger (98% della pagina)
+const SCROLL_THRESHOLD_TRIGGER_ZONE = 0.98;
 // Soglia per scroll verso l'alto per la zona trigger (5% dall'alto)
 const SCROLL_THRESHOLD_UP_TRIGGER = 0.05;
 
+// Soglie specifiche per pagina per evitare interferenze con i form
+const PAGE_SPECIFIC_THRESHOLDS = {
+  '/insert-values': { down: 0.99, up: 0.02 }, // Molto più restrittiva per i form con spazio extra
+  '/comparison': { down: 0.98, up: 0.05 },
+  default: { down: 0.98, up: 0.05 }
+};
+
 // Tempo di permanenza nella zona trigger prima del cambio pagina (3 secondi per sicurezza)
 const TRIGGER_ZONE_DURATION = 3000;
+
+// Tempo di pausa dopo la dismissione (10 secondi)
+const DISMISSAL_COOLDOWN = 10000;
 
 // Debounce time per check della zona trigger
 const TRIGGER_CHECK_DEBOUNCE = 100;
@@ -28,6 +38,7 @@ export const useScrollNavigation = (enabled = true) => {
   const location = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
   const [showTriggerZone, setShowTriggerZone] = useState(false);
+  const [lastDismissalTime, setLastDismissalTime] = useState(null);
   const [triggerDirection, setTriggerDirection] = useState(null); // 'up' | 'down'
   const [triggerProgress, setTriggerProgress] = useState(0);
   const [triggerStartTime, setTriggerStartTime] = useState(null);
@@ -104,6 +115,12 @@ export const useScrollNavigation = (enabled = true) => {
     setTriggerStartTime(null);
   }, [triggerIntervalId]);
 
+  // Funzione per dismissione manuale del popup
+  const dismissTriggerZone = useCallback(() => {
+    setLastDismissalTime(Date.now());
+    stopTriggerZone();
+  }, [stopTriggerZone]);
+
   const handleScroll = useCallback(() => {
     // Ignora gli eventi di scroll se è in corso uno scroll automatico
     if (!enabled || isNavigating || !pageHasScrollableContent || isAutoScrolling) return;
@@ -125,16 +142,29 @@ export const useScrollNavigation = (enabled = true) => {
       setPageHasScrollableContent(true);
     }
     
+    // Verifica se siamo in cooldown dopo una dismissione
+    const now = Date.now();
+    if (lastDismissalTime && (now - lastDismissalTime) < DISMISSAL_COOLDOWN) {
+      if (showTriggerZone) {
+        stopTriggerZone();
+      }
+      return;
+    }
+    
     // Calcola la percentuale di scroll
     const scrollPercentage = (currentScrollY + windowHeight) / documentHeight;
     const scrollFromTop = currentScrollY / Math.max(documentHeight - windowHeight, 1);
     
     const currentIndex = getCurrentPageIndex();
     
+    // Ottieni le soglie specifiche per la pagina corrente
+    const currentPath = location.pathname;
+    const thresholds = PAGE_SPECIFIC_THRESHOLDS[currentPath] || PAGE_SPECIFIC_THRESHOLDS.default;
+    
     // Mostra pulsante per andare alla pagina successiva quando si è vicini al fondo
-    const showDownButton = scrollPercentage >= SCROLL_THRESHOLD_TRIGGER_ZONE && currentIndex < PAGE_ORDER.length - 1;
+    const showDownButton = scrollPercentage >= thresholds.down && currentIndex < PAGE_ORDER.length - 1;
     // Mostra pulsante per andare alla pagina precedente quando si è vicini all'inizio
-    const showUpButton = scrollFromTop <= SCROLL_THRESHOLD_UP_TRIGGER && currentIndex > 0;
+    const showUpButton = scrollFromTop <= thresholds.up && currentIndex > 0;
 
     if (showDownButton && (!showTriggerZone || triggerDirection !== 'down')) {
       setShowTriggerZone(true);
@@ -146,7 +176,7 @@ export const useScrollNavigation = (enabled = true) => {
       // L'utente è uscito dalla zona, nascondi i pulsanti
       stopTriggerZone();
     }
-  }, [enabled, isNavigating, pageHasScrollableContent, isAutoScrolling, showTriggerZone, triggerDirection, getCurrentPageIndex, stopTriggerZone]);
+  }, [enabled, isNavigating, pageHasScrollableContent, isAutoScrolling, showTriggerZone, triggerDirection, getCurrentPageIndex, stopTriggerZone, lastDismissalTime, location.pathname]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -210,6 +240,7 @@ export const useScrollNavigation = (enabled = true) => {
     totalPages: PAGE_ORDER.length,
     isAutoScrolling,
     cancelTrigger: stopTriggerZone, // Funzione per nascondere il pulsante
+    dismissTrigger: dismissTriggerZone, // Funzione per dismissione con cooldown
     navigateManually: navigateToPageManually, // Funzione per navigare con il pulsante
     nextPage: () => {
       const currentIndex = getCurrentPageIndex();

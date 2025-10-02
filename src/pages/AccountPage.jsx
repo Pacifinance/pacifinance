@@ -799,54 +799,24 @@ const AccountPage = () => {
                             marginBottom: '3rem',
                             textAlign: 'center'
                         }}>
-                            <div style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '1rem',
-                                marginBottom: '1rem',
-                                background: theme.mode === 'dark' 
-                                    ? 'linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%)'
-                                    : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                                padding: '1.5rem 2.5rem',
-                                borderRadius: '25px',
-                                boxShadow: theme.mode === 'dark'
-                                    ? '0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05)'
-                                    : '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                                border: `1px solid ${theme.mode === 'dark' ? theme.buttonBackgroundColor + '20' : theme.buttonBackgroundColor + '10'}`,
-                                backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none'
+                            <h1 style={{
+                                margin: '0 0 1rem 0',
+                                fontSize: isMobileScreen ? '2rem' : '2.5rem',
+                                fontWeight: '700',
+                                color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937',
+                                letterSpacing: '-0.025em'
                             }}>
-                                <div style={{
-                                    background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}cc)`,
-                                    borderRadius: '20px',
-                                    padding: '1.25rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: `0 15px 25px -5px ${theme.buttonBackgroundColor}40`,
-                                    animation: 'pulse 2s ease-in-out infinite'
-                                }}>
-                                    <User size={28} color="white" />
-                                </div>
-                                <h1 style={{
-                                    margin: 0,
-                                    fontSize: isMobileScreen ? '1.8rem' : '2.5rem',
-                                    fontWeight: '800',
-                                    background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}aa)`,
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    backgroundClip: 'text',
-                                    letterSpacing: '-0.025em'
-                                }}>
-                                    Your Account
-                                </h1>
-                            </div>
+                                {languages[language].sidebar.account.title}
+                            </h1>
                             <p style={{
                                 margin: 0,
                                 color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280',
                                 fontSize: '1.1rem',
-                                fontWeight: '500'
+                                fontWeight: '400',
+                                maxWidth: '600px',
+                                margin: '0 auto'
                             }}>
-                                Gestisci e personalizza le tue informazioni
+                                Gestisci e personalizza le tue informazioni personali
                             </p>
                         </div>
 
@@ -892,10 +862,9 @@ const AccountPage = () => {
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'space-between',
+                                justifyContent: 'center',
                                 marginBottom: '2rem',
-                                flexWrap: 'wrap',
-                                gap: '1rem'
+                                textAlign: 'center'
                             }}>
                                 <h2 style={{
                                     margin: 0,
@@ -916,54 +885,35 @@ const AccountPage = () => {
                                     </div>
                                     {languages[language].sidebar.account.sections.basicInfo}
                                 </h2>
-                                
-                                <MyButton
-                                    onClick={() => setIsEditMode(!isEditMode)}
-                                    theme={theme}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.75rem',
-                                        padding: '14px 24px',
-                                        borderRadius: '16px',
-                                        fontSize: '1rem',
-                                        fontWeight: '600',
-                                        background: isEditMode 
-                                            ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                                            : `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`,
-                                        boxShadow: isEditMode
-                                            ? '0 10px 15px -3px rgba(239, 68, 68, 0.4)'
-                                            : `0 10px 15px -3px ${theme.buttonBackgroundColor}40`,
-                                        transition: 'all 0.3s ease',
-                                        transform: 'translateY(0)',
-                                        ':hover': {
-                                            transform: 'translateY(-2px)',
-                                            boxShadow: isEditMode
-                                                ? '0 15px 20px -3px rgba(239, 68, 68, 0.5)'
-                                                : `0 15px 20px -3px ${theme.buttonBackgroundColor}50`
-                                        }
-                                    }}
-                                >
-                                    <Edit size={18} />
-                                    {isEditMode ? languages[language].sidebar.account.buttons.cancelEdit : languages[language].sidebar.account.buttons.editProfile}
-                                </MyButton>
                             </div>
                             
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: isMobileScreen ? '1fr' : 'repeat(2, 1fr)',
-                                gap: '2rem'
+                                gridTemplateColumns: 'repeat(2, 1fr)',
+                                gap: isMobileScreen ? '1rem' : '2rem',
+                                maxWidth: isMobileScreen ? '600px' : 'none',
+                                margin: isMobileScreen ? '0 auto' : '0'
                             }}>
-                                <InfoCard
-                                    icon={<User />}
-                                    title="User ID"
-                                    value={userId}
-                                />
-                                <InfoCard
-                                    icon={<Star />}
-                                    title="Tipo Account"
-                                    value={userType}
-                                />
+                                <div style={{
+                                    transform: isMobileScreen ? 'scale(0.9)' : 'scale(1)',
+                                    transformOrigin: 'center'
+                                }}>
+                                    <InfoCard
+                                        icon={<User />}
+                                        title="User ID"
+                                        value={userId}
+                                    />
+                                </div>
+                                <div style={{
+                                    transform: isMobileScreen ? 'scale(0.9)' : 'scale(1)',
+                                    transformOrigin: 'center'
+                                }}>
+                                    <InfoCard
+                                        icon={<Star />}
+                                        title={languages[language].sidebar.account.accountType || "Tipo Account"}
+                                        value={userType}
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -1097,84 +1047,185 @@ const AccountPage = () => {
                                 
                                 <div className="profile-details-section">
                                     <div className="basic-info-section">
-                                        <h2 style={{
-                                            margin: '0 0 2rem 0',
-                                            fontSize: isMobileScreen ? '1.5rem' : '1.8rem',
-                                            fontWeight: '700',
-                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937',
+                                        <div style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '1rem'
+                                            justifyContent: isMobileScreen ? 'center' : 'space-between',
+                                            marginBottom: '2rem',
+                                            flexWrap: 'wrap',
+                                            gap: '1rem',
+                                            flexDirection: isMobileScreen ? 'column' : 'row',
+                                            textAlign: isMobileScreen ? 'center' : 'left'
                                         }}>
-                                            <div style={{
-                                                background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`,
-                                                borderRadius: '12px',
-                                                padding: '0.75rem',
-                                                boxShadow: `0 8px 15px -3px ${theme.buttonBackgroundColor}30`
+                                            <h2 style={{
+                                                margin: 0,
+                                                fontSize: isMobileScreen ? '1.5rem' : '1.8rem',
+                                                fontWeight: '700',
+                                                color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '1rem'
                                             }}>
-                                                <Briefcase size={20} color="white" />
-                                            </div>
-                                            {languages[language].sidebar.account.sections.profileDetails}
-                                        </h2>
+                                                <div style={{
+                                                    background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`,
+                                                    borderRadius: '12px',
+                                                    padding: '0.75rem',
+                                                    boxShadow: `0 8px 15px -3px ${theme.buttonBackgroundColor}30`
+                                                }}>
+                                                    <Briefcase size={20} color="white" />
+                                                </div>
+                                                {languages[language].sidebar.account.sections.profileDetails}
+                                            </h2>
+                                            
+                                            <MyButton
+                                                onClick={() => setIsEditMode(!isEditMode)}
+                                                theme={theme}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.75rem',
+                                                    padding: '14px 24px',
+                                                    borderRadius: '16px',
+                                                    fontSize: '1rem',
+                                                    fontWeight: '600',
+                                                    background: isEditMode 
+                                                        ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                                                        : `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`,
+                                                    boxShadow: isEditMode
+                                                        ? '0 10px 15px -3px rgba(239, 68, 68, 0.4)'
+                                                        : `0 10px 15px -3px ${theme.buttonBackgroundColor}40`,
+                                                    transition: 'all 0.3s ease',
+                                                    transform: 'translateY(0)',
+                                                    ':hover': {
+                                                        transform: 'translateY(-2px)',
+                                                        boxShadow: isEditMode
+                                                            ? '0 15px 20px -3px rgba(239, 68, 68, 0.5)'
+                                                            : `0 15px 20px -3px ${theme.buttonBackgroundColor}50`
+                                                    }
+                                                }}
+                                            >
+                                                <Edit size={18} />
+                                                {isEditMode ? languages[language].sidebar.account.buttons.cancelEdit : languages[language].sidebar.account.buttons.editProfile}
+                                            </MyButton>
+                                        </div>
                                     </div>
-                                    <div className="profile-grid" style={{
-                                        marginBottom: '2rem'
+                                    {/* Sezione Profilo Professionale */}
+                                    <div style={{
+                                        marginBottom: '3rem',
+                                        background: theme.mode === 'dark' 
+                                            ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%)'
+                                            : 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%)',
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'}`,
+                                        borderRadius: '20px',
+                                        padding: isMobileScreen ? '1.5rem' : '2rem',
+                                        backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none'
                                     }}>
-                                    <InfoCard
-                                        icon={<MapPin />}
-                                        title={languages[language].sidebar.account.nationality}
-                                        value={userNationality.value}
-                                    />
-                                    <InfoCard
-                                        icon={<MapPin />}
-                                        title={languages[language].sidebar.account.whereWork}
-                                        value={userWhereWorks.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Briefcase />}
-                                        title={languages[language].sidebar.account.work}
-                                        value={userJob.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Briefcase />}
-                                        title={languages[language].sidebar.account.workType}
-                                        value={userJobType.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Clock />}
-                                        title={languages[language].sidebar.account.hoursContract}
-                                        value={userWorkTime.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Home />}
-                                        title={languages[language].sidebar.account.remoteWork}
-                                        value={userRemoteType.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Star />}
-                                        title={languages[language].sidebar.account.yearsExperience}
-                                        value={userYearsExperience.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Calendar />}
-                                        title={languages[language].sidebar.account.age}
-                                        value={userAge.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Users />}
-                                        title={languages[language].sidebar.account.livingStatus}
-                                        value={userLivingStatus.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Home />}
-                                        title={languages[language].sidebar.account.housingType}
-                                        value={userHousingType.value}
-                                    />
-                                    <InfoCard
-                                        icon={<Baby />}
-                                        title={languages[language].sidebar.account.hasChildren}
-                                        value={userHasChildren.value}
-                                    />
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <h3 style={{
+                                                margin: 0,
+                                                fontSize: isMobileScreen ? '1.3rem' : '1.5rem',
+                                                fontWeight: '700',
+                                                color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                            }}>
+                                                💼 Profilo Professionale
+                                            </h3>
+                                        </div>
+                                        <div className="profile-grid" style={{
+                                            marginBottom: '1rem'
+                                        }}>
+                                            <InfoCard
+                                                icon={<MapPin />}
+                                                title={languages[language].sidebar.account.nationality}
+                                                value={userNationality.value}
+                                            />
+                                            <InfoCard
+                                                icon={<MapPin />}
+                                                title={languages[language].sidebar.account.whereWork}
+                                                value={userWhereWorks.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Briefcase />}
+                                                title={languages[language].sidebar.account.work}
+                                                value={userJob.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Briefcase />}
+                                                title={languages[language].sidebar.account.workType}
+                                                value={userJobType.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Clock />}
+                                                title={languages[language].sidebar.account.hoursContract}
+                                                value={userWorkTime.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Home />}
+                                                title={languages[language].sidebar.account.remoteWork}
+                                                value={userRemoteType.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Star />}
+                                                title={languages[language].sidebar.account.yearsExperience}
+                                                value={userYearsExperience.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Calendar />}
+                                                title={languages[language].sidebar.account.age}
+                                                value={userAge.value}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Sezione Situazione Personale */}
+                                    <div style={{
+                                        marginBottom: '2rem',
+                                        background: theme.mode === 'dark' 
+                                            ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)'
+                                            : 'linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%)',
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(168, 85, 247, 0.15)'}`,
+                                        borderRadius: '20px',
+                                        padding: isMobileScreen ? '1.5rem' : '2rem',
+                                        backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <h3 style={{
+                                                margin: 0,
+                                                fontSize: isMobileScreen ? '1.3rem' : '1.5rem',
+                                                fontWeight: '700',
+                                                color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                            }}>
+                                                🏠 Situazione Personale
+                                            </h3>
+                                        </div>
+                                        <div className="profile-grid" style={{
+                                            marginBottom: '1rem'
+                                        }}>
+                                            <InfoCard
+                                                icon={<Users />}
+                                                title={languages[language].sidebar.account.livingStatus}
+                                                value={userLivingStatus.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Home />}
+                                                title={languages[language].sidebar.account.housingType}
+                                                value={userHousingType.value}
+                                            />
+                                            <InfoCard
+                                                icon={<Baby />}
+                                                title={languages[language].sidebar.account.hasChildren}
+                                                value={userHasChildren.value}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1204,119 +1255,186 @@ const AccountPage = () => {
                                     {languages[language].sidebar.account.sections.editMode}
                                 </h2>
                                 
-                                <div 
-                                    className="form-grid"
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: isMobileScreen 
-                                            ? '1fr' 
-                                            : 'repeat(3, 1fr)',
-                                        gap: isMobileScreen ? '1rem' : '2rem',
-                                        width: '100%',
-                                        maxWidth: 'none',
-                                        justifyItems: 'stretch',
-                                        alignItems: 'start'
+                                {/* Sezione Form Profilo Professionale */}
+                                <div style={{
+                                    marginBottom: '3rem',
+                                    background: theme.mode === 'dark' 
+                                        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%)'
+                                        : 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%)',
+                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'}`,
+                                    borderRadius: '20px',
+                                    padding: isMobileScreen ? '1.5rem' : '2rem',
+                                    backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '1.5rem'
                                     }}>
-                                    <SelectField
-                                        label={languages[language].sidebar.account.nationality}
-                                        value={userNationality.value}
-                                        onChange={(event) => setUserNationality({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedNationalityTags}
-                                        placeholder={languages[language].sidebar.account.selectNationality}
-                                        icon={<MapPin />}
-                                    />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.whereWork}
-                                        value={userWhereWorks.value}
-                                        onChange={(event) => setUserWhereWorks({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedNationalityTags}
-                                        placeholder={languages[language].sidebar.account.selectWhereWork}
-                                        icon={<MapPin />}
-                                    />
+                                        <h3 style={{
+                                            margin: 0,
+                                            fontSize: isMobileScreen ? '1.3rem' : '1.5rem',
+                                            fontWeight: '700',
+                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                        }}>
+                                            � Profilo Professionale
+                                        </h3>
+                                    </div>
+                                    <div 
+                                        className="form-grid"
+                                        style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: isMobileScreen 
+                                                ? '1fr' 
+                                                : 'repeat(auto-fit, minmax(280px, 1fr))',
+                                            gap: isMobileScreen ? '1rem' : '1.5rem',
+                                            width: '100%',
+                                            justifyItems: 'stretch',
+                                            alignItems: 'start'
+                                        }}>
+                                        <SelectField
+                                            label={languages[language].sidebar.account.nationality}
+                                            value={userNationality.value}
+                                            onChange={(event) => setUserNationality({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedNationalityTags}
+                                            placeholder={languages[language].sidebar.account.selectNationality}
+                                            icon={<MapPin />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.work}
-                                        value={userJob.value}
-                                        onChange={(event) => setUserJob({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedJobTags}
-                                        placeholder={languages[language].sidebar.account.selectWork}
-                                        icon={<Briefcase />}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.whereWork}
+                                            value={userWhereWorks.value}
+                                            onChange={(event) => setUserWhereWorks({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedNationalityTags}
+                                            placeholder={languages[language].sidebar.account.selectWhereWork}
+                                            icon={<MapPin />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.workType}
-                                        value={userJobType.value}
-                                        onChange={(event) => setUserJobType({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedJobTypeTags}
-                                        placeholder={languages[language].sidebar.account.selectWorkType}
-                                        icon={<Briefcase />}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.work}
+                                            value={userJob.value}
+                                            onChange={(event) => setUserJob({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedJobTags}
+                                            placeholder={languages[language].sidebar.account.selectWork}
+                                            icon={<Briefcase />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.hoursContract}
-                                        value={userWorkTime.value}
-                                        onChange={(event) => setUserWorkTime({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedWorkTimeTags}
-                                        placeholder={languages[language].sidebar.account.selectHoursContract}
-                                        icon={<Clock />}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.workType}
+                                            value={userJobType.value}
+                                            onChange={(event) => setUserJobType({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedJobTypeTags}
+                                            placeholder={languages[language].sidebar.account.selectWorkType}
+                                            icon={<Briefcase />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.remoteWork}
-                                        value={userRemoteType.value}
-                                        onChange={(event) => setUserRemoteType({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedRemoteTypeTags}
-                                        placeholder={languages[language].sidebar.account.selectRemoteWork}
-                                        icon={<Home />}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.hoursContract}
+                                            value={userWorkTime.value}
+                                            onChange={(event) => setUserWorkTime({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedWorkTimeTags}
+                                            placeholder={languages[language].sidebar.account.selectHoursContract}
+                                            icon={<Clock />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.yearsExperience}
-                                        value={userYearsExperience.value}
-                                        onChange={(event) => setUserYearsExperience({key: event.target.value, value: event.target.value})}
-                                        options={sortedYearsExperienceTags}
-                                        placeholder={languages[language].sidebar.account.selectYearsExperience}
-                                        icon={<Star />}
-                                        isSimpleArray={true}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.remoteWork}
+                                            value={userRemoteType.value}
+                                            onChange={(event) => setUserRemoteType({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedRemoteTypeTags}
+                                            placeholder={languages[language].sidebar.account.selectRemoteWork}
+                                            icon={<Home />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.age}
-                                        value={userAge.value}
-                                        onChange={(event) => setUserAge({key: event.target.value, value: event.target.value})}
-                                        options={sortedAgeTags}
-                                        placeholder={languages[language].sidebar.account.selectAge}
-                                        icon={<Calendar />}
-                                        isSimpleArray={true}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.yearsExperience}
+                                            value={userYearsExperience.value}
+                                            onChange={(event) => setUserYearsExperience({key: event.target.value, value: event.target.value})}
+                                            options={sortedYearsExperienceTags}
+                                            placeholder={languages[language].sidebar.account.selectYearsExperience}
+                                            icon={<Star />}
+                                            isSimpleArray={true}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.livingStatus}
-                                        value={userLivingStatus.value}
-                                        onChange={(event) => setUserLivingStatus({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedLivingStatusTags}
-                                        placeholder={languages[language].sidebar.account.selectLivingStatus}
-                                        icon={<Users />}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.age}
+                                            value={userAge.value}
+                                            onChange={(event) => setUserAge({key: event.target.value, value: event.target.value})}
+                                            options={sortedAgeTags}
+                                            placeholder={languages[language].sidebar.account.selectAge}
+                                            icon={<Calendar />}
+                                            isSimpleArray={true}
+                                        />
+                                    </div>
+                                </div>
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.housingType}
-                                        value={userHousingType.value}
-                                        onChange={(event) => setUserHousingType({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedHousingTypeTags}
-                                        placeholder={languages[language].sidebar.account.selectHousingType}
-                                        icon={<Home />}
-                                    />
+                                {/* Sezione Form Situazione Personale */}
+                                <div style={{
+                                    marginBottom: '3rem',
+                                    background: theme.mode === 'dark' 
+                                        ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)'
+                                        : 'linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%)',
+                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(168, 85, 247, 0.15)'}`,
+                                    borderRadius: '20px',
+                                    padding: isMobileScreen ? '1.5rem' : '2rem',
+                                    backdropFilter: theme.mode === 'dark' ? 'blur(16px)' : 'none'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '1.5rem'
+                                    }}>
+                                        <h3 style={{
+                                            margin: 0,
+                                            fontSize: isMobileScreen ? '1.3rem' : '1.5rem',
+                                            fontWeight: '700',
+                                            color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
+                                        }}>
+                                            🏠 Situazione Personale
+                                        </h3>
+                                    </div>
+                                    <div 
+                                        className="form-grid"
+                                        style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: isMobileScreen 
+                                                ? '1fr' 
+                                                : 'repeat(auto-fit, minmax(280px, 1fr))',
+                                            gap: isMobileScreen ? '1rem' : '1.5rem',
+                                            width: '100%',
+                                            justifyItems: 'stretch',
+                                            alignItems: 'start'
+                                        }}>
+                                        <SelectField
+                                            label={languages[language].sidebar.account.livingStatus}
+                                            value={userLivingStatus.value}
+                                            onChange={(event) => setUserLivingStatus({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedLivingStatusTags}
+                                            placeholder={languages[language].sidebar.account.selectLivingStatus}
+                                            icon={<Users />}
+                                        />
 
-                                    <SelectField
-                                        label={languages[language].sidebar.account.hasChildren}
-                                        value={userHasChildren.value}
-                                        onChange={(event) => setUserHasChildren({key: event.target.value.key, value: event.target.value.label})}
-                                        options={sortedHasChildrenTags}
-                                        placeholder={languages[language].sidebar.account.selectHasChildren}
-                                        icon={<Baby />}
-                                    />
+                                        <SelectField
+                                            label={languages[language].sidebar.account.housingType}
+                                            value={userHousingType.value}
+                                            onChange={(event) => setUserHousingType({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedHousingTypeTags}
+                                            placeholder={languages[language].sidebar.account.selectHousingType}
+                                            icon={<Home />}
+                                        />
+
+                                        <SelectField
+                                            label={languages[language].sidebar.account.hasChildren}
+                                            value={userHasChildren.value}
+                                            onChange={(event) => setUserHasChildren({key: event.target.value.key, value: event.target.value.label})}
+                                            options={sortedHasChildrenTags}
+                                            placeholder={languages[language].sidebar.account.selectHasChildren}
+                                            icon={<Baby />}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div style={{

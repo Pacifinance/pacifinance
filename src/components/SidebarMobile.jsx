@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import avatarImage from '../assets/account-logo.png';
@@ -17,11 +17,17 @@ const SidebarMobile = ({
     handleLogout
 }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     
     // Guardia per verificare che il theme sia disponibile
     if (!theme) {
         return null;
     }
+
+    // Funzione per verificare se una pagina è attiva
+    const isActivePage = (path) => {
+        return location.pathname === path;
+    };
 
     const HamburgerMenu = () => (
         <div onClick={() => setIsSideBarMenuOpen(false)}>
@@ -68,17 +74,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/dashboard") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/dashboard") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/dashboard") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/dashboard")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/dashboard")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/dashboard");
@@ -90,17 +101,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/charts-statistics") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/charts-statistics") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/charts-statistics") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/charts-statistics")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/charts-statistics")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/charts-statistics");
@@ -112,17 +128,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/insert-values") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/insert-values") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/insert-values") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/insert-values")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/insert-values")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/insert-values");
@@ -134,17 +155,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/check-prices") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/check-prices") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/check-prices") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/check-prices")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/check-prices")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/check-prices");
@@ -156,17 +182,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/comparison") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/comparison") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/comparison") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/comparison")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/comparison")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/comparison");
@@ -178,17 +209,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/knowledge") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/knowledge") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/knowledge") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/knowledge")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/knowledge")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/knowledge");
@@ -200,17 +236,22 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105"
                         style={{
-                            color: theme.textColor,
-                            backgroundColor: "transparent",
+                            color: isActivePage("/info") ? "white" : theme.textColor,
+                            backgroundColor: isActivePage("/info") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",
+                            fontWeight: isActivePage("/info") ? "600" : "normal",
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                            e.target.style.color = "white";
+                            if (!isActivePage("/info")) {
+                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                e.target.style.color = "white";
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "transparent";
-                            e.target.style.color = theme.textColor;
+                            if (!isActivePage("/info")) {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.color = theme.textColor;
+                            }
                         }}
                         onClick={() => {
                             navigate("/info");
@@ -289,17 +330,22 @@ const SidebarMobile = ({
                         <button
                             className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
                             style={{
-                                color: theme.textColor,
-                                backgroundColor: "transparent",
+                                color: isActivePage("/account") ? "white" : theme.textColor,
+                                backgroundColor: isActivePage("/account") ? theme.buttonBackgroundColor : "transparent",
                                 border: "none",
+                                fontWeight: isActivePage("/account") ? "600" : "normal",
                             }}
                             onMouseEnter={(e) => {
-                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                                e.target.style.color = "white";
+                                if (!isActivePage("/account")) {
+                                    e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                    e.target.style.color = "white";
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.target.style.backgroundColor = "transparent";
-                                e.target.style.color = theme.textColor;
+                                if (!isActivePage("/account")) {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.color = theme.textColor;
+                                }
                             }}
                             onClick={() => {
                                 navigate("/account");
@@ -311,17 +357,22 @@ const SidebarMobile = ({
                         <button
                             className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
                             style={{
-                                color: theme.textColor,
-                                backgroundColor: "transparent",
+                                color: isActivePage("/settings") ? "white" : theme.textColor,
+                                backgroundColor: isActivePage("/settings") ? theme.buttonBackgroundColor : "transparent",
                                 border: "none",
+                                fontWeight: isActivePage("/settings") ? "600" : "normal",
                             }}
                             onMouseEnter={(e) => {
-                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                                e.target.style.color = "white";
+                                if (!isActivePage("/settings")) {
+                                    e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                    e.target.style.color = "white";
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.target.style.backgroundColor = "transparent";
-                                e.target.style.color = theme.textColor;
+                                if (!isActivePage("/settings")) {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.color = theme.textColor;
+                                }
                             }}
                             onClick={() => {
                                 navigate("/settings");

@@ -310,6 +310,7 @@
                     "profileDetails": "Dettagli Profilo",
                     "editMode": "Modalità Modifica Attiva"
                 },
+                "accountType": "Tipo Account",
                 "buttons": {
                     "editProfile": "Modifica Profilo",
                     "cancelEdit": "Annulla Modifica",
@@ -1450,6 +1451,7 @@
                     "profileDetails": "Profile Details",
                     "editMode": "Edit Mode Active"
                 },
+                "accountType": "Account Type",
                 "buttons": {
                     "editProfile": "Edit Profile",
                     "cancelEdit": "Cancel Edit",

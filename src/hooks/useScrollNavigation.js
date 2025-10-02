@@ -45,6 +45,10 @@ export const useScrollNavigation = (enabled = true) => {
   const [pageHasScrollableContent, setPageHasScrollableContent] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [triggerIntervalId, setTriggerIntervalId] = useState(null);
+  const [pageLoadTime, setPageLoadTime] = useState(Date.now());
+
+// Periodo di grazia dopo il caricamento della pagina (3 secondi)
+const PAGE_LOAD_GRACE_PERIOD = 3000;
 
   const getCurrentPageIndex = useCallback(() => {
     return PAGE_ORDER.indexOf(location.pathname);
@@ -125,6 +129,12 @@ export const useScrollNavigation = (enabled = true) => {
     // Ignora gli eventi di scroll se è in corso uno scroll automatico
     if (!enabled || isNavigating || !pageHasScrollableContent || isAutoScrolling) return;
 
+    // Periodo di grazia dopo il caricamento della pagina
+    const currentTime = Date.now();
+    if (currentTime - pageLoadTime < PAGE_LOAD_GRACE_PERIOD) {
+      return;
+    }
+
     const currentScrollY = window.scrollY;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
@@ -199,6 +209,7 @@ export const useScrollNavigation = (enabled = true) => {
   useEffect(() => {
     stopTriggerZone();
     setIsAutoScrolling(false); // Reset flag di auto-scroll
+    setPageLoadTime(Date.now()); // Reset del tempo di caricamento pagina
     
     // Scroll automatico all'inizio della pagina
     window.scrollTo({ top: 0, behavior: 'auto' });

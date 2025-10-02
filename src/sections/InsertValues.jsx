@@ -350,8 +350,10 @@ export default function InsertValue({
     fetchData();
   }, [userData]);
 
-  // Imposta la sezione iniziale basata sul parametro URL
+    // Imposta la sezione iniziale basata sul parametro URL - solo al primo caricamento
   useEffect(() => {
+    if (initialSectionApplied.current) return; // Evita di eseguire più volte
+    
     const urlParams = new URLSearchParams(location.search);
     const sectionParam = urlParams.get('section');
     
@@ -371,9 +373,13 @@ export default function InsertValue({
           default:
             setActivePage('outflows');
         }
+        initialSectionApplied.current = true; // Marca come applicato
       }, 100);
+    } else {
+      // Se non c'è parametro URL, imposta default e marca come applicato
+      initialSectionApplied.current = true;
     }
-  }, [location, activePage]);
+  }, [location.search]); // Rimosso activePage dalle dipendenze per evitare loop
 
   // Auto-hide success notifications with toast
   useEffect(() => {

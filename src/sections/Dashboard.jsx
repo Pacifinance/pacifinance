@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { 
     BsGraphUpArrow,
@@ -50,6 +51,14 @@ import {
     MainDashboardLayout,
     DashboardContent
 } from '../styles/ModernDashboardStyled';
+
+const ResponsivePadding = styled.div`
+  padding: 0 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 0 1rem;
+  }
+`;
 
 const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -249,7 +258,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     return (
         <MainDashboardLayout theme={theme}>
             <DashboardContent theme={theme}>
-                <div style={{ padding: '0 2rem' }}> {/* Padding interno controllato */}
+                <ResponsivePadding>
                     <ModernDashboardHeader theme={theme}>
                     <ModernDashboardTitle theme={theme}>
                         {languages[language].dashboard.title}
@@ -579,7 +588,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         </ModernChartContainer>
                     </div>
                 </ModernChartsSection>
-                </div> {/* Chiusura del padding interno */}
+                </ResponsivePadding>
             </DashboardContent>
         </MainDashboardLayout>
     );

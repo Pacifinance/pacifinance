@@ -18,12 +18,6 @@ const DashboardPage = () => {
     const { theme } = useContext(ThemeContext);
     const { language } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-
-    // Debug per verificare il cambio di stato della privacy
-    console.log('DashboardPage - isHidden:', isHidden);
-    console.log('DashboardPage - userData:', userData);
-    console.log('DashboardPage - auth object:', auth);
-
     const {
         isNavigating,
         showTriggerZone,

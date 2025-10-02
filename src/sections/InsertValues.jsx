@@ -28,7 +28,7 @@ const ModernContainer = styled.div`
   width: 100%;
   
   @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
+    padding: 4rem 0.5rem 1rem 0.5rem; /* Aumentato padding-top per mobile */
   }
 `;
 

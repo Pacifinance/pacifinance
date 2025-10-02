@@ -40,7 +40,7 @@ export const Section = styled.section `
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     margin-left: 0;
-    padding-top: 1rem;
+    padding-top: 4rem; /* Aumentato per compensare l'header mobile fisso */
   }
 `;
 
@@ -674,6 +674,7 @@ export const StyledSection = styled.div`
 
   @media (max-width: 768px) {
     margin-top: 0em;
+    padding-top: 4rem; /* Aggiunto padding-top per mobile */
   }
 `;
 

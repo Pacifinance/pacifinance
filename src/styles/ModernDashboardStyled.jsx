@@ -87,7 +87,7 @@ export const ModernDashboardContainer = styled.div`
   overflow-x: auto;
 
   @media (max-width: 768px) {
-    padding: 1rem; /* Su mobile manteniamo padding normale */
+    padding: 4rem 1rem 1rem 1rem; /* Aumentato padding-top per mobile */
   }
 `;
 

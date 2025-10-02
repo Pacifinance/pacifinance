@@ -41,6 +41,10 @@ const StatsContainer = styled.div`
     z-index: 0;
   }
   
+  @media (max-width: 768px) {
+    padding-top: 4rem; /* Aggiunto padding-top per mobile */
+  }
+  
   @media (min-width: 768px) {
     margin-left: 5.5rem;
     width: calc(100% - 5.5rem);

@@ -32,7 +32,7 @@ import {
     ToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTrashCan, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {
     SidebarToggleModeButton,
@@ -594,22 +594,25 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         </button>
                                         <button
                                             data-umami-event="logoutButton"
-                                            className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full"
+                                            className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full flex items-center gap-2"
                                             style={{
-                                                color: theme.textColor,
-                                                backgroundColor: "transparent",
-                                                border: "none",
+                                                color: "#dc2626", // Rosso elegante
+                                                backgroundColor: "rgba(220, 38, 38, 0.05)", // Sfondo rosso molto leggero
+                                                border: "1px solid rgba(220, 38, 38, 0.2)",
                                             }}
                                             onMouseEnter={(e) => {
-                                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                                e.target.style.backgroundColor = "#dc2626";
                                                 e.target.style.color = "white";
+                                                e.target.style.borderColor = "#dc2626";
                                             }}
                                             onMouseLeave={(e) => {
-                                                e.target.style.backgroundColor = "transparent";
-                                                e.target.style.color = theme.textColor;
+                                                e.target.style.backgroundColor = "rgba(220, 38, 38, 0.05)";
+                                                e.target.style.color = "#dc2626";
+                                                e.target.style.borderColor = "rgba(220, 38, 38, 0.2)";
                                             }}
                                             onClick={handleLogout}
                                         >
+                                            <FontAwesomeIcon icon={faSignOutAlt} />
                                             {languages[language].sidebar.logout}
                                         </button>
                                     </div>

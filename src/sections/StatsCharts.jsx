@@ -438,7 +438,7 @@ export default function StatsCharts() {
     const hasData = userData && (
         (userData.last12MonthsData && userData.last12MonthsData.length > 0) ||
         (userData.incomesArray && userData.incomesArray.length > 0) ||
-        (userData.expensesArray && userData.expensesArray.length > 0)
+        (userData.outflowsArray && userData.outflowsArray.length > 0)
     );
 
     const renderBalanceContent = () => {

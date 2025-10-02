@@ -717,7 +717,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
             allUsers: 2800
         },
         avgExpenses: {
-            user: userData?.expensesArray?.[0] || 0,
+            user: userData?.outflowsArray?.[0] || 0,
             similarUsers: 2400,
             allUsers: 2200
         }

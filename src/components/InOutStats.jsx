@@ -203,21 +203,21 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
             if (userData) {
                 try {
                     // DATI CORRENTI (sempre mese corrente - indice 0)
-                    setOutflowsCurrent(userData?.expensesArray[0] || 0);
+                    setOutflowsCurrent(userData?.outflowsArray[0] || 0);
                     setIncomesCurrent(userData?.incomesArray[0] || 0);
-                    setSavedCurrent((userData?.incomesArray[0] || 0) - (userData?.expensesArray[0] || 0));
+                    setSavedCurrent((userData?.incomesArray[0] || 0) - (userData?.outflowsArray[0] || 0));
 
                     // DATI DI CONFRONTO (dipendono dal periodo)
                     if (period === "month") {
                         // Confronto con mese precedente (indice 1)
                         setIncomesComparison(userData?.incomesArray[1] || 0);
-                        setOutflowsComparison(userData?.expensesArray[1] || 0);
-                        setSavedComparison((userData?.incomesArray[1] || 0) - (userData?.expensesArray[1] || 0));
+                        setOutflowsComparison(userData?.outflowsArray[1] || 0);
+                        setSavedComparison((userData?.incomesArray[1] || 0) - (userData?.outflowsArray[1] || 0));
                     } else if (period === "year") {
                         // Confronto con stesso mese anno precedente (indice 12)
                         setIncomesComparison(userData?.incomesArray[12] || 0);
-                        setOutflowsComparison(userData?.expensesArray[12] || 0);
-                        setSavedComparison((userData?.incomesArray[12] || 0) - (userData?.expensesArray[12] || 0));
+                        setOutflowsComparison(userData?.outflowsArray[12] || 0);
+                        setSavedComparison((userData?.incomesArray[12] || 0) - (userData?.outflowsArray[12] || 0));
                     }
                 } catch (error) {
                     console.error('Error loading stats data:', error);

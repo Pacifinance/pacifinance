@@ -60,9 +60,9 @@ function Dashboard({ theme, userData, isHidden, CustomTick}) {
                 setCashReal(userData ? userData.cashReal : 0);
                 setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
                 setTotalReal(userData ? userData.totalReal : 0);
-                setExpensesMonth(userData ? userData.expensesArray[0] : 0);
+                setExpensesMonth(userData ? userData.outflowsArray[0] : 0);
                 setIncomesMonth(userData ? userData.incomesArray[0] : 0);
-                setSavedMonth(userData ? (userData.incomesArray[0] - userData.expensesArray[0]) : 0);
+                setSavedMonth(userData ? (userData.incomesArray[0] - userData.outflowsArray[0]) : 0);
 
                 
                 

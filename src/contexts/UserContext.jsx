@@ -197,12 +197,14 @@ export const UserProvider = ({ children }) => {
               month.forEach((entry) => {
                 // Check if the entry is an expense
                 if (entry.isExpense) {
+                  // Use English category name for consistency across the application
+                  const categoryKey = entry.categoryTag.translations.en;
                   // If the category exists, add the current value
-                  if (totalExpensesPerCategory[entry.categoryTag.translations.en]) {
-                    totalExpensesPerCategory[entry.categoryTag.translations.en] += entry.amount;
+                  if (totalExpensesPerCategory[categoryKey]) {
+                    totalExpensesPerCategory[categoryKey] += entry.amount;
                   } else {
                     // Otherwise, initialize the category with the current value
-                    totalExpensesPerCategory[entry.categoryTag.translations.en] = entry.amount;
+                    totalExpensesPerCategory[categoryKey] = entry.amount;
                   }
                 }
               });
@@ -217,7 +219,7 @@ export const UserProvider = ({ children }) => {
 
             // Crea un array di oggetti per le entrate e un array di oggetti per le spese, inizializzati con valori iniziali a 0
             const incomesArray = Array(13).fill(0);
-            const expensesArray = Array(13).fill(0);
+            const outflowsArray = Array(13).fill(0);
 
             // Itera su ciascun elemento dell'array allExpensesIncomesArray
             allExpensesIncomesArray.forEach((outerItem, index) => {
@@ -225,7 +227,7 @@ export const UserProvider = ({ children }) => {
               outerItem.forEach((innerItem) => {
                 // Aggiungi l'importo all'array corrispondente, a seconda se è un'entrata o una spesa
                 if (innerItem.isExpense) {
-                  expensesArray[index] += innerItem.amount;
+                  outflowsArray[index] += innerItem.amount;
                 } else {
                   incomesArray[index] += innerItem.amount;
                 }
@@ -233,7 +235,7 @@ export const UserProvider = ({ children }) => {
             });
 
             // console.log('Somma delle entrate per ciascun mese:', incomesArray);
-            // console.log('Somma delle spese per ciascun mese:', expensesArray);
+            // console.log('Somma delle spese per ciascun mese:', outflowsArray);
 
             // qua potrei aggiungere un controllo che se non ci sono spese ed entrate del mese corrente, allora prendo i dati del mese precedente
             // const lastExpenses = allExpensesIncomesArray[0].filter(data => data.isExpense);
@@ -261,14 +263,16 @@ export const UserProvider = ({ children }) => {
 
             const last12MonthsData = [];
 
-            // Loop per i 12 mesi precedenti
+            // Loop per i 12 mesi precedenti (dal più vecchio al più recente per consistenza con mock)
             for (let i = 0; i < 12; i++) {
-              // Calcola il mese corrente (potrei prendere il mese dai dati dal db senza calcolarlo)
-              const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-              const currentMonthAsString = currentMonth.toLocaleString('default', { month: 'long' });
+              // Calcola il mese usando lo stesso ordine del mock: dal più vecchio (11-i) al più recente (0)
+              const monthOffset = 11 - i;
+              const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - monthOffset, 1);
+              // Usa formato YYYY-MM come nei mock per consistenza con i grafici
+              const currentMonthAsString = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
 
               // Recupera il bilancio per il mese corrente (se disponibile, altrimenti imposta a 0)
-              const currentMonthBalance = balancesResponse.data[i]?.balance ?? 0;
+              const currentMonthBalance = balancesResponse.data[monthOffset]?.balance ?? 0;
 
               const monthData = {
                 month: currentMonthAsString,
@@ -317,7 +321,7 @@ export const UserProvider = ({ children }) => {
               bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, totalRealPreMonth, 
               cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
-              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, expensesArray, incomesArray, allExpenses, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
+              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, outflowsArray, incomesArray, allExpenses, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
               percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalExpensesPerCategoryPerMonth,
               userId, userType, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
             });

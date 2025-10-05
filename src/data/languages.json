@@ -248,6 +248,7 @@
             "privacy": "Privacy",
             "account": {
                 "title": "Il tuo Profilo",
+                "subtitle": "Gestisci e personalizza le tue informazioni personali",
                 "id": "ID utente: ",
                 "userType": "Tipo utente: ",
                 "nationality": "Nazionalità: ",
@@ -303,7 +304,10 @@
                     "title": "Perché completare il tuo profilo?",
                     "subtitle": "Inserire i tuoi dati personali permetterà alla piattaforma di fornirti analisi e confronti molto più accurati:",
                     "personalizedComparisons": "I tuoi dati ci permettono di confrontare le tue finanze con utenti che hanno profili simili al tuo (stesso lavoro, età, situazione abitativa, ecc.).",
-                    "anonymousNote": "Tutti i confronti sono completamente anonimi e i tuoi dati personali rimangono sempre privati e sicuri."
+                    "personalizedComparisonsLabel": "Confronti personalizzati:",
+                    "anonymousNote": "Tutti i confronti sono completamente anonimi e i tuoi dati personali rimangono sempre privati e sicuri.",
+                    "clickToHide": "Clicca per nascondere",
+                    "clickToLearnMore": "Clicca per saperne di più"
                 },
                 "sections": {
                     "basicInfo": "Informazioni Base",
@@ -1389,6 +1393,7 @@
             "privacy": "Privacy",
             "account": {
                 "title": "Your Account",
+                "subtitle": "Manage and customize your personal information",
                 "id": "User ID: ",
                 "userType": "User Type: ",
                 "nationality": "Nationality: ",
@@ -1444,7 +1449,10 @@
                     "title": "Why complete your profile?",
                     "subtitle": "Entering your personal data will allow the platform to provide you with much more accurate analysis and comparisons:",
                     "personalizedComparisons": "Your data allows us to compare your finances with users who have similar profiles to yours (same job, age, housing situation, etc.).",
-                    "anonymousNote": "All comparisons are completely anonymous and your personal data always remains private and secure."
+                    "personalizedComparisonsLabel": "Personalized comparisons:",
+                    "anonymousNote": "All comparisons are completely anonymous and your personal data always remains private and secure.",
+                    "clickToHide": "Click to hide",
+                    "clickToLearnMore": "Click to learn more"
                 },
                 "sections": {
                     "basicInfo": "Basic Information",

@@ -698,10 +698,22 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
     const getCurrentMonth = () => {
         const monthDate = userData?.preMonthDate || new Date();
-        return new Date(monthDate).toLocaleDateString('it-IT', { 
-            year: 'numeric', 
-            month: 'long' 
-        });
+        
+        // Get the month number and year
+        const date = new Date(monthDate);
+        const monthNumber = date.getMonth(); // 0-based month (0 = January, 8 = September)
+        const year = date.getFullYear();
+        
+        // Manual mapping for reliable translation
+        const monthNames = {
+            it: ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 
+                 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'],
+            en: ['January', 'February', 'March', 'April', 'May', 'June',
+                 'July', 'August', 'September', 'October', 'November', 'December']
+        };
+        
+        const monthName = monthNames[language] ? monthNames[language][monthNumber] : monthNames.en[monthNumber];
+        return `${monthName} ${year}`;
     };
 
     // Mock data for comparisons - in a real app, this would come from API

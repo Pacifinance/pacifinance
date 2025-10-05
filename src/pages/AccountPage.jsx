@@ -326,6 +326,29 @@ const AccountPage = () => {
     const sortedHousingTypeTags = sortTagsByLanguage(housingTypeTags, language);
     const sortedHasChildrenTags = sortTagsByLanguage(hasChildrenTags, language);
 
+    // Helper function to translate existing values to current language
+    const translateValueToCurrentLanguage = (currentValue, tagsArray, currentLanguage) => {
+        if (!currentValue || !tagsArray || tagsArray.length === 0) {
+            return currentValue;
+        }
+        
+        // Find the tag that matches the current value in any language
+        const matchingTag = tagsArray.find(tag => {
+            if (tag.translations) {
+                return Object.values(tag.translations).includes(currentValue);
+            }
+            return false;
+        });
+        
+        // If found, return the value in the current language
+        if (matchingTag && matchingTag.translations && matchingTag.translations[currentLanguage]) {
+            return matchingTag.translations[currentLanguage];
+        }
+        
+        // If not found, return the original value
+        return currentValue;
+    };
+
     // Modern Card Component with theme support and enhanced styling
     const InfoCard = ({ icon, title, value, isEditable = false }) => {
         const [isHovered, setIsHovered] = useState(false);
@@ -809,14 +832,13 @@ const AccountPage = () => {
                                 {languages[language].sidebar.account.title}
                             </h1>
                             <p style={{
-                                margin: 0,
                                 color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280',
                                 fontSize: '1.1rem',
                                 fontWeight: '400',
                                 maxWidth: '600px',
                                 margin: '0 auto'
                             }}>
-                                Gestisci e personalizza le tue informazioni personali
+                                {languages[language].sidebar.account.subtitle}
                             </p>
                         </div>
 
@@ -972,7 +994,7 @@ const AccountPage = () => {
                                             fontSize: '0.9rem',
                                             color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280'
                                         }}>
-                                            {showBenefitsInfo ? 'Clicca per nascondere' : 'Clicca per saperne di più'}
+                                            {showBenefitsInfo ? languages[language].sidebar.account.benefits.clickToHide : languages[language].sidebar.account.benefits.clickToLearnMore}
                                         </p>
                                     </div>
                                 </div>
@@ -1008,7 +1030,7 @@ const AccountPage = () => {
                                         lineHeight: '1.6',
                                         color: theme.mode === 'dark' ? '#d1d5db' : '#4b5563'
                                     }}>
-                                        <strong>Confronti personalizzati:</strong> {languages[language].sidebar.account.benefits.personalizedComparisons}
+                                        <strong>{languages[language].sidebar.account.benefits.personalizedComparisonsLabel}</strong> {languages[language].sidebar.account.benefits.personalizedComparisons}
                                     </p>
                                     <p style={{
                                         margin: 0,
@@ -1141,42 +1163,37 @@ const AccountPage = () => {
                                             <InfoCard
                                                 icon={<MapPin />}
                                                 title={languages[language].sidebar.account.nationality}
-                                                value={userNationality.value}
+                                                value={translateValueToCurrentLanguage(userNationality.value, nationalityTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<MapPin />}
                                                 title={languages[language].sidebar.account.whereWork}
-                                                value={userWhereWorks.value}
+                                                value={translateValueToCurrentLanguage(userWhereWorks.value, nationalityTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Briefcase />}
                                                 title={languages[language].sidebar.account.work}
-                                                value={userJob.value}
+                                                value={translateValueToCurrentLanguage(userJob.value, jobTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Briefcase />}
                                                 title={languages[language].sidebar.account.workType}
-                                                value={userJobType.value}
+                                                value={translateValueToCurrentLanguage(userJobType.value, jobTypeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Clock />}
                                                 title={languages[language].sidebar.account.hoursContract}
-                                                value={userWorkTime.value}
+                                                value={translateValueToCurrentLanguage(userWorkTime.value, workTimeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Home />}
                                                 title={languages[language].sidebar.account.remoteWork}
-                                                value={userRemoteType.value}
+                                                value={translateValueToCurrentLanguage(userRemoteType.value, remoteTypeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Star />}
                                                 title={languages[language].sidebar.account.yearsExperience}
                                                 value={userYearsExperience.value}
-                                            />
-                                            <InfoCard
-                                                icon={<Calendar />}
-                                                title={languages[language].sidebar.account.age}
-                                                value={userAge.value}
                                             />
                                         </div>
                                     </div>
@@ -1211,19 +1228,24 @@ const AccountPage = () => {
                                             marginBottom: '1rem'
                                         }}>
                                             <InfoCard
+                                                icon={<Calendar />}
+                                                title={languages[language].sidebar.account.age}
+                                                value={userAge.value}
+                                            />
+                                            <InfoCard
                                                 icon={<Users />}
                                                 title={languages[language].sidebar.account.livingStatus}
-                                                value={userLivingStatus.value}
+                                                value={translateValueToCurrentLanguage(userLivingStatus.value, livingStatusTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Home />}
                                                 title={languages[language].sidebar.account.housingType}
-                                                value={userHousingType.value}
+                                                value={translateValueToCurrentLanguage(userHousingType.value, housingTypeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Baby />}
                                                 title={languages[language].sidebar.account.hasChildren}
-                                                value={userHasChildren.value}
+                                                value={translateValueToCurrentLanguage(userHasChildren.value, hasChildrenTags, language)}
                                             />
                                         </div>
                                     </div>
@@ -1357,16 +1379,6 @@ const AccountPage = () => {
                                             icon={<Star />}
                                             isSimpleArray={true}
                                         />
-
-                                        <SelectField
-                                            label={languages[language].sidebar.account.age}
-                                            value={userAge.value}
-                                            onChange={(event) => setUserAge({key: event.target.value, value: event.target.value})}
-                                            options={sortedAgeTags}
-                                            placeholder={languages[language].sidebar.account.selectAge}
-                                            icon={<Calendar />}
-                                            isSimpleArray={true}
-                                        />
                                     </div>
                                 </div>
 
@@ -1408,6 +1420,16 @@ const AccountPage = () => {
                                             justifyItems: 'stretch',
                                             alignItems: 'start'
                                         }}>
+                                        <SelectField
+                                            label={languages[language].sidebar.account.age}
+                                            value={userAge.value}
+                                            onChange={(event) => setUserAge({key: event.target.value, value: event.target.value})}
+                                            options={sortedAgeTags}
+                                            placeholder={languages[language].sidebar.account.selectAge}
+                                            icon={<Calendar />}
+                                            isSimpleArray={true}
+                                        />
+
                                         <SelectField
                                             label={languages[language].sidebar.account.livingStatus}
                                             value={userLivingStatus.value}

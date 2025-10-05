@@ -18,6 +18,13 @@ import {
 import { 
   SiMoneygram 
 } from "react-icons/si";
+import { 
+  GiGoldBar,
+  GiReceiveMoney 
+} from "react-icons/gi";
+import { 
+  RiSecurePaymentLine 
+} from "react-icons/ri";
 
 /**
  * Mappa centralizzata delle icone per tutti gli asset
@@ -34,6 +41,9 @@ export const assetIcons = {
   etf: AiOutlineStock,
   bitcoin: FaBitcoin,
   crypto: BsCoin,
+  bond: RiSecurePaymentLine, // Coming soon - backend update required
+  funds: GiReceiveMoney, // Coming soon - backend update required
+  gold: GiGoldBar, // Coming soon - backend update required
 };
 
 /**

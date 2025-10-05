@@ -47,6 +47,24 @@ export const assetColors = {
     light: '#e17055',
     dark: '#d63031'
   },
+  bond: {
+    primary: '#2d3436',
+    gradient: 'linear-gradient(135deg, #2d3436 0%, #636e72 100%)',
+    light: '#636e72',
+    dark: '#2d3436'
+  },
+  funds: {
+    primary: '#00b894',
+    gradient: 'linear-gradient(135deg, #00b894 0%, #00cec9 100%)',
+    light: '#00cec9',
+    dark: '#00b894'
+  },
+  gold: {
+    primary: '#ffeaa7',
+    gradient: 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)',
+    light: '#ffeaa7',
+    dark: '#fdcb6e'
+  },
   
   // Colori speciali per gruppi
   totalLiquidity: '#079164',
@@ -87,7 +105,10 @@ export const assetOrder = [
   'bank',
   'crypto',
   'etf',
-  'bitcoin'
+  'bitcoin',
+  'bond',
+  'funds',
+  'gold'
 ];
 
 // Mappa per tradurre le keys nei nomi visualizzati
@@ -98,5 +119,8 @@ export const assetNameMap = {
   bank: 'bank',
   crypto: 'crypto',
   etf: 'etf',
-  bitcoin: 'bitcoin'
+  bitcoin: 'bitcoin',
+  bond: 'bond',
+  funds: 'funds',
+  gold: 'gold'
 };

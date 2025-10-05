@@ -14,7 +14,10 @@ export const mockDashboardData = {
     etfReal: 25000,
     bitcoinReal: 0,
     cryptoReal: 0,
-    totalReal: 53500,
+    bondReal: 15000, // Test value to display visually
+    fundsReal: 12500, // Test value to display visually
+    goldReal: 8000, // Test value to display visually
+    totalReal: 89000, // Updated to include new investments
     
     // Dati balance mese precedente
     cashRealPreMonth: 450,
@@ -24,7 +27,10 @@ export const mockDashboardData = {
     etfRealPreMonth: 24000,
     bitcoinRealPreMonth: 0,
     cryptoRealPreMonth: 0,
-    totalRealPreMonth: 50450,
+    bondRealPreMonth: 14000, // Test value to display visually
+    fundsRealPreMonth: 11800, // Test value to display visually
+    goldRealPreMonth: 7500, // Test value to display visually
+    totalRealPreMonth: 83750, // Updated to include new investments
     
     // Dati balance anno precedente stesso mese
     cashRealPreYearSameMonth: 300,
@@ -34,7 +40,10 @@ export const mockDashboardData = {
     etfRealPreYearSameMonth: 20000,
     bitcoinRealPreYearSameMonth: 0,
     cryptoRealPreYearSameMonth: 0,
-    totalRealPreYearSameMonth: 40300,
+    bondRealPreYearSameMonth: 10000, // Test value to display visually
+    fundsRealPreYearSameMonth: 9000, // Test value to display visually
+    goldRealPreYearSameMonth: 6000, // Test value to display visually
+    totalRealPreYearSameMonth: 65300, // Updated to include new investments
     
     // Date
     currentDate: new Date().toISOString().split('T')[0],
@@ -220,18 +229,24 @@ export const mockDashboardData = {
     last12MonthsData: Array.from({ length: 12 }, (_, i) => {
         const baseDate = new Date();
         baseDate.setMonth(baseDate.getMonth() - (11 - i));
+        const isCurrentMonth = i === 11; // Ultimo elemento = mese corrente (ottobre 2025)
+        
         return {
             month: baseDate.toISOString().split('T')[0].slice(0, 7),
             totalReal: 40000 + Math.sin(i * 0.5) * 10000 + Math.random() * 5000,
             totalExpenses: 1000 + Math.sin(i * 0.3) * 300 + Math.random() * 200,
             totalIncomes: 2800 + Math.sin(i * 0.4) * 500 + Math.random() * 300,
-            cashReal: 400 + Math.random() * 200,
-            bankReal: 18000 + Math.sin(i * 0.6) * 5000,
-            stocksReal: 7000 + Math.sin(i * 0.7) * 2000,
-            etfReal: 23000 + Math.sin(i * 0.8) * 3000,
+            cashReal: isCurrentMonth ? 500 : 400 + Math.random() * 200,
+            bankReal: isCurrentMonth ? 20000 : 18000 + Math.sin(i * 0.6) * 5000,
+            stocksReal: isCurrentMonth ? 8000 : 7000 + Math.sin(i * 0.7) * 2000,
+            etfReal: isCurrentMonth ? 25000 : 23000 + Math.sin(i * 0.8) * 3000,
             bitcoinReal: Math.random() * 1000,
             cryptoReal: Math.random() * 500,
-            digitalServicesReal: Math.random() * 100
+            digitalServicesReal: isCurrentMonth ? 0 : Math.random() * 100,
+            // New investments with realistic progression - current month matches dashboard
+            bondReal: isCurrentMonth ? 15000 : Math.max(0, 8000 + (i * 800) + Math.random() * 1000),
+            fundsReal: isCurrentMonth ? 12500 : Math.max(0, 6000 + (i * 600) + Math.random() * 800),
+            goldReal: isCurrentMonth ? 8000 : Math.max(0, 3000 + (i * 450) + Math.random() * 600)
         };
     }),
     
@@ -239,17 +254,23 @@ export const mockDashboardData = {
     balances: Array.from({ length: 24 }, (_, i) => {
         const date = new Date();
         date.setMonth(date.getMonth() - i);
+        const isCurrentMonth = i === 0; // Primo elemento = mese corrente
+        
         return {
             date: date.toISOString().split('T')[0],
             month: date.toISOString().split('T')[0].slice(0, 7),
             totalReal: 35000 + Math.sin(i * 0.3) * 8000 + Math.random() * 3000,
-            cashReal: 300 + Math.random() * 400,
-            bankReal: 15000 + Math.sin(i * 0.4) * 4000,
-            stocksReal: 6000 + Math.sin(i * 0.5) * 2000,
-            etfReal: 20000 + Math.sin(i * 0.6) * 3000,
+            cashReal: isCurrentMonth ? 500 : 300 + Math.random() * 400,
+            bankReal: isCurrentMonth ? 20000 : 15000 + Math.sin(i * 0.4) * 4000,
+            stocksReal: isCurrentMonth ? 8000 : 6000 + Math.sin(i * 0.5) * 2000,
+            etfReal: isCurrentMonth ? 25000 : 20000 + Math.sin(i * 0.6) * 3000,
             bitcoinReal: Math.random() * 1500,
             cryptoReal: Math.random() * 800,
-            digitalServicesReal: Math.random() * 200
+            digitalServicesReal: isCurrentMonth ? 0 : Math.random() * 200,
+            // New investments with realistic progression
+            bondReal: isCurrentMonth ? 15000 : Math.max(0, 12000 - (i * 500) + Math.random() * 1000),
+            fundsReal: isCurrentMonth ? 12500 : Math.max(0, 10000 - (i * 400) + Math.random() * 800),
+            goldReal: isCurrentMonth ? 8000 : Math.max(0, 6500 - (i * 300) + Math.random() * 600)
         };
     }),
     

@@ -75,6 +75,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bitcoinReal, setBitcoinReal] = useState(0);
     const [digitalServicesReal, setDigitalServicesReal] = useState(0);
+    const [bondReal, setBondReal] = useState(0); // Coming soon - backend update required
+    const [fundsReal, setFundsReal] = useState(0); // Coming soon - backend update required
+    const [goldReal, setGoldReal] = useState(0); // Coming soon - backend update required
     const [totalReal, setTotalReal] = useState(0);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
@@ -91,6 +94,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     setBankReal(userData? userData.bankReal : 0);
                     setCashReal(userData ? userData.cashReal : 0);
                     setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
+                    setBondReal(userData ? userData.bondReal : 0); // Coming soon - backend update required
+                    setFundsReal(userData ? userData.fundsReal : 0); // Coming soon - backend update required
+                    setGoldReal(userData ? userData.goldReal : 0); // Coming soon - backend update required
                     setTotalReal(userData ? userData.totalReal : 0);
                     setExpensesMonth(userData ? userData.outflowsArray[0] : 0);
                     setIncomesMonth(userData ? userData.incomesArray[0] : 0);
@@ -130,8 +136,8 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
     ];
 
-    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto)
-    const investments = [
+    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bond, Funds, Gold)
+    const allInvestments = [
         { 
             name: languages[language].assets.stocks, 
             value: stocksReal >= 0 ? stocksReal : 0,
@@ -164,10 +170,40 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             gradient: assetColors.crypto.gradient,
             description: languages[language].dashboard.cryptoDescription
         },
+        { 
+            name: languages[language].assets.bond, 
+            value: bondReal >= 0 ? bondReal : 0,
+            icon: assetIcons.bond,
+            color: assetColors.bond.primary,
+            gradient: assetColors.bond.gradient,
+            description: languages[language].dashboard.bondDescription,
+            comingSoon: true // Coming soon - backend update required
+        },
+        { 
+            name: languages[language].assets.funds, 
+            value: fundsReal >= 0 ? fundsReal : 0,
+            icon: assetIcons.funds,
+            color: assetColors.funds.primary,
+            gradient: assetColors.funds.gradient,
+            description: languages[language].dashboard.fundsDescription,
+            comingSoon: true // Coming soon - backend update required
+        },
+        { 
+            name: languages[language].assets.gold, 
+            value: goldReal >= 0 ? goldReal : 0,
+            icon: assetIcons.gold,
+            color: assetColors.gold.primary,
+            gradient: assetColors.gold.gradient,
+            description: languages[language].dashboard.goldDescription,
+            comingSoon: true // Coming soon - backend update required
+        },
     ];
 
+    // Filtra gli investimenti per mostrare solo quelli con valore > 0
+    const investments = allInvestments.filter(investment => investment.value > 0);
+
     const totalTraditional = traditionalAssets.reduce((acc, asset) => acc + asset.value, 0);
-    const totalInvestments = investments.reduce((acc, investment) => acc + investment.value, 0);
+    const totalInvestments = allInvestments.reduce((acc, investment) => acc + investment.value, 0);
     const totalBalance = totalReal;
 
     // Dati per i grafici patrimoniali
@@ -359,6 +395,22 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                             <div className="card-header">
                                                 <div className="icon-container">
                                                     <IconComponent className="investment-icon" />
+                                                    {investment.comingSoon && (
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            top: '-8px',
+                                                            right: '-8px',
+                                                            backgroundColor: '#22c55e',
+                                                            color: 'white',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: '600',
+                                                            padding: '2px 6px',
+                                                            borderRadius: '8px',
+                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                        }}>
+                                                            {language === 'it' ? 'Presto' : 'Soon'}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="investment-type">
                                                     <span>{isHidden ? '****' : investment.description}</span>

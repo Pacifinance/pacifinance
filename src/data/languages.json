@@ -9,7 +9,9 @@
             "etf": "ETF",
             "bitcoin": "Bitcoin",
             "crypto": "Criptovalute",
-            "bond": "Obbligazioni"
+            "bond": "Obbligazioni",
+            "funds": "Fondi",
+            "gold": "Oro"
         },
         "general": {
             "ok": "ok",
@@ -436,7 +438,10 @@
             "stockDescription": "Azioni individuali",
             "etfDescription": "Fondi diversificati",
             "bitcoinDescription": "Bitcoin",
-            "cryptoDescription": "Crypto"
+            "cryptoDescription": "Crypto",
+            "bondDescription": "Obbligazioni",
+            "fundsDescription": "Fondi",
+            "goldDescription": "Oro"
         },
         "graphs": {
             "title": "Grafici e Statistiche",
@@ -1154,7 +1159,9 @@
             "etf": "ETF",
             "bitcoin": "Bitcoin",
             "crypto": "Crypto",
-            "bond": "Bond"
+            "bond": "Bond",
+            "funds": "Funds",
+            "gold": "Gold"
         },
         "general": {
             "ok": "ok",
@@ -1582,7 +1589,10 @@
             "stockDescription": "Individual stocks",
             "etfDescription": "Diversified funds",
             "bitcoinDescription": "Bitcoin",
-            "cryptoDescription": "Crypto"
+            "cryptoDescription": "Crypto",
+            "bondDescription": "Bonds",
+            "fundsDescription": "Funds",
+            "goldDescription": "Gold"
         },
         "graphs": {
             "title": "Charts & Statistics",

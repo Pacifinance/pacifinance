@@ -21,10 +21,7 @@ import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import { getCategoryColor } from '../data/categoryColors';
-
-
-
-
+import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 
 export default function InOutChart({theme, userData, isHidden, CustomTick, type = "line"}) {
   const { language } = useContext(LanguageContext);
@@ -41,10 +38,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
 
-  const greyScale1 = Math.floor(Math.random() * 256);
-  const greyColor1 = `rgb(${greyScale1}, ${greyScale1}, ${greyScale1})`;
-  const greyScale2 = Math.floor(Math.random() * 256);
-  const greyColor2 = `rgb(${greyScale2}, ${greyScale2}, ${greyScale2})`;
+  const greyColor1 = getRandomGrayscaleColor(1);
+  const greyColor2 = getRandomGrayscaleColor(2);
 
   // Gestione responsive
   useEffect(() => {
@@ -120,20 +115,28 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
 
     // Crea array da 11 mesi fa al mese corrente (ordine cronologico corretto)
     for (let i = 11; i >= 0; i--) {
-      const month = today.getMonth() - i;
-      const year = today.getFullYear();
-      const date = new Date(year, month, 1);
+      // Usa Date constructor per gestire correttamente i mesi negativi
+      const targetDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const year = targetDate.getFullYear();
+      const month = targetDate.getMonth();
 
       // Usa formato anno-mese per coerenza con BalancesChart
-      const displayName = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const displayName = `${year}-${String(month + 1).padStart(2, '0')}`;
       
-      // L'indice per gli array dovrebbe essere 11-i perché gli array sono già stati invertiti
-      const arrayIndex = 11 - i;
+      // Correzione: dopo .reverse(), incomesArray[0] è il mese più recente
+      // i = 0 -> mese corrente -> arrayIndex = 0 (primo elemento dopo reverse)
+      // i = 1 -> 1 mese fa -> arrayIndex = 1
+      // Però dobbiamo considerare che potremmo non avere 12 mesi di dati
+      const arrayIndex = i;
+      
+      // Usa dati solo se l'indice è valido nell'array
+      const incomesValue = arrayIndex < incomesArray.length ? Math.abs(incomesArray[arrayIndex] || 0) : 0;
+      const outflowsValue = arrayIndex < outflowsArray.length ? Math.abs(outflowsArray[arrayIndex] || 0) : 0;
 
       lastTwelveMonths.push({
         name: displayName,
-        [languages[language].general.outflows]: Math.abs(outflowsArray[arrayIndex] || 0), // Usa valore assoluto
-        [languages[language].general.incomes]: Math.abs(incomesArray[arrayIndex] || 0), // Usa valore assoluto
+        [languages[language].general.outflows]: outflowsValue,
+        [languages[language].general.incomes]: incomesValue,
         amt: 0, // Aggiungi eventuali dati aggiuntivi
       });
     }
@@ -163,10 +166,12 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     if (totalOutflowsPerCategoryPerMonth[selectedMonth]) {
       pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
         .filter(([key, value]) => value > 0)
-        .map(([key, value]) => ({
+        .map(([key, value], index) => ({
           name: languages[language]?.categories?.[key] || key,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,
-          fill: getCategoryColor(key)
+          fill: isHidden 
+            ? getGrayscaleColor(getCategoryColor(key), index)
+            : getLighterSolidColor(getCategoryColor(key))
         }));
     }
 
@@ -451,6 +456,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
                 fontSize: containerWidth < 500 ? 14 : 16,
                 fill: theme.mode === 'dark' ? '#fff' : '#333'
               }}
+              tickFormatter={(value) => isHidden ? '****' : value}
               axisLine={{ 
                 stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
                 strokeWidth: 1 

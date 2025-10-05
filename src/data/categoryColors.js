@@ -26,27 +26,56 @@ export const outflowCategoryColors = {
   'Gift': 'rgba(255, 99, 132, 0.28)', // rosa/rosso: dono
   'Pets': 'rgba(255, 206, 86, 0.28)', // giallo chiaro: affetto
   'Personal project': 'rgba(255, 115, 0, 0.38)', // arancione acceso: creatività, motivazione, risalto
-  'Investment': 'rgba(39, 174, 96, 0.22)', // verde: crescita
-  'Transports': 'rgba(52, 73, 94, 0.22)', // grigio scuro: spostamenti
+  'Investment': 'rgba(106, 90, 205, 0.32)', // viola bluastro: crescita finanziaria
+  'Transports': 'rgba(139, 69, 19, 0.32)', // marrone: mezzi di trasporto
   'Other': 'rgba(127, 140, 141, 0.22)', // grigio: altro
 };
 
-// Mapping dalle chiavi inglesi (usate nei dati) alle chiavi inglesi (usate per i colori)
-export const categoryKeyMapping = {
-  'Home': 'House',
-  'Food': 'Food',
-  'Transport': 'Transports',
-  'Entertainment': 'Free time',
-  'Health': 'Health',
-  'Clothing': 'Shopping',
-  'Other': 'Other',
-  'Travel': 'Travelling',
-  'Digital': 'Digital service',
-  'Car': 'Vehicle'
-};
-
-// Funzione helper per ottenere il colore dalla chiave inglese
-export const getCategoryColor = (englishKey) => {
-  const colorKey = categoryKeyMapping[englishKey];
-  return outflowCategoryColors[colorKey] || outflowCategoryColors['Other'] || '#8884d8';
+// Funzione helper per ottenere il colore dalla chiave di categoria
+export const getCategoryColor = (categoryKey) => {
+  if (!categoryKey) return '#8884d8';
+  
+  // Prova prima con outflowCategoryColors
+  if (outflowCategoryColors[categoryKey]) {
+    return outflowCategoryColors[categoryKey];
+  }
+  
+  // Prova con incomeCategoryColors
+  if (incomeCategoryColors[categoryKey]) {
+    return incomeCategoryColors[categoryKey];
+  }
+  
+  // Fallback con altri possibili mapping
+  const keyMappings = {
+    'food': 'Food',
+    'house': 'House',
+    'health': 'Health',
+    'education': 'Education',
+    'tax': 'Tax',
+    'shopping': 'Shopping',
+    'freetime': 'Free time',
+    'travelling': 'Travelling',
+    'vehicle': 'Vehicle',
+    'digitalservice': 'Digital service',
+    'gift': 'Gift',
+    'pets': 'Pets',
+    'personalproject': 'Personal project',
+    'investment': 'Investment',
+    'transports': 'Transports',
+    'other': 'Other',
+    'salary': 'Salary',
+    'freelanceincome': 'Freelance income',
+    'extraincome': 'Extra income',
+    'retirement': 'Retirement'
+  };
+  
+  const mappedKey = keyMappings[categoryKey.toLowerCase()] || keyMappings[categoryKey];
+  if (mappedKey && outflowCategoryColors[mappedKey]) {
+    return outflowCategoryColors[mappedKey];
+  }
+  if (mappedKey && incomeCategoryColors[mappedKey]) {
+    return incomeCategoryColors[mappedKey];
+  }
+  
+  return outflowCategoryColors['Other'] || '#8884d8';
 };

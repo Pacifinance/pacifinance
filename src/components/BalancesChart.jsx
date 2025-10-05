@@ -238,6 +238,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
           fontWeight={500}
           dx={-5}
         />}
+        tickFormatter={(value) => isHidden ? '****' : value}
         axisLine={{ 
           stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
           strokeWidth: 1
@@ -250,13 +251,13 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       {/* {renderLegend()} */}
 
       {/* Styled bars with centralized colors */}
-      <Bar dataKey="cash" stackId="a" fill={getAssetColor('cash', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="digitalServices" stackId="a" fill={getAssetColor('digitalServices', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="stocks" stackId="a" fill={getAssetColor('stocks', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="bank" stackId="a" fill={getAssetColor('bank', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="crypto" stackId="a" fill={getAssetColor('crypto', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="etf" stackId="a" fill={getAssetColor('etf', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="bitcoin" stackId="a" fill={getAssetColor('bitcoin', theme.mode)} radius={[4, 4, 0, 0]} />
+      <Bar dataKey="cash" stackId="a" fill={isHidden ? '#808080' : getAssetColor('cash', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="digitalServices" stackId="a" fill={isHidden ? '#909090' : getAssetColor('digitalServices', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="stocks" stackId="a" fill={isHidden ? '#A0A0A0' : getAssetColor('stocks', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="bank" stackId="a" fill={isHidden ? '#B0B0B0' : getAssetColor('bank', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="crypto" stackId="a" fill={isHidden ? '#C0C0C0' : getAssetColor('crypto', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="etf" stackId="a" fill={isHidden ? '#D0D0D0' : getAssetColor('etf', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="bitcoin" stackId="a" fill={isHidden ? '#E0E0E0' : getAssetColor('bitcoin', theme.mode)} radius={[4, 4, 0, 0]} />
       
       {/* <Brush dataKey='name' height={containerWidth < 500 ? 80 : 60} stroke={theme.textColor} fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} /> */}
     </BarChart>
@@ -309,6 +310,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
           fontWeight={500}
           dx={-5}
         />}
+        tickFormatter={(value) => isHidden ? '****' : value}
         axisLine={{ 
           stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
           strokeWidth: 1
@@ -323,14 +325,14 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       {/* {renderLegend()} */}
 
       {/* Areas with centralized colors */}
-      {data.every(item => item['total'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'total'} stroke={isHidden ? theme.textColor : assetColors.totalBalance} fillOpacity={0.3} fill={isHidden ? theme.textColor : assetColors.totalBalance} />}
-      {data.every(item => item['bank'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bank'} stroke={isHidden ? theme.textColor : getAssetColor('bank', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('bank', theme.mode)} />}
-      {data.every(item => item['cash'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'cash'} stroke={isHidden ? theme.textColor : getAssetColor('cash', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('cash', theme.mode)} />}
-      {data.every(item => item['digitalServices']=== 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'digitalServices'} stroke={isHidden ? theme.textColor : getAssetColor('digitalServices', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('digitalServices', theme.mode)} />}
-      {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'stocks'} stroke={isHidden ? theme.textColor : getAssetColor('stocks', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('stocks', theme.mode)} />}
-      {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'crypto'} stroke={isHidden ? theme.textColor : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('crypto', theme.mode)} />}
-      {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'etf'} stroke={isHidden ? theme.textColor : getAssetColor('etf', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('etf', theme.mode)} />}
-      {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={isHidden ? '****' : 'bitcoin'} stroke={isHidden ? theme.textColor : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? theme.textColor : getAssetColor('bitcoin', theme.mode)} />}
+      {data.every(item => item['total'] === 0) || <Area type="monotone" dataKey={'total'} stroke={isHidden ? '#606060' : assetColors.totalBalance} fillOpacity={0.3} fill={isHidden ? '#606060' : assetColors.totalBalance} />}
+      {data.every(item => item['bank'] === 0) || <Area type="monotone" dataKey={'bank'} stroke={isHidden ? '#707070' : getAssetColor('bank', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#707070' : getAssetColor('bank', theme.mode)} />}
+      {data.every(item => item['cash'] === 0) || <Area type="monotone" dataKey={'cash'} stroke={isHidden ? '#808080' : getAssetColor('cash', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#808080' : getAssetColor('cash', theme.mode)} />}
+      {data.every(item => item['digitalServices']=== 0) || <Area type="monotone" dataKey={'digitalServices'} stroke={isHidden ? '#909090' : getAssetColor('digitalServices', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#909090' : getAssetColor('digitalServices', theme.mode)} />}
+      {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={'stocks'} stroke={isHidden ? '#A0A0A0' : getAssetColor('stocks', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#A0A0A0' : getAssetColor('stocks', theme.mode)} />}
+      {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={'crypto'} stroke={isHidden ? '#B0B0B0' : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#B0B0B0' : getAssetColor('crypto', theme.mode)} />}
+      {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={'etf'} stroke={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} />}
+      {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={'bitcoin'} stroke={isHidden ? '#D0D0D0' : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#D0D0D0' : getAssetColor('bitcoin', theme.mode)} />}
     </AreaChart>
   );
 

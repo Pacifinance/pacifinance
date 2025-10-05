@@ -231,11 +231,11 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
 
 
     // Funzione per determinare se un cambiamento è positivo
-    const isPositiveChange = (current, comparison, isIncome = false) => {
-        if (isIncome) {
-            return current > comparison; // Per income, aumento è positivo
+    const isPositiveChange = (current, comparison, type = 'outflow') => {
+        if (type === 'income' || type === 'saved') {
+            return current > comparison; // Per income e saved, aumento è positivo
         } else {
-            return current < comparison; // Per expense, diminuzione è positivo
+            return current < comparison; // Per outflow, diminuzione è positivo
         }
     };
 
@@ -321,9 +321,9 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </StatLabel>
                         
                         <PercentageChange 
-                            $isPositive={isPositiveChange(incomesCurrent, incomesComparison, true)}
+                            $isPositive={isPositiveChange(incomesCurrent, incomesComparison, 'income')}
                         >
-                            {isHidden ? '****' : calculatePercentageChange(incomesCurrent, incomesComparison)}
+                            {isHidden ? '****' : calculatePercentageChange(incomesCurrent, incomesComparison, 'income')}
                         </PercentageChange>
                     </StatCard>
 
@@ -344,9 +344,9 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </StatLabel>
                         
                         <PercentageChange 
-                            $isPositive={isPositiveChange(outflowsCurrent, outflowsComparison, false)}
+                            $isPositive={isPositiveChange(outflowsCurrent, outflowsComparison, 'expense')}
                         >
-                            {isHidden ? '****' : calculatePercentageChange(outflowsCurrent, outflowsComparison)}
+                            {isHidden ? '****' : calculatePercentageChange(outflowsCurrent, outflowsComparison, 'expense')}
                         </PercentageChange>
                     </StatCard>
 
@@ -367,9 +367,9 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </StatLabel>
                         
                         <PercentageChange 
-                            $isPositive={savedCurrent > savedComparison}
+                            $isPositive={isPositiveChange(savedCurrent, savedComparison, 'saved')}
                         >
-                            {isHidden ? '****' : calculatePercentageChange(savedCurrent, savedComparison)}
+                            {isHidden ? '****' : calculatePercentageChange(savedCurrent, savedComparison, 'saved')}
                         </PercentageChange>
                     </StatCard>
                 </StatsGrid>

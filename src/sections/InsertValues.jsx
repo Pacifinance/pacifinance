@@ -385,10 +385,8 @@ export default function InsertValue({
   useEffect(() => {
     if (updateBalanceSuccess) {
       showSuccess(languages[language].insert.balanceSection.successUpdate);
-      const timer = setTimeout(() => {
-        setUpdateBalanceSuccess(false);
-      }, 100);
-      return () => clearTimeout(timer);
+      // Reset immediatamente per evitare loop
+      setUpdateBalanceSuccess(false);
     }
   }, [updateBalanceSuccess, language, showSuccess]);
 

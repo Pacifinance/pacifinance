@@ -14,6 +14,10 @@ import {
   TitleLastAdds,
 } from '../styles/MyStyled';
 import { incomeCategoryColors } from '../data/categoryColors';
+import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
+
+// Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
+
 
 const currentDate = new Date().toISOString().split('T')[0];
 
@@ -332,9 +336,9 @@ export default function IncomeSection({
       ...filtered.map((add, index) => {
         let colorKey = undefined;
 
-        // First try to get the English translation as it matches the keys in categoryColors.js
-        if (add.categoryTag && add.categoryTag.translations && add.categoryTag.translations['en']) {
-          colorKey = add.categoryTag.translations['en'];
+        // Use the key directly as it matches the keys in incomeCategoryColors
+        if (add.categoryTag && add.categoryTag.key) {
+          colorKey = add.categoryTag.key;
         } else if (add.categoryTag && add.categoryTag.label) {
           colorKey = add.categoryTag.label;
         } else if (add.categoryTag && add.categoryTag.translations) {
@@ -342,8 +346,12 @@ export default function IncomeSection({
           if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
         }
 
-        const baseColor = incomeCategoryColors[colorKey] || 'rgba(181, 222, 209, 0.35)';
-        const rowGradient = getGradientForCategory(baseColor);
+        // Use same color processing as pie chart
+        const rawColor = incomeCategoryColors[colorKey] || 'rgba(181, 222, 209, 0.35)';
+        const processedColor = isHidden 
+          ? getGrayscaleColor(rawColor, index)
+          : getLighterSolidColor(rawColor);
+        const rowGradient = getGradientForCategory(processedColor);
         return (
           <tr key={index} style={{ background: rowGradient }}>
             <td>
@@ -446,14 +454,33 @@ export default function IncomeSection({
               textAlign: 'center',
               fontSize: '1.08em',
               color: '#1a2b2b',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px'
             }}
           >
-            {isHidden
-              ? '****'
-              : totals.totalFiltered.toLocaleString('it-IT', {
-                  minimumFractionDigits: 2,
-                })}{' '}
-            €
+            <div>
+              {isHidden
+                ? '****'
+                : totals.totalFiltered.toLocaleString('it-IT', {
+                    minimumFractionDigits: 2,
+                  })}{' '}
+              €
+            </div>
+            {!isHidden && totals.totalAll > 0 && (
+              <div style={{
+                fontSize: '0.85em',
+                opacity: 0.8,
+                fontWeight: 500,
+                background: 'rgba(255,255,255,0.2)',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.3)'
+              }}>
+                {((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%
+              </div>
+            )}
           </td>
           <td colSpan={3}></td>
         </tr>,

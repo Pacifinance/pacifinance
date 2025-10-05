@@ -170,7 +170,7 @@ export const mockDashboardData = {
                 { index: 0, translations: { it: 'Stipendio', en: 'Salary' }},
                 { index: 1, translations: { it: 'Freelance', en: 'Freelance' }},
                 { index: 2, translations: { it: 'Investimenti', en: 'Investments' }},
-                { index: 3, translations: { it: 'Altri', en: 'Other' }}
+                { index: 3, translations: { it: 'Altro', en: 'Other' }}
             ];
             
             const randomCategory = incomeCategories[Math.floor(Math.random() * incomeCategories.length)];
@@ -263,118 +263,229 @@ export const mockDashboardData = {
         totalReal: 35000 + Math.sin(i * 0.3) * 6000
     })),
 
-    // Tags e categorie per entrate/uscite (con traduzioni)
+    // Tags e categorie per entrate/uscite (con traduzioni) - chiavi corrispondenti a outflowCategoryColors
     outflowsTags: [
         { 
             index: 0,
-            name: 'Casa', 
+            key: 'House',
+            name: 'House', 
             total: 1200, 
-            percentage: 45,
-            translations: { it: 'Casa', en: 'Home' }
+            percentage: 22,
+            translations: { it: 'Casa', en: 'House' }
         },
         { 
             index: 1,
-            name: 'Alimentari', 
-            total: 400, 
+            key: 'Food',
+            name: 'Food', 
+            total: 800, 
             percentage: 15,
             translations: { it: 'Alimentari', en: 'Food' }
         },
         { 
             index: 2,
-            name: 'Trasporti', 
-            total: 300, 
-            percentage: 11,
-            translations: { it: 'Trasporti', en: 'Transport' }
+            key: 'Transports',
+            name: 'Transports', 
+            total: 400, 
+            percentage: 8,
+            translations: { it: 'Trasporti', en: 'Transports' }
         },
         { 
             index: 3,
-            name: 'Intrattenimento', 
-            total: 200, 
+            key: 'Free time',
+            name: 'Free time', 
+            total: 350, 
             percentage: 7,
-            translations: { it: 'Intrattenimento', en: 'Entertainment' }
+            translations: { it: 'Tempo libero', en: 'Free time' }
         },
         { 
             index: 4,
-            name: 'Salute', 
-            total: 150, 
+            key: 'Health',
+            name: 'Health', 
+            total: 300, 
             percentage: 6,
             translations: { it: 'Salute', en: 'Health' }
         },
         { 
             index: 5,
-            name: 'Abbigliamento', 
-            total: 100, 
-            percentage: 4,
-            translations: { it: 'Abbigliamento', en: 'Clothing' }
+            key: 'Shopping',
+            name: 'Shopping', 
+            total: 280, 
+            percentage: 5,
+            translations: { it: 'Shopping', en: 'Shopping' }
         },
         { 
             index: 6,
-            name: 'Altri', 
-            total: 300, 
-            percentage: 12,
-            translations: { it: 'Altri', en: 'Other' }
+            key: 'Digital service',
+            name: 'Digital service', 
+            total: 200, 
+            percentage: 4,
+            translations: { it: 'Servizi digitali', en: 'Digital service' }
+        },
+        { 
+            index: 7,
+            key: 'Education',
+            name: 'Education', 
+            total: 180, 
+            percentage: 3,
+            translations: { it: 'Educazione', en: 'Education' }
+        },
+        { 
+            index: 8,
+            key: 'Travelling',
+            name: 'Travelling', 
+            total: 150, 
+            percentage: 3,
+            translations: { it: 'Viaggi', en: 'Travelling' }
+        },
+        { 
+            index: 9,
+            key: 'Vehicle',
+            name: 'Vehicle', 
+            total: 120, 
+            percentage: 2,
+            translations: { it: 'Veicoli', en: 'Vehicle' }
+        },
+        { 
+            index: 10,
+            key: 'Investment',
+            name: 'Investment', 
+            total: 100, 
+            percentage: 2,
+            translations: { it: 'Investimenti', en: 'Investment' }
+        },
+        { 
+            index: 11,
+            key: 'Tax',
+            name: 'Tax', 
+            total: 90, 
+            percentage: 2,
+            translations: { it: 'Tasse', en: 'Tax' }
+        },
+        { 
+            index: 12,
+            key: 'Gift',
+            name: 'Gift', 
+            total: 80, 
+            percentage: 1,
+            translations: { it: 'Regali', en: 'Gift' }
+        },
+        { 
+            index: 13,
+            key: 'Pets',
+            name: 'Pets', 
+            total: 70, 
+            percentage: 1,
+            translations: { it: 'Animali domestici', en: 'Pets' }
+        },
+        { 
+            index: 14,
+            key: 'Personal project',
+            name: 'Personal project', 
+            total: 60, 
+            percentage: 1,
+            translations: { it: 'Progetti personali', en: 'Personal project' }
+        },
+        { 
+            index: 15,
+            key: 'Other',
+            name: 'Other', 
+            total: 50, 
+            percentage: 1,
+            translations: { it: 'Altro', en: 'Other' }
         }
     ],
     
     incomesTags: [
         { 
             index: 0,
-            name: 'Stipendio', 
+            key: 'Salary',
+            name: 'Salary', 
             total: 2500, 
-            percentage: 83,
+            percentage: 65,
             translations: { it: 'Stipendio', en: 'Salary' }
         },
         { 
             index: 1,
-            name: 'Freelance', 
-            total: 400, 
-            percentage: 13,
-            translations: { it: 'Freelance', en: 'Freelance' }
+            key: 'Freelance income',
+            name: 'Freelance income', 
+            total: 600, 
+            percentage: 15,
+            translations: { it: 'Freelance', en: 'Freelance income' }
         },
         { 
             index: 2,
-            name: 'Investimenti', 
-            total: 100, 
-            percentage: 3,
-            translations: { it: 'Investimenti', en: 'Investments' }
+            key: 'Extra income',
+            name: 'Extra income',
+            total: 400, 
+            percentage: 10,
+            translations: { it: 'Entrate extra', en: 'Extra income' }
         },
         { 
             index: 3,
-            name: 'Altri', 
-            total: 50, 
-            percentage: 1,
-            translations: { it: 'Altri', en: 'Other' }
+            key: 'Gift',
+            name: 'Gift', 
+            total: 200, 
+            percentage: 5,
+            translations: { it: 'Regali', en: 'Gift' }
+        },
+        { 
+            index: 4,
+            key: 'Retirement',
+            name: 'Retirement', 
+            total: 100, 
+            percentage: 3,
+            translations: { it: 'Pensione', en: 'Retirement' }
+        },
+        { 
+            index: 5,
+            key: 'Other',
+            name: 'Other', 
+            total: 80, 
+            percentage: 2,
+            translations: { it: 'Altro', en: 'Other' }
         }
     ],
     
     paymentTags: [
         { 
             index: 0,
-            name: 'Carta di Credito', 
-            total: 1500, 
-            percentage: 55,
-            translations: { it: 'Carta di Credito', en: 'Credit Card' }
+            key: 'Single Payment',
+            name: 'Single Payment', 
+            total: 2000, 
+            percentage: 40,
+            translations: { it: 'Pagamento singolo', en: 'Single Payment' }
         },
         { 
             index: 1,
-            name: 'Bonifico', 
-            total: 800, 
+            key: 'Subscription',
+            name: 'Subscription', 
+            total: 1500, 
             percentage: 30,
-            translations: { it: 'Bonifico', en: 'Bank Transfer' }
+            translations: { it: 'Abbonamento', en: 'Subscription' }
         },
         { 
             index: 2,
-            name: 'Contanti', 
-            total: 300, 
-            percentage: 11,
-            translations: { it: 'Contanti', en: 'Cash' }
+            key: 'Installment',
+            name: 'Installment', 
+            total: 800, 
+            percentage: 16,
+            translations: { it: 'Rata', en: 'Installment' }
         },
         { 
             index: 3,
-            name: 'PayPal', 
-            total: 100, 
-            percentage: 4,
-            translations: { it: 'PayPal', en: 'PayPal' }
+            key: 'Periodic payment',
+            name: 'Periodic payment', 
+            total: 400, 
+            percentage: 8,
+            translations: { it: 'Pagamento periodico', en: 'Periodic payment' }
+        },
+        { 
+            index: 4,
+            key: 'Capital accumulation plan',
+            name: 'Capital accumulation plan', 
+            total: 300, 
+            percentage: 6,
+            translations: { it: 'Piano di accumulo', en: 'Capital accumulation plan' }
         }
     ],
 
@@ -411,14 +522,14 @@ export const mockDashboardData = {
                 // Categorie con chiavi inglesi per consistenza nell'applicazione
                 'Home': 800 + Math.sin((today.getMonth() - monthIndex) * 0.4) * 200 + Math.random() * 150,
                 'Food': 350 + Math.sin((today.getMonth() - monthIndex) * 0.6) * 100 + Math.random() * 100,
-                'Transport': 200 + Math.sin((today.getMonth() - monthIndex) * 0.8) * 80 + Math.random() * 60,
-                'Entertainment': 180 + Math.sin((today.getMonth() - monthIndex) * 0.5) * 70 + Math.random() * 50,
+                'Transports': 200 + Math.sin((today.getMonth() - monthIndex) * 0.8) * 80 + Math.random() * 60,
+                'Free time': 180 + Math.sin((today.getMonth() - monthIndex) * 0.5) * 70 + Math.random() * 50,
                 'Health': 120 + Math.sin((today.getMonth() - monthIndex) * 0.3) * 60 + Math.random() * 40,
-                'Clothing': 100 + Math.sin((today.getMonth() - monthIndex) * 0.7) * 80 + Math.random() * 60,
+                'Shopping': 100 + Math.sin((today.getMonth() - monthIndex) * 0.7) * 80 + Math.random() * 60,
                 'Other': 150 + Math.sin((today.getMonth() - monthIndex) * 1.0) * 100 + Math.random() * 80,
-                'Travel': 250 + Math.sin((today.getMonth() - monthIndex) * 0.9) * 200 + Math.random() * 100,
-                'Digital': 80 + Math.sin((today.getMonth() - monthIndex) * 0.2) * 50 + Math.random() * 30,
-                'Car': 120 + Math.sin((today.getMonth() - monthIndex) * 0.1) * 60 + Math.random() * 40
+                'Travelling': 250 + Math.sin((today.getMonth() - monthIndex) * 0.9) * 200 + Math.random() * 100,
+                'Digital service': 80 + Math.sin((today.getMonth() - monthIndex) * 0.2) * 50 + Math.random() * 30,
+                'Vehicle': 120 + Math.sin((today.getMonth() - monthIndex) * 0.1) * 60 + Math.random() * 40
             };
         });
     })(),

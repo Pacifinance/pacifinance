@@ -14,14 +14,10 @@ function isBalanceValid(data: any) {
     data.bank = common.roundCurrency(Number(data.bank));
     data.cash = common.roundCurrency(Number(data.cash));
     data.digital_services = common.roundCurrency(Number(data.digital_services));
-    data.stocks.real = common.roundCurrency(Number(data.stocks.real));
-    data.stocks.invested = common.roundCurrency(Number(data.stocks.invested));
-    data.etf.real = common.roundCurrency(Number(data.etf.real));
-    data.etf.invested = common.roundCurrency(Number(data.stocks.invested));
-    data.bitcoin.real = common.roundCurrency(Number(data.bitcoin.real));
-    data.bitcoin.invested = common.roundCurrency(Number(data.bitcoin.invested));
-    data.crypto.real = common.roundCurrency(Number(data.crypto.real));
-    data.crypto.invested = common.roundCurrency(Number(data.crypto.invested));
+    data.stocks = common.roundCurrency(Number(data.stocks));
+    data.etf = common.roundCurrency(Number(data.etf));
+    data.bitcoin = common.roundCurrency(Number(data.bitcoin));
+    data.crypto = common.roundCurrency(Number(data.crypto));
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
     data.date = common.toDateObject(data.date);
@@ -29,10 +25,9 @@ function isBalanceValid(data: any) {
     // Return true if all fields exist and they are valid numbers
     return (
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
-        !isNaN(data.stocks.real) && !isNaN(data.stocks.invested) &&
-        !isNaN(data.etf.real) && !isNaN(data.etf.invested) &&
-        !isNaN(data.bitcoin.real) && !isNaN(data.bitcoin.invested) &&
-        !isNaN(data.crypto.real) && !isNaN(data.crypto.real)
+        !isNaN(data.stocks) && !isNaN(data.etf) && !isNaN(data.bitcoin) &&
+        !isNaN(data.crypto) && !isNaN(data.bonds) && !isNaN(data.funds) &&
+        !isNaN(data.gold)
     );
 }
 
@@ -56,8 +51,8 @@ balancesRouter.post("/add", async (req, res) => {
     const session = req.session as SessionData
     const doc = await db.balances.insertNew(
         session.userId, balance.date, balance.bank, balance.cash, balance.digital_services,
-        balance.stocks.real, balance.stocks.invested, balance.etf.real, balance.etf.invested,
-        balance.bitcoin.real, balance.bitcoin.invested, balance.crypto.real, balance.crypto.invested
+        balance.stocks, balance.etf, balance.bitcoin, balance.crypto,
+        balance.bonds, balance.funds, balance.gold
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

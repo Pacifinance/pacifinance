@@ -10,22 +10,13 @@ const balanceSchema = new mongoose.Schema({
     bank: {type: Number, required: true},
     cash: {type: Number, required: true},
     digitalServices: {type: Number, required: true},
-    stocks: {type: {
-        real: {type: Number, required: true},
-        invested: {type: Number, required: true}
-    }, required: true},
-    etf: {type: {
-        real: {type: Number, required: true},
-        invested: {type: Number, required: true}
-    }, required: true},
-    bitcoin: {type: {
-        real: {type: Number, required: true},
-        invested: {type: Number, required: true}
-    }, required: true},
-    crypto: {type: {
-        real: {type: Number, required: true},
-        invested: {type: Number, required: true}
-    }, required: true}
+    stocks: {type: Number, required: true},
+    etf: {type: Number, required: true},
+    bitcoin: {type: Number, required: true},
+    crypto: {type: Number, required: true},
+    bonds: {type: Number, required: true},
+    funds: {type: Number, required: true},
+    gold: {type: Number, required: true}
 });
 
 /* ==================== Template queries ==================== */
@@ -82,19 +73,18 @@ async function deleteMany(where: object) {
  * @param bank Bank amount
  * @param cash Cash amount
  * @param digital_services Amount on digital services platforms
- * @param stocks_real Real stocks amount
- * @param stocks_invested Invested stocks amount
- * @param etf_real Real etf amount
- * @param etf_invested Invested etf amount
- * @param bitcoin_real Real bitcoin amount
- * @param bitcoin_invested Invested bitcoin amount
- * @param crypto_real Real crypto amount
- * @param crypto_invested Invested crypto amount
+ * @param stocks Stocks amount
+ * @param etf Etf amount
+ * @param bitcoin Bitcoin amount
+ * @param crypto Crypto amount
+ * @param bonds Bonds amount
+ * @param funds Funds amount
+ * @param gold Gold amount
  * @returns Balance document
  */
 async function insertNew(
-    user_id: string, user_date: Date, bank: number, cash: number, digital_services: number, stocks_real: number, stocks_invested: number,
-    etf_real: number, etf_invested: number, bitcoin_real: number, bitcoin_invested: number, crypto_real: number, crypto_invested: number
+    user_id: string, user_date: Date, bank: number, cash: number, digital_services: number, stocks: number,
+    etf: number, bitcoin: number, crypto: number, bonds: number, funds: number, gold: number
 ) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
@@ -106,22 +96,13 @@ async function insertNew(
         bank: bank,
         cash: cash,
         digitalServices: digital_services,
-        stocks: {
-            real: stocks_real,
-            invested: stocks_invested
-        },
-        etf: {
-            real: etf_real,
-            invested: etf_invested
-        },
-        bitcoin: {
-            real: bitcoin_real,
-            invested: bitcoin_invested
-        },
-        crypto: {
-            real: crypto_real,
-            invested: crypto_invested
-        }
+        stocks: stocks,
+        etf: etf,
+        bitcoin: bitcoin,
+        crypto: crypto,
+        bonds: bonds,
+        funds: funds,
+        gold: gold
     };
     return await addOne(data);
 }
@@ -178,8 +159,9 @@ async function getTotalLatestByUserId(user_id: string, limit_date: Date | undefi
     if (balance === null)
         return null;
     return (
-        balance.bank + balance.cash + balance.digitalServices + balance.stocks.real +
-        balance.etf.real + balance.bitcoin.real + balance.crypto.real
+        balance.bank + balance.cash + balance.digitalServices + balance.stocks +
+        balance.etf + balance.bitcoin + balance.crypto + balance.bonds + balance.funds +
+        balance.gold
     );
 }
 

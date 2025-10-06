@@ -216,10 +216,10 @@ userRouter.post("/alldata", async (req, res) => {
                 bank: balance.bank,
                 cash: balance.cash,
                 digitalServices: balance.digitalServices,
-                stocks: balance.stocks.real,
-                etf: balance.etf.real,
-                bitcoin: balance.bitcoin.real,
-                crypto: balance.crypto.real
+                stocks: balance.stocks,
+                etf: balance.etf,
+                bitcoin: balance.bitcoin,
+                crypto: balance.crypto
             }
         }),
 

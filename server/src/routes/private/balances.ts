@@ -18,6 +18,9 @@ function isBalanceValid(data: any) {
     data.etf = common.roundCurrency(Number(data.etf));
     data.bitcoin = common.roundCurrency(Number(data.bitcoin));
     data.crypto = common.roundCurrency(Number(data.crypto));
+    data.bonds = common.roundCurrency(Number(data.bonds));
+    data.funds = common.roundCurrency(Number(data.funds));
+    data.gold = common.roundCurrency(Number(data.gold));
     // If the date field is not set or invalid, set it to now
     let now = new Date(Date.now());
     data.date = common.toDateObject(data.date);

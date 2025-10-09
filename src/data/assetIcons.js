@@ -41,7 +41,7 @@ export const assetIcons = {
   etf: AiOutlineStock,
   bitcoin: FaBitcoin,
   crypto: BsCoin,
-  bond: RiSecurePaymentLine, // Coming soon - backend update required
+  bonds: RiSecurePaymentLine, // Coming soon - backend update required
   funds: GiReceiveMoney, // Coming soon - backend update required
   gold: GiGoldBar, // Coming soon - backend update required
 };

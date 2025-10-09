@@ -9,7 +9,7 @@
             "etf": "ETF",
             "bitcoin": "Bitcoin",
             "crypto": "Criptovalute",
-            "bond": "Obbligazioni",
+            "bonds": "Obbligazioni",
             "funds": "Fondi",
             "gold": "Oro"
         },
@@ -439,7 +439,7 @@
             "etfDescription": "Fondi diversificati",
             "bitcoinDescription": "Bitcoin",
             "cryptoDescription": "Crypto",
-            "bondDescription": "Obbligazioni",
+            "bondsDescription": "Obbligazioni",
             "fundsDescription": "Fondi",
             "goldDescription": "Oro"
         },
@@ -566,6 +566,15 @@
                 "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
                 "successDelete": "Investimento eliminato con successo",
                 "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
+            },
+            "errors": {
+                "balanceUpdateFailed": "Errore nell'aggiornamento del bilancio. Riprova più tardi.",
+                "incomeAddFailed": "Errore nell'inserimento dell'entrata. Riprova più tardi.",
+                "outflowAddFailed": "Errore nell'inserimento dell'uscita. Riprova più tardi.",
+                "incomeDeleteFailed": "Errore nell'eliminazione dell'entrata. Riprova più tardi.",
+                "outflowDeleteFailed": "Errore nell'eliminazione dell'uscita. Riprova più tardi.",
+                "serverConnectionFailed": "Errore di connessione al server. Controlla la connessione e riprova.",
+                "requestFailed": "Richiesta non riuscita. Controlla i dati inseriti e riprova."
             }
         },
         "comparison": {
@@ -1159,7 +1168,7 @@
             "etf": "ETF",
             "bitcoin": "Bitcoin",
             "crypto": "Crypto",
-            "bond": "Bond",
+            "bonds": "Bonds",
             "funds": "Funds",
             "gold": "Gold"
         },
@@ -1590,7 +1599,7 @@
             "etfDescription": "Diversified funds",
             "bitcoinDescription": "Bitcoin",
             "cryptoDescription": "Crypto",
-            "bondDescription": "Bonds",
+            "bondsDescription": "Bonds",
             "fundsDescription": "Funds",
             "goldDescription": "Gold"
         },
@@ -1718,6 +1727,15 @@
                 "confirmDelete": "Are you sure you want to delete this investment?",
                 "successDelete": "Investment deleted successfully",
                 "decreaseWhichBalance": "Select where to subtract the investment"
+            },
+            "errors": {
+                "balanceUpdateFailed": "Error updating balance. Please try again later.",
+                "incomeAddFailed": "Error inserting income. Please try again later.",
+                "outflowAddFailed": "Error inserting outflow. Please try again later.",
+                "incomeDeleteFailed": "Error deleting income. Please try again later.",
+                "outflowDeleteFailed": "Error deleting outflow. Please try again later.",
+                "serverConnectionFailed": "Server connection error. Check your connection and try again.",
+                "requestFailed": "Request failed. Check the entered data and try again."
             }
         },
         "comparison": {

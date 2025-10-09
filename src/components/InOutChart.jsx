@@ -87,8 +87,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
       if (userData) {
         try {
           if (type === "line") {
-            setIncomesArray(userData.incomesArray ? [...userData.incomesArray].reverse() : []);
-            setOutflowsArray(userData.outflowsArray ? [...userData.outflowsArray].reverse() : []);
+            setIncomesArray(userData.incomesArray ? [...userData.incomesArray] : []);
+            setOutflowsArray(userData.outflowsArray ? [...userData.outflowsArray] : []);
           } else {
             setTotalOutflowsPerCategoryPerMonth(userData.totalOutflowsPerCategoryPerMonth || []);
           }
@@ -123,10 +123,10 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
       // Usa formato anno-mese per coerenza con BalancesChart
       const displayName = `${year}-${String(month + 1).padStart(2, '0')}`;
       
-      // Correzione: dopo .reverse(), incomesArray[0] è il mese più recente
-      // i = 0 -> mese corrente -> arrayIndex = 0 (primo elemento dopo reverse)
-      // i = 1 -> 1 mese fa -> arrayIndex = 1
-      // Però dobbiamo considerare che potremmo non avere 12 mesi di dati
+      // UserContext: incomesArray[0] = mese corrente, incomesArray[11] = 11 mesi fa
+      // Loop: i=11 (11 mesi fa) → i=0 (mese corrente) 
+      // Mappatura: i=11 → arrayIndex=11 (11 mesi fa), i=0 → arrayIndex=0 (mese corrente)
+      // Risultato grafico: da sinistra (11 mesi fa) a destra (mese corrente) ✅
       const arrayIndex = i;
       
       // Usa dati solo se l'indice è valido nell'array
@@ -413,6 +413,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               left: 30,
               bottom: 70
             }}
+            syncId="incomeOutflowChart"
           >
             <defs>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
@@ -433,12 +434,20 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             
             <XAxis 
               dataKey="name"
+              type="category"
               tick={{
                 fontSize: containerWidth < 500 ? 10 : 12, 
                 fill: theme.mode === 'dark' ? '#fff' : '#333',
                 fontWeight: 500
               }} 
-              interval={containerWidth < 500 ? 1 : 0} 
+              interval={(() => {
+                const dataLength = data.length;
+                if (containerWidth < 500) return 'preserveStartEnd';
+                if (dataLength <= 3) return 0;
+                if (dataLength <= 6) return 0;
+                if (dataLength === 12) return containerWidth < 800 ? 1 : 0;
+                return 0;
+              })()} 
               angle={containerWidth < 500 ? -45 : 0}
               textAnchor={containerWidth < 500 ? 'end' : 'middle'}
               height={containerWidth < 500 ? 80 : 60}
@@ -449,6 +458,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               tickLine={{ 
                 stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
               }}
+              allowDuplicatedCategory={false}
             />
             
                         <YAxis 
@@ -468,6 +478,21 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             />
             
                         <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+                borderRadius: '8px',
+                padding: '12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                color: '#333'
+              }}
+              labelStyle={{
+                color: '#333',
+                fontWeight: 'bold',
+                marginBottom: '4px'
+              }}
               formatter={(value, name) => {
                 if (isHidden) return ['****', name];
                 
@@ -478,6 +503,31 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
                 }).format(value);
                 
                 return [formattedValue, name];
+              }}
+              labelFormatter={(label) => {
+                if (isHidden) return '****';
+                
+                // Converti formato YYYY-MM in nome mese tradotto + anno
+                const [year, monthNum] = label.split('-');
+                const monthIndex = parseInt(monthNum);
+                
+                const monthNames = {
+                  1: languages[language].months.january,
+                  2: languages[language].months.february,
+                  3: languages[language].months.march,
+                  4: languages[language].months.april,
+                  5: languages[language].months.may,
+                  6: languages[language].months.june,
+                  7: languages[language].months.july,
+                  8: languages[language].months.august,
+                  9: languages[language].months.september,
+                  10: languages[language].months.october,
+                  11: languages[language].months.november,
+                  12: languages[language].months.december
+                };
+                
+                const monthName = monthNames[monthIndex] || monthNum;
+                return `${monthName} ${year}`;
               }}
             />
             
@@ -493,17 +543,23 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               type="monotone" 
               dataKey={languages[language].general.incomes} 
               stroke={isHidden ? greyColor1 : "#079164"} 
-              strokeWidth={3} 
+              strokeWidth={3}
+              connectNulls={false}
+              isAnimationActive={false}
               dot={{ 
                 fill: isHidden ? greyColor1 : "#079164", 
                 strokeWidth: 2, 
-                r: 4 
+                r: 5 
               }}
               activeDot={{ 
-                r: 6, 
+                r: 10, 
                 fill: isHidden ? greyColor1 : "#079164",
                 stroke: '#fff',
-                strokeWidth: 2
+                strokeWidth: 4,
+                style: { 
+                  cursor: 'pointer',
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                }
               }} 
             />
             
@@ -512,16 +568,22 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               dataKey={languages[language].general.outflows} 
               stroke={isHidden ? greyColor2 : "#ff3838"} 
               strokeWidth={3}
+              connectNulls={false}
+              isAnimationActive={false}
               dot={{ 
                 fill: isHidden ? greyColor2 : "#ff3838", 
                 strokeWidth: 2, 
-                r: 4 
+                r: 5 
               }}
               activeDot={{ 
-                r: 6, 
+                r: 10, 
                 fill: isHidden ? greyColor2 : "#ff3838",
                 stroke: '#fff',
-                strokeWidth: 2
+                strokeWidth: 4,
+                style: { 
+                  cursor: 'pointer',
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                }
               }}
             />
           </LineChart>

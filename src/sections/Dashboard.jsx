@@ -75,9 +75,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bitcoinReal, setBitcoinReal] = useState(0);
     const [digitalServicesReal, setDigitalServicesReal] = useState(0);
-    const [bondReal, setBondReal] = useState(0); // Coming soon - backend update required
-    const [fundsReal, setFundsReal] = useState(0); // Coming soon - backend update required
-    const [goldReal, setGoldReal] = useState(0); // Coming soon - backend update required
+    const [bondsReal, setBondsReal] = useState(0);
+    const [fundsReal, setFundsReal] = useState(0);
+    const [goldReal, setGoldReal] = useState(0);
     const [totalReal, setTotalReal] = useState(0);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
@@ -94,9 +94,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     setBankReal(userData? userData.bankReal : 0);
                     setCashReal(userData ? userData.cashReal : 0);
                     setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-                    setBondReal(userData ? userData.bondReal : 0); // Coming soon - backend update required
-                    setFundsReal(userData ? userData.fundsReal : 0); // Coming soon - backend update required
-                    setGoldReal(userData ? userData.goldReal : 0); // Coming soon - backend update required
+                    setBondsReal(userData ? userData.bondsReal : 0);
+                    setFundsReal(userData ? userData.fundsReal : 0);
+                    setGoldReal(userData ? userData.goldReal : 0);
                     setTotalReal(userData ? userData.totalReal : 0);
                     setExpensesMonth(userData ? userData.outflowsArray[0] : 0);
                     setIncomesMonth(userData ? userData.incomesArray[0] : 0);
@@ -136,7 +136,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
     ];
 
-    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bond, Funds, Gold)
+    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Gold)
     const allInvestments = [
         { 
             name: languages[language].assets.stocks, 
@@ -171,13 +171,12 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             description: languages[language].dashboard.cryptoDescription
         },
         { 
-            name: languages[language].assets.bond, 
-            value: bondReal >= 0 ? bondReal : 0,
-            icon: assetIcons.bond,
-            color: assetColors.bond.primary,
-            gradient: assetColors.bond.gradient,
-            description: languages[language].dashboard.bondDescription,
-            comingSoon: true // Coming soon - backend update required
+            name: languages[language].assets.bonds, 
+            value: bondsReal >= 0 ? bondsReal : 0,
+            icon: assetIcons.bonds,
+            color: assetColors.bonds.primary,
+            gradient: assetColors.bonds.gradient,
+            description: languages[language].dashboard.bondsDescription,
         },
         { 
             name: languages[language].assets.funds, 
@@ -186,7 +185,6 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             color: assetColors.funds.primary,
             gradient: assetColors.funds.gradient,
             description: languages[language].dashboard.fundsDescription,
-            comingSoon: true // Coming soon - backend update required
         },
         { 
             name: languages[language].assets.gold, 
@@ -195,7 +193,6 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             color: assetColors.gold.primary,
             gradient: assetColors.gold.gradient,
             description: languages[language].dashboard.goldDescription,
-            comingSoon: true // Coming soon - backend update required
         },
     ];
 

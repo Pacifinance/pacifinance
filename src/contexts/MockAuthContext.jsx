@@ -14,7 +14,7 @@ export const mockDashboardData = {
     etfReal: 25000,
     bitcoinReal: 0,
     cryptoReal: 0,
-    bondReal: 15000, // Test value to display visually
+    bondsReal: 15000, // Test value to display visually
     fundsReal: 12500, // Test value to display visually
     goldReal: 8000, // Test value to display visually
     totalReal: 89000, // Updated to include new investments
@@ -27,7 +27,7 @@ export const mockDashboardData = {
     etfRealPreMonth: 24000,
     bitcoinRealPreMonth: 0,
     cryptoRealPreMonth: 0,
-    bondRealPreMonth: 14000, // Test value to display visually
+    bondsRealPreMonth: 14000, // Test value to display visually
     fundsRealPreMonth: 11800, // Test value to display visually
     goldRealPreMonth: 7500, // Test value to display visually
     totalRealPreMonth: 83750, // Updated to include new investments
@@ -40,7 +40,7 @@ export const mockDashboardData = {
     etfRealPreYearSameMonth: 20000,
     bitcoinRealPreYearSameMonth: 0,
     cryptoRealPreYearSameMonth: 0,
-    bondRealPreYearSameMonth: 10000, // Test value to display visually
+    bondsRealPreYearSameMonth: 10000, // Test value to display visually
     fundsRealPreYearSameMonth: 9000, // Test value to display visually
     goldRealPreYearSameMonth: 6000, // Test value to display visually
     totalRealPreYearSameMonth: 65300, // Updated to include new investments
@@ -218,6 +218,13 @@ export const mockDashboardData = {
     userId: 'dev-user-123',
     userType: 'premium',
     username: 'Developer User',
+    creationDate: '2023-01-15T10:30:00Z',
+    country: { label: 'Italy' },
+    job: { label: 'Developer' },
+    jobType: { label: 'Full-time' },
+    jobCountry: { label: 'Italy' },
+    workTime: { label: '40' },
+    remoteType: { label: 'Remote' },
     userNationality: 'Italy',
     userWhereWorks: 'Technology',
     userJob: 'Developer',
@@ -244,7 +251,7 @@ export const mockDashboardData = {
             cryptoReal: Math.random() * 500,
             digitalServicesReal: isCurrentMonth ? 0 : Math.random() * 100,
             // New investments with realistic progression - current month matches dashboard
-            bondReal: isCurrentMonth ? 15000 : Math.max(0, 8000 + (i * 800) + Math.random() * 1000),
+            bondsReal: isCurrentMonth ? 15000 : Math.max(0, 8000 + (i * 800) + Math.random() * 1000),
             fundsReal: isCurrentMonth ? 12500 : Math.max(0, 6000 + (i * 600) + Math.random() * 800),
             goldReal: isCurrentMonth ? 8000 : Math.max(0, 3000 + (i * 450) + Math.random() * 600)
         };
@@ -268,7 +275,7 @@ export const mockDashboardData = {
             cryptoReal: Math.random() * 800,
             digitalServicesReal: isCurrentMonth ? 0 : Math.random() * 200,
             // New investments with realistic progression
-            bondReal: isCurrentMonth ? 15000 : Math.max(0, 12000 - (i * 500) + Math.random() * 1000),
+            bondsReal: isCurrentMonth ? 15000 : Math.max(0, 12000 - (i * 500) + Math.random() * 1000),
             fundsReal: isCurrentMonth ? 12500 : Math.max(0, 10000 - (i * 400) + Math.random() * 800),
             goldReal: isCurrentMonth ? 8000 : Math.max(0, 6500 - (i * 300) + Math.random() * 600)
         };

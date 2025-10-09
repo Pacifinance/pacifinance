@@ -32,6 +32,7 @@
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "file-saver": "^2.0.5",
     "lucide-react": "^0.544.0",
     "mongoose": "^8.18.1",
     "react": "^19.1.1",

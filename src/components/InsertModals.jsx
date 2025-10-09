@@ -31,6 +31,9 @@ export default function InsertModals({
   etfReal,
   bitcoinReal,
   cryptoReal,
+  bondsReal,
+  fundsReal,
+  goldReal,
   categoryIncome,
   income,
   noteIncomeAreaValue,
@@ -89,6 +92,15 @@ export default function InsertModals({
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {languages[language].assets.crypto}: {cryptoReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.bonds}: {bondsReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.funds}: {fundsReal}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].assets.gold}: {goldReal}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {languages[language].general.selectedDate}: {balanceDate}

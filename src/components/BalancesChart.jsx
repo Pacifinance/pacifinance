@@ -35,7 +35,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
   // Funzione per filtrare i dati in base al periodo selezionato
   const getFilteredData = () => {
     const allData = last12MonthsData.map((monthData) => {
-      const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0);
+      const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0);
       return {
         name: monthData.month,
         cash: monthData.cashReal,
@@ -45,7 +45,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         crypto: monthData.cryptoReal,
         etf: monthData.etfReal,
         bitcoin: monthData.bitcoinReal,
-        bond: monthData.bondReal || 0,
+        bonds: monthData.bondsReal || 0,
         funds: monthData.fundsReal || 0,
         gold: monthData.goldReal || 0,
         total: total,
@@ -124,7 +124,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     { label: languages[language].assets.crypto, key: 'crypto' },
     { label: languages[language].assets.etf, key: 'etf' },
     { label: languages[language].assets.bitcoin, key: 'bitcoin' },
-    { label: languages[language].assets.bond, key: 'bond' },
+    { label: languages[language].assets.bonds, key: 'bonds' },
     { label: languages[language].assets.funds, key: 'funds' },
     { label: languages[language].assets.gold, key: 'gold' },
     { label: languages[language].assets.total, key: 'total' },
@@ -139,21 +139,45 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     <Tooltip
       position={{ x: undefined, y: undefined }}
       allowEscapeViewBox={{ x: false, y: false }}
-      contentStyle={{ 
-        backgroundColor: theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)', 
-        color: theme.textColor,
-        borderRadius: '12px', 
+      contentStyle={{
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+        borderRadius: '8px',
         padding: '12px',
-        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-        backdropFilter: 'blur(10px)',
-        fontSize: '14px'
+        fontSize: '14px',
+        fontWeight: '500',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+        color: '#333'
       }}
-      labelStyle={{ 
-        color: theme.textColor, 
-        fontWeight: 'bold', 
-        textTransform: 'capitalize',
+      labelStyle={{
+        color: '#333',
+        fontWeight: 'bold',
         marginBottom: '4px'
+      }}
+      labelFormatter={(label) => {
+        if (isHidden) return '****';
+        
+        // Converti formato YYYY-MM in nome mese tradotto + anno
+        const [year, monthNum] = label.split('-');
+        const monthIndex = parseInt(monthNum);
+        
+        const monthNames = {
+          1: languages[language].months.january,
+          2: languages[language].months.february,
+          3: languages[language].months.march,
+          4: languages[language].months.april,
+          5: languages[language].months.may,
+          6: languages[language].months.june,
+          7: languages[language].months.july,
+          8: languages[language].months.august,
+          9: languages[language].months.september,
+          10: languages[language].months.october,
+          11: languages[language].months.november,
+          12: languages[language].months.december
+        };
+        
+        const monthName = monthNames[monthIndex] || monthNum;
+        return `${monthName} ${year}`;
       }}
       formatter={(value, name, entry, index) => {
         if (isHidden) return ['****'];
@@ -173,7 +197,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
           'crypto': languages[language].assets.crypto,
           'etf': languages[language].assets.etf,
           'bitcoin': languages[language].assets.bitcoin,
-          'bond': languages[language].assets.bond,
+          'bonds': languages[language].assets.bonds,
           'funds': languages[language].assets.funds,
           'gold': languages[language].assets.gold,
           'total': languages[language].assets.total
@@ -267,9 +291,12 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       <Bar dataKey="crypto" stackId="a" fill={isHidden ? '#C0C0C0' : getAssetColor('crypto', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="etf" stackId="a" fill={isHidden ? '#D0D0D0' : getAssetColor('etf', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="bitcoin" stackId="a" fill={isHidden ? '#E0E0E0' : getAssetColor('bitcoin', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="bond" stackId="a" fill={isHidden ? '#F0F0F0' : getAssetColor('bond', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="bonds" stackId="a" fill={isHidden ? '#F0F0F0' : getAssetColor('bonds', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="funds" stackId="a" fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="gold" stackId="a" fill={isHidden ? '#F8F8F8' : getAssetColor('gold', theme.mode)} radius={[4, 4, 0, 0]} />
+      
+      {/* Barra invisibile per il total - serve solo per mostrarlo nel tooltip */}
+      <Bar dataKey="total" fill="transparent" strokeWidth={0} />
       
       {/* <Brush dataKey='name' height={containerWidth < 500 ? 80 : 60} stroke={theme.textColor} fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} /> */}
     </BarChart>
@@ -345,7 +372,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={'crypto'} stroke={isHidden ? '#B0B0B0' : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#B0B0B0' : getAssetColor('crypto', theme.mode)} />}
       {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={'etf'} stroke={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} />}
       {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={'bitcoin'} stroke={isHidden ? '#D0D0D0' : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#D0D0D0' : getAssetColor('bitcoin', theme.mode)} />}
-      {data.every(item => item['bond'] === 0) || <Area type="monotone" dataKey={'bond'} stroke={isHidden ? '#E0E0E0' : getAssetColor('bond', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E0E0E0' : getAssetColor('bond', theme.mode)} />}
+      {data.every(item => item['bonds'] === 0) || <Area type="monotone" dataKey={'bonds'} stroke={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} />}
       {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} />}
       {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
     </AreaChart>

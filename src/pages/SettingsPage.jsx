@@ -6,10 +6,12 @@ import { PrivacyContext } from "../contexts/PrivacyContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { UserContext } from "../contexts/UserContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
+import { useAuth } from "../hooks/useAuth";
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import languages from "../data/languages.json";
+import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import {
     Section,
     TitleDashboard,
@@ -28,6 +30,19 @@ import {
     faTrashCan,
     faEye,
     faEyeSlash,
+    faDownload,
+    faFileExcel,
+    faFileCsv,
+    faFileAlt,
+    faFilePdf,
+    faPalette,
+    faShieldAlt,
+    faUserCog,
+    faLanguage,
+    faGlobe,
+    faKey,
+    faUserShield,
+    faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
 const SettingsPage = () => {
@@ -35,7 +50,9 @@ const SettingsPage = () => {
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, toggleLanguage } = useContext(LanguageContext);
-    const { userData, handleSetIsAuthenticated } = useContext(UserContext);
+    // Usa l'hook unificato che gestisce sia UserContext che MockAuth
+    const auth = useAuth();
+    const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useNavigate();
 
@@ -52,6 +69,7 @@ const SettingsPage = () => {
     const [showIDResult, setShowIDResult] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [exportLoading, setExportLoading] = useState(false);
 
     const userType = userData?.userType || "";
 
@@ -132,6 +150,100 @@ const SettingsPage = () => {
         }
     };
 
+    // Funzioni per l'export dei dati
+    const handleExportData = async (format) => {
+        setExportLoading(true);
+        console.log('Settings Export Debug:', {
+            format,
+            userData,
+            userDataKeys: userData ? Object.keys(userData) : 'null',
+            userId: userData?.userId,
+            userType: userData?.userType,
+            isValidUserData: userData && typeof userData === 'object'
+        });
+        
+        try {
+            // Verifica che userData sia valido
+            if (!userData || typeof userData !== 'object') {
+                throw new Error('Dati utente non disponibili per l\'export');
+            }
+
+            let completeUserData = userData;
+
+            // Se l'utente è reale (non mock), fai una richiesta API per ottenere tutti i dati
+            if (userData.userType !== 'mock') {
+                console.log('Fetching complete user data from API...');
+                try {
+                    const response = await fetch('/user/alldata', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const apiUserData = await response.json();
+                    
+                    // Usa direttamente i dati dall'API
+                    completeUserData = apiUserData;
+                } catch (apiError) {
+                    console.error('Error fetching complete user data:', apiError);
+                    // Se l'API fallisce, usa i dati già disponibili nel context
+                    console.log('Using context data as fallback');
+                }
+            }
+            
+            switch (format) {
+                case 'csv':
+                    exportToCSV(completeUserData, language);
+                    break;
+                case 'excel':
+                    await exportToExcel(completeUserData, language);
+                    break;
+                case 'json':
+                    exportToJSON(completeUserData, language);
+                    break;
+                case 'pdf':
+                    await exportToPDF(completeUserData, language);
+                    break;
+                default:
+                    throw new Error('Formato non supportato');
+            }
+            setSuccessMessage(
+                language === 'it' 
+                    ? `Dati esportati con successo in formato ${format.toUpperCase()}!`
+                    : `Data successfully exported in ${format.toUpperCase()} format!`
+            );
+            setTimeout(() => setSuccessMessage(""), 5000);
+        } catch (error) {
+            console.error('Errore durante l\'export:', error);
+            
+            let errorMsg = language === 'it' 
+                ? 'Errore durante l\'esportazione dei dati' 
+                : 'Error during data export';
+                
+            // Messaggi di errore più specifici
+            if (error.message.includes('HTTP error')) {
+                errorMsg = language === 'it'
+                    ? 'Errore di connessione al server'
+                    : 'Server connection error';
+            } else if (error.message.includes('Dati utente non disponibili')) {
+                errorMsg = language === 'it'
+                    ? 'Dati utente non disponibili'
+                    : 'User data not available';
+            }
+            
+            setErrorMessage(errorMsg);
+            setTimeout(() => setErrorMessage(""), 5000);
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
     return (
         <div style={{ display: "flex", height: "100vh" }}>
             {!isMobileScreen && (
@@ -162,21 +274,30 @@ const SettingsPage = () => {
                         theme={theme}
                         style={{
                             textAlign: "center",
-                            fontSize: isMobileScreen ? "1.2rem" : "1.5rem",
+                            fontSize: isMobileScreen ? "1.8rem" : "2.2rem",
+                            marginBottom: "2rem",
+                            background: "linear-gradient(135deg, #079164 0%, #0a9c73 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
+                            fontWeight: "bold"
                         }}
                     >
+                        <FontAwesomeIcon icon={faUserCog} style={{ marginRight: "0.5rem" }} />
                         {languages[language].sidebar.settings.title}
                     </TitleDashboard>
 
                     {successMessage && (
                         <div
                             style={{
-                                backgroundColor: theme.buttonBackgroundColor,
-                                color: "white",
+                                backgroundColor: "#d4edda",
+                                color: "#155724",
                                 padding: "1rem",
-                                borderRadius: "8px",
+                                borderRadius: "12px",
                                 margin: "1rem 0",
                                 textAlign: "center",
+                                border: "1px solid #c3e6cb",
+                                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                             }}
                         >
                             {successMessage}
@@ -186,12 +307,14 @@ const SettingsPage = () => {
                     {errorMessage && (
                         <div
                             style={{
-                                backgroundColor: "#dc3545",
-                                color: "white",
+                                backgroundColor: "#f8d7da",
+                                color: "#721c24",
                                 padding: "1rem",
-                                borderRadius: "8px",
+                                borderRadius: "12px",
                                 margin: "1rem 0",
                                 textAlign: "center",
+                                border: "1px solid #f5c6cb",
+                                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                             }}
                         >
                             {errorMessage}
@@ -200,106 +323,303 @@ const SettingsPage = () => {
 
                     <div
                         style={{
-                            maxWidth: "800px",
+                            maxWidth: "900px",
                             margin: "0 auto",
-                            padding: "2rem",
-                            backgroundColor: "white",
-                            borderRadius: "12px",
-                            border: `2px solid ${theme.buttonBackgroundColor}`,
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                            padding: isMobileScreen ? "1rem" : "2rem",
                         }}
                     >
+                        {/* Data Export Section */}
+                        <div
+                            style={{
+                                marginBottom: "2rem",
+                                padding: "2rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "16px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                                backdropFilter: "blur(10px)",
+                            }}
+                        >
+                            <h3 style={{ 
+                                marginBottom: "1.5rem", 
+                                color: theme.textColor,
+                                fontSize: "1.4rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faDownload} style={{ 
+                                    marginRight: "0.75rem",
+                                    color: theme.buttonBackgroundColor 
+                                }} />
+                                {language === "it" ? "Esportazione Dati" : "Data Export"}
+                            </h3>
+                            <p style={{ 
+                                color: theme.textColor, 
+                                marginBottom: "2rem",
+                                fontSize: "1rem",
+                                lineHeight: "1.5"
+                            }}>
+                                {language === "it" 
+                                    ? "Scarica tutti i tuoi dati dalla piattaforma in diversi formati"
+                                    : "Download all your platform data in different formats"}
+                            </p>
+                            
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
+                                gap: "1rem",
+                            }}>
+                                {/* CSV Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('csv')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#28a745",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(40, 167, 69, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileCsv} style={{ marginRight: "0.5rem" }} />
+                                    CSV
+                                </MyButton>
+
+                                {/* Excel Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('excel')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#217346",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(33, 115, 70, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileExcel} style={{ marginRight: "0.5rem" }} />
+                                    Excel
+                                </MyButton>
+
+                                {/* JSON Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('json')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#17a2b8",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(23, 162, 184, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "0.5rem" }} />
+                                    JSON
+                                </MyButton>
+
+                                {/* PDF Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('pdf')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#dc3545",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(220, 53, 69, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: "0.5rem" }} />
+                                    PDF
+                                </MyButton>
+                            </div>
+
+                            {exportLoading && (
+                                <div style={{
+                                    textAlign: "center",
+                                    marginTop: "1rem",
+                                    color: theme.textColor,
+                                    fontSize: "0.9rem",
+                                    fontStyle: "italic"
+                                }}>
+                                    {language === "it" ? "Esportazione in corso..." : "Exporting data..."}
+                                </div>
+                            )}
+                        </div>
+
                         {/* Theme Settings */}
                         <div
                             style={{
                                 marginBottom: "2rem",
-                                padding: "1.5rem",
-                                backgroundColor: "#f8f9fa",
-                                borderRadius: "8px",
+                                padding: "2rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "16px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                                backdropFilter: "blur(10px)",
                             }}
                         >
-                            <h3 style={{ marginBottom: "1rem", color: "#333" }}>
-                                {languages[language].sidebar.settings
-                                    .themeSection ||
-                                    (language === "it"
-                                        ? "Tema e Aspetto"
-                                        : "Theme and Appearance")}
+                            <h3 style={{ 
+                                marginBottom: "1.5rem", 
+                                color: theme.textColor,
+                                fontSize: "1.4rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faPalette} style={{ 
+                                    marginRight: "0.75rem",
+                                    color: theme.buttonBackgroundColor 
+                                }} />
+                                {languages[language].sidebar.settings.themeSection ||
+                                    (language === "it" ? "Tema e Aspetto" : "Theme and Appearance")}
                             </h3>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    marginBottom: "1rem",
-                                }}
-                            >
-                                <label
+                            
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "1.5rem",
+                            }}>
+                                <div
                                     style={{
-                                        fontWeight: "bold",
-                                        color: "#333",
-                                        marginRight: "1rem",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "1rem",
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        borderRadius: "12px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
                                     }}
                                 >
-                                    {languages[language].sidebar.settings.light}
-                                </label>
-                                <ToggleModeButton
-                                    theme={theme}
-                                    mode={mode}
-                                    toggleMode={toggleMode}
-                                />
-                            </div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    marginBottom: "1rem",
-                                }}
-                            >
-                                <label
+                                    <div>
+                                        <label style={{
+                                            fontWeight: "600",
+                                            color: theme.textColor,
+                                            fontSize: "1rem",
+                                            display: "block",
+                                            marginBottom: "0.25rem"
+                                        }}>
+                                            {languages[language].sidebar.settings.light}
+                                        </label>
+                                        <span style={{
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                            fontSize: "0.85rem"
+                                        }}>
+                                            {language === "it" ? "Cambia tema scuro/chiaro" : "Switch dark/light theme"}
+                                        </span>
+                                    </div>
+                                    <ToggleModeButton
+                                        theme={theme}
+                                        mode={mode}
+                                        toggleMode={toggleMode}
+                                    />
+                                </div>
+
+                                <div
                                     style={{
-                                        fontWeight: "bold",
-                                        color: "#333",
-                                        marginRight: "1rem",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "1rem",
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        borderRadius: "12px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
                                     }}
                                 >
-                                    {
-                                        languages[language].sidebar.settings
-                                            .privacy
-                                    }
-                                </label>
-                                <PrivacyToggleModeButton
-                                    theme={theme}
-                                    mode={mode}
-                                    toggleHidden={toggleHidden}
-                                    isHidden={isHidden}
-                                />
-                            </div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                }}
-                            >
-                                <label
+                                    <div>
+                                        <label style={{
+                                            fontWeight: "600",
+                                            color: theme.textColor,
+                                            fontSize: "1rem",
+                                            display: "block",
+                                            marginBottom: "0.25rem"
+                                        }}>
+                                            {languages[language].sidebar.settings.privacy}
+                                        </label>
+                                        <span style={{
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                            fontSize: "0.85rem"
+                                        }}>
+                                            {language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts"}
+                                        </span>
+                                    </div>
+                                    <PrivacyToggleModeButton
+                                        theme={theme}
+                                        mode={mode}
+                                        toggleHidden={toggleHidden}
+                                        isHidden={isHidden}
+                                    />
+                                </div>
+
+                                <div
                                     style={{
-                                        fontWeight: "bold",
-                                        color: "#333",
-                                        marginRight: "2rem",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "1rem",
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        borderRadius: "12px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
                                     }}
                                 >
-                                    {
-                                        languages[language].sidebar.settings
-                                            .language
-                                    }
-                                </label>
-                                <MyButton
-                                    theme={theme}
-                                    onClick={toggleLanguage}
-                                >
-                                    {language === "it" ? "IT" : "EN"}
-                                </MyButton>
+                                    <div>
+                                        <label style={{
+                                            fontWeight: "600",
+                                            color: theme.textColor,
+                                            fontSize: "1rem",
+                                            display: "block",
+                                            marginBottom: "0.25rem"
+                                        }}>
+                                            <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.5rem" }} />
+                                            {languages[language].sidebar.settings.language}
+                                        </label>
+                                        <span style={{
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                            fontSize: "0.85rem"
+                                        }}>
+                                            {language === "it" ? "Cambia lingua interfaccia" : "Change interface language"}
+                                        </span>
+                                    </div>
+                                    <MyButton
+                                        theme={theme}
+                                        onClick={toggleLanguage}
+                                        style={{
+                                            padding: "0.75rem 1.5rem",
+                                            borderRadius: "10px",
+                                            fontWeight: "600",
+                                            fontSize: "0.9rem",
+                                            minWidth: "80px"
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faGlobe} style={{ marginRight: "0.5rem" }} />
+                                        {language === "it" ? "IT" : "EN"}
+                                    </MyButton>
+                                </div>
                             </div>
                         </div>
 
@@ -307,20 +627,31 @@ const SettingsPage = () => {
                         <div
                             style={{
                                 marginBottom: "2rem",
-                                padding: "1.5rem",
-                                backgroundColor: "#f8f9fa",
-                                borderRadius: "8px",
+                                padding: "2rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "16px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                                backdropFilter: "blur(10px)",
                             }}
                         >
-                            <h3 style={{ marginBottom: "1rem", color: "#333" }}>
-                                {languages[language].sidebar.settings
-                                    .securitySection ||
-                                    (language === "it"
-                                        ? "Sicurezza"
-                                        : "Security")}
+                            <h3 style={{ 
+                                marginBottom: "1.5rem", 
+                                color: theme.textColor,
+                                fontSize: "1.4rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faUserShield} style={{ 
+                                    marginRight: "0.75rem",
+                                    color: theme.buttonBackgroundColor 
+                                }} />
+                                {languages[language].sidebar.settings.securitySection ||
+                                    (language === "it" ? "Sicurezza" : "Security")}
                             </h3>
 
-                            <div style={{ marginBottom: "1rem" }}>
+                            <div style={{ marginBottom: "1.5rem" }}>
                                 <MyButton
                                     theme={theme}
                                     onClick={() =>
@@ -331,15 +662,26 @@ const SettingsPage = () => {
                                     )}
                                     style={{
                                         width: "100%",
-                                        marginBottom: "0.5rem",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "1rem",
+                                        fontWeight: "500",
                                         backgroundColor: [
                                             "test",
                                             "demo",
                                         ].includes(userType)
                                             ? "#d3d3d3"
                                             : theme.buttonBackgroundColor,
+                                        boxShadow: ["test", "demo"].includes(userType) 
+                                            ? "none" 
+                                            : "0 4px 15px rgba(7, 145, 100, 0.3)",
+                                        transition: "all 0.3s ease"
                                     }}
                                 >
+                                    <FontAwesomeIcon icon={faKey} style={{ marginRight: "0.75rem" }} />
                                     {languages[language].sidebar.changeID.title}
                                 </MyButton>
 
@@ -404,7 +746,7 @@ const SettingsPage = () => {
                                 )}
                             </div>
 
-                            <div style={{ marginBottom: "1rem" }}>
+                            <div style={{ marginBottom: "1.5rem" }}>
                                 <MyButton
                                     theme={theme}
                                     onClick={() =>
@@ -417,19 +759,27 @@ const SettingsPage = () => {
                                     )}
                                     style={{
                                         width: "100%",
-                                        marginBottom: "0.5rem",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "1rem",
+                                        fontWeight: "500",
                                         backgroundColor: [
                                             "test",
                                             "demo",
                                         ].includes(userType)
                                             ? "#d3d3d3"
                                             : theme.buttonBackgroundColor,
+                                        boxShadow: ["test", "demo"].includes(userType) 
+                                            ? "none" 
+                                            : "0 4px 15px rgba(7, 145, 100, 0.3)",
+                                        transition: "all 0.3s ease"
                                     }}
                                 >
-                                    {
-                                        languages[language].sidebar
-                                            .changePassword.title
-                                    }
+                                    <FontAwesomeIcon icon={faShieldAlt} style={{ marginRight: "0.75rem" }} />
+                                    {languages[language].sidebar.changePassword.title}
                                 </MyButton>
 
                                 {showChangePassword && (
@@ -584,47 +934,78 @@ const SettingsPage = () => {
                         <div
                             style={{
                                 marginBottom: "2rem",
-                                padding: "1.5rem",
-                                backgroundColor: "#fff5f5",
-                                borderRadius: "8px",
-                                border: "1px solid #feb2b2",
+                                padding: "2rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.1)' : '#fff5f5',
+                                borderRadius: "16px",
+                                border: `2px solid ${theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.3)' : '#feb2b2'}`,
+                                boxShadow: "0 8px 32px rgba(220, 53, 69, 0.15)",
                             }}
                         >
-                            <h3
-                                style={{
-                                    marginBottom: "1rem",
-                                    color: "#dc3545",
-                                }}
-                            >
-                                {languages[language].sidebar.settings
-                                    .dangerZone ||
-                                    (language === "it"
-                                        ? "Zona Pericolosa"
-                                        : "Danger Zone")}
+                            <h3 style={{
+                                marginBottom: "1.5rem",
+                                color: "#dc3545",
+                                fontSize: "1.4rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faExclamationTriangle} style={{ 
+                                    marginRight: "0.75rem",
+                                    color: "#dc3545" 
+                                }} />
+                                {languages[language].sidebar.settings.dangerZone ||
+                                    (language === "it" ? "Zona Pericolosa" : "Danger Zone")}
                             </h3>
+                            
+                            <div style={{
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)',
+                                padding: "1rem",
+                                borderRadius: "12px",
+                                marginBottom: "1.5rem",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.2)' : 'rgba(220, 53, 69, 0.1)'}`
+                            }}>
+                                <p style={{
+                                    color: "#dc3545",
+                                    fontSize: "0.9rem",
+                                    margin: "0",
+                                    fontWeight: "500"
+                                }}>
+                                    {language === "it" 
+                                        ? "⚠️ Attenzione: L'eliminazione dell'account è irreversibile e cancellerà tutti i tuoi dati."
+                                        : "⚠️ Warning: Account deletion is irreversible and will delete all your data."}
+                                </p>
+                            </div>
+
                             <MyButton
                                 onClick={() =>
                                     setShowDeleteAccount(!showDeleteAccount)
                                 }
                                 disabled={["test", "demo"].includes(userType)}
                                 style={{
-                                    backgroundColor: ["test", "demo"].includes(
-                                        userType,
-                                    )
+                                    width: "100%",
+                                    padding: "1rem",
+                                    borderRadius: "12px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: "1rem",
+                                    fontWeight: "600",
+                                    backgroundColor: ["test", "demo"].includes(userType)
                                         ? "#d3d3d3"
                                         : "#dc3545",
                                     color: "white",
-                                    width: "100%",
+                                    border: "none",
+                                    boxShadow: ["test", "demo"].includes(userType) 
+                                        ? "none" 
+                                        : "0 4px 15px rgba(220, 53, 69, 0.4)",
+                                    transition: "all 0.3s ease"
                                 }}
                             >
                                 <FontAwesomeIcon
                                     icon={faTrashCan}
-                                    style={{ marginRight: "0.5rem" }}
+                                    style={{ marginRight: "0.75rem" }}
                                 />
-                                {
-                                    languages[language].sidebar.settings
-                                        .deleteAccount
-                                }
+                                {languages[language].sidebar.settings.deleteAccount}
                             </MyButton>
 
                             {showDeleteAccount && (
@@ -678,13 +1059,27 @@ const SettingsPage = () => {
                             )}
                         </div>
 
-                        <div style={{ textAlign: "center" }}>
+                        <div style={{ 
+                            textAlign: "center",
+                            marginTop: "3rem",
+                            padding: "2rem",
+                            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                            borderRadius: "16px",
+                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
+                        }}>
                             <MyButton
                                 theme={theme}
                                 onClick={() => navigate("/dashboard")}
+                                style={{
+                                    padding: "1rem 2rem",
+                                    borderRadius: "12px",
+                                    fontSize: "1.1rem",
+                                    fontWeight: "600",
+                                    boxShadow: "0 6px 20px rgba(7, 145, 100, 0.3)",
+                                    transition: "all 0.3s ease"
+                                }}
                             >
-                                {languages[language].sidebar.settings
-                                    .backToDashboard || "Torna alla Dashboard"}
+                                {languages[language].sidebar.settings.backToDashboard || "Torna alla Dashboard"}
                             </MyButton>
                         </div>
                     </div>

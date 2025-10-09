@@ -47,7 +47,7 @@ export const assetColors = {
     light: '#e17055',
     dark: '#d63031'
   },
-  bond: {
+  bonds: {
     primary: '#2d3436',
     gradient: 'linear-gradient(135deg, #2d3436 0%, #636e72 100%)',
     light: '#636e72',
@@ -106,7 +106,7 @@ export const assetOrder = [
   'crypto',
   'etf',
   'bitcoin',
-  'bond',
+  'bonds',
   'funds',
   'gold'
 ];
@@ -120,7 +120,7 @@ export const assetNameMap = {
   crypto: 'crypto',
   etf: 'etf',
   bitcoin: 'bitcoin',
-  bond: 'bond',
+  bonds: 'bonds',
   funds: 'funds',
   gold: 'gold'
 };

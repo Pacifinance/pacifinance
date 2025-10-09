@@ -247,7 +247,7 @@ export default function InsertValue({
   initialSection,
 }) {
   const { language } = React.useContext(LanguageContext);
-  const { showSuccess } = useToast();
+  const { showSuccess, showError } = useToast();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -281,9 +281,9 @@ export default function InsertValue({
   const [cryptoReal, setCryptoReal] = useState(0);
   const [bitcoinReal, setBitcoinReal] = useState(0);
   const [digitalServicesReal, setDigitalServicesReal] = useState(0);
-  const [bondReal, setBondReal] = useState(0); // Coming soon - backend update required
-  const [fundsReal, setFundsReal] = useState(0); // Coming soon - backend update required
-  const [goldReal, setGoldReal] = useState(0); // Coming soon - backend update required
+  const [bondsReal, setBondsReal] = useState(0);
+  const [fundsReal, setFundsReal] = useState(0);
+  const [goldReal, setGoldReal] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
   const [typoOutflow, setTypoOutflow] = useState({ key: "", value: "" });
@@ -318,6 +318,32 @@ export default function InsertValue({
   const [showOutflowNoteInput, setShowOutflowNoteInput] = useState(false);
   const [showOutflowDatePicker, setShowOutflowDatePicker] = useState(false);
 
+  // Helper function to create balances JSON - simplified with component context access
+  const createBalancesJson = (date, selectedOption = null, newValue = null) => {
+    const getValue = (assetKey, currentValue) => {
+      if (selectedOption?.includes(languages[language].assets[assetKey])) {
+        return Number(newValue) || 0;
+      }
+      return Number(currentValue) || 0;
+    };
+    
+    return {
+      balance: {
+        date,
+        bank: getValue('bank', bankReal),
+        cash: getValue('cash', cashReal),
+        digital_services: getValue('digitalServices', digitalServicesReal),
+        stocks: getValue('stocks', stocksReal),
+        etf: getValue('etf', etfReal),
+        bitcoin: getValue('bitcoin', bitcoinReal),
+        crypto: getValue('crypto', cryptoReal),
+        bonds: getValue('bonds', bondsReal),
+        funds: getValue('funds', fundsReal),
+        gold: getValue('gold', goldReal),
+      }
+    };
+  };
+
   const options = {
     [languages[language].assets.bank]: [bankReal, setBankReal],
     [languages[language].assets.cash]: [cashReal, setCashReal],
@@ -326,10 +352,9 @@ export default function InsertValue({
     [languages[language].assets.etf]: [etfReal, setETFReal],
     [languages[language].assets.bitcoin]: [bitcoinReal, setBitcoinReal],
     [languages[language].assets.crypto]: [cryptoReal, setCryptoReal],
-    // Coming soon - backend update required (disabled for now)
-    [languages[language].assets.bond]: [bondReal, setBondReal, true], // third parameter = disabled
-    [languages[language].assets.funds]: [fundsReal, setFundsReal, true], // third parameter = disabled
-    [languages[language].assets.gold]: [goldReal, setGoldReal, true], // third parameter = disabled
+    [languages[language].assets.bonds]: [bondsReal, setBondsReal],
+    [languages[language].assets.funds]: [fundsReal, setFundsReal],
+    [languages[language].assets.gold]: [goldReal, setGoldReal],
   };
 
   const fetchData = async () => {
@@ -342,9 +367,9 @@ export default function InsertValue({
         setBankReal(userData ? userData.bankReal : 0);
         setCashReal(userData ? userData.cashReal : 0);
         setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-        setBondReal(userData ? userData.bondReal : 0); // Coming soon - backend update required
-        setFundsReal(userData ? userData.fundsReal : 0); // Coming soon - backend update required
-        setGoldReal(userData ? userData.goldReal : 0); // Coming soon - backend update required
+        setBondsReal(userData ? userData.bondsReal : 0);
+        setFundsReal(userData ? userData.fundsReal : 0);
+        setGoldReal(userData ? userData.goldReal : 0);
         setOutflowsTags(userData ? userData.outflowsTags : []);
         setIncomesTags(userData ? userData.incomesTags : []);
         setPaymentTags(userData ? userData.paymentTags : []);
@@ -545,46 +570,27 @@ export default function InsertValue({
 
   const handleConfirmBalance = async () => {
     setIsConfirmBalanceOpen(false);
-    const balancesJson = {
-      balance: {
-        date: balanceDate,
-        bank: bankReal,
-        cash: cashReal,
-        digital_services: digitalServicesReal,
-        stocks: {
-          real: stocksReal,
-        },
-        etf: {
-          real: etfReal,
-        },
-        bitcoin: {
-          real: bitcoinReal,
-        },
-        crypto: {
-          real: cryptoReal,
-        },
-        bond: {
-          real: bondReal, // Coming soon - backend update required
-        },
-        funds: {
-          real: fundsReal, // Coming soon - backend update required
-        },
-        gold: {
-          real: goldReal, // Coming soon - backend update required
-        },
-      },
-    };
+    const balancesJson = createBalancesJson(balanceDate);
 
-    const balancesChange = await axios.post("/balances/add", balancesJson, {
-      withCredentials: true,
-    });
-    if (balancesChange.status === 200) {
-      handleSetIsUpdated(false);
-      setUpdateBalanceSuccess(true);
-      fetchData();
-      setBalanceDate(currentDate);
-    } else {
-      alert("Errore in the update of the balance");
+    try {
+      const balancesChange = await axios.post("/balances/add", balancesJson, {
+        withCredentials: true,
+      });
+      if (balancesChange.status === 200) {
+        handleSetIsUpdated(false);
+        setUpdateBalanceSuccess(true);
+        fetchData();
+        setBalanceDate(currentDate);
+      } else {
+        showError(languages[language].insert.errors.balanceUpdateFailed);
+      }
+    } catch (error) {
+      console.error("Error updating balance:", error);
+      if (error.response?.status === 404) {
+        showError(languages[language].insert.errors.serverConnectionFailed);
+      } else {
+        showError(languages[language].insert.errors.balanceUpdateFailed);
+      }
     }
   };
 
@@ -592,7 +598,7 @@ export default function InsertValue({
     return {
       expense: {
         date: date,
-        amount: amount,
+        amount: Number(amount) || 0,
         is_expense: isOutflow,
         payment_type: payment_type,
         category_tag: category_tag,
@@ -643,9 +649,9 @@ export default function InsertValue({
         [languages[language].assets.etf]: etfReal,
         [languages[language].assets.bitcoin]: bitcoinReal,
         [languages[language].assets.crypto]: cryptoReal,
-        [languages[language].assets.bond]: bondReal, // Coming soon - backend update required
-        [languages[language].assets.funds]: fundsReal, // Coming soon - backend update required
-        [languages[language].assets.gold]: goldReal, // Coming soon - backend update required
+        [languages[language].assets.bonds]: bondsReal,
+        [languages[language].assets.funds]: fundsReal,
+        [languages[language].assets.gold]: goldReal,
       };
       if (inExAdd.status === 200) {
         if (selectedOption !== "") {
@@ -656,59 +662,7 @@ export default function InsertValue({
           if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
           else newValue = valueBalanceSelected + incomeNumber;
 
-          const balancesJson = {
-            balance: {
-              date: balanceDate,
-              bank: selectedOption.includes(languages[language].assets.bank)
-                ? newValue
-                : bankReal,
-              cash: selectedOption.includes(languages[language].assets.cash)
-                ? newValue
-                : cashReal,
-              digital_services: selectedOption.includes(
-                languages[language].assets.digitalServices,
-              )
-                ? newValue
-                : digitalServicesReal,
-              stocks: {
-                real: selectedOption.includes(languages[language].assets.stocks)
-                  ? newValue
-                  : stocksReal,
-              },
-              etf: {
-                real: selectedOption.includes(languages[language].assets.etf)
-                  ? newValue
-                  : etfReal,
-              },
-              bitcoin: {
-                real: selectedOption.includes(
-                  languages[language].assets.bitcoin,
-                )
-                  ? newValue
-                  : bitcoinReal,
-              },
-              crypto: {
-                real: selectedOption.includes(languages[language].assets.crypto)
-                  ? newValue
-                  : cryptoReal,
-              },
-              bond: {
-                real: selectedOption.includes(languages[language].assets.bond)
-                  ? newValue
-                  : bondReal, // Coming soon - backend update required
-              },
-              funds: {
-                real: selectedOption.includes(languages[language].assets.funds)
-                  ? newValue
-                  : fundsReal, // Coming soon - backend update required
-              },
-              gold: {
-                real: selectedOption.includes(languages[language].assets.gold)
-                  ? newValue
-                  : goldReal, // Coming soon - backend update required
-              },
-            },
-          };
+          const balancesJson = createBalancesJson(balanceDate, selectedOption, newValue);
 
           const balancesChange = await axios.post(
             "/balances/add",
@@ -722,7 +676,7 @@ export default function InsertValue({
             setUpdateInExBalanceSuccess(true);
             fetchData();
           } else {
-            alert("Error in the update of the balance");
+            showError(languages[language].insert.errors.balanceUpdateFailed);
           }
         } else {
           handleSetIsUpdated(false);
@@ -731,10 +685,21 @@ export default function InsertValue({
           fetchData();
         }
       } else {
-        alert("Error in the update of the outflow");
+        if (isOutflow) {
+          showError(languages[language].insert.errors.outflowAddFailed);
+        } else {
+          showError(languages[language].insert.errors.incomeAddFailed);
+        }
       }
     } catch (error) {
       console.error("Error:", error);
+      if (error.response?.status === 404) {
+        showError(languages[language].insert.errors.serverConnectionFailed);
+      } else if (isOutflow) {
+        showError(languages[language].insert.errors.outflowAddFailed);
+      } else {
+        showError(languages[language].insert.errors.incomeAddFailed);
+      }
     }
   };
 
@@ -743,90 +708,52 @@ export default function InsertValue({
     const data = {
       expense: {
         date: deleteIncomeDate,
-        amount: deleteIncomeAmount,
+        amount: Number(deleteIncomeAmount) || 0,
         is_expense: false,
       },
     };
-    const incomesDelete = await axios.post("/expenses/delete", data, {
-      withCredentials: true,
-    });
+    
+    try {
+      const incomesDelete = await axios.post("/expenses/delete", data, {
+        withCredentials: true,
+      });
 
-    // If user selected a balance to adjust, subtract the deleted income from that balance
-    if (incomesDelete.status === 200) {
-      if (selectedOption) {
-        // Find the current value for the selected balance
-        const balanceOptions = {
-          [languages[language].assets.bank]: bankReal,
-          [languages[language].assets.cash]: cashReal,
-          [languages[language].assets.digitalServices]: digitalServicesReal,
-          [languages[language].assets.stocks]: stocksReal,
-          [languages[language].assets.etf]: etfReal,
-          [languages[language].assets.bitcoin]: bitcoinReal,
-          [languages[language].assets.crypto]: cryptoReal,
-          [languages[language].assets.bond]: bondReal, // Coming soon - backend update required
-          [languages[language].assets.funds]: fundsReal, // Coming soon - backend update required
-          [languages[language].assets.gold]: goldReal, // Coming soon - backend update required
-        };
-        const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-        const incomeNumber = parseFloat(deleteIncomeAmount);
-        const newValue = valueBalanceSelected - incomeNumber;
-        // Build balancesJson for update
-        const balancesJson = {
-          balance: {
-            date: currentDate,
-            bank: selectedOption.includes(languages[language].assets.bank)
-              ? newValue
-              : bankReal,
-            cash: selectedOption.includes(languages[language].assets.cash)
-              ? newValue
-              : cashReal,
-            digital_services: selectedOption.includes(languages[language].assets.digitalServices)
-              ? newValue
-              : digitalServicesReal,
-            stocks: {
-              real: selectedOption.includes(languages[language].assets.stocks)
-                ? newValue
-                : stocksReal,
-            },
-            etf: {
-              real: selectedOption.includes(languages[language].assets.etf)
-                ? newValue
-                : etfReal,
-            },
-            bitcoin: {
-              real: selectedOption.includes(languages[language].assets.bitcoin)
-                ? newValue
-                : bitcoinReal,
-            },
-            crypto: {
-              real: selectedOption.includes(languages[language].assets.crypto)
-                ? newValue
-                : cryptoReal,
-            },
-            bond: {
-              real: selectedOption.includes(languages[language].assets.bond)
-                ? newValue
-                : bondReal, // Coming soon - backend update required
-            },
-            funds: {
-              real: selectedOption.includes(languages[language].assets.funds)
-                ? newValue
-                : fundsReal, // Coming soon - backend update required
-            },
-            gold: {
-              real: selectedOption.includes(languages[language].assets.gold)
-                ? newValue
-                : goldReal, // Coming soon - backend update required
-            },
-          },
-        };
-        await axios.post("/balances/add", balancesJson, { withCredentials: true });
+      // If user selected a balance to adjust, subtract the deleted income from that balance
+      if (incomesDelete.status === 200) {
+        if (selectedOption) {
+          // Find the current value for the selected balance
+          const balanceOptions = {
+            [languages[language].assets.bank]: bankReal,
+            [languages[language].assets.cash]: cashReal,
+            [languages[language].assets.digitalServices]: digitalServicesReal,
+            [languages[language].assets.stocks]: stocksReal,
+            [languages[language].assets.etf]: etfReal,
+            [languages[language].assets.bitcoin]: bitcoinReal,
+            [languages[language].assets.crypto]: cryptoReal,
+            [languages[language].assets.bonds]: bondsReal,
+            [languages[language].assets.funds]: fundsReal,
+            [languages[language].assets.gold]: goldReal,
+          };
+          const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+          const incomeNumber = parseFloat(deleteIncomeAmount);
+          const newValue = valueBalanceSelected - incomeNumber;
+          // Build balancesJson for update
+          const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+          await axios.post("/balances/add", balancesJson, { withCredentials: true });
+        }
+        handleSetIsUpdated(false);
+        setDeleteIncomesSuccess(true);
+        fetchData();
+      } else {
+        showError(languages[language].insert.errors.incomeDeleteFailed);
       }
-      handleSetIsUpdated(false);
-      setDeleteIncomesSuccess(true);
-      fetchData();
-    } else {
-      alert("Error in the update of the income");
+    } catch (error) {
+      console.error("Error deleting income:", error);
+      if (error.response?.status === 404) {
+        showError(languages[language].insert.errors.serverConnectionFailed);
+      } else {
+        showError(languages[language].insert.errors.incomeDeleteFailed);
+      }
     }
     setShowConfirmationDeleteIncome(false);
   };
@@ -835,88 +762,50 @@ export default function InsertValue({
     const data = {
       expense: {
         date: deleteOutflowDate,
-        amount: deleteOutflowAmount,
+        amount: Number(deleteOutflowAmount) || 0,
         is_expense: true,
       },
     };
-    const outflowsDelete = await axios.post("/expenses/delete", data, {
-      withCredentials: true,
-    });
+    
+    try {
+      const outflowsDelete = await axios.post("/expenses/delete", data, {
+        withCredentials: true,
+      });
 
-    // If user selected a balance to adjust, add the deleted outflow back to that balance
-    if (outflowsDelete.status === 200) {
-      if (selectedOption) {
-        const balanceOptions = {
-          [languages[language].assets.bank]: bankReal,
-          [languages[language].assets.cash]: cashReal,
-          [languages[language].assets.digitalServices]: digitalServicesReal,
-          [languages[language].assets.stocks]: stocksReal,
-          [languages[language].assets.etf]: etfReal,
-          [languages[language].assets.bitcoin]: bitcoinReal,
-          [languages[language].assets.crypto]: cryptoReal,
-          [languages[language].assets.bond]: bondReal, // Coming soon - backend update required
-          [languages[language].assets.funds]: fundsReal, // Coming soon - backend update required
-          [languages[language].assets.gold]: goldReal, // Coming soon - backend update required
-        };
-        const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-        const outflowNumber = parseFloat(deleteOutflowAmount);
-        const newValue = valueBalanceSelected + outflowNumber;
-        const balancesJson = {
-          balance: {
-            date: currentDate,
-            bank: selectedOption.includes(languages[language].assets.bank)
-              ? newValue
-              : bankReal,
-            cash: selectedOption.includes(languages[language].assets.cash)
-              ? newValue
-              : cashReal,
-            digital_services: selectedOption.includes(languages[language].assets.digitalServices)
-              ? newValue
-              : digitalServicesReal,
-            stocks: {
-              real: selectedOption.includes(languages[language].assets.stocks)
-                ? newValue
-                : stocksReal,
-            },
-            etf: {
-              real: selectedOption.includes(languages[language].assets.etf)
-                ? newValue
-                : etfReal,
-            },
-            bitcoin: {
-              real: selectedOption.includes(languages[language].assets.bitcoin)
-                ? newValue
-                : bitcoinReal,
-            },
-            crypto: {
-              real: selectedOption.includes(languages[language].assets.crypto)
-                ? newValue
-                : cryptoReal,
-            },
-            bond: {
-              real: selectedOption.includes(languages[language].assets.bond)
-                ? newValue
-                : bondReal, // Coming soon - backend update required
-            },
-            funds: {
-              real: selectedOption.includes(languages[language].assets.funds)
-                ? newValue
-                : fundsReal, // Coming soon - backend update required
-            },
-            gold: {
-              real: selectedOption.includes(languages[language].assets.gold)
-                ? newValue
-                : goldReal, // Coming soon - backend update required
-            },
-          },
-        };
-        await axios.post("/balances/add", balancesJson, { withCredentials: true });
+      // If user selected a balance to adjust, add the deleted outflow back to that balance
+      if (outflowsDelete.status === 200) {
+        if (selectedOption) {
+          const balanceOptions = {
+            [languages[language].assets.bank]: bankReal,
+            [languages[language].assets.cash]: cashReal,
+            [languages[language].assets.digitalServices]: digitalServicesReal,
+            [languages[language].assets.stocks]: stocksReal,
+            [languages[language].assets.etf]: etfReal,
+            [languages[language].assets.bitcoin]: bitcoinReal,
+            [languages[language].assets.crypto]: cryptoReal,
+            [languages[language].assets.bonds]: bondsReal,
+            [languages[language].assets.funds]: fundsReal,
+            [languages[language].assets.gold]: goldReal,
+          };
+          const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+          const outflowNumber = parseFloat(deleteOutflowAmount);
+          const newValue = valueBalanceSelected + outflowNumber;
+          const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+          await axios.post("/balances/add", balancesJson, { withCredentials: true });
+        }
+        handleSetIsUpdated(false);
+        setDeleteOutflowsSuccess(true);
+        fetchData();
+      } else {
+        showError(languages[language].insert.errors.outflowDeleteFailed);
       }
-      handleSetIsUpdated(false);
-      setDeleteOutflowsSuccess(true);
-      fetchData();
-    } else {
-      alert("Error in the update of the outflow");
+    } catch (error) {
+      console.error("Error deleting outflow:", error);
+      if (error.response?.status === 404) {
+        showError(languages[language].insert.errors.serverConnectionFailed);
+      } else {
+        showError(languages[language].insert.errors.outflowDeleteFailed);
+      }
     }
     setShowConfirmationDeleteOutflow(false);
   };
@@ -942,8 +831,8 @@ export default function InsertValue({
             setBitcoinReal={setBitcoinReal}
             cryptoReal={cryptoReal}
             setCryptoReal={setCryptoReal}
-            bondReal={bondReal}
-            setBondReal={setBondReal}
+            bondsReal={bondsReal}
+            setBondsReal={setBondsReal}
             fundsReal={fundsReal}
             setFundsReal={setFundsReal}
             goldReal={goldReal}
@@ -1084,6 +973,9 @@ export default function InsertValue({
           etfReal={etfReal}
           bitcoinReal={bitcoinReal}
           cryptoReal={cryptoReal}
+          bondsReal={bondsReal}
+          fundsReal={fundsReal}
+          goldReal={goldReal}
           categoryIncome={categoryIncome}
           income={income}
           noteIncomeAreaValue={noteIncomeAreaValue}

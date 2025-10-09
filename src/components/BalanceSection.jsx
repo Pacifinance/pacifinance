@@ -57,8 +57,8 @@ export default function BalanceSection({
   setBitcoinReal,
   cryptoReal,
   setCryptoReal,
-  bondReal,
-  setBondReal,
+  bondsReal,
+  setBondsReal,
   fundsReal,
   setFundsReal,
   goldReal,
@@ -241,51 +241,51 @@ export default function BalanceSection({
               />
             </div>
           </div>
-          {/* Bond - Coming Soon */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200, opacity: 0.6}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500, position: 'relative'}}>
-              {languages[language].assets.bond}
-              <span style={{fontSize: '0.7rem', color: '#888', marginLeft: '4px'}}>({languages[language].comingSoon})</span>
+          {/* Bonds */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
+              {languages[language].assets.bonds}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                disabled
-                placeholder={isHidden ? '****' : bondReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={{...inputWithCurrency, cursor: 'not-allowed', backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8f9fa'}}
+                onChange={(e) => handleInputChange(e, setBondsReal)}
+                onBlur={(e) => handleInputBlur(e, setBondsReal)}
+                placeholder={isHidden ? '****' : bondsReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
               />
             </div>
           </div>
-          {/* Funds - Coming Soon */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200, opacity: 0.6}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500, position: 'relative'}}>
+          {/* Funds */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.funds}
-              <span style={{fontSize: '0.7rem', color: '#888', marginLeft: '4px'}}>({languages[language].comingSoon})</span>
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                disabled
+                onChange={(e) => handleInputChange(e, setFundsReal)}
+                onBlur={(e) => handleInputBlur(e, setFundsReal)}
                 placeholder={isHidden ? '****' : fundsReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={{...inputWithCurrency, cursor: 'not-allowed', backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8f9fa'}}
+                style={inputWithCurrency}
               />
             </div>
           </div>
-          {/* Gold - Coming Soon */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200, opacity: 0.6}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500, position: 'relative'}}>
+          {/* Gold */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
               {languages[language].assets.gold}
-              <span style={{fontSize: '0.7rem', color: '#888', marginLeft: '4px'}}>({languages[language].comingSoon})</span>
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                disabled
+                onChange={(e) => handleInputChange(e, setGoldReal)}
+                onBlur={(e) => handleInputBlur(e, setGoldReal)}
                 placeholder={isHidden ? '****' : goldReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={{...inputWithCurrency, cursor: 'not-allowed', backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8f9fa'}}
+                style={inputWithCurrency}
               />
             </div>
           </div>

@@ -70,8 +70,32 @@ const SettingsPage = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [exportLoading, setExportLoading] = useState(false);
+    
+    // Stati per il filtro dati export
+    const [exportFilter, setExportFilter] = useState("all"); // "all", "last12", "specific"
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedYear, setSelectedYear] = useState("");
 
     const userType = userData?.userType || "";
+
+    // Genera opzioni per mesi e anni
+    const months = [
+        { value: 1, label: language === 'it' ? 'Gennaio' : 'January' },
+        { value: 2, label: language === 'it' ? 'Febbraio' : 'February' },
+        { value: 3, label: language === 'it' ? 'Marzo' : 'March' },
+        { value: 4, label: language === 'it' ? 'Aprile' : 'April' },
+        { value: 5, label: language === 'it' ? 'Maggio' : 'May' },
+        { value: 6, label: language === 'it' ? 'Giugno' : 'June' },
+        { value: 7, label: language === 'it' ? 'Luglio' : 'July' },
+        { value: 8, label: language === 'it' ? 'Agosto' : 'August' },
+        { value: 9, label: language === 'it' ? 'Settembre' : 'September' },
+        { value: 10, label: language === 'it' ? 'Ottobre' : 'October' },
+        { value: 11, label: language === 'it' ? 'Novembre' : 'November' },
+        { value: 12, label: language === 'it' ? 'Dicembre' : 'December' }
+    ];
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 5 }, (_, i) => currentYear - i); // Ultimi 5 anni
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -197,18 +221,25 @@ const SettingsPage = () => {
                 }
             }
             
+            // Prepara il filtro per l'export
+            const filterOptions = {
+                type: exportFilter,
+                month: selectedMonth ? parseInt(selectedMonth) : null,
+                year: selectedYear ? parseInt(selectedYear) : null
+            };
+
             switch (format) {
                 case 'csv':
-                    exportToCSV(completeUserData, language);
+                    await exportToCSV(completeUserData, language, filterOptions);
                     break;
                 case 'excel':
-                    await exportToExcel(completeUserData, language);
+                    await exportToExcel(completeUserData, language, filterOptions);
                     break;
                 case 'json':
-                    exportToJSON(completeUserData, language);
+                    exportToJSON(completeUserData, language, filterOptions);
                     break;
                 case 'pdf':
-                    await exportToPDF(completeUserData, language);
+                    await exportToPDF(completeUserData, language, filterOptions);
                     break;
                 default:
                     throw new Error('Formato non supportato');
@@ -356,7 +387,7 @@ const SettingsPage = () => {
                             </h3>
                             <p style={{ 
                                 color: theme.textColor, 
-                                marginBottom: "2rem",
+                                marginBottom: "1.5rem",
                                 fontSize: "1rem",
                                 lineHeight: "1.5"
                             }}>
@@ -364,6 +395,134 @@ const SettingsPage = () => {
                                     ? "Scarica tutti i tuoi dati dalla piattaforma in diversi formati"
                                     : "Download all your platform data in different formats"}
                             </p>
+
+                            {/* Filtri Export */}
+                            <div style={{
+                                backgroundColor: theme.cardColor,
+                                border: `1px solid ${theme.borderColor}`,
+                                borderRadius: "12px",
+                                padding: "1.5rem",
+                                marginBottom: "2rem"
+                            }}>
+                                <h4 style={{ 
+                                    color: theme.textColor, 
+                                    marginBottom: "1rem",
+                                    fontSize: "1.1rem"
+                                }}>
+                                    {language === "it" ? "Filtro Dati" : "Data Filter"}
+                                </h4>
+                                
+                                <div style={{
+                                    display: "grid",
+                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
+                                    gap: "1rem",
+                                    alignItems: "end"
+                                }}>
+                                    <div>
+                                        <label style={{ 
+                                            color: theme.textColor, 
+                                            fontSize: "0.9rem",
+                                            marginBottom: "0.5rem",
+                                            display: "block"
+                                        }}>
+                                            {language === "it" ? "Periodo" : "Period"}
+                                        </label>
+                                        <select
+                                            value={exportFilter}
+                                            onChange={(e) => setExportFilter(e.target.value)}
+                                            style={{
+                                                width: "100%",
+                                                padding: "0.75rem",
+                                                border: `1px solid ${theme.borderColor}`,
+                                                borderRadius: "8px",
+                                                backgroundColor: theme.inputBackground,
+                                                color: "#000000",
+                                                fontSize: "0.9rem"
+                                            }}
+                                        >
+                                            <option value="all" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Tutti i dati" : "All data"}
+                                            </option>
+                                            <option value="last12" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Ultimi 12 mesi" : "Last 12 months"}
+                                            </option>
+                                            <option value="specific" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Mese specifico" : "Specific month"}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    {exportFilter === "specific" && (
+                                        <>
+                                            <div>
+                                                <label style={{ 
+                                                    color: theme.textColor, 
+                                                    fontSize: "0.9rem",
+                                                    marginBottom: "0.5rem",
+                                                    display: "block"
+                                                }}>
+                                                    {language === "it" ? "Mese" : "Month"}
+                                                </label>
+                                                <select
+                                                    value={selectedMonth}
+                                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.75rem",
+                                                        border: `1px solid ${theme.borderColor}`,
+                                                        borderRadius: "8px",
+                                                        backgroundColor: theme.inputBackground,
+                                                        color: "#000000",
+                                                        fontSize: "0.9rem"
+                                                    }}
+                                                >
+                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        {language === "it" ? "Seleziona mese" : "Select month"}
+                                                    </option>
+                                                    {months.map(month => (
+                                                        <option key={month.value} value={month.value} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                            {month.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ 
+                                                    color: theme.textColor, 
+                                                    fontSize: "0.9rem",
+                                                    marginBottom: "0.5rem",
+                                                    display: "block"
+                                                }}>
+                                                    {language === "it" ? "Anno" : "Year"}
+                                                </label>
+                                                <select
+                                                    value={selectedYear}
+                                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.75rem",
+                                                        border: `1px solid ${theme.borderColor}`,
+                                                        borderRadius: "8px",
+                                                        backgroundColor: theme.inputBackground,
+                                                        color: "#000000",
+                                                        fontSize: "0.9rem"
+                                                    }}
+                                                >
+                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        {language === "it" ? "Seleziona anno" : "Select year"}
+                                                    </option>
+                                                    {years.map(year => (
+                                                        <option key={year} value={year} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                            {year}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                             
                             <div style={{
                                 display: "grid",

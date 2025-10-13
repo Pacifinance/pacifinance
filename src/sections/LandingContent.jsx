@@ -1,18 +1,23 @@
-import React, { useContext } from "react";
+import React, { useContext, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
-import LockIcon from "@mui/icons-material/Lock";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ShieldIcon from "@mui/icons-material/Shield";
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import PaidIcon from "@mui/icons-material/Paid";
-import StarIcon from "@mui/icons-material/Star";
+// Lazy import delle icone MUI per performance
+import { 
+  Lock as LockIcon,
+  CheckCircle as CheckCircleIcon, 
+  Shield as ShieldIcon,
+  Analytics as AnalyticsIcon,
+  CompareArrows as CompareArrowsIcon,
+  TrendingUp as TrendingUpIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Paid as PaidIcon,
+  Star as StarIcon
+} from "@mui/icons-material";
 import LandingPageImage from "../assets/LandingPage/PacifinanceArt2NoBg.webp";
 import Logo from "../assets/Brand/PacifinanceLogoPNG3NoBg.webp";
-import ConsentBanner from "../components/ConsentBanner";
-import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
+
+// Lazy loading dei componenti non critici per il First Contentful Paint
+const ConsentBanner = lazy(() => import("../components/ConsentBanner"));
+const BuyMeACoffeeWidget = lazy(() => import("../components/BuyMeACoffeeWidget"));
 import { LanguageContext } from "../contexts/LanguageContext";
 import languages from "../data/languages.json";
 
@@ -33,7 +38,9 @@ export default function NewLandingContent({ theme }) {
       className="relative left-0 w-full overflow-y-hidden"
       style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
     >
-      <ConsentBanner />
+      <Suspense fallback={<div></div>}>
+        <ConsentBanner />
+      </Suspense>
 
       {/* Hero Section */}
       <section
@@ -161,6 +168,8 @@ export default function NewLandingContent({ theme }) {
                 alt="PaciFinance Dashboard Preview"
                 className="max-w-full h-auto rounded-2xl shadow-2xl"
                 style={{ maxHeight: "600px" }}
+                loading="eager"
+                fetchPriority="high"
                 draggable="false"
                 onContextMenu={(e) => e.preventDefault()}
               />
@@ -462,7 +471,9 @@ export default function NewLandingContent({ theme }) {
           <p className="opacity-80 mb-6">
             {languages[language].landing.new.donation.description}
           </p>
-          <BuyMeACoffeeWidget showLink={true} />
+          <Suspense fallback={<div></div>}>
+            <BuyMeACoffeeWidget showLink={true} />
+          </Suspense>
         </div>
       </section>
     </div>

@@ -3,6 +3,16 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import AppRouter from './AppRouter';
+
+// Registrazione Service Worker per performance mobile
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch((error) => {
+        console.log('SW registration failed: ', error);
+      });
+  });
+}
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
 import { PageProvider } from './contexts/PageContext';

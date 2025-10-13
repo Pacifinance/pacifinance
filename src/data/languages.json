@@ -79,55 +79,55 @@
         "landing": {
             "new": {
                 "hero": {
-                    "title": "Prendi il Controllo",
-                    "subtitle": "delle Tue Finanze",
-                    "description": "L'unica piattaforma di finanza personale che mette la tua privacy al primo posto. Monitora, analizza e migliora la tua salute finanziaria in completo anonimato.",
+                    "title": "Unifica le Tue Finanze",
+                    "subtitle": "in Un'Unica Piattaforma",
+                    "description": "Hai conti sparsi tra banche diverse? Investimenti su più piattaforme? PaciFinance ti offre una visione completa dall'alto della tua situazione finanziaria, tutto in un posto.",
                     "getStarted": "Inizia Gratis",
                     "learnMore": "Scopri di Più",
                     "socialProof": "Affidabile da utenti attenti alla privacy in tutto il mondo"
                 },
                 "benefits": {
                     "freeForever": "100% Gratuito per Sempre",
-                    "privacyFirst": "Privacy Prima di Tutto",
-                    "smartAnalytics": "Analytics Intelligenti"
+                    "privacyFirst": "Confronti Anonimi",
+                    "smartAnalytics": "Visione Unificata"
                 },
                 "features": {
-                    "title": "Perché Scegliere PaciFinance?",
-                    "subtitle": "Abbiamo costruito la piattaforma di finanza personale definitiva pensando alla tua privacy e al tuo successo. Ecco cosa ci rende diversi.",
+                    "title": "Perché Hai Bisogno di PaciFinance?",
+                    "subtitle": "Basta con conti sparsi e informazioni frammentate. È tempo di avere una visione completa della tua situazione finanziaria.",
                     "privacy": {
-                        "title": "Privacy Completa",
-                        "description": "I tuoi dati finanziari sono protetti con sicurezza di livello bancario. Utilizziamo crittografia avanzata e analisi anonime per garantire che le tue informazioni rimangano private.",
+                        "title": "Confronti Anonimi Intelligenti",
+                        "description": "Scopri come ti posizioni rispetto ad altri utenti con profilo simile. Confronta stipendi, spese e investimenti in totale anonimato per capire dove puoi migliorare.",
                         "features": [
-                            "• Nessuna raccolta di dati personali",
-                            "• Solo confronti anonimi",
-                            "• Protezione dati avanzata"
+                            "• Confronti per età e professione",
+                            "• Statistiche di mercato anonime",
+                            "• Scopri se sei pagato adeguatamente"
                         ]
                     },
                     "analytics": {
-                        "title": "Analytics Intelligenti",
-                        "description": "Ottieni automaticamente insights e bellissime visualizzazioni della tua salute finanziaria. Monitora spese, investimenti e risparmi con facilità.",
+                        "title": "Visione Unificata e Completa",
+                        "description": "Ogni banca ha i suoi grafici, ogni app i suoi dati. PaciFinance riunisce tutto: conti correnti, investimenti, crypto in un'unica dashboard dall'alto.",
                         "features": [
-                            "• Categorizzazione automatica",
-                            "• Grafici interattivi",
-                            "• Analisi delle tendenze"
+                            "• Tutti i conti in una vista",
+                            "• Patrimonio totale in tempo reale",
+                            "• Analisi cross-platform"
                         ]
                     },
                     "comparisons": {
-                        "title": "Benchmarking Anonimo",
-                        "description": "Confronta i tuoi progressi finanziari con utenti simili in modo anonimo. Impara dagli altri senza compromettere la tua privacy.",
+                        "title": "Rompi il Tabù del Denaro",
+                        "description": "Non parliamo mai di soldi, ma la consapevolezza è potere. Confronta anonimamente le tue finanze con chi fa il tuo stesso lavoro per capire il tuo valore sul mercato.",
                         "features": [
-                            "• Confronti tra pari",
-                            "• Benchmark di settore",
-                            "• Monitoraggio della crescita"
+                            "• Il tuo stipendio è nella media?",
+                            "• Come gestiscono i soldi i tuoi pari?",
+                            "• Dove puoi migliorare?"
                         ]
                     },
                     "investment": {
-                        "title": "Gestione Investimenti",
-                        "description": "Monitora azioni, ETF, crypto e altri investimenti. Controlla le performance e la diversificazione con insights in tempo reale.",
+                        "title": "Investimenti Multi-Piattaforma",
+                        "description": "Hai investimenti sparsi su Fineco, Degiro, eToro, Binance? Finalmente puoi vedere tutto insieme e capire la tua vera diversificazione.",
                         "features": [
-                            "• Monitoraggio portafoglio",
-                            "• Analytics delle performance",
-                            "• Valutazione del rischio"
+                            "• Portfolio unificato",
+                            "• Diversificazione reale",
+                            "• Performance totale"
                         ]
                     },
                     "free": {
@@ -140,19 +140,19 @@
                         ]
                     },
                     "security": {
-                        "title": "Sicurezza di Grado Militare",
-                        "description": "La tua password e i dati sensibili sono protetti con hashing crittografico avanzato e molteplici livelli di sicurezza. I tuoi dati rimangono completamente anonimi.",
+                        "title": "Sicurezza e Privacy",
+                        "description": "I tuoi dati finanziari sono protetti con crittografia avanzata e rimangono completamente anonimi. Zero tracciamento, massima privacy.",
                         "features": [
-                            "• Hashing avanzato a 480 bit",
-                            "• Protezione multi-livello con salt",
-                            "• Anonimato completo degli utenti"
+                            "• Crittografia avanzata",
+                            "• Dati completamente anonimi",
+                            "• Nessun tracciamento pubblicitario"
                         ]
                     }
                 },
                 "cta": {
-                    "title": "Pronto a Prendere il Controllo del Tuo",
-                    "subtitle": "Futuro Finanziario",
-                    "description": "Unisciti a centinaia di utenti che hanno già trasformato le loro vite finanziarie con PaciFinance. Inizia il tuo viaggio oggi, completamente gratis.",
+                    "title": "Smetti di Navigare a Vista nelle Tue",
+                    "subtitle": "Finanze",
+                    "description": "Basta conti sparsi e confusione. Unifica tutto in PaciFinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
                     "button": "Apri il Tuo Account Gratuito",
                     "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente"
                 },
@@ -1238,9 +1238,9 @@
         "landing": {
             "new": {
                 "hero": {
-                    "title": "Take Control",
-                    "subtitle": "of Your Finances",
-                    "description": "The only personal finance platform that puts your privacy first. Track, analyze, and improve your financial health with complete anonymity.",
+                    "title": "Unify Your Finances",
+                    "subtitle": "in One Platform",
+                    "description": "Accounts scattered across different banks? Investments on multiple platforms? PaciFinance gives you a complete bird's-eye view of your financial situation, all in one place.",
                     "getStarted": "Get Started Free",
                     "learnMore": "Learn More",
                     "socialProof": "Trusted by privacy-conscious users worldwide"
@@ -1251,42 +1251,42 @@
                     "smartAnalytics": "Smart Analytics"
                 },
                 "features": {
-                    "title": "Why Choose PaciFinance?",
-                    "subtitle": "We've built the ultimate personal finance platform with your privacy and success in mind. Here's what makes us different.",
+                    "title": "How PaciFinance Solves Your Problems",
+                    "subtitle": "Tired of juggling multiple apps to see your complete financial picture? PaciFinance transforms the way you manage your money.",
                     "privacy": {
-                        "title": "Complete Privacy",
-                        "description": "Your financial data is protected with bank-level security. We use advanced encryption and anonymous analytics to ensure your information stays private.",
+                        "title": "Smart Anonymous Comparisons",
+                        "description": "Discover if you're spending too much or saving too little compared to people in similar situations. All comparisons are completely anonymous.",
                         "features": [
-                            "• No personal data collection",
-                            "• Anonymous comparisons only",
-                            "• Advanced data protection"
+                            "• Anonymous user matching",
+                            "• Spending pattern analysis", 
+                            "• Personalized insights"
                         ]
                     },
                     "analytics": {
-                        "title": "Smart Analytics",
-                        "description": "Get automatic insights and beautiful visualizations of your financial health. Track expenses, investments, and savings with ease.",
+                        "title": "Complete Unified View",
+                        "description": "See all your accounts, investments, and expenses in one dashboard. No more switching between apps to understand your financial situation.",
                         "features": [
-                            "• Automated categorization",
-                            "• Interactive charts",
+                            "• Multi-platform integration",
+                            "• Unified dashboard",
                             "• Trend analysis"
                         ]
                     },
                     "comparisons": {
-                        "title": "Anonymous Benchmarking",
-                        "description": "Compare your financial progress with similar users anonymously. Learn from others without compromising your privacy.",
+                        "title": "Break the Money Taboo",
+                        "description": "Finally discover if you're on the right track. Anonymous comparisons show you how your spending and savings compare to similar profiles.",
                         "features": [
-                            "• Peer comparisons",
-                            "• Industry benchmarks",
-                            "• Growth tracking"
+                            "• Anonymous peer comparisons",
+                            "• Spending benchmarks",
+                            "• Personalized recommendations"
                         ]
                     },
                     "investment": {
-                        "title": "Investment Management",
-                        "description": "Track stocks, ETFs, crypto, and other investments. Monitor performance and diversification with real-time insights.",
+                        "title": "Multi-Platform Investments",
+                        "description": "Track stocks, ETFs, crypto across different platforms. See your complete investment portfolio in one place, not scattered across apps.",
                         "features": [
-                            "• Portfolio tracking",
-                            "• Performance analytics",
-                            "• Risk assessment"
+                            "• Cross-platform tracking",
+                            "• Unified performance view",
+                            "• Diversification analysis"
                         ]
                     },
                     "free": {
@@ -1299,19 +1299,19 @@
                         ]
                     },
                     "security": {
-                        "title": "Military-Grade Security",
-                        "description": "Your password and sensitive data are protected with advanced cryptographic hashing and multiple security layers. Your data remains completely anonymous.",
+                        "title": "Bank-Level Security",
+                        "description": "Your financial data is protected with advanced encryption and security measures. Complete privacy and anonymity guaranteed.",
                         "features": [
-                            "• 480-bit advanced hashing",
-                            "• Multi-layer salt protection",
-                            "• Complete user anonymity"
+                            "• Advanced encryption",
+                            "• Anonymous data handling",
+                            "• Complete user privacy"
                         ]
                     }
                 },
                 "cta": {
-                    "title": "Ready to Take Control of Your",
-                    "subtitle": "Financial Future",
-                    "description": "Join hundreds of users who have already transformed their financial lives with PaciFinance. Start your journey today, completely free.",
+                    "title": "Ready to Unify Your",
+                    "subtitle": "Financial Life",
+                    "description": "Join users who have already gained complete control over their scattered finances with PaciFinance. See your complete financial picture today.",
                     "button": "Start Your Free Account",
                     "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately"
                 },

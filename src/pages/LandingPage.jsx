@@ -16,13 +16,35 @@ export default function NewLandingPage() {
   return (
     <>
       {/* SEO Meta Tags */}
-      <title>PaciFinance - Personal Finance Made Simple & Private</title>
-      <meta name="description" content="Take control of your personal finances with complete privacy. Track expenses, manage investments, and compare anonymously with similar users. Free forever." />
-      <meta name="keywords" content="personal finance, privacy, expense tracking, investment management, financial analytics, anonymous comparison" />
-      <meta property="og:title" content="PaciFinance - Personal Finance Made Simple & Private" />
-      <meta property="og:description" content="Take control of your personal finances with complete privacy. Track expenses, manage investments, and compare anonymously with similar users." />
+      <title>Unify Your Finances - PaciFinance Multi-Platform Dashboard</title>
+      <meta name="description" content="Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments. Free multi-platform financial dashboard." />
+      <meta name="keywords" content="unify finances, multi-platform dashboard, financial management, anonymous comparison, expense tracking, investment portfolio, bank account aggregation, financial analytics" />
+      <meta property="og:title" content="Unify Your Finances - PaciFinance Multi-Platform Dashboard" />
+      <meta property="og:description" content="Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments." />
       <meta property="og:type" content="website" />
       <meta name="twitter:card" content="summary_large_image" />
+      
+      {/* Schema.org Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "PaciFinance",
+          "description": "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments.",
+          "url": "https://pacifinance.com",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": ["Web Browser", "iOS", "Android"],
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "author": {
+            "@type": "Organization",
+            "name": "PaciFinance"
+          },
+        })}
+      </script>
       
       <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
         <Header theme={theme} mode={mode} toggleMode={toggleMode}/>

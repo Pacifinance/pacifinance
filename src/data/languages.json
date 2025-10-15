@@ -645,7 +645,7 @@
                     "description": "Vedi come ti posizioni rispetto ad altri utenti"
                 },
                 "insights": {
-                    "title": "Analisi Finanziarie",
+                    "title": "Confronto Finanziario",
                     "description": "Scopri pattern e opportunità"
                 },
                 "spending": {
@@ -1865,7 +1865,7 @@
                     "description": "See how you rank compared to other users"
                 },
                 "insights": {
-                    "title": "Financial Insights",
+                    "title": "Financial Comparison",
                     "description": "Discover patterns and opportunities"
                 },
                 "spending": {

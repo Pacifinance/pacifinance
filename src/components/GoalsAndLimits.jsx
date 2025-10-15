@@ -1,7 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import { UserContext } from '../contexts/UserContext';
 import languages from '../data/languages.json';
 import {
     FaBullseye, 
@@ -257,10 +258,64 @@ const SaveButton = styled.button`
   }
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+`;
+
+const ModalContent = styled.div`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(30,30,30,0.95)' : 'rgba(255,255,255,0.95)'};
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  backdrop-filter: blur(10px);
+  
+  h3 {
+    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+`;
+
+const CancelButton = styled.button`
+  background: transparent;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
+  color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+  }
+`;
+
 const ProfileSettings = ({ theme }) => {
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
+  const { userData, setUserData } = useContext(UserContext);
   
+  // Stati per i limiti e controlli
   const [settings, setSettings] = useState({
     monthlySpendingLimit: 2000,
     savingsGoalPercentage: 20,
@@ -268,30 +323,117 @@ const ProfileSettings = ({ theme }) => {
     notificationsEnabled: true
   });
 
-  const [goals, setGoals] = useState([
-    { id: 1, name: 'Fondo Emergenza', target: 10000, current: 3500, deadline: '2025-12-31', type: 'savings' },
-    { id: 2, name: 'Vacanze Estate', target: 3000, current: 1200, deadline: '2025-06-30', type: 'savings' },
-    { id: 3, name: 'Nuovo Laptop', target: 2500, current: 800, deadline: '2025-03-31', type: 'purchase' }
-  ]);
+  // Stati per gli obiettivi
+  const [goals, setGoals] = useState([]);
+  
+  // Stati per il modal di modifica
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(null);
+  const [modalGoalData, setModalGoalData] = useState({
+    name: '',
+    target: 0,
+    current: 0,
+    deadline: '',
+    type: 'savings'
+  });
+
+  // Carica i dati dal UserContext al montaggio del componente
+  useEffect(() => {
+    if (userData) {
+      // Carica i settings dall'UserContext se esistono, altrimenti usa i default
+      setSettings({
+        monthlySpendingLimit: userData.monthlySpendingLimit || 2000,
+        savingsGoalPercentage: userData.savingsGoalPercentage || 20,
+        emergencyFundTarget: userData.emergencyFundTarget || 10000,
+        notificationsEnabled: userData.notificationsEnabled !== undefined ? userData.notificationsEnabled : true
+      });
+      
+      // Carica gli obiettivi dall'UserContext se esistono, altrimenti usa esempi default
+      setGoals(userData.goals || [
+        { id: 1, name: 'Fondo Emergenza', target: 10000, current: 3500, deadline: '2025-12-31', type: 'savings' },
+        { id: 2, name: 'Vacanze Estate', target: 3000, current: 1200, deadline: '2025-06-30', type: 'savings' },
+        { id: 3, name: 'Nuovo Laptop', target: 2500, current: 800, deadline: '2025-03-31', type: 'purchase' }
+      ]);
+    }
+  }, [userData]);
+
+  // Funzione per aggiornare i dati nel UserContext (preparazione per DB)
+  const updateUserContextData = (newData) => {
+    setUserData(prev => ({
+      ...prev,
+      ...newData
+    }));
+    // TODO: Quando il backend sarà pronto, qui andrà chiamata l'API per salvare nel DB
+    // await axios.post('/user/updateGoalsAndLimits', newData, { withCredentials: true });
+  };
 
   const handleSettingChange = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+  };
+
+  const handleSaveSettings = () => {
+    // Salva i settings nel UserContext
+    updateUserContextData(settings);
   };
 
   const handleAddGoal = () => {
     const newGoal = {
       id: Date.now(),
-      name: 'Nuovo Obiettivo',
+      name: language === 'it' ? 'Nuovo Obiettivo' : 'New Goal',
       target: 1000,
       current: 0,
       deadline: '2025-12-31',
       type: 'savings'
     };
-    setGoals(prev => [...prev, newGoal]);
+    const newGoals = [...goals, newGoal];
+    setGoals(newGoals);
+    updateUserContextData({ goals: newGoals });
   };
 
   const handleDeleteGoal = (goalId) => {
-    setGoals(prev => prev.filter(goal => goal.id !== goalId));
+    const newGoals = goals.filter(goal => goal.id !== goalId);
+    setGoals(newGoals);
+    updateUserContextData({ goals: newGoals });
+  };
+
+  const handleEditGoal = (goal) => {
+    setEditingGoal(goal);
+    setModalGoalData({ ...goal });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveGoal = () => {
+    let newGoals;
+    if (editingGoal) {
+      // Modifica obiettivo esistente
+      newGoals = goals.map(goal => 
+        goal.id === editingGoal.id ? modalGoalData : goal
+      );
+    } else {
+      // Nuovo obiettivo
+      newGoals = [...goals, { ...modalGoalData, id: Date.now() }];
+    }
+    
+    setGoals(newGoals);
+    updateUserContextData({ goals: newGoals });
+    closeModal();
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingGoal(null);
+    setModalGoalData({
+      name: '',
+      target: 0,
+      current: 0,
+      deadline: '',
+      type: 'savings'
+    });
+  };
+
+  const handleModalInputChange = (key, value) => {
+    setModalGoalData(prev => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -369,7 +511,7 @@ const ProfileSettings = ({ theme }) => {
             </label>
           </FormGroup>
 
-          <SaveButton theme={theme}>
+          <SaveButton theme={theme} onClick={handleSaveSettings}>
             <FaSave />
             {language === 'it' ? 'Salva Impostazioni' : 'Save Settings'}
           </SaveButton>
@@ -389,7 +531,7 @@ const ProfileSettings = ({ theme }) => {
                 <div className="goal-header">
                   <h4>{goal.name}</h4>
                   <div className="goal-actions">
-                    <ActionButton theme={theme}>
+                    <ActionButton theme={theme} onClick={() => handleEditGoal(goal)}>
                       <FaEdit />
                     </ActionButton>
                     <ActionButton 
@@ -416,6 +558,91 @@ const ProfileSettings = ({ theme }) => {
           </AddGoalButton>
         </Section>
       </SectionsGrid>
+
+      {/* Modal per modifica obiettivo */}
+      {isModalOpen && (
+        <Modal onClick={closeModal}>
+          <ModalContent theme={theme} onClick={(e) => e.stopPropagation()}>
+            <h3>
+              {editingGoal 
+                ? (language === 'it' ? 'Modifica Obiettivo' : 'Edit Goal')
+                : (language === 'it' ? 'Nuovo Obiettivo' : 'New Goal')
+              }
+            </h3>
+            
+            <FormGroup theme={theme}>
+              <label>{language === 'it' ? 'Nome obiettivo' : 'Goal name'}</label>
+              <input
+                type="text"
+                value={modalGoalData.name}
+                onChange={(e) => handleModalInputChange('name', e.target.value)}
+                placeholder={language === 'it' ? 'Es. Fondo emergenza' : 'Ex. Emergency fund'}
+              />
+            </FormGroup>
+
+            <FormGroup theme={theme}>
+              <label>{language === 'it' ? 'Importo target (€)' : 'Target amount (€)'}</label>
+              <InputWithIcon theme={theme}>
+                <FaEuroSign className="input-icon" />
+                <input
+                  type="number"
+                  value={modalGoalData.target}
+                  onChange={(e) => handleModalInputChange('target', parseInt(e.target.value) || 0)}
+                  min="0"
+                />
+              </InputWithIcon>
+            </FormGroup>
+
+            <FormGroup theme={theme}>
+              <label>{language === 'it' ? 'Importo attuale (€)' : 'Current amount (€)'}</label>
+              <InputWithIcon theme={theme}>
+                <FaEuroSign className="input-icon" />
+                <input
+                  type="number"
+                  value={modalGoalData.current}
+                  onChange={(e) => handleModalInputChange('current', parseInt(e.target.value) || 0)}
+                  min="0"
+                />
+              </InputWithIcon>
+            </FormGroup>
+
+            <FormGroup theme={theme}>
+              <label>{language === 'it' ? 'Data scadenza' : 'Deadline'}</label>
+              <InputWithIcon theme={theme}>
+                <BsCalendar3 className="input-icon" />
+                <input
+                  type="date"
+                  value={modalGoalData.deadline}
+                  onChange={(e) => handleModalInputChange('deadline', e.target.value)}
+                />
+              </InputWithIcon>
+            </FormGroup>
+
+            <FormGroup theme={theme}>
+              <label>{language === 'it' ? 'Tipo obiettivo' : 'Goal type'}</label>
+              <select
+                value={modalGoalData.type}
+                onChange={(e) => handleModalInputChange('type', e.target.value)}
+              >
+                <option value="savings">{language === 'it' ? 'Risparmio' : 'Savings'}</option>
+                <option value="purchase">{language === 'it' ? 'Acquisto' : 'Purchase'}</option>
+                <option value="investment">{language === 'it' ? 'Investimento' : 'Investment'}</option>
+                <option value="debt">{language === 'it' ? 'Pagamento debito' : 'Debt payment'}</option>
+              </select>
+            </FormGroup>
+
+            <ModalActions>
+              <CancelButton theme={theme} onClick={closeModal}>
+                {language === 'it' ? 'Annulla' : 'Cancel'}
+              </CancelButton>
+              <SaveButton theme={theme} onClick={handleSaveGoal}>
+                <FaSave />
+                {language === 'it' ? 'Salva' : 'Save'}
+              </SaveButton>
+            </ModalActions>
+          </ModalContent>
+        </Modal>
+      )}
     </ProfileContainer>
   );
 };

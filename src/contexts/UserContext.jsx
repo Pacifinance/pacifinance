@@ -118,7 +118,18 @@ export const UserProvider = ({ children }) => {
             const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato'};
             const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
 
-
+            // TODO: Quando il backend sarà pronto, qui andranno caricate le impostazioni goals e limits dal DB
+            // const goalsAndLimitsData = await axios.post('/user/getGoalsAndLimits', null, { withCredentials: true });
+            const goalsAndLimitsData = {
+              goals: [],
+              limits: {
+                monthlySpendingLimit: 2000,
+                savingsGoalPercentage: 20,
+                emergencyFundTarget: 10000,
+                notificationsEnabled: true
+              }
+            };
+            const { goals, limits } = goalsAndLimitsData;
 
 
             //************************************* BALANCES **********************************************/
@@ -340,7 +351,9 @@ export const UserProvider = ({ children }) => {
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, bondsRealPreYearSameMonth, fundsRealPreYearSameMonth, goldRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
               preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, outflowsArray, incomesArray, allOutflows, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
               percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalOutflowsPerCategoryPerMonth,
-              userId, userType, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags
+              userId, userType, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags,
+              // Goals and limits data
+              goals, limits
             });
             handleSetIsUpdated(true);
         }

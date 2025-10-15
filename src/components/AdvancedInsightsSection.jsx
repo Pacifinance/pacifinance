@@ -122,7 +122,7 @@ const AdvancedInsightsSection = ({ theme, userData }) => {
   const tabs = [
     {
       id: 'insights',
-      name: language === 'it' ? 'Insights Finanziari' : 'Financial Insights',
+      name: language === 'it' ? 'Analisi Personale' : 'Personal Analysis',
       icon: FaBrain
     },
     {

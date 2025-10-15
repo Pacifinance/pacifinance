@@ -250,6 +250,46 @@ export default function SignUpForm() {
 
     return (
         <div>
+            {/* Registration Process Explanation */}
+            <div 
+                className="mb-6 p-4 rounded-lg border-l-4"
+                style={{ 
+                    borderLeftColor: theme.secondaryColor,
+                    backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}15` : `${theme.secondaryColor}10`,
+                    border: `1px solid ${theme.secondaryColor}30`
+                }}
+            >
+                <div className="flex items-start space-x-3">
+                    <InfoIcon 
+                        style={{ color: theme.secondaryColor, marginTop: '2px' }} 
+                        fontSize="small" 
+                    />
+                    <div className="text-sm">
+                        <h4 className="font-semibold mb-2" style={{ color: theme.secondaryColor }}>
+                            {language === 'it' ? 'Come funziona la registrazione' : 'How registration works'}
+                        </h4>
+                        <p className="opacity-90 mb-2">
+                            {language === 'it' 
+                                ? '🔐 Inserisci solo una password sicura - nessuna email richiesta'
+                                : '🔐 Just enter a secure password - no email required'
+                            }
+                        </p>
+                        <p className="opacity-90 mb-2">
+                            {language === 'it'
+                                ? '🎲 Il sistema genererà automaticamente un ID utente casuale'
+                                : '🎲 The system will automatically generate a random User ID'
+                            }
+                        </p>
+                        <p className="opacity-90">
+                            {language === 'it'
+                                ? '💾 Salva entrambi (ID + password) per accedere in futuro'
+                                : '💾 Save both (ID + password) to access your account later'
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div className="space-y-6">
                 <form
                     id="signUp-PasswordConfirm"
@@ -371,11 +411,54 @@ export default function SignUpForm() {
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="success-dialog-description">
-                            {languages[language].header.register.successPopup.message} <strong>{generated_user_id}</strong>
-                            <br /><br />
-                            <div dangerouslySetInnerHTML={{
-                                __html: languages[language].header.register.successPopup.securityMessage
-                            }} />
+                            <div className="space-y-4">
+                                <p>{languages[language].header.register.successPopup.message}</p>
+                                
+                                {/* ID Display Box */}
+                                <div 
+                                    className="p-4 rounded-lg border-2 text-center"
+                                    style={{ 
+                                        backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}15` : `${theme.secondaryColor}10`,
+                                        borderColor: theme.secondaryColor,
+                                        borderStyle: 'dashed'
+                                    }}
+                                >
+                                    <div className="text-sm opacity-70 mb-1">
+                                        {language === 'it' ? 'Il tuo ID utente generato:' : 'Your generated User ID:'}
+                                    </div>
+                                    <div 
+                                        className="text-lg font-mono font-bold"
+                                        style={{ color: theme.secondaryColor }}
+                                    >
+                                        {generated_user_id}
+                                    </div>
+                                </div>
+                                
+                                {/* Warning */}
+                                <div 
+                                    className="p-3 rounded-lg border-l-4 bg-orange-50 dark:bg-orange-900/20"
+                                    style={{ borderLeftColor: '#ff9800' }}
+                                >
+                                    <div className="flex items-start space-x-2">
+                                        <InfoIcon style={{ color: '#ff9800', fontSize: '20px', marginTop: '2px' }} />
+                                        <div className="text-sm">
+                                            <strong className="text-orange-600 dark:text-orange-400">
+                                                {language === 'it' ? '⚠️ Importante!' : '⚠️ Important!'}
+                                            </strong>
+                                            <p className="mt-1 text-orange-700 dark:text-orange-300">
+                                                {language === 'it' 
+                                                    ? 'Salva questo ID insieme alla tua password in un gestore di password sicuro. Senza questi dati il recupero account è impossibile.'
+                                                    : 'Save this ID along with your password in a secure password manager. Account recovery is impossible without this data.'
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div dangerouslySetInnerHTML={{
+                                    __html: languages[language].header.register.successPopup.securityMessage
+                                }} />
+                            </div>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
                     <MuiCustomDialogActions>

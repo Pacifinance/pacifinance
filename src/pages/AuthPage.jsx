@@ -62,12 +62,30 @@ export default function AuthPage() {
                     </>
                   )}
                 </h1>
-                <p className="text-lg opacity-80 mb-8">
+                <p className="text-lg opacity-80 mb-4">
                   {isSignUp 
                     ? languages[language].header.register.info
                     : languages[language].header.login.info
                   }
                 </p>
+                
+                {/* Quick Process Explanation for Sign Up */}
+                {isSignUp && (
+                  <div 
+                    className="p-3 rounded-lg border mb-6 text-sm"
+                    style={{ 
+                      backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}10` : `${theme.secondaryColor}05`,
+                      borderColor: `${theme.secondaryColor}40`
+                    }}
+                  >
+                    <div className="text-center opacity-90">
+                      {language === 'it' 
+                        ? '💫 Inserisci password → Sistema genera ID casuale → Salva entrambi'
+                        : '💫 Enter password → System generates random ID → Save both'
+                      }
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Authentication Form - Directly after title */}
@@ -254,12 +272,35 @@ export default function AuthPage() {
                       </>
                     )}
                   </h1>
-                  <p className="text-xl opacity-80 mb-8">
+                  <p className="text-xl opacity-80 mb-6">
                     {isSignUp 
                       ? languages[language].header.register.info
                       : languages[language].header.login.info
                     }
                   </p>
+                  
+                  {/* Quick Process Explanation for Sign Up */}
+                  {isSignUp && (
+                    <div 
+                      className="p-4 rounded-lg border mb-8"
+                      style={{ 
+                        backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}10` : `${theme.secondaryColor}05`,
+                        borderColor: `${theme.secondaryColor}40`
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="font-medium mb-2" style={{ color: theme.secondaryColor }}>
+                          {language === 'it' ? 'Processo di Registrazione Semplificato' : 'Simplified Registration Process'}
+                        </div>
+                        <div className="opacity-90">
+                          {language === 'it' 
+                            ? '💫 Inserisci una password sicura → Il sistema genera automaticamente un ID utente casuale → Salva entrambi per accessi futuri'
+                            : '💫 Enter a secure password → System automatically generates a random User ID → Save both for future access'
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {/* Security Features */}
                 <div className="space-y-6">

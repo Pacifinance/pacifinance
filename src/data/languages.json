@@ -185,7 +185,7 @@
             "register": {
                 "title": "Registrazione",
                 "titleButton": "Registrati",
-                "info": "Il sistema genererà per te un id univoco e casuale",
+                "info": "Nessuna email richiesta - il sistema genererà automaticamente il tuo ID utente",
                 "username": "ID o Username",
                 "password": "Password",
                 "confirmPassword": "Conferma Password",
@@ -196,9 +196,9 @@
                     "okButton": "ok va bene"
                 },
                 "successPopup": {
-                    "title": "Registrazione avvenuta con successo",
-                    "message": "Il tuo id utente è: ",
-                    "securityMessage": "Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.",
+                    "title": "🎉 Account creato con successo!",
+                    "message": "Ecco le tue credenziali di accesso:",
+                    "securityMessage": "<strong>💾 Salva queste credenziali ora!</strong><br/>Utilizza un gestore di password come Bitwarden, 1Password o LastPass per conservare in sicurezza sia l'ID che la password.",
                     "copied": "Copiato negli appunti!",
                     "toCopy": "Copia il tuo ID",
                     "okButton": "ok va bene"
@@ -1344,7 +1344,7 @@
             "register": {
                 "title": "Registration",
                 "titleButton": "Register",
-                "info": "The system will generate a unique and random id for you",
+                "info": "No email required - the system will automatically generate your User ID",
                 "username": "ID or Username",
                 "password": "Password",
                 "confirmPassword": "Confirm Password",
@@ -1355,9 +1355,9 @@
                     "okButton": "ok fine"
                 },
                 "successPopup": {
-                    "title": "Registration successful",
-                    "message": "Your user id is: ",
-                    "securityMessage": "We recommend that you save it in a safe place for future access.",
+                    "title": "🎉 Account created successfully!",
+                    "message": "Here are your login credentials:",
+                    "securityMessage": "<strong>💾 Save these credentials now!</strong><br/>Use a password manager like Bitwarden, 1Password, or LastPass to securely store both your ID and password.",
                     "copied": "Copied to clipboard!",
                     "toCopy": "Copy your ID",
                     "okButton": "ok fine"

@@ -7,6 +7,7 @@ import {
     AiOutlineDotChart,
 } from "react-icons/ai";
 import { BsBook, BsInfoCircle } from "react-icons/bs";
+import { FaUser, FaBullseye } from "react-icons/fa";
 import Tooltip from "@mui/material/Tooltip";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { Link, useLocation } from "react-router-dom";
@@ -32,7 +33,7 @@ import {
     ToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTrashCan, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTrashCan, faSignOutAlt, faUserCog } from "@fortawesome/free-solid-svg-icons";
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {
     SidebarToggleModeButton,
@@ -160,7 +161,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         if (path === "/dashboard") return 0;
         if (path === "/charts-statistics") return 1;
         if (path === "/insert-values") return 2;
-        if (path === "/check-prices") return 3;
         if (path === "/comparison") return 4;
         if (path === "/knowledge") return 5;
         if (path === "/info") return 6;
@@ -554,34 +554,63 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         }}
                                     >
                                         <button
-                                            className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                                             style={{
-                                                color: isActivePage("/account") ? "white" : theme.textColor,
-                                                backgroundColor: isActivePage("/account") ? theme.buttonBackgroundColor : "transparent",
+                                                color: isActivePage("/profile") ? "white" : theme.textColor,
+                                                backgroundColor: isActivePage("/profile") ? theme.buttonBackgroundColor : "transparent",
                                                 border: "none",
-                                                fontWeight: isActivePage("/account") ? "600" : "normal",
+                                                fontWeight: isActivePage("/profile") ? "600" : "normal",
                                             }}
                                             onMouseEnter={(e) => {
-                                                if (!isActivePage("/account")) {
+                                                if (!isActivePage("/profile")) {
                                                     e.target.style.backgroundColor = theme.buttonBackgroundColor;
                                                     e.target.style.color = "white";
                                                 }
                                             }}
                                             onMouseLeave={(e) => {
-                                                if (!isActivePage("/account")) {
+                                                if (!isActivePage("/profile")) {
                                                     e.target.style.backgroundColor = "transparent";
                                                     e.target.style.color = theme.textColor;
                                                 }
                                             }}
                                             onClick={() => {
-                                                navigate("/account");
+                                                navigate("/profile");
                                                 setShowDropdown(false);
                                             }}
                                         >
+                                            <FaUser size={14} />
                                             {languages[language].sidebar.account.title}
                                         </button>
                                         <button
-                                            className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
+                                            style={{
+                                                color: isActivePage("/goals-limits") ? "white" : theme.textColor,
+                                                backgroundColor: isActivePage("/goals-limits") ? theme.buttonBackgroundColor : "transparent",
+                                                border: "none",
+                                                fontWeight: isActivePage("/goals-limits") ? "600" : "normal",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (!isActivePage("/goals-limits")) {
+                                                    e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                                    e.target.style.color = "white";
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isActivePage("/goals-limits")) {
+                                                    e.target.style.backgroundColor = "transparent";
+                                                    e.target.style.color = theme.textColor;
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                navigate("/goals-limits");
+                                                setShowDropdown(false);
+                                            }}
+                                        >
+                                            <FaBullseye size={14} />
+                                            Goals and limits
+                                        </button>
+                                        <button
+                                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                                             style={{
                                                 color: isActivePage("/settings") ? "white" : theme.textColor,
                                                 backgroundColor: isActivePage("/settings") ? theme.buttonBackgroundColor : "transparent",
@@ -605,11 +634,12 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                 setShowDropdown(false);
                                             }}
                                         >
+                                            <FontAwesomeIcon icon={faUserCog} size="sm" />
                                             {languages[language].sidebar.settings.title}
                                         </button>
                                         <button
                                             data-umami-event="logoutButton"
-                                            className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full flex items-center gap-2"
+                                            className="text-left p-2 rounded-md transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                                             style={{
                                                 color: "#dc2626", // Rosso elegante
                                                 backgroundColor: "rgba(220, 38, 38, 0.05)", // Sfondo rosso molto leggero

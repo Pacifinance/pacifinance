@@ -249,7 +249,7 @@
             "logout": "Esci",
             "privacy": "Privacy",
             "account": {
-                "title": "Il tuo Profilo",
+                "title": "Profilo",
                 "subtitle": "Gestisci e personalizza le tue informazioni personali",
                 "id": "ID utente: ",
                 "userType": "Tipo utente: ",
@@ -495,6 +495,65 @@
                 "loadingCharts": "Caricamento grafici...",
                 "noDataAvailable": "Nessun dato disponibile",
                 "addDataFirst": "Aggiungi i tuoi dati per visualizzare le statistiche"
+            },
+            "insights": {
+                "title": "Insights Finanziari",
+                "subtitle": "Analisi intelligente dei tuoi dati finanziari",
+                "spendingRate": {
+                    "title": "Velocità di spesa",
+                    "low": "Spendi il {percentage}% delle tue entrate",
+                    "moderate": "Spendi il {percentage}% delle tue entrate", 
+                    "high": "Spendi il {percentage}% delle tue entrate",
+                    "recommendation": {
+                        "low": "Ottima gestione! Continua a risparmiare",
+                        "moderate": "Buona gestione, considera di aumentare i risparmi",
+                        "high": "Attenzione: potresti ridurre alcune spese"
+                    }
+                },
+                "diversification": {
+                    "title": "Diversificazione portafoglio",
+                    "poor": "Portafoglio poco diversificato",
+                    "good": "Buona diversificazione",
+                    "excellent": "Ottima diversificazione",
+                    "recommendation": {
+                        "poor": "Considera di diversificare maggiormente i tuoi investimenti",
+                        "good": "Continua a mantenere una buona diversificazione",
+                        "excellent": "Perfetto! Il tuo portafoglio è ben bilanciato"
+                    }
+                },
+                "liquidity": {
+                    "title": "Riserva di liquidità",
+                    "low": "Liquidità insufficiente",
+                    "adequate": "Liquidità adeguata",
+                    "high": "Liquidità elevata",
+                    "recommendation": {
+                        "low": "Mantieni almeno 3-6 mesi di spese in liquidità",
+                        "adequate": "La tua riserva di emergenza è adeguata",
+                        "high": "Potresti investire parte della liquidità in eccesso"
+                    }
+                }
+            },
+            "goals": {
+                "title": "Obiettivi Finanziari",
+                "subtitle": "Traccia i tuoi progressi verso gli obiettivi",
+                "addGoal": "Aggiungi Obiettivo",
+                "progress": "Progresso",
+                "completed": "Completato",
+                "targetAmount": "Importo obiettivo",
+                "currentAmount": "Importo attuale",
+                "timeline": "Scadenza",
+                "types": {
+                    "savings": "Risparmio",
+                    "investment": "Investimento", 
+                    "debt": "Riduzione debiti"
+                },
+                "examples": {
+                    "emergency": "Fondo emergenza",
+                    "vacation": "Vacanze",
+                    "house": "Casa",
+                    "retirement": "Pensione",
+                    "debt_payoff": "Estinzione debito"
+                }
             }
         },
         "insert": {
@@ -1408,7 +1467,7 @@
             "logout": "Logout",
             "privacy": "Privacy",
             "account": {
-                "title": "Your Account",
+                "title": "Profile",
                 "subtitle": "Manage and customize your personal information",
                 "id": "User ID: ",
                 "userType": "User Type: ",
@@ -1654,6 +1713,65 @@
                 "loadingCharts": "Loading charts...",
                 "noDataAvailable": "No data available",
                 "addDataFirst": "Add your data to view statistics"
+            },
+            "insights": {
+                "title": "Financial Insights",
+                "subtitle": "Smart analysis of your financial data",
+                "spendingRate": {
+                    "title": "Spending Rate",
+                    "low": "You spend {percentage}% of your income",
+                    "moderate": "You spend {percentage}% of your income",
+                    "high": "You spend {percentage}% of your income",
+                    "recommendation": {
+                        "low": "Great management! Keep saving",
+                        "moderate": "Good management, consider increasing savings",
+                        "high": "Attention: you might reduce some expenses"
+                    }
+                },
+                "diversification": {
+                    "title": "Portfolio Diversification",
+                    "poor": "Poorly diversified portfolio",
+                    "good": "Good diversification",
+                    "excellent": "Excellent diversification",
+                    "recommendation": {
+                        "poor": "Consider diversifying your investments more",
+                        "good": "Keep maintaining good diversification",
+                        "excellent": "Perfect! Your portfolio is well balanced"
+                    }
+                },
+                "liquidity": {
+                    "title": "Liquidity Reserve",
+                    "low": "Insufficient liquidity",
+                    "adequate": "Adequate liquidity",
+                    "high": "High liquidity",
+                    "recommendation": {
+                        "low": "Keep at least 3-6 months of expenses in liquidity",
+                        "adequate": "Your emergency reserve is adequate",
+                        "high": "You could invest part of the excess liquidity"
+                    }
+                }
+            },
+            "goals": {
+                "title": "Financial Goals",
+                "subtitle": "Track your progress towards goals",
+                "addGoal": "Add Goal",
+                "progress": "Progress",
+                "completed": "Completed",
+                "targetAmount": "Target amount",
+                "currentAmount": "Current amount",
+                "timeline": "Deadline",
+                "types": {
+                    "savings": "Savings",
+                    "investment": "Investment",
+                    "debt": "Debt Reduction"
+                },
+                "examples": {
+                    "emergency": "Emergency Fund",
+                    "vacation": "Vacation",
+                    "house": "House",
+                    "retirement": "Retirement",
+                    "debt_payoff": "Debt Payoff"
+                }
             }
         },
         "insert": {

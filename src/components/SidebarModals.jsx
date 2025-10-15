@@ -1,8 +1,10 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { FaBullseye } from 'react-icons/fa';
 import languages from "../data/languages.json";
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
@@ -1070,6 +1072,21 @@ const SidebarModals = ({
                             >
                                 {language === "it" ? "IT" : "EN"}
                             </SettingsToggleButton>
+                        </div>
+
+                        <div>
+                            <label>
+                                {language === 'it' ? 'Obiettivi e Limiti' : 'Goals & Limits'}
+                            </label>
+                            <Link to="/goals-limits" style={{ textDecoration: 'none' }}>
+                                <SettingsToggleButton
+                                    data-umami-event="goalsSettings-settings"
+                                    title="goalsSettingsButton"
+                                    onClick={handleCloseModal}
+                                >
+                                    <FaBullseye />
+                                </SettingsToggleButton>
+                            </Link>
                         </div>
 
                         <div

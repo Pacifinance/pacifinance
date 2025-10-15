@@ -62,10 +62,10 @@ export const mockDashboardData = {
         };
         
         return Array.from({ length: 13 }, (_, i) => {
-            const baseExpense = 1200;
-            const variation = Math.sin((today.getMonth() - i) * 0.5) * 300;
-            const randomFactor = (seededRandom() - 0.5) * 200;
-            return Math.max(500, Math.abs(baseExpense + variation + randomFactor)); // Min 500€
+            const baseExpense = 2100; // Aumentato per insights più realistici
+            const variation = Math.sin((today.getMonth() - i) * 0.5) * 400;
+            const randomFactor = (seededRandom() - 0.5) * 300;
+            return Math.max(800, Math.abs(baseExpense + variation + randomFactor)); // Min 800€
         });
     })(),
     
@@ -80,11 +80,50 @@ export const mockDashboardData = {
         };
         
         return Array.from({ length: 13 }, (_, i) => {
-            const baseSalary = 2800;
+            const baseSalary = 2800; // Manteniamo le entrate
             const variation = Math.sin((today.getMonth() - i) * 0.3) * 400;
             const randomBonus = seededRandom() * 300;
             return Math.max(1500, baseSalary + variation + randomBonus); // Min 1500€
         });
+    })(),
+    
+    // Aggiungi un array assets per gli insights
+    assets: [
+        { typology: 'cash', value: 500, date: new Date().toISOString().split('T')[0] },
+        { typology: 'bank', value: 20000, date: new Date().toISOString().split('T')[0] },
+        { typology: 'stocks', value: 8000, date: new Date().toISOString().split('T')[0] },
+        { typology: 'etf', value: 25000, date: new Date().toISOString().split('T')[0] },
+        { typology: 'bonds', value: 15000, date: new Date().toISOString().split('T')[0] },
+        { typology: 'funds', value: 12500, date: new Date().toISOString().split('T')[0] },
+        { typology: 'gold', value: 8000, date: new Date().toISOString().split('T')[0] }
+    ],
+    
+    // Array spese del mese corrente per insights
+    expenses: (() => {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        
+        return Array.from({ length: 15 }, (_, i) => ({
+            date: new Date(currentYear, currentMonth, i + 1).toISOString().split('T')[0],
+            value: Math.floor(Math.random() * 200) + 50, // Spese da 50-250€
+            category: ['Casa', 'Alimentari', 'Trasporti', 'Intrattenimento'][Math.floor(Math.random() * 4)]
+        }));
+    })(),
+    
+    // Array entrate del mese corrente per insights  
+    incomes: (() => {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        
+        return [
+            {
+                date: new Date(currentYear, currentMonth, 1).toISOString().split('T')[0],
+                value: 2800,
+                category: 'Stipendio'
+            }
+        ];
     })(),
     
     // Arrays dettagliati per tabelle insert-values (sempre del mese corrente)

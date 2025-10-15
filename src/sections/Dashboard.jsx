@@ -51,6 +51,8 @@ import {
     MainDashboardLayout,
     DashboardContent
 } from '../styles/ModernDashboardStyled';
+import FinancialInsights from '../components/FinancialInsights';
+import GoalTracker from '../components/GoalTracker';
 
 const ResponsivePadding = styled.div`
   padding: 0 2rem;
@@ -637,6 +639,13 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         </ModernChartContainer>
                     </div>
                 </ModernChartsSection>
+
+                {/* Financial Insights Section */}
+                <FinancialInsights theme={theme} userData={userData} />
+
+                {/* Goal Tracking Section */}
+                <GoalTracker theme={theme} userData={userData} />
+
                 </ResponsivePadding>
             </DashboardContent>
         </MainDashboardLayout>

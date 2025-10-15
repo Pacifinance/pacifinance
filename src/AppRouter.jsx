@@ -38,8 +38,9 @@ const ComparisonPage = React.lazy(() => import("./pages/ComparisonPage"));
 const CheckPrices = React.lazy(() => import("./pages/CheckPricesPage"));
 const Knowledge = React.lazy(() => import("./pages/KnowledgePage"));
 const Info = React.lazy(() => import("./pages/InfoPage"));
-const AccountPage = React.lazy(() => import("./pages/AccountPage"));
+const AccountPage = React.lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
+const GoalsSettingsPage = React.lazy(() => import("./pages/GoalsAndLimitsPage"));
 
 // Lazy loading per pagine legali/info (raramente visitate)
 const FAQPage = React.lazy(() => import("./pages/FAQPage"));
@@ -205,7 +206,7 @@ function AppRouter() {
           }
         />
         <Route
-          path="/account"
+          path="/profile"
           element={
             <ProtectedRoute>
               <AccountPage />
@@ -217,6 +218,14 @@ function AppRouter() {
           element={
             <ProtectedRoute>
               <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals-limits"
+          element={
+            <ProtectedRoute>
+              <GoalsSettingsPage />
             </ProtectedRoute>
           }
         />

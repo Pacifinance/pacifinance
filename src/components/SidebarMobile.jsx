@@ -2,7 +2,8 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faSignOutAlt, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { FaBullseye, FaUser } from 'react-icons/fa';
 import avatarImage from '../assets/account-logo.png';
 import languages from '../data/languages.json';
 import { DropdownContainer } from '../styles/MyStyled';
@@ -328,34 +329,63 @@ const SidebarMobile = ({
                         }}
                     >
                         <button
-                            className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                             style={{
-                                color: isActivePage("/account") ? "white" : theme.textColor,
-                                backgroundColor: isActivePage("/account") ? theme.buttonBackgroundColor : "transparent",
+                                color: isActivePage("/profile") ? "white" : theme.textColor,
+                                backgroundColor: isActivePage("/profile") ? theme.buttonBackgroundColor : "transparent",
                                 border: "none",
-                                fontWeight: isActivePage("/account") ? "600" : "normal",
+                                fontWeight: isActivePage("/profile") ? "600" : "normal",
                             }}
                             onMouseEnter={(e) => {
-                                if (!isActivePage("/account")) {
+                                if (!isActivePage("/profile")) {
                                     e.target.style.backgroundColor = theme.buttonBackgroundColor;
                                     e.target.style.color = "white";
                                 }
                             }}
                             onMouseLeave={(e) => {
-                                if (!isActivePage("/account")) {
+                                if (!isActivePage("/profile")) {
                                     e.target.style.backgroundColor = "transparent";
                                     e.target.style.color = theme.textColor;
                                 }
                             }}
                             onClick={() => {
-                                navigate("/account");
+                                navigate("/profile");
                                 setShowDropdown(false);
                             }}
                         >
+                            <FaUser size={14} />
                             {languages[language].sidebar.account.title}
                         </button>
                         <button
-                            className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full"
+                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
+                            style={{
+                                color: isActivePage("/goals-limits") ? "white" : theme.textColor,
+                                backgroundColor: isActivePage("/goals-limits") ? theme.buttonBackgroundColor : "transparent",
+                                border: "none",
+                                fontWeight: isActivePage("/goals-limits") ? "600" : "normal",
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isActivePage("/goals-limits")) {
+                                    e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                    e.target.style.color = "white";
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isActivePage("/goals-limits")) {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.color = theme.textColor;
+                                }
+                            }}
+                            onClick={() => {
+                                navigate("/goals-limits");
+                                setShowDropdown(false);
+                            }}
+                        >
+                            <FaBullseye size={14} />
+                            Goals and limits
+                        </button>
+                        <button
+                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                             style={{
                                 color: isActivePage("/settings") ? "white" : theme.textColor,
                                 backgroundColor: isActivePage("/settings") ? theme.buttonBackgroundColor : "transparent",
@@ -379,11 +409,12 @@ const SidebarMobile = ({
                                 setShowDropdown(false);
                             }}
                         >
+                            <FontAwesomeIcon icon={faUserCog} size="sm" />
                             {languages[language].sidebar.settings.title}
                         </button>
                         <button
                             data-umami-event="logoutButton"
-                            className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105 w-full flex items-center gap-2"
+                            className="text-left p-2 rounded-md transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                             style={{
                                 color: "#dc2626", // Rosso elegante
                                 backgroundColor: "rgba(220, 38, 38, 0.05)", // Sfondo rosso molto leggero

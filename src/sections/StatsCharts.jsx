@@ -11,7 +11,8 @@ import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown } from 'lucide-react';
+import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain } from 'lucide-react';
+import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
 
 const StatsContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -133,7 +134,9 @@ const TabButton = styled.button`
   
   color: ${props => props.active 
     ? 'white' 
-    : props.theme.textColor
+    : props.theme.mode === 'dark' 
+      ? 'white' 
+      : '#1f2937'
   };
   
   box-shadow: ${props => props.active 
@@ -619,6 +622,10 @@ export default function StatsCharts() {
         );
     };
 
+    const renderInsightsContent = () => {
+        return <AdvancedInsightsSection theme={theme} userData={userData} />;
+    };
+
     return (
         <StatsContainer theme={theme}>
             <HeaderSection>
@@ -646,11 +653,21 @@ export default function StatsCharts() {
                         <TrendingUp />
                         <span>{languages[language].graphs.statsOutflows.title}</span>
                     </TabButton>
+                    <TabButton
+                        theme={theme}
+                        active={activePage === "insights"}
+                        onClick={() => handlePageChange("insights")}
+                    >
+                        <Brain />
+                        <span>{language === 'it' ? 'Insights AI' : 'AI Insights'}</span>
+                    </TabButton>
                 </NavigationTabs>
             </HeaderSection>
 
             <MainContent>
-                {activePage === "statsBilancio" ? renderBalanceContent() : renderIncomeOutflowContent()}
+                {activePage === "statsBilancio" && renderBalanceContent()}
+                {activePage === "statsIncomesOutflows" && renderIncomeOutflowContent()}
+                {activePage === "insights" && renderInsightsContent()}
             </MainContent>
         </StatsContainer>
     );

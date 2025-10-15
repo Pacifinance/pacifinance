@@ -2466,6 +2466,11 @@ export const MuiCustomDialogContentText = styled(DialogContentText)`
   && {
     font-family: Roboto, sans-serif;
     color: black;
+    font-size: 0.9rem;
+    
+    @media (min-width: 768px) {
+      font-size: 0.8rem;
+    }
   }
 `;
 

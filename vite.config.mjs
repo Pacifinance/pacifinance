@@ -30,18 +30,14 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           // Chunk per le librerie di grafici (molto pesanti)
           'charts': ['recharts'],
-          // Chunk separato per MUI icons (ottimizzazione mobile)
-          'mui-icons': ['@mui/icons-material'],
-          // Chunk per le icone React (molto pesanti)
-          'react-icons': ['react-icons'],
+          // Chunk per le icone (molto pesanti)
+          'icons': ['react-icons'],
           // Chunk per styled-components
           'styled': ['styled-components'],
           // Chunk per le utility UI
           'ui-utils': ['react-calendar', 'react-csv', 'dom-to-image'],
           // Chunk per Emotion (se usato)
-          'emotion': ['@emotion/react', '@emotion/styled'],
-          // Chunk per utilities
-          'utils': ['axios', 'react-helmet']
+          'emotion': ['@emotion/react', '@emotion/styled']
         }
       }
     },
@@ -50,16 +46,9 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true, // Rimuove console.log in produzione
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'] // Rimuove specifiche funzioni console
-      },
-      mangle: {
-        safari10: true // Fix per Safari mobile
+        drop_debugger: true
       }
-    },
-    // Ottimizzazioni per mobile
-    target: ['es2015', 'safari11'], // Supporto browser mobile
-    sourcemap: false // Riduce dimensione bundle in produzione
+    }
   },
   define: {
     'process.env': 'import.meta.env'

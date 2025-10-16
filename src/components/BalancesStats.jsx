@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../data/languages.json';
 import { assetIcons } from '../data/assetIcons';
+import { assetColors } from '../data/assetColors';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 
 const ComparisonHeader = styled.div`
@@ -177,6 +178,10 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bitcoinReal, setBitcoinReal] = useState(0);
     const [digitalServicesReal, setDigitalServicesReal] = useState(0);
+    const [emergencyFundReal, setEmergencyFundReal] = useState(0);
+    const [bondsReal, setBondsReal] = useState(0);
+    const [fundsReal, setFundsReal] = useState(0);
+    const [goldReal, setGoldReal] = useState(0);
     const [totalReal, setTotalReal] = useState(0);
     
     // Previous period values
@@ -187,6 +192,10 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
     const [cryptoRealPrev, setCryptoRealPrev] = useState(0);
     const [bitcoinRealPrev, setBitcoinRealPrev] = useState(0);
     const [digitalServicesRealPrev, setDigitalServicesRealPrev] = useState(0);
+    const [emergencyFundRealPrev, setEmergencyFundRealPrev] = useState(0);
+    const [bondsRealPrev, setBondsRealPrev] = useState(0);
+    const [fundsRealPrev, setFundsRealPrev] = useState(0);
+    const [goldRealPrev, setGoldRealPrev] = useState(0);
     const [totalRealPrev, setTotalRealPrev] = useState(0);
     
     // Formatted date
@@ -204,6 +213,10 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                     setCryptoReal(userData.cryptoReal || 0);
                     setBitcoinReal(userData.bitcoinReal || 0);
                     setDigitalServicesReal(userData.digitalServicesReal || 0);
+                    setEmergencyFundReal(userData.emergencyFund || 0);
+                    setBondsReal(userData.bondsReal || 0);
+                    setFundsReal(userData.fundsReal || 0);
+                    setGoldReal(userData.goldReal || 0);
                     setTotalReal(userData.totalReal || 0);
 
                     // Previous period values based on period prop
@@ -215,6 +228,10 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         setCryptoRealPrev(userData.cryptoRealPreMonth || 0);
                         setBitcoinRealPrev(userData.bitcoinRealPreMonth || 0);
                         setDigitalServicesRealPrev(userData.digitalServicesRealPreMonth || 0);
+                        setEmergencyFundRealPrev(userData.emergencyFundPreMonth || 0);
+                        setBondsRealPrev(userData.bondsRealPreMonth || 0);
+                        setFundsRealPrev(userData.fundsRealPreMonth || 0);
+                        setGoldRealPrev(userData.goldRealPreMonth || 0);
                         setTotalRealPrev(userData.totalRealPreMonth || 0);
                         setFormattedPrevDate(userData.formattedPreMonthDate || '');
                     } else {
@@ -225,6 +242,10 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                         setCryptoRealPrev(userData.cryptoRealPreYearSameMonth || 0);
                         setBitcoinRealPrev(userData.bitcoinRealPreYearSameMonth || 0);
                         setDigitalServicesRealPrev(userData.digitalServicesRealPreYearSameMonth || 0);
+                        setEmergencyFundRealPrev(userData.emergencyFundRealPreYearSameMonth || 0);
+                        setBondsRealPrev(userData.bondsRealPreYearSameMonth || 0);
+                        setFundsRealPrev(userData.fundsRealPreYearSameMonth || 0);
+                        setGoldRealPrev(userData.goldRealPreYearSameMonth || 0);
                         setTotalRealPrev(userData.totalRealPreYearSameMonth || 0);
                         setFormattedPrevDate(userData.formattedPreYearSameMonthDate || '');
                     }
@@ -244,6 +265,103 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
     const totalChange = calculateDifference(totalReal, totalRealPrev);
     const totalPercentage = calculatePercentageChange(totalReal, totalRealPrev);
     const isPositiveChange = (((totalReal - totalRealPrev) / totalRealPrev) * 100) > 0;
+
+    // Configurazione dinamica degli asset
+    const assetsConfig = [
+        {
+            key: 'bank',
+            current: bankReal,
+            previous: bankRealPrev,
+            icon: assetIcons.bank,
+            color: assetColors.bank.primary,
+            label: languages[language].assets.bank
+        },
+        {
+            key: 'cash',
+            current: cashReal,
+            previous: cashRealPrev,
+            icon: assetIcons.cash,
+            color: assetColors.cash.primary,
+            label: languages[language].assets.cash
+        },
+        {
+            key: 'emergencyFund',
+            current: emergencyFundReal,
+            previous: emergencyFundRealPrev,
+            icon: assetIcons.emergencyFund,
+            color: assetColors.emergencyFund.primary,
+            label: languages[language].assets.emergencyFund
+        },
+        {
+            key: 'digitalServices',
+            current: digitalServicesReal,
+            previous: digitalServicesRealPrev,
+            icon: assetIcons.digitalServices,
+            color: assetColors.digitalServices.primary,
+            label: languages[language].assets.digitalServices
+        },
+        {
+            key: 'stocks',
+            current: stocksReal,
+            previous: stocksRealPrev,
+            icon: assetIcons.stocks,
+            color: assetColors.stocks.primary,
+            label: languages[language].assets.stocks
+        },
+        {
+            key: 'etf',
+            current: etfReal,
+            previous: etfRealPrev,
+            icon: assetIcons.etf,
+            color: assetColors.etf.primary,
+            label: languages[language].assets.etf
+        },
+        {
+            key: 'bitcoin',
+            current: bitcoinReal,
+            previous: bitcoinRealPrev,
+            icon: assetIcons.bitcoin,
+            color: assetColors.bitcoin.primary,
+            label: languages[language].assets.bitcoin
+        },
+        {
+            key: 'crypto',
+            current: cryptoReal,
+            previous: cryptoRealPrev,
+            icon: assetIcons.crypto,
+            color: assetColors.crypto.primary,
+            label: languages[language].assets.crypto
+        },
+        {
+            key: 'bonds',
+            current: bondsReal,
+            previous: bondsRealPrev,
+            icon: assetIcons.bonds,
+            color: assetColors.bonds.primary,
+            label: languages[language].assets.bonds
+        },
+        {
+            key: 'funds',
+            current: fundsReal,
+            previous: fundsRealPrev,
+            icon: assetIcons.funds,
+            color: assetColors.funds.primary,
+            label: languages[language].assets.funds
+        },
+        {
+            key: 'gold',
+            current: goldReal,
+            previous: goldRealPrev,
+            icon: assetIcons.gold,
+            color: assetColors.gold.primary,
+            label: languages[language].assets.gold
+        }
+    ];
+
+    // Filtra asset con valori non-zero (current o previous)
+    const visibleAssets = assetsConfig.filter(asset => 
+        asset.current !== 0 || asset.previous !== 0
+    );
 
     return (
         <div className="wrapper">
@@ -274,208 +392,43 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             </ComparisonHeader>
             
             <Section theme={theme}>
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#0D579B'}}>
-                            <assetIcons.bank/>
+                {visibleAssets.map((asset) => {
+                    const IconComponent = asset.icon;
+                    const isPositive = asset.current !== asset.previous 
+                        ? (asset.current > asset.previous) 
+                        : null;
+                    
+                    return (
+                        <div key={asset.key} className="analytic">
+                            <div className="design">
+                                <div className="logo" style={{ color: asset.color }}>
+                                    <IconComponent />
+                                </div>
+                            </div>
+                            <div className="transfer">
+                                <h2>{languages[language].graphs.statsBalance.variation}</h2>
+                                <h6>{asset.label}</h6>
+                            </div>
+                            <div className="money">
+                                <ColoredValue 
+                                    as="h5" 
+                                    theme={theme} 
+                                    $isPositive={isPositive}
+                                >
+                                    {isHidden ? '****' : formatCurrencyDifference(calculateDifference(asset.current, asset.previous))}
+                                </ColoredValue>
+                                <ColoredValue 
+                                    as="h6" 
+                                    className="text-xs" 
+                                    theme={theme} 
+                                    $isPositive={isPositive}
+                                >
+                                    {isHidden ? '****' : calculatePercentageChange(asset.current, asset.previous)}
+                                </ColoredValue>
+                            </div>
                         </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.bank}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={bankReal !== bankRealPrev ? (bankReal > bankRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(bankReal, bankRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={bankReal !== bankRealPrev ? (bankReal > bankRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(bankReal, bankRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
-
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#329239' }}>
-                            <assetIcons.cash />
-                        </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.cash}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={cashReal !== cashRealPrev ? (cashReal > cashRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(cashReal, cashRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={cashReal !== cashRealPrev ? (cashReal > cashRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(cashReal, cashRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
-
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#F7B510' }}>
-                            <assetIcons.bitcoin />
-                        </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.bitcoin}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={bitcoinReal !== bitcoinRealPrev ? (bitcoinReal > bitcoinRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(bitcoinReal, bitcoinRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={bitcoinReal !== bitcoinRealPrev ? (bitcoinReal > bitcoinRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(bitcoinReal, bitcoinRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
-
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#d63031' }}>
-                            <assetIcons.crypto />
-                        </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.crypto}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={cryptoReal !== cryptoRealPrev ? (cryptoReal > cryptoRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(cryptoReal, cryptoRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={cryptoReal !== cryptoRealPrev ? (cryptoReal > cryptoRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(cryptoReal, cryptoRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
-
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#74b9ff' }}>
-                            <assetIcons.digitalServices />
-                        </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.digitalServices}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={digitalServicesReal !== digitalServicesRealPrev ? (digitalServicesReal > digitalServicesRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(digitalServicesReal, digitalServicesRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={digitalServicesReal !== digitalServicesRealPrev ? (digitalServicesReal > digitalServicesRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(digitalServicesReal, digitalServicesRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
-
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#FF6600' }}>
-                            <assetIcons.stocks />
-                        </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.stocks}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={stocksReal !== stocksRealPrev ? (stocksReal > stocksRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(stocksReal, stocksRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={stocksReal !== stocksRealPrev ? (stocksReal > stocksRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(stocksReal, stocksRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
-
-                <div className="analytic">
-                    <div className="design">
-                        <div className="logo" style={{ color: '#a29bfe' }}>
-                            <assetIcons.etf />
-                        </div>
-                    </div>
-                    <div className="transfer">
-                        <h2>{languages[language].graphs.statsBalance.variation}</h2>
-                        <h6>{languages[language].assets.etf}</h6>
-                    </div>
-                    <div className="money">
-                        <ColoredValue 
-                            as="h5" 
-                            theme={theme} 
-                            $isPositive={etfReal !== etfRealPrev ? (etfReal > etfRealPrev) : null}
-                        >
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(etfReal, etfRealPrev))}
-                        </ColoredValue>
-                        <ColoredValue 
-                            as="h6" 
-                            className="text-xs" 
-                            theme={theme} 
-                            $isPositive={etfReal !== etfRealPrev ? (etfReal > etfRealPrev) : null}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(etfReal, etfRealPrev)}
-                        </ColoredValue>
-                    </div>
-                </div>
+                    );
+                })}
             </Section>
         </div>
     );

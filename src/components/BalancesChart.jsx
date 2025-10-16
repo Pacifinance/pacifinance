@@ -35,7 +35,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
   // Funzione per filtrare i dati in base al periodo selezionato
   const getFilteredData = () => {
     const allData = last12MonthsData.map((monthData) => {
-      const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0);
+      const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0) + (monthData.emergencyFundReal || 0);
       return {
         name: monthData.month,
         cash: monthData.cashReal,
@@ -48,6 +48,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         bonds: monthData.bondsReal || 0,
         funds: monthData.fundsReal || 0,
         gold: monthData.goldReal || 0,
+        emergencyFund: monthData.emergencyFundReal || 0,
         total: total,
         amt: 2400, 
       };
@@ -293,7 +294,8 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       <Bar dataKey="bitcoin" stackId="a" fill={isHidden ? '#E0E0E0' : getAssetColor('bitcoin', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="bonds" stackId="a" fill={isHidden ? '#F0F0F0' : getAssetColor('bonds', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="funds" stackId="a" fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="gold" stackId="a" fill={isHidden ? '#F8F8F8' : getAssetColor('gold', theme.mode)} radius={[4, 4, 0, 0]} />
+      <Bar dataKey="gold" stackId="a" fill={isHidden ? '#F8F8F8' : getAssetColor('gold', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="emergencyFund" stackId="a" fill={isHidden ? '#E5E5E5' : getAssetColor('emergencyFund', theme.mode)} radius={[4, 4, 0, 0]} />
       
       {/* Barra invisibile per il total - serve solo per mostrarlo nel tooltip */}
       <Bar dataKey="total" fill="transparent" strokeWidth={0} />
@@ -375,6 +377,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       {data.every(item => item['bonds'] === 0) || <Area type="monotone" dataKey={'bonds'} stroke={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} />}
       {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} />}
       {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
+      {data.every(item => item['emergencyFund'] === 0) || <Area type="monotone" dataKey={'emergencyFund'} stroke={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} />}
     </AreaChart>
   );
 

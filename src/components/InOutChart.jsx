@@ -39,8 +39,37 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
 
+  // Line visibility state for legend toggle
+  const [lineVisibility, setLineVisibility] = useState({
+    incomes: true,
+    outflows: true,
+    saved: true
+  });
+
   const greyColor1 = getRandomGrayscaleColor(1);
   const greyColor2 = getRandomGrayscaleColor(2);
+
+  // Funzione per gestire il toggle delle linee tramite click sulla legenda
+  const handleLegendClick = (data) => {
+    const key = data.dataKey;
+    let lineKey;
+    
+    // Mappa le dataKeys alle keys di visibilità
+    if (key === languages[language].general.incomes) {
+      lineKey = 'incomes';
+    } else if (key === languages[language].general.outflows) {
+      lineKey = 'outflows';
+    } else if (key === languages[language].general.saved) {
+      lineKey = 'saved';
+    }
+    
+    if (lineKey) {
+      setLineVisibility(prev => ({
+        ...prev,
+        [lineKey]: !prev[lineKey]
+      }));
+    }
+  };
 
   // Gestione responsive
   useEffect(() => {
@@ -138,6 +167,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
         name: displayName,
         [languages[language].general.outflows]: outflowsValue,
         [languages[language].general.incomes]: incomesValue,
+        [languages[language].general.saved]: Math.max(incomesValue - outflowsValue, 0),
         amt: 0, // Aggiungi eventuali dati aggiuntivi
       });
     }
@@ -532,61 +562,85 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               }}
             />
             
-            <Legend 
-              wrapperStyle={{ 
-                fontSize: containerWidth < 500 ? '16px' : '18px',
-                fontWeight: 500,
-                paddingTop: '15px'
-              }} 
-            />
+
             
-            <Line 
-              type="monotone" 
-              dataKey={languages[language].general.incomes} 
-              stroke={isHidden ? greyColor1 : "#079164"} 
-              strokeWidth={3}
-              connectNulls={false}
-              isAnimationActive={false}
-              dot={{ 
-                fill: isHidden ? greyColor1 : "#079164", 
-                strokeWidth: 2, 
-                r: 5 
-              }}
-              activeDot={{ 
-                r: 10, 
-                fill: isHidden ? greyColor1 : "#079164",
-                stroke: '#fff',
-                strokeWidth: 4,
-                style: { 
-                  cursor: 'pointer',
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                }
-              }} 
-            />
+            {lineVisibility.incomes && (
+              <Line 
+                type="monotone" 
+                dataKey={languages[language].general.incomes} 
+                stroke={isHidden ? greyColor1 : "#079164"} 
+                strokeWidth={3}
+                connectNulls={false}
+                isAnimationActive={false}
+                dot={{ 
+                  fill: isHidden ? greyColor1 : "#079164", 
+                  strokeWidth: 2, 
+                  r: 5 
+                }}
+                activeDot={{ 
+                  r: 10, 
+                  fill: isHidden ? greyColor1 : "#079164",
+                  stroke: '#fff',
+                  strokeWidth: 4,
+                  style: { 
+                    cursor: 'pointer',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                  }
+                }} 
+              />
+            )}
             
-            <Line 
-              type="monotone" 
-              dataKey={languages[language].general.outflows} 
-              stroke={isHidden ? greyColor2 : "#ff3838"} 
-              strokeWidth={3}
-              connectNulls={false}
-              isAnimationActive={false}
-              dot={{ 
-                fill: isHidden ? greyColor2 : "#ff3838", 
-                strokeWidth: 2, 
-                r: 5 
-              }}
-              activeDot={{ 
-                r: 10, 
-                fill: isHidden ? greyColor2 : "#ff3838",
-                stroke: '#fff',
-                strokeWidth: 4,
-                style: { 
-                  cursor: 'pointer',
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                }
-              }}
-            />
+            {lineVisibility.outflows && (
+              <Line 
+                type="monotone" 
+                dataKey={languages[language].general.outflows} 
+                stroke={isHidden ? greyColor2 : "#ff3838"} 
+                strokeWidth={3}
+                connectNulls={false}
+                isAnimationActive={false}
+                dot={{ 
+                  fill: isHidden ? greyColor2 : "#ff3838", 
+                  strokeWidth: 2, 
+                  r: 5 
+                }}
+                activeDot={{ 
+                  r: 10, 
+                  fill: isHidden ? greyColor2 : "#ff3838",
+                  stroke: '#fff',
+                  strokeWidth: 4,
+                  style: { 
+                    cursor: 'pointer',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                  }
+                }}
+              />
+            )}
+
+            {lineVisibility.saved && (
+              <Line 
+                type="monotone" 
+                dataKey={languages[language].general.saved} 
+                stroke={isHidden ? greyColor1 : "#06b6d4"} 
+                strokeWidth={3}
+                connectNulls={false}
+                isAnimationActive={false}
+                dot={{ 
+                  fill: isHidden ? greyColor1 : "#06b6d4", 
+                  strokeWidth: 2, 
+                  r: 5 
+                }}
+                activeDot={{ 
+                  r: 10, 
+                  fill: isHidden ? greyColor1 : "#06b6d4",
+                  stroke: '#fff',
+                  strokeWidth: 4,
+                  style: { 
+                    cursor: 'pointer',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                  }
+                }}
+              />
+            )}
             
             {/* Limite di spesa mensile - solo se abilitato dall'utente */}
             {userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit && !isHidden && (
@@ -597,10 +651,12 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
                 strokeWidth={2}
                 label={{ 
                   value: `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: €${userData.limits.monthlySpendingLimit.toLocaleString()}`,
-                  position: "topRight",
+                  position: "top",
+                  offset: 25,
                   fill: "#ff6b35",
                   fontSize: containerWidth < 500 ? 10 : 12,
-                  fontWeight: 600
+                  fontWeight: 600,
+                  textAnchor: 'middle'
                 }}
               />
             )}
@@ -621,16 +677,61 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
                     strokeWidth={2}
                     label={{ 
                       value: `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: €${savingsTarget.toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
-                      position: "topLeft",
+                      position: "bottom",
+                      offset: 25,
                       fill: "#10b981",
                       fontSize: containerWidth < 500 ? 10 : 12,
-                      fontWeight: 600
+                      fontWeight: 600,
+                      textAnchor: 'middle'
                     }}
                   />
                 ) : null;
               })()
             )}
           </LineChart>
+          
+        </div>
+        
+        {/* Legenda personalizzata - posizionata sotto il grafico */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          gap: '20px', 
+          paddingTop: '15px',
+          flexWrap: 'wrap',
+          width: '100%'
+        }}>
+          {[
+            { key: 'incomes', label: languages[language].general.incomes, color: "#079164" },
+            { key: 'outflows', label: languages[language].general.outflows, color: "#ff3838" },
+            { key: 'saved', label: languages[language].general.saved, color: "#06b6d4" }
+          ].map(({ key, label, color }) => (
+            <div
+              key={key}
+              onClick={() => handleLegendClick({ dataKey: label })}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                fontSize: containerWidth < 500 ? '16px' : '18px',
+                fontWeight: 500,
+                opacity: lineVisibility[key] ? 1 : 0.5,
+                textDecoration: lineVisibility[key] ? 'none' : 'line-through',
+                color: '#ffffff'
+              }}
+            >
+              <div
+                style={{
+                  width: '16px',
+                  height: '3px',
+                  backgroundColor: (isHidden ? (key === 'incomes' ? greyColor1 : key === 'outflows' ? greyColor2 : greyColor1) : color),
+                  opacity: lineVisibility[key] ? 1 : 0.3
+                }}
+              />
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </SectionInOut>

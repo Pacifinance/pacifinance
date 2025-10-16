@@ -10,8 +10,7 @@ import {
     FaBrain, 
     FaBullseye, 
     FaChartBar,
-    FaRocket,
-    FaLightbulb
+    FaRocket
 } from 'react-icons/fa';
 
 // Styled Components
@@ -22,42 +21,6 @@ const InsightsPageContainer = styled.div`
   
   @media (max-width: 768px) {
     padding: 0;
-  }
-`;
-
-const PageHeader = styled.div`
-  text-align: center;
-  margin-bottom: 2rem;
-  
-  h1 {
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, ${props => props.theme.secondaryColor}, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)'};
-    font-size: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-  
-  @media (max-width: 768px) {
-    margin-bottom: 1.5rem;
-    
-    h1 {
-      font-size: 1.7rem;
-    }
-    
-    p {
-      font-size: 0.9rem;
-    }
   }
 `;
 
@@ -76,12 +39,12 @@ const Tab = styled.button`
   background: none;
   border: none;
   padding: 1rem 2rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  color: ${props => props.active ? props.theme.secondaryColor : props.theme.textColor + '80'};
+  color: ${props => props.active ? props.theme.secondaryColor : '#ffffff'};
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -105,7 +68,7 @@ const Tab = styled.button`
   @media (max-width: 768px) {
     flex: 1;
     padding: 0.8rem 1rem;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
 `;
 
@@ -139,19 +102,6 @@ const AdvancedInsightsSection = ({ theme, userData }) => {
 
   return (
     <InsightsPageContainer theme={theme}>
-      <PageHeader theme={theme}>
-        <h1>
-          <FaLightbulb style={{ marginRight: '1rem', verticalAlign: 'middle' }} />
-          {language === 'it' ? 'Analisi Intelligente' : 'Smart Analysis'}
-        </h1>
-        <p>
-          {language === 'it' 
-            ? 'Ottieni insights personalizzati sui tuoi dati finanziari e traccia i tuoi obiettivi'
-            : 'Get personalized insights on your financial data and track your goals'
-          }
-        </p>
-      </PageHeader>
-      
       <ContentContainer>
         <TabsContainer theme={theme}>
           {tabs.map(tab => {

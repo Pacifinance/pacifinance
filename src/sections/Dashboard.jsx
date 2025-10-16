@@ -220,6 +220,11 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const totalEmergencySecurity = emergencyFundAsset.value; // For now only emergency fund, but prepared for future additions
     const totalBalance = totalReal;
 
+    // Calcola percentuale obiettivo emergency fund
+    const emergencyFundGoal = userData?.goals?.find(goal => goal.type === 'emergencyFund');
+    const emergencyFundTarget = emergencyFundGoal?.target || userData?.limits?.emergencyFundTarget;
+    const emergencyFundProgress = emergencyFundTarget ? Math.min((emergencyFundAsset.value / emergencyFundTarget) * 100, 100) : null;
+
     // Dati per i grafici patrimoniali
     const pieData = [
         { name: languages[language].dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
@@ -438,6 +443,15 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                 <div className="asset-percentage">
                                                     {formatPercentage(emergencyFundAsset.value, totalBalance)} {languages[language].dashboard.ofTotal}
                                                 </div>
+                                                {emergencyFundProgress !== null && !isHidden && (
+                                                    <div style={{
+                                                        fontSize: '0.8rem',
+                                                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                                        marginTop: '0.25rem'
+                                                    }}>
+                                                        {languages[language].general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
+                                                    </div>
+                                                )}
                                             </div>
                                             
                                             <div className="card-footer">
@@ -746,7 +760,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     }}>
                         {/* Grafico Distribuzione Patrimonio Completa */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
-                            <h4>{languages[language].dashboard.titleGraph}</h4>
+                            <h4>{languages[language].dashboard.titleGraph2}</h4>
                             <ResponsiveContainer width="100%" height={350}>
                                 <PieChart>
                                     <Pie
@@ -834,7 +848,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                         {/* Grafico Distribuzione Patrimonio */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
-                            <h4>{languages[language].dashboard.titleGraph2}</h4>
+                            <h4>{languages[language].dashboard.titleGraph}</h4>
                             <ResponsiveContainer width="100%" height={350}>
                                 <PieChart>
                                     <Pie

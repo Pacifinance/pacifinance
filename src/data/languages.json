@@ -37,7 +37,8 @@
             "deposited": "Depositati",
             "comingSoon": "Prossimamente",
             "weAreWorking": "Stiamo lavorando a questa funzionalità",
-            "selectAnOption": "Seleziona un'opzione"
+            "selectAnOption": "Seleziona un'opzione",
+            "objective": "Obiettivo"
         },
         "months": {
             "january": "Gennaio",
@@ -421,8 +422,8 @@
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Il tuo patrimonio totale è: ",
-            "titleGraph": "Distribuzione Investimenti",
-            "titleGraph2": "Distribuzione Capitale",
+            "titleGraph": "Distribuzione Capitale",
+            "titleGraph2": "Distribuzione Patrimonio",
             "titleGraph3": "Entrate | Uscite",
             "updateValue": "Aggiorna valore",
             "noData": "Assenza di dati:",
@@ -1287,7 +1288,8 @@
             "deposited": "Deposited",
             "comingSoon": "Coming soon",
             "weAreWorking": "We are working on this feature",
-            "selectAnOption": "Select an option"
+            "selectAnOption": "Select an option",
+            "objective": "Objective"
         },
         "cookie": {
             "title": "We use cookies",
@@ -1672,8 +1674,8 @@
         "dashboard": {
             "title": "Dashboard",
             "totalBalance": "Your total balance is: ",
-            "titleGraph": "Investment Distribution",
-            "titleGraph2": "Capital Distribution",
+            "titleGraph": "Capital Distribution",
+            "titleGraph2": "Balance Distribution",
             "titleGraph3": "Income | Outflows",
             "updateValue": "Update value",
             "noData": "No data:",
@@ -1724,7 +1726,7 @@
                 "title": "Balance statistics",
                 "titleGraph": "Trend of your balance in the last 12 months",
                 "titleGraph2": "Distribution of your balance in the last 12 months",
-                "detailedVision": "Detailed vision",
+                "detailedVision": "Balance comparison with previous periods",
                 "titleDetailsMonth": "Your balance compared to last month has changed by: ",
                 "variation": "Variation ",
                 "titleDetailsYear": "Your balance compared to a year ago has changed by: "

@@ -53,6 +53,9 @@ import {
 } from '../styles/ModernDashboardStyled';
 import FinancialInsights from '../components/FinancialInsights';
 import GoalTracker from '../components/GoalTracker';
+import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
+import { BsPercent } from 'react-icons/bs';
+import { GiUmbrella } from 'react-icons/gi';
 
 const ResponsivePadding = styled.div`
   padding: 0 2rem;
@@ -74,6 +77,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const [etfReal, setETFReal] = useState(0);
     const [bankReal, setBankReal] = useState(0);
     const [cashReal, setCashReal] = useState(0);
+    const [emergencyFund, setEmergencyFund] = useState(0);
     const [cryptoReal, setCryptoReal] = useState(0);
     const [bitcoinReal, setBitcoinReal] = useState(0);
     const [digitalServicesReal, setDigitalServicesReal] = useState(0);
@@ -95,6 +99,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     setCryptoReal(userData ? userData.cryptoReal : 0);
                     setBankReal(userData? userData.bankReal : 0);
                     setCashReal(userData ? userData.cashReal : 0);
+                    setEmergencyFund(userData ? userData.emergencyFund : 0);
                     setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
                     setBondsReal(userData ? userData.bondsReal : 0);
                     setFundsReal(userData ? userData.fundsReal : 0);
@@ -137,6 +142,15 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             gradient: assetColors.digitalServices.gradient
         },
     ];
+
+    // Fondo di Emergenza - Sezione separata
+    const emergencyFundAsset = {
+        name: languages[language].assets.emergencyFund, 
+        value: emergencyFund >= 0 ? emergencyFund : 0,
+        icon: assetIcons.emergencyFund,
+        color: assetColors.emergencyFund.primary,
+        gradient: assetColors.emergencyFund.gradient
+    };
 
     // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Gold)
     const allInvestments = [
@@ -203,11 +217,13 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
     const totalTraditional = traditionalAssets.reduce((acc, asset) => acc + asset.value, 0);
     const totalInvestments = allInvestments.reduce((acc, investment) => acc + investment.value, 0);
+    const totalEmergencySecurity = emergencyFundAsset.value; // For now only emergency fund, but prepared for future additions
     const totalBalance = totalReal;
 
     // Dati per i grafici patrimoniali
     const pieData = [
         { name: languages[language].dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
+        ...(totalEmergencySecurity > 0 ? [{ name: languages[language].dashboard.emergencySecurity, value: totalEmergencySecurity, color: emergencyFundAsset.color }] : []),
         { name: languages[language].general.investments, value: totalInvestments, color: assetColors.totalInvestments }
     ];
 
@@ -217,6 +233,11 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             value: asset.value,
             color: asset.color
         })),
+        ...(emergencyFundAsset.value > 0 ? [{
+            name: emergencyFundAsset.name,
+            value: emergencyFundAsset.value,
+            color: emergencyFundAsset.color
+        }] : []),
         ...investments.filter(investment => investment.value > 0).map(investment => ({
             name: investment.name,
             value: investment.value,
@@ -319,6 +340,17 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                 </div>
                             </ModernMetricCard>
                             
+                            {totalEmergencySecurity > 0 && (
+                                <ModernMetricCard theme={theme}>
+                                    <GiUmbrella className="metric-icon" />
+                                    <div className="metric-content">
+                                        <div className="metric-value">{formatCurrency(totalEmergencySecurity)}</div>
+                                        <div className="metric-label">{languages[language].dashboard.emergencySecurity}</div>
+                                        <div className="metric-percentage">{formatPercentage(totalEmergencySecurity, totalBalance)}</div>
+                                    </div>
+                                </ModernMetricCard>
+                            )}
+                            
                             <ModernMetricCard theme={theme}>
                                 <FaRocket className="metric-icon" />
                                 <div className="metric-content">
@@ -332,32 +364,79 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 </ModernDashboardHeader>
 
                 <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: '2rem' }}>
-                    {/* Sezione Bilanci Tradizionali */}
-                    <div style={{ flex: '1' }}>
-                        <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
-                            <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
-                            {languages[language].dashboard.liquidityAvailability}
-                        </h3>
-                        <ModernAssetsGrid theme={theme}>
-                            {traditionalAssets.map((asset, index) => {
-                                const IconComponent = asset.icon;
-                                return (
-                                    <ModernAssetCard key={index} theme={theme} gradient={asset.gradient}>
-                                        <FloatingElement delay={index * 0.2}>
+                    {/* Colonna Sinistra - Liquidità + Emergency Fund */}
+                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                        {/* Sezione Bilanci Tradizionali */}
+                        <div>
+                            <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
+                                <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
+                                {languages[language].dashboard.liquidityAvailability}
+                            </h3>
+                            <ModernAssetsGrid theme={theme}>
+                                {traditionalAssets.map((asset, index) => {
+                                    const IconComponent = asset.icon;
+                                    return (
+                                        <ModernAssetCard key={index} theme={theme} gradient={asset.gradient}>
+                                            <FloatingElement delay={index * 0.2}>
+                                                <div className="card-header">
+                                                    <div className="icon-container">
+                                                        <IconComponent className="asset-icon" />
+                                                    </div>
+                                                    <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                        <AiOutlinePlusCircle />
+                                                    </Link>
+                                                </div>
+                                                
+                                                <div className="card-content">
+                                                    <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
+                                                    <div className="asset-value">{formatCurrency(asset.value)}</div>
+                                                    <div className="asset-percentage">
+                                                        {formatPercentage(asset.value, totalBalance)} {languages[language].dashboard.ofTotal}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="card-footer">
+                                                    <div className="progress-bar">
+                                                        <div 
+                                                            className="progress-fill" 
+                                                            style={{ 
+                                                                width: `${formatPercentage(asset.value, totalBalance)}%`,
+                                                                backgroundColor: asset.color
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </FloatingElement>
+                                        </ModernAssetCard>
+                                    );
+                                })}
+                            </ModernAssetsGrid>
+                        </div>
+
+                        {/* Sezione Fondo di Emergenza - Sotto la liquidità */}
+                        {emergencyFundAsset.value > 0 && (
+                            <div>
+                                <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
+                                    <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
+                                    {languages[language].dashboard.emergencySecurity}
+                                </h3>
+                                <ModernAssetsGrid theme={theme}>
+                                    <ModernAssetCard theme={theme} gradient={emergencyFundAsset.gradient}>
+                                        <FloatingElement delay={0.3}>
                                             <div className="card-header">
                                                 <div className="icon-container">
-                                                    <IconComponent className="asset-icon" />
+                                                    <GiUmbrella className="asset-icon" />
                                                 </div>
-                                                <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
                                                     <AiOutlinePlusCircle />
                                                 </Link>
                                             </div>
                                             
                                             <div className="card-content">
-                                                <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
-                                                <div className="asset-value">{formatCurrency(asset.value)}</div>
+                                                <h4 className="asset-name">{isHidden ? '****' : emergencyFundAsset.name}</h4>
+                                                <div className="asset-value">{formatCurrency(emergencyFundAsset.value)}</div>
                                                 <div className="asset-percentage">
-                                                    {formatPercentage(asset.value, totalBalance)} {languages[language].dashboard.ofTotal}
+                                                    {formatPercentage(emergencyFundAsset.value, totalBalance)} {languages[language].dashboard.ofTotal}
                                                 </div>
                                             </div>
                                             
@@ -366,20 +445,20 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                     <div 
                                                         className="progress-fill" 
                                                         style={{ 
-                                                            width: `${formatPercentage(asset.value, totalBalance)}%`,
-                                                            backgroundColor: asset.color
+                                                            width: `${formatPercentage(emergencyFundAsset.value, totalBalance)}%`,
+                                                            backgroundColor: emergencyFundAsset.color
                                                         }}
                                                     />
                                                 </div>
                                             </div>
                                         </FloatingElement>
                                     </ModernAssetCard>
-                                );
-                            })}
-                        </ModernAssetsGrid>
+                                </ModernAssetsGrid>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Sezione Investimenti */}
+                    {/* Colonna Destra - Investimenti */}
                     <div style={{ flex: '1' }}>
                         <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
                             <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
@@ -452,6 +531,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         {languages[language].dashboard.titleGraph3}
                     </h3>
                     
+                    {/* Card principali: Entrate, Uscite, Risparmiato */}
                     <div style={{ 
                         display: 'flex', 
                         flexDirection: isMobileScreen ? 'column' : 'row', 
@@ -491,6 +571,164 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             </ModernIncomeExpenseCard>
                         ))}
                     </div>
+
+                    {/* Obiettivi e Limiti - Card più piccole sotto */}
+                    {(userData?.limits?.notificationsEnabled && !isHidden && 
+                      (userData?.limits?.monthlySpendingLimit || userData?.limits?.savingsGoalPercentage)) && (
+                        <div style={{ 
+                            display: 'flex', 
+                            flexDirection: isMobileScreen ? 'column' : 'row',
+                            gap: '0.75rem',
+                            justifyContent: 'center',
+                            marginTop: '1.5rem',
+                            maxWidth: '500px',
+                            margin: '1.5rem auto 0 auto'
+                        }}>
+                            {/* Card Limite Spesa - più piccola */}
+                            {userData.limits.monthlySpendingLimit && (
+                                (() => {
+                                    const currentExpenses = expensesMonth;
+                                    const progress = (currentExpenses / userData.limits.monthlySpendingLimit) * 100;
+                                    const isOverLimit = progress > 100;
+                                    const isNearLimit = progress > 80;
+                                    const limitColor = isOverLimit ? '#e74c3c' : isNearLimit ? '#f39c12' : '#27ae60';
+                                    
+                                    return (
+                                        <div key="spending-limit" style={{
+                                            background: theme.mode === 'dark' 
+                                                ? `linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)`
+                                                : `linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)`,
+                                            border: `2px solid ${limitColor}`,
+                                            borderRadius: '10px',
+                                            padding: '0.75rem',
+                                            flex: '1',
+                                            textAlign: 'center',
+                                            minHeight: '90px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <FloatingElement delay={0.4}>
+                                                <FaExclamationTriangle style={{ 
+                                                    color: limitColor, 
+                                                    fontSize: '1.2rem', 
+                                                    marginBottom: '0.3rem' 
+                                                }} />
+                                                <div style={{ 
+                                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a1a',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: '600',
+                                                    marginBottom: '0.2rem'
+                                                }}>
+                                                    {language === 'it' ? 'Limite Spesa' : 'Spending Limit'}
+                                                </div>
+                                                <div style={{ 
+                                                    color: limitColor,
+                                                    fontSize: '1.3rem',
+                                                    fontWeight: '700',
+                                                    marginBottom: '0.2rem'
+                                                }}>
+                                                    {progress.toFixed(0)}%
+                                                </div>
+                                                <div style={{ 
+                                                    fontSize: '0.65rem',
+                                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                                    marginBottom: '0.15rem'
+                                                }}>
+                                                    {formatCurrency(currentExpenses)} / {formatCurrency(userData.limits.monthlySpendingLimit)}
+                                                </div>
+                                                <div style={{ 
+                                                    color: limitColor,
+                                                    fontWeight: '600',
+                                                    fontSize: '0.6rem',
+                                                    textTransform: 'uppercase'
+                                                }}>
+                                                    {isOverLimit 
+                                                        ? (language === 'it' ? 'SUPERATO' : 'EXCEEDED')
+                                                        : isNearLimit 
+                                                            ? (language === 'it' ? 'ATTENZIONE' : 'WARNING')
+                                                            : (language === 'it' ? 'OK' : 'ON TRACK')
+                                                    }
+                                                </div>
+                                            </FloatingElement>
+                                        </div>
+                                    );
+                                })()
+                            )}
+
+                            {/* Card Obiettivo Risparmio - più piccola */}
+                            {userData.limits.savingsGoalPercentage && (
+                                (() => {
+                                    const savingsTarget = (incomesMonth * userData.limits.savingsGoalPercentage) / 100;
+                                    const progress = savingsTarget > 0 ? (savedMonth / savingsTarget) * 100 : 0;
+                                    const isGoodProgress = progress >= 100;
+                                    const isOkProgress = progress >= 50;
+                                    const savingsColor = isGoodProgress ? '#27ae60' : isOkProgress ? '#f39c12' : '#e74c3c';
+                                    
+                                    return (
+                                        <div key="savings-goal" style={{
+                                            background: theme.mode === 'dark' 
+                                                ? `linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)`
+                                                : `linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)`,
+                                            border: `2px solid ${savingsColor}`,
+                                            borderRadius: '10px',
+                                            padding: '0.75rem',
+                                            flex: '1',
+                                            textAlign: 'center',
+                                            minHeight: '90px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <FloatingElement delay={0.5}>
+                                                <FaBullseye style={{ 
+                                                    color: savingsColor, 
+                                                    fontSize: '1.2rem', 
+                                                    marginBottom: '0.3rem' 
+                                                }} />
+                                                <div style={{ 
+                                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a1a',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: '600',
+                                                    marginBottom: '0.2rem'
+                                                }}>
+                                                    {language === 'it' ? 'Obiettivo Risparmio' : 'Savings Goal'}
+                                                </div>
+                                                <div style={{ 
+                                                    color: savingsColor,
+                                                    fontSize: '1.3rem',
+                                                    fontWeight: '700',
+                                                    marginBottom: '0.2rem'
+                                                }}>
+                                                    {progress.toFixed(0)}%
+                                                </div>
+                                                <div style={{ 
+                                                    fontSize: '0.65rem',
+                                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                                    marginBottom: '0.15rem'
+                                                }}>
+                                                    {formatCurrency(savedMonth)} / {formatCurrency(savingsTarget)}
+                                                </div>
+                                                <div style={{ 
+                                                    color: savingsColor,
+                                                    fontWeight: '600',
+                                                    fontSize: '0.6rem',
+                                                    textTransform: 'uppercase'
+                                                }}>
+                                                    {isGoodProgress 
+                                                        ? (language === 'it' ? 'RAGGIUNTO' : 'ACHIEVED')
+                                                        : isOkProgress 
+                                                            ? (language === 'it' ? 'IN CORSO' : 'IN PROGRESS')
+                                                            : (language === 'it' ? 'DA MIGLIORARE' : 'NEEDS WORK')
+                                                    }
+                                                </div>
+                                            </FloatingElement>
+                                        </div>
+                                    );
+                                })()
+                            )}
+                        </div>
+                    )}
                 </ModernIncomeExpenseSection>
 
                 {/* Sezione Grafici */}
@@ -594,9 +832,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             </div>
                         </ModernChartContainer>
 
-                        {/* Grafico Liquidità vs Investimenti */}
+                        {/* Grafico Distribuzione Patrimonio */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
-                            <h4>Liquidità vs Investimenti</h4>
+                            <h4>{languages[language].dashboard.titleGraph2}</h4>
                             <ResponsiveContainer width="100%" height={350}>
                                 <PieChart>
                                     <Pie
@@ -630,6 +868,13 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                     <span>{isHidden ? '****' : languages[language].dashboard.liquidity}</span>
                                     <span className="legend-value">{formatCurrency(totalTraditional)} ({formatPercentage(totalTraditional, totalBalance)})</span>
                                 </div>
+                                {totalEmergencySecurity > 0 && (
+                                    <div className="legend-item">
+                                        <div className="legend-color" style={{ backgroundColor: emergencyFundAsset.color }} />
+                                        <span>{isHidden ? '****' : languages[language].dashboard.emergencySecurity}</span>
+                                        <span className="legend-value">{formatCurrency(totalEmergencySecurity)} ({formatPercentage(totalEmergencySecurity, totalBalance)})</span>
+                                    </div>
+                                )}
                                 <div className="legend-item">
                                     <div className="legend-color" style={{ backgroundColor: assetColors.totalInvestments }} />
                                     <span>{isHidden ? '****' : languages[language].general.investments}</span>

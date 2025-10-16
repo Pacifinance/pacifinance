@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import languages from '../data/languages.json';
@@ -10,7 +11,9 @@ import {
     FaChartLine,
     FaPlus,
     FaEdit,
-    FaTrash
+    FaTrash,
+    FaEuroSign,
+    FaCog
 } from 'react-icons/fa';
 import { 
     BsTrophyFill, 
@@ -64,7 +67,7 @@ const GoalsHeader = styled.div`
   }
 `;
 
-const AddGoalButton = styled.button`
+const AddGoalButton = styled(Link)`
   background: rgba(168, 85, 247, 0.15);
   border: 1px solid rgba(168, 85, 247, 0.4);
   border-radius: 8px;
@@ -77,10 +80,12 @@ const AddGoalButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
   
   &:hover {
     background: rgba(168, 85, 247, 0.25);
     transform: translateY(-1px);
+    color: #a855f7;
   }
 `;
 
@@ -267,10 +272,13 @@ const GoalTracker = ({ theme, userData }) => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
-    // Per ora usiamo dati di esempio, in futuro questi verranno dal backend
-    const sampleGoals = generateSampleGoals(userData, language);
-    setGoals(sampleGoals);
-  }, [userData, language]);
+    // Usa i goals dal UserContext se disponibili, altrimenti array vuoto
+    if (userData && userData.goals) {
+      setGoals(userData.goals);
+    } else {
+      setGoals([]);
+    }
+  }, [userData]);
 
   const calculateProgress = (current, target) => {
     if (!target || target === 0) return 0;
@@ -286,6 +294,31 @@ const GoalTracker = ({ theme, userData }) => {
     }).format(value);
   };
 
+  const getGoalIcon = (type) => {
+    switch(type) {
+      case 'savings':
+        return FaPiggyBank;
+      case 'purchase':
+        return FaEuroSign;
+      case 'investment':
+        return FaChartLine;
+      case 'debt':
+        return FaCreditCard;
+      default:
+        return FaBullseye;
+    }
+  };
+
+  const getGoalTypeLabel = (type) => {
+    const labels = {
+      savings: language === 'it' ? 'Risparmio' : 'Savings',
+      purchase: language === 'it' ? 'Acquisto' : 'Purchase',
+      investment: language === 'it' ? 'Investimento' : 'Investment',
+      debt: language === 'it' ? 'Pagamento Debito' : 'Debt Payment'
+    };
+    return labels[type] || type;
+  };
+
   if (!goals || goals.length === 0) {
     return (
       <GoalsContainer theme={theme}>
@@ -294,9 +327,9 @@ const GoalTracker = ({ theme, userData }) => {
             <FaBullseye style={{ color: '#a855f7', fontSize: '1.4rem', marginRight: '0.5rem' }} />
             {language === 'it' ? '🎯 I Tuoi Obiettivi' : '🎯 Your Goals'}
           </h3>
-          <AddGoalButton onClick={() => setShowAddModal(true)}>
+          <AddGoalButton to="/goals-limits">
             <FaPlus />
-            {language === 'it' ? 'Nuovo Obiettivo' : 'New Goal'}
+            {language === 'it' ? 'Gestisci Obiettivi' : 'Manage Goals'}
           </AddGoalButton>
         </GoalsHeader>
         
@@ -323,29 +356,37 @@ const GoalTracker = ({ theme, userData }) => {
           <FaBullseye style={{ color: '#a855f7', fontSize: '1.4rem', marginRight: '0.5rem' }} />
           {language === 'it' ? '🎯 I Tuoi Obiettivi' : '🎯 Your Goals'}
         </h3>
-        <AddGoalButton onClick={() => setShowAddModal(true)}>
-          <FaPlus />
-          {language === 'it' ? 'Nuovo Obiettivo' : 'New Goal'}
+        <AddGoalButton to="/goals-limits">
+          <FaCog />
+          {language === 'it' ? 'Gestisci Obiettivi' : 'Manage Goals'}
         </AddGoalButton>
       </GoalsHeader>
       
       <GoalsGrid>
         {goals.map((goal) => {
-          const progress = calculateProgress(goal.currentAmount, goal.targetAmount);
-          const IconComponent = goal.icon;
+          const progress = calculateProgress(goal.current, goal.target);
+          const IconComponent = getGoalIcon(goal.type);
+          const goalTypeLabel = getGoalTypeLabel(goal.type);
+          const deadlineDate = new Date(goal.deadline);
+          const isOverdue = deadlineDate < new Date();
           
           return (
             <GoalCard key={goal.id} theme={theme}>
               <GoalHeader>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <IconComponent className="goal-icon" />
-                  <div className="goal-type">{goal.type}</div>
+                  <IconComponent className="goal-icon" style={{ color: '#a855f7', fontSize: '1.2rem', marginRight: '0.5rem' }} />
+                  <div className="goal-type">{goalTypeLabel}</div>
+                </div>
+                <div style={{ fontSize: '0.7rem', color: isOverdue ? '#ef4444' : '#6b7280' }}>
+                  {deadlineDate.toLocaleDateString('it-IT')}
                 </div>
               </GoalHeader>
               
               <GoalContent theme={theme}>
-                <div className="goal-title">{goal.title}</div>
-                <div className="goal-description">{goal.description}</div>
+                <div className="goal-title">{goal.name}</div>
+                <div className="goal-description" style={{ marginBottom: '1rem', fontSize: '0.8rem', opacity: '0.8' }}>
+                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {deadlineDate.toLocaleDateString('it-IT')}
+                </div>
                 
                 <ProgressBar theme={theme} progress={progress}>
                   <div className="progress-fill" />
@@ -353,7 +394,7 @@ const GoalTracker = ({ theme, userData }) => {
                 
                 <ProgressStats theme={theme}>
                   <div className="progress-text">
-                    {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
+                    {formatCurrency(goal.current)} / {formatCurrency(goal.target)}
                   </div>
                   <div className="progress-percentage">
                     {progress.toFixed(1)}%

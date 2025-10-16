@@ -21,6 +21,12 @@ export const assetColors = {
     light: '#74b9ff',
     dark: '#0984e3'
   },
+  emergencyFund: {
+    primary: '#8e44ad',
+    gradient: 'linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%)',
+    light: '#9b59b6',
+    dark: '#8e44ad'
+  },
   
   // Investimenti
   stocks: {
@@ -101,6 +107,7 @@ export const getAssetColor = (assetType, theme = 'light', variant = 'primary') =
 export const assetOrder = [
   'cash',
   'digitalServices', 
+  'emergencyFund',
   'stocks',
   'bank',
   'crypto',
@@ -115,6 +122,7 @@ export const assetOrder = [
 export const assetNameMap = {
   cash: 'cash',
   digitalServices: 'digitalServices',
+  emergencyFund: 'emergencyFund',
   stocks: 'stocks', 
   bank: 'bank',
   crypto: 'crypto',

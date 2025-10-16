@@ -10,6 +10,7 @@ export const mockDashboardData = {
     cashReal: 500,
     bankReal: 20000,
     digitalServicesReal: 0,
+    emergencyFund: 5000, // Fondo di emergenza separato
     stocksReal: 8000,
     etfReal: 25000,
     bitcoinReal: 0,
@@ -17,12 +18,13 @@ export const mockDashboardData = {
     bondsReal: 15000, // Test value to display visually
     fundsReal: 12500, // Test value to display visually
     goldReal: 8000, // Test value to display visually
-    totalReal: 89000, // Updated to include new investments
+    totalReal: 94000, // Updated to include emergency fund
     
     // Dati balance mese precedente
     cashRealPreMonth: 450,
     bankRealPreMonth: 18500,
     digitalServicesRealPreMonth: 0,
+    emergencyFundPreMonth: 4500, // Fondo di emergenza mese precedente
     stocksRealPreMonth: 7500,
     etfRealPreMonth: 24000,
     bitcoinRealPreMonth: 0,
@@ -30,12 +32,13 @@ export const mockDashboardData = {
     bondsRealPreMonth: 14000, // Test value to display visually
     fundsRealPreMonth: 11800, // Test value to display visually
     goldRealPreMonth: 7500, // Test value to display visually
-    totalRealPreMonth: 83750, // Updated to include new investments
+    totalRealPreMonth: 88250, // Updated to include emergency fund
     
     // Dati balance anno precedente stesso mese
     cashRealPreYearSameMonth: 300,
     bankRealPreYearSameMonth: 15000,
     digitalServicesRealPreYearSameMonth: 0,
+    emergencyFundPreYearSameMonth: 3000, // Fondo di emergenza anno precedente
     stocksRealPreYearSameMonth: 5000,
     etfRealPreYearSameMonth: 20000,
     bitcoinRealPreYearSameMonth: 0,
@@ -43,7 +46,7 @@ export const mockDashboardData = {
     bondsRealPreYearSameMonth: 10000, // Test value to display visually
     fundsRealPreYearSameMonth: 9000, // Test value to display visually
     goldRealPreYearSameMonth: 6000, // Test value to display visually
-    totalRealPreYearSameMonth: 65300, // Updated to include new investments
+    totalRealPreYearSameMonth: 68300, // Updated to include emergency fund
     
     // Date
     currentDate: new Date().toISOString().split('T')[0],
@@ -308,6 +311,7 @@ export const mockDashboardData = {
             totalReal: 35000 + Math.sin(i * 0.3) * 8000 + Math.random() * 3000,
             cashReal: isCurrentMonth ? 500 : 300 + Math.random() * 400,
             bankReal: isCurrentMonth ? 20000 : 15000 + Math.sin(i * 0.4) * 4000,
+            emergencyFund: isCurrentMonth ? 5000 : Math.max(2000, 4000 - (i * 100) + Math.random() * 500), // Emergency fund growth over time
             stocksReal: isCurrentMonth ? 8000 : 6000 + Math.sin(i * 0.5) * 2000,
             etfReal: isCurrentMonth ? 25000 : 20000 + Math.sin(i * 0.6) * 3000,
             bitcoinReal: Math.random() * 1500,
@@ -607,7 +611,49 @@ export const mockDashboardData = {
     percentageRankOnExpenses: Math.floor(Math.random() * 50) + 25, // 25-75%
     percentageRankOnBalanceSimilar: Math.floor(Math.random() * 30) + 65,
     percentageRankOnIncomesSimilar: Math.floor(Math.random() * 25) + 60,
-    percentageRankOnExpensesSimilar: Math.floor(Math.random() * 40) + 30
+    percentageRankOnExpensesSimilar: Math.floor(Math.random() * 40) + 30,
+
+    // Goals and limits data con esempi per mock user
+    goals: [
+        { 
+            id: 1, 
+            name: 'Fondo Emergenza', 
+            target: 15000, 
+            current: 5000, // Ora corrisponde al valore emergencyFund
+            deadline: '2025-12-31', 
+            type: 'emergencyFund' // Cambiato da 'savings' a 'emergencyFund'
+        },
+        { 
+            id: 2, 
+            name: 'Vacanze Estate 2025', 
+            target: 4000, 
+            current: 2200, 
+            deadline: '2025-06-30', 
+            type: 'savings' 
+        },
+        { 
+            id: 3, 
+            name: 'Nuovo MacBook Pro', 
+            target: 3500, 
+            current: 1800, 
+            deadline: '2025-04-15', 
+            type: 'purchase' 
+        },
+        { 
+            id: 4, 
+            name: 'Portfolio Investimenti', 
+            target: 50000, 
+            current: 33000, 
+            deadline: '2026-01-31', 
+            type: 'investment' 
+        }
+    ],
+    limits: {
+        monthlySpendingLimit: 2800,
+        savingsGoalPercentage: 25,
+        emergencyFundTarget: 15000,
+        notificationsEnabled: true
+    }
 };
 
 export const MockAuthProvider = ({ children }) => {

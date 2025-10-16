@@ -348,12 +348,8 @@ const ProfileSettings = ({ theme }) => {
         notificationsEnabled: userData.notificationsEnabled !== undefined ? userData.notificationsEnabled : true
       });
       
-      // Carica gli obiettivi dall'UserContext se esistono, altrimenti usa esempi default
-      setGoals(userData.goals || [
-        { id: 1, name: 'Fondo Emergenza', target: 10000, current: 3500, deadline: '2025-12-31', type: 'savings' },
-        { id: 2, name: 'Vacanze Estate', target: 3000, current: 1200, deadline: '2025-06-30', type: 'savings' },
-        { id: 3, name: 'Nuovo Laptop', target: 2500, current: 800, deadline: '2025-03-31', type: 'purchase' }
-      ]);
+      // Carica gli obiettivi dall'UserContext se esistono, altrimenti array vuoto
+      setGoals(userData.goals || []);
     }
   }, [userData]);
 
@@ -386,9 +382,9 @@ const ProfileSettings = ({ theme }) => {
       deadline: '2025-12-31',
       type: 'savings'
     };
-    const newGoals = [...goals, newGoal];
-    setGoals(newGoals);
-    updateUserContextData({ goals: newGoals });
+    setModalGoalData(newGoal);
+    setEditingGoal(null);
+    setIsModalOpen(true);
   };
 
   const handleDeleteGoal = (goalId) => {
@@ -411,8 +407,9 @@ const ProfileSettings = ({ theme }) => {
         goal.id === editingGoal.id ? modalGoalData : goal
       );
     } else {
-      // Nuovo obiettivo
-      newGoals = [...goals, { ...modalGoalData, id: Date.now() }];
+      // Nuovo obiettivo - assicurati che abbia un ID unico
+      const goalWithId = { ...modalGoalData, id: modalGoalData.id || Date.now() };
+      newGoals = [...goals, goalWithId];
     }
     
     setGoals(newGoals);

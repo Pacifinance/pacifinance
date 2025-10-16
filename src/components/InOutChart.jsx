@@ -9,7 +9,8 @@ import {
   Legend, 
   PieChart, 
   Pie, 
-  Cell 
+  Cell,
+  ReferenceLine
 } from 'recharts';
 import { SectionInOut, PercentageOutflowsChartContainer } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
@@ -586,6 +587,49 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
                 }
               }}
             />
+            
+            {/* Limite di spesa mensile - solo se abilitato dall'utente */}
+            {userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit && !isHidden && (
+              <ReferenceLine 
+                y={userData.limits.monthlySpendingLimit} 
+                stroke="#ff6b35"
+                strokeDasharray="8 4"
+                strokeWidth={2}
+                label={{ 
+                  value: `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: €${userData.limits.monthlySpendingLimit.toLocaleString()}`,
+                  position: "topRight",
+                  fill: "#ff6b35",
+                  fontSize: containerWidth < 500 ? 10 : 12,
+                  fontWeight: 600
+                }}
+              />
+            )}
+            
+            {/* Obiettivo di risparmio mensile - calcolato dalle entrate */}
+            {userData?.limits?.notificationsEnabled && userData?.limits?.savingsGoalPercentage && !isHidden && (
+              (() => {
+                // Calcola la media delle entrate per determinare l'obiettivo di risparmio
+                const avgIncome = data.length > 0 ? 
+                  data.reduce((sum, item) => sum + (item[languages[language].general.incomes] || 0), 0) / data.length : 0;
+                const savingsTarget = (avgIncome * userData.limits.savingsGoalPercentage) / 100;
+                
+                return savingsTarget > 0 ? (
+                  <ReferenceLine 
+                    y={savingsTarget} 
+                    stroke="#10b981"
+                    strokeDasharray="6 6"
+                    strokeWidth={2}
+                    label={{ 
+                      value: `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: €${savingsTarget.toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
+                      position: "topLeft",
+                      fill: "#10b981",
+                      fontSize: containerWidth < 500 ? 10 : 12,
+                      fontWeight: 600
+                    }}
+                  />
+                ) : null;
+              })()
+            )}
           </LineChart>
         </div>
       </div>

@@ -20,7 +20,8 @@ import {
 } from "react-icons/si";
 import { 
   GiGoldBar,
-  GiReceiveMoney 
+  GiReceiveMoney,
+  GiUmbrella
 } from "react-icons/gi";
 import { 
   RiSecurePaymentLine 
@@ -35,6 +36,7 @@ export const assetIcons = {
   bank: BsBank,
   cash: BsCashCoin,
   digitalServices: SiMoneygram,
+  emergencyFund: GiUmbrella,
   
   // Investimenti
   stocks: MdOutlineAutoGraph,
@@ -62,6 +64,7 @@ export const assetOrder = [
   'cash',
   'bank', 
   'digitalServices',
+  'emergencyFund',
   'stocks',
   'etf',
   'bitcoin',
@@ -76,6 +79,7 @@ export const assetMapping = {
   'bankReal': 'bank',
   'cashReal': 'cash',
   'digitalServicesReal': 'digitalServices',
+  'emergencyFundReal': 'emergencyFund',
   'stocksReal': 'stocks',
   'etfReal': 'etf',
   'bitcoinReal': 'bitcoin',
@@ -85,6 +89,7 @@ export const assetMapping = {
   bank: 'bank',
   cash: 'cash',
   digitalServices: 'digitalServices',
+  emergencyFund: 'emergencyFund',
   stocks: 'stocks',
   etf: 'etf',
   bitcoin: 'bitcoin',

@@ -162,6 +162,7 @@ export const UserProvider = ({ children }) => {
             const cashReal = balances.cash || 0;
             const bankReal = balances.bank || 0;
             const digitalServicesReal = balances.digitalServices || 0;
+            const emergencyFund = balances.emergencyFund || 0;
             const stocksReal = balances.stocks || 0; //if stocks is undefined, set it to 0
             const etfReal = balances.etf || 0;
             const bitcoinReal = balances.bitcoin || 0;
@@ -169,11 +170,12 @@ export const UserProvider = ({ children }) => {
             const bondsReal = balances.bonds || 0; 
             const fundsReal = balances.funds || 0; 
             const goldReal = balances.gold || 0; 
-            const totalReal = cashReal + bankReal + digitalServicesReal + stocksReal + etfReal + bitcoinReal + cryptoReal + bondsReal + fundsReal + goldReal;
+            const totalReal = cashReal + bankReal + emergencyFund + digitalServicesReal + stocksReal + etfReal + bitcoinReal + cryptoReal + bondsReal + fundsReal + goldReal;
 
             const cashRealPreMonth = balancesPreMonth.cash || 0;
             const bankRealPreMonth = balancesPreMonth.bank || 0;
             const digitalServicesRealPreMonth = balancesPreMonth.digitalServices || 0;
+            const emergencyFundPreMonth = balancesPreMonth.emergencyFund || 0;
             const stocksRealPreMonth = balancesPreMonth.stocks || 0; //if stocks is undefined, set it to 0
             const etfRealPreMonth = balancesPreMonth.etf || 0;
             const bitcoinRealPreMonth = balancesPreMonth.bitcoin || 0;
@@ -181,11 +183,12 @@ export const UserProvider = ({ children }) => {
             const bondsRealPreMonth = balancesPreMonth.bonds || 0; 
             const fundsRealPreMonth = balancesPreMonth.funds || 0; 
             const goldRealPreMonth = balancesPreMonth.gold || 0; 
-            const totalRealPreMonth = cashRealPreMonth + bankRealPreMonth + digitalServicesRealPreMonth + stocksRealPreMonth + etfRealPreMonth + bitcoinRealPreMonth + cryptoRealPreMonth + bondsRealPreMonth + fundsRealPreMonth + goldRealPreMonth;
+            const totalRealPreMonth = cashRealPreMonth + bankRealPreMonth + emergencyFundPreMonth + digitalServicesRealPreMonth + stocksRealPreMonth + etfRealPreMonth + bitcoinRealPreMonth + cryptoRealPreMonth + bondsRealPreMonth + fundsRealPreMonth + goldRealPreMonth;
 
             const cashRealPreYearSameMonth = balancesPreYearSameMonth.cash || 0;
             const bankRealPreYearSameMonth = balancesPreYearSameMonth.bank || 0;
             const digitalServicesRealPreYearSameMonth = balancesPreYearSameMonth.digitalServices || 0;
+            const emergencyFundPreYearSameMonth = balancesPreYearSameMonth.emergencyFund || 0;
             const stocksRealPreYearSameMonth = balancesPreYearSameMonth.stocks || 0; //if stocks is undefined, set it to 0
             const etfRealPreYearSameMonth = balancesPreYearSameMonth.etf || 0;
             const bitcoinRealPreYearSameMonth = balancesPreYearSameMonth.bitcoin || 0;
@@ -193,7 +196,7 @@ export const UserProvider = ({ children }) => {
             const bondsRealPreYearSameMonth = balancesPreYearSameMonth.bonds || 0;
             const fundsRealPreYearSameMonth = balancesPreYearSameMonth.funds || 0;
             const goldRealPreYearSameMonth = balancesPreYearSameMonth.gold || 0;
-            const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth + bondsRealPreYearSameMonth + fundsRealPreYearSameMonth + goldRealPreYearSameMonth;
+            const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + emergencyFundPreYearSameMonth+digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth + bondsRealPreYearSameMonth + fundsRealPreYearSameMonth + goldRealPreYearSameMonth;
             //************************************* EXPENSES AND INCOMES **********************************************/
 
             const allOutflowsIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all outflows and incomes
@@ -303,6 +306,7 @@ export const UserProvider = ({ children }) => {
                 month: currentMonthAsString,
                 cashReal: currentMonthBalance.cash || 0,
                 bankReal: currentMonthBalance.bank || 0,
+                emergencyFund: currentMonthBalance.emergencyFund || 0,
                 digitalServicesReal: currentMonthBalance.digitalServices || 0,
                 stocksReal: currentMonthBalance.stocks || 0,
                 etfReal: currentMonthBalance.etf || 0,
@@ -345,9 +349,9 @@ export const UserProvider = ({ children }) => {
 
             // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
             setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, outflowsTags, incomesTags, paymentTags, 
-              cashReal, bankReal, digitalServicesReal, stocksReal, etfReal, bitcoinReal, cryptoReal, bondsReal, fundsReal, goldReal, totalReal, cashRealPreMonth, 
-              bankRealPreMonth, digitalServicesRealPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, bondsRealPreMonth, fundsRealPreMonth, goldRealPreMonth, totalRealPreMonth, 
-              cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
+              cashReal, bankReal, digitalServicesReal, emergencyFund, stocksReal, etfReal, bitcoinReal, cryptoReal, bondsReal, fundsReal, goldReal, totalReal, cashRealPreMonth, 
+              bankRealPreMonth, digitalServicesRealPreMonth, emergencyFundPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, bondsRealPreMonth, fundsRealPreMonth, goldRealPreMonth, totalRealPreMonth, 
+              cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, emergencyFundPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
               bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, bondsRealPreYearSameMonth, fundsRealPreYearSameMonth, goldRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
               preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, outflowsArray, incomesArray, allOutflows, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
               percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalOutflowsPerCategoryPerMonth,

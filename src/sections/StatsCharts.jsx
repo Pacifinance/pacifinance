@@ -13,6 +13,7 @@ import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
+import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
 
 const StatsContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -401,6 +402,59 @@ const EmptyStateContainer = styled.div`
   }
 `;
 
+// Aggiungiamo le keyframes per le animazioni
+const GlobalAnimations = styled.div`
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInLeft {
+    0% {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    0% {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+  
+  .slide-in-left {
+    animation: slideInLeft 0.8s ease-out forwards;
+  }
+  
+  .slide-in-right {
+    animation: slideInRight 0.8s ease-out forwards;
+  }
+`;
+
 
 
 export default function StatsCharts() {
@@ -618,6 +672,16 @@ export default function StatsCharts() {
                         </div>
                     </StatsGrid>
                 </SectionContainer>
+
+                <SectionContainer>
+                    <div className="fade-in-up" style={{ animationDelay: '0.6s' }}>
+                        <DetailedExpenseAnalysis 
+                            theme={theme} 
+                            userData={userData} 
+                            language={language}
+                        />
+                    </div>
+                </SectionContainer>
             </>
         );
     };
@@ -627,6 +691,8 @@ export default function StatsCharts() {
     };
 
     return (
+        <>
+        <GlobalAnimations />
         <StatsContainer theme={theme}>
             <HeaderSection>
                 <StatsTitle theme={theme}>
@@ -670,5 +736,6 @@ export default function StatsCharts() {
                 {activePage === "insights" && renderInsightsContent()}
             </MainContent>
         </StatsContainer>
+        </>
     );
 }

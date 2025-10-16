@@ -481,10 +481,37 @@
                 "title": "Statistiche Entrate e Uscite",
                 "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
                 "titleGraph2": "Distribuzione delle tue spese per categoria",
-                "detailedVision": "Visione dettagliata",
+                "detailedVision": "Comparazione finanziaria con i periodi precedenti",
                 "titleDetailsMonth": "Variazione entrate, spese e risparmi rispetto al mese scorso: ",
                 "variation": "Variazione ",
-                "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: "
+                "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: ",
+                "expenseAnalysis": {
+                    "title": "Analisi Dettagliata Uscite",
+                    "subtitle": "Analisi approfondita delle tue uscite per categoria, metodi di pagamento e pattern ricorrenti",
+                    "currentMonthExpenses": "Uscite Mese Corrente",
+                    "totalTransactions": "Transazioni Totali",
+                    "monthlyAverage12M": "Media Mensile 12M",
+                    "recurringExpenses": "Uscite Ricorrenti",
+                    "vsPrevMonth": "vs Mese Prec.",
+                    "vs12MAvg": "vs Media 12M",
+                    "transactions": "Transazioni",
+                    "avgAmount": "Importo Medio",
+                    "paymentMethodsTitle": "Analisi Metodi di Pagamento",
+                    "paymentMethodsSubtitle": "Distribuzione delle uscite per metodo di pagamento e identificazione degli abbonamenti",
+                    "total": "Totale",
+                    "ofTotal": "del Totale",
+                    "topCategories": "Categorie Principali:",
+                    "recurringIdentified": "Uscite Ricorrenti Identificate",
+                    "totalMonthlyRecurring": "Totale mensile ricorrente:",
+                    "times": "volte",
+                    "activeSubscriptions": "Sottoscrizioni Attive",
+                    "monthlyRecurringSpending": "Spesa Mensile Ricorrente",
+                    "budgetImpact": "Impatto sul Budget",
+                    "paymentTypologiesTitle": "Analisi Tipologie di Pagamento",
+                    "paymentTypologiesSubtitle": "Categorizzazione degli acquisti per tipologia",
+                    "notSpecified": "Non Specificato",
+                    "subscription": "Sottoscrizione"
+                }
             },
             "dashboard": {
                 "vsLastMonth": "vs mese precedente",
@@ -633,7 +660,10 @@
                 "incomeDeleteFailed": "Errore nell'eliminazione dell'entrata. Riprova più tardi.",
                 "outflowDeleteFailed": "Errore nell'eliminazione dell'uscita. Riprova più tardi.",
                 "serverConnectionFailed": "Errore di connessione al server. Controlla la connessione e riprova.",
-                "requestFailed": "Richiesta non riuscita. Controlla i dati inseriti e riprova."
+                "requestFailed": "Richiesta non riuscita. Controlla i dati inseriti e riprova.",
+                "selectCategory": "Seleziona una categoria",
+                "selectPaymentType": "Seleziona un tipo di pagamento",
+                "insertValidValue": "Inserisci un valore valido maggiore di 0"
             }
         },
         "comparison": {
@@ -1699,10 +1729,37 @@
                 "title": "Income and Outflows statistics",
                 "titleGraph": "Trend of your incomes and outflows in the last 12 months",
                 "titleGraph2": "Distribution of your outflows by category",
-                "detailedVision": "Detailed vision",
+                "detailedVision": "Financial comparison with previous periods",
                 "titleDetailsMonth": "Your income, outflows and savings compared to last month ",
                 "variation": "Variation ",
-                "titleDetailsYear": "Your income, outflows and savings compared to last year "
+                "titleDetailsYear": "Your income, outflows and savings compared to last year ",
+                "expenseAnalysis": {
+                    "title": "Detailed Outflow Analysis",
+                    "subtitle": "In-depth analysis of your outflows by category, payment methods and recurring patterns",
+                    "currentMonthExpenses": "Current Month Outflows",
+                    "totalTransactions": "Total Transactions", 
+                    "monthlyAverage12M": "12M Monthly Average",
+                    "recurringExpenses": "Recurring Outflows",
+                    "vsPrevMonth": "vs Prev Month",
+                    "vs12MAvg": "vs 12M Avg",
+                    "transactions": "Transactions",
+                    "avgAmount": "Avg Amount",
+                    "paymentMethodsTitle": "Payment Methods Analysis",
+                    "paymentMethodsSubtitle": "Outflow distribution by payment method and subscription identification",
+                    "total": "Total",
+                    "ofTotal": "of Total",
+                    "topCategories": "Top Categories:",
+                    "recurringIdentified": "Identified Recurring Outflows",
+                    "totalMonthlyRecurring": "Total monthly recurring:",
+                    "times": "times",
+                    "activeSubscriptions": "Active Subscriptions",
+                    "monthlyRecurringSpending": "Monthly Recurring Spending",
+                    "budgetImpact": "Budget Impact",
+                    "paymentTypologiesTitle": "Payment Typologies Analysis",
+                    "paymentTypologiesSubtitle": "Purchase categorization by typology",
+                    "notSpecified": "Not Specified",
+                    "subscription": "Subscription"
+                }
             },
             "dashboard": {
                 "vsLastMonth": "vs previous month",
@@ -1853,7 +1910,10 @@
                 "incomeDeleteFailed": "Error deleting income. Please try again later.",
                 "outflowDeleteFailed": "Error deleting outflow. Please try again later.",
                 "serverConnectionFailed": "Server connection error. Check your connection and try again.",
-                "requestFailed": "Request failed. Check the entered data and try again."
+                "requestFailed": "Request failed. Check the entered data and try again.",
+                "selectCategory": "Select a category",
+                "selectPaymentType": "Select a payment type",
+                "insertValidValue": "Insert a valid value greater than 0"
             }
         },
         "comparison": {

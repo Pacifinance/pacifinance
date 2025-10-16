@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { GiReceiveMoney, GiExpense } from "react-icons/gi";
+﻿import React, { useEffect, useState, useContext } from 'react'
+import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
 import { SectionAMonth } from '../styles/MyStyled';
 import styled from 'styled-components';
@@ -7,79 +7,31 @@ import { calculatePercentageChange, calculateDifference, formatCurrencyDifferenc
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
 const ModernStatsCard = styled.div`
-  background: ${props => props.theme.mode === 'dark' 
-    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%)'
-    : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
-  };
-  border: 1px solid ${props => props.theme.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.15)' 
-    : 'rgba(0, 0, 0, 0.06)'
-  };
-  border-radius: 20px;
-  padding: 2rem;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: 1rem;
   margin: 0;
-  box-shadow: ${props => props.theme.mode === 'dark' 
-    ? '0 10px 40px rgba(0, 0, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2)' 
-    : '0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 15px rgba(0, 0, 0, 0.04)'
-  };
-  backdrop-filter: blur(20px);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
-  height: 100%;
   display: flex;
   flex-direction: column;
   
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: ${props => props.theme.mode === 'dark'
-      ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)'
-      : 'linear-gradient(90deg, transparent, rgba(7,145,100,0.3), transparent)'
-    };
-  }
-  
-  &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: ${props => props.theme.mode === 'dark' 
-      ? '0 20px 60px rgba(0, 0, 0, 0.5), 0 8px 25px rgba(0, 0, 0, 0.3)' 
-      : '0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 25px rgba(0, 0, 0, 0.08)'
-    };
-    border-color: ${props => props.theme.mode === 'dark' 
-      ? 'rgba(255, 255, 255, 0.2)' 
-      : 'rgba(7, 145, 100, 0.2)'
-    };
-  }
-
   @media (max-width: 768px) {
-    padding: 1.5rem;
-    border-radius: 16px;
-    
-    &:hover {
-      transform: translateY(-2px) scale(1.01);
-    }
+    padding: 0.8rem;
+    border-radius: 12px;
   }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  height: 100%;
-  
-  @media (min-width: 1200px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
   
   @media (max-width: 768px) {
-    gap: 1.5rem;
+    gap: 0.6rem;
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -88,80 +40,80 @@ const StatCard = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.5rem;
+  padding: 0.8rem;
   background: ${props => props.theme.mode === 'dark' 
     ? 'rgba(255, 255, 255, 0.05)' 
-    : 'rgba(255, 255, 255, 0.7)'
+    : 'rgba(255, 255, 255, 0.8)'
   };
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid ${props => props.theme.mode === 'dark' 
     ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.05)'
+    : 'rgba(0, 0, 0, 0.08)'
   };
   transition: all 0.3s ease;
   
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     background: ${props => props.theme.mode === 'dark' 
       ? 'rgba(255, 255, 255, 0.08)' 
-      : 'rgba(255, 255, 255, 0.9)'
+      : 'rgba(255, 255, 255, 0.95)'
     };
   }
   
   @media (max-width: 768px) {
-    padding: 1rem;
+    padding: 0.6rem;
   }
 `;
 
 const IconContainer = styled.div`
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   background: ${props => props.$bgColor || '#079164'};
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   
   @media (max-width: 768px) {
-    width: 60px;
-    height: 60px;
+    width: 36px;
+    height: 36px;
   }
 `;
 
 const StatValue = styled.div`
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${props => props.theme.textColor};
-  margin-bottom: 0.5rem;
-  
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
-  }
-`;
-
-const StatLabel = styled.div`
   font-size: 1rem;
-  font-weight: 500;
-  color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
-  margin-bottom: 1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.3rem;
   
   @media (max-width: 768px) {
     font-size: 0.9rem;
   }
 `;
 
+const StatLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 0.5rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+  }
+`;
+
 const PercentageChange = styled.div`
-  font-size: 0.95rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: ${props => props.$isPositive ? '#27ae60' : '#e74c3c'};
   background: ${props => props.$isPositive 
     ? 'rgba(39, 174, 96, 0.1)' 
     : 'rgba(231, 76, 60, 0.1)'
   };
-  padding: 0.4rem 0.8rem;
-  border-radius: 16px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
   border: 1px solid ${props => props.$isPositive 
     ? 'rgba(39, 174, 96, 0.2)' 
     : 'rgba(231, 76, 60, 0.2)'
@@ -172,28 +124,60 @@ const PercentageChange = styled.div`
   max-width: 100%;
   
   @media (max-width: 768px) {
-    font-size: 0.85rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 8px;
   }
 `;
 
-/**
- * Componente unificato per statistiche Income/Outflow
- * @param {string} period - Periodo di confronto: "month" (vs mese precedente) o "year" (vs stesso mese anno precedente)
- * @param {Object} theme - Tema dell'applicazione
- * @param {Object} userData - Dati utente
- * @param {boolean} isHidden - Privacy mode
- */
+const TooltipContainer = styled.div`
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  
+  &:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+`;
+
+const Tooltip = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)'};
+  color: ${props => props.theme.textColor};
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s, visibility 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+  z-index: 1000;
+  margin-bottom: 0.5rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: ${props => props.theme.mode === 'dark' ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)'};
+  }
+`;
+
 export default function InOutStats({ period = "month", theme, userData, isHidden }) {
     const { language } = useContext(LanguageContext);
     
-    // Dati correnti (sempre mese corrente)
     const [incomesCurrent, setIncomesCurrent] = useState(0);
     const [outflowsCurrent, setOutflowsCurrent] = useState(0);
     const [savedCurrent, setSavedCurrent] = useState(0);
     
-    // Dati di confronto (dipendono dal period)
     const [incomesComparison, setIncomesComparison] = useState(0);
     const [outflowsComparison, setOutflowsComparison] = useState(0);
     const [savedComparison, setSavedComparison] = useState(0);
@@ -202,25 +186,21 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
         const fetchData = async () => {
             if (userData) {
                 try {
-                    // DATI CORRENTI (sempre mese corrente - indice 0)
                     setOutflowsCurrent(userData?.outflowsArray[0] || 0);
                     setIncomesCurrent(userData?.incomesArray[0] || 0);
                     setSavedCurrent((userData?.incomesArray[0] || 0) - (userData?.outflowsArray[0] || 0));
 
-                    // DATI DI CONFRONTO (dipendono dal periodo)
                     if (period === "month") {
-                        // Confronto con mese precedente (indice 1)
                         setIncomesComparison(userData?.incomesArray[1] || 0);
                         setOutflowsComparison(userData?.outflowsArray[1] || 0);
                         setSavedComparison((userData?.incomesArray[1] || 0) - (userData?.outflowsArray[1] || 0));
-                    } else if (period === "year") {
-                        // Confronto con stesso mese anno precedente (indice 12)
+                    } else {
                         setIncomesComparison(userData?.incomesArray[12] || 0);
                         setOutflowsComparison(userData?.outflowsArray[12] || 0);
                         setSavedComparison((userData?.incomesArray[12] || 0) - (userData?.outflowsArray[12] || 0));
                     }
                 } catch (error) {
-                    console.error('Error loading stats data:', error);
+                    console.error("Errore nel calcolo delle statistiche:", error);
                 }
             }
         };
@@ -228,14 +208,13 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
         fetchData();
     }, [userData, period]);
 
-
-
-    // Funzione per determinare se un cambiamento è positivo
-    const isPositiveChange = (current, comparison, type = 'outflow') => {
+    const isPositiveChange = (current, comparison, type) => {
+        if (current === comparison) return true;
+        
         if (type === 'income' || type === 'saved') {
-            return current > comparison; // Per income e saved, aumento è positivo
+            return current > comparison;
         } else {
-            return current < comparison; // Per outflow, diminuzione è positivo
+            return current < comparison;
         }
     };
 
@@ -247,27 +226,27 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
             // Mese precedente
             const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
             const prevMonthFormatted = prevMonth.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
-                month: 'long', 
+                month: 'short', 
                 year: 'numeric' 
             });
             
             return {
-                vsText: `${languages[language]?.graphs?.comparison?.vsLastMonth || "vs mese precedente"}`,
-                periodLabel: languages[language]?.graphs?.comparison?.monthlyComparison || "Confronto mensile",
-                comparisonDate: prevMonthFormatted
+                vsText: `vs ${prevMonthFormatted}`,
+                periodLabel: language === 'it' ? "Confronto Finanziario Mensile" : "Monthly Financial Overview",
+                tooltipText: language === 'it' ? "Confronto vs mese precedente" : "Comparison vs previous month"
             };
         } else {
             // Anno precedente, stesso mese
             const prevYear = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
             const prevYearFormatted = prevYear.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
-                month: 'long', 
+                month: 'short', 
                 year: 'numeric' 
             });
             
             return {
-                vsText: `${languages[language]?.graphs?.comparison?.vsLastYear || "vs anno precedente"}`,
-                periodLabel: languages[language]?.graphs?.comparison?.yearlyComparison || "Confronto annuale",
-                comparisonDate: prevYearFormatted
+                vsText: `vs ${prevYearFormatted}`,
+                periodLabel: language === 'it' ? "Confronto Finanziario Annuale" : "Annual Financial Overview",
+                tooltipText: language === 'it' ? "Confronto vs stesso mese anno precedente" : "Comparison vs same month last year"
             };
         }
     };
@@ -277,46 +256,43 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
     return (
         <SectionAMonth theme={theme}>
             <ModernStatsCard theme={theme}>
-                <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
                     <h3 style={{ 
-                        color: theme.textColor, 
-                        fontSize: '1.5rem', 
+                        color: 'white', 
+                        fontSize: '1rem', 
                         fontWeight: '600',
-                        margin: '0 0 0.5rem 0'
+                        margin: '0 0 0.3rem 0'
                     }}>
                         {periodText.periodLabel}
                     </h3>
-                    <p style={{ 
-                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
-                        fontSize: '1rem',
-                        margin: '0 0 0.25rem 0'
-                    }}>
-                        {periodText.vsText}
-                    </p>
-                    <p style={{ 
-                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)',
-                        fontSize: '1.1rem',
-                        fontWeight: '600',
-                        margin: 0
-                    }}>
-                        {periodText.comparisonDate}
-                    </p>
+                    <TooltipContainer>
+                        <p style={{ 
+                            color: 'rgba(255,255,255,0.8)',
+                            fontSize: '0.8rem',
+                            margin: 0,
+                            fontWeight: '500'
+                        }}>
+                            {periodText.vsText}
+                        </p>
+                        <Tooltip className="tooltip" theme={theme}>
+                            {periodText.tooltipText}
+                        </Tooltip>
+                    </TooltipContainer>
                 </div>
 
                 <StatsGrid>
-                    {/* INCOME CARD */}
                     <StatCard theme={theme}>
                         <IconContainer $bgColor="linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)">
-                            <div className="logo" style={{ color: '#fff', fontSize: '2rem' }}>
+                            <div className="logo" style={{ color: '#fff', fontSize: '1.2rem' }}>
                                 <GiReceiveMoney />
                             </div>
                         </IconContainer>
                         
-                        <StatValue theme={theme}>
+                        <StatValue>
                             {isHidden ? '****' : formatCurrencyDifference(calculateDifference(incomesCurrent, incomesComparison))}
                         </StatValue>
                         
-                        <StatLabel theme={theme}>
+                        <StatLabel>
                             {languages[language]?.general?.incomes || 'Entrate'}
                         </StatLabel>
                         
@@ -327,19 +303,18 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </PercentageChange>
                     </StatCard>
 
-                    {/* EXPENSE CARD */}
                     <StatCard theme={theme}>
                         <IconContainer $bgColor="linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)">
-                            <div className="logo" style={{ color: '#fff', fontSize: '2rem' }}>
-                                <GiExpense />
+                            <div className="logo" style={{ color: '#fff', fontSize: '1.2rem' }}>
+                                <GiPayMoney />
                             </div>
                         </IconContainer>
                         
-                        <StatValue theme={theme}>
+                        <StatValue>
                             {isHidden ? '****' : formatCurrencyDifference(calculateDifference(outflowsCurrent, outflowsComparison))}
                         </StatValue>
                         
-                        <StatLabel theme={theme}>
+                        <StatLabel>
                             {languages[language]?.general?.outflows || 'Uscite'}
                         </StatLabel>
                         
@@ -350,19 +325,18 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </PercentageChange>
                     </StatCard>
 
-                    {/* SAVINGS CARD */}  
                     <StatCard theme={theme}>
                         <IconContainer $bgColor="linear-gradient(135deg, #3498db 0%, #2980b9 100%)">
-                            <div className="logo" style={{ color: '#fff', fontSize: '2rem' }}>
+                            <div className="logo" style={{ color: '#fff', fontSize: '1.2rem' }}>
                                 <MdOutlineSavings />
                             </div>
                         </IconContainer>
                         
-                        <StatValue theme={theme}>
+                        <StatValue>
                             {isHidden ? '****' : formatCurrencyDifference(calculateDifference(savedCurrent, savedComparison))}
                         </StatValue>
                         
-                        <StatLabel theme={theme}>
+                        <StatLabel>
                             {languages[language]?.general?.saved || 'Risparmiato'}
                         </StatLabel>
                         

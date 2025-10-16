@@ -145,7 +145,7 @@ export const mockDashboardData = {
             
             // Categoria casuale
             const categories = [
-                { index: 0, translations: { it: 'Casa', en: 'Home' }},
+                { index: 0, translations: { it: 'Casa', en: 'House' }},
                 { index: 1, translations: { it: 'Alimentari', en: 'Food' }},
                 { index: 2, translations: { it: 'Trasporti', en: 'Transport' }},
                 { index: 3, translations: { it: 'Intrattenimento', en: 'Entertainment' }},
@@ -587,7 +587,7 @@ export const mockDashboardData = {
         return Array.from({ length: 12 }, (_, monthIndex) => {
             return {
                 // Categorie con chiavi inglesi per consistenza nell'applicazione
-                'Home': 800 + Math.sin((today.getMonth() - monthIndex) * 0.4) * 200 + Math.random() * 150,
+                'House': 800 + Math.sin((today.getMonth() - monthIndex) * 0.4) * 200 + Math.random() * 150,
                 'Food': 350 + Math.sin((today.getMonth() - monthIndex) * 0.6) * 100 + Math.random() * 100,
                 'Transports': 200 + Math.sin((today.getMonth() - monthIndex) * 0.8) * 80 + Math.random() * 60,
                 'Free time': 180 + Math.sin((today.getMonth() - monthIndex) * 0.5) * 70 + Math.random() * 50,

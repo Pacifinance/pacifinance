@@ -570,7 +570,7 @@ export default function OutflowSection({
         {/* Category Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Categoria
+            {languages[language].general.category}
           </label>
           <Select
             value={categoryOutflow.value}
@@ -624,7 +624,7 @@ export default function OutflowSection({
         {/* Payment Type Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Tipologia
+            {languages[language].general.typology}
           </label>
           <Select
             value={typoOutflow.value}
@@ -679,7 +679,7 @@ export default function OutflowSection({
         {/* Amount Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Importo
+            {languages[language].general.value}
           </label>
           <div style={inputCurrencyWrapper}>
             <span style={currencySymbolStyle}>€</span>
@@ -697,7 +697,7 @@ export default function OutflowSection({
         {/* Date Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Data
+            {languages[language].general.date}
           </label>
           <StyledDateInput
             type="date"

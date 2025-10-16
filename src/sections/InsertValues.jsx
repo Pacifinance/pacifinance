@@ -533,10 +533,10 @@ export default function InsertValue({
 
   const handleAddIncome = () => {
     if (categoryIncome.value === "") {
-      alert("Select a category");
+      alert(languages[language].insert.errors.selectCategory);
       return;
     } else if (Number(income) === 0 || income === "" || income === undefined) {
-      alert("Insert a valid value greater than 0");
+      alert(languages[language].insert.errors.insertValidValue);
       return;
     }
     setIsConfirmIncomeOpen(true);
@@ -544,13 +544,13 @@ export default function InsertValue({
 
   const handleAddOutflow = () => {
     if (categoryOutflow.value === "") {
-      alert("Select a category");
+      alert(languages[language].insert.errors.selectCategory);
       return;
     } else if (typoOutflow.value === "") {
-      alert("Select a payment type");
+      alert(languages[language].insert.errors.selectPaymentType);
       return;
     } else if (Number(outflow) === 0 || outflow === "" || outflow === undefined) {
-      alert("Insert a valid value greater than 0");
+      alert(languages[language].insert.errors.insertValidValue);
       return;
     }
     setIsConfirmOutflowOpen(true);

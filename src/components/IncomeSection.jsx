@@ -533,7 +533,7 @@ export default function IncomeSection({
         {/* Category Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Categoria
+            {languages[language].general.category}
           </label>
           <Select
             value={categoryIncome.value}
@@ -587,7 +587,7 @@ export default function IncomeSection({
         {/* Amount Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Importo
+            {languages[language].general.value}
           </label>
           <div style={inputCurrencyWrapper}>
             <span style={currencySymbolStyle}>€</span>
@@ -605,7 +605,7 @@ export default function IncomeSection({
         {/* Date Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            Data
+            {languages[language].general.date}
           </label>
           <StyledDateInput
             type="date"

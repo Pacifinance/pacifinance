@@ -161,9 +161,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         if (path === "/dashboard") return 0;
         if (path === "/charts-statistics") return 1;
         if (path === "/insert-values") return 2;
-        if (path === "/comparison") return 4;
-        if (path === "/knowledge") return 5;
-        if (path === "/info") return 6;
+        if (path === "/comparison") return 3;
+        if (path === "/knowledge") return 4;
+        if (path === "/info") return 5;
         return -1;
     };
 
@@ -418,28 +418,22 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     index: 2,
                                 },
                                 {
-                                    icon: AiOutlineFundProjectionScreen,
-                                    route: "/check-prices",
-                                    tooltip: languages[language].sidebar.check,
-                                    index: 3,
-                                },
-                                {
                                     icon: CompareArrowsIcon,
                                     route: "/comparison",
                                     tooltip: languages[language].sidebar.comparison,
-                                    index: 4,
+                                    index: 3,
                                 },
                                 {
                                     icon: BsBook,
                                     route: "/knowledge",
                                     tooltip: languages[language].sidebar.knowledge,
-                                    index: 5,
+                                    index: 4,
                                 },
                                 {
                                     icon: BsInfoCircle,
                                     route: "/info",
                                     tooltip: languages[language].sidebar.info,
-                                    index: 6,
+                                    index: 5,
                                 },
                             ].map(({ icon: Icon, route, tooltip, index }) => (
                                 <Tooltip key={index} title={tooltip} placement="right">

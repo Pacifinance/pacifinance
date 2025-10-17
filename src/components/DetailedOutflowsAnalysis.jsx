@@ -517,9 +517,13 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
       const averageChange = averageAmount > 0 ? ((currentAmount - averageAmount) / averageAmount) * 100 : 0;
       
       // Conta transazioni per categoria nel mese corrente
-      const transactions = currentMonth.filter(outflow => 
-        outflow.categoryTag?.translations?.en === category
-      );
+      const transactions = currentMonth.filter(outflow => {
+        const categoryName = outflow.categoryTag?.translations?.en || 
+                           outflow.categoryTag?.key || 
+                           outflow.categoryTag?.name || 
+                           outflow.categoryTag;
+        return categoryName === category;
+      });
       
       categoryAnalysis[category] = {
         currentAmount,
@@ -546,7 +550,11 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
     currentMonth.forEach(outflow => {
       const paymentType = outflow.paymentType || 'Unknown';
       const typology = outflow.typology || 'Unknown';
-      const category = outflow.categoryTag?.translations?.en || 'Other';
+      const category = outflow.categoryTag?.translations?.en || 
+                      outflow.categoryTag?.key || 
+                      outflow.categoryTag?.name || 
+                      outflow.categoryTag || 
+                      'Other';
       
       // Analisi metodi di pagamento
       if (!paymentMethods[paymentType]) {
@@ -756,7 +764,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
       {/* Category Analysis */}
       <CategoryGrid>
-        {Object.entries(categories)
+        {categories && Object.entries(categories)
+          .filter(([category, data]) => category && data && typeof data === 'object')
           .sort((a, b) => b[1].currentAmount - a[1].currentAmount)
           .map(([category, data], index) => (
             <CategoryCard key={category} theme={theme}>
@@ -767,7 +776,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                   </div>
                   <div>
                     <div className="category-name">
-                      {typeof category === 'string' ? category : JSON.stringify(category)}
+                      {typeof category === 'string' && category ? category : 'N/A'}
                     </div>
                   </div>
                 </div>
@@ -822,14 +831,14 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
       </CategoryGrid>
 
       {/* Payment Methods Analysis */}
-      <PaymentMethodsSection>
+      {/* <PaymentMethodsSection>
         <SectionHeader>
           <h2 style={{ color: 'white' }}>{t.paymentMethodsTitle}</h2>
           <p style={{ color: 'white' }}>{t.paymentMethodsSubtitle}</p>
-        </SectionHeader>
+        </SectionHeader> */}
 
         {/* Subscription Overview */}
-        <SubscriptionOverview>
+        {/* <SubscriptionOverview>
           <OverviewCard theme={theme}>
             <h4 style={{ color: 'white' }}>{t.activeSubscriptions}</h4>
             <p style={{ color: 'white', fontSize: '1.8rem', fontWeight: 'bold' }}>
@@ -848,10 +857,11 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               {subscriptionAnalysis.budgetImpact.toFixed(1)}%
             </p>
           </OverviewCard>
-        </SubscriptionOverview>
+        </SubscriptionOverview> */}
 
-        <PaymentGrid>
-          {Object.entries(paymentMethods)
+        {/* <PaymentGrid>
+          {paymentMethods && Object.entries(paymentMethods)
+            .filter(([method, data]) => method && data && typeof data === 'object')
             .sort((a, b) => b[1].total - a[1].total)
             .map(([method, data]) => (
               <PaymentCard key={method} theme={theme}>
@@ -860,9 +870,9 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                     {getPaymentIcon(method)}
                   </div>
                   <div className="payment-info">
-                    <div className="payment-name">{method}</div>
+                    <div className="payment-name">{typeof method === 'string' && method ? method : 'N/A'}</div>
                     <div className="payment-subtitle">
-                      {formatCurrency(data.total)} • {data.count} {t.transactions.toLowerCase()}
+                      {formatCurrency(data.total || 0)} • {data.count || 0} {t.transactions.toLowerCase()}
                     </div>
                   </div>
                 </div>
@@ -889,7 +899,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                 </CategoryStats>
 
                 {/* Top categories for this payment method */}
-                <div style={{ marginTop: '1rem' }}>
+                {/* <div style={{ marginTop: '1rem' }}>
                   <div style={{ 
                     fontSize: '0.875rem', 
                     fontWeight: '600', 
@@ -898,7 +908,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                   }}>
                     {t.topCategories}
                   </div>
-                  {Object.entries(data.categories)
+                  {data.categories && Object.entries(data.categories)
+                    .filter(([category, amount]) => category && typeof amount === 'number')
                     .sort((a, b) => b[1] - a[1])
                     .slice(0, 3)
                     .map(([category, amount]) => (
@@ -912,8 +923,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                           marginBottom: '0.25rem'
                         }}
                       >
-                        <span>{category}</span>
-                        <span>{formatCurrency(amount)}</span>
+                        <span>{typeof category === 'string' && category ? category : 'N/A'}</span>
+                        <span>{formatCurrency(amount || 0)}</span>
                       </div>
                     ))
                   }
@@ -921,17 +932,18 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               </PaymentCard>
             ))
           }
-        </PaymentGrid>
+        </PaymentGrid> */}
 
         {/* Payment Typologies Analysis */}
-        {Object.keys(paymentTypologies).length > 0 && (
+        {/* {Object.keys(paymentTypologies || {}).length > 0 && (
           <>
             <SectionHeader style={{ marginTop: '2rem' }}>
               <h3 style={{ color: 'white' }}>{t.paymentTypologiesTitle}</h3>
               <p style={{ color: 'white' }}>{t.paymentTypologiesSubtitle}</p>
             </SectionHeader>
             <PaymentGrid>
-              {Object.entries(paymentTypologies)
+              {paymentTypologies && Object.entries(paymentTypologies)
+                .filter(([typology, data]) => typology && data && typeof data === 'object')
                 .sort((a, b) => b[1].total - a[1].total)
                 .map(([typology, data]) => (
                   <PaymentCard key={typology} theme={theme}>
@@ -941,10 +953,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                       </div>
                       <div className="payment-info">
                         <div className="payment-name">
-                          {typology === 'Unknown' || !typology ? t.notSpecified : typology}
+                          {!typology || typology === 'Unknown' ? t.notSpecified : (typeof typology === 'string' ? typology : 'N/A')}
                         </div>
                         <div className="payment-subtitle">
-                          {formatCurrency(data.total)} • {data.count} {t.transactions.toLowerCase()}
+                          {formatCurrency(data.total || 0)} • {data.count || 0} {t.transactions.toLowerCase()}
                         </div>
                       </div>
                     </div>
@@ -981,10 +993,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               }
             </PaymentGrid>
           </>
-        )}
+        )} */}
 
         {/* Recurring Outflows */}
-        {recurringExpenses.length > 0 && (
+        {/* {recurringExpenses.length > 0 && (
           <RecurringSection theme={theme}>
             <div className="recurring-header">
               <Repeat className="recurring-icon" size={24} />
@@ -1014,8 +1026,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               {t.totalMonthlyRecurring} {formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
             </div>
           </RecurringSection>
-        )}
-      </PaymentMethodsSection>
+        )}*/}
+      {/* </PaymentMethodsSection>  */}
     </AnalysisContainer>
   );
 }

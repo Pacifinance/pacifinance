@@ -156,33 +156,6 @@ const SidebarMobile = ({
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
                         style={{
-                            color: isActivePage("/check-prices") ? "white" : theme.textColor,
-                            backgroundColor: isActivePage("/check-prices") ? theme.buttonBackgroundColor : "transparent",
-                            border: "none",
-                            fontWeight: isActivePage("/check-prices") ? "600" : "normal",
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!isActivePage("/check-prices")) {
-                                e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                                e.target.style.color = "white";
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!isActivePage("/check-prices")) {
-                                e.target.style.backgroundColor = "transparent";
-                                e.target.style.color = theme.textColor;
-                            }
-                        }}
-                        onClick={() => {
-                            navigate("/check-prices");
-                            setIsSideBarMenuOpen(false);
-                        }}
-                    >
-                        {languages[language].sidebar.check}
-                    </button>
-                    <button
-                        className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
-                        style={{
                             color: isActivePage("/comparison") ? "white" : theme.textColor,
                             backgroundColor: isActivePage("/comparison") ? theme.buttonBackgroundColor : "transparent",
                             border: "none",

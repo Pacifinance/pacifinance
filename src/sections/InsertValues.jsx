@@ -201,98 +201,7 @@ const SectionContainer = styled.div`
   }
 `;
 
-// Popup per avvisi sui limiti
-const LimitWarningPopup = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: ${(props) => props.theme.mode === 'dark' 
-    ? `linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%)`
-    : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`};
-  border: 2px solid #ff6b35;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
-  z-index: 1000;
-  max-width: 400px;
-  text-align: center;
-  animation: popupAppear 0.3s ease-out;
 
-  @keyframes popupAppear {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.8);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-  }
-
-  .warning-icon {
-    font-size: 3rem;
-    color: #ff6b35;
-    margin-bottom: 1rem;
-  }
-
-  .warning-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: ${(props) => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    margin-bottom: 0.5rem;
-  }
-
-  .warning-message {
-    font-size: 0.9rem;
-    color: ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    margin-bottom: 1.5rem;
-    line-height: 1.4;
-  }
-
-  .warning-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  .warning-button {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &.continue {
-      background: #ff6b35;
-      color: white;
-      &:hover {
-        background: #e55a2b;
-      }
-    }
-
-    &.cancel {
-      background: transparent;
-      color: ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
-      border: 1px solid ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
-      &:hover {
-        background: ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
-      }
-    }
-  }
-`;
-
-const PopupOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  backdrop-filter: blur(5px);
-`;
 
 export default function InsertValue({
   theme,
@@ -313,9 +222,7 @@ export default function InsertValue({
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   
-  // Popup avvisi limiti
-  const [showLimitWarning, setShowLimitWarning] = useState(false);
-  const [limitWarningData, setLimitWarningData] = useState(null);
+
 
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
@@ -613,27 +520,6 @@ export default function InsertValue({
       return;
     }
     
-    // Controllo limite di spesa mensile
-    if (userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
-      const currentMonth = new Date().getMonth();
-      const currentOutflowsThisMonth = userData.outflowsArray?.[currentMonth] || 0;
-      const newTotal = currentOutflowsThisMonth + parseFloat(outflow.replace(',', '.'));
-      
-      if (newTotal > userData.limits.monthlySpendingLimit) {
-        const exceeding = newTotal - userData.limits.monthlySpendingLimit;
-        setLimitWarningData({
-          type: 'spending',
-          limit: userData.limits.monthlySpendingLimit,
-          current: currentOutflowsThisMonth,
-          newAmount: parseFloat(outflow.replace(',', '.')),
-          newTotal: newTotal,
-          exceeding: exceeding
-        });
-        setShowLimitWarning(true);
-        return;
-      }
-    }
-    
     setIsConfirmOutflowOpen(true);
   };
 
@@ -690,6 +576,8 @@ export default function InsertValue({
 
   const handleConfirmInEx = async (isOutflow) => {
     let inExJson = {};
+    const originalOutflowAmount = outflow; // Store original value for limit check
+    
     if (isOutflow) {
       setIsConfirmOutflowOpen(false);
       inExJson = createInExJson(
@@ -735,9 +623,25 @@ export default function InsertValue({
         [languages[language].assets.gold]: goldReal,
       };
       if (inExAdd.status === 200) {
+        // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
+        if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
+          const currentMonth = new Date().getMonth();
+          const currentOutflowsThisMonth = userData.outflowsArray?.[currentMonth] || 0;
+          const newTotal = currentOutflowsThisMonth + parseFloat(originalOutflowAmount.replace(',', '.'));
+          
+          if (newTotal > userData.limits.monthlySpendingLimit) {
+            const exceeding = newTotal - userData.limits.monthlySpendingLimit;
+            const warningMessage = language === 'it' 
+              ? `⚠️ Limite mensile superato! Hai raggiunto €${newTotal.toFixed(2)}, superando il tuo limite di €${userData.limits.monthlySpendingLimit} di €${exceeding.toFixed(2)}.`
+              : `⚠️ Monthly limit exceeded! You've reached €${newTotal.toFixed(2)}, exceeding your limit of €${userData.limits.monthlySpendingLimit} by €${exceeding.toFixed(2)}.`;
+            
+            showError(warningMessage, 6000); // Durata più lunga per avviso importante
+          }
+        }
+        
         if (selectedOption !== "") {
           const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-          const outflowNumber = parseFloat(outflow);
+          const outflowNumber = parseFloat(originalOutflowAmount);
           const incomeNumber = parseFloat(income);
           let newValue = 0;
           if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
@@ -1075,46 +979,7 @@ export default function InsertValue({
           onConfirmDeleteIncome={handleIncomesDelete}
           onConfirmDeleteOutflow={handleOutflowsDelete}
         />
-        
-        {/* Popup avviso limiti */}
-        {showLimitWarning && limitWarningData && (
-          <>
-            <PopupOverlay onClick={() => setShowLimitWarning(false)} />
-            <LimitWarningPopup theme={theme}>
-              <div className="warning-icon">⚠️</div>
-              <div className="warning-title">
-                {language === 'it' ? 'Attenzione: Limite Superato!' : 'Warning: Limit Exceeded!'}
-              </div>
-              <div className="warning-message">
-                {limitWarningData.type === 'spending' && (
-                  <>
-                    {language === 'it' 
-                      ? `Questa spesa porterebbe il totale mensile a €${limitWarningData.newTotal.toFixed(2)}, superando il tuo limite di €${limitWarningData.limit} di €${limitWarningData.exceeding.toFixed(2)}.`
-                      : `This expense would bring your monthly total to €${limitWarningData.newTotal.toFixed(2)}, exceeding your limit of €${limitWarningData.limit} by €${limitWarningData.exceeding.toFixed(2)}.`
-                    }
-                  </>
-                )}
-              </div>
-              <div className="warning-buttons">
-                <button 
-                  className="warning-button cancel"
-                  onClick={() => setShowLimitWarning(false)}
-                >
-                  {language === 'it' ? 'Annulla' : 'Cancel'}
-                </button>
-                <button 
-                  className="warning-button continue"
-                  onClick={() => {
-                    setShowLimitWarning(false);
-                    setIsConfirmOutflowOpen(true);
-                  }}
-                >
-                  {language === 'it' ? 'Continua Comunque' : 'Continue Anyway'}
-                </button>
-              </div>
-            </LimitWarningPopup>
-          </>
-        )}
+
         
         {/* Spacer per evitare che il popup di navigazione appaia troppo presto su mobile */}
         <div style={{ height: '400px' }}></div>

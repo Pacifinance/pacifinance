@@ -641,11 +641,11 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
             userData.hasChildren
         ];
         
-        // Considera completo se almeno il 70% dei campi è compilato
+        // Considera completo solo se TUTTI i campi sono compilati (100%)
         const completedFields = profileFields.filter(field => field && field !== "").length;
         const completionPercentage = (completedFields / profileFields.length) * 100;
         
-        return completionPercentage >= 70;
+        return completionPercentage === 100;
     };
 
     // Funzioni helper per Rankings
@@ -777,7 +777,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const renderProfileBanner = () => (
         <ProfileBanner 
             theme={theme} 
-            onClick={() => navigate('/account')}
+            onClick={() => navigate('/profile')}
             data-umami-event="comparison-complete-profile"
         >
             <BannerIcon theme={theme}>

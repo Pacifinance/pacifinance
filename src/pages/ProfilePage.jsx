@@ -45,9 +45,15 @@ const ProfileCompletionIndicator = ({
         userYearsExperience.value, userAge.value, userLivingStatus.value, 
         userHousingType.value, userHasChildren.value
     ];
-    const completedFields = fields.filter(field => field && field !== "").length;
+    const completedFields = fields.filter(field => field && field !== "" && field !== null && field !== undefined).length;
     const totalFields = fields.length;
     const completionPercentage = Math.round((completedFields / totalFields) * 100);
+    
+    // Debug logging
+    console.log('Profile fields:', fields);
+    console.log('Completed fields count:', completedFields);
+    console.log('Total fields:', totalFields);
+    console.log('Completion percentage:', completionPercentage);
     
     return (
         <div style={{
@@ -242,17 +248,18 @@ const ProfilePage = () => {
         if (userData) {
             setUserId(userData.userId || '00000');
             setUserType(userData.userType || 'mockUser');
-            setUserNationality(userData.userNationality || { key: "", value: "" });
-            setUserWhereWorks(userData.userWhereWorks || { key: "", value: "" });
-            setUserJob(userData.userJob || { key: "", value: "" });
-            setUserJobType(userData.userJobType || { key: "", value: "" });
-            setUserWorkTime(userData.userWorkTime || { key: "", value: "" });
-            setUserRemoteType(userData.userRemoteType || { key: "", value: "" });
-            setUserYearsExperience(userData.userYearsExperience || { key: "", value: "" });
-            setUserAge(userData.userAge || { key: "", value: "" });
-            setUserLivingStatus(userData.userLivingStatus || { key: "", value: "" });
-            setUserHousingType(userData.userHousingType || { key: "", value: "" });
-            setUserHasChildren(userData.userHasChildren || { key: "", value: "" });
+            // Only set values if they exist and are not empty in userData
+            setUserNationality(userData.userNationality && userData.userNationality.value ? userData.userNationality : { key: "", value: "" });
+            setUserWhereWorks(userData.userWhereWorks && userData.userWhereWorks.value ? userData.userWhereWorks : { key: "", value: "" });
+            setUserJob(userData.userJob && userData.userJob.value ? userData.userJob : { key: "", value: "" });
+            setUserJobType(userData.userJobType && userData.userJobType.value ? userData.userJobType : { key: "", value: "" });
+            setUserWorkTime(userData.userWorkTime && userData.userWorkTime.value ? userData.userWorkTime : { key: "", value: "" });
+            setUserRemoteType(userData.userRemoteType && userData.userRemoteType.value ? userData.userRemoteType : { key: "", value: "" });
+            setUserYearsExperience(userData.userYearsExperience && userData.userYearsExperience.value ? userData.userYearsExperience : { key: "", value: "" });
+            setUserAge(userData.userAge && userData.userAge.value ? userData.userAge : { key: "", value: "" });
+            setUserLivingStatus(userData.userLivingStatus && userData.userLivingStatus.value ? userData.userLivingStatus : { key: "", value: "" });
+            setUserHousingType(userData.userHousingType && userData.userHousingType.value ? userData.userHousingType : { key: "", value: "" });
+            setUserHasChildren(userData.userHasChildren && userData.userHasChildren.value ? userData.userHasChildren : { key: "", value: "" });
             
             // Use mock data if no userData tags are available (development mode)
             setNationalityTags(userData.nationalityTags || mockNationalityTags);

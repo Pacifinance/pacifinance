@@ -146,23 +146,78 @@ export const mockDashboardData = {
             const day = Math.floor(Math.random() * 28) + 1; // 1-28 per sicurezza
             const transactionDate = new Date(currentYear, currentMonth - 1, day);
             
-            // Categoria casuale
+            // Categoria casuale - aligned with real backend format
             const categories = [
-                { index: 0, translations: { it: 'Casa', en: 'House' }},
-                { index: 1, translations: { it: 'Alimentari', en: 'Food' }},
-                { index: 2, translations: { it: 'Trasporti', en: 'Transport' }},
-                { index: 3, translations: { it: 'Intrattenimento', en: 'Entertainment' }},
-                { index: 4, translations: { it: 'Salute', en: 'Health' }},
-                { index: 5, translations: { it: 'Abbigliamento', en: 'Clothing' }},
-                { index: 6, translations: { it: 'Altri', en: 'Other' }}
+                { 
+                    index: 0, 
+                    label: 'house',
+                    type: 1,
+                    translations: { it: 'Casa', en: 'House' }
+                },
+                { 
+                    index: 1, 
+                    label: 'food',
+                    type: 1,
+                    translations: { it: 'Alimentari', en: 'Food' }
+                },
+                { 
+                    index: 2, 
+                    label: 'transport',
+                    type: 1,
+                    translations: { it: 'Trasporti', en: 'Transport' }
+                },
+                { 
+                    index: 3, 
+                    label: 'entertainment',
+                    type: 1,
+                    translations: { it: 'Intrattenimento', en: 'Entertainment' }
+                },
+                { 
+                    index: 4, 
+                    label: 'health',
+                    type: 1,
+                    translations: { it: 'Salute', en: 'Health' }
+                },
+                { 
+                    index: 5, 
+                    label: 'clothing',
+                    type: 1,
+                    translations: { it: 'Abbigliamento', en: 'Clothing' }
+                },
+                { 
+                    index: 6, 
+                    label: 'other',
+                    type: 1,
+                    translations: { it: 'Altri', en: 'Other' }
+                }
             ];
             
-            // Tipo pagamento casuale
+            // Tipo pagamento casuale - aligned with real backend format
             const paymentTypes = [
-                { index: 0, translations: { it: 'Carta di Credito', en: 'Credit Card' }},
-                { index: 1, translations: { it: 'Bonifico', en: 'Bank Transfer' }},
-                { index: 2, translations: { it: 'Contanti', en: 'Cash' }},
-                { index: 3, translations: { it: 'PayPal', en: 'PayPal' }}
+                { 
+                    index: 0, 
+                    label: 'single payment',
+                    type: 2,
+                    translations: { it: 'Pagamento singolo', en: 'Single Payment' }
+                },
+                { 
+                    index: 1, 
+                    label: 'subscription',
+                    type: 2,
+                    translations: { it: 'Abbonamento', en: 'Subscription' }
+                },
+                { 
+                    index: 2, 
+                    label: 'installment',
+                    type: 2,
+                    translations: { it: 'Rata', en: 'Installment' }
+                },
+                { 
+                    index: 3, 
+                    label: 'periodic payment',
+                    type: 2,
+                    translations: { it: 'Pagamento periodico', en: 'Periodic payment' }
+                }
             ];
             
             const randomCategory = categories[Math.floor(Math.random() * categories.length)];
@@ -216,12 +271,32 @@ export const mockDashboardData = {
             const day = Math.floor(Math.random() * 28) + 1; // 1-28 per sicurezza  
             const transactionDate = new Date(currentYear, currentMonth - 1, day);
             
-            // Categoria entrata casuale
+            // Categoria entrata casuale - aligned with real backend format
             const incomeCategories = [
-                { index: 0, translations: { it: 'Stipendio', en: 'Salary' }},
-                { index: 1, translations: { it: 'Freelance', en: 'Freelance' }},
-                { index: 2, translations: { it: 'Investimenti', en: 'Investments' }},
-                { index: 3, translations: { it: 'Altro', en: 'Other' }}
+                { 
+                    index: 0, 
+                    label: 'salary',
+                    type: 1,
+                    translations: { it: 'Stipendio', en: 'Salary' }
+                },
+                { 
+                    index: 1, 
+                    label: 'freelance',
+                    type: 1,
+                    translations: { it: 'Freelance', en: 'Freelance' }
+                },
+                { 
+                    index: 2, 
+                    label: 'investments',
+                    type: 1,
+                    translations: { it: 'Investimenti', en: 'Investments' }
+                },
+                { 
+                    index: 3, 
+                    label: 'other',
+                    type: 1,
+                    translations: { it: 'Altro', en: 'Other' }
+                }
             ];
             
             const randomCategory = incomeCategories[Math.floor(Math.random() * incomeCategories.length)];
@@ -256,23 +331,67 @@ export const mockDashboardData = {
     
     // Ranking mock (ora gestito più sotto con valori dinamici)
     
-    // User info
+    // User info - aligned with real backend format
     userId: 'dev-user-123',
     userType: 'premium',
     username: 'Developer User',
+    nickname: '',
     creationDate: '2023-01-15T10:30:00Z',
-    country: { label: 'Italy' },
-    job: { label: 'Developer' },
-    jobType: { label: 'Full-time' },
-    jobCountry: { label: 'Italy' },
-    workTime: { label: '40' },
-    remoteType: { label: 'Remote' },
-    userNationality: 'Italy',
-    userWhereWorks: 'Technology',
-    userJob: 'Developer',
-    userJobType: 'Full-time',
-    userWorkTime: '40',
-    userRemoteType: 'Remote',
+    country: {
+        label: "italy",
+        index: 107,
+        type: 3,
+        translations: {
+            "en": "Italy",
+            "it": "Italia"
+        }
+    },
+    job: {
+        label: "information technology",
+        index: 1,
+        type: 4,
+        translations: {
+            "en": "Information Technology",
+            "it": "Informatica"
+        }
+    },
+    jobType: {
+        label: "employee",
+        index: 0,
+        type: 5,
+        translations: {
+            "en": "Employee",
+            "it": "Lavoro dipendente"
+        }
+    },
+    jobCountry: {
+        label: "italy",
+        index: 107,
+        type: 3,
+        translations: {
+            "en": "Italy",
+            "it": "Italia"
+        }
+    },
+    workTime: {
+        label: "full time",
+        index: 1,
+        type: 6,
+        translations: {
+            "en": "Full time",
+            "it": "Full time"
+        }
+    },
+    remoteType: {
+        label: "hybrid",
+        index: 1,
+        type: 7,
+        translations: {
+            "en": "Hybrid",
+            "it": "Ibrido"
+        }
+    },
+    type: 1,
     
     // Dati per grafici ultimi 12 mesi (mock) - più dettagliati
     last12MonthsData: Array.from({ length: 12 }, (_, i) => {
@@ -299,8 +418,39 @@ export const mockDashboardData = {
         };
     }),
     
-    // Dati storici per grafici e confronti
-    balances: Array.from({ length: 24 }, (_, i) => {
+    
+    // Dati storici per grafici e confronti - aligned with real backend format
+    balances: (() => {
+        const today = new Date();
+        return Array.from({ length: 24 }, (_, i) => {
+            const date = new Date();
+            date.setMonth(date.getMonth() - i);
+            const isCurrentMonth = i === 0; // Primo elemento = mese corrente
+            
+            return {
+                date: new Date(date.getFullYear(), date.getMonth(), 1).toISOString(),
+                balance: {
+                    date: new Date().toISOString(),
+                    userDate: date.toISOString(),
+                    bank: isCurrentMonth ? 20000 : 15000 + Math.sin(i * 0.4) * 4000 + Math.random() * 1000,
+                    cash: isCurrentMonth ? 500 : 300 + Math.random() * 400,
+                    digitalServices: isCurrentMonth ? 0 : Math.random() * 200,
+                    stocks: isCurrentMonth ? 8000 : 6000 + Math.sin(i * 0.5) * 2000 + Math.random() * 500,
+                    etf: isCurrentMonth ? 25000 : 20000 + Math.sin(i * 0.6) * 3000 + Math.random() * 1000,
+                    bitcoin: isCurrentMonth ? 0 : Math.random() * 1500,
+                    crypto: isCurrentMonth ? 0 : Math.random() * 800,
+                    bonds: isCurrentMonth ? 15000 : Math.max(0, 12000 - (i * 500) + Math.random() * 1000),
+                    funds: isCurrentMonth ? 12500 : Math.max(0, 10000 - (i * 400) + Math.random() * 800),
+                    gold: isCurrentMonth ? 8000 : Math.max(0, 6500 - (i * 300) + Math.random() * 600),
+                    // emergencyFund not in backend yet but we keep it for frontend
+                    emergencyFund: isCurrentMonth ? 5000 : Math.max(2000, 4000 - (i * 100) + Math.random() * 500)
+                }
+            };
+        });
+    })(),
+    
+    // Legacy format for compatibility (computed from balances array)
+    balancesLegacy: Array.from({ length: 24 }, (_, i) => {
         const date = new Date();
         date.setMonth(date.getMonth() - i);
         const isCurrentMonth = i === 0; // Primo elemento = mese corrente
@@ -334,132 +484,164 @@ export const mockDashboardData = {
         totalReal: 35000 + Math.sin(i * 0.3) * 6000
     })),
 
-    // Tags e categorie per entrate/uscite (con traduzioni) - chiavi corrispondenti a outflowCategoryColors
+    // Tags e categorie per entrate/uscite (con traduzioni) - aligned with backend format
     outflowsTags: [
         { 
             index: 0,
+            label: 'house',
             key: 'House',
-            name: 'House', 
+            name: 'House',
+            type: 1,
             total: 1200, 
             percentage: 22,
             translations: { it: 'Casa', en: 'House' }
         },
         { 
             index: 1,
+            label: 'food',
             key: 'Food',
-            name: 'Food', 
+            name: 'Food',
+            type: 1,
             total: 800, 
             percentage: 15,
             translations: { it: 'Alimentari', en: 'Food' }
         },
         { 
             index: 2,
+            label: 'transport',
             key: 'Transports',
-            name: 'Transports', 
+            name: 'Transports',
+            type: 1,
             total: 400, 
             percentage: 8,
             translations: { it: 'Trasporti', en: 'Transports' }
         },
         { 
             index: 3,
+            label: 'entertainment',
             key: 'Free time',
-            name: 'Free time', 
+            name: 'Free time',
+            type: 1,
             total: 350, 
             percentage: 7,
             translations: { it: 'Tempo libero', en: 'Free time' }
         },
         { 
             index: 4,
+            label: 'health',
             key: 'Health',
-            name: 'Health', 
+            name: 'Health',
+            type: 1,
             total: 300, 
             percentage: 6,
             translations: { it: 'Salute', en: 'Health' }
         },
         { 
             index: 5,
+            label: 'shopping',
             key: 'Shopping',
-            name: 'Shopping', 
+            name: 'Shopping',
+            type: 1,
             total: 280, 
             percentage: 5,
             translations: { it: 'Shopping', en: 'Shopping' }
         },
         { 
             index: 6,
+            label: 'digital service',
             key: 'Digital service',
-            name: 'Digital service', 
+            name: 'Digital service',
+            type: 1,
             total: 200, 
             percentage: 4,
             translations: { it: 'Servizi digitali', en: 'Digital service' }
         },
         { 
             index: 7,
+            label: 'education',
             key: 'Education',
-            name: 'Education', 
+            name: 'Education',
+            type: 1,
             total: 180, 
             percentage: 3,
             translations: { it: 'Educazione', en: 'Education' }
         },
         { 
             index: 8,
+            label: 'travelling',
             key: 'Travelling',
-            name: 'Travelling', 
+            name: 'Travelling',
+            type: 1,
             total: 150, 
             percentage: 3,
             translations: { it: 'Viaggi', en: 'Travelling' }
         },
         { 
             index: 9,
+            label: 'vehicle',
             key: 'Vehicle',
-            name: 'Vehicle', 
+            name: 'Vehicle',
+            type: 1,
             total: 120, 
             percentage: 2,
             translations: { it: 'Veicoli', en: 'Vehicle' }
         },
         { 
             index: 10,
+            label: 'investment',
             key: 'Investment',
-            name: 'Investment', 
+            name: 'Investment',
+            type: 1,
             total: 100, 
             percentage: 2,
             translations: { it: 'Investimenti', en: 'Investment' }
         },
         { 
             index: 11,
+            label: 'tax',
             key: 'Tax',
-            name: 'Tax', 
+            name: 'Tax',
+            type: 1,
             total: 90, 
             percentage: 2,
             translations: { it: 'Tasse', en: 'Tax' }
         },
         { 
             index: 12,
+            label: 'gift',
             key: 'Gift',
-            name: 'Gift', 
+            name: 'Gift',
+            type: 1,
             total: 80, 
             percentage: 1,
             translations: { it: 'Regali', en: 'Gift' }
         },
         { 
             index: 13,
+            label: 'pets',
             key: 'Pets',
-            name: 'Pets', 
+            name: 'Pets',
+            type: 1,
             total: 70, 
             percentage: 1,
             translations: { it: 'Animali domestici', en: 'Pets' }
         },
         { 
             index: 14,
+            label: 'personal project',
             key: 'Personal project',
-            name: 'Personal project', 
+            name: 'Personal project',
+            type: 1,
             total: 60, 
             percentage: 1,
             translations: { it: 'Progetti personali', en: 'Personal project' }
         },
         { 
             index: 15,
+            label: 'other',
             key: 'Other',
-            name: 'Other', 
+            name: 'Other',
+            type: 1,
             total: 50, 
             percentage: 1,
             translations: { it: 'Altro', en: 'Other' }
@@ -469,48 +651,60 @@ export const mockDashboardData = {
     incomesTags: [
         { 
             index: 0,
+            label: 'salary',
             key: 'Salary',
-            name: 'Salary', 
+            name: 'Salary',
+            type: 1,
             total: 2500, 
             percentage: 65,
             translations: { it: 'Stipendio', en: 'Salary' }
         },
         { 
             index: 1,
+            label: 'freelance income',
             key: 'Freelance income',
-            name: 'Freelance income', 
+            name: 'Freelance income',
+            type: 1,
             total: 600, 
             percentage: 15,
             translations: { it: 'Freelance', en: 'Freelance income' }
         },
         { 
             index: 2,
+            label: 'extra income',
             key: 'Extra income',
             name: 'Extra income',
+            type: 1,
             total: 400, 
             percentage: 10,
             translations: { it: 'Entrate extra', en: 'Extra income' }
         },
         { 
             index: 3,
+            label: 'gift',
             key: 'Gift',
-            name: 'Gift', 
+            name: 'Gift',
+            type: 1,
             total: 200, 
             percentage: 5,
             translations: { it: 'Regali', en: 'Gift' }
         },
         { 
             index: 4,
+            label: 'retirement',
             key: 'Retirement',
-            name: 'Retirement', 
+            name: 'Retirement',
+            type: 1,
             total: 100, 
             percentage: 3,
             translations: { it: 'Pensione', en: 'Retirement' }
         },
         { 
             index: 5,
+            label: 'other',
             key: 'Other',
-            name: 'Other', 
+            name: 'Other',
+            type: 1,
             total: 80, 
             percentage: 2,
             translations: { it: 'Altro', en: 'Other' }
@@ -520,40 +714,50 @@ export const mockDashboardData = {
     paymentTags: [
         { 
             index: 0,
+            label: 'single payment',
             key: 'Single Payment',
-            name: 'Single Payment', 
+            name: 'Single Payment',
+            type: 2,
             total: 2000, 
             percentage: 40,
             translations: { it: 'Pagamento singolo', en: 'Single Payment' }
         },
         { 
             index: 1,
+            label: 'subscription',
             key: 'Subscription',
-            name: 'Subscription', 
+            name: 'Subscription',
+            type: 2,
             total: 1500, 
             percentage: 30,
             translations: { it: 'Abbonamento', en: 'Subscription' }
         },
         { 
             index: 2,
+            label: 'installment',
             key: 'Installment',
-            name: 'Installment', 
+            name: 'Installment',
+            type: 2,
             total: 800, 
             percentage: 16,
             translations: { it: 'Rata', en: 'Installment' }
         },
         { 
             index: 3,
+            label: 'periodic payment',
             key: 'Periodic payment',
-            name: 'Periodic payment', 
+            name: 'Periodic payment',
+            type: 2,
             total: 400, 
             percentage: 8,
             translations: { it: 'Pagamento periodico', en: 'Periodic payment' }
         },
         { 
             index: 4,
+            label: 'capital accumulation plan',
             key: 'Capital accumulation plan',
-            name: 'Capital accumulation plan', 
+            name: 'Capital accumulation plan',
+            type: 2,
             total: 300, 
             percentage: 6,
             translations: { it: 'Piano di accumulo', en: 'Capital accumulation plan' }
@@ -688,6 +892,39 @@ export const MockAuthProvider = ({ children }) => {
     const value = {
         userData: {
             ...userData,
+            // Extract current month balance values for compatibility
+            cashReal: userData.balances[0]?.balance?.cash || userData.cashReal,
+            bankReal: userData.balances[0]?.balance?.bank || userData.bankReal,
+            digitalServicesReal: userData.balances[0]?.balance?.digitalServices || userData.digitalServicesReal,
+            stocksReal: userData.balances[0]?.balance?.stocks || userData.stocksReal,
+            etfReal: userData.balances[0]?.balance?.etf || userData.etfReal,
+            bitcoinReal: userData.balances[0]?.balance?.bitcoin || userData.bitcoinReal,
+            cryptoReal: userData.balances[0]?.balance?.crypto || userData.cryptoReal,
+            bondsReal: userData.balances[0]?.balance?.bonds || userData.bondsReal,
+            fundsReal: userData.balances[0]?.balance?.funds || userData.fundsReal,
+            goldReal: userData.balances[0]?.balance?.gold || userData.goldReal,
+            // emergencyFund is frontend-only for now
+            emergencyFund: userData.balances[0]?.balance?.emergencyFund || userData.emergencyFund,
+            
+            // Calculate total from current balances
+            totalReal: (() => {
+                const balance = userData.balances[0]?.balance;
+                if (balance) {
+                    return (balance.cash || 0) + 
+                           (balance.bank || 0) + 
+                           (balance.digitalServices || 0) + 
+                           (balance.stocks || 0) + 
+                           (balance.etf || 0) + 
+                           (balance.bitcoin || 0) + 
+                           (balance.crypto || 0) + 
+                           (balance.bonds || 0) + 
+                           (balance.funds || 0) + 
+                           (balance.gold || 0) + 
+                           (balance.emergencyFund || 0);
+                }
+                return userData.totalReal;
+            })(),
+            
             // Tags ordinati alfabeticamente in base alla lingua
             outflowsTags: getSortedTags(userData.outflowsTags),
             incomesTags: getSortedTags(userData.incomesTags), 

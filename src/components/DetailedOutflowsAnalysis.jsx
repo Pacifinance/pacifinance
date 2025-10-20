@@ -519,9 +519,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
       // Conta transazioni per categoria nel mese corrente
       const transactions = currentMonth.filter(outflow => {
         const categoryName = outflow.categoryTag?.translations?.en || 
-                           outflow.categoryTag?.key || 
-                           outflow.categoryTag?.name || 
-                           outflow.categoryTag;
+                           outflow.categoryTag?.label || 
+                           'Other';
         return categoryName === category;
       });
       
@@ -548,88 +547,121 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
     };
     
     currentMonth.forEach(outflow => {
-      const paymentType = outflow.paymentType || 'Unknown';
-      const typology = outflow.typology || 'Unknown';
-      const category = outflow.categoryTag?.translations?.en || 
-                      outflow.categoryTag?.key || 
-                      outflow.categoryTag?.name || 
-                      outflow.categoryTag || 
+      // Estrai correttamente i dati dalla struttura reale
+      const paymentType = outflow.paymentType?.translations?.[language] || 
+                         outflow.paymentType?.label || 
+                         'Unknown';
+      const paymentTypeKey = outflow.paymentType?.label || 'unknown';
+      
+      const category = outflow.categoryTag?.translations?.[language] || 
+                      outflow.categoryTag?.label || 
                       'Other';
+      const categoryKey = outflow.categoryTag?.label || 'other';
       
       // Analisi metodi di pagamento
-      if (!paymentMethods[paymentType]) {
-        paymentMethods[paymentType] = {
+      if (!paymentMethods[paymentTypeKey]) {
+        paymentMethods[paymentTypeKey] = {
+          name: paymentType,
           total: 0,
           count: 0,
           categories: {},
-          typologies: {}
+          isSubscription: paymentTypeKey === 'subscription'
         };
       }
       
-      paymentMethods[paymentType].total += outflow.amount;
-      paymentMethods[paymentType].count += 1;
+      paymentMethods[paymentTypeKey].total += outflow.amount;
+      paymentMethods[paymentTypeKey].count += 1;
       
-      if (!paymentMethods[paymentType].categories[category]) {
-        paymentMethods[paymentType].categories[category] = 0;
+      if (!paymentMethods[paymentTypeKey].categories[categoryKey]) {
+        paymentMethods[paymentTypeKey].categories[categoryKey] = {
+          name: category,
+          amount: 0
+        };
       }
-      paymentMethods[paymentType].categories[category] += outflow.amount;
+      paymentMethods[paymentTypeKey].categories[categoryKey].amount += outflow.amount;
       
-      if (!paymentMethods[paymentType].typologies[typology]) {
-        paymentMethods[paymentType].typologies[typology] = 0;
-      }
-      paymentMethods[paymentType].typologies[typology] += 1;
-      
-      // Analisi tipologie
-      if (!paymentTypologies[typology]) {
-        paymentTypologies[typology] = {
+      // Analisi tipologie di pagamento
+      if (!paymentTypologies[paymentTypeKey]) {
+        paymentTypologies[paymentTypeKey] = {
+          name: paymentType,
           total: 0,
           count: 0,
           categories: {},
-          paymentMethods: {}
+          isSubscription: paymentTypeKey === 'subscription'
         };
       }
       
-      paymentTypologies[typology].total += outflow.amount;
-      paymentTypologies[typology].count += 1;
+      paymentTypologies[paymentTypeKey].total += outflow.amount;
+      paymentTypologies[paymentTypeKey].count += 1;
       
-      if (!paymentTypologies[typology].categories[category]) {
-        paymentTypologies[typology].categories[category] = 0;
+      if (!paymentTypologies[paymentTypeKey].categories[categoryKey]) {
+        paymentTypologies[paymentTypeKey].categories[categoryKey] = {
+          name: category,
+          amount: 0
+        };
       }
-      paymentTypologies[typology].categories[category] += outflow.amount;
+      paymentTypologies[paymentTypeKey].categories[categoryKey].amount += outflow.amount;
       
-      if (!paymentTypologies[typology].paymentMethods[paymentType]) {
-        paymentTypologies[typology].paymentMethods[paymentType] = 0;
-      }
-      paymentTypologies[typology].paymentMethods[paymentType] += 1;
-      
-      // Identifica abbonamenti e pagamenti ricorrenti
-      if (typology.toLowerCase().includes('subscription') || 
-          typology.toLowerCase().includes('periodic') ||
-          typology.toLowerCase().includes('installment')) {
+      // Analisi abbonamenti
+      if (paymentTypeKey === 'subscription') {
         subscriptionPayments.total += outflow.amount;
         subscriptionPayments.count += 1;
         
-        if (!subscriptionPayments.categories[category]) {
-          subscriptionPayments.categories[category] = 0;
+        if (!subscriptionPayments.categories[categoryKey]) {
+          subscriptionPayments.categories[categoryKey] = {
+            name: category,
+            amount: 0,
+            count: 0
+          };
         }
-        subscriptionPayments.categories[category] += outflow.amount;
+        subscriptionPayments.categories[categoryKey].amount += outflow.amount;
+        subscriptionPayments.categories[categoryKey].count += 1;
       }
       
-      // Identifica potenziali uscite ricorrenti (stesso importo negli ultimi mesi)
-      if (outflow.amount > 10) { // Solo uscite significative
-        const similarOutflows = last12Months.flat().filter(e => 
-          Math.abs(e.amount - outflow.amount) < 1 && // Stesso importo
-          e.categoryTag?.translations?.en === category
-        );
+      // Identifica potenziali uscite ricorrenti con logica migliorata
+      if (outflow.amount > 5) { // Solo uscite significative (soglia ridotta)
+        // Cerca spese simili negli ultimi mesi con criteri più flessibili
+        const similarOutflows = last12Months.flat().filter(e => {
+          const amountMatch = Math.abs(e.amount - outflow.amount) < 2; // Tolleranza di 2€
+          const categoryMatch = e.categoryTag?.label === outflow.categoryTag?.label;
+          
+          // Analisi delle note per trovare pattern simili
+          let notesMatch = false;
+          if (outflow.notes && e.notes) {
+            const currentNotes = outflow.notes.toLowerCase().trim();
+            const compareNotes = e.notes.toLowerCase().trim();
+            
+            // Calcola similarità delle note (almeno 60% di sovrapposizione)
+            const words1 = currentNotes.split(/\s+/);
+            const words2 = compareNotes.split(/\s+/);
+            const commonWords = words1.filter(word => words2.includes(word));
+            const similarity = commonWords.length / Math.max(words1.length, words2.length);
+            
+            notesMatch = similarity > 0.6 || currentNotes === compareNotes;
+          }
+          
+          return amountMatch && categoryMatch && (notesMatch || !outflow.notes);
+        });
         
-        if (similarOutflows.length >= 2) { // Almeno 3 occorrenze (inclusa quella corrente)
-          recurringExpenses.push({
-            category,
-            amount: outflow.amount,
-            frequency: similarOutflows.length + 1,
-            paymentType,
-            typology
-          });
+        if (similarOutflows.length >= 1) { // Almeno 2 occorrenze totali
+          const existing = recurringExpenses.find(r => 
+            Math.abs(r.amount - outflow.amount) < 2 && 
+            r.categoryKey === categoryKey &&
+            (r.notes === outflow.notes || (!r.notes && !outflow.notes))
+          );
+          
+          if (!existing) {
+            recurringExpenses.push({
+              category,
+              categoryKey,
+              amount: outflow.amount,
+              frequency: similarOutflows.length + 1,
+              paymentType,
+              paymentTypeKey,
+              notes: outflow.notes || '',
+              isSubscription: paymentTypeKey === 'subscription'
+            });
+          }
         }
       }
     });
@@ -677,12 +709,14 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
   // Le funzioni getCategoryIcon e getCategoryColor ora vengono importate dal file categoryIcons.js
 
-  const getPaymentIcon = (paymentType) => {
-    switch (paymentType.toLowerCase()) {
-      case 'card': return <CreditCard size={20} />;
+  const getPaymentIcon = (paymentTypeKey) => {
+    switch (paymentTypeKey.toLowerCase()) {
+      case 'subscription': return <Repeat size={20} />;
+      case 'single payment': case 'single_payment': return <CreditCard size={20} />;
       case 'cash': return <Banknote size={20} />;
-      case 'digital': case 'digital payment': return <Smartphone size={20} />;
-      case 'transfer': case 'bank transfer': return <Repeat size={20} />;
+      case 'digital': case 'digital_payment': return <Smartphone size={20} />;
+      case 'transfer': case 'bank_transfer': return <Repeat size={20} />;
+      case 'installment': return <CalendarDays size={20} />;
       default: return <CreditCard size={20} />;
     }
   };
@@ -831,46 +865,54 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
       </CategoryGrid>
 
       {/* Payment Methods Analysis */}
-      {/* <PaymentMethodsSection>
+      <PaymentMethodsSection>
         <SectionHeader>
           <h2 style={{ color: 'white' }}>{t.paymentMethodsTitle}</h2>
           <p style={{ color: 'white' }}>{t.paymentMethodsSubtitle}</p>
-        </SectionHeader> */}
+        </SectionHeader>
 
         {/* Subscription Overview */}
-        {/* <SubscriptionOverview>
+        <SubscriptionOverview>
           <OverviewCard theme={theme}>
-            <h4 style={{ color: 'white' }}>{t.activeSubscriptions}</h4>
-            <p style={{ color: 'white', fontSize: '1.8rem', fontWeight: 'bold' }}>
-              {subscriptionAnalysis.activeCount}
-            </p>
+            <div className="icon">
+              <Repeat size={24} />
+            </div>
+            <div className="value">{subscriptionPayments.count}</div>
+            <div className="label">{t.activeSubscriptions}</div>
           </OverviewCard>
           <OverviewCard theme={theme}>
-            <h4 style={{ color: 'white' }}>{t.monthlyRecurringSpending}</h4>
-            <p style={{ color: 'white', fontSize: '1.8rem', fontWeight: 'bold' }}>
-              €{subscriptionAnalysis.monthlyTotal.toFixed(2)}
-            </p>
+            <div className="icon">
+              <Calendar size={24} />
+            </div>
+            <div className="value">{formatCurrency(subscriptionPayments.total)}</div>
+            <div className="label">{t.monthlyRecurringSpending}</div>
           </OverviewCard>
           <OverviewCard theme={theme}>
-            <h4 style={{ color: 'white' }}>{t.budgetImpact}</h4>
-            <p style={{ color: subscriptionAnalysis.budgetImpact > 30 ? '#e74c3c' : theme.secondaryColor, fontSize: '1.8rem', fontWeight: 'bold' }}>
-              {subscriptionAnalysis.budgetImpact.toFixed(1)}%
-            </p>
+            <div className="icon">
+              <Target size={24} />
+            </div>
+            <div className="value">
+              {overview.currentMonthTotal > 0 ? 
+                `${((subscriptionPayments.total / overview.currentMonthTotal) * 100).toFixed(1)}%` : 
+                '0%'
+              }
+            </div>
+            <div className="label">{t.budgetImpact}</div>
           </OverviewCard>
-        </SubscriptionOverview> */}
+        </SubscriptionOverview>
 
-        {/* <PaymentGrid>
+        <PaymentGrid>
           {paymentMethods && Object.entries(paymentMethods)
-            .filter(([method, data]) => method && data && typeof data === 'object')
+            .filter(([methodKey, data]) => methodKey && data && typeof data === 'object')
             .sort((a, b) => b[1].total - a[1].total)
-            .map(([method, data]) => (
-              <PaymentCard key={method} theme={theme}>
+            .map(([methodKey, data]) => (
+              <PaymentCard key={methodKey} theme={theme}>
                 <div className="payment-header">
                   <div className="payment-icon">
-                    {getPaymentIcon(method)}
+                    {getPaymentIcon(methodKey)}
                   </div>
                   <div className="payment-info">
-                    <div className="payment-name">{typeof method === 'string' && method ? method : 'N/A'}</div>
+                    <div className="payment-name">{data.name || methodKey}</div>
                     <div className="payment-subtitle">
                       {formatCurrency(data.total || 0)} • {data.count || 0} {t.transactions.toLowerCase()}
                     </div>
@@ -892,29 +934,27 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
                   <StatItem theme={theme}>
                     <div className="stat-value">{formatCurrency(data.total / data.count)}</div>
-                    <div className="stat-label">
-                      {language === 'it' ? 'Importo Medio' : 'Avg Amount'}
-                    </div>
+                    <div className="stat-label">{t.avgAmount}</div>
                   </StatItem>
                 </CategoryStats>
 
                 {/* Top categories for this payment method */}
-                {/* <div style={{ marginTop: '1rem' }}>
+                <div style={{ marginTop: '1rem' }}>
                   <div style={{ 
                     fontSize: '0.875rem', 
                     fontWeight: '600', 
-                    color: theme.textColor, 
+                    color: 'white', 
                     marginBottom: '0.5rem' 
                   }}>
                     {t.topCategories}
                   </div>
                   {data.categories && Object.entries(data.categories)
-                    .filter(([category, amount]) => category && typeof amount === 'number')
-                    .sort((a, b) => b[1] - a[1])
+                    .filter(([categoryKey, categoryData]) => categoryKey && categoryData && typeof categoryData.amount === 'number')
+                    .sort((a, b) => b[1].amount - a[1].amount)
                     .slice(0, 3)
-                    .map(([category, amount]) => (
+                    .map(([categoryKey, categoryData]) => (
                       <div 
-                        key={category}
+                        key={categoryKey}
                         style={{ 
                           display: 'flex', 
                           justifyContent: 'space-between', 
@@ -923,8 +963,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                           marginBottom: '0.25rem'
                         }}
                       >
-                        <span>{typeof category === 'string' && category ? category : 'N/A'}</span>
-                        <span>{formatCurrency(amount || 0)}</span>
+                        <span>{categoryData.name || categoryKey}</span>
+                        <span>{formatCurrency(categoryData.amount || 0)}</span>
                       </div>
                     ))
                   }
@@ -932,71 +972,12 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               </PaymentCard>
             ))
           }
-        </PaymentGrid> */}
+        </PaymentGrid>
 
-        {/* Payment Typologies Analysis */}
-        {/* {Object.keys(paymentTypologies || {}).length > 0 && (
-          <>
-            <SectionHeader style={{ marginTop: '2rem' }}>
-              <h3 style={{ color: 'white' }}>{t.paymentTypologiesTitle}</h3>
-              <p style={{ color: 'white' }}>{t.paymentTypologiesSubtitle}</p>
-            </SectionHeader>
-            <PaymentGrid>
-              {paymentTypologies && Object.entries(paymentTypologies)
-                .filter(([typology, data]) => typology && data && typeof data === 'object')
-                .sort((a, b) => b[1].total - a[1].total)
-                .map(([typology, data]) => (
-                  <PaymentCard key={typology} theme={theme}>
-                    <div className="payment-header">
-                      <div className="payment-icon">
-                        {getTypologyIcon(typology)}
-                      </div>
-                      <div className="payment-info">
-                        <div className="payment-name">
-                          {!typology || typology === 'Unknown' ? t.notSpecified : (typeof typology === 'string' ? typology : 'N/A')}
-                        </div>
-                        <div className="payment-subtitle">
-                          {formatCurrency(data.total || 0)} • {data.count || 0} {t.transactions.toLowerCase()}
-                        </div>
-                      </div>
-                    </div>
 
-                    <CategoryStats theme={theme}>
-                      <StatItem theme={theme}>
-                        <div className="stat-value">{formatCurrency(data.total)}</div>
-                        <div className="stat-label">{t.total}</div>
-                      </StatItem>
-
-                      <StatItem theme={theme}>
-                        <div className="stat-value">
-                          {((data.total / (expenseAnalysis.currentMonth?.total || 1)) * 100).toFixed(1)}%
-                        </div>
-                        <div className="stat-label">{t.ofTotal}</div>
-                      </StatItem>
-
-                      <StatItem theme={theme}>
-                        <div className="stat-label">
-                          {data.isSubscription && (
-                            <div style={{ 
-                              color: theme.accentColor, 
-                              fontSize: '0.8rem',
-                              fontWeight: 'bold'
-                            }}>
-                              🔄 {t.subscription}
-                            </div>
-                          )}
-                        </div>
-                      </StatItem>
-                    </CategoryStats>
-                  </PaymentCard>
-                ))
-              }
-            </PaymentGrid>
-          </>
-        )} */}
 
         {/* Recurring Outflows */}
-        {/* {recurringExpenses.length > 0 && (
+        {recurringExpenses.length > 0 && (
           <RecurringSection theme={theme}>
             <div className="recurring-header">
               <Repeat className="recurring-icon" size={24} />
@@ -1009,9 +990,19 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                   <div key={index} className="recurring-item">
                     <div className="recurring-category">
                       {outflow.category} • {outflow.paymentType} • {outflow.frequency} {t.times}
+                      {outflow.notes && (
+                        <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: '0.25rem' }}>
+                          "{outflow.notes}"
+                        </div>
+                      )}
                     </div>
                     <div className="recurring-amount">
                       {formatCurrency(outflow.amount)}
+                      {outflow.isSubscription && (
+                        <div style={{ fontSize: '0.7rem', color: theme.buttonBackgroundColor }}>
+                          🔄 {t.subscription}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
@@ -1026,8 +1017,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               {t.totalMonthlyRecurring} {formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
             </div>
           </RecurringSection>
-        )}*/}
-      {/* </PaymentMethodsSection>  */}
+        )}
+      </PaymentMethodsSection>
     </AnalysisContainer>
   );
 }

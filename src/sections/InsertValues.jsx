@@ -625,8 +625,8 @@ export default function InsertValue({
       if (inExAdd.status === 200) {
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
-          const currentMonth = new Date().getMonth();
-          const currentOutflowsThisMonth = userData.outflowsArray?.[currentMonth] || 0;
+          // L'indice 0 corrisponde al mese corrente nell'array outflowsArray
+          const currentOutflowsThisMonth = userData.outflowsArray?.[0] || 0;
           const newTotal = currentOutflowsThisMonth + parseFloat(originalOutflowAmount.replace(',', '.'));
           
           if (newTotal > userData.limits.monthlySpendingLimit) {
@@ -635,7 +635,10 @@ export default function InsertValue({
               ? `⚠️ Limite mensile superato! Hai raggiunto €${newTotal.toFixed(2)}, superando il tuo limite di €${userData.limits.monthlySpendingLimit} di €${exceeding.toFixed(2)}.`
               : `⚠️ Monthly limit exceeded! You've reached €${newTotal.toFixed(2)}, exceeding your limit of €${userData.limits.monthlySpendingLimit} by €${exceeding.toFixed(2)}.`;
             
-            showError(warningMessage, 6000); // Durata più lunga per avviso importante
+            // Delay per far scomparire prima la notifica di successo
+            setTimeout(() => {
+              showError(warningMessage, 7000); // Durata più lunga per avviso importante
+            }, 2500); // Delay di 2.5 secondi per evitare sovrapposizione
           }
         }
         

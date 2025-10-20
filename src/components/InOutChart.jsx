@@ -18,6 +18,7 @@ import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { LanguageContext } from '../contexts/LanguageContext';
 import languages from '../data/languages.json';
+import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
@@ -117,10 +118,10 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
       if (userData) {
         try {
           if (type === "line") {
-            setIncomesArray(userData.incomesArray ? [...userData.incomesArray] : []);
-            setOutflowsArray(userData.outflowsArray ? [...userData.outflowsArray] : []);
+            setIncomesArray(getIncomesArray(userData) ? [...getIncomesArray(userData)] : []);
+            setOutflowsArray(getOutflowsArray(userData) ? [...getOutflowsArray(userData)] : []);
           } else {
-            setTotalOutflowsPerCategoryPerMonth(userData.totalOutflowsPerCategoryPerMonth || []);
+            setTotalOutflowsPerCategoryPerMonth(getTotalOutflowsPerCategoryPerMonth(userData) || []);
           }
         } catch (error) {
           console.error('Error during operations:', error);

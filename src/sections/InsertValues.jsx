@@ -16,6 +16,12 @@ import IncomeSection from "../components/IncomeSection";
 import OutflowSection from "../components/OutflowSection";
 import InsertModals from "../components/InsertModals";
 import styled from 'styled-components';
+import {
+    getCashReal, getBankReal, getDigitalServicesReal, getEmergencyFund,
+    getStocksReal, getEtfReal, getBitcoinReal, getCryptoReal, getBondsReal,
+    getFundsReal, getGoldReal, getOutflowsTags, getIncomesTags, getPaymentTags,
+    getAllOutflows, getAllIncomes, getOutflowsArray
+} from '../utils/userDataSelectors';
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -326,21 +332,21 @@ export default function InsertValue({
   const fetchData = async () => {
     if (userData) {
       try {
-        setStocksReal(userData ? userData.stocksReal : 0);
-        setETFReal(userData ? userData.etfReal : 0);
-        setBitcoinReal(userData ? userData.bitcoinReal : 0);
-        setCryptoReal(userData ? userData.cryptoReal : 0);
-        setBankReal(userData ? userData.bankReal : 0);
-        setCashReal(userData ? userData.cashReal : 0);
-        setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-        setBondsReal(userData ? userData.bondsReal : 0);
-        setFundsReal(userData ? userData.fundsReal : 0);
-        setGoldReal(userData ? userData.goldReal : 0);
-        setOutflowsTags(userData ? userData.outflowsTags : []);
-        setIncomesTags(userData ? userData.incomesTags : []);
-        setPaymentTags(userData ? userData.paymentTags : []);
-        setAllOutflowsAdds(userData ? userData.allOutflows : []);
-        setAllIncomesAdds(userData ? userData.allIncomes : []);
+        setStocksReal(userData ? getStocksReal(userData) : 0);
+        setETFReal(userData ? getETFReal(userData) : 0);
+        setBitcoinReal(userData ? getBitcoinReal(userData) : 0);
+        setCryptoReal(userData ? getCryptoReal(userData) : 0);
+        setBankReal(userData ? getBankReal(userData) : 0);
+        setCashReal(userData ? getCashReal(userData) : 0);
+        setDigitalServicesReal(userData ? getDigitalServicesReal(userData) : 0);
+        setBondsReal(userData ? getBondsReal(userData) : 0);
+        setFundsReal(userData ? getFundsReal(userData) : 0);
+        setGoldReal(userData ? getGoldReal(userData) : 0);
+        setOutflowsTags(userData ? getOutflowsTags(userData) : []);
+        setIncomesTags(userData ? getIncomesTags(userData) : []);
+        setPaymentTags(userData ? getPaymentTags(userData) : []);
+        setAllOutflowsAdds(userData ? getAllOutflows(userData) : []);
+        setAllIncomesAdds(userData ? getAllIncomes(userData) : []);
       } catch (error) {
         console.error("Error: ", error);
       }
@@ -626,7 +632,7 @@ export default function InsertValue({
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
           // L'indice 0 corrisponde al mese corrente nell'array outflowsArray
-          const currentOutflowsThisMonth = userData.outflowsArray?.[0] || 0;
+          const currentOutflowsThisMonth = getOutflowsArray(userData)?.[0] || 0;
           const newTotal = currentOutflowsThisMonth + parseFloat(originalOutflowAmount.replace(',', '.'));
           
           if (newTotal > userData.limits.monthlySpendingLimit) {

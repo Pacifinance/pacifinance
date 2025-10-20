@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { createLegacyBalanceData } from '../utils/userDataSelectors';
 
 const UserContext = React.createContext();
 
@@ -135,68 +136,26 @@ export const UserProvider = ({ children }) => {
             //************************************* BALANCES **********************************************/
 
             const balancesResponse = await axios.post('/balances/get', null, { withCredentials: true });
-            // console.log('Array completo di risposta BALANCE: ', balancesResponse.data);
+            
+            // Ensure we have valid balance data for at least current month
+            const balancesData = balancesResponse.data.map(monthData => ({
+                date: monthData.date,
+                balance: monthData.balance || {}
+            }));
 
-            //GET DATA FROM RESPONSES
-            var balances = {};
-            //add a control to check if the user has data in this month and previous month
-            const currentMonthBalances = balancesResponse.data[0]?.balance;
-            if (currentMonthBalances && Object.keys(currentMonthBalances).length > 0) {
-              // Use the balances for the current month
-              balances = currentMonthBalances;
-            } else {
-              // with a cycle check and use the balances of the first month that has data from the previous month (balancesResponse.data[1]?.balance) to the older month (balancesResponse.data[23]?.balance)
-                for (let i = 1; i <= 23; i++) {
-                  balances = balancesResponse.data[i]?.balance;
-                  if (balances && Object.keys(balances).length > 0) {
-                    break;
-                  }
-                }    
-            } 
+            // Helper function to calculate total from balance object
+            const calculateTotal = (balance) => {
+                if (!balance) return 0;
+                return (balance.cash || 0) + (balance.bank || 0) + (balance.emergencyFund || 0) + 
+                       (balance.digitalServices || 0) + (balance.stocks || 0) + (balance.etf || 0) + 
+                       (balance.bitcoin || 0) + (balance.crypto || 0) + (balance.bonds || 0) + 
+                       (balance.funds || 0) + (balance.gold || 0);
+            };
 
-            const balancesPreMonth = (balancesResponse.data[1] || 0).balance || 0;  //Using ?? 0, if the value is undefined or empty, set it to 0
-            const balancesPreYearSameMonth = (balancesResponse.data[12] || 0).balance || 0;      
-
-            //************************************* CASH **********************************************/
-
-            const cashReal = balances.cash || 0;
-            const bankReal = balances.bank || 0;
-            const digitalServicesReal = balances.digitalServices || 0;
-            const emergencyFund = balances.emergencyFund || 0;
-            const stocksReal = balances.stocks || 0; //if stocks is undefined, set it to 0
-            const etfReal = balances.etf || 0;
-            const bitcoinReal = balances.bitcoin || 0;
-            const cryptoReal = balances.crypto || 0;
-            const bondsReal = balances.bonds || 0; 
-            const fundsReal = balances.funds || 0; 
-            const goldReal = balances.gold || 0; 
-            const totalReal = cashReal + bankReal + emergencyFund + digitalServicesReal + stocksReal + etfReal + bitcoinReal + cryptoReal + bondsReal + fundsReal + goldReal;
-
-            const cashRealPreMonth = balancesPreMonth.cash || 0;
-            const bankRealPreMonth = balancesPreMonth.bank || 0;
-            const digitalServicesRealPreMonth = balancesPreMonth.digitalServices || 0;
-            const emergencyFundPreMonth = balancesPreMonth.emergencyFund || 0;
-            const stocksRealPreMonth = balancesPreMonth.stocks || 0; //if stocks is undefined, set it to 0
-            const etfRealPreMonth = balancesPreMonth.etf || 0;
-            const bitcoinRealPreMonth = balancesPreMonth.bitcoin || 0;
-            const cryptoRealPreMonth = balancesPreMonth.crypto || 0;
-            const bondsRealPreMonth = balancesPreMonth.bonds || 0; 
-            const fundsRealPreMonth = balancesPreMonth.funds || 0; 
-            const goldRealPreMonth = balancesPreMonth.gold || 0; 
-            const totalRealPreMonth = cashRealPreMonth + bankRealPreMonth + emergencyFundPreMonth + digitalServicesRealPreMonth + stocksRealPreMonth + etfRealPreMonth + bitcoinRealPreMonth + cryptoRealPreMonth + bondsRealPreMonth + fundsRealPreMonth + goldRealPreMonth;
-
-            const cashRealPreYearSameMonth = balancesPreYearSameMonth.cash || 0;
-            const bankRealPreYearSameMonth = balancesPreYearSameMonth.bank || 0;
-            const digitalServicesRealPreYearSameMonth = balancesPreYearSameMonth.digitalServices || 0;
-            const emergencyFundPreYearSameMonth = balancesPreYearSameMonth.emergencyFund || 0;
-            const stocksRealPreYearSameMonth = balancesPreYearSameMonth.stocks || 0; //if stocks is undefined, set it to 0
-            const etfRealPreYearSameMonth = balancesPreYearSameMonth.etf || 0;
-            const bitcoinRealPreYearSameMonth = balancesPreYearSameMonth.bitcoin || 0;
-            const cryptoRealPreYearSameMonth = balancesPreYearSameMonth.crypto || 0;
-            const bondsRealPreYearSameMonth = balancesPreYearSameMonth.bonds || 0;
-            const fundsRealPreYearSameMonth = balancesPreYearSameMonth.funds || 0;
-            const goldRealPreYearSameMonth = balancesPreYearSameMonth.gold || 0;
-            const totalRealPreYearSameMonth = cashRealPreYearSameMonth + bankRealPreYearSameMonth + emergencyFundPreYearSameMonth+digitalServicesRealPreYearSameMonth + stocksRealPreYearSameMonth + etfRealPreYearSameMonth + bitcoinRealPreYearSameMonth + cryptoRealPreYearSameMonth + bondsRealPreYearSameMonth + fundsRealPreYearSameMonth + goldRealPreYearSameMonth;
+            // Add computed totals to balance data
+            balancesData.forEach(monthData => {
+                monthData.balance.totalReal = calculateTotal(monthData.balance);
+            });
             //************************************* EXPENSES AND INCOMES **********************************************/
 
             const allOutflowsIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all outflows and incomes
@@ -286,40 +245,20 @@ export const UserProvider = ({ children }) => {
             // });
 
 
-            //************************************* CHARTS **********************************************/
-            //DATAS FOR THE CHARTS
-
-            const last12MonthsData = [];
-
-            // Loop per i 12 mesi precedenti (dal più vecchio al più recente per consistenza con mock)
-            for (let i = 0; i < 12; i++) {
-              // Calcola il mese usando lo stesso ordine del mock: dal più vecchio (11-i) al più recente (0)
-              const monthOffset = 11 - i;
-              const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - monthOffset, 1);
-              // Usa formato YYYY-MM come nei mock per consistenza con i grafici
-              const currentMonthAsString = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
-
-              // Recupera il bilancio per il mese corrente (se disponibile, altrimenti imposta a 0)
-              const currentMonthBalance = balancesResponse.data[monthOffset]?.balance ?? 0;
-
-              const monthData = {
-                month: currentMonthAsString,
-                cashReal: currentMonthBalance.cash || 0,
-                bankReal: currentMonthBalance.bank || 0,
-                emergencyFund: currentMonthBalance.emergencyFund || 0,
-                digitalServicesReal: currentMonthBalance.digitalServices || 0,
-                stocksReal: currentMonthBalance.stocks || 0,
-                etfReal: currentMonthBalance.etf || 0,
-                bitcoinReal: currentMonthBalance.bitcoin || 0,
-                cryptoReal: currentMonthBalance.crypto || 0,
-                bondsReal: currentMonthBalance.bonds || 0, // Coming soon - backend update required
-                fundsReal: currentMonthBalance.funds || 0, // Coming soon - backend update required
-                goldReal: currentMonthBalance.gold || 0 // Coming soon - backend update required
-              };
-
-              // Aggiungi l'oggetto all'array dei dati degli ultimi 12 mesi
-              last12MonthsData.push(monthData);
-            }
+            //************************************* PROCESSED DATA **********************************************/
+            
+            // Add formatted month strings to balance data for charts (last 12 months)
+            const last12MonthsData = balancesData.slice(0, 12).reverse().map((monthData, i) => {
+                const monthOffset = 11 - i;
+                const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - monthOffset, 1);
+                const monthString = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+                
+                return {
+                    ...monthData.balance,
+                    month: monthString,
+                    date: monthData.date
+                };
+            });
 
             //************************************* RANKING **********************************************/
 
@@ -347,17 +286,89 @@ export const UserProvider = ({ children }) => {
             // console.log('rankOnExpense:', rankOnExpense);
             // console.log('percentageRankOnExpense:', percentageRankOnExpenses);
 
-            // Aggiorna i dati dell'utente nel contesto con i risultati delle chiamate API
-            setUserData({ balances, balancesPreMonth, balancesPreYearSameMonth, outflowsTags, incomesTags, paymentTags, 
-              cashReal, bankReal, digitalServicesReal, emergencyFund, stocksReal, etfReal, bitcoinReal, cryptoReal, bondsReal, fundsReal, goldReal, totalReal, cashRealPreMonth, 
-              bankRealPreMonth, digitalServicesRealPreMonth, emergencyFundPreMonth, stocksRealPreMonth, etfRealPreMonth, bitcoinRealPreMonth, cryptoRealPreMonth, bondsRealPreMonth, fundsRealPreMonth, goldRealPreMonth, totalRealPreMonth, 
-              cashRealPreYearSameMonth, bankRealPreYearSameMonth, digitalServicesRealPreYearSameMonth, emergencyFundPreYearSameMonth, stocksRealPreYearSameMonth, etfRealPreYearSameMonth, 
-              bitcoinRealPreYearSameMonth, cryptoRealPreYearSameMonth, bondsRealPreYearSameMonth, fundsRealPreYearSameMonth, goldRealPreYearSameMonth, totalRealPreYearSameMonth, currentDate, preMonthDate, 
-              preYearSameMonthDate, last12MonthsData, percentageRankOnBalance, outflowsArray, incomesArray, allOutflows, allIncomes, percentageRankOnIncomes, percentageRankOnExpenses, 
-              percentageRankOnBalanceSimilar, percentageRankOnIncomesSimilar, percentageRankOnExpensesSimilar, totalOutflowsPerCategoryPerMonth,
-              userId, userType, username, userNationality, userWhereWorks, userJob, userJobType, userWorkTime, userRemoteType, nationalityTags, jobTags, jobTypeTags, workTimeTags, remoteTypeTags,
-              // Goals and limits data
-              goals, limits
+            // Create assets array for Financial Insights from current balance
+            const currentBalance = balancesData[0]?.balance || {};
+            const assets = [
+              { typology: 'cash', value: currentBalance.cash || 0 },
+              { typology: 'bank', value: currentBalance.bank || 0 },
+              { typology: 'digitalServices', value: currentBalance.digitalServices || 0 },
+              { typology: 'stocks', value: currentBalance.stocks || 0 },
+              { typology: 'etf', value: currentBalance.etf || 0 },
+              { typology: 'bitcoin', value: currentBalance.bitcoin || 0 },
+              { typology: 'crypto', value: currentBalance.crypto || 0 },
+              { typology: 'bonds', value: currentBalance.bonds || 0 },
+              { typology: 'funds', value: currentBalance.funds || 0 },
+              { typology: 'gold', value: currentBalance.gold || 0 }
+            ].filter(asset => asset.value > 0);
+
+            //************************************* USER DATA UPDATE **********************************************/
+            
+            // Simplified user data with organized structure
+            setUserData({
+              // Core user info
+              userId, userType, username,
+              
+              // User profile data with structured objects
+              profile: {
+                nationality: userNationality,
+                whereWorks: userWhereWorks,
+                job: userJob,
+                jobType: userJobType,
+                workTime: userWorkTime,
+                remoteType: userRemoteType
+              },
+              
+              // All balance data in structured format
+              balances: balancesData,
+              
+              // Chart data (derived from balances but formatted for UI)
+              last12MonthsData,
+              
+              // Expense and income data
+              expenses: {
+                allOutflows,
+                outflowsArray,
+                totalOutflowsPerCategoryPerMonth
+              },
+              
+              incomes: {
+                allIncomes,
+                incomesArray
+              },
+              
+              // Tags for dropdowns/categories
+              tags: {
+                outflowsTags,
+                incomesTags,
+                paymentTags,
+                nationalityTags,
+                jobTags,
+                jobTypeTags,
+                workTimeTags,
+                remoteTypeTags
+              },
+              
+              // Ranking data
+              rankings: {
+                balance: percentageRankOnBalance,
+                incomes: percentageRankOnIncomes,
+                expenses: percentageRankOnExpenses,
+                balanceSimilar: percentageRankOnBalanceSimilar,
+                incomesSimilar: percentageRankOnIncomesSimilar,
+                expensesSimilar: percentageRankOnExpensesSimilar
+              },
+              
+              // Date references
+              dates: {
+                current: currentDate,
+                preMonth: preMonthDate,
+                preYearSameMonth: preYearSameMonthDate
+              },
+              
+              // Goals, limits and assets for Financial Insights
+              goals,
+              limits,
+              assets
             });
             handleSetIsUpdated(true);
         }
@@ -382,8 +393,23 @@ export const UserProvider = ({ children }) => {
 
   if (isLoading) return null; // oppure uno spinner
 
+  // Create enhanced userData with both new structure and legacy compatibility
+  const enhancedUserData = userData ? {
+    ...userData,
+    // Add legacy format for backward compatibility
+    ...createLegacyBalanceData(userData)
+  } : null;
+
   return (
-    <UserContext.Provider value={{ userData, setUserData, isAuthenticated, isUpdated, handleSetIsAuthenticated, handleSetIsUpdated, isLoading }}>
+    <UserContext.Provider value={{ 
+      userData: enhancedUserData, 
+      setUserData, 
+      isAuthenticated, 
+      isUpdated, 
+      handleSetIsAuthenticated, 
+      handleSetIsUpdated, 
+      isLoading 
+    }}>
       {children}
     </UserContext.Provider>
   );

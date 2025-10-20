@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
+import { getIncomesArray, getOutflowsArray } from './userDataSelectors';
 
 // Funzione per filtrare i dati in base alle opzioni selezionate
 function filterDataByDateRange(data, filterOptions) {
@@ -417,8 +418,8 @@ export function prepareUserDataForExport(userData, language = 'en', filterOption
 
   const expenses = Array.isArray(userData.expenses) ? userData.expenses : [];
   const last12MonthsData = Array.isArray(userData.last12MonthsData) ? userData.last12MonthsData : [];
-  const incomesArray = Array.isArray(userData.incomesArray) ? userData.incomesArray : [];
-  const outflowsArray = Array.isArray(userData.outflowsArray) ? userData.outflowsArray : [];
+  const incomesArray = Array.isArray(getIncomesArray(userData)) ? getIncomesArray(userData) : [];
+  const outflowsArray = Array.isArray(getOutflowsArray(userData)) ? getOutflowsArray(userData) : [];
   const totalOutflowsPerCategoryPerMonth = Array.isArray(userData.totalOutflowsPerCategoryPerMonth) ? 
     userData.totalOutflowsPerCategoryPerMonth : [];
 

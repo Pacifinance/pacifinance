@@ -32,6 +32,11 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
+import {
+    getCashReal, getBankReal, getDigitalServicesReal, getEmergencyFund,
+    getStocksReal, getEtfReal, getBitcoinReal, getCryptoReal, getBondsReal,
+    getFundsReal, getGoldReal, getTotalReal, getOutflowsArray, getIncomesArray
+} from '../utils/userDataSelectors';
 import { 
     ModernDashboardContainer,
     ModernDashboardHeader,
@@ -93,21 +98,26 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         const fetchData = async () => {
             if (userData) {
                 try {
-                    setStocksReal(userData ? userData.stocksReal : 0);
-                    setETFReal(userData ? userData.etfReal : 0);
-                    setBitcoinReal(userData ? userData.bitcoinReal : 0);
-                    setCryptoReal(userData ? userData.cryptoReal : 0);
-                    setBankReal(userData? userData.bankReal : 0);
-                    setCashReal(userData ? userData.cashReal : 0);
-                    setEmergencyFund(userData ? userData.emergencyFund : 0);
-                    setDigitalServicesReal(userData ? userData.digitalServicesReal : 0);
-                    setBondsReal(userData ? userData.bondsReal : 0);
-                    setFundsReal(userData ? userData.fundsReal : 0);
-                    setGoldReal(userData ? userData.goldReal : 0);
-                    setTotalReal(userData ? userData.totalReal : 0);
-                    setExpensesMonth(userData ? userData.outflowsArray[0] : 0);
-                    setIncomesMonth(userData ? userData.incomesArray[0] : 0);
-                    setSavedMonth(userData ? (userData.incomesArray[0] - userData.outflowsArray[0]) : 0);
+                    // Using optimized selectors
+                    setStocksReal(getStocksReal(userData));
+                    setETFReal(getEtfReal(userData));
+                    setBitcoinReal(getBitcoinReal(userData));
+                    setCryptoReal(getCryptoReal(userData));
+                    setBankReal(getBankReal(userData));
+                    setCashReal(getCashReal(userData));
+                    setEmergencyFund(getEmergencyFund(userData));
+                    setDigitalServicesReal(getDigitalServicesReal(userData));
+                    setBondsReal(getBondsReal(userData));
+                    setFundsReal(getFundsReal(userData));
+                    setGoldReal(getGoldReal(userData));
+                    setTotalReal(getTotalReal(userData));
+                    
+                    const outflowsArray = getOutflowsArray(userData);
+                    const incomesArray = getIncomesArray(userData);
+                    
+                    setExpensesMonth(outflowsArray[0] || 0);
+                    setIncomesMonth(incomesArray[0] || 0);
+                    setSavedMonth((incomesArray[0] || 0) - (outflowsArray[0] || 0));
                     
                     setIsLoading(false);
                 } catch (error) {

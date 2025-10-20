@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import languages from '../data/languages.json';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
+import { getAllOutflows, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 
 const AnalysisContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -482,9 +483,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
       return null;
     }
 
-    const currentMonth = userData.allOutflows[0] || [];
-    const previousMonth = userData.allOutflows[1] || [];
-    const last12Months = userData.allOutflows.slice(0, 12) || [];
+    const allOutflows = getAllOutflows(userData);
+    const currentMonth = allOutflows[0] || [];
+    const previousMonth = allOutflows[1] || [];
+    const last12Months = allOutflows.slice(0, 12) || [];
 
     // Calcola totali per periodo
     const currentMonthTotal = currentMonth.reduce((sum, expense) => sum + expense.amount, 0);
@@ -494,18 +496,19 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
     // Analisi per categoria
     const categoryAnalysis = {};
-    const currentMonthCategories = userData.totalOutflowsPerCategoryPerMonth[0] || {};
+    const totalOutflowsPerCategory = getTotalOutflowsPerCategoryPerMonth(userData);
+    const currentMonthCategories = totalOutflowsPerCategory[0] || {};
 
     Object.keys(currentMonthCategories).forEach(category => {
       const currentAmount = currentMonthCategories[category] || 0;
-      const previousAmount = userData.totalOutflowsPerCategoryPerMonth[1]?.[category] || 0;
+      const previousAmount = totalOutflowsPerCategory[1]?.[category] || 0;
       
       // Calcola media ultimi 12 mesi per questa categoria
       let totalLast12Months = 0;
       let monthsWithData = 0;
       
       for (let i = 0; i < 12; i++) {
-        const monthData = userData.totalOutflowsPerCategoryPerMonth[i];
+        const monthData = totalOutflowsPerCategory[i];
         if (monthData && monthData[category]) {
           totalLast12Months += monthData[category];
           monthsWithData++;

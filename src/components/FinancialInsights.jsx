@@ -18,6 +18,7 @@ import {
     BsInfoCircle
 } from 'react-icons/bs';
 import { MdInsights, MdTrendingUp } from 'react-icons/md';
+import { getOutflowsArray, getIncomesArray } from '../utils/userDataSelectors';
 
 // Styled Components
 const InsightsContainer = styled.div`
@@ -167,8 +168,8 @@ const generateInsights = (userData, language) => {
   const totalAssets = userData.assets.reduce((sum, asset) => sum + (asset.value || 0), 0);
   
   // Usa i dati dal dashboard (indice 0 = mese corrente)
-  const totalExpenses = userData.outflowsArray && userData.outflowsArray[0] ? userData.outflowsArray[0] : 0;
-  const totalIncome = userData.incomesArray && userData.incomesArray[0] ? userData.incomesArray[0] : 0;
+  const totalExpenses = getOutflowsArray(userData) && getOutflowsArray(userData)[0] ? getOutflowsArray(userData)[0] : 0;
+  const totalIncome = getIncomesArray(userData) && getIncomesArray(userData)[0] ? getIncomesArray(userData)[0] : 0;
 
   // Insight 1: Analisi spese mensili
   if (totalExpenses > 0) {

@@ -8,7 +8,12 @@ const TagType = {
     job: {name: "job", value: 4},
     jobType: {name: "jobType", value: 5},
     workTime: {name: "workTime", value: 6},
-    remoteType: {name: "remoteType", value: 7}
+    remoteType: {name: "remoteType", value: 7},
+    yearsOfExperience: {name: "yearsOfExperience", value: 8},
+    age: {name: "age", value: 9},
+    livingSituation: {name: "livingSituation", value: 10},
+    housingType: {name: "housingType", value: 11},
+    children: {name: "children", value: 12}
 }
 
 const tagsSchema = new mongoose.Schema({

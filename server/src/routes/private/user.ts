@@ -168,8 +168,9 @@ userRouter.post("/set", async(req, res) => {
     // Set the user's new public data
     const session = req.session as SessionData
     const doc = await db.users.setPublicInfoOfUserId(
-        session.userId, req.body.country, req.body.job, req.body.job_type,
-        req.body.job_country, req.body.work_time, req.body.remote_type
+        session.userId, req.body.age, req.body.living_situation, req.body.housing_type,
+        req.body.children, req.body.country, req.body.job, req.body.job_type,
+        req.body.job_country, req.body.work_time, req.body.remote_type, req.body.years_of_experience
     )
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -201,12 +202,17 @@ userRouter.post("/alldata", async (req, res) => {
         user: {
             userId: user.userId,
             creationDate: user.creationDate,
+            age: (user.age as any).label,
+            livingSituation: (user.livingSituation as any).label,
+            housingType: (user.housingType as any).label,
+            children: (user.children as any).label,
             country: (user.country as any).label,
             job: (user.job as any).label,
             jobType: (user.jobType as any).label,
             jobCountry: (user.jobCountry as any).label,
             workTime: (user.workTime as any).label,
-            remoteType: (user.remoteType as any).label
+            remoteType: (user.remoteType as any).label,
+            yearsOfExperience: (user.yearsOfExperience as any).label
         },
 
         balances: balances.map((balance) => {

@@ -25,12 +25,17 @@ const userSchema = new mongoose.Schema({
     creationDate: {type: Date, required: true},
     type: {type: Number, required: true},
     nickname: {type: String, default: ""},
+    age: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    livingSituation: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    housingType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    children: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     country: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     job: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     jobType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     jobCountry: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     workTime: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     remoteType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    yearsOfExperience: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     session: {type: {
         sessionId: {type: String, required: true, unique: true, dropDups: true},
         expirationDate: {type: Date, required: true}
@@ -79,12 +84,17 @@ async function getOne(where: object, select: string) {
  */
 async function getOneAndPopulate(where: object, select: string) {
     return await User.findOne(where, select)
-    .populate({path: "country", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "country"
-    .populate({path: "job", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "job"
-    .populate({path: "jobType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "jobType"
-    .populate({path: "jobCountry", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "jobCountry"
-    .populate({path: "workTime", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "workTime"
-    .populate({path: "remoteType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "remoteType"
+    .populate({path: "age", select: "-_id -__v -translations._id"})
+    .populate({path: "livingSituation", select: "-_id -__v -translations._id"})
+    .populate({path: "housingType", select: "-_id -__v -translations._id"})
+    .populate({path: "children", select: "-_id -__v -translations._id"})
+    .populate({path: "country", select: "-_id -__v -translations._id"})
+    .populate({path: "job", select: "-_id -__v -translations._id"})
+    .populate({path: "jobType", select: "-_id -__v -translations._id"})
+    .populate({path: "jobCountry", select: "-_id -__v -translations._id"})
+    .populate({path: "workTime", select: "-_id -__v -translations._id"})
+    .populate({path: "remoteType", select: "-_id -__v -translations._id"})
+    .populate({path: "yearsOfExperience", select: "-_id -__v -translations._id"})
     .lean().exec();
 }
 
@@ -122,12 +132,17 @@ async function insertNew(user_id: string, password: string, type: number = UserT
         creationDate: new Date(Date.now()),
         type: type,
         nickname: "",
+        age: newNullObjectId(),
+        livingSituation: newNullObjectId(),
+        housingType: newNullObjectId(),
+        children: newNullObjectId(),
         country: newNullObjectId(),
         job: newNullObjectId(),
         jobType: newNullObjectId(),
         jobCountry: newNullObjectId(),
         workTime: newNullObjectId(),
         remoteType: newNullObjectId(),
+        yearsOfExperience: newNullObjectId(),
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
             expirationDate: new Date(0)
@@ -275,26 +290,42 @@ async function getPublicInfoByUserId(user_id: string) {
 /**
  * Sets all public information of a user
  * @param user_id ID of the user
+ * @param age Index of the age tag to set
+ * @param livingSituation Index of the livingSituation tag to set
+ * @param housingType Index of the housingType tag to set
+ * @param children Index of the children tag to set
  * @param country Index of the country tag to set
  * @param job Index of the job tag to set
- * @param job_type Index of the jobType tag to set
- * @param job_country Index of the jobCountry tag to set
- * @param work_time Index of the workTime tag to set
- * @param remote_type Index of the remoteType tag to set
+ * @param jobType Index of the jobType tag to set
+ * @param jobCountry Index of the jobCountry tag to set
+ * @param workTime Index of the workTime tag to set
+ * @param remoteType Index of the remoteType tag to set
+ * @param yearsOfExperience Index of the yearsOfExperience tag to set
  * @returns User document
  */
-async function setPublicInfoOfUserId(user_id: string, country: number, job: number, job_type: number,
-    job_country: number, work_time: number, remote_type: number) {
+async function setPublicInfoOfUserId(user_id: string, age: number, livingSituation: number, housingType: number,
+    children: number, country: number, job: number, jobType: number, jobCountry: number, workTime: number,
+    remoteType: number, yearsOfExperience: number) {
     // Get the tags references by their index and type
     // If a reference is found, add it to the object that will be used to update the User document
-    let tags_indeces = [country, job, job_type, job_country, work_time, remote_type];
-    let tags_types = [tags.TagType.country, tags.TagType.job, tags.TagType.jobType, tags.TagType.country, tags.TagType.workTime, tags.TagType.remoteType];
-    let user_fields = ["country", "job", "jobType", "jobCountry", "workTime", "remoteType"];
+    const valueToTagMapping = [
+        {tag: tags.TagType.age, newSelection: age},
+        {tag: tags.TagType.livingSituation, newSelection: livingSituation},
+        {tag: tags.TagType.housingType, newSelection: housingType},
+        {tag: tags.TagType.children, newSelection: children},
+        {tag: tags.TagType.country, newSelection: country},
+        {tag: tags.TagType.job, newSelection: job},
+        {tag: tags.TagType.jobType, newSelection: jobType},
+        {tag: tags.TagType.country, newSelection: jobCountry},
+        {tag: tags.TagType.workTime, newSelection: workTime},
+        {tag: tags.TagType.remoteType, newSelection: remoteType},
+        {tag: tags.TagType.yearsOfExperience, newSelection: yearsOfExperience},
+    ]
     let update_object: any = {};
-    for (let i = 0; i < tags_indeces.length; i++) {
-        const tag_ref = await tags.getReferenceByIndexAndType(tags_indeces[i], tags_types[i].value);
+    for (let curr of valueToTagMapping) {
+        const tag_ref = await tags.getReferenceByIndexAndType(curr.newSelection, curr.tag.value);
         if (tag_ref !== null) {
-            update_object[user_fields[i]] = tag_ref._id;
+            update_object[curr.tag.name] = tag_ref._id;
         }
     }
     // Update the User document

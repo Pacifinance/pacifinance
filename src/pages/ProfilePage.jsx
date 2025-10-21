@@ -18,6 +18,31 @@ import {
 } from 'lucide-react';
 import { FaUser } from 'react-icons/fa';
 import axios from 'axios';
+
+// Import userDataSelectors
+import {
+    getUserNationality,
+    getUserWhereWorks,
+    getUserJob,
+    getUserJobType,
+    getUserWorkTime,
+    getUserRemoteType,
+    getUserAge,
+    getUserLivingSituation,
+    getUserHousingType,
+    getUserChildren,
+    getUserYearsOfExperience,
+    getNationalityTags,
+    getJobTags,
+    getJobTypeTags,
+    getWorkTimeTags,
+    getRemoteTypeTags,
+    getAgeTags,
+    getLivingSituationTags,
+    getHousingTypeTags,
+    getChildrenTags,
+    getYearsOfExperienceTags
+} from '../utils/userDataSelectors';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -248,30 +273,30 @@ const ProfilePage = () => {
         if (userData) {
             setUserId(userData.userId || '00000');
             setUserType(userData.userType || 'mockUser');
-            // Only set values if they exist and are not empty in userData.profile
-            setUserNationality(userData.profile?.nationality && userData.profile.nationality.value ? userData.profile.nationality : { key: "", value: "" });
-            setUserWhereWorks(userData.profile?.whereWorks && userData.profile.whereWorks.value ? userData.profile.whereWorks : { key: "", value: "" });
-            setUserJob(userData.profile?.job && userData.profile.job.value ? userData.profile.job : { key: "", value: "" });
-            setUserJobType(userData.profile?.jobType && userData.profile.jobType.value ? userData.profile.jobType : { key: "", value: "" });
-            setUserWorkTime(userData.profile?.workTime && userData.profile.workTime.value ? userData.profile.workTime : { key: "", value: "" });
-            setUserRemoteType(userData.profile?.remoteType && userData.profile.remoteType.value ? userData.profile.remoteType : { key: "", value: "" });
-            setUserYearsExperience(userData.profile?.yearsOfExperience && userData.profile.yearsOfExperience.value ? userData.profile.yearsOfExperience : { key: "", value: "" });
-            setUserAge(userData.profile?.age && userData.profile.age.value ? userData.profile.age : { key: "", value: "" });
-            setUserLivingStatus(userData.profile?.livingSituation && userData.profile.livingSituation.value ? userData.profile.livingSituation : { key: "", value: "" });
-            setUserHousingType(userData.profile?.housingType && userData.profile.housingType.value ? userData.profile.housingType : { key: "", value: "" });
-            setUserHasChildren(userData.profile?.children && userData.profile.children.value ? userData.profile.children : { key: "", value: "" });
+            // Use userDataSelectors for consistent data access
+            setUserNationality(getUserNationality(userData));
+            setUserWhereWorks(getUserWhereWorks(userData));
+            setUserJob(getUserJob(userData));
+            setUserJobType(getUserJobType(userData));
+            setUserWorkTime(getUserWorkTime(userData));
+            setUserRemoteType(getUserRemoteType(userData));
+            setUserYearsExperience(getUserYearsOfExperience(userData));
+            setUserAge(getUserAge(userData));
+            setUserLivingStatus(getUserLivingSituation(userData));
+            setUserHousingType(getUserHousingType(userData));
+            setUserHasChildren(getUserChildren(userData));
             
-            // Use tags from userData.tags or fallback to mock data
-            setNationalityTags(userData.tags?.nationalityTags || mockNationalityTags);
-            setJobTags(userData.tags?.jobTags || mockJobTags);
-            setJobTypeTags(userData.tags?.jobTypeTags || mockJobTypeTags);
-            setWorkTimeTags(userData.tags?.workTimeTags || mockWorkTimeTags);
-            setRemoteTypeTags(userData.tags?.remoteTypeTags || mockRemoteTypeTags);
-            setYearsExperienceTags(userData.tags?.yearsOfExperienceTags || mockYearsExperienceTags);
-            setAgeTags(userData.tags?.ageTags || mockAgeTags);
-            setLivingStatusTags(userData.tags?.livingSituationTags || mockLivingStatusTags);
-            setHousingTypeTags(userData.tags?.housingTypeTags || mockHousingTypeTags);
-            setHasChildrenTags(userData.tags?.childrenTags || mockHasChildrenTags);
+            // Use tag selectors or fallback to mock data
+            setNationalityTags(getNationalityTags(userData) || mockNationalityTags);
+            setJobTags(getJobTags(userData) || mockJobTags);
+            setJobTypeTags(getJobTypeTags(userData) || mockJobTypeTags);
+            setWorkTimeTags(getWorkTimeTags(userData) || mockWorkTimeTags);
+            setRemoteTypeTags(getRemoteTypeTags(userData) || mockRemoteTypeTags);
+            setYearsExperienceTags(getYearsOfExperienceTags(userData) || mockYearsExperienceTags);
+            setAgeTags(getAgeTags(userData) || mockAgeTags);
+            setLivingStatusTags(getLivingSituationTags(userData) || mockLivingStatusTags);
+            setHousingTypeTags(getHousingTypeTags(userData) || mockHousingTypeTags);
+            setHasChildrenTags(getChildrenTags(userData) || mockHasChildrenTags);
         } else {
             // Mock user when no userData is available
             setUserId('00000');
@@ -603,7 +628,13 @@ const ProfilePage = () => {
                                     fontStyle: 'italic' 
                                 }}>{placeholder}</span>;
                             }
-                            return isSimpleArray ? val : (typeof val === 'object' ? val.label : val);
+                            if (isSimpleArray) {
+                                return val;
+                            }
+                            if (typeof val === 'object' && val !== null) {
+                                return val.label || val.value || String(val);
+                            }
+                            return String(val);
                         }}
                     >
                         <MenuItem value="">

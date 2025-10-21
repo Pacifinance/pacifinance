@@ -479,11 +479,13 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
   // Analisi dati delle uscite
   const expenseAnalysis = useMemo(() => {
-    if (!userData?.allOutflows || !userData?.totalOutflowsPerCategoryPerMonth) {
+    const allOutflows = getAllOutflows(userData);
+    const totalOutflowsPerCategoryPerMonth = getTotalOutflowsPerCategoryPerMonth(userData);
+    
+    if (!allOutflows || allOutflows.length === 0 || !totalOutflowsPerCategoryPerMonth) {
       return null;
     }
 
-    const allOutflows = getAllOutflows(userData);
     const currentMonth = allOutflows[0] || [];
     const previousMonth = allOutflows[1] || [];
     const last12Months = allOutflows.slice(0, 12) || [];
@@ -496,19 +498,18 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
     // Analisi per categoria
     const categoryAnalysis = {};
-    const totalOutflowsPerCategory = getTotalOutflowsPerCategoryPerMonth(userData);
-    const currentMonthCategories = totalOutflowsPerCategory[0] || {};
+    const currentMonthCategories = totalOutflowsPerCategoryPerMonth[0] || {};
 
     Object.keys(currentMonthCategories).forEach(category => {
       const currentAmount = currentMonthCategories[category] || 0;
-      const previousAmount = totalOutflowsPerCategory[1]?.[category] || 0;
+      const previousAmount = totalOutflowsPerCategoryPerMonth[1]?.[category] || 0;
       
       // Calcola media ultimi 12 mesi per questa categoria
       let totalLast12Months = 0;
       let monthsWithData = 0;
       
       for (let i = 0; i < 12; i++) {
-        const monthData = totalOutflowsPerCategory[i];
+        const monthData = totalOutflowsPerCategoryPerMonth[i];
         if (monthData && monthData[category]) {
           totalLast12Months += monthData[category];
           monthsWithData++;

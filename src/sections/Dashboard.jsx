@@ -98,6 +98,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         const fetchData = async () => {
             if (userData) {
                 try {
+                    // Verify the total calculation is working
+                    const calculatedTotal = getTotalValue(userData);
+                    console.log('Dashboard total value calculated:', calculatedTotal);
+                    
                     setStocksValue(getStocksValue(userData));
                     setETFValue(getEtfValue(userData));
                     setBitcoinValue(getBitcoinValue(userData));

@@ -114,6 +114,11 @@ export const getUserJob = (userData) => userData?.profile?.job || { key: -1, val
 export const getUserJobType = (userData) => userData?.profile?.jobType || { key: -1, value: 'Tipo di lavoro non impostato' };
 export const getUserWorkTime = (userData) => userData?.profile?.workTime || { key: -1, value: 'Tipologia contratto non impostato' };
 export const getUserRemoteType = (userData) => userData?.profile?.remoteType || { key: -1, value: 'Tipologia lavoro non impostata' };
+export const getUserAge = (userData) => userData?.profile?.age || { key: -1, value: 'Età non impostata' };
+export const getUserLivingSituation = (userData) => userData?.profile?.livingSituation || { key: -1, value: 'Situazione abitativa non impostata' };
+export const getUserHousingType = (userData) => userData?.profile?.housingType || { key: -1, value: 'Tipologia abitativa non impostata' };
+export const getUserChildren = (userData) => userData?.profile?.children || { key: -1, value: 'Figli non impostati' };
+export const getUserYearsOfExperience = (userData) => userData?.profile?.yearsOfExperience || { key: -1, value: 'Anni di esperienza non impostati' };
 
 // Expense and income selectors
 export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || userData?.allOutflows || [];
@@ -168,6 +173,11 @@ export const getJobTags = (userData) => userData?.tags?.jobTags || [];
 export const getJobTypeTags = (userData) => userData?.tags?.jobTypeTags || [];
 export const getWorkTimeTags = (userData) => userData?.tags?.workTimeTags || [];
 export const getRemoteTypeTags = (userData) => userData?.tags?.remoteTypeTags || [];
+export const getAgeTags = (userData) => userData?.tags?.ageTags || [];
+export const getLivingSituationTags = (userData) => userData?.tags?.livingSituationTags || [];
+export const getHousingTypeTags = (userData) => userData?.tags?.housingTypeTags || [];
+export const getChildrenTags = (userData) => userData?.tags?.childrenTags || [];
+export const getYearsOfExperienceTags = (userData) => userData?.tags?.yearsOfExperienceTags || [];
 
 // Rankings selectors
 export const getPercentageRankOnBalance = (userData) => userData?.rankings?.balance || 0;

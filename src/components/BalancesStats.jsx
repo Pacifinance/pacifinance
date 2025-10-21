@@ -6,44 +6,44 @@ import { assetIcons } from '../data/assetIcons';
 import { assetColors } from '../data/assetColors';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 import { 
-  getStocksReal, 
-  getETFReal, 
-  getBankReal, 
-  getCashReal, 
-  getCryptoReal, 
-  getBitcoinReal, 
-  getDigitalServicesReal, 
-  getBondsReal, 
-  getFundsReal, 
-  getGoldReal,
-  getTotalReal,
+  getStocksValue, 
+  getEtfValue, 
+  getBankValue, 
+  getCashValue, 
+  getCryptoValue, 
+  getBitcoinValue, 
+  getDigitalServicesValue, 
+  getBondsValue, 
+  getFundsValue, 
+  getGoldValue,
+  getTotalValue,
   getEmergencyFund,
-  getStocksRealPreMonth,
-  getEtfRealPreMonth,
-  getBankRealPreMonth,
-  getCashRealPreMonth,
-  getCryptoRealPreMonth,
-  getBitcoinRealPreMonth,
-  getDigitalServicesRealPreMonth,
-  getBondsRealPreMonth,
-  getFundsRealPreMonth,
-  getGoldRealPreMonth,
-  getTotalRealPreMonth,
+  getStocksValuePreMonth,
+  getEtfValuePreMonth,
+  getBankValuePreMonth,
+  getCashValuePreMonth,
+  getCryptoValuePreMonth,
+  getBitcoinValuePreMonth,
+  getDigitalServicesValuePreMonth,
+  getBondsValuePreMonth,
+  getFundsValuePreMonth,
+  getGoldValuePreMonth,
+  getTotalValuePreMonth,
   getEmergencyFundPreMonth,
-  getStocksRealPreYearSameMonth,
-  getEtfRealPreYearSameMonth,
-  getBankRealPreYearSameMonth,
-  getCashRealPreYearSameMonth,
-  getCryptoRealPreYearSameMonth,
-  getBitcoinRealPreYearSameMonth,
-  getDigitalServicesRealPreYearSameMonth,
-  getBondsRealPreYearSameMonth,
-  getFundsRealPreYearSameMonth,
-  getGoldRealPreYearSameMonth,
-  getTotalRealPreYearSameMonth,
+  getStocksValuePreYearSameMonth,
+  getEtfValuePreYearSameMonth,
+  getBankValuePreYearSameMonth,
+  getCashValuePreYearSameMonth,
+  getCryptoValuePreYearSameMonth,
+  getBitcoinValuePreYearSameMonth,
+  getDigitalServicesValuePreYearSameMonth,
+  getBondsValuePreYearSameMonth,
+  getFundsValuePreYearSameMonth,
+  getGoldValuePreYearSameMonth,
+  getTotalValuePreYearSameMonth,
   getEmergencyFundPreYearSameMonth,
-  getFormattedPreMonthDate,
-  getFormattedPreYearSameMonthDate
+  getFormattedPreMonthDateLocalized,
+  getFormattedPreYearSameMonthDateLocalized
 } from '../utils/userDataSelectors';
 
 const ComparisonHeader = styled.div`
@@ -211,32 +211,32 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
     const { language } = useContext(LanguageContext);
     
     // Current values
-    const [stocksReal, setStocksReal] = useState(0);
-    const [etfReal, setETFReal] = useState(0);
-    const [bankReal, setBankReal] = useState(0);
-    const [cashReal, setCashReal] = useState(0);
-    const [cryptoReal, setCryptoReal] = useState(0);
-    const [bitcoinReal, setBitcoinReal] = useState(0);
-    const [digitalServicesReal, setDigitalServicesReal] = useState(0);
-    const [emergencyFundReal, setEmergencyFundReal] = useState(0);
-    const [bondsReal, setBondsReal] = useState(0);
-    const [fundsReal, setFundsReal] = useState(0);
-    const [goldReal, setGoldReal] = useState(0);
-    const [totalReal, setTotalReal] = useState(0);
+    const [stocksValue, setStocksValue] = useState(0);
+    const [etfValue, setETFValue] = useState(0);
+    const [bankValue, setBankValue] = useState(0);
+    const [cashValue, setCashValue] = useState(0);
+    const [cryptoValue, setCryptoValue] = useState(0);
+    const [bitcoinValue, setBitcoinValue] = useState(0);
+    const [digitalServicesValue, setDigitalServicesValue] = useState(0);
+    const [emergencyFundValue, setEmergencyFundValue] = useState(0);
+    const [bondsValue, setBondsValue] = useState(0);
+    const [fundsValue, setFundsValue] = useState(0);
+    const [goldValue, setGoldValue] = useState(0);
+    const [totalValue, setTotalValue] = useState(0);
     
     // Previous period values
-    const [stocksRealPrev, setStocksRealPrev] = useState(0);
-    const [etfRealPrev, setEtfRealPrev] = useState(0);
-    const [bankRealPrev, setBankRealPrev] = useState(0);
-    const [cashRealPrev, setCashRealPrev] = useState(0);
-    const [cryptoRealPrev, setCryptoRealPrev] = useState(0);
-    const [bitcoinRealPrev, setBitcoinRealPrev] = useState(0);
-    const [digitalServicesRealPrev, setDigitalServicesRealPrev] = useState(0);
-    const [emergencyFundRealPrev, setEmergencyFundRealPrev] = useState(0);
-    const [bondsRealPrev, setBondsRealPrev] = useState(0);
-    const [fundsRealPrev, setFundsRealPrev] = useState(0);
-    const [goldRealPrev, setGoldRealPrev] = useState(0);
-    const [totalRealPrev, setTotalRealPrev] = useState(0);
+    const [stocksValuePrev, setStocksValuePrev] = useState(0);
+    const [etfValuePrev, setEtfValuePrev] = useState(0);
+    const [bankValuePrev, setBankValuePrev] = useState(0);
+    const [cashValuePrev, setCashValuePrev] = useState(0);
+    const [cryptoValuePrev, setCryptoValuePrev] = useState(0);
+    const [bitcoinValuePrev, setBitcoinValuePrev] = useState(0);
+    const [digitalServicesValuePrev, setDigitalServicesValuePrev] = useState(0);
+    const [emergencyFundValuePrev, setEmergencyFundValuePrev] = useState(0);
+    const [bondsValuePrev, setBondsValuePrev] = useState(0);
+    const [fundsValuePrev, setFundsValuePrev] = useState(0);
+    const [goldValuePrev, setGoldValuePrev] = useState(0);
+    const [totalValuePrev, setTotalValuePrev] = useState(0);
     
     // Formatted date
     const [formattedPrevDate, setFormattedPrevDate] = useState('');
@@ -246,48 +246,48 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             if (userData) {
                 try {
                     // Current values
-                    setStocksReal(getStocksReal(userData) || 0);
-                    setETFReal(getETFReal(userData) || 0);
-                    setBankReal(getBankReal(userData) || 0);
-                    setCashReal(getCashReal(userData) || 0);
-                    setCryptoReal(getCryptoReal(userData) || 0);
-                    setBitcoinReal(getBitcoinReal(userData) || 0);
-                    setDigitalServicesReal(getDigitalServicesReal(userData) || 0);
-                    setEmergencyFundReal(getEmergencyFund(userData) || 0);
-                    setBondsReal(getBondsReal(userData) || 0);
-                    setFundsReal(getFundsReal(userData) || 0);
-                    setGoldReal(getGoldReal(userData) || 0);
-                    setTotalReal(getTotalReal(userData) || 0);
+                    setStocksValue(getStocksValue(userData) || 0);
+                    setETFValue(getEtfValue(userData) || 0);
+                    setBankValue(getBankValue(userData) || 0);
+                    setCashValue(getCashValue(userData) || 0);
+                    setCryptoValue(getCryptoValue(userData) || 0);
+                    setBitcoinValue(getBitcoinValue(userData) || 0);
+                    setDigitalServicesValue(getDigitalServicesValue(userData) || 0);
+                    setEmergencyFundValue(getEmergencyFund(userData) || 0);
+                    setBondsValue(getBondsValue(userData) || 0);
+                    setFundsValue(getFundsValue(userData) || 0);
+                    setGoldValue(getGoldValue(userData) || 0);
+                    setTotalValue(getTotalValue(userData) || 0);
 
                     // Previous period values based on period prop
                     if (period === "month") {
-                        setStocksRealPrev(getStocksRealPreMonth(userData) || 0);
-                        setEtfRealPrev(getEtfRealPreMonth(userData) || 0);
-                        setBankRealPrev(getBankRealPreMonth(userData) || 0);
-                        setCashRealPrev(getCashRealPreMonth(userData) || 0);
-                        setCryptoRealPrev(getCryptoRealPreMonth(userData) || 0);
-                        setBitcoinRealPrev(getBitcoinRealPreMonth(userData) || 0);
-                        setDigitalServicesRealPrev(getDigitalServicesRealPreMonth(userData) || 0);
-                        setEmergencyFundRealPrev(getEmergencyFundPreMonth(userData) || 0);
-                        setBondsRealPrev(getBondsRealPreMonth(userData) || 0);
-                        setFundsRealPrev(getFundsRealPreMonth(userData) || 0);
-                        setGoldRealPrev(getGoldRealPreMonth(userData) || 0);
-                        setTotalRealPrev(getTotalRealPreMonth(userData) || 0);
-                        setFormattedPrevDate(getFormattedPreMonthDate(userData) || '');
+                        setStocksValuePrev(getStocksValuePreMonth(userData) || 0);
+                        setEtfValuePrev(getEtfValuePreMonth(userData) || 0);
+                        setBankValuePrev(getBankValuePreMonth(userData) || 0);
+                        setCashValuePrev(getCashValuePreMonth(userData) || 0);
+                        setCryptoValuePrev(getCryptoValuePreMonth(userData) || 0);
+                        setBitcoinValuePrev(getBitcoinValuePreMonth(userData) || 0);
+                        setDigitalServicesValuePrev(getDigitalServicesValuePreMonth(userData) || 0);
+                        setEmergencyFundValuePrev(getEmergencyFundPreMonth(userData) || 0);
+                        setBondsValuePrev(getBondsValuePreMonth(userData) || 0);
+                        setFundsValuePrev(getFundsValuePreMonth(userData) || 0);
+                        setGoldValuePrev(getGoldValuePreMonth(userData) || 0);
+                        setTotalValuePrev(getTotalValuePreMonth(userData) || 0);
+                        setFormattedPrevDate(getFormattedPreMonthDateLocalized(userData, language) || '');
                     } else {
-                        setStocksRealPrev(getStocksRealPreYearSameMonth(userData) || 0);
-                        setEtfRealPrev(getEtfRealPreYearSameMonth(userData) || 0);
-                        setBankRealPrev(getBankRealPreYearSameMonth(userData) || 0);
-                        setCashRealPrev(getCashRealPreYearSameMonth(userData) || 0);
-                        setCryptoRealPrev(getCryptoRealPreYearSameMonth(userData) || 0);
-                        setBitcoinRealPrev(getBitcoinRealPreYearSameMonth(userData) || 0);
-                        setDigitalServicesRealPrev(getDigitalServicesRealPreYearSameMonth(userData) || 0);
-                        setEmergencyFundRealPrev(getEmergencyFundPreYearSameMonth(userData) || 0);
-                        setBondsRealPrev(getBondsRealPreYearSameMonth(userData) || 0);
-                        setFundsRealPrev(getFundsRealPreYearSameMonth(userData) || 0);
-                        setGoldRealPrev(getGoldRealPreYearSameMonth(userData) || 0);
-                        setTotalRealPrev(getTotalRealPreYearSameMonth(userData) || 0);
-                        setFormattedPrevDate(getFormattedPreYearSameMonthDate(userData) || '');
+                        setStocksValuePrev(getStocksValuePreYearSameMonth(userData) || 0);
+                        setEtfValuePrev(getEtfValuePreYearSameMonth(userData) || 0);
+                        setBankValuePrev(getBankValuePreYearSameMonth(userData) || 0);
+                        setCashValuePrev(getCashValuePreYearSameMonth(userData) || 0);
+                        setCryptoValuePrev(getCryptoValuePreYearSameMonth(userData) || 0);
+                        setBitcoinValuePrev(getBitcoinValuePreYearSameMonth(userData) || 0);
+                        setDigitalServicesValuePrev(getDigitalServicesValuePreYearSameMonth(userData) || 0);
+                        setEmergencyFundValuePrev(getEmergencyFundPreYearSameMonth(userData) || 0);
+                        setBondsValuePrev(getBondsValuePreYearSameMonth(userData) || 0);
+                        setFundsValuePrev(getFundsValuePreYearSameMonth(userData) || 0);
+                        setGoldValuePrev(getGoldValuePreYearSameMonth(userData) || 0);
+                        setTotalValuePrev(getTotalValuePreYearSameMonth(userData) || 0);
+                        setFormattedPrevDate(getFormattedPreYearSameMonthDateLocalized(userData, language) || '');
                     }
 
                 } catch (error) {
@@ -297,101 +297,101 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
         };
 
         fetchData();
-    }, [userData, period]);
+    }, [userData, period, language]);
 
     const primaryColor = theme === "light" ? "#4F46E5" : "#60A5FA";
 
     const titleKey = period === "month" ? "titleDetailsMonth" : "titleDetailsYear";
-    const totalChange = calculateDifference(totalReal, totalRealPrev);
-    const totalPercentage = calculatePercentageChange(totalReal, totalRealPrev);
-    const isPositiveChange = (((totalReal - totalRealPrev) / totalRealPrev) * 100) > 0;
+    const totalChange = calculateDifference(totalValue, totalValuePrev);
+    const totalPercentage = calculatePercentageChange(totalValue, totalValuePrev);
+    const isPositiveChange = (((totalValue - totalValuePrev) / totalValuePrev) * 100) > 0;
 
     // Configurazione dinamica degli asset
     const assetsConfig = [
         {
             key: 'bank',
-            current: bankReal,
-            previous: bankRealPrev,
+            current: bankValue,
+            previous: bankValuePrev,
             icon: assetIcons.bank,
             color: assetColors.bank.primary,
             label: languages[language].assets.bank
         },
         {
             key: 'cash',
-            current: cashReal,
-            previous: cashRealPrev,
+            current: cashValue,
+            previous: cashValuePrev,
             icon: assetIcons.cash,
             color: assetColors.cash.primary,
             label: languages[language].assets.cash
         },
         {
             key: 'emergencyFund',
-            current: emergencyFundReal,
-            previous: emergencyFundRealPrev,
+            current: emergencyFundValue,
+            previous: emergencyFundValuePrev,
             icon: assetIcons.emergencyFund,
             color: assetColors.emergencyFund.primary,
             label: languages[language].assets.emergencyFund
         },
         {
             key: 'digitalServices',
-            current: digitalServicesReal,
-            previous: digitalServicesRealPrev,
+            current: digitalServicesValue,
+            previous: digitalServicesValuePrev,
             icon: assetIcons.digitalServices,
             color: assetColors.digitalServices.primary,
             label: languages[language].assets.digitalServices
         },
         {
             key: 'stocks',
-            current: stocksReal,
-            previous: stocksRealPrev,
+            current: stocksValue,
+            previous: stocksValuePrev,
             icon: assetIcons.stocks,
             color: assetColors.stocks.primary,
             label: languages[language].assets.stocks
         },
         {
             key: 'etf',
-            current: etfReal,
-            previous: etfRealPrev,
+            current: etfValue,
+            previous: etfValuePrev,
             icon: assetIcons.etf,
             color: assetColors.etf.primary,
             label: languages[language].assets.etf
         },
         {
             key: 'bitcoin',
-            current: bitcoinReal,
-            previous: bitcoinRealPrev,
+            current: bitcoinValue,
+            previous: bitcoinValuePrev,
             icon: assetIcons.bitcoin,
             color: assetColors.bitcoin.primary,
             label: languages[language].assets.bitcoin
         },
         {
             key: 'crypto',
-            current: cryptoReal,
-            previous: cryptoRealPrev,
+            current: cryptoValue,
+            previous: cryptoValuePrev,
             icon: assetIcons.crypto,
             color: assetColors.crypto.primary,
             label: languages[language].assets.crypto
         },
         {
             key: 'bonds',
-            current: bondsReal,
-            previous: bondsRealPrev,
+            current: bondsValue,
+            previous: bondsValuePrev,
             icon: assetIcons.bonds,
             color: assetColors.bonds.primary,
             label: languages[language].assets.bonds
         },
         {
             key: 'funds',
-            current: fundsReal,
-            previous: fundsRealPrev,
+            current: fundsValue,
+            previous: fundsValuePrev,
             icon: assetIcons.funds,
             color: assetColors.funds.primary,
             label: languages[language].assets.funds
         },
         {
             key: 'gold',
-            current: goldReal,
-            previous: goldRealPrev,
+            current: goldValue,
+            previous: goldValuePrev,
             icon: assetIcons.gold,
             color: assetColors.gold.primary,
             label: languages[language].assets.gold

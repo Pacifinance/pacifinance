@@ -17,9 +17,9 @@ import OutflowSection from "../components/OutflowSection";
 import InsertModals from "../components/InsertModals";
 import styled from 'styled-components';
 import {
-    getCashReal, getBankReal, getDigitalServicesReal, getEmergencyFund,
-    getStocksReal, getEtfReal, getBitcoinReal, getCryptoReal, getBondsReal,
-    getFundsReal, getGoldReal, getOutflowsTags, getIncomesTags, getPaymentTags,
+    getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
+    getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
+    getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
     getAllOutflows, getAllIncomes, getOutflowsArray
 } from '../utils/userDataSelectors';
 
@@ -246,16 +246,17 @@ export default function InsertValue({
 
   // Form states
   const [selectedOption, setSelectedOption] = useState("");
-  const [bankReal, setBankReal] = useState(0);
-  const [cashReal, setCashReal] = useState(0);
-  const [stocksReal, setStocksReal] = useState(0);
-  const [etfReal, setETFReal] = useState(0);
-  const [cryptoReal, setCryptoReal] = useState(0);
-  const [bitcoinReal, setBitcoinReal] = useState(0);
-  const [digitalServicesReal, setDigitalServicesReal] = useState(0);
-  const [bondsReal, setBondsReal] = useState(0);
-  const [fundsReal, setFundsReal] = useState(0);
-  const [goldReal, setGoldReal] = useState(0);
+  const [bankValue, setBankValue] = useState(0);
+  const [cashValue, setCashValue] = useState(0);
+  const [stocksValue, setStocksValue] = useState(0);
+  const [etfValue, setETFValue] = useState(0);
+  const [cryptoValue, setCryptoValue] = useState(0);
+  const [bitcoinValue, setBitcoinValue] = useState(0);
+  const [digitalServicesValue, setDigitalServicesValue] = useState(0);
+  const [emergencyFundValue, setEmergencyFundValue] = useState(0);
+  const [bondsValue, setBondsValue] = useState(0);
+  const [fundsValue, setFundsValue] = useState(0);
+  const [goldValue, setGoldValue] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
   const [typoOutflow, setTypoOutflow] = useState({ key: "", value: "" });
@@ -302,46 +303,48 @@ export default function InsertValue({
     return {
       balance: {
         date,
-        bank: getValue('bank', bankReal),
-        cash: getValue('cash', cashReal),
-        digital_services: getValue('digitalServices', digitalServicesReal),
-        stocks: getValue('stocks', stocksReal),
-        etf: getValue('etf', etfReal),
-        bitcoin: getValue('bitcoin', bitcoinReal),
-        crypto: getValue('crypto', cryptoReal),
-        bonds: getValue('bonds', bondsReal),
-        funds: getValue('funds', fundsReal),
-        gold: getValue('gold', goldReal),
+        bank: getValue('bank', bankValue),
+        cash: getValue('cash', cashValue),
+        digital_services: getValue('digitalServices', digitalServicesValue),
+        stocks: getValue('stocks', stocksValue),
+        etf: getValue('etf', etfValue),
+        bitcoin: getValue('bitcoin', bitcoinValue),
+        crypto: getValue('crypto', cryptoValue),
+        bonds: getValue('bonds', bondsValue),
+        funds: getValue('funds', fundsValue),
+        gold: getValue('gold', goldValue),
       }
     };
   };
 
   const options = {
-    [languages[language].assets.bank]: [bankReal, setBankReal],
-    [languages[language].assets.cash]: [cashReal, setCashReal],
-    [languages[language].assets.digitalServices]: [digitalServicesReal, setDigitalServicesReal],
-    [languages[language].assets.stocks]: [stocksReal, setStocksReal],
-    [languages[language].assets.etf]: [etfReal, setETFReal],
-    [languages[language].assets.bitcoin]: [bitcoinReal, setBitcoinReal],
-    [languages[language].assets.crypto]: [cryptoReal, setCryptoReal],
-    [languages[language].assets.bonds]: [bondsReal, setBondsReal],
-    [languages[language].assets.funds]: [fundsReal, setFundsReal],
-    [languages[language].assets.gold]: [goldReal, setGoldReal],
+    [languages[language].assets.bank]: [bankValue, setBankValue],
+    [languages[language].assets.cash]: [cashValue, setCashValue],
+    [languages[language].assets.digitalServices]: [digitalServicesValue, setDigitalServicesValue],
+    "Emergency Fund": [emergencyFundValue, setEmergencyFundValue],
+    [languages[language].assets.stocks]: [stocksValue, setStocksValue],
+    [languages[language].assets.etf]: [etfValue, setETFValue],
+    [languages[language].assets.bitcoin]: [bitcoinValue, setBitcoinValue],
+    [languages[language].assets.crypto]: [cryptoValue, setCryptoValue],
+    [languages[language].assets.bonds]: [bondsValue, setBondsValue],
+    [languages[language].assets.funds]: [fundsValue, setFundsValue],
+    [languages[language].assets.gold]: [goldValue, setGoldValue],
   };
 
   const fetchData = async () => {
     if (userData) {
       try {
-        setStocksReal(userData ? getStocksReal(userData) : 0);
-        setETFReal(userData ? getETFReal(userData) : 0);
-        setBitcoinReal(userData ? getBitcoinReal(userData) : 0);
-        setCryptoReal(userData ? getCryptoReal(userData) : 0);
-        setBankReal(userData ? getBankReal(userData) : 0);
-        setCashReal(userData ? getCashReal(userData) : 0);
-        setDigitalServicesReal(userData ? getDigitalServicesReal(userData) : 0);
-        setBondsReal(userData ? getBondsReal(userData) : 0);
-        setFundsReal(userData ? getFundsReal(userData) : 0);
-        setGoldReal(userData ? getGoldReal(userData) : 0);
+        setStocksValue(userData ? getStocksValue(userData) : 0);
+        setETFValue(userData ? getEtfValue(userData) : 0);
+        setBitcoinValue(userData ? getBitcoinValue(userData) : 0);
+        setCryptoValue(userData ? getCryptoValue(userData) : 0);
+        setBankValue(userData ? getBankValue(userData) : 0);
+        setCashValue(userData ? getCashValue(userData) : 0);
+        setDigitalServicesValue(userData ? getDigitalServicesValue(userData) : 0);
+        setEmergencyFundValue(userData ? getEmergencyFund(userData) : 0);
+        setBondsValue(userData ? getBondsValue(userData) : 0);
+        setFundsValue(userData ? getFundsValue(userData) : 0);
+        setGoldValue(userData ? getGoldValue(userData) : 0);
         setOutflowsTags(userData ? getOutflowsTags(userData) : []);
         setIncomesTags(userData ? getIncomesTags(userData) : []);
         setPaymentTags(userData ? getPaymentTags(userData) : []);
@@ -617,16 +620,16 @@ export default function InsertValue({
         withCredentials: true,
       });
       const balanceOptions = {
-        [languages[language].assets.bank]: bankReal,
-        [languages[language].assets.cash]: cashReal,
-        [languages[language].assets.digitalServices]: digitalServicesReal,
-        [languages[language].assets.stocks]: stocksReal,
-        [languages[language].assets.etf]: etfReal,
-        [languages[language].assets.bitcoin]: bitcoinReal,
-        [languages[language].assets.crypto]: cryptoReal,
-        [languages[language].assets.bonds]: bondsReal,
-        [languages[language].assets.funds]: fundsReal,
-        [languages[language].assets.gold]: goldReal,
+        [languages[language].assets.bank]: bankValue,
+        [languages[language].assets.cash]: cashValue,
+        [languages[language].assets.digitalServices]: digitalServicesValue,
+        [languages[language].assets.stocks]: stocksValue,
+        [languages[language].assets.etf]: etfValue,
+        [languages[language].assets.bitcoin]: bitcoinValue,
+        [languages[language].assets.crypto]: cryptoValue,
+        [languages[language].assets.bonds]: bondsValue,
+        [languages[language].assets.funds]: fundsValue,
+        [languages[language].assets.gold]: goldValue,
       };
       if (inExAdd.status === 200) {
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
@@ -717,16 +720,16 @@ export default function InsertValue({
         if (selectedOption) {
           // Find the current value for the selected balance
           const balanceOptions = {
-            [languages[language].assets.bank]: bankReal,
-            [languages[language].assets.cash]: cashReal,
-            [languages[language].assets.digitalServices]: digitalServicesReal,
-            [languages[language].assets.stocks]: stocksReal,
-            [languages[language].assets.etf]: etfReal,
-            [languages[language].assets.bitcoin]: bitcoinReal,
-            [languages[language].assets.crypto]: cryptoReal,
-            [languages[language].assets.bonds]: bondsReal,
-            [languages[language].assets.funds]: fundsReal,
-            [languages[language].assets.gold]: goldReal,
+            [languages[language].assets.bank]: bankValue,
+            [languages[language].assets.cash]: cashValue,
+            [languages[language].assets.digitalServices]: digitalServicesValue,
+            [languages[language].assets.stocks]: stocksValue,
+            [languages[language].assets.etf]: etfValue,
+            [languages[language].assets.bitcoin]: bitcoinValue,
+            [languages[language].assets.crypto]: cryptoValue,
+            [languages[language].assets.bonds]: bondsValue,
+            [languages[language].assets.funds]: fundsValue,
+            [languages[language].assets.gold]: goldValue,
           };
           const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
           const incomeNumber = parseFloat(deleteIncomeAmount);
@@ -770,16 +773,16 @@ export default function InsertValue({
       if (outflowsDelete.status === 200) {
         if (selectedOption) {
           const balanceOptions = {
-            [languages[language].assets.bank]: bankReal,
-            [languages[language].assets.cash]: cashReal,
-            [languages[language].assets.digitalServices]: digitalServicesReal,
-            [languages[language].assets.stocks]: stocksReal,
-            [languages[language].assets.etf]: etfReal,
-            [languages[language].assets.bitcoin]: bitcoinReal,
-            [languages[language].assets.crypto]: cryptoReal,
-            [languages[language].assets.bonds]: bondsReal,
-            [languages[language].assets.funds]: fundsReal,
-            [languages[language].assets.gold]: goldReal,
+            [languages[language].assets.bank]: bankValue,
+            [languages[language].assets.cash]: cashValue,
+            [languages[language].assets.digitalServices]: digitalServicesValue,
+            [languages[language].assets.stocks]: stocksValue,
+            [languages[language].assets.etf]: etfValue,
+            [languages[language].assets.bitcoin]: bitcoinValue,
+            [languages[language].assets.crypto]: cryptoValue,
+            [languages[language].assets.bonds]: bondsValue,
+            [languages[language].assets.funds]: fundsValue,
+            [languages[language].assets.gold]: goldValue,
           };
           const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
           const outflowNumber = parseFloat(deleteOutflowAmount);
@@ -811,26 +814,28 @@ export default function InsertValue({
           <BalanceSection
             theme={theme}
             isHidden={isHidden}
-            bankReal={bankReal}
-            setBankReal={setBankReal}
-            cashReal={cashReal}
-            setCashReal={setCashReal}
-            digitalServicesReal={digitalServicesReal}
-            setDigitalServicesReal={setDigitalServicesReal}
-            stocksReal={stocksReal}
-            setStocksReal={setStocksReal}
-            etfReal={etfReal}
-            setETFReal={setETFReal}
-            bitcoinReal={bitcoinReal}
-            setBitcoinReal={setBitcoinReal}
-            cryptoReal={cryptoReal}
-            setCryptoReal={setCryptoReal}
-            bondsReal={bondsReal}
-            setBondsReal={setBondsReal}
-            fundsReal={fundsReal}
-            setFundsReal={setFundsReal}
-            goldReal={goldReal}
-            setGoldReal={setGoldReal}
+            bankReal={bankValue}
+            setBankReal={setBankValue}
+            cashReal={cashValue}
+            setCashReal={setCashValue}
+            digitalServicesReal={digitalServicesValue}
+            setDigitalServicesReal={setDigitalServicesValue}
+            emergencyFund={emergencyFundValue}
+            setEmergencyFund={setEmergencyFundValue}
+            stocksReal={stocksValue}
+            setStocksReal={setStocksValue}
+            etfReal={etfValue}
+            setETFReal={setETFValue}
+            bitcoinReal={bitcoinValue}
+            setBitcoinReal={setBitcoinValue}
+            cryptoReal={cryptoValue}
+            setCryptoReal={setCryptoValue}
+            bondsReal={bondsValue}
+            setBondsReal={setBondsValue}
+            fundsReal={fundsValue}
+            setFundsReal={setFundsValue}
+            goldReal={goldValue}
+            setGoldReal={setGoldValue}
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
             onUpdateBalance={handleUpdateBalance}
@@ -960,16 +965,16 @@ export default function InsertValue({
           showConfirmationDeleteOutflow={showConfirmationDeleteOutflow}
           setShowConfirmationDeleteOutflow={setShowConfirmationDeleteOutflow}
           balanceDate={balanceDate}
-          bankReal={bankReal}
-          cashReal={cashReal}
-          digitalServicesReal={digitalServicesReal}
-          stocksReal={stocksReal}
-          etfReal={etfReal}
-          bitcoinReal={bitcoinReal}
-          cryptoReal={cryptoReal}
-          bondsReal={bondsReal}
-          fundsReal={fundsReal}
-          goldReal={goldReal}
+          bankValue={bankValue}
+          cashValue={cashValue}
+          digitalServicesValue={digitalServicesValue}
+          stocksValue={stocksValue}
+          etfValue={etfValue}
+          bitcoinValue={bitcoinValue}
+          cryptoValue={cryptoValue}
+          bondsValue={bondsValue}
+          fundsValue={fundsValue}
+          goldValue={goldValue}
           categoryIncome={categoryIncome}
           income={income}
           noteIncomeAreaValue={noteIncomeAreaValue}

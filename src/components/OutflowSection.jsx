@@ -6,7 +6,7 @@ import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
-  MySecondaryButton,
+  ModernActionButton,
   StyledDateInput,
   StyledAddSection,
   StyledTable,
@@ -744,13 +744,12 @@ export default function OutflowSection({
             }}
           />
         </div>
-        <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-          <MySecondaryButton theme={theme} onClick={onAddOutflow}>
+        <div style={{display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '24px'}}>
+          <ModernActionButton theme={theme} onClick={onAddOutflow}>
             {languages[language].insert.outflowSection.updateButton}
-          </MySecondaryButton>
+          </ModernActionButton>
         </div>
       </div>
-
 
       {/* Unified Table Container with Month Selection */}
       <div

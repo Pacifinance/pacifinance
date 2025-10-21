@@ -79,7 +79,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       // Adatta la larghezza in base al numero di punti dati
       let baseWidth;
       if (width < 768) {
-        baseWidth = Math.min(width - 40, 500);
+        baseWidth = Math.min(width - 20, 500); // Ridotto da 40 a 20
       } else if (width < 1024) {
         baseWidth = Math.min(width - 80, 750);
       } else {
@@ -230,9 +230,9 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       height={550}
       data={data}
       margin={{
-        top: 60,
-        left: containerWidth < 768 ? 20 : 40,
-        right: containerWidth < 768 ? 20 : 30,
+        top: containerWidth < 768 ? 40 : 60,
+        left: containerWidth < 768 ? 5 : 40,
+        right: containerWidth < 768 ? 5 : 30,
         bottom: containerWidth < 768 ? 5 : 10
       }}
     >
@@ -250,15 +250,15 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         tick={(props) => <CustomTick 
           {...props} 
           theme={theme} 
-          fontSize={containerWidth < 500 ? 14 : 16}
-          maxWidth={containerWidth < 768 ? 60 : 80}
+          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
+          maxWidth={containerWidth < 768 ? 50 : 80}
           fill="#ffffff"
           dy={15}
           dx={-5}
           angle={-15}
           textAnchor="end"
         />}
-        height={containerWidth < 500 ? 100 : 80}
+        height={containerWidth < 500 ? 80 : containerWidth < 768 ? 90 : 80}
         axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
         tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
       />
@@ -268,7 +268,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
           {...props} 
           textAnchor="end" 
           fill={theme.textColor} 
-          fontSize={containerWidth < 500 ? 14 : 16}
+          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
           fontWeight={500}
           dx={-5}
         />}
@@ -311,9 +311,9 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       height={550}
       data={data}
       margin={{
-        top: 50,
-        left: containerWidth < 768 ? 20 : 40,
-        right: containerWidth < 768 ? 20 : 30,
+        top: containerWidth < 768 ? 30 : 50,
+        left: containerWidth < 768 ? 5 : 40,
+        right: containerWidth < 768 ? 5 : 30,
         bottom: containerWidth < 768 ? 15 : 20
       }}
     >
@@ -329,15 +329,15 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         tick={(props) => <CustomTick 
           {...props} 
           theme={theme} 
-          fontSize={containerWidth < 500 ? 14 : 16}
-          maxWidth={containerWidth < 768 ? 60 : 80}
+          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
+          maxWidth={containerWidth < 768 ? 50 : 80}
           fill="#ffffff"
           dy={15}
           dx={-5}
           angle={-15}
           textAnchor="end"
         />}
-        height={containerWidth < 500 ? 100 : 80}
+        height={containerWidth < 500 ? 80 : containerWidth < 768 ? 90 : 80}
         axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
         tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
       />
@@ -347,7 +347,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
           {...props} 
           textAnchor="end" 
           fill={theme.textColor} 
-          fontSize={containerWidth < 500 ? 14 : 16}
+          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
           fontWeight={500}
           dx={-5}
         />}
@@ -384,7 +384,8 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
   return (
     <SectionBalancesCharts theme={theme} style={{position: 'relative', height: '100%'}}>
       {/* Time Period Selector */}
-      <div className="absolute top-0 left-0 flex gap-1 z-10 p-2">
+      <div className="absolute top-0 left-0 flex gap-1 z-10 p-2 md:top-0 md:left-0 
+                      max-md:top-12 max-md:left-0 max-md:right-0 max-md:justify-center">
         {['3m', '6m', '1y', '2y', 'all'].map((period) => {
           const isDisabled = period === '2y' || period === 'all';
           const isActive = selectedPeriod === period;
@@ -421,42 +422,44 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       </div>
 
       {/* Export buttons */}
-      <div className="absolute top-0 right-0 flex gap-2 z-10 p-2">
+      <div className="absolute flex gap-2 z-10 p-2 md:top-0 md:right-0 
+                      max-md:-top-1 max-md:left-0 max-md:right-0 max-md:justify-end max-md:pr-1 max-md:gap-1"
+           style={{ top: 0, right: 0 }}>
         <CSVLink
           data={data}
           headers={headers}
           filename={`distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
-          className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+          className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
           style={{
             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
             borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
             backdropFilter: 'blur(10px)'
           }}
         >
-          <BsFiletypeCsv className="text-paciGreen text-lg" />
+          <BsFiletypeCsv className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
         </CSVLink>
 
         <button
           onClick={async () => await downloadExcel(data, headers, `distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-          className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+          className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
           style={{
             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
             borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
             backdropFilter: 'blur(10px)'
           }}
         >
-          <RiFileExcel2Line className="text-paciGreen text-lg" />
+          <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
         </button>
       </div>
 
-      <div style={{ 
+      <div className="pt-10 md:pt-4" style={{ 
         width: '100%', 
         height: '550px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: '0.5rem',
-        padding: '0 1rem',
+        padding: containerWidth < 768 ? '0 0.25rem' : '0 1rem',
         overflow: 'hidden'
       }}>
         {type === 'bar' ? renderBarChart() : renderAreaChart()}

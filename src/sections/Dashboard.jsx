@@ -33,9 +33,9 @@ import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import languages from '../data/languages.json';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
 import {
-    getCashReal, getBankReal, getDigitalServicesReal, getEmergencyFund,
-    getStocksReal, getEtfReal, getBitcoinReal, getCryptoReal, getBondsReal,
-    getFundsReal, getGoldReal, getTotalReal, getOutflowsArray, getIncomesArray
+    getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
+    getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
+    getFundsValue, getGoldValue, getTotalValue, getOutflowsArray, getIncomesArray
 } from '../utils/userDataSelectors';
 import { 
     ModernDashboardContainer,
@@ -78,18 +78,18 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const colorsIncExp = getColorsIncExp(language);
     
     // Stati per i bilanci
-    const [stocksReal, setStocksReal] = useState(0);
-    const [etfReal, setETFReal] = useState(0);
-    const [bankReal, setBankReal] = useState(0);
-    const [cashReal, setCashReal] = useState(0);
+    const [stocksValue, setStocksValue] = useState(0);
+    const [etfValue, setETFValue] = useState(0);
+    const [bankValue, setBankValue] = useState(0);
+    const [cashValue, setCashValue] = useState(0);
     const [emergencyFund, setEmergencyFund] = useState(0);
-    const [cryptoReal, setCryptoReal] = useState(0);
-    const [bitcoinReal, setBitcoinReal] = useState(0);
-    const [digitalServicesReal, setDigitalServicesReal] = useState(0);
-    const [bondsReal, setBondsReal] = useState(0);
-    const [fundsReal, setFundsReal] = useState(0);
-    const [goldReal, setGoldReal] = useState(0);
-    const [totalReal, setTotalReal] = useState(0);
+    const [cryptoValue, setCryptoValue] = useState(0);
+    const [bitcoinValue, setBitcoinValue] = useState(0);
+    const [digitalServicesValue, setDigitalServicesValue] = useState(0);
+    const [bondsValue, setBondsValue] = useState(0);
+    const [fundsValue, setFundsValue] = useState(0);
+    const [goldValue, setGoldValue] = useState(0);
+    const [totalValue, setTotalValue] = useState(0);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
     const [savedMonth, setSavedMonth] = useState(0);
@@ -98,19 +98,18 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         const fetchData = async () => {
             if (userData) {
                 try {
-                    // Using optimized selectors
-                    setStocksReal(getStocksReal(userData));
-                    setETFReal(getEtfReal(userData));
-                    setBitcoinReal(getBitcoinReal(userData));
-                    setCryptoReal(getCryptoReal(userData));
-                    setBankReal(getBankReal(userData));
-                    setCashReal(getCashReal(userData));
+                    setStocksValue(getStocksValue(userData));
+                    setETFValue(getEtfValue(userData));
+                    setBitcoinValue(getBitcoinValue(userData));
+                    setCryptoValue(getCryptoValue(userData));
+                    setBankValue(getBankValue(userData));
+                    setCashValue(getCashValue(userData));
                     setEmergencyFund(getEmergencyFund(userData));
-                    setDigitalServicesReal(getDigitalServicesReal(userData));
-                    setBondsReal(getBondsReal(userData));
-                    setFundsReal(getFundsReal(userData));
-                    setGoldReal(getGoldReal(userData));
-                    setTotalReal(getTotalReal(userData));
+                    setDigitalServicesValue(getDigitalServicesValue(userData));
+                    setBondsValue(getBondsValue(userData));
+                    setFundsValue(getFundsValue(userData));
+                    setGoldValue(getGoldValue(userData));
+                    setTotalValue(getTotalValue(userData));
                     
                     const outflowsArray = getOutflowsArray(userData);
                     const incomesArray = getIncomesArray(userData);
@@ -132,21 +131,21 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const traditionalAssets = [
         { 
             name: languages[language].assets.bank, 
-            value: bankReal >= 0 ? bankReal : 0,
+            value: bankValue >= 0 ? bankValue : 0,
             icon: assetIcons.bank,
             color: assetColors.bank.primary,
             gradient: assetColors.bank.gradient
         },
         { 
             name: languages[language].assets.cash, 
-            value: cashReal >= 0 ? cashReal : 0,
+            value: cashValue >= 0 ? cashValue : 0,
             icon: assetIcons.cash,
             color: assetColors.cash.primary,
             gradient: assetColors.cash.gradient
         },
         { 
             name: languages[language].assets.digitalServices, 
-            value: digitalServicesReal >= 0 ? digitalServicesReal : 0,
+            value: digitalServicesValue >= 0 ? digitalServicesValue : 0,
             icon: assetIcons.digitalServices,
             color: assetColors.digitalServices.primary,
             gradient: assetColors.digitalServices.gradient
@@ -166,7 +165,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const allInvestments = [
         { 
             name: languages[language].assets.stocks, 
-            value: stocksReal >= 0 ? stocksReal : 0,
+            value: stocksValue >= 0 ? stocksValue : 0,
             icon: assetIcons.stocks,
             color: assetColors.stocks.primary,
             gradient: assetColors.stocks.gradient,
@@ -174,7 +173,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
         { 
             name: languages[language].assets.etf, 
-            value: etfReal >= 0 ? etfReal : 0,
+            value: etfValue >= 0 ? etfValue : 0,
             icon: assetIcons.etf,
             color: assetColors.etf.primary,
             gradient: assetColors.etf.gradient,
@@ -182,7 +181,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
         { 
             name: languages[language].assets.bitcoin, 
-            value: bitcoinReal >= 0 ? bitcoinReal : 0,
+            value: bitcoinValue >= 0 ? bitcoinValue : 0,
             icon: assetIcons.bitcoin,
             color: assetColors.bitcoin.primary,
             gradient: assetColors.bitcoin.gradient,
@@ -190,7 +189,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
         { 
             name: languages[language].assets.crypto, 
-            value: cryptoReal >= 0 ? cryptoReal : 0,
+            value: cryptoValue >= 0 ? cryptoValue : 0,
             icon: assetIcons.crypto,
             color: assetColors.crypto.primary,
             gradient: assetColors.crypto.gradient,
@@ -198,7 +197,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
         { 
             name: languages[language].assets.bonds, 
-            value: bondsReal >= 0 ? bondsReal : 0,
+            value: bondsValue >= 0 ? bondsValue : 0,
             icon: assetIcons.bonds,
             color: assetColors.bonds.primary,
             gradient: assetColors.bonds.gradient,
@@ -206,7 +205,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
         { 
             name: languages[language].assets.funds, 
-            value: fundsReal >= 0 ? fundsReal : 0,
+            value: fundsValue >= 0 ? fundsValue : 0,
             icon: assetIcons.funds,
             color: assetColors.funds.primary,
             gradient: assetColors.funds.gradient,
@@ -214,7 +213,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         },
         { 
             name: languages[language].assets.gold, 
-            value: goldReal >= 0 ? goldReal : 0,
+            value: goldValue >= 0 ? goldValue : 0,
             icon: assetIcons.gold,
             color: assetColors.gold.primary,
             gradient: assetColors.gold.gradient,
@@ -228,7 +227,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const totalTraditional = traditionalAssets.reduce((acc, asset) => acc + asset.value, 0);
     const totalInvestments = allInvestments.reduce((acc, investment) => acc + investment.value, 0);
     const totalEmergencySecurity = emergencyFundAsset.value; // For now only emergency fund, but prepared for future additions
-    const totalBalance = totalReal;
+    const totalBalance = totalValue;
 
     // Calcola percentuale obiettivo emergency fund
     const emergencyFundGoal = userData?.goals?.find(goal => goal.type === 'emergencyFund');

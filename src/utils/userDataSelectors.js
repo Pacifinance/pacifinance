@@ -11,46 +11,46 @@ export const getPreviousMonthBalance = (userData) => userData?.balances?.[1]?.ba
 export const getPreviousYearSameMonthBalance = (userData) => userData?.balances?.[12]?.balance || {};
 
 // Individual asset selectors for current month
-export const getCashReal = (userData) => getCurrentBalance(userData).cash || 0;
-export const getBankReal = (userData) => getCurrentBalance(userData).bank || 0;
-export const getDigitalServicesReal = (userData) => getCurrentBalance(userData).digitalServices || 0;
+export const getCashValue = (userData) => getCurrentBalance(userData).cash || 0;
+export const getBankValue = (userData) => getCurrentBalance(userData).bank || 0;
+export const getDigitalServicesValue = (userData) => getCurrentBalance(userData).digitalServices || 0;
 export const getEmergencyFund = (userData) => getCurrentBalance(userData).emergencyFund || 0;
-export const getStocksReal = (userData) => getCurrentBalance(userData).stocks || 0;
-export const getEtfReal = (userData) => getCurrentBalance(userData).etf || 0;
-export const getBitcoinReal = (userData) => getCurrentBalance(userData).bitcoin || 0;
-export const getCryptoReal = (userData) => getCurrentBalance(userData).crypto || 0;
-export const getBondsReal = (userData) => getCurrentBalance(userData).bonds || 0;
-export const getFundsReal = (userData) => getCurrentBalance(userData).funds || 0;
-export const getGoldReal = (userData) => getCurrentBalance(userData).gold || 0;
-export const getTotalReal = (userData) => getCurrentBalance(userData).totalReal || 0;
+export const getStocksValue = (userData) => getCurrentBalance(userData).stocks || 0;
+export const getEtfValue = (userData) => getCurrentBalance(userData).etf || 0;
+export const getBitcoinValue = (userData) => getCurrentBalance(userData).bitcoin || 0;
+export const getCryptoValue = (userData) => getCurrentBalance(userData).crypto || 0;
+export const getBondsValue = (userData) => getCurrentBalance(userData).bonds || 0;
+export const getFundsValue = (userData) => getCurrentBalance(userData).funds || 0;
+export const getGoldValue = (userData) => getCurrentBalance(userData).gold || 0;
+export const getTotalValue = (userData) => getCurrentBalance(userData).totalValue || 0;
 
 // Previous month balance selectors
-export const getCashRealPreMonth = (userData) => getPreviousMonthBalance(userData).cash || 0;
-export const getBankRealPreMonth = (userData) => getPreviousMonthBalance(userData).bank || 0;
-export const getDigitalServicesRealPreMonth = (userData) => getPreviousMonthBalance(userData).digitalServices || 0;
+export const getCashValuePreMonth = (userData) => getPreviousMonthBalance(userData).cash || 0;
+export const getBankValuePreMonth = (userData) => getPreviousMonthBalance(userData).bank || 0;
+export const getDigitalServicesValuePreMonth = (userData) => getPreviousMonthBalance(userData).digitalServices || 0;
 export const getEmergencyFundPreMonth = (userData) => getPreviousMonthBalance(userData).emergencyFund || 0;
-export const getStocksRealPreMonth = (userData) => getPreviousMonthBalance(userData).stocks || 0;
-export const getEtfRealPreMonth = (userData) => getPreviousMonthBalance(userData).etf || 0;
-export const getBitcoinRealPreMonth = (userData) => getPreviousMonthBalance(userData).bitcoin || 0;
-export const getCryptoRealPreMonth = (userData) => getPreviousMonthBalance(userData).crypto || 0;
-export const getBondsRealPreMonth = (userData) => getPreviousMonthBalance(userData).bonds || 0;
-export const getFundsRealPreMonth = (userData) => getPreviousMonthBalance(userData).funds || 0;
-export const getGoldRealPreMonth = (userData) => getPreviousMonthBalance(userData).gold || 0;
-export const getTotalRealPreMonth = (userData) => getPreviousMonthBalance(userData).totalReal || 0;
+export const getStocksValuePreMonth = (userData) => getPreviousMonthBalance(userData).stocks || 0;
+export const getEtfValuePreMonth = (userData) => getPreviousMonthBalance(userData).etf || 0;
+export const getBitcoinValuePreMonth = (userData) => getPreviousMonthBalance(userData).bitcoin || 0;
+export const getCryptoValuePreMonth = (userData) => getPreviousMonthBalance(userData).crypto || 0;
+export const getBondsValuePreMonth = (userData) => getPreviousMonthBalance(userData).bonds || 0;
+export const getFundsValuePreMonth = (userData) => getPreviousMonthBalance(userData).funds || 0;
+export const getGoldValuePreMonth = (userData) => getPreviousMonthBalance(userData).gold || 0;
+export const getTotalValuePreMonth = (userData) => getPreviousMonthBalance(userData).totalValue || 0;
 
 // Previous year same month balance selectors
-export const getCashRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).cash || 0;
-export const getBankRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).bank || 0;
-export const getDigitalServicesRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).digitalServices || 0;
+export const getCashValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).cash || 0;
+export const getBankValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).bank || 0;
+export const getDigitalServicesValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).digitalServices || 0;
 export const getEmergencyFundPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).emergencyFund || 0;
-export const getStocksRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).stocks || 0;
-export const getEtfRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).etf || 0;
-export const getBitcoinRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).bitcoin || 0;
-export const getCryptoRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).crypto || 0;
-export const getBondsRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).bonds || 0;
-export const getFundsRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).funds || 0;
-export const getGoldRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).gold || 0;
-export const getTotalRealPreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).totalReal || 0;
+export const getStocksValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).stocks || 0;
+export const getEtfValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).etf || 0;
+export const getBitcoinValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).bitcoin || 0;
+export const getCryptoValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).crypto || 0;
+export const getBondsValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).bonds || 0;
+export const getFundsValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).funds || 0;
+export const getGoldValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).gold || 0;
+export const getTotalValuePreYearSameMonth = (userData) => getPreviousYearSameMonthBalance(userData).totalValue || 0;
 
 // Legacy format creators for backward compatibility
 export const createLegacyBalanceData = (userData) => {
@@ -60,46 +60,46 @@ export const createLegacyBalanceData = (userData) => {
   
   return {
     // Current month individual values
-    cashReal: currentBalance.cash || 0,
-    bankReal: currentBalance.bank || 0,
-    digitalServicesReal: currentBalance.digitalServices || 0,
+    cashValue: currentBalance.cash || 0,
+    bankValue: currentBalance.bank || 0,
+    digitalServicesValue: currentBalance.digitalServices || 0,
     emergencyFund: currentBalance.emergencyFund || 0,
-    stocksReal: currentBalance.stocks || 0,
-    etfReal: currentBalance.etf || 0,
-    bitcoinReal: currentBalance.bitcoin || 0,
-    cryptoReal: currentBalance.crypto || 0,
-    bondsReal: currentBalance.bonds || 0,
-    fundsReal: currentBalance.funds || 0,
-    goldReal: currentBalance.gold || 0,
-    totalReal: currentBalance.totalReal || 0,
+    stocksValue: currentBalance.stocks || 0,
+    etfValue: currentBalance.etf || 0,
+    bitcoinValue: currentBalance.bitcoin || 0,
+    cryptoValue: currentBalance.crypto || 0,
+    bondsValue: currentBalance.bonds || 0,
+    fundsValue: currentBalance.funds || 0,
+    goldValue: currentBalance.gold || 0,
+    totalValue: currentBalance.totalValue || 0,
     
     // Previous month individual values
-    cashRealPreMonth: preMonthBalance.cash || 0,
-    bankRealPreMonth: preMonthBalance.bank || 0,
-    digitalServicesRealPreMonth: preMonthBalance.digitalServices || 0,
+    cashValuePreMonth: preMonthBalance.cash || 0,
+    bankValuePreMonth: preMonthBalance.bank || 0,
+    digitalServicesValuePreMonth: preMonthBalance.digitalServices || 0,
     emergencyFundPreMonth: preMonthBalance.emergencyFund || 0,
-    stocksRealPreMonth: preMonthBalance.stocks || 0,
-    etfRealPreMonth: preMonthBalance.etf || 0,
-    bitcoinRealPreMonth: preMonthBalance.bitcoin || 0,
-    cryptoRealPreMonth: preMonthBalance.crypto || 0,
-    bondsRealPreMonth: preMonthBalance.bonds || 0,
-    fundsRealPreMonth: preMonthBalance.funds || 0,
-    goldRealPreMonth: preMonthBalance.gold || 0,
-    totalRealPreMonth: preMonthBalance.totalReal || 0,
+    stocksValuePreMonth: preMonthBalance.stocks || 0,
+    etfValuePreMonth: preMonthBalance.etf || 0,
+    bitcoinValuePreMonth: preMonthBalance.bitcoin || 0,
+    cryptoValuePreMonth: preMonthBalance.crypto || 0,
+    bondsValuePreMonth: preMonthBalance.bonds || 0,
+    fundsValuePreMonth: preMonthBalance.funds || 0,
+    goldValuePreMonth: preMonthBalance.gold || 0,
+    totalValuePreMonth: preMonthBalance.totalValue || 0,
     
     // Previous year same month individual values
-    cashRealPreYearSameMonth: preYearSameMonthBalance.cash || 0,
-    bankRealPreYearSameMonth: preYearSameMonthBalance.bank || 0,
-    digitalServicesRealPreYearSameMonth: preYearSameMonthBalance.digitalServices || 0,
+    cashValuePreYearSameMonth: preYearSameMonthBalance.cash || 0,
+    bankValuePreYearSameMonth: preYearSameMonthBalance.bank || 0,
+    digitalServicesValuePreYearSameMonth: preYearSameMonthBalance.digitalServices || 0,
     emergencyFundPreYearSameMonth: preYearSameMonthBalance.emergencyFund || 0,
-    stocksRealPreYearSameMonth: preYearSameMonthBalance.stocks || 0,
-    etfRealPreYearSameMonth: preYearSameMonthBalance.etf || 0,
-    bitcoinRealPreYearSameMonth: preYearSameMonthBalance.bitcoin || 0,
-    cryptoRealPreYearSameMonth: preYearSameMonthBalance.crypto || 0,
-    bondsRealPreYearSameMonth: preYearSameMonthBalance.bonds || 0,
-    fundsRealPreYearSameMonth: preYearSameMonthBalance.funds || 0,
-    goldRealPreYearSameMonth: preYearSameMonthBalance.gold || 0,
-    totalRealPreYearSameMonth: preYearSameMonthBalance.totalReal || 0,
+    stocksValuePreYearSameMonth: preYearSameMonthBalance.stocks || 0,
+    etfValuePreYearSameMonth: preYearSameMonthBalance.etf || 0,
+    bitcoinValuePreYearSameMonth: preYearSameMonthBalance.bitcoin || 0,
+    cryptoValuePreYearSameMonth: preYearSameMonthBalance.crypto || 0,
+    bondsValuePreYearSameMonth: preYearSameMonthBalance.bonds || 0,
+    fundsValuePreYearSameMonth: preYearSameMonthBalance.funds || 0,
+    goldValuePreYearSameMonth: preYearSameMonthBalance.gold || 0,
+    totalValuePreYearSameMonth: preYearSameMonthBalance.totalValue || 0,
     
     // Formatted dates
     formattedPreMonthDate: userData?.dates?.preMonth || '',
@@ -116,11 +116,48 @@ export const getUserWorkTime = (userData) => userData?.profile?.workTime || { ke
 export const getUserRemoteType = (userData) => userData?.profile?.remoteType || { key: -1, value: 'Tipologia lavoro non impostata' };
 
 // Expense and income selectors
-export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || [];
-export const getOutflowsArray = (userData) => userData?.expenses?.outflowsArray || [];
+export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || userData?.allOutflows || [];
+export const getOutflowsArray = (userData) => userData?.expenses?.outflowsArray || userData?.outflowsArray || [];
 export const getTotalOutflowsPerCategoryPerMonth = (userData) => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
-export const getAllIncomes = (userData) => userData?.expenses?.allIncomes || [];
-export const getIncomesArray = (userData) => userData?.incomes?.incomesArray || [];
+export const getAllIncomes = (userData) => userData?.expenses?.allIncomes || userData?.allIncomes || [];
+export const getIncomesArray = (userData) => userData?.incomes?.incomesArray || userData?.incomesArray || [];
+
+// Totale spese/income/saved del mese corrente
+export const getTotalOutflowsCurrentMonth = (userData) => {
+  // Se expenses ha una proprietà totalOutflowsMonth, usala, altrimenti somma l'array
+  if (typeof userData?.expenses?.totalOutflowsMonth === 'number') {
+    return userData.expenses.totalOutflowsMonth;
+  }
+  // Supporto struttura UserContext ottimizzata
+  if (Array.isArray(userData?.expenses?.outflowsArray)) {
+    // outflowsArray può essere un array di valori mensili, prendi il primo (corrente)
+    return userData.expenses.outflowsArray[0] || 0;
+  }
+  // Supporto struttura legacy (mockUser)
+  if (Array.isArray(userData?.outflowsArray)) {
+    return userData.outflowsArray[0] || 0;
+  }
+  return 0;
+};
+
+export const getTotalIncomesCurrentMonth = (userData) => {
+  if (typeof userData?.incomes?.totalIncomesMonth === 'number') {
+    return userData.incomes.totalIncomesMonth;
+  }
+  // Supporto struttura UserContext ottimizzata
+  if (Array.isArray(userData?.incomes?.incomesArray)) {
+    return userData.incomes.incomesArray[0] || 0;
+  }
+  // Supporto struttura legacy (mockUser)
+  if (Array.isArray(userData?.incomesArray)) {
+    return userData.incomesArray[0] || 0;
+  }
+  return 0;
+};
+
+export const getTotalSavedCurrentMonth = (userData) => {
+  return getTotalIncomesCurrentMonth(userData) - getTotalOutflowsCurrentMonth(userData);
+};
 
 // Tags selectors
 export const getOutflowsTags = (userData) => userData?.tags?.outflowsTags || [];
@@ -148,9 +185,55 @@ export const getFormattedPreMonthDate = (userData) => {
   const legacyData = createLegacyBalanceData(userData);
   return legacyData.formattedPreMonthDate;
 };
+
 export const getFormattedPreYearSameMonthDate = (userData) => {
   const legacyData = createLegacyBalanceData(userData);
   return legacyData.formattedPreYearSameMonthDate;
+};
+
+// Localized date formatters
+export const getFormattedPreMonthDateLocalized = (userData, language = 'it') => {
+  const preMonthDate = getPreMonthDate(userData);
+  if (!preMonthDate) return '';
+  
+  const date = new Date(preMonthDate);
+  const monthNames = {
+    it: [
+      'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+    ],
+    en: [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+  };
+  
+  const month = monthNames[language] ? monthNames[language][date.getMonth()] : monthNames.it[date.getMonth()];
+  const year = date.getFullYear();
+  
+  return `${month} ${year}`;
+};
+
+export const getFormattedPreYearSameMonthDateLocalized = (userData, language = 'it') => {
+  const preYearDate = getPreYearSameMonthDate(userData);
+  if (!preYearDate) return '';
+  
+  const date = new Date(preYearDate);
+  const monthNames = {
+    it: [
+      'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+    ],
+    en: [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+  };
+  
+  const month = monthNames[language] ? monthNames[language][date.getMonth()] : monthNames.it[date.getMonth()];
+  const year = date.getFullYear();
+  
+  return `${month} ${year}`;
 };
 
 // Financial insights data

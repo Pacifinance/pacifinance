@@ -81,7 +81,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
         
         let baseWidth;
         if (width < 768) {
-          baseWidth = Math.min(width - 40, 500);
+          baseWidth = Math.min(width - 20, 500); // Ridotto da 40 a 20
         } else if (width < 1024) {
           baseWidth = Math.min(width - 80, 750);
         } else {
@@ -98,7 +98,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
         }
       } else {
         if (width < 768) {
-          setContainerWidth(Math.min(width - 60, 350));
+          setContainerWidth(Math.min(width - 30, 350)); // Ridotto da 60 a 30
         } else if (width < 1024) {
           setContainerWidth(Math.min(width - 120, 500));
         } else {
@@ -360,7 +360,8 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Time Period Selector */}
-        <div className="absolute top-0 left-0 flex gap-1 z-10 p-2">
+        <div className="absolute top-0 left-0 flex gap-1 z-10 p-2 md:top-0 md:left-0 
+                        max-md:top-12 max-md:left-0 max-md:right-0 max-md:justify-center">
           {['3m', '6m', '1y', '2y', 'all'].map((period) => {
             const isDisabled = period === '2y' || period === 'all';
             const isActive = selectedPeriod === period;
@@ -397,53 +398,55 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
         </div>
 
         {/* Export buttons */}
-        <div className="absolute top-0 right-0 flex gap-2 z-10 p-2">
+        <div className="absolute flex gap-2 z-10 p-2 md:top-0 md:right-0 
+                        max-md:-top-1 max-md:left-0 max-md:right-0 max-md:justify-end max-md:pr-1 max-md:gap-1"
+             style={{ top: 0, right: 0 }}>
           <CSVLink 
             data={data}
             headers={headers}
             filename={`incomeOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
-            className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+            className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
             style={{
               backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
               borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
               backdropFilter: 'blur(10px)'
             }}
           >
-            <BsFiletypeCsv className="text-paciGreen text-lg" />
+            <BsFiletypeCsv className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
           </CSVLink>
 
           <button
             onClick={async () => await downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-            className="flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+            className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
             style={{
               backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
               borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
               backdropFilter: 'blur(10px)'
             }}
           >
-            <RiFileExcel2Line className="text-paciGreen text-lg" />
+            <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
           </button>
         </div>
 
         {/* Responsive chart container */}
-        <div style={{ 
+        <div className="pt-10 md:pt-4" style={{ 
           width: '100%', 
           height: '500px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginTop: '3.5rem',
-          // padding: '0 1rem'
+          padding: containerWidth < 768 ? '0 0.25rem' : '0 1rem'
         }}>
           <LineChart
             width={containerWidth}
             height={550}
             data={data}
             margin={{
-              top: 30,
-              right: 40,
-              left: 30,
-              bottom: 70
+              top: containerWidth < 768 ? 20 : 30,
+              right: containerWidth < 768 ? 5 : 40,
+              left: containerWidth < 768 ? 5 : 30,
+              bottom: containerWidth < 768 ? 50 : 70
             }}
             syncId="incomeOutflowChart"
           >
@@ -468,7 +471,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               dataKey="name"
               type="category"
               tick={{
-                fontSize: containerWidth < 500 ? 10 : 12, 
+                fontSize: containerWidth < 500 ? 8 : containerWidth < 768 ? 10 : 12, 
                 fill: theme.mode === 'dark' ? '#fff' : '#333',
                 fontWeight: 500
               }} 
@@ -495,7 +498,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             
                         <YAxis 
               tick={{
-                fontSize: containerWidth < 500 ? 14 : 16,
+                fontSize: containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16,
                 fill: theme.mode === 'dark' ? '#fff' : '#333'
               }}
               tickFormatter={(value) => isHidden ? '****' : value}

@@ -3,7 +3,7 @@ import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import {
   StyledDateInput,
-  MySecondaryButton,
+  ModernActionButton,
 } from '../styles/MyStyled';
 
 const currentDate = new Date().toISOString().split('T')[0];
@@ -49,6 +49,8 @@ export default function BalanceSection({
   setCashReal,
   digitalServicesReal,
   setDigitalServicesReal,
+  emergencyFund,
+  setEmergencyFund,
   stocksReal,
   setStocksReal,
   etfReal,
@@ -165,6 +167,22 @@ export default function BalanceSection({
                 onChange={(e) => handleInputChange(e, setDigitalServicesReal)}
                 onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)}
                 placeholder={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                style={inputWithCurrency}
+              />
+            </div>
+          </div>
+          {/* Emergency Fund */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
+            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
+              Emergency Fund
+            </label>
+            <div style={inputCurrencyWrapper}>
+              <span style={currencySymbolStyle}>€</span>
+              <input
+                type="text"
+                onChange={(e) => handleInputChange(e, setEmergencyFund)}
+                onBlur={(e) => handleInputBlur(e, setEmergencyFund)}
+                placeholder={isHidden ? '****' : emergencyFund.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -312,9 +330,9 @@ export default function BalanceSection({
           />
         </div>
         <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-          <MySecondaryButton theme={theme} onClick={onUpdateBalance}>
+          <ModernActionButton theme={theme} onClick={onUpdateBalance}>
             {languages[language].insert.balanceSection.updateButton}
-          </MySecondaryButton>
+          </ModernActionButton>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { MdOutlineSavings } from "react-icons/md";
 import { SectionAMonth } from '../styles/MyStyled';
 import styled from 'styled-components';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
+import { getIncomesArray, getOutflowsArray, getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
@@ -186,9 +187,9 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
         const fetchData = async () => {
             if (userData) {
                 try {
-                    setOutflowsCurrent(userData?.outflowsArray[0] || 0);
-                    setIncomesCurrent(userData?.incomesArray[0] || 0);
-                    setSavedCurrent((userData?.incomesArray[0] || 0) - (userData?.outflowsArray[0] || 0));
+                    setOutflowsCurrent(getTotalOutflowsCurrentMonth(userData));
+                    setIncomesCurrent(getTotalIncomesCurrentMonth(userData));
+                    setSavedCurrent(getTotalSavedCurrentMonth(userData));
 
                     if (period === "month") {
                         setIncomesComparison(userData?.incomesArray[1] || 0);

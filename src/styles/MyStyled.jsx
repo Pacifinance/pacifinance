@@ -595,6 +595,96 @@ export const MySecondaryButton = styled(MyButton)`
   }
 `;
 
+export const ModernActionButton = styled.button`
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  background: linear-gradient(135deg, ${(props) => props.theme.buttonBackgroundColor} 0%, ${(props) => props.theme.buttonBackgroundColor}dd 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px ${(props) => props.theme.buttonBackgroundColor}40;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  min-height: 56px;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: -0.01em;
+  
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15), 
+                0 0 0 2px ${(props) => props.theme.buttonBackgroundColor}60;
+    background: linear-gradient(135deg, ${(props) => props.theme.buttonBackgroundColor}ee 0%, ${(props) => props.theme.buttonBackgroundColor}cc 100%);
+  }
+  
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  /* Effetto shine per dare un tocco premium */
+  &:before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    border-radius: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  &:hover:before {
+    opacity: 1;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    min-height: 52px;
+    min-width: 180px;
+    border-radius: 14px;
+    
+    &:hover {
+      /* Su mobile riduciamo gli effetti hover per performance */
+      transform: translateY(-1px) scale(1.01);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    min-height: 48px;
+    min-width: 160px;
+    border-radius: 12px;
+  }
+`;
+
 export const SecondaryTitle = styled.h2 `
     font-size: 1.5rem;
     color: ${(props) => (props.theme.textColor)};

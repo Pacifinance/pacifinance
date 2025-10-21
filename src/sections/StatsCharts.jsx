@@ -343,6 +343,7 @@ const ChartCard = styled.div`
 
   @media (max-width: 768px) {
     padding: 1.5rem;
+    padding-top: 2rem; /* Ridotto da 4rem per mobile */
     border-radius: 16px;
     
     &:hover {
@@ -478,14 +479,14 @@ export default function StatsCharts() {
     }, [userData]);
     
     const formattedPreMonthDate = userData?.preMonthDate
-      ? new Date(userData.preMonthDate).toLocaleDateString('it-IT', { 
+      ? new Date(userData.preMonthDate).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
           year: 'numeric', 
           month: 'long' 
         })
       : "";
 
     const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate
-      ? new Date(userData.preYearSameMonthDate).toLocaleDateString('it-IT', { 
+      ? new Date(userData.preYearSameMonthDate).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
           year: 'numeric', 
           month: 'long' 
         })

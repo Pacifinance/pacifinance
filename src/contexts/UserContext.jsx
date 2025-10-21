@@ -97,6 +97,13 @@ export const UserProvider = ({ children }) => {
             const jobTypeTags = allTags.data.jobType;
             const workTimeTags = allTags.data.workTime;
             const remoteTypeTags = allTags.data.remoteType;
+            const ageTags = allTags.data.age;
+            const livingSituationTags = allTags.data.livingSituation;
+            const housingTypeTags = allTags.data.housingType;
+            const childrenTags = allTags.data.children;
+            const yearsOfExperienceTags = allTags.data.yearsOfExperience;
+
+
 
             // Definizione dell'enum
             const userTypeDict = {
@@ -118,6 +125,11 @@ export const UserProvider = ({ children }) => {
             const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato'};
             const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato'};
             const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
+            const userAge = {key: infoUser.data.age?.index ?? -1, value: infoUser.data.age?.translations?.it ?? 'Età non impostata'};
+            const userLivingSituation = {key: infoUser.data.living_situation?.index ?? -1, value: infoUser.data.living_situation?.translations?.it ?? 'Situazione abitativa non impostata'};
+            const userHousingType = {key: infoUser.data.housing_type?.index ?? -1, value: infoUser.data.housing_type?.translations?.it ?? 'Tipologia abitazione non impostata'};
+            const userChildren = {key: infoUser.data.children?.index ?? -1, value: infoUser.data.children?.translations?.it ?? 'Figli non impostato'};
+            const userYearsOfExperience = {key: infoUser.data.years_of_experience?.index ?? -1, value: infoUser.data.years_of_experience?.translations?.it ?? 'Anni di esperienza non impostati'};
 
             // TODO: Quando il backend sarà pronto, qui andranno caricate le impostazioni goals e limits dal DB
             // const goalsAndLimitsData = await axios.post('/user/getGoalsAndLimits', null, { withCredentials: true });
@@ -315,7 +327,12 @@ export const UserProvider = ({ children }) => {
                 job: userJob,
                 jobType: userJobType,
                 workTime: userWorkTime,
-                remoteType: userRemoteType
+                remoteType: userRemoteType,
+                age: userAge,
+                livingSituation: userLivingSituation,
+                housingType: userHousingType,
+                children: userChildren,
+                yearsOfExperience: userYearsOfExperience
               },
               
               // All balance data in structured format
@@ -345,7 +362,12 @@ export const UserProvider = ({ children }) => {
                 jobTags,
                 jobTypeTags,
                 workTimeTags,
-                remoteTypeTags
+                remoteTypeTags,
+                ageTags,
+                livingSituationTags,
+                housingTypeTags,
+                childrenTags,
+                yearsOfExperienceTags
               },
               
               // Ranking data

@@ -106,7 +106,10 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
       }, [userData]);
 
       const formattedPreMonthDate = userData?.preMonthDate
-          ? new Date(userData.preMonthDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' })
+          ? new Date(userData.preMonthDate).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
+              year: 'numeric', 
+              month: 'long' 
+            })
           : "";
 
 

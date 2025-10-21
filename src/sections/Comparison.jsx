@@ -2,6 +2,15 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Section } from '../styles/MyStyled';
 import { 
+    getTotalValue,
+    getPercentageRankOnBalance,
+    getPercentageRankOnIncomes,
+    getPercentageRankOnExpenses,
+    getPercentageRankOnBalanceSimilar,
+    getPercentageRankOnIncomesSimilar,
+    getPercentageRankOnExpensesSimilar
+} from '../utils/userDataSelectors';
+import { 
   StyledMonth, 
   StyledLabel, 
   StyledRankingsSection, 
@@ -719,7 +728,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     // Mock data for comparisons - in a real app, this would come from API
     const mockComparisonData = {
         avgBalance: {
-            user: userData?.totalReal || 0,
+            user: getTotalValue(userData) || 0,
             similarUsers: 45000,
             allUsers: 38000
         },
@@ -919,12 +928,12 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     );
 
     const renderRankingsTab = () => {
-        const balanceRank = userData?.percentageRankOnBalance || '';
-        const incomeRank = userData?.percentageRankOnIncomes || '';
-        const expenseRank = userData?.percentageRankOnExpenses || '';
-        const balanceSimilarRank = userData?.percentageRankOnBalanceSimilar || '';
-        const incomeSimilarRank = userData?.percentageRankOnIncomesSimilar || '';
-        const expenseSimilarRank = userData?.percentageRankOnExpensesSimilar || '';
+        const balanceRank = getPercentageRankOnBalance(userData);
+        const incomeRank = getPercentageRankOnIncomes(userData);
+        const expenseRank = getPercentageRankOnExpenses(userData);
+        const balanceSimilarRank = getPercentageRankOnBalanceSimilar(userData);
+        const incomeSimilarRank = getPercentageRankOnIncomesSimilar(userData);
+        const expenseSimilarRank = getPercentageRankOnExpensesSimilar(userData);
 
         const RankCard = ({ title, rank, icon, isExpense = false, category }) => (
             <RankingCard 

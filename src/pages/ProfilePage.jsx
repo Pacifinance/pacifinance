@@ -207,19 +207,19 @@ const ProfilePage = () => {
     ];
 
     const mockYearsExperienceTags = [
-        "0-1 anni",
-        "2-3 anni", 
-        "4-5 anni",
-        "6-10 anni",
-        "10+ anni"
+        { index: 0, translations: { it: "0-1 anni", en: "0-1 years" } },
+        { index: 1, translations: { it: "2-3 anni", en: "2-3 years" } },
+        { index: 2, translations: { it: "4-5 anni", en: "4-5 years" } },
+        { index: 3, translations: { it: "6-10 anni", en: "6-10 years" } },
+        { index: 4, translations: { it: "10+ anni", en: "10+ years" } }
     ];
 
     const mockAgeTags = [
-        "18-25",
-        "26-35", 
-        "36-45",
-        "46-55",
-        "55+"
+        { index: 0, translations: { it: "18-25", en: "18-25" } },
+        { index: 1, translations: { it: "26-35", en: "26-35" } },
+        { index: 2, translations: { it: "36-45", en: "36-45" } },
+        { index: 3, translations: { it: "46-55", en: "46-55" } },
+        { index: 4, translations: { it: "55+", en: "55+" } }
     ];
 
     const mockLivingStatusTags = [
@@ -248,30 +248,30 @@ const ProfilePage = () => {
         if (userData) {
             setUserId(userData.userId || '00000');
             setUserType(userData.userType || 'mockUser');
-            // Only set values if they exist and are not empty in userData
-            setUserNationality(userData.userNationality && userData.userNationality.value ? userData.userNationality : { key: "", value: "" });
-            setUserWhereWorks(userData.userWhereWorks && userData.userWhereWorks.value ? userData.userWhereWorks : { key: "", value: "" });
-            setUserJob(userData.userJob && userData.userJob.value ? userData.userJob : { key: "", value: "" });
-            setUserJobType(userData.userJobType && userData.userJobType.value ? userData.userJobType : { key: "", value: "" });
-            setUserWorkTime(userData.userWorkTime && userData.userWorkTime.value ? userData.userWorkTime : { key: "", value: "" });
-            setUserRemoteType(userData.userRemoteType && userData.userRemoteType.value ? userData.userRemoteType : { key: "", value: "" });
-            setUserYearsExperience(userData.userYearsExperience && userData.userYearsExperience.value ? userData.userYearsExperience : { key: "", value: "" });
-            setUserAge(userData.userAge && userData.userAge.value ? userData.userAge : { key: "", value: "" });
-            setUserLivingStatus(userData.userLivingStatus && userData.userLivingStatus.value ? userData.userLivingStatus : { key: "", value: "" });
-            setUserHousingType(userData.userHousingType && userData.userHousingType.value ? userData.userHousingType : { key: "", value: "" });
-            setUserHasChildren(userData.userHasChildren && userData.userHasChildren.value ? userData.userHasChildren : { key: "", value: "" });
+            // Only set values if they exist and are not empty in userData.profile
+            setUserNationality(userData.profile?.nationality && userData.profile.nationality.value ? userData.profile.nationality : { key: "", value: "" });
+            setUserWhereWorks(userData.profile?.whereWorks && userData.profile.whereWorks.value ? userData.profile.whereWorks : { key: "", value: "" });
+            setUserJob(userData.profile?.job && userData.profile.job.value ? userData.profile.job : { key: "", value: "" });
+            setUserJobType(userData.profile?.jobType && userData.profile.jobType.value ? userData.profile.jobType : { key: "", value: "" });
+            setUserWorkTime(userData.profile?.workTime && userData.profile.workTime.value ? userData.profile.workTime : { key: "", value: "" });
+            setUserRemoteType(userData.profile?.remoteType && userData.profile.remoteType.value ? userData.profile.remoteType : { key: "", value: "" });
+            setUserYearsExperience(userData.profile?.yearsOfExperience && userData.profile.yearsOfExperience.value ? userData.profile.yearsOfExperience : { key: "", value: "" });
+            setUserAge(userData.profile?.age && userData.profile.age.value ? userData.profile.age : { key: "", value: "" });
+            setUserLivingStatus(userData.profile?.livingSituation && userData.profile.livingSituation.value ? userData.profile.livingSituation : { key: "", value: "" });
+            setUserHousingType(userData.profile?.housingType && userData.profile.housingType.value ? userData.profile.housingType : { key: "", value: "" });
+            setUserHasChildren(userData.profile?.children && userData.profile.children.value ? userData.profile.children : { key: "", value: "" });
             
-            // Use mock data if no userData tags are available (development mode)
-            setNationalityTags(userData.nationalityTags || mockNationalityTags);
-            setJobTags(userData.jobTags || mockJobTags);
-            setJobTypeTags(userData.jobTypeTags || mockJobTypeTags);
-            setWorkTimeTags(userData.workTimeTags || mockWorkTimeTags);
-            setRemoteTypeTags(userData.remoteTypeTags || mockRemoteTypeTags);
-            setYearsExperienceTags(userData.yearsExperienceTags || mockYearsExperienceTags);
-            setAgeTags(userData.ageTags || mockAgeTags);
-            setLivingStatusTags(userData.livingStatusTags || mockLivingStatusTags);
-            setHousingTypeTags(userData.housingTypeTags || mockHousingTypeTags);
-            setHasChildrenTags(userData.hasChildrenTags || mockHasChildrenTags);
+            // Use tags from userData.tags or fallback to mock data
+            setNationalityTags(userData.tags?.nationalityTags || mockNationalityTags);
+            setJobTags(userData.tags?.jobTags || mockJobTags);
+            setJobTypeTags(userData.tags?.jobTypeTags || mockJobTypeTags);
+            setWorkTimeTags(userData.tags?.workTimeTags || mockWorkTimeTags);
+            setRemoteTypeTags(userData.tags?.remoteTypeTags || mockRemoteTypeTags);
+            setYearsExperienceTags(userData.tags?.yearsOfExperienceTags || mockYearsExperienceTags);
+            setAgeTags(userData.tags?.ageTags || mockAgeTags);
+            setLivingStatusTags(userData.tags?.livingSituationTags || mockLivingStatusTags);
+            setHousingTypeTags(userData.tags?.housingTypeTags || mockHousingTypeTags);
+            setHasChildrenTags(userData.tags?.childrenTags || mockHasChildrenTags);
         } else {
             // Mock user when no userData is available
             setUserId('00000');
@@ -301,11 +301,11 @@ const ProfilePage = () => {
                 job_country: userWhereWorks.key,
                 work_time: userWorkTime.key,
                 remote_type: userRemoteType.key,
-                years_experience: userYearsExperience.key,
+                years_of_experience: userYearsExperience.key,
                 age: userAge.key,
-                living_status: userLivingStatus.key,
+                living_situation: userLivingStatus.key,
                 housing_type: userHousingType.key,
-                has_children: userHasChildren.key
+                children: userHasChildren.key
             };
             const response = await axios.post('/user/set', data, { withCredentials: true });
             if (response.status === 200) {

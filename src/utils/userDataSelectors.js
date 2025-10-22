@@ -262,3 +262,52 @@ export const getBalanceGrowth12Months = (userData) => {
   if (balance12MonthsAgo === 0 || currentBalance === 0) return 0;
   return ((currentBalance - balance12MonthsAgo) / balance12MonthsAgo) * 100;
 };
+
+// Chart data selectors
+export const getBalanceChartData = (userData) => {
+  const balances = userData?.balances || [];
+  const currentDate = new Date();
+  
+  // Get last 12 months data in reverse order (oldest to newest for charts)
+  return balances.slice(0, 12).reverse().map((monthData, i) => {
+    const monthOffset = 11 - i;
+    const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - monthOffset, 1);
+    const monthString = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+    
+    const balance = monthData?.balance || {};
+    const total = (balance.cash || 0) + (balance.digitalServices || 0) + (balance.stocks || 0) + 
+                  (balance.bank || 0) + (balance.crypto || 0) + (balance.etf || 0) + 
+                  (balance.bitcoin || 0) + (balance.bonds || 0) + (balance.funds || 0) + 
+                  (balance.gold || 0) + (balance.emergencyFund || 0);
+    
+    return {
+      name: monthString,
+      cash: balance.cash || 0,
+      digitalServices: balance.digitalServices || 0,
+      stocks: balance.stocks || 0,
+      bank: balance.bank || 0,
+      crypto: balance.crypto || 0,
+      etf: balance.etf || 0,
+      bitcoin: balance.bitcoin || 0,
+      bonds: balance.bonds || 0,
+      funds: balance.funds || 0,
+      gold: balance.gold || 0,
+      emergencyFund: balance.emergencyFund || 0,
+      total: total,
+      amt: 2400, // Legacy property for compatibility
+      // Add all properties with "Real" suffix for backward compatibility
+      cashReal: balance.cash || 0,
+      digitalServicesReal: balance.digitalServices || 0,
+      stocksReal: balance.stocks || 0,
+      bankReal: balance.bank || 0,
+      cryptoReal: balance.crypto || 0,
+      etfReal: balance.etf || 0,
+      bitcoinReal: balance.bitcoin || 0,
+      bondsReal: balance.bonds || 0,
+      fundsReal: balance.funds || 0,
+      goldReal: balance.gold || 0,
+      emergencyFundReal: balance.emergencyFund || 0,
+      month: monthString // Legacy property for compatibility
+    };
+  });
+};

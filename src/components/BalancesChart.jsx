@@ -17,6 +17,7 @@ import { BsFiletypeCsv } from "react-icons/bs";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
+import { getBalanceChartData } from '../utils/userDataSelectors.js';
 
 /**
  * Componente unificato per grafici dei bilanci
@@ -105,7 +106,9 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     const fetchData = async () => {
       if (userData) {
         try {
-          setLast12MonthsData(userData ? userData.last12MonthsData : []);
+          // Use the new selector to get chart data
+          const chartData = getBalanceChartData(userData);
+          setLast12MonthsData(chartData);
         } catch (error) {
           console.error('Errore durante le operazioni:', error);
         }

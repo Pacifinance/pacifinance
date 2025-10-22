@@ -14,7 +14,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
 import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
-import { getIncomesArray, getOutflowsArray } from '../utils/userDataSelectors';
+import { getIncomesArray, getOutflowsArray, getBalanceChartData } from '../utils/userDataSelectors';
 
 const StatsContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -499,7 +499,7 @@ export default function StatsCharts() {
     };
     
     const hasData = userData && (
-        (userData.last12MonthsData && userData.last12MonthsData.length > 0) ||
+        (getBalanceChartData(userData) && getBalanceChartData(userData).length > 0) ||
         (getIncomesArray(userData) && getIncomesArray(userData).length > 0) ||
         (getOutflowsArray(userData) && getOutflowsArray(userData).length > 0)
     );

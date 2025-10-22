@@ -265,7 +265,7 @@ const generateSampleGoals = (userData, language) => {
   ];
 };
 
-const GoalTracker = ({ theme, userData }) => {
+const GoalTracker = ({ theme, userData, isHidden = false }) => {
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [goals, setGoals] = useState([]);
@@ -383,7 +383,7 @@ const GoalTracker = ({ theme, userData }) => {
               </GoalHeader>
               
               <GoalContent theme={theme}>
-                <div className="goal-title">{goal.name}</div>
+                <div className="goal-title">{isHidden ? '****' : goal.name}</div>
                 <div className="goal-description" style={{ marginBottom: '1rem', fontSize: '0.8rem', opacity: '0.8' }}>
                   {language === 'it' ? 'Scadenza' : 'Deadline'}: {deadlineDate.toLocaleDateString('it-IT')}
                 </div>
@@ -394,10 +394,10 @@ const GoalTracker = ({ theme, userData }) => {
                 
                 <ProgressStats theme={theme}>
                   <div className="progress-text">
-                    {formatCurrency(goal.current)} / {formatCurrency(goal.target)}
+                    {isHidden ? '**** / ****' : `${formatCurrency(goal.current)} / ${formatCurrency(goal.target)}`}
                   </div>
                   <div className="progress-percentage">
-                    {progress.toFixed(1)}%
+                    {isHidden ? '****' : `${progress.toFixed(1)}%`}
                   </div>
                 </ProgressStats>
               </GoalContent>

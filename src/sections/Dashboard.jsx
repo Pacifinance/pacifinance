@@ -913,10 +913,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 </ModernChartsSection>
 
                 {/* Financial Insights Section */}
-                <FinancialInsights theme={theme} userData={userData} />
+                <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
 
                 {/* Goal Tracking Section */}
-                <GoalTracker theme={theme} userData={userData} />
+                <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
 
                 </ResponsivePadding>
             </DashboardContent>

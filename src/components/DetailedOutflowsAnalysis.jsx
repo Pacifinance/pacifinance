@@ -472,7 +472,7 @@ const RecurringSection = styled.div`
   }
 `;
 
-export default function DetailedOutflowAnalysis({ theme, userData, language = 'it' }) {
+export default function DetailedOutflowAnalysis({ theme, userData, language = 'it', isHidden = false }) {
   const t = languages[language].graphs.statsOutflows.outflowAnalysis;
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
@@ -771,7 +771,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
           <div className="icon">
             <BarChart3 size={24} />
           </div>
-          <div className="value">{formatCurrency(overview.currentMonthTotal)}</div>
+          <div className="value">{isHidden ? '****' : formatCurrency(overview.currentMonthTotal)}</div>
           <div className="label">{t.currentMonthExpenses}</div>
         </OverviewCard>
 
@@ -779,7 +779,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
           <div className="icon">
             <Activity size={24} />
           </div>
-          <div className="value">{overview.totalTransactions}</div>
+          <div className="value">{isHidden ? '****' : overview.totalTransactions}</div>
           <div className="label">{t.totalTransactions}</div>
         </OverviewCard>
 
@@ -787,7 +787,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
           <div className="icon">
             <TrendingUp size={24} />
           </div>
-          <div className="value">{formatCurrency(overview.monthlyAverage)}</div>
+          <div className="value">{isHidden ? '****' : formatCurrency(overview.monthlyAverage)}</div>
           <div className="label">{t.monthlyAverage12M}</div>
         </OverviewCard>
 
@@ -795,7 +795,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
           <div className="icon">
             <Target size={24} />
           </div>
-          <div className="value">{recurringExpenses.length}</div>
+          <div className="value">{isHidden ? '****' : recurringExpenses.length}</div>
           <div className="label">{t.recurringExpenses}</div>
         </OverviewCard>
       </OverviewGrid>
@@ -819,9 +819,9 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                   </div>
                 </div>
                 <div className="category-amount">
-                  <div className="amount">{formatCurrency(data.currentAmount)}</div>
+                  <div className="amount">{isHidden ? '****' : formatCurrency(data.currentAmount)}</div>
                   <div className="percentage">
-                    {((data.currentAmount / overview.currentMonthTotal) * 100).toFixed(1)}%
+                    {isHidden ? '****' : `${((data.currentAmount / overview.currentMonthTotal) * 100).toFixed(1)}%`}
                   </div>
                 </div>
               </CategoryHeader>
@@ -834,7 +834,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                       trend={getTrendType(data.monthlyChange)}
                     >
                       {getTrendIcon(data.monthlyChange)}
-                      {formatPercentage(data.monthlyChange)}
+                      {isHidden ? '****' : formatPercentage(data.monthlyChange)}
                     </TrendIndicator>
                   </div>
                   <div className="stat-label">{t.vsPrevMonth}</div>
@@ -847,19 +847,19 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                       trend={getTrendType(data.averageChange)}
                     >
                       {getTrendIcon(data.averageChange)}
-                      {formatPercentage(data.averageChange)}
+                      {isHidden ? '****' : formatPercentage(data.averageChange)}
                     </TrendIndicator>
                   </div>
                   <div className="stat-label">{t.vs12MAvg}</div>
                 </StatItem>
 
                 <StatItem theme={theme}>
-                  <div className="stat-value">{data.transactionCount}</div>
+                  <div className="stat-value">{isHidden ? '****' : data.transactionCount}</div>
                   <div className="stat-label">{t.transactions}</div>
                 </StatItem>
 
                 <StatItem theme={theme}>
-                  <div className="stat-value">{formatCurrency(data.avgTransactionAmount)}</div>
+                  <div className="stat-value">{isHidden ? '****' : formatCurrency(data.avgTransactionAmount)}</div>
                   <div className="stat-label">{t.avgAmount}</div>
                 </StatItem>
               </CategoryStats>
@@ -881,14 +881,14 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
             <div className="icon">
               <Repeat size={24} />
             </div>
-            <div className="value">{subscriptionPayments.count}</div>
+            <div className="value">{isHidden ? '****' : subscriptionPayments.count}</div>
             <div className="label">{t.activeSubscriptions}</div>
           </OverviewCard>
           <OverviewCard theme={theme}>
             <div className="icon">
               <Calendar size={24} />
             </div>
-            <div className="value">{formatCurrency(subscriptionPayments.total)}</div>
+            <div className="value">{isHidden ? '****' : formatCurrency(subscriptionPayments.total)}</div>
             <div className="label">{t.monthlyRecurringSpending}</div>
           </OverviewCard>
           <OverviewCard theme={theme}>
@@ -896,10 +896,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               <Target size={24} />
             </div>
             <div className="value">
-              {overview.currentMonthTotal > 0 ? 
+              {isHidden ? '****' : (overview.currentMonthTotal > 0 ? 
                 `${((subscriptionPayments.total / overview.currentMonthTotal) * 100).toFixed(1)}%` : 
                 '0%'
-              }
+              )}
             </div>
             <div className="label">{t.budgetImpact}</div>
           </OverviewCard>
@@ -918,26 +918,26 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                   <div className="payment-info">
                     <div className="payment-name">{data.name || methodKey}</div>
                     <div className="payment-subtitle">
-                      {formatCurrency(data.total || 0)} • {data.count || 0} {t.transactions.toLowerCase()}
+                      {isHidden ? '**** • ****' : `${formatCurrency(data.total || 0)} • ${data.count || 0} ${t.transactions.toLowerCase()}`}
                     </div>
                   </div>
                 </div>
 
                 <CategoryStats theme={theme}>
                   <StatItem theme={theme}>
-                    <div className="stat-value">{formatCurrency(data.total)}</div>
+                    <div className="stat-value">{isHidden ? '****' : formatCurrency(data.total)}</div>
                     <div className="stat-label">{t.total}</div>
                   </StatItem>
 
                   <StatItem theme={theme}>
                     <div className="stat-value">
-                      {((data.total / overview.currentMonthTotal) * 100).toFixed(1)}%
+                      {isHidden ? '****' : `${((data.total / overview.currentMonthTotal) * 100).toFixed(1)}%`}
                     </div>
                     <div className="stat-label">{t.ofTotal}</div>
                   </StatItem>
 
                   <StatItem theme={theme}>
-                    <div className="stat-value">{formatCurrency(data.total / data.count)}</div>
+                    <div className="stat-value">{isHidden ? '****' : formatCurrency(data.total / data.count)}</div>
                     <div className="stat-label">{t.avgAmount}</div>
                   </StatItem>
                 </CategoryStats>
@@ -968,7 +968,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                         }}
                       >
                         <span>{categoryData.name || categoryKey}</span>
-                        <span>{formatCurrency(categoryData.amount || 0)}</span>
+                        <span>{isHidden ? '****' : formatCurrency(categoryData.amount || 0)}</span>
                       </div>
                     ))
                   }
@@ -1001,7 +1001,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                       )}
                     </div>
                     <div className="recurring-amount">
-                      {formatCurrency(outflow.amount)}
+                      {isHidden ? '****' : formatCurrency(outflow.amount)}
                       {outflow.isSubscription && (
                         <div style={{ fontSize: '0.7rem', color: theme.buttonBackgroundColor }}>
                           🔄 {t.subscription}
@@ -1018,7 +1018,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               color: 'white',
               textAlign: 'center'
             }}>
-              {t.totalMonthlyRecurring} {formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
+              {t.totalMonthlyRecurring} {isHidden ? '****' : formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
             </div>
           </RecurringSection>
         )}

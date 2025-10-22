@@ -159,7 +159,7 @@ const ViewMoreButton = styled.button`
 `;
 
 // Funzione per generare insights basati sui dati utente
-const generateInsights = (userData, language) => {
+const generateInsights = (userData, language, isHidden) => {
   if (!userData || !userData.assets) return [];
   
   const insights = [];
@@ -180,9 +180,9 @@ const generateInsights = (userData, language) => {
       type: languages[language].graphs.insights.spendingRate.title,
       icon: BsArrowDownLeft,
       color: level === 'low' ? '#10b981' : level === 'moderate' ? '#f59e0b' : '#ef4444',
-      title: languages[language].graphs.insights.spendingRate[level].replace('{percentage}', spendingRate.toFixed(1)),
+      title: languages[language].graphs.insights.spendingRate[level].replace('{percentage}', isHidden ? '****' : spendingRate.toFixed(1)),
       description: languages[language].graphs.insights.spendingRate.recommendation[level],
-      value: `€${totalExpenses.toLocaleString()}`
+      value: isHidden ? '****' : `€${totalExpenses.toLocaleString()}`
     });
   }
 
@@ -201,9 +201,9 @@ const generateInsights = (userData, language) => {
       type: languages[language].graphs.insights.diversification.title,
       icon: FaChartLine,
       color: level === 'excellent' ? '#10b981' : level === 'good' ? '#f59e0b' : '#ef4444',
-      title: `Portfolio: €${investmentTotal.toLocaleString()}`,
+      title: isHidden ? `Portfolio: ****` : `Portfolio: €${investmentTotal.toLocaleString()}`,
       description: languages[language].graphs.insights.diversification.recommendation[level],
-      value: `${((investmentTotal / totalAssets) * 100).toFixed(1)}%`
+      value: isHidden ? '****' : `${((investmentTotal / totalAssets) * 100).toFixed(1)}%`
     });
   }
 
@@ -222,15 +222,15 @@ const generateInsights = (userData, language) => {
     icon: BsGraphUp,
     color: liquidityLevel === 'adequate' ? '#10b981' 
          : liquidityLevel === 'low' ? '#ef4444' : '#f59e0b',
-    title: `${languages[language].graphs.insights.liquidity.title}: ${liquidityRatio.toFixed(1)}%`,
+    title: `${languages[language].graphs.insights.liquidity.title}: ${isHidden ? '****' : liquidityRatio.toFixed(1)}%`,
     description: languages[language].graphs.insights.liquidity.recommendation[liquidityLevel],
-    value: `€${liquidTotal.toLocaleString()}`
+    value: isHidden ? '****' : `€${liquidTotal.toLocaleString()}`
   });
 
   return insights.slice(0, 4); // Mostra max 4 insights
 };
 
-const FinancialInsights = ({ theme, userData }) => {
+const FinancialInsights = ({ theme, userData, isHidden = false }) => {
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [insights, setInsights] = useState([]);
@@ -238,10 +238,10 @@ const FinancialInsights = ({ theme, userData }) => {
 
   useEffect(() => {
     if (userData) {
-      const generatedInsights = generateInsights(userData, language);
+      const generatedInsights = generateInsights(userData, language, isHidden);
       setInsights(generatedInsights);
     }
-  }, [userData, language]);
+  }, [userData, language, isHidden]);
 
   if (!insights.length) return null;
 

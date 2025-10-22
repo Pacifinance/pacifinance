@@ -681,6 +681,7 @@ export default function StatsCharts() {
                             theme={theme} 
                             userData={userData} 
                             language={language}
+                            isHidden={isHidden}
                         />
                     </div>
                 </SectionContainer>
@@ -689,7 +690,7 @@ export default function StatsCharts() {
     };
 
     const renderInsightsContent = () => {
-        return <AdvancedInsightsSection theme={theme} userData={userData} />;
+        return <AdvancedInsightsSection theme={theme} userData={userData} isHidden={isHidden} />;
     };
 
     return (

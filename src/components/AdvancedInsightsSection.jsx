@@ -77,7 +77,7 @@ const ContentContainer = styled.div`
   margin: 0 auto;
 `;
 
-const AdvancedInsightsSection = ({ theme, userData }) => {
+const AdvancedInsightsSection = ({ theme, userData, isHidden = false }) => {
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [activeTab, setActiveTab] = useState('insights');
@@ -121,11 +121,11 @@ const AdvancedInsightsSection = ({ theme, userData }) => {
         </TabsContainer>
         
         {activeTab === 'insights' && (
-          <FinancialInsights theme={theme} userData={userData} />
+          <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
         )}
         
         {activeTab === 'goals' && (
-          <GoalTracker theme={theme} userData={userData} />
+          <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
         )}
         
         {activeTab === 'predictions' && (

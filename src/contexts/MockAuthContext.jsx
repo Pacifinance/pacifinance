@@ -188,18 +188,18 @@ export const mockUserData = {
         
         return {
             month: baseDate.toISOString().split('T')[0].slice(0, 7),
-            totalReal: 40000 + Math.sin(i * 0.5) * 10000 + Math.random() * 5000,
-            cashReal: isCurrentMonth ? 500 : 400 + Math.random() * 200,
-            bankReal: isCurrentMonth ? 20000 : 18000 + Math.sin(i * 0.6) * 5000,
-            stocksReal: isCurrentMonth ? 8000 : 7000 + Math.sin(i * 0.7) * 2000,
-            etfReal: isCurrentMonth ? 25000 : 23000 + Math.sin(i * 0.8) * 3000,
-            bitcoinReal: Math.random() * 1000,
-            cryptoReal: Math.random() * 500,
-            digitalServicesReal: isCurrentMonth ? 0 : Math.random() * 100,
-            bondsReal: isCurrentMonth ? 15000 : Math.max(0, 8000 + (i * 800) + Math.random() * 1000),
-            fundsReal: isCurrentMonth ? 12500 : Math.max(0, 6000 + (i * 600) + Math.random() * 800),
-            goldReal: isCurrentMonth ? 8000 : Math.max(0, 3000 + (i * 450) + Math.random() * 600),
-            emergencyFundReal: isCurrentMonth ? 5000 : Math.max(2000, 4000 - (i * 100) + Math.random() * 500)
+            totalValue: 40000 + Math.sin(i * 0.5) * 10000 + Math.random() * 5000,
+            cashValue: isCurrentMonth ? 500 : 400 + Math.random() * 200,
+            bankValue: isCurrentMonth ? 20000 : 18000 + Math.sin(i * 0.6) * 5000,
+            stocksValue: isCurrentMonth ? 8000 : 7000 + Math.sin(i * 0.7) * 2000,
+            etfValue: isCurrentMonth ? 25000 : 23000 + Math.sin(i * 0.8) * 3000,
+            bitcoinValue: Math.random() * 1000,
+            cryptoValue: Math.random() * 500,
+            digitalServicesValue: isCurrentMonth ? 0 : Math.random() * 100,
+            bondsValue: isCurrentMonth ? 15000 : Math.max(0, 8000 + (i * 800) + Math.random() * 1000),
+            fundsValue: isCurrentMonth ? 12500 : Math.max(0, 6000 + (i * 600) + Math.random() * 800),
+            goldValue: isCurrentMonth ? 8000 : Math.max(0, 3000 + (i * 450) + Math.random() * 600),
+            emergencyFund: isCurrentMonth ? 5000 : Math.max(2000, 4000 - (i * 100) + Math.random() * 500)
         };
     }),
     

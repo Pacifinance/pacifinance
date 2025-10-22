@@ -250,3 +250,15 @@ export const getFormattedPreYearSameMonthDateLocalized = (userData, language = '
 export const getGoals = (userData) => userData?.goals || [];
 export const getLimits = (userData) => userData?.limits || {};
 export const getAssets = (userData) => userData?.assets || [];
+
+// Balance growth calculation
+export const getBalanceGrowth12Months = (userData) => {
+  const currentBalance = getTotalValue(userData) || 0;
+  
+  // Get balance from 12 months ago using the userData structure
+  const balances = userData?.balances || [];
+  const balance12MonthsAgo = balances[11]?.balance?.totalValue || 0; // 12th element (0-indexed)
+  
+  if (balance12MonthsAgo === 0 || currentBalance === 0) return 0;
+  return ((currentBalance - balance12MonthsAgo) / balance12MonthsAgo) * 100;
+};

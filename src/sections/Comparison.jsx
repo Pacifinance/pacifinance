@@ -8,7 +8,10 @@ import {
     getPercentageRankOnExpenses,
     getPercentageRankOnBalanceSimilar,
     getPercentageRankOnIncomesSimilar,
-    getPercentageRankOnExpensesSimilar
+    getPercentageRankOnExpensesSimilar,
+    getIncomesArray,
+    getOutflowsArray,
+    getBalanceGrowth12Months
 } from '../utils/userDataSelectors';
 import { 
   StyledMonth, 
@@ -219,6 +222,29 @@ const MetricRow = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+`;
+
+const BalanceValueContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  
+  .main-value {
+    color: ${props => props.theme.textColor};
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .growth-value {
+    color: ${props => props.growth > 0 ? '#27ae60' : props.growth < 0 ? '#e74c3c' : props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'};
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: right;
   }
 `;
 
@@ -726,25 +752,41 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     };
 
     // Mock data for comparisons - in a real app, this would come from API
-    const mockComparisonData = {
+    // Calculate 12-month averages for user
+    const userIncomesArray = getIncomesArray(userData) || [];
+    const userOutflowsArray = getOutflowsArray(userData) || [];
+    
+    const calculateAverage = (array) => {
+        const validValues = array.slice(0, 12).filter(val => val && val > 0);
+        return validValues.length > 0 ? validValues.reduce((sum, val) => sum + val, 0) / validValues.length : 0;
+    };
+
+    const mockData = {
         avgBalance: {
-            user: getTotalValue(userData) || 0,
-            similarUsers: 45000,
-            allUsers: 38000
+            user: {
+                current: getTotalValue(userData) || 0,
+                growth12Months: getBalanceGrowth12Months(userData)
+            },
+            similarUsers: {
+                current: 45000,
+                growth12Months: 8.5
+            },
+            allUsers: {
+                current: 38000,
+                growth12Months: 6.2
+            }
         },
         avgIncome: {
-            user: userData?.incomesArray?.[0] || 0,
+            user: calculateAverage(userIncomesArray),
             similarUsers: 3200,
             allUsers: 2800
         },
-        avgExpenses: {
-            user: userData?.outflowsArray?.[0] || 0,
+        avgOutflows: {
+            user: calculateAverage(userOutflowsArray),
             similarUsers: 2400,
             allUsers: 2200
         }
-    };
-
-    const formatCurrency = (value) => {
+    };    const formatCurrency = (value) => {
         if (isHidden) return '****';
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -754,17 +796,31 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         }).format(value);
     };
 
+    const formatGrowthPercentage = (value) => {
+        if (isHidden) return '****';
+        if (value === 0) return languages[language].comparison.cards.avgBalance.noGrowthData;
+        
+        const sign = value > 0 ? '+' : '';
+        return `${sign}${value.toFixed(1)}% ${languages[language].comparison.cards.avgBalance.growth12Months}`;
+    };
+
     const getComparisonIcon = (userValue, compareValue) => {
         if (userValue > compareValue) return <TrendingUpIcon style={{ color: '#27ae60' }} />;
         if (userValue < compareValue) return <TrendingDownIcon style={{ color: '#e74c3c' }} />;
         return <EqualIcon style={{ color: '#f39c12' }} />;
     };
 
+    const getBalanceComparisonIcon = (userBalance, compareBalance) => {
+        if (userBalance.current > compareBalance.current) return <TrendingUpIcon style={{ color: '#27ae60' }} />;
+        if (userBalance.current < compareBalance.current) return <TrendingDownIcon style={{ color: '#e74c3c' }} />;
+        return <EqualIcon style={{ color: '#f39c12' }} />;
+    };
+
     const generateInsights = () => {
         const insights = [];
-        const { avgBalance, avgIncome, avgExpenses } = mockComparisonData;
+        const { avgBalance, avgIncome, avgOutflows } = mockData;
         
-        if (avgBalance.user > avgBalance.similarUsers) {
+        if (avgBalance.user.current > avgBalance.similarUsers.current) {
             insights.push({
                 type: 'positive',
                 title: languages[language].comparison.insights.betterThan + ' 70% ' + languages[language].comparison.insights.ofUsers,
@@ -772,18 +828,16 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
             });
         }
         
-        if (avgExpenses.user > avgIncome.user * 0.8) {
+        if (avgOutflows.user > avgIncome.user * 0.8) {
             insights.push({
                 type: 'warning',
                 title: languages[language].comparison.tips.title,
-                description: languages[language].comparison.tips.highExpenses
+                description: languages[language].comparison.tips.highOutflows
             });
         }
         
         return insights;
-    };
-
-    const renderProfileBanner = () => (
+    };    const renderProfileBanner = () => (
         <ProfileBanner 
             theme={theme} 
             onClick={() => navigate('/profile')}
@@ -818,23 +872,38 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     </CardHeader>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgBalance.yourBalance}</span>
-                        <span className="value">
-                            {formatCurrency(mockComparisonData.avgBalance.user)}
-                        </span>
+                        <BalanceValueContainer theme={theme} growth={mockData.avgBalance.user.growth12Months}>
+                            <div className="main-value">
+                                {formatCurrency(mockData.avgBalance.user.current)}
+                            </div>
+                            <div className="growth-value">
+                                {formatGrowthPercentage(mockData.avgBalance.user.growth12Months)}
+                            </div>
+                        </BalanceValueContainer>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgBalance.avgSimilar}</span>
-                        <span className="value">
-                            {formatCurrency(mockComparisonData.avgBalance.similarUsers)}
-                            {getComparisonIcon(mockComparisonData.avgBalance.user, mockComparisonData.avgBalance.similarUsers)}
-                        </span>
+                        <BalanceValueContainer theme={theme} growth={mockData.avgBalance.similarUsers.growth12Months}>
+                            <div className="main-value">
+                                {formatCurrency(mockData.avgBalance.similarUsers.current)}
+                                {getBalanceComparisonIcon(mockData.avgBalance.user, mockData.avgBalance.similarUsers)}
+                            </div>
+                            <div className="growth-value">
+                                {formatGrowthPercentage(mockData.avgBalance.similarUsers.growth12Months)}
+                            </div>
+                        </BalanceValueContainer>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgBalance.avgAll}</span>
-                        <span className="value">
-                            {formatCurrency(mockComparisonData.avgBalance.allUsers)}
-                            {getComparisonIcon(mockComparisonData.avgBalance.user, mockComparisonData.avgBalance.allUsers)}
-                        </span>
+                        <BalanceValueContainer theme={theme} growth={mockData.avgBalance.allUsers.growth12Months}>
+                            <div className="main-value">
+                                {formatCurrency(mockData.avgBalance.allUsers.current)}
+                                {getBalanceComparisonIcon(mockData.avgBalance.user, mockData.avgBalance.allUsers)}
+                            </div>
+                            <div className="growth-value">
+                                {formatGrowthPercentage(mockData.avgBalance.allUsers.growth12Months)}
+                            </div>
+                        </BalanceValueContainer>
                     </MetricRow>
                 </ComparisonCard>
 
@@ -848,50 +917,50 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgIncome.yourIncome}</span>
                         <span className="value">
-                            {formatCurrency(mockComparisonData.avgIncome.user)}
+                            {formatCurrency(mockData.avgIncome.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgIncome.avgSimilar}</span>
                         <span className="value">
-                            {formatCurrency(mockComparisonData.avgIncome.similarUsers)}
-                            {getComparisonIcon(mockComparisonData.avgIncome.user, mockComparisonData.avgIncome.similarUsers)}
+                            {formatCurrency(mockData.avgIncome.similarUsers)}
+                            {getComparisonIcon(mockData.avgIncome.user, mockData.avgIncome.similarUsers)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgIncome.avgAll}</span>
                         <span className="value">
-                            {formatCurrency(mockComparisonData.avgIncome.allUsers)}
-                            {getComparisonIcon(mockComparisonData.avgIncome.user, mockComparisonData.avgIncome.allUsers)}
+                            {formatCurrency(mockData.avgIncome.allUsers)}
+                            {getComparisonIcon(mockData.avgIncome.user, mockData.avgIncome.allUsers)}
                         </span>
                     </MetricRow>
                 </ComparisonCard>
 
                 <ComparisonCard theme={theme} accent="#e74c3c">
                     <CardHeader theme={theme}>
-                        <h3><TrendingDownIcon /> {languages[language].comparison.cards.avgExpenses.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.avgExpenses.description}>
+                        <h3><TrendingDownIcon /> {languages[language].comparison.cards.avgOutflows.title}</h3>
+                        <Tooltip title={languages[language].comparison.cards.avgOutflows.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgExpenses.yourExpenses}</span>
+                        <span className="label">{languages[language].comparison.cards.avgOutflows.yourOutflows}</span>
                         <span className="value">
-                            {formatCurrency(mockComparisonData.avgExpenses.user)}
+                            {formatCurrency(mockData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgExpenses.avgSimilar}</span>
+                        <span className="label">{languages[language].comparison.cards.avgOutflows.avgSimilar}</span>
                         <span className="value">
-                            {formatCurrency(mockComparisonData.avgExpenses.similarUsers)}
-                            {getComparisonIcon(mockComparisonData.avgExpenses.similarUsers, mockComparisonData.avgExpenses.user)}
+                            {formatCurrency(mockData.avgOutflows.similarUsers)}
+                            {getComparisonIcon(mockData.avgOutflows.similarUsers, mockData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgExpenses.avgAll}</span>
+                        <span className="label">{languages[language].comparison.cards.avgOutflows.avgAll}</span>
                         <span className="value">
-                            {formatCurrency(mockComparisonData.avgExpenses.allUsers)}
-                            {getComparisonIcon(mockComparisonData.avgExpenses.allUsers, mockComparisonData.avgExpenses.user)}
+                            {formatCurrency(mockData.avgOutflows.allUsers)}
+                            {getComparisonIcon(mockData.avgOutflows.allUsers, mockData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                 </ComparisonCard>

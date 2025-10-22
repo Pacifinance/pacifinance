@@ -166,7 +166,7 @@ export const UserProvider = ({ children }) => {
 
             // Add computed totals to balance data
             balancesData.forEach(monthData => {
-                monthData.balance.totalReal = calculateTotal(monthData.balance);
+                monthData.balance.totalValue = calculateTotal(monthData.balance);
             });
             //************************************* EXPENSES AND INCOMES **********************************************/
 

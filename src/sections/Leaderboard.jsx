@@ -27,9 +27,9 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
         if (isExpenseTitle) {
 
           if (isRankingsAbove50) {
-            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.lowerExpense}`;
+            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.lowerOutflow}`;
           } else if (isRankingBelow20) {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherExpense}`;
+            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherOutflow}`;
           } else {
             textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.mediumRank}`;
           }
@@ -58,7 +58,7 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
         <h2>
           {safeTitle}
           {isExpenseTitle && (
-            <Tooltip title={languages[language].leaderboard.infoExpenseRank} arrow>
+            <Tooltip title={languages[language].leaderboard.infoOutflowRank} arrow>
               <InfoIcon style={{ color: 'white' }} />
             </Tooltip>
           )}
@@ -140,13 +140,13 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                       <CenteredRankings theme={theme}>
                           <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
                           <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={expenseRank} isHidden={isHidden} />
+                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.outflowRanking} rankings={expenseRank} isHidden={isHidden} />
                       </CenteredRankings>
                       <RankingsTitle style={{ color: theme.textColor }}>{languages[language].leaderboard.similarRanking} </RankingsTitle>
                       <CenteredRankings theme={theme}>
                           <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
                           <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.expenseRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} />
+                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.outflowRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} />
                       </CenteredRankings>
                   </StyledRankingPage>
             </div>

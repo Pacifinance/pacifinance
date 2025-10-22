@@ -98,7 +98,7 @@
                     "subtitle": "Basta con conti sparsi e informazioni frammentate. È tempo di avere una visione completa della tua situazione finanziaria.",
                     "privacy": {
                         "title": "Confronti Anonimi Intelligenti",
-                        "description": "Scopri come ti posizioni rispetto ad altri utenti con profilo simile. Confronta stipendi, spese e investimenti in totale anonimato per capire dove puoi migliorare.",
+                        "description": "Scopri come ti posizioni rispetto ad altri utenti con profilo simile. Confronta stipendi, uscite e investimenti in totale anonimato per capire dove puoi migliorare.",
                         "features": [
                             "• Confronti per età e professione",
                             "• Statistiche di mercato anonime",
@@ -483,18 +483,18 @@
             "statsOutflows": {
                 "title": "Statistiche Entrate e Uscite",
                 "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
-                "titleGraph2": "Distribuzione delle tue spese per categoria",
+                "titleGraph2": "Distribuzione delle tue uscite per categoria",
                 "detailedVision": "Comparazione finanziaria con i periodi precedenti",
-                "titleDetailsMonth": "Variazione entrate, spese e risparmi rispetto al mese scorso: ",
+                "titleDetailsMonth": "Variazione entrate, uscite e risparmi rispetto al mese scorso: ",
                 "variation": "Variazione ",
-                "titleDetailsYear": "Variazione entrate, spese e risparmi rispetto all'anno scorso: ",
-                "expenseAnalysis": {
+                "titleDetailsYear": "Variazione entrate, uscite e risparmi rispetto all'anno scorso: ",
+                "outflowAnalysis": {
                     "title": "Analisi Dettagliata Uscite",
                     "subtitle": "Analisi approfondita delle tue uscite per categoria, metodi di pagamento e pattern ricorrenti",
-                    "currentMonthExpenses": "Uscite Mese Corrente",
+                    "currentMonthOutflows": "Uscite Mese Corrente",
                     "totalTransactions": "Transazioni Totali",
                     "monthlyAverage12M": "Media Mensile 12M",
-                    "recurringExpenses": "Uscite Ricorrenti",
+                    "recurringOutflows": "Uscite Ricorrenti",
                     "vsPrevMonth": "vs Mese Prec.",
                     "vs12MAvg": "vs Media 12M",
                     "transactions": "Transazioni",
@@ -508,7 +508,7 @@
                     "totalMonthlyRecurring": "Totale mensile ricorrente:",
                     "times": "volte",
                     "activeSubscriptions": "Sottoscrizioni Attive",
-                    "monthlyRecurringSpending": "Spesa Mensile Ricorrente",
+                    "monthlyRecurringSpending": "Uscita Mensile Ricorrente",
                     "budgetImpact": "Impatto sul Budget",
                     "paymentTypologiesTitle": "Analisi Tipologie di Pagamento",
                     "paymentTypologiesSubtitle": "Categorizzazione degli acquisti per tipologia",
@@ -530,14 +530,14 @@
                 "title": "Insights Finanziari",
                 "subtitle": "Analisi intelligente dei tuoi dati finanziari",
                 "spendingRate": {
-                    "title": "Velocità di spesa",
+                    "title": "Velocità di uscita",
                     "low": "Spendi il {percentage}% delle tue entrate",
                     "moderate": "Spendi il {percentage}% delle tue entrate", 
                     "high": "Spendi il {percentage}% delle tue entrate",
                     "recommendation": {
                         "low": "Ottima gestione! Continua a risparmiare",
                         "moderate": "Buona gestione, considera di aumentare i risparmi",
-                        "high": "Attenzione: potresti ridurre alcune spese"
+                        "high": "Attenzione: potresti ridurre alcune uscite"
                     }
                 },
                 "diversification": {
@@ -557,7 +557,7 @@
                     "adequate": "Liquidità adeguata",
                     "high": "Liquidità elevata",
                     "recommendation": {
-                        "low": "Mantieni almeno 3-6 mesi di spese in liquidità",
+                        "low": "Mantieni almeno 3-6 mesi di uscite in liquidità",
                         "adequate": "La tua riserva di emergenza è adeguata",
                         "high": "Potresti investire parte della liquidità in eccesso"
                     }
@@ -682,8 +682,8 @@
                     "description": "Scopri pattern e opportunità"
                 },
                 "spending": {
-                    "title": "Analisi Spese",
-                    "description": "Confronta le tue abitudini di spesa"
+                    "title": "Analisi Uscite",
+                    "description": "Confronta le tue abitudini di uscita"
                 },
                 "benchmarks": {
                     "title": "Benchmark",
@@ -693,22 +693,24 @@
             "cards": {
                 "avgBalance": {
                     "title": "Patrimonio Medio",
-                    "description": "Confronta il tuo patrimonio con utenti simili",
+                    "description": "Confronta il tuo patrimonio attuale e la crescita negli ultimi 12 mesi con altri utenti",
                     "yourBalance": "Il Tuo Patrimonio",
                     "avgSimilar": "Media Utenti Simili",
-                    "avgAll": "Media Tutti gli Utenti"
+                    "avgAll": "Media Tutti gli Utenti",
+                    "growth12Months": "ultimi 12 mesi",
+                    "noGrowthData": "Dati crescita non disponibili"
                 },
                 "avgIncome": {
                     "title": "Entrate Mensili",
-                    "description": "Confronta le tue entrate mensili",
-                    "yourIncome": "Le Tue Entrate",
+                    "description": "Confronta le tue entrate mensili medie degli ultimi 12 mesi",
+                    "yourIncome": "Media tue entrate",
                     "avgSimilar": "Media Utenti Simili",
                     "avgAll": "Media Tutti gli Utenti"
                 },
-                "avgExpenses": {
-                    "title": "Spese Mensili",
-                    "description": "Confronta le tue spese mensili",
-                    "yourExpenses": "Le Tue Spese",
+                "avgOutflows": {
+                    "title": "Uscite Mensili",
+                    "description": "Confronta le tue uscite mensili medie degli ultimi 12 mesi",
+                    "yourOutflows": "Media tue uscite",
                     "avgSimilar": "Media Utenti Simili",
                     "avgAll": "Media Tutti gli Utenti"
                 },
@@ -723,7 +725,7 @@
                     "comingSoon": "Prossimamente"
                 },
                 "spendingCategories": {
-                    "title": "Spese per Categoria",
+                    "title": "Uscite per Categoria",
                     "description": "Dove spendi i tuoi soldi",
                     "comingSoon": "Prossimamente"
                 }
@@ -742,7 +744,7 @@
             },
             "tips": {
                 "title": "Suggerimenti Personalizzati",
-                "highExpenses": "Considera di rivedere le tue spese - sono sopra la media per il tuo livello di reddito",
+                "highOutflows": "Considera di rivedere le tue uscite - sono sopra la media per il tuo livello di reddito",
                 "lowSavings": "Prova ad aumentare il tuo tasso di risparmio per una migliore salute finanziaria",
                 "goodBalance": "Ottimo lavoro! Il tuo equilibrio finanziario è sopra la media",
                 "diversify": "Considera di diversificare i tuoi asset per una migliore gestione del rischio"
@@ -756,15 +758,15 @@
             "similarRanking": "Classifiche utenti simili: ",
             "balanceRanking": "Classifica Patrimonio ",
             "incomeRanking": "Classifica Entrate ",
-            "expenseRanking": "Classifica Uscite ",
-            "infoExpenseRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
+            "outflowRanking": "Classifica Uscite ",
+            "infoOutflowRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
             "noRank": "Rankings non disponibili",
             "compliments": "Complimenti! Sei nella top ",
             "superCompliments": "Incredibile!! Sei nella top ",
             "top": "Sei nella top ",
             "users": " degli utenti!",
-            "lowerExpense": " Sei tra gli utenti che spendono di meno!",
-            "higherExpense": " Attenzione! Sei tra gli utenti che spendono di più!",
+            "lowerOutflow": " Sei tra gli utenti che spendono di meno!",
+            "higherOutflow": " Attenzione! Sei tra gli utenti che spendono di più!",
             "higherIncome": " Sei tra gli utenti che guadagnano di più!",
             "mediumRank": "Sei nella media degli utenti!",
             "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio.",
@@ -777,7 +779,7 @@
                 "similarSubtitle": "Confronto con profili simili al tuo",
                 "balance": "Patrimonio",
                 "income": "Entrate",
-                "expenses": "Uscite",
+                "outflows": "Uscite",
                 "topPerformance": "Ottima posizione!",
                 "goodPerformance": "Buona posizione",
                 "canImprove": "Spazio per crescere",
@@ -793,10 +795,10 @@
                         "medium": "Buone entrate, hai una base solida",
                         "low": "Ci sono opportunità di crescita per le tue entrate"
                     },
-                    "expenses": {
-                        "top": "Eccellente controllo delle spese!",
-                        "medium": "Gestisci bene le tue spese",
-                        "low": "Potresti ottimizzare alcune spese, ma sei sulla buona strada"
+                    "outflows": {
+                        "top": "Eccellente controllo delle uscite!",
+                        "medium": "Gestisci bene le tue uscite",
+                        "low": "Potresti ottimizzare alcune uscite, ma sei sulla buona strada"
                     }
                 },
                 "motivational": {
@@ -804,19 +806,19 @@
                         "title": "🎉 Fantastico!",
                         "balance": "La tua gestione del patrimonio è eccellente! Continua con questa strategia vincente.",
                         "income": "Le tue entrate sono ottime! Hai costruito una base finanziaria solida.",
-                        "expenses": "Controlli benissimo le spese! La tua disciplina finanziaria è ammirevole."
+                        "outflows": "Controlli benissimo le uscite! La tua disciplina finanziaria è ammirevole."
                     },
                     "medium": {
                         "title": "👍 Sulla buona strada!",
                         "balance": "Stai costruendo bene il tuo patrimonio. Con costanza raggiungerai i tuoi obiettivi!",
                         "income": "Hai una buona base di entrate. Continua a lavorare sui tuoi obiettivi finanziari!",
-                        "expenses": "Gestisci bene le tue spese. Piccoli aggiustamenti possono portare grandi risultati!"
+                        "outflows": "Gestisci bene le tue uscite. Piccoli aggiustamenti possono portare grandi risultati!"
                     },
                     "low": {
                         "title": "💪 Opportunità di crescita!",
                         "balance": "Ogni grande patrimonio inizia con piccoli passi. Continua a risparmiare, anche poco alla volta!",
                         "income": "Ci sono opportunità per aumentare le tue entrate. Considera nuove strade e competenze!",
-                        "expenses": "Rivedere alcune spese può liberare risorse preziose. Un budget dettagliato può aiutarti!"
+                        "outflows": "Rivedere alcune uscite può liberare risorse preziose. Un budget dettagliato può aiutarti!"
                     }
                 },
                 "popup": {
@@ -897,9 +899,9 @@
                         "intro": "Il risparmio è la base della salute finanziaria. Prima di investire, è fondamentale avere un fondo di emergenza e obiettivi chiari.",
                         "emergency_fund": {
                             "title": "Fondo di Emergenza",
-                            "description": "Un fondo di emergenza dovrebbe coprire 3-6 mesi di spese. Va tenuto in conti deposito o conti correnti facilmente accessibili.",
+                            "description": "Un fondo di emergenza dovrebbe coprire 3-6 mesi di uscite. Va tenuto in conti deposito o conti correnti facilmente accessibili.",
                             "tips": [
-                                "Calcola le tue spese mensili essenziali",
+                                "Calcola le tue uscite mensili essenziali",
                                 "Moltiplica per 3-6 mesi",
                                 "Tieni questi soldi in conti sicuri e liquidi",
                                 "Non toccare tranne per vere emergenze"
@@ -918,7 +920,7 @@
                                 "Regola del 50/30/20: 50% bisogni, 30% desideri, 20% risparmio",
                                 "Paga te stesso per primo: risparmia appena ricevi lo stipendio",
                                 "Automatizza i risparmi con bonifici automatici",
-                                "Traccia tutte le spese per 1 mese per capire dove vanno i soldi",
+                                "Traccia tutte le uscite per 1 mese per capire dove vanno i soldi",
                                 "Elimina abbonamenti non utilizzati",
                                 "Confronta prezzi prima di acquisti importanti"
                             ]
@@ -927,15 +929,15 @@
                 },
                 "budgeting": {
                     "title": "Gestione Budget",
-                    "subtitle": "Come pianificare e controllare le tue spese",
+                    "subtitle": "Come pianificare e controllare le tue uscite",
                     "content": {
                         "intro": "Un budget ti aiuta a controllare dove vanno i tuoi soldi e a raggiungere i tuoi obiettivi finanziari. Non deve essere rigido, ma una guida flessibile.",
                         "budget_creation": {
                             "title": "Come Creare un Budget",
                             "steps": [
                                 "1. Calcola il tuo reddito netto mensile",
-                                "2. Elenca tutte le spese fisse (affitto, utenze, assicurazioni)",
-                                "3. Stima le spese variabili (cibo, trasporti, svago)",
+                                "2. Elenca tutte le uscite fisse (affitto, utenze, assicurazioni)",
+                                "3. Stima le uscite variabili (cibo, trasporti, svago)",
                                 "4. Assegna una percentuale al risparmio",
                                 "5. Monitora mensilmente e aggiusta se necessario"
                             ]
@@ -949,13 +951,13 @@
                                 "pay_yourself_first": "Paga te stesso per primo: Risparmia prima di spendere"
                             }
                         },
-                        "expense_tracking": {
-                            "title": "Tracciamento Spese",
+                        "outflow_tracking": {
+                            "title": "Tracciamento Uscite",
                             "tips": [
                                 "Usa app come PaciFinance per monitorare automaticamente",
                                 "Controlla il conto almeno settimanalmente",
-                                "Categorizza le spese per identificare pattern",
-                                "Fai foto degli scontrini per spese in contanti",
+                                "Categorizza le uscite per identificare pattern",
+                                "Fai foto degli scontrini per uscite in contanti",
                                 "Rivedi mensilmente e identifica aree di miglioramento"
                             ]
                         }
@@ -977,10 +979,10 @@
                         "tax_optimization": {
                             "title": "Ottimizzazione Fiscale",
                             "tips": [
-                                "Sfrutta detrazioni per spese mediche e istruzione",
+                                "Sfrutta detrazioni per uscite mediche e istruzione",
                                 "Considera fondi pensione per ridurre il carico fiscale",
                                 "Valuta benefits aziendali (buoni pasto, auto aziendali)",
-                                "Tieni traccia di tutte le spese detraibili",
+                                "Tieni traccia di tutte le uscite detraibili",
                                 "Consulta un commercialista per situazioni complesse"
                             ]
                         },
@@ -1053,7 +1055,7 @@
                         "financial_independence": {
                             "title": "Indipendenza Finanziaria",
                             "description": "L'obiettivo finale: avere abbastanza investimenti da vivere dei rendimenti senza lavorare.",
-                            "rule_25": "Regola del 25: Accumula 25 volte le tue spese annuali in investimenti",
+                            "rule_25": "Regola del 25: Accumula 25 volte le tue uscite annuali in investimenti",
                             "withdrawal_rate": "Regola del 4%: Preleva max 4% all'anno dal portafoglio per mantenerlo nel tempo"
                         }
                     }
@@ -1358,7 +1360,7 @@
                     },
                     "analytics": {
                         "title": "Complete Unified View",
-                        "description": "See all your accounts, investments, and expenses in one dashboard. No more switching between apps to understand your financial situation.",
+                        "description": "See all your accounts, investments, and outflows in one dashboard. No more switching between apps to understand your financial situation.",
                         "features": [
                             "• Multi-platform integration",
                             "• Unified dashboard",
@@ -1714,12 +1716,12 @@
             "emptyState": {
                 "title": "No data available",
                 "balanceDescription": "Start entering your financial data to view detailed charts and statistics of your assets.",
-                "incomeOutflowDescription": "Add your monthly income and expenses to view detailed charts and comparative analysis."
+                "incomeOutflowDescription": "Add your monthly income and outflows to view detailed charts and comparative analysis."
             },
             "descriptions": {
                 "balanceOverview": "Visualize the evolution of your assets over time with interactive charts",
                 "balanceDetails": "Detailed analysis of monthly and yearly variations",
-                "incomeOutflowOverview": "Monitor income and expenses for optimal financial management",
+                "incomeOutflowOverview": "Monitor income and outflows for optimal financial management",
                 "incomeOutflowDetails": "Compare current data with previous periods"
             },
             "statsBalance": {
@@ -1739,13 +1741,13 @@
                 "titleDetailsMonth": "Your income, outflows and savings compared to last month ",
                 "variation": "Variation ",
                 "titleDetailsYear": "Your income, outflows and savings compared to last year ",
-                "expenseAnalysis": {
+                "outflowAnalysis": {
                     "title": "Detailed Outflow Analysis",
                     "subtitle": "In-depth analysis of your outflows by category, payment methods and recurring patterns",
-                    "currentMonthExpenses": "Current Month Outflows",
+                    "currentMonthOutflows": "Current Month Outflows",
                     "totalTransactions": "Total Transactions", 
                     "monthlyAverage12M": "12M Monthly Average",
-                    "recurringExpenses": "Recurring Outflows",
+                    "recurringOutflows": "Recurring Outflows",
                     "vsPrevMonth": "vs Prev Month",
                     "vs12MAvg": "vs 12M Avg",
                     "transactions": "Transactions",
@@ -1788,7 +1790,7 @@
                     "recommendation": {
                         "low": "Great management! Keep saving",
                         "moderate": "Good management, consider increasing savings",
-                        "high": "Attention: you might reduce some expenses"
+                        "high": "Attention: you might reduce some outflows"
                     }
                 },
                 "diversification": {
@@ -1808,7 +1810,7 @@
                     "adequate": "Adequate liquidity",
                     "high": "High liquidity",
                     "recommendation": {
-                        "low": "Keep at least 3-6 months of expenses in liquidity",
+                        "low": "Keep at least 3-6 months of outflows in liquidity",
                         "adequate": "Your emergency reserve is adequate",
                         "high": "You could invest part of the excess liquidity"
                     }
@@ -1946,22 +1948,24 @@
             "cards": {
                 "avgBalance": {
                     "title": "Average Balance",
-                    "description": "Compare your balance with similar users",
+                    "description": "Compare your current balance and 12-month growth with other users",
                     "yourBalance": "Your Balance",
                     "avgSimilar": "Similar Users Avg",
-                    "avgAll": "All Users Avg"
+                    "avgAll": "All Users Avg",
+                    "growth12Months": "last 12 months",
+                    "noGrowthData": "Growth data not available"
                 },
                 "avgIncome": {
                     "title": "Monthly Income",
-                    "description": "Compare your monthly income",
-                    "yourIncome": "Your Income",
+                    "description": "Compare your average monthly income over the last 12 months",
+                    "yourIncome": "Your Average Income",
                     "avgSimilar": "Similar Users Avg",
                     "avgAll": "All Users Avg"
                 },
-                "avgExpenses": {
-                    "title": "Monthly Expenses",
-                    "description": "Compare your monthly expenses",
-                    "yourExpenses": "Your Expenses",
+                "avgOutflows": {
+                    "title": "Monthly Outflows",
+                    "description": "Compare your average monthly outflows over the last 12 months",
+                    "yourOutflows": "Your Average Outflows",
                     "avgSimilar": "Similar Users Avg",
                     "avgAll": "All Users Avg"
                 },
@@ -1995,7 +1999,7 @@
             },
             "tips": {
                 "title": "Personalized Tips",
-                "highExpenses": "Consider reviewing your expenses - they're above average for your income level",
+                "highOutflows": "Consider reviewing your outflows - they're above average for your income level",
                 "lowSavings": "Try to increase your savings rate for better financial health",
                 "goodBalance": "Great job! Your financial balance is above average",
                 "diversify": "Consider diversifying your assets for better risk management"
@@ -2009,15 +2013,15 @@
             "similarRanking": "Similar users rankings: ",
             "balanceRanking": "Balance Ranking ",
             "incomeRanking": "Income Ranking ",
-            "expenseRanking": "Expense Ranking ",
-            "infoExpenseRank": "This rank shows in the high positions who spends the most.",
+            "outflowRanking": "Outflow Ranking ",
+            "infoOutflowRank": "This rank shows in the high positions who spends the most.",
             "noRank": "Rankings not available",
             "compliments": "Congratulations! You are in the top ",
             "superCompliments": "Incredible!! You are in the top ",
             "top": "You are in the top ",
             "users": " of users!",
-            "lowerExpense": " You are among the users who spend the least!",
-            "higherExpense": " Attention! You are among the users who spend the most!",
+            "lowerOutflow": " You are among the users who spend the least!",
+            "higherOutflow": " Attention! You are among the users who spend the most!",
             "higherIncome": " You are among the users who earn the most!",
             "mediumRank": "You are in the average of users!",
             "demoWarning": "Warning! Random and not relevant values, used as an example.",
@@ -2030,7 +2034,7 @@
                 "similarSubtitle": "Comparison with profiles similar to yours",
                 "balance": "Balance",
                 "income": "Income",
-                "expenses": "Expenses",
+                "expenses": "Outflows",
                 "topPerformance": "Great position!",
                 "goodPerformance": "Good position",
                 "canImprove": "Room for growth",
@@ -2047,9 +2051,9 @@
                         "low": "There are growth opportunities for your income"
                     },
                     "expenses": {
-                        "top": "Excellent expense control!",
-                        "medium": "You manage your expenses well",
-                        "low": "You could optimize some expenses, but you're on the right track"
+                        "top": "Excellent outflow control!",
+                        "medium": "You manage your outflows well",
+                        "low": "You could optimize some outflows, but you're on the right track"
                     }
                 },
                 "motivational": {
@@ -2057,19 +2061,19 @@
                         "title": "🎉 Fantastic!",
                         "balance": "Your wealth management is excellent! Continue with this winning strategy.",
                         "income": "Your income is great! You've built a solid financial foundation.",
-                        "expenses": "You control expenses very well! Your financial discipline is admirable."
+                        "expenses": "You control outflows very well! Your financial discipline is admirable."
                     },
                     "medium": {
                         "title": "👍 On the right track!",
                         "balance": "You're building your wealth well. With consistency, you'll reach your goals!",
                         "income": "You have a good income base. Keep working on your financial goals!",
-                        "expenses": "You manage expenses well. Small adjustments can bring great results!"
+                        "expenses": "You manage outflows well. Small adjustments can bring great results!"
                     },
                     "low": {
                         "title": "💪 Growth opportunities!",
                         "balance": "Every great wealth starts with small steps. Keep saving, even little by little!",
                         "income": "There are opportunities to increase your income. Consider new paths and skills!",
-                        "expenses": "Reviewing some expenses can free up valuable resources. A detailed budget can help!"
+                        "expenses": "Reviewing some outflows can free up valuable resources. A detailed budget can help!"
                     }
                 },
                 "popup": {
@@ -2125,7 +2129,7 @@
                 },
                 {
                     "question": "What type of data can I enter?",
-                    "answer": "You can enter income, expenses, investments, savings, and other financial data. All data remains anonymous and is used only for your personal analysis."
+                    "answer": "You can enter income, outflows, investments, savings, and other financial data. All data remains anonymous and is used only for your personal analysis."
                 },
                 {
                     "question": "How can I support the project?",
@@ -2208,9 +2212,9 @@
                         "intro": "Saving is the foundation of financial health. Before investing, it's essential to have an emergency fund and clear goals.",
                         "emergency_fund": {
                             "title": "Emergency Fund",
-                            "description": "An emergency fund should cover 3-6 months of expenses. Keep it in deposit accounts or easily accessible current accounts.",
+                            "description": "An emergency fund should cover 3-6 months of outflows. Keep it in deposit accounts or easily accessible current accounts.",
                             "tips": [
-                                "Calculate your essential monthly expenses",
+                                "Calculate your essential monthly outflows",
                                 "Multiply by 3-6 months",
                                 "Keep this money in safe and liquid accounts",
                                 "Don't touch except for real emergencies"
@@ -2229,7 +2233,7 @@
                                 "50/30/20 rule: 50% needs, 30% wants, 20% savings",
                                 "Pay yourself first: save as soon as you receive salary",
                                 "Automate savings with automatic transfers",
-                                "Track all expenses for 1 month to understand where money goes",
+                                "Track all outflows for 1 month to understand where money goes",
                                 "Eliminate unused subscriptions",
                                 "Compare prices before important purchases"
                             ]
@@ -2238,15 +2242,15 @@
                 },
                 "budgeting": {
                     "title": "Budget Management",
-                    "subtitle": "How to plan and control your expenses",
+                    "subtitle": "How to plan and control your outflows",
                     "content": {
                         "intro": "A budget helps you control where your money goes and reach your financial goals. It shouldn't be rigid, but a flexible guide.",
                         "budget_creation": {
                             "title": "How to Create a Budget",
                             "steps": [
                                 "1. Calculate your monthly net income",
-                                "2. List all fixed expenses (rent, utilities, insurance)",
-                                "3. Estimate variable expenses (food, transport, entertainment)",
+                                "2. List all fixed outflows (rent, utilities, insurance)",
+                                "3. Estimate variable outflows (food, transport, entertainment)",
                                 "4. Assign a percentage to savings",
                                 "5. Monitor monthly and adjust if necessary"
                             ]
@@ -2261,12 +2265,12 @@
                             }
                         },
                         "expense_tracking": {
-                            "title": "Expense Tracking",
+                            "title": "Outflow Tracking",
                             "tips": [
                                 "Use apps like PaciFinance to monitor automatically",
                                 "Check account at least weekly",
-                                "Categorize expenses to identify patterns",
-                                "Take photos of receipts for cash expenses",
+                                "Categorize outflows to identify patterns",
+                                "Take photos of receipts for cash outflows",
                                 "Review monthly and identify areas for improvement"
                             ]
                         }
@@ -2288,10 +2292,10 @@
                         "tax_optimization": {
                             "title": "Tax Optimization",
                             "tips": [
-                                "Take advantage of deductions for medical and education expenses",
+                                "Take advantage of deductions for medical and education outflows",
                                 "Consider pension funds to reduce tax burden",
                                 "Evaluate company benefits (meal vouchers, company cars)",
-                                "Keep track of all deductible expenses",
+                                "Keep track of all deductible outflows",
                                 "Consult an accountant for complex situations"
                             ]
                         },
@@ -2364,7 +2368,7 @@
                         "financial_independence": {
                             "title": "Financial Independence",
                             "description": "The ultimate goal: having enough investments to live off returns without working.",
-                            "rule_25": "Rule of 25: Accumulate 25 times your annual expenses in investments",
+                            "rule_25": "Rule of 25: Accumulate 25 times your annual outflows in investments",
                             "withdrawal_rate": "4% rule: Withdraw max 4% annually from portfolio to maintain it over time"
                         }
                     }

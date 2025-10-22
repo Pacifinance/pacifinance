@@ -929,7 +929,7 @@ const ProfilePage = () => {
                                 }}>
                                     <InfoCard
                                         icon={<FaUser />}
-                                        title="User ID"
+                                        title={languages[language].sidebar.account.id || "User ID"}
                                         value={userId}
                                     />
                                     <InfoCard

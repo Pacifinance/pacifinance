@@ -174,7 +174,7 @@ export default function BalanceSection({
           {/* Emergency Fund */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              Emergency Fund
+              {languages[language].assets.emergencyFund}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>

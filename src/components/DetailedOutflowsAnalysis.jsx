@@ -473,7 +473,7 @@ const RecurringSection = styled.div`
 `;
 
 export default function DetailedOutflowAnalysis({ theme, userData, language = 'it' }) {
-  const t = languages[language].graphs.statsOutflows.expenseAnalysis;
+  const t = languages[language].graphs.statsOutflows.outflowAnalysis;
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
 

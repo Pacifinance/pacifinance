@@ -124,7 +124,7 @@ export const getUserYearsOfExperience = (userData) => userData?.profile?.yearsOf
 export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || userData?.allOutflows || [];
 export const getOutflowsArray = (userData) => userData?.expenses?.outflowsArray || userData?.outflowsArray || [];
 export const getTotalOutflowsPerCategoryPerMonth = (userData) => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
-export const getAllIncomes = (userData) => userData?.expenses?.allIncomes || userData?.allIncomes || [];
+export const getAllIncomes = (userData) => userData?.incomes?.allIncomes || userData?.allIncomes || [];
 export const getIncomesArray = (userData) => userData?.incomes?.incomesArray || userData?.incomesArray || [];
 
 // Totale spese/income/saved del mese corrente

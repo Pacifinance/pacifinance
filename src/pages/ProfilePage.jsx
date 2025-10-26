@@ -346,14 +346,21 @@ const ProfilePage = () => {
         }
     };
 
+    // Map tags to {key, value} for SelectField compatibility
+    const mapTagsToOptions = (tagsArray, language) =>
+        tagsArray.map(tag => ({
+            key: tag.index,
+            value: tag.translations?.[language] || tag.translations?.en || tag.label || ''
+        }));
+
     // Sort all tags by current language
     const sortedNationalityTags = sortTagsByLanguage(nationalityTags, language);
     const sortedJobTags = sortTagsByLanguage(jobTags, language);
     const sortedJobTypeTags = sortTagsByLanguage(jobTypeTags, language);
     const sortedWorkTimeTags = sortTagsByLanguage(workTimeTags, language);
     const sortedRemoteTypeTags = sortTagsByLanguage(remoteTypeTags, language);
-    const sortedYearsExperienceTags = [...yearsExperienceTags].sort();
-    const sortedAgeTags = [...ageTags].sort();
+    const sortedYearsExperienceTags = sortTagsByLanguage(yearsExperienceTags, language);
+    const sortedAgeTags = sortTagsByLanguage(ageTags, language);
     const sortedLivingStatusTags = sortTagsByLanguage(livingStatusTags, language);
     const sortedHousingTypeTags = sortTagsByLanguage(housingTypeTags, language);
     const sortedHasChildrenTags = sortTagsByLanguage(hasChildrenTags, language);
@@ -1383,7 +1390,6 @@ const ProfilePage = () => {
                                             options={sortedYearsExperienceTags}
                                             placeholder={languages[language].sidebar.account.selectYearsExperience}
                                             icon={<Star />}
-                                            isSimpleArray={true}
                                         />
                                     </div>
                                 </div>
@@ -1433,7 +1439,6 @@ const ProfilePage = () => {
                                             options={sortedAgeTags}
                                             placeholder={languages[language].sidebar.account.selectAge}
                                             icon={<Calendar />}
-                                            isSimpleArray={true}
                                         />
 
                                         <SelectField

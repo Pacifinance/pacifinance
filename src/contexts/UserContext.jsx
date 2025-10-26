@@ -119,17 +119,29 @@ export const UserProvider = ({ children }) => {
             //Obtain the user type from the dictionary
             // userType = userTypeDict[userType];
             const username = infoUser.data.nickname ?? 'Username non impostato';
-            const userNationality = {key: infoUser.data.country?.index ?? -1, value: infoUser.data.country?.translations?.it ?? 'Nazionalità non impostata'};
-            const userWhereWorks = {key: infoUser.data.jobCountry?.index ?? -1 ,value: infoUser.data.jobCountry?.translations?.it ?? 'Dove lavora non impostato'};
-            const userJob = {key: infoUser.data.job?.index ?? -1, value: infoUser.data.job?.translations?.it ?? 'Lavoro non impostato'};
-            const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: infoUser.data.jobType?.translations?.it ?? 'Tipo di lavoro non impostato'};
-            const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: infoUser.data.workTime?.translations?.it ?? 'Tipologia contratto non impostato'};
-            const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: infoUser.data.remoteType?.translations?.it ?? 'Tipologia lavoro non impostata'};
-            const userAge = {key: infoUser.data.age?.index ?? -1, value: infoUser.data.age?.translations?.it ?? 'Età non impostata'};
-            const userLivingSituation = {key: infoUser.data.living_situation?.index ?? -1, value: infoUser.data.living_situation?.translations?.it ?? 'Situazione abitativa non impostata'};
-            const userHousingType = {key: infoUser.data.housing_type?.index ?? -1, value: infoUser.data.housing_type?.translations?.it ?? 'Tipologia abitazione non impostata'};
-            const userChildren = {key: infoUser.data.children?.index ?? -1, value: infoUser.data.children?.translations?.it ?? 'Figli non impostato'};
-            const userYearsOfExperience = {key: infoUser.data.years_of_experience?.index ?? -1, value: infoUser.data.years_of_experience?.translations?.it ?? 'Anni di esperienza non impostati'};
+            // Helper to get translation fallback
+            const getTranslation = (obj, language, fallback) => {
+              if (!obj?.translations) return fallback;
+              if (obj.translations[language]) return obj.translations[language];
+              if (obj.translations.en) return obj.translations.en;
+              if (obj.translations.it) return obj.translations.it;
+              return fallback;
+            };
+
+            // Get current language from localStorage or default to 'en'
+            const language = localStorage.getItem('language') || 'en';
+
+            const userNationality = {key: infoUser.data.country?.index ?? -1, value: getTranslation(infoUser.data.country, language, 'Nazionalità non impostata')};
+            const userWhereWorks = {key: infoUser.data.jobCountry?.index ?? -1 ,value: getTranslation(infoUser.data.jobCountry, language, 'Dove lavora non impostato')};
+            const userJob = {key: infoUser.data.job?.index ?? -1, value: getTranslation(infoUser.data.job, language, 'Lavoro non impostato')};
+            const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: getTranslation(infoUser.data.jobType, language, 'Tipo di lavoro non impostato')};
+            const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: getTranslation(infoUser.data.workTime, language, 'Tipologia contratto non impostato')};
+            const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: getTranslation(infoUser.data.remoteType, language, 'Tipologia lavoro non impostata')};
+            const userAge = {key: infoUser.data.age?.index ?? -1, value: getTranslation(infoUser.data.age, language, 'Età non impostata')};
+            const userLivingSituation = {key: infoUser.data.livingSituation?.index ?? -1, value: getTranslation(infoUser.data.livingSituation, language, 'Situazione abitativa non impostata')};
+            const userHousingType = {key: infoUser.data.housingType?.index ?? -1, value: getTranslation(infoUser.data.housingType, language, 'Tipologia abitazione non impostata')};
+            const userChildren = {key: infoUser.data.children?.index ?? -1, value: getTranslation(infoUser.data.children, language, 'Figli non impostato')};
+            const userYearsOfExperience = {key: infoUser.data.yearsOfExperience?.index ?? -1, value: getTranslation(infoUser.data.yearsOfExperience, language, 'Anni di esperienza non impostati')};
 
             // TODO: Quando il backend sarà pronto, qui andranno caricate le impostazioni goals e limits dal DB
             // const goalsAndLimitsData = await axios.post('/user/getGoalsAndLimits', null, { withCredentials: true });

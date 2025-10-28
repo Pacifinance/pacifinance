@@ -119,6 +119,7 @@ export const getUserLivingSituation = (userData) => userData?.profile?.livingSit
 export const getUserHousingType = (userData) => userData?.profile?.housingType || { key: -1, value: 'Tipologia abitativa non impostata' };
 export const getUserChildren = (userData) => userData?.profile?.children || { key: -1, value: 'Figli non impostati' };
 export const getUserYearsOfExperience = (userData) => userData?.profile?.yearsOfExperience || { key: -1, value: 'Anni di esperienza non impostati' };
+export const getProfileCompletionPercentage = (userData) => userData?.profile?.completionPercentage || 0;
 
 // Expense and income selectors
 export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || userData?.allOutflows || [];

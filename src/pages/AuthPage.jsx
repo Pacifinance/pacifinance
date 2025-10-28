@@ -224,26 +224,23 @@ export default function AuthPage() {
                 className="p-4 rounded-lg border-2"
                 style={{ 
                   borderColor: '#ff9800',
-                  backgroundColor: theme.mode === "dark" ? 'rgba(255, 152, 0, 0.1)' : 'rgba(255, 152, 0, 0.05)'
+                  backgroundColor: theme.mode === "dark" ? 'rgba(255, 152, 0, 0.15)' : 'rgba(255, 152, 0, 0.15)'
                 }}
               >
                 <div className="flex items-start space-x-2">
                   <WarningIcon style={{ color: '#ff9800' }} className="mt-1 flex-shrink-0" fontSize="small" />
                   <div>
-                    <h4 className="font-semibold mb-2 text-orange-600 text-sm">
+                    <h4 className="font-bold mb-2" style={{ color: '#b45309', fontSize: '1rem', letterSpacing: '0.01em' }}>
                       {language === 'it' 
-                        ? 'Raccomandazione di Sicurezza'
-                        : 'Security Recommendation'
+                        ? '⚠️ Importante!'
+                        : '⚠️ Important!'
                       }
                     </h4>
-                    <p className="text-xs opacity-90 mb-2">
+                    <p style={{ color: '#b45309', fontWeight: 600, fontSize: '0.98rem', marginBottom: 4 }}>
                       {language === 'it' 
-                        ? 'Salva le tue credenziali in un gestore di password sicuro:'
-                        : 'Save your credentials in a secure password manager:'
+                        ? 'Salva questo ID insieme alla tua password in un gestore di password sicuro. Senza questi dati il recupero account è impossibile.'
+                        : 'Save this ID together with your password in a secure password manager. Without these, account recovery is impossible.'
                       }
-                    </p>
-                    <p className="text-xs opacity-80">
-                      Bitwarden, 1Password, LastPass, {language === 'it' ? 'o il gestore del browser' : 'or browser manager'}
                     </p>
                   </div>
                 </div>

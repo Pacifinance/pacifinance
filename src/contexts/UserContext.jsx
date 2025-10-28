@@ -143,6 +143,23 @@ export const UserProvider = ({ children }) => {
             const userChildren = {key: infoUser.data.children?.index ?? -1, value: getTranslation(infoUser.data.children, language, 'Figli non impostato')};
             const userYearsOfExperience = {key: infoUser.data.yearsOfExperience?.index ?? -1, value: getTranslation(infoUser.data.yearsOfExperience, language, 'Anni di esperienza non impostati')};
 
+            // Calcola la percentuale di completamento del profilo
+            const profileFields = [
+              userNationality,
+              userWhereWorks,
+              userJob,
+              userJobType,
+              userWorkTime,
+              userRemoteType,
+              userAge,
+              userLivingSituation,
+              userHousingType,
+              userChildren,
+              userYearsOfExperience
+            ];
+            const completedFields = profileFields.filter(field => field.key !== -1).length;
+            const profileCompletionPercentage = Math.round((completedFields / profileFields.length) * 100);
+
             // TODO: Quando il backend sarà pronto, qui andranno caricate le impostazioni goals e limits dal DB
             // const goalsAndLimitsData = await axios.post('/user/getGoalsAndLimits', null, { withCredentials: true });
             const goalsAndLimitsData = {
@@ -331,6 +348,9 @@ export const UserProvider = ({ children }) => {
             setUserData({
               // Core user info
               userId, userType, username,
+              
+              // Profile completion percentage
+              profileCompletionPercentage,
               
               // User profile data with structured objects
               profile: {

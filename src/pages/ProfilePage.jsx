@@ -41,7 +41,8 @@ import {
     getLivingSituationTags,
     getHousingTypeTags,
     getChildrenTags,
-    getYearsOfExperienceTags
+    getYearsOfExperienceTags,
+    getProfileCompletionPercentage
 } from '../utils/userDataSelectors';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -59,27 +60,7 @@ import {
 } from '../styles/MyStyled';
 
 // Profile Completion Indicator Component
-const ProfileCompletionIndicator = ({ 
-    userNationality, userWhereWorks, userJob, userJobType, userWorkTime, 
-    userRemoteType, userYearsExperience, userAge, userLivingStatus, 
-    userHousingType, userHasChildren, theme, isMobileScreen, language 
-}) => {
-    const fields = [
-        userNationality.value, userWhereWorks.value, userJob.value, 
-        userJobType.value, userWorkTime.value, userRemoteType.value, 
-        userYearsExperience.value, userAge.value, userLivingStatus.value, 
-        userHousingType.value, userHasChildren.value
-    ];
-    const completedFields = fields.filter(field => field && field !== "" && field !== null && field !== undefined).length;
-    const totalFields = fields.length;
-    const completionPercentage = Math.round((completedFields / totalFields) * 100);
-    
-    // Debug logging
-    console.log('Profile fields:', fields);
-    console.log('Completed fields count:', completedFields);
-    console.log('Total fields:', totalFields);
-    console.log('Completion percentage:', completionPercentage);
-    
+const ProfileCompletionIndicator = ({ completionPercentage, theme, isMobileScreen, language }) => {
     return (
         <div style={{
             background: theme.mode === 'dark' 
@@ -110,13 +91,6 @@ const ProfileCompletionIndicator = ({
                     }}>
                         {languages[language].sidebar.account.profileCompletion.title} {completionPercentage}%
                     </h3>
-                    <p style={{
-                        margin: 0,
-                        fontSize: '0.9rem',
-                        color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280'
-                    }}>
-                        {completedFields} {languages[language].sidebar.account.profileCompletion.of} {totalFields} {languages[language].sidebar.account.profileCompletion.completedFields}
-                    </p>
                 </div>
                 <div style={{
                     fontSize: '2rem',
@@ -167,6 +141,7 @@ const ProfilePage = () => {
     const [userLivingStatus, setUserLivingStatus] = useState({ key: "", value: "" });
     const [userHousingType, setUserHousingType] = useState({ key: "", value: "" });
     const [userHasChildren, setUserHasChildren] = useState({ key: "", value: "" });
+    const [profileCompletionPercentage, setProfileCompletionPercentage] = useState(0);
     
     const [nationalityTags, setNationalityTags] = useState([]);
     const [jobTags, setJobTags] = useState([]);
@@ -285,6 +260,8 @@ const ProfilePage = () => {
             setUserLivingStatus(getUserLivingSituation(userData));
             setUserHousingType(getUserHousingType(userData));
             setUserHasChildren(getUserChildren(userData));
+
+            setProfileCompletionPercentage(getProfileCompletionPercentage(userData));
             
             // Use tag selectors or fallback to mock data
             setNationalityTags(getNationalityTags(userData) || mockNationalityTags);
@@ -957,17 +934,7 @@ const ProfilePage = () => {
                             }}>
                                 {/* Profile Completion Indicator */}
                                 <ProfileCompletionIndicator 
-                                    userNationality={userNationality}
-                                    userWhereWorks={userWhereWorks}
-                                    userJob={userJob}
-                                    userJobType={userJobType}
-                                    userWorkTime={userWorkTime}
-                                    userRemoteType={userRemoteType}
-                                    userYearsExperience={userYearsExperience}
-                                    userAge={userAge}
-                                    userLivingStatus={userLivingStatus}
-                                    userHousingType={userHousingType}
-                                    userHasChildren={userHasChildren}
+                                    completionPercentage={profileCompletionPercentage}
                                     theme={theme}
                                     isMobileScreen={isMobileScreen}
                                     language={language}

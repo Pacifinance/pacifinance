@@ -11,7 +11,8 @@ import {
     getPercentageRankOnExpensesSimilar,
     getIncomesArray,
     getOutflowsArray,
-    getBalanceGrowth12Months
+    getBalanceGrowth12Months,
+    getProfileCompletionPercentage
 } from '../utils/userDataSelectors';
 import { 
   StyledMonth, 
@@ -658,31 +659,6 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
     const navigate = useNavigate();
 
-    // Controllo se il profilo è completo
-    const isProfileComplete = () => {
-        if (!userData) return false;
-        
-        const profileFields = [
-            userData.nationality,
-            userData.whereWorks,
-            userData.job,
-            userData.jobType,
-            userData.workTime,
-            userData.remoteType,
-            userData.yearsExperience,
-            userData.age,
-            userData.livingStatus,
-            userData.housingType,
-            userData.hasChildren
-        ];
-        
-        // Considera completo solo se TUTTI i campi sono compilati (100%)
-        const completedFields = profileFields.filter(field => field && field !== "").length;
-        const completionPercentage = (completedFields / profileFields.length) * 100;
-        
-        return completionPercentage === 100;
-    };
-
     // Funzioni helper per Rankings
     const getRankLevel = (rank) => {
         if (!rank || rank === '' || isNaN(rank)) return 'none';
@@ -755,6 +731,8 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     // Calculate 12-month averages for user
     const userIncomesArray = getIncomesArray(userData) || [];
     const userOutflowsArray = getOutflowsArray(userData) || [];
+
+    const ProfileCompletionPercentage = getProfileCompletionPercentage(userData);
     
     const calculateAverage = (array) => {
         const validValues = array.slice(0, 12).filter(val => val && val > 0);
@@ -861,7 +839,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
     const renderInsightsTab = () => (
         <>
-            {!isProfileComplete() && renderProfileBanner()}
+            {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
             <GridContainer>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
@@ -1031,7 +1009,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
         return (
             <RankingsContainer>
-                {!isProfileComplete() && renderProfileBanner()}
+                {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
                 
                 <RankingsHeader theme={theme}>
                     <h2>

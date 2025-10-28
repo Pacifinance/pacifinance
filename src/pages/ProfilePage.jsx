@@ -1386,7 +1386,7 @@ const ProfilePage = () => {
                                         <SelectField
                                             label={languages[language].sidebar.account.yearsExperience}
                                             value={userYearsExperience.value}
-                                            onChange={(event) => setUserYearsExperience({key: event.target.value, value: event.target.value})}
+                                            onChange={(event) => setUserYearsExperience({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedYearsExperienceTags}
                                             placeholder={languages[language].sidebar.account.selectYearsExperience}
                                             icon={<Star />}
@@ -1435,7 +1435,7 @@ const ProfilePage = () => {
                                         <SelectField
                                             label={languages[language].sidebar.account.age}
                                             value={userAge.value}
-                                            onChange={(event) => setUserAge({key: event.target.value, value: event.target.value})}
+                                            onChange={(event) => setUserAge({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedAgeTags}
                                             placeholder={languages[language].sidebar.account.selectAge}
                                             icon={<Calendar />}

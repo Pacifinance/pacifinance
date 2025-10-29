@@ -1,9 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { UserContext } from '../contexts/UserContext';
+import { useToast } from '../contexts/ToastContext';
 import languages from '../data/languages.json';
+import {
+  getMonthlySpendingLimit,
+  getSavingsGoalPercentage,
+  getEmergencyFundTarget
+} from '../utils/userDataSelectors';
 import {
     FaBullseye, 
     FaChartLine, 
@@ -314,6 +321,7 @@ const ProfileSettings = ({ theme }) => {
   const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
+  const { showSuccess, showError } = useToast();
   
   // Stati per i limiti e controlli
   const [settings, setSettings] = useState({
@@ -340,15 +348,15 @@ const ProfileSettings = ({ theme }) => {
   // Carica i dati dal UserContext al montaggio del componente
   useEffect(() => {
     if (userData) {
-      // Carica i settings dall'UserContext se esistono, altrimenti usa i default
+      // Carica i settings dall'UserContext usando i selector
       setSettings({
-        monthlySpendingLimit: userData.monthlySpendingLimit || 2000,
-        savingsGoalPercentage: userData.savingsGoalPercentage || 20,
-        emergencyFundTarget: userData.emergencyFundTarget || 10000,
-        notificationsEnabled: userData.notificationsEnabled !== undefined ? userData.notificationsEnabled : true
+        monthlySpendingLimit: getExpensesLimit(userData) !== -1 ? getExpensesLimit(userData) : getMonthlySpendingLimit(userData),
+        savingsGoalPercentage: getSavingsPercent(userData) !== -1 ? getSavingsPercent(userData) : getSavingsGoalPercentage(userData),
+        emergencyFundTarget: getEmergencyFundGoal(userData) !== -1 ? getEmergencyFundGoal(userData) : getEmergencyFundTarget(userData),
+        notificationsEnabled: true // Questo potrebbe venire dal backend in futuro
       });
       
-      // Carica gli obiettivi dall'UserContext se esistono, altrimenti array vuoto
+      // Carica i goals
       setGoals(userData.goals || []);
     }
   }, [userData]);
@@ -368,9 +376,37 @@ const ProfileSettings = ({ theme }) => {
     setSettings(newSettings);
   };
 
-  const handleSaveSettings = () => {
-    // Salva i settings nel UserContext
-    updateUserContextData(settings);
+  const handleSaveSettings = async () => {
+    try {
+      // Prepara i dati per il backend con validazione
+      const expensesLimit = (settings.monthlySpendingLimit >= 0) ? settings.monthlySpendingLimit : -1;
+      const savingsPercent = (settings.savingsGoalPercentage >= 0 && settings.savingsGoalPercentage <= 100) ? settings.savingsGoalPercentage : -1;
+      const emergencyFundGoal = (settings.emergencyFundTarget >= 0) ? settings.emergencyFundTarget : -1;
+
+      // Invia i dati al backend
+      await axios.post('/user/goals', {
+        expenses_limit: expensesLimit,
+        savings_percent: savingsPercent,
+        emergency_fund_goal: emergencyFundGoal
+      }, { withCredentials: true });
+
+      // Aggiorna il UserContext locale
+      updateUserContextData({
+        limits: {
+          ...userData.limits,
+          monthlySpendingLimit: expensesLimit !== -1 ? expensesLimit : 2000,
+          savingsGoalPercentage: savingsPercent !== -1 ? savingsPercent : 20,
+          emergencyFundTarget: emergencyFundGoal !== -1 ? emergencyFundGoal : 10000,
+          notificationsEnabled: settings.notificationsEnabled
+        }
+      });
+
+      // Mostra messaggio di successo
+      showSuccess(language === 'it' ? 'Impostazioni salvate con successo!' : 'Settings saved successfully!');
+    } catch (error) {
+      console.error('Errore nel salvataggio delle impostazioni:', error);
+      showError(language === 'it' ? 'Errore nel salvataggio delle impostazioni' : 'Error saving settings');
+    }
   };
 
   const handleAddGoal = () => {

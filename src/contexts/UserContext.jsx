@@ -160,14 +160,21 @@ export const UserProvider = ({ children }) => {
             const completedFields = profileFields.filter(field => field.key !== -1).length;
             const profileCompletionPercentage = Math.round((completedFields / profileFields.length) * 100);
 
+            // Get goals and limits from user data
+            const userGoals = infoUser.data.goals || {
+              expensesLimit: -1,
+              savingsPercent: -1,
+              emergencyFundGoal: -1
+            };
+
             // TODO: Quando il backend sarà pronto, qui andranno caricate le impostazioni goals e limits dal DB
             // const goalsAndLimitsData = await axios.post('/user/getGoalsAndLimits', null, { withCredentials: true });
             const goalsAndLimitsData = {
               goals: [],
               limits: {
-                monthlySpendingLimit: 2000,
-                savingsGoalPercentage: 20,
-                emergencyFundTarget: 10000,
+                monthlySpendingLimit: userGoals.expensesLimit !== -1 ? userGoals.expensesLimit : 2000,
+                savingsGoalPercentage: userGoals.savingsPercent !== -1 ? userGoals.savingsPercent : 20,
+                emergencyFundTarget: userGoals.emergencyFundGoal !== -1 ? userGoals.emergencyFundGoal : 10000,
                 notificationsEnabled: true
               }
             };

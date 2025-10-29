@@ -36,6 +36,11 @@ const userSchema = new mongoose.Schema({
     workTime: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     remoteType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     yearsOfExperience: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    goals: {type: {
+        expensesLimit: {type: Number, required: true},
+        savingsPercent: {type: Number, required: true},
+        emergencyFundGoal: {type: Number, required: true},
+    }, required: true},
     session: {type: {
         sessionId: {type: String, required: true, unique: true, dropDups: true},
         expirationDate: {type: Date, required: true}
@@ -143,6 +148,11 @@ async function insertNew(user_id: string, password: string, type: number = UserT
         workTime: newNullObjectId(),
         remoteType: newNullObjectId(),
         yearsOfExperience: newNullObjectId(),
+        goals: {
+            expensesLimit: -1,
+            savingsPercent: -1,
+            emergencyFundGoal: -1,
+        },
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
             expirationDate: new Date(0)
@@ -333,6 +343,26 @@ async function setPublicInfoOfUserId(user_id: string, age: number, livingSituati
 }
 
 /**
+ * Sets the goals of a user
+ * @param user_id ID of the user
+ * @param expensesLimit Limit on expenses
+ * @param savingsPercent Goal on savings percentage
+ * @param emergencyFundGoal Goal on emergency fund
+ * @returns User document
+ */
+async function setGoalsOfUserId(user_id: string, expensesLimit: number,
+    savingsPercent: number, emergencyFundGoal: number) {
+    const update_object = {
+        goals: {
+            expensesLimit: expensesLimit,
+            savingsPercent: savingsPercent,
+            emergencyFundGoal: emergencyFundGoal,
+        }
+    }
+    return await setOne({userId: user_id}, update_object)
+}
+
+/**
  * Deletes a user by its reference
  * @param user_ref ObjectId of the user
  * @returns DeleteResult object
@@ -364,5 +394,6 @@ export default {
     setSessionOfUserId,
     getPublicInfoByUserId,
     setPublicInfoOfUserId,
+    setGoalsOfUserId,
     deleteUserByRef
 };

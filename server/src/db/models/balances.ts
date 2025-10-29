@@ -16,7 +16,8 @@ const balanceSchema = new mongoose.Schema({
     crypto: {type: Number, required: true},
     bonds: {type: Number, required: true},
     funds: {type: Number, required: true},
-    gold: {type: Number, required: true}
+    gold: {type: Number, required: true},
+    emergencyFund: {type: Number, required: true},
 });
 
 /* ==================== Template queries ==================== */
@@ -80,11 +81,13 @@ async function deleteMany(where: object) {
  * @param bonds Bonds amount
  * @param funds Funds amount
  * @param gold Gold amount
+ * @param emergency_fund Emergency fund amount
  * @returns Balance document
  */
 async function insertNew(
-    user_id: string, user_date: Date, bank: number, cash: number, digital_services: number, stocks: number,
-    etf: number, bitcoin: number, crypto: number, bonds: number, funds: number, gold: number
+    user_id: string, user_date: Date, bank: number, cash: number, digital_services: number,
+    stocks: number, etf: number, bitcoin: number, crypto: number, bonds: number,
+    funds: number, gold: number, emergency_fund: number
 ) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
@@ -102,7 +105,8 @@ async function insertNew(
         crypto: crypto,
         bonds: bonds,
         funds: funds,
-        gold: gold
+        gold: gold,
+        emergencyFund: emergency_fund
     };
     return await addOne(data);
 }

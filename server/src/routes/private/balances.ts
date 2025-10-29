@@ -55,7 +55,7 @@ balancesRouter.post("/add", async (req, res) => {
     const doc = await db.balances.insertNew(
         session.userId, balance.date, balance.bank, balance.cash, balance.digital_services,
         balance.stocks, balance.etf, balance.bitcoin, balance.crypto,
-        balance.bonds, balance.funds, balance.gold
+        balance.bonds, balance.funds, balance.gold, balance.emergency_fund
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

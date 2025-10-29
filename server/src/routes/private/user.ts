@@ -185,6 +185,36 @@ userRouter.post("/set", async(req, res) => {
     res.send()
 })
 
+userRouter.post("/goals", async (req, res) => {
+    // Set the users's goals and limits
+    const session = req.session as SessionData
+    let expensesLimit = req.body.expenses_limit
+    let savingsPercent = req.body.savings_percent
+    let emergencyFundGoal = req.body.emergency_fund_goal
+    if (expensesLimit < 0)
+        expensesLimit = -1
+    if (savingsPercent < 0)
+        savingsPercent = -1
+    else if (savingsPercent > 100)
+        savingsPercent = 100
+    if (emergencyFundGoal < 0)
+        emergencyFundGoal = -1
+    const doc = await db.users.setGoalsOfUserId(
+        session.userId, expensesLimit, savingsPercent, emergencyFundGoal
+    )
+    // Check if the document was inserted successfully. Send
+    // status code 500 (Internal Server Error) if it failed
+    if (doc === null)
+    {
+        res.status(500)
+        res.send()
+        return
+    }
+    // Send status code 200 (OK)
+    res.status(200)
+    res.send()
+})
+
 userRouter.post("/alldata", async (req, res) => {
     const session = req.session as SessionData
     // Get all user's data. Return status 500 (Internal Server Error) if any

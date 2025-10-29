@@ -247,10 +247,11 @@ export const getFormattedPreYearSameMonthDateLocalized = (userData, language = '
   return `${month} ${year}`;
 };
 
-// Financial insights data
-export const getGoals = (userData) => userData?.goals || [];
-export const getLimits = (userData) => userData?.limits || {};
-export const getAssets = (userData) => userData?.assets || [];
+
+// Goals and limits selectors (for backward compatibility)
+export const getMonthlySpendingLimit = (userData) => userData?.limits?.monthlySpendingLimit ?? 2000;
+export const getSavingsGoalPercentage = (userData) => userData?.limits?.savingsGoalPercentage ?? 20;
+export const getEmergencyFundTarget = (userData) => userData?.limits?.emergencyFundTarget ?? 10000;
 
 // Balance growth calculation
 export const getBalanceGrowth12Months = (userData) => {

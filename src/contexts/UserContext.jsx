@@ -371,7 +371,8 @@ export const UserProvider = ({ children }) => {
                 livingSituation: userLivingSituation,
                 housingType: userHousingType,
                 children: userChildren,
-                yearsOfExperience: userYearsOfExperience
+                yearsOfExperience: userYearsOfExperience,
+                completionPercentage: profileCompletionPercentage
               },
               
               // All balance data in structured format

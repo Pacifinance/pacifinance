@@ -561,56 +561,51 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
                       outflow.categoryTag?.label || 
                       'Other';
       const categoryKey = outflow.categoryTag?.label || 'other';
+      const notes = (outflow.notes || '').toLowerCase().trim();
+      const amount = outflow.amount;
       
       // Analisi metodi di pagamento
-      if (!paymentMethods[paymentTypeKey]) {
-        paymentMethods[paymentTypeKey] = {
+      if (!paymentMethods[paymentType]) {
+        paymentMethods[paymentType] = {
           name: paymentType,
           total: 0,
           count: 0,
           categories: {},
-          isSubscription: paymentTypeKey === 'subscription'
+          isSubscription: paymentType === 'subscription'
         };
       }
-      
-      paymentMethods[paymentTypeKey].total += outflow.amount;
-      paymentMethods[paymentTypeKey].count += 1;
-      
-      if (!paymentMethods[paymentTypeKey].categories[categoryKey]) {
-        paymentMethods[paymentTypeKey].categories[categoryKey] = {
+      paymentMethods[paymentType].total += amount;
+      paymentMethods[paymentType].count += 1;
+      if (!paymentMethods[paymentType].categories[categoryKey]) {
+        paymentMethods[paymentType].categories[categoryKey] = {
           name: category,
           amount: 0
         };
       }
-      paymentMethods[paymentTypeKey].categories[categoryKey].amount += outflow.amount;
-      
+      paymentMethods[paymentType].categories[categoryKey].amount += amount;
       // Analisi tipologie di pagamento
-      if (!paymentTypologies[paymentTypeKey]) {
-        paymentTypologies[paymentTypeKey] = {
+      if (!paymentTypologies[paymentType]) {
+        paymentTypologies[paymentType] = {
           name: paymentType,
           total: 0,
           count: 0,
           categories: {},
-          isSubscription: paymentTypeKey === 'subscription'
+          isSubscription: paymentType === 'subscription'
         };
       }
-      
-      paymentTypologies[paymentTypeKey].total += outflow.amount;
-      paymentTypologies[paymentTypeKey].count += 1;
-      
-      if (!paymentTypologies[paymentTypeKey].categories[categoryKey]) {
-        paymentTypologies[paymentTypeKey].categories[categoryKey] = {
+      paymentTypologies[paymentType].total += amount;
+      paymentTypologies[paymentType].count += 1;
+      if (!paymentTypologies[paymentType].categories[categoryKey]) {
+        paymentTypologies[paymentType].categories[categoryKey] = {
           name: category,
           amount: 0
         };
       }
-      paymentTypologies[paymentTypeKey].categories[categoryKey].amount += outflow.amount;
-      
+      paymentTypologies[paymentType].categories[categoryKey].amount += amount;
       // Analisi abbonamenti
-      if (paymentTypeKey === 'subscription') {
-        subscriptionPayments.total += outflow.amount;
+      if (paymentType === 'subscription') {
+        subscriptionPayments.total += amount;
         subscriptionPayments.count += 1;
-        
         if (!subscriptionPayments.categories[categoryKey]) {
           subscriptionPayments.categories[categoryKey] = {
             name: category,
@@ -618,51 +613,45 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
             count: 0
           };
         }
-        subscriptionPayments.categories[categoryKey].amount += outflow.amount;
+        subscriptionPayments.categories[categoryKey].amount += amount;
         subscriptionPayments.categories[categoryKey].count += 1;
       }
-      
       // Identifica potenziali uscite ricorrenti con logica migliorata
-      if (outflow.amount > 5) { // Solo uscite significative (soglia ridotta)
-        // Cerca spese simili negli ultimi mesi con criteri più flessibili
+      if (amount > 5) { // Solo uscite significative
+        // Raggruppa per categoria, note (similitudine), tipo pagamento, importo (tolleranza più ampia)
         const similarOutflows = last12Months.flat().filter(e => {
-          const amountMatch = Math.abs(e.amount - outflow.amount) < 2; // Tolleranza di 2€
-          const categoryMatch = e.categoryTag?.label === outflow.categoryTag?.label;
-          
+          const eNotes = (e.notes || '').toLowerCase().trim();
+          const currentNotes = notes;
           // Analisi delle note per trovare pattern simili
           let notesMatch = false;
-          if (outflow.notes && e.notes) {
-            const currentNotes = outflow.notes.toLowerCase().trim();
-            const compareNotes = e.notes.toLowerCase().trim();
-            
-            // Calcola similarità delle note (almeno 60% di sovrapposizione)
+          if (currentNotes && eNotes) {
             const words1 = currentNotes.split(/\s+/);
-            const words2 = compareNotes.split(/\s+/);
+            const words2 = eNotes.split(/\s+/);
             const commonWords = words1.filter(word => words2.includes(word));
             const similarity = commonWords.length / Math.max(words1.length, words2.length);
-            
-            notesMatch = similarity > 0.6 || currentNotes === compareNotes;
+            notesMatch = similarity > 0.6 || currentNotes === eNotes;
           }
-          
-          return amountMatch && categoryMatch && (notesMatch || !outflow.notes);
+          const categoryMatch = e.categoryTag?.label === outflow.categoryTag?.label;
+          const paymentTypeMatch = e.paymentType?.label === outflow.paymentType?.label;
+          const amountClose = Math.abs(e.amount - amount) < 20; // tolleranza più ampia
+          // Considera ricorrente se almeno categoria, tipo pagamento e note simili
+          return categoryMatch && paymentTypeMatch && (notesMatch || !currentNotes) && amountClose;
         });
-        
-        if (similarOutflows.length >= 1) { // Almeno 2 occorrenze totali
-          const existing = recurringExpenses.find(r => 
-            Math.abs(r.amount - outflow.amount) < 2 && 
+        if (similarOutflows.length >= 3) { // almeno 4 occorrenze totali
+          const existing = recurringExpenses.find(r =>
             r.categoryKey === categoryKey &&
-            (r.notes === outflow.notes || (!r.notes && !outflow.notes))
+            r.paymentTypeKey === paymentTypeKey &&
+            r.notes === notes
           );
-          
           if (!existing) {
             recurringExpenses.push({
               category,
               categoryKey,
-              amount: outflow.amount,
+              amount,
               frequency: similarOutflows.length + 1,
               paymentType,
               paymentTypeKey,
-              notes: outflow.notes || '',
+              notes,
               isSubscription: paymentTypeKey === 'subscription'
             });
           }

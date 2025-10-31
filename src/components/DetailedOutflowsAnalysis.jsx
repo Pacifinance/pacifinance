@@ -551,59 +551,57 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
     };
     
     currentMonth.forEach(outflow => {
-      // Estrai correttamente i dati dalla struttura reale
-      const paymentType = outflow.paymentType?.translations?.[language] || 
-                         outflow.paymentType?.label || 
-                         'Unknown';
-      const paymentTypeKey = outflow.paymentType?.label || 'unknown';
-      
-      const category = outflow.categoryTag?.translations?.[language] || 
-                      outflow.categoryTag?.label || 
-                      'Other';
-      const categoryKey = outflow.categoryTag?.label || 'other';
+      // Normalizza e ottieni i dati principali
+      const paymentTypeName = outflow.paymentType?.translations?.[language] || outflow.paymentType?.label || 'Unknown';
+      const paymentTypeKey = (outflow.paymentType?.label || 'unknown').toLowerCase();
+
+      const category = outflow.categoryTag?.translations?.[language] || outflow.categoryTag?.label || 'Other';
+      const categoryKey = (outflow.categoryTag?.label || 'other').toLowerCase();
       const notes = (outflow.notes || '').toLowerCase().trim();
-      const amount = outflow.amount;
-      
-      // Analisi metodi di pagamento
-      if (!paymentMethods[paymentType]) {
-        paymentMethods[paymentType] = {
-          name: paymentType,
+      const amount = Number(outflow.amount) || 0;
+
+      // Analisi metodi di pagamento (usa paymentTypeKey come chiave per coerenza)
+      if (!paymentMethods[paymentTypeKey]) {
+        paymentMethods[paymentTypeKey] = {
+          name: paymentTypeName,
           total: 0,
           count: 0,
           categories: {},
-          isSubscription: paymentType === 'subscription'
+          isSubscription: paymentTypeKey === 'subscription'
         };
       }
-      paymentMethods[paymentType].total += amount;
-      paymentMethods[paymentType].count += 1;
-      if (!paymentMethods[paymentType].categories[categoryKey]) {
-        paymentMethods[paymentType].categories[categoryKey] = {
+      paymentMethods[paymentTypeKey].total += amount;
+      paymentMethods[paymentTypeKey].count += 1;
+      if (!paymentMethods[paymentTypeKey].categories[categoryKey]) {
+        paymentMethods[paymentTypeKey].categories[categoryKey] = {
           name: category,
           amount: 0
         };
       }
-      paymentMethods[paymentType].categories[categoryKey].amount += amount;
-      // Analisi tipologie di pagamento
-      if (!paymentTypologies[paymentType]) {
-        paymentTypologies[paymentType] = {
-          name: paymentType,
+      paymentMethods[paymentTypeKey].categories[categoryKey].amount += amount;
+
+      // Analisi tipologie di pagamento (stessa chiave usata)
+      if (!paymentTypologies[paymentTypeKey]) {
+        paymentTypologies[paymentTypeKey] = {
+          name: paymentTypeName,
           total: 0,
           count: 0,
           categories: {},
-          isSubscription: paymentType === 'subscription'
+          isSubscription: paymentTypeKey === 'subscription'
         };
       }
-      paymentTypologies[paymentType].total += amount;
-      paymentTypologies[paymentType].count += 1;
-      if (!paymentTypologies[paymentType].categories[categoryKey]) {
-        paymentTypologies[paymentType].categories[categoryKey] = {
+      paymentTypologies[paymentTypeKey].total += amount;
+      paymentTypologies[paymentTypeKey].count += 1;
+      if (!paymentTypologies[paymentTypeKey].categories[categoryKey]) {
+        paymentTypologies[paymentTypeKey].categories[categoryKey] = {
           name: category,
           amount: 0
         };
       }
-      paymentTypologies[paymentType].categories[categoryKey].amount += amount;
-      // Analisi abbonamenti
-      if (paymentType === 'subscription') {
+      paymentTypologies[paymentTypeKey].categories[categoryKey].amount += amount;
+
+      // Analisi abbonamenti: usa la key normalizzata per il confronto
+      if (paymentTypeKey === 'subscription' || paymentTypeKey === 'sottoscrizione') {
         subscriptionPayments.total += amount;
         subscriptionPayments.count += 1;
         if (!subscriptionPayments.categories[categoryKey]) {
@@ -616,13 +614,12 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
         subscriptionPayments.categories[categoryKey].amount += amount;
         subscriptionPayments.categories[categoryKey].count += 1;
       }
+
       // Identifica potenziali uscite ricorrenti con logica migliorata
       if (amount > 5) { // Solo uscite significative
-        // Raggruppa per categoria, note (similitudine), tipo pagamento, importo (tolleranza più ampia)
         const similarOutflows = last12Months.flat().filter(e => {
           const eNotes = (e.notes || '').toLowerCase().trim();
           const currentNotes = notes;
-          // Analisi delle note per trovare pattern simili
           let notesMatch = false;
           if (currentNotes && eNotes) {
             const words1 = currentNotes.split(/\s+/);
@@ -631,13 +628,12 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
             const similarity = commonWords.length / Math.max(words1.length, words2.length);
             notesMatch = similarity > 0.6 || currentNotes === eNotes;
           }
-          const categoryMatch = e.categoryTag?.label === outflow.categoryTag?.label;
-          const paymentTypeMatch = e.paymentType?.label === outflow.paymentType?.label;
-          const amountClose = Math.abs(e.amount - amount) < 20; // tolleranza più ampia
-          // Considera ricorrente se almeno categoria, tipo pagamento e note simili
+          const categoryMatch = (e.categoryTag?.label || '').toLowerCase() === (outflow.categoryTag?.label || '').toLowerCase();
+          const paymentTypeMatch = (e.paymentType?.label || '').toLowerCase() === (outflow.paymentType?.label || '').toLowerCase();
+          const amountClose = Math.abs((e.amount || 0) - amount) < 20;
           return categoryMatch && paymentTypeMatch && (notesMatch || !currentNotes) && amountClose;
         });
-        if (similarOutflows.length >= 3) { // almeno 4 occorrenze totali
+        if (similarOutflows.length >= 3) {
           const existing = recurringExpenses.find(r =>
             r.categoryKey === categoryKey &&
             r.paymentTypeKey === paymentTypeKey &&
@@ -649,7 +645,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
               categoryKey,
               amount,
               frequency: similarOutflows.length + 1,
-              paymentType,
+              paymentType: paymentTypeName,
               paymentTypeKey,
               notes,
               isSubscription: paymentTypeKey === 'subscription'

@@ -268,7 +268,7 @@ export default function InsertValue({
   const [allOutflowsAdds, setAllOutflowsAdds] = useState([]);
   const [incomeDate, setIncomeDate] = useState(currentDate);
   const [outflowDate, setOutflowDate] = useState(currentDate);
-  const [balanceDate, setBalanceDate] = useState(currentDate);
+  const [balanceDate, setBalanceDate] = useState({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
   const [activePage, setActivePage] = useState("outflows");
   const [OutflowsTags, setOutflowsTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
@@ -316,6 +316,23 @@ export default function InsertValue({
         gold: getValue('gold', goldValue),
       }
     };
+  };
+
+  // Function to convert month/year selection to actual date for DB
+  const getBalanceDateForDB = (monthYearObj) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+    
+    // If selected month/year is current month/year, use current date
+    if (monthYearObj.month === currentMonth && monthYearObj.year === currentYear) {
+      return currentDate.toISOString().split('T')[0];
+    }
+    
+    // Otherwise, use the last day of the selected month
+    const lastDayOfMonth = new Date(monthYearObj.year, monthYearObj.month, 0).getDate();
+    const date = new Date(monthYearObj.year, monthYearObj.month - 1, lastDayOfMonth);
+    return date.toISOString().split('T')[0];
   };
 
   const options = {
@@ -547,7 +564,8 @@ export default function InsertValue({
 
   const handleConfirmBalance = async () => {
     setIsConfirmBalanceOpen(false);
-    const balancesJson = createBalancesJson(balanceDate);
+    const dbDate = getBalanceDateForDB(balanceDate);
+    const balancesJson = createBalancesJson(dbDate);
 
     try {
       const balancesChange = await axios.post("/balances/add", balancesJson, {
@@ -557,7 +575,8 @@ export default function InsertValue({
         handleSetIsUpdated(false);
         setUpdateBalanceSuccess(true);
         fetchData();
-        setBalanceDate(currentDate);
+        // Reset to current month/year after successful update
+        setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
       } else {
         showError(languages[language].insert.errors.balanceUpdateFailed);
       }
@@ -840,6 +859,7 @@ export default function InsertValue({
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
             onUpdateBalance={handleUpdateBalance}
+            language={language}
           />
         </SectionContainer>
       );
@@ -969,6 +989,7 @@ export default function InsertValue({
           bankValue={bankValue}
           cashValue={cashValue}
           digitalServicesValue={digitalServicesValue}
+          emergencyFundValue={emergencyFundValue}
           stocksValue={stocksValue}
           etfValue={etfValue}
           bitcoinValue={bitcoinValue}

@@ -1,6 +1,7 @@
 import React from 'react';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { Select, MenuItem } from '@mui/material';
 import {
   StyledDateInput,
   ModernActionButton,
@@ -68,13 +69,45 @@ export default function BalanceSection({
   balanceDate,
   setBalanceDate,
   onUpdateBalance,
+  language,
 }) {
-  const { language } = React.useContext(LanguageContext);
 
   const handleBalanceDateChange = (event) => {
-    let inputDate = event.target.value;
-    setBalanceDate(inputDate);
+    const [month, year] = event.target.value.split('-').map(Number);
+    setBalanceDate({ month, year });
   };
+
+  // Create month/year options for the last 12 months
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+  
+  const monthNames = {
+    1: languages[language].months.january,
+    2: languages[language].months.february,
+    3: languages[language].months.march,
+    4: languages[language].months.april,
+    5: languages[language].months.may,
+    6: languages[language].months.june,
+    7: languages[language].months.july,
+    8: languages[language].months.august,
+    9: languages[language].months.september,
+    10: languages[language].months.october,
+    11: languages[language].months.november,
+    12: languages[language].months.december,
+  };
+
+  // Build the last 12 months (including current) - newest first
+  let monthsArray = [];
+  for (let i = 0; i < 12; i++) {
+    let d = new Date(currentYear, currentMonth - 1 - i, 1);
+    monthsArray.push({
+      month: d.getMonth() + 1,
+      year: d.getFullYear(),
+      label: `${monthNames[d.getMonth() + 1]} ${d.getFullYear()}`,
+      value: `${d.getMonth() + 1}-${d.getFullYear()}`
+    });
+  }
 
   // Wrapper e stile per input con simbolo valuta - updated for modern design
   const inputCurrencyWrapper = {
@@ -310,24 +343,44 @@ export default function BalanceSection({
         </div>
       </div>
 
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%'}}>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%'}}>
         <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-          <StyledDateInput
-            type="date"
-            value={balanceDate}
+          <Select
+            value={`${balanceDate.month}-${balanceDate.year}`}
             onChange={handleBalanceDateChange}
-            max={currentDate}
             style={{
               border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
               borderRadius: '12px',
-              padding: '12px 16px',
-              fontSize: '1rem',
+              padding: '4px 6px',
+              fontSize: '0.9rem',
               background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
               color: theme.textColor,
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              minHeight: '48px'
+              minHeight: '40px',
+              minWidth: '160px'
             }}
-          />
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  background: theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.95)' : 'white',
+                  color: theme.textColor,
+                }
+              }
+            }}
+          >
+            {monthsArray.map((option) => (
+              <MenuItem 
+                key={option.value} 
+                value={option.value}
+                style={{
+                  background: 'transparent',
+                  color: theme.textColor
+                }}
+              >
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
         </div>
         <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
           <ModernActionButton theme={theme} onClick={onUpdateBalance}>

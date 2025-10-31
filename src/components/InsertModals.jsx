@@ -24,16 +24,17 @@ export default function InsertModals({
   showConfirmationDeleteOutflow,
   setShowConfirmationDeleteOutflow,
   balanceDate,
-  bankReal,
-  cashReal,
-  digitalServicesReal,
-  stocksReal,
-  etfReal,
-  bitcoinReal,
-  cryptoReal,
-  bondsReal,
-  fundsReal,
-  goldReal,
+  bankValue,
+  cashValue,
+  digitalServicesValue,
+  emergencyFundValue,
+  stocksValue,
+  etfValue,
+  bitcoinValue,
+  cryptoValue,
+  bondsValue,
+  fundsValue,
+  goldValue,
   categoryIncome,
   income,
   noteIncomeAreaValue,
@@ -54,6 +55,23 @@ export default function InsertModals({
 }) {
   const { language } = React.useContext(LanguageContext);
 
+  // Function to convert month/year selection to display date for popup
+  const getDisplayDateForBalance = (monthYearObj) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+    
+    // If selected month/year is current month/year, show current date
+    if (monthYearObj.month === currentMonth && monthYearObj.year === currentYear) {
+      return currentDate.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US');
+    }
+    
+    // Otherwise, show the last day of the selected month
+    const lastDayOfMonth = new Date(monthYearObj.year, monthYearObj.month, 0).getDate();
+    const date = new Date(monthYearObj.year, monthYearObj.month - 1, lastDayOfMonth);
+    return date.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US');
+  };
+
   const handleExitConfirm = (setModalState) => {
     setModalState(false);
   };
@@ -72,38 +90,41 @@ export default function InsertModals({
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {languages[language].assets.bank}: {bankReal}€
+              {languages[language].assets.bank}: {bankValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.cash}: {cashReal}€
+              {languages[language].assets.cash}: {cashValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {languages[language].assets.digitalServices}:{' '}
-              {digitalServicesReal}€
+              {digitalServicesValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.stocks}: {stocksReal}€
+              {languages[language].assets.emergencyFund}: {emergencyFundValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.etf}: {etfReal}€
+              {languages[language].assets.stocks}: {stocksValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.bitcoin}: {bitcoinReal}€
+              {languages[language].assets.etf}: {etfValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.crypto}: {cryptoReal}€
+              {languages[language].assets.bitcoin}: {bitcoinValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.bonds}: {bondsReal}€
+              {languages[language].assets.crypto}: {cryptoValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.funds}: {fundsReal}€
+              {languages[language].assets.bonds}: {bondsValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.gold}: {goldReal}€
+              {languages[language].assets.funds}: {fundsValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.selectedDate}: {balanceDate}
+              {languages[language].assets.gold}: {goldValue}€
+            </MuiCustomDialogContentText>
+            <MuiCustomDialogContentText>
+              {languages[language].general.selectedDate}: {getDisplayDateForBalance(balanceDate)}
             </MuiCustomDialogContentText>
           </MuiCustomDialogContent>
           <MuiCustomDialogActions>

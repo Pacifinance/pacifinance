@@ -350,9 +350,9 @@ const ProfileSettings = ({ theme }) => {
     if (userData) {
       // Carica i settings dall'UserContext usando i selector
       setSettings({
-        monthlySpendingLimit: getExpensesLimit(userData) !== -1 ? getExpensesLimit(userData) : getMonthlySpendingLimit(userData),
-        savingsGoalPercentage: getSavingsPercent(userData) !== -1 ? getSavingsPercent(userData) : getSavingsGoalPercentage(userData),
-        emergencyFundTarget: getEmergencyFundGoal(userData) !== -1 ? getEmergencyFundGoal(userData) : getEmergencyFundTarget(userData),
+        monthlySpendingLimit: getMonthlySpendingLimit(userData),
+        savingsGoalPercentage: getSavingsGoalPercentage(userData),
+        emergencyFundTarget: getEmergencyFundTarget(userData),
         notificationsEnabled: true // Questo potrebbe venire dal backend in futuro
       });
       

@@ -74,6 +74,18 @@ balancesRouter.post("/get", async (req, res) => {
     // Get the last 12 month of balances from the database
     const session = req.session as SessionData
     const balances = await db.balances.getYearlyBalanceByUserId(session.userId);
+    // If a balance is empty, fill it with the data of the most recent
+    // non-empty balance
+    const isBalanceEmpty = (balance: any) => {
+        return Object.keys(balance.balance).length === 0
+    }
+    let lastValidBalance: any = {}
+    for (let i = balances.length - 1; i >= 0; i--) {
+        if (isBalanceEmpty(balances[i]))
+            balances[i].balance = lastValidBalance
+        else
+            lastValidBalance = balances[i].balance
+    }
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(balances);

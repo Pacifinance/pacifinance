@@ -44,28 +44,28 @@ const handleInputBlur = (e, setterFunction) => {
 export default function BalanceSection({
   theme,
   isHidden,
-  bankReal,
-  setBankReal,
-  cashReal,
-  setCashReal,
-  digitalServicesReal,
-  setDigitalServicesReal,
+  bankValue,
+  setBankValue,
+  cashValue,
+  setCashValue,
+  digitalServicesValue,
+  setDigitalServicesValue,
   emergencyFund,
   setEmergencyFund,
-  stocksReal,
-  setStocksReal,
-  etfReal,
-  setETFReal,
-  bitcoinReal,
-  setBitcoinReal,
-  cryptoReal,
-  setCryptoReal,
-  bondsReal,
-  setBondsReal,
-  fundsReal,
-  setFundsReal,
-  goldReal,
-  setGoldReal,
+  stocksValue,
+  setStocksValue,
+  etfValue,
+  setETFValue,
+  bitcoinValue,
+  setBitcoinValue,
+  cryptoValue,
+  setCryptoValue,
+  bondsValue,
+  setBondsValue,
+  fundsValue,
+  setFundsValue,
+  goldValue,
+  setGoldValue,
   balanceDate,
   setBalanceDate,
   onUpdateBalance,
@@ -165,9 +165,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setBankReal)}
-                onBlur={(e) => handleInputBlur(e, setBankReal)}
-                placeholder={isHidden ? '****' : bankReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setBankValue)}
+                onBlur={(e) => handleInputBlur(e, setBankValue)}
+                placeholder={isHidden ? '****' : bankValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -181,9 +181,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setCashReal)}
-                onBlur={(e) => handleInputBlur(e, setCashReal)}
-                placeholder={isHidden ? '****' : cashReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setCashValue)}
+                onBlur={(e) => handleInputBlur(e, setCashValue)}
+                placeholder={isHidden ? '****' : cashValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -197,9 +197,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setDigitalServicesReal)}
-                onBlur={(e) => handleInputBlur(e, setDigitalServicesReal)}
-                placeholder={isHidden ? '****' : digitalServicesReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setDigitalServicesValue)}
+                onBlur={(e) => handleInputBlur(e, setDigitalServicesValue)}
+                placeholder={isHidden ? '****' : digitalServicesValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -237,9 +237,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setStocksReal)}
-                onBlur={(e) => handleInputBlur(e, setStocksReal)}
-                placeholder={isHidden ? '****' : stocksReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setStocksValue)}
+                onBlur={(e) => handleInputBlur(e, setStocksValue)}
+                placeholder={isHidden ? '****' : stocksValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -253,9 +253,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setETFReal)}
-                onBlur={(e) => handleInputBlur(e, setETFReal)}
-                placeholder={isHidden ? '****' : etfReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setETFValue)}
+                onBlur={(e) => handleInputBlur(e, setETFValue)}
+                placeholder={isHidden ? '****' : etfValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -269,9 +269,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setBitcoinReal)}
-                onBlur={(e) => handleInputBlur(e, setBitcoinReal)}
-                placeholder={isHidden ? '****' : bitcoinReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setBitcoinValue)}
+                onBlur={(e) => handleInputBlur(e, setBitcoinValue)}
+                placeholder={isHidden ? '****' : bitcoinValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -285,9 +285,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setCryptoReal)}
-                onBlur={(e) => handleInputBlur(e, setCryptoReal)}
-                placeholder={isHidden ? '****' : cryptoReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setCryptoValue)}
+                onBlur={(e) => handleInputBlur(e, setCryptoValue)}
+                placeholder={isHidden ? '****' : cryptoValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -301,9 +301,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setBondsReal)}
-                onBlur={(e) => handleInputBlur(e, setBondsReal)}
-                placeholder={isHidden ? '****' : bondsReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setBondsValue)}
+                onBlur={(e) => handleInputBlur(e, setBondsValue)}
+                placeholder={isHidden ? '****' : bondsValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -317,9 +317,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setFundsReal)}
-                onBlur={(e) => handleInputBlur(e, setFundsReal)}
-                placeholder={isHidden ? '****' : fundsReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setFundsValue)}
+                onBlur={(e) => handleInputBlur(e, setFundsValue)}
+                placeholder={isHidden ? '****' : fundsValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>
@@ -333,9 +333,9 @@ export default function BalanceSection({
               <span style={currencySymbolStyle}>€</span>
               <input
                 type="text"
-                onChange={(e) => handleInputChange(e, setGoldReal)}
-                onBlur={(e) => handleInputBlur(e, setGoldReal)}
-                placeholder={isHidden ? '****' : goldReal.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+                onChange={(e) => handleInputChange(e, setGoldValue)}
+                onBlur={(e) => handleInputBlur(e, setGoldValue)}
+                placeholder={isHidden ? '****' : goldValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
                 style={inputWithCurrency}
               />
             </div>

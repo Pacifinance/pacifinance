@@ -21,7 +21,9 @@ import {
   ShoppingBag,
   Clock,
   CalendarDays,
-  CalendarCheck
+  CalendarCheck,
+  Wallet,
+  Receipt
 } from 'lucide-react';
 import languages from '../data/languages.json';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
@@ -87,6 +89,74 @@ const FilterSection = styled.div`
   
   @media (max-width: 768px) {
     gap: 0.5rem;
+  }
+`;
+
+const MonthSelector = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  
+  label {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  
+  select {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: ${props => props.theme.mode === 'dark' 
+      ? 'rgba(255, 255, 255, 0.08)' 
+      : 'rgba(255, 255, 255, 0.8)'};
+    color: ${props => props.theme.mode === 'dark' ? 'white' : '#1f2937'};
+    border: 1px solid ${props => props.theme.mode === 'dark' 
+      ? 'rgba(255, 255, 255, 0.1)' 
+      : 'rgba(0, 0, 0, 0.08)'};
+    
+    &:hover {
+      background: ${props => props.theme.mode === 'dark' 
+        ? 'rgba(255, 255, 255, 0.12)' 
+        : 'rgba(255, 255, 255, 0.95)'};
+    }
+    
+    &:focus {
+      outline: none;
+      border-color: ${props => props.theme.buttonBackgroundColor};
+    }
+    
+    option {
+      background: white;
+      color: #1f2937;
+      padding: 0.5rem;
+      
+      &:hover {
+        background: ${props => props.theme.buttonBackgroundColor};
+        color: white;
+      }
+      
+      &:checked {
+        background: ${props => props.theme.buttonBackgroundColor};
+        color: white;
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    select {
+      width: 100%;
+      max-width: 300px;
+    }
   }
 `;
 
@@ -476,6 +546,28 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
   const t = languages[language].graphs.statsOutflows.outflowAnalysis;
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0); // 0 = mese corrente
+  const [recurringDisplayMode, setRecurringDisplayMode] = useState('thisMonth'); // 'thisMonth' o 'last12Months'
+
+  // Genera lista mesi per il selettore
+  const monthOptions = useMemo(() => {
+    const options = [];
+    const currentDate = new Date();
+    
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthName = date.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      options.push({
+        value: i,
+        label: i === 0 ? t.currentMonth : monthName.charAt(0).toUpperCase() + monthName.slice(1)
+      });
+    }
+    
+    return options;
+  }, [language, t]);
 
   // Analisi dati delle uscite
   const expenseAnalysis = useMemo(() => {
@@ -486,8 +578,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
       return null;
     }
 
-    const currentMonth = allOutflows[0] || [];
-    const previousMonth = allOutflows[1] || [];
+    const currentMonth = allOutflows[selectedMonthIndex] || [];
+    const previousMonth = allOutflows[selectedMonthIndex + 1] || [];
     const last12Months = allOutflows.slice(0, 12) || [];
 
     // Calcola totali per periodo
@@ -498,11 +590,11 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
     // Analisi per categoria
     const categoryAnalysis = {};
-    const currentMonthCategories = totalOutflowsPerCategoryPerMonth[0] || {};
+    const currentMonthCategories = totalOutflowsPerCategoryPerMonth[selectedMonthIndex] || {};
 
     Object.keys(currentMonthCategories).forEach(category => {
       const currentAmount = currentMonthCategories[category] || 0;
-      const previousAmount = totalOutflowsPerCategoryPerMonth[1]?.[category] || 0;
+      const previousAmount = totalOutflowsPerCategoryPerMonth[selectedMonthIndex + 1]?.[category] || 0;
       
       // Calcola media ultimi 12 mesi per questa categoria
       let totalLast12Months = 0;
@@ -672,7 +764,52 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
         index === self.findIndex(e => e.category === outflow.category && Math.abs(e.amount - outflow.amount) < 1)
       )
     };
-  }, [userData]);
+  }, [userData, selectedMonthIndex]);
+  
+  // Calcola ricorrenti per tutti i 12 mesi (sempre basati su tutti i mesi)
+  const recurringLast12Months = useMemo(() => {
+    const allOutflows = getAllOutflows(userData);
+    if (!allOutflows || allOutflows.length === 0) return [];
+    
+    const last12Months = allOutflows.slice(0, 12) || [];
+    const recurringMap = new Map();
+    
+    last12Months.flat().forEach(outflow => {
+      if (outflow.amount <= 5) return;
+      
+      const categoryKey = (outflow.categoryTag?.label || 'other').toLowerCase();
+      const paymentTypeKey = (outflow.paymentType?.label || 'unknown').toLowerCase();
+      const notes = (outflow.notes || '').toLowerCase().trim();
+      const amount = Number(outflow.amount) || 0;
+      
+      const key = `${categoryKey}-${paymentTypeKey}-${notes}`;
+      
+      if (!recurringMap.has(key)) {
+        recurringMap.set(key, {
+          category: outflow.categoryTag?.translations?.[language] || outflow.categoryTag?.label || 'Other',
+          categoryKey,
+          paymentType: outflow.paymentType?.translations?.[language] || outflow.paymentType?.label || 'Unknown',
+          paymentTypeKey,
+          notes,
+          amounts: [],
+          frequency: 0,
+          isSubscription: paymentTypeKey === 'subscription'
+        });
+      }
+      
+      recurringMap.get(key).amounts.push(amount);
+      recurringMap.get(key).frequency++;
+    });
+    
+    // Filtra solo quelli con almeno 4 occorrenze
+    return Array.from(recurringMap.values())
+      .filter(item => item.frequency >= 4)
+      .map(item => ({
+        ...item,
+        amount: item.amounts.reduce((sum, val) => sum + val, 0) / item.amounts.length // media degli importi
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [userData, language]);
 
   if (!expenseAnalysis) {
     return (
@@ -750,19 +887,36 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
         <SectionHeader>
           <h2>{t.title}</h2>
           <p>{t.subtitle}</p>
-        </SectionHeader>      {/* Overview Cards */}
+        </SectionHeader>
+        
+        {/* Selettore Mese */}
+        <MonthSelector theme={theme}>
+          <label>{t.selectMonth}:</label>
+          <select 
+            value={selectedMonthIndex} 
+            onChange={(e) => setSelectedMonthIndex(Number(e.target.value))}
+          >
+            {monthOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </MonthSelector>
+        
+        {/* Overview Cards */}
       <OverviewGrid>
         <OverviewCard theme={theme}>
           <div className="icon">
-            <BarChart3 size={24} />
+            <Wallet size={24} />
           </div>
           <div className="value">{isHidden ? '****' : formatCurrency(overview.currentMonthTotal)}</div>
-          <div className="label">{t.currentMonthExpenses}</div>
+          <div className="label">{t.currentMonthTotal}</div>
         </OverviewCard>
 
         <OverviewCard theme={theme}>
           <div className="icon">
-            <Activity size={24} />
+            <Receipt size={24} />
           </div>
           <div className="value">{isHidden ? '****' : overview.totalTransactions}</div>
           <div className="label">{t.totalTransactions}</div>
@@ -778,10 +932,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
         <OverviewCard theme={theme}>
           <div className="icon">
-            <Target size={24} />
+            <Repeat size={24} />
           </div>
           <div className="value">{isHidden ? '****' : recurringExpenses.length}</div>
-          <div className="label">{t.recurringExpenses}</div>
+          <div className="label">{t.recurringThisMonth}</div>
         </OverviewCard>
       </OverviewGrid>
 
@@ -965,49 +1119,109 @@ export default function DetailedOutflowAnalysis({ theme, userData, language = 'i
 
 
 
-        {/* Recurring Outflows */}
+        {/* Recurring Outflows - This Month */}
         {recurringExpenses.length > 0 && (
-          <RecurringSection theme={theme}>
-            <div className="recurring-header">
-              <Repeat className="recurring-icon" size={24} />
-              <div className="recurring-title">{t.recurringIdentified}</div>
-            </div>
-            <div className="recurring-list">
-              {recurringExpenses
-                .sort((a, b) => b.amount - a.amount)
-                .map((outflow, index) => (
-                  <div key={index} className="recurring-item">
-                    <div className="recurring-category">
-                      {outflow.category} • {outflow.paymentType} • {outflow.frequency} {t.times}
-                      {outflow.notes && (
-                        <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: '0.25rem' }}>
-                          "{outflow.notes}"
-                        </div>
-                      )}
+          <>
+            <SectionHeader style={{ marginTop: '3rem', marginBottom: '2rem' }}>
+              <h2 style={{ color: 'white' }}>{t.recurringIdentifiedThisMonth}</h2>
+              <p style={{ color: 'white' }}>
+                {language === 'it' 
+                  ? 'Pagamenti ricorrenti identificati nel mese selezionato'
+                  : 'Recurring payments identified in the selected month'
+                }
+              </p>
+            </SectionHeader>
+            
+            <RecurringSection theme={theme}>
+              <div className="recurring-list">
+                {recurringExpenses
+                  .sort((a, b) => b.amount - a.amount)
+                  .map((outflow, index) => (
+                    <div key={index} className="recurring-item">
+                      <div className="recurring-category">
+                        {outflow.category} • {outflow.paymentType} • {outflow.frequency} {t.times}
+                        {outflow.notes && (
+                          <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: '0.25rem' }}>
+                            "{outflow.notes}"
+                          </div>
+                        )}
+                      </div>
+                      <div className="recurring-amount">
+                        {isHidden ? '****' : formatCurrency(outflow.amount)}
+                        {outflow.isSubscription && (
+                          <div style={{ fontSize: '0.7rem', color: theme.buttonBackgroundColor }}>
+                            🔄 {t.subscription}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="recurring-amount">
-                      {isHidden ? '****' : formatCurrency(outflow.amount)}
-                      {outflow.isSubscription && (
-                        <div style={{ fontSize: '0.7rem', color: theme.buttonBackgroundColor }}>
-                          🔄 {t.subscription}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))
+                  ))
+                }
+              </div>
+              <div style={{ 
+                marginTop: '1rem', 
+                fontSize: '0.875rem', 
+                color: 'white',
+                textAlign: 'center'
+              }}>
+                {t.totalMonthlyRecurring} {isHidden ? '****' : formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
+              </div>
+            </RecurringSection>
+          </>
+        )}
+      </PaymentMethodsSection>
+      
+      {/* Recurring Outflows - Last 12 Months */}
+      {recurringLast12Months.length > 0 && (
+        <>
+          <SectionHeader style={{ marginTop: '3rem', marginBottom: '2rem' }}>
+            <h2 style={{ color: 'white' }}>{t.recurringIdentifiedLast12M}</h2>
+            <p style={{ color: 'white' }}>
+              {language === 'it' 
+                ? 'Tutti i pagamenti ricorrenti identificati negli ultimi 12 mesi'
+                : 'All recurring payments identified in the last 12 months'
               }
+            </p>
+          </SectionHeader>
+          
+          <RecurringSection theme={theme}>
+            <div className="recurring-list">
+              {recurringLast12Months.map((outflow, index) => (
+                <div key={index} className="recurring-item">
+                  <div className="recurring-category">
+                    {outflow.category} • {outflow.paymentType} • {outflow.frequency} {t.times}
+                    {outflow.notes && (
+                      <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: '0.25rem' }}>
+                        "{outflow.notes}"
+                      </div>
+                    )}
+                  </div>
+                  <div className="recurring-amount">
+                    {isHidden ? '****' : formatCurrency(outflow.amount)}
+                    {outflow.isSubscription && (
+                      <div style={{ fontSize: '0.7rem', color: theme.buttonBackgroundColor }}>
+                        🔄 {t.subscription}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
             <div style={{ 
               marginTop: '1rem', 
               fontSize: '0.875rem', 
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              opacity: 0.8
             }}>
-              {t.totalMonthlyRecurring} {isHidden ? '****' : formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
+              {language === 'it' 
+                ? `Media importo mensile basata su ${recurringLast12Months.length} pagamenti ricorrenti identificati negli ultimi 12 mesi`
+                : `Average monthly amount based on ${recurringLast12Months.length} recurring payments identified in the last 12 months`
+              }
             </div>
           </RecurringSection>
-        )}
-      </PaymentMethodsSection>
+        </>
+      )}
     </AnalysisContainer>
   );
 }

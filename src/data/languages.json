@@ -491,10 +491,14 @@
                 "outflowAnalysis": {
                     "title": "Analisi Dettagliata Uscite",
                     "subtitle": "Analisi approfondita delle tue uscite per categoria, metodi di pagamento e pattern ricorrenti",
+                    "currentMonthTotal": "Totale Spese Mese",
                     "currentMonthOutflows": "Uscite Mese Corrente",
+                    "currentMonthExpenses": "Spese Mese Corrente",
                     "totalTransactions": "Transazioni Totali",
                     "monthlyAverage12M": "Media Mensile 12M",
                     "recurringOutflows": "Uscite Ricorrenti",
+                    "recurringExpenses": "Pagamenti Ricorrenti",
+                    "recurringThisMonth": "Ricorrenti Questo Mese",
                     "vsPrevMonth": "vs Mese Prec.",
                     "vs12MAvg": "vs Media 12M",
                     "transactions": "Transazioni",
@@ -505,6 +509,8 @@
                     "ofTotal": "del Totale",
                     "topCategories": "Categorie Principali:",
                     "recurringIdentified": "Uscite Ricorrenti Identificate",
+                    "recurringIdentifiedThisMonth": "Pagamenti Ricorrenti Rilevati Questo Mese",
+                    "recurringIdentifiedLast12M": "Tutti i Pagamenti Ricorrenti (Ultimi 12 Mesi)",
                     "totalMonthlyRecurring": "Totale mensile ricorrente:",
                     "times": "volte",
                     "activeSubscriptions": "Sottoscrizioni Attive",
@@ -513,7 +519,11 @@
                     "paymentTypologiesTitle": "Analisi Tipologie di Pagamento",
                     "paymentTypologiesSubtitle": "Categorizzazione degli acquisti per tipologia",
                     "notSpecified": "Non Specificato",
-                    "subscription": "Sottoscrizione"
+                    "subscription": "Sottoscrizione",
+                    "selectMonth": "Seleziona Mese",
+                    "currentMonth": "Mese Corrente",
+                    "previousMonth": "Mese Precedente",
+                    "showRecurringFor": "Mostra ricorrenti per:"
                 }
             },
             "dashboard": {
@@ -1744,10 +1754,14 @@
                 "outflowAnalysis": {
                     "title": "Detailed Outflow Analysis",
                     "subtitle": "In-depth analysis of your outflows by category, payment methods and recurring patterns",
+                    "currentMonthTotal": "Total Monthly Expenses",
                     "currentMonthOutflows": "Current Month Outflows",
+                    "currentMonthExpenses": "Current Month Expenses",
                     "totalTransactions": "Total Transactions", 
                     "monthlyAverage12M": "12M Monthly Average",
                     "recurringOutflows": "Recurring Outflows",
+                    "recurringExpenses": "Recurring Payments",
+                    "recurringThisMonth": "Recurring This Month",
                     "vsPrevMonth": "vs Prev Month",
                     "vs12MAvg": "vs 12M Avg",
                     "transactions": "Transactions",
@@ -1758,6 +1772,8 @@
                     "ofTotal": "of Total",
                     "topCategories": "Top Categories:",
                     "recurringIdentified": "Identified Recurring Outflows",
+                    "recurringIdentifiedThisMonth": "Recurring Payments Detected This Month",
+                    "recurringIdentifiedLast12M": "All Recurring Payments (Last 12 Months)",
                     "totalMonthlyRecurring": "Total monthly recurring:",
                     "times": "times",
                     "activeSubscriptions": "Active Subscriptions",
@@ -1766,7 +1782,11 @@
                     "paymentTypologiesTitle": "Payment Typologies Analysis",
                     "paymentTypologiesSubtitle": "Purchase categorization by typology",
                     "notSpecified": "Not Specified",
-                    "subscription": "Subscription"
+                    "subscription": "Subscription",
+                    "selectMonth": "Select Month",
+                    "currentMonth": "Current Month",
+                    "previousMonth": "Previous Month",
+                    "showRecurringFor": "Show recurring for:"
                 }
             },
             "dashboard": {

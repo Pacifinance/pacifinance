@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faSearch, faCalendarAlt, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSearch, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -82,8 +82,29 @@ export default function IncomeSection({
   setShowIncomeDatePicker,
   onAddIncome,
   onDeleteIncome,
+  // New props for balance selection
+  selectedOption,
+  setSelectedOption,
+  balanceOptions,
+  incomeDateFilterStart,
+  setIncomeDateFilterStart,
+  incomeDateFilterEnd,
+  setIncomeDateFilterEnd,
 }) {
   const { language } = React.useContext(LanguageContext);
+  
+  // Sorting state
+  const [sortColumn, setSortColumn] = React.useState(null);
+  const [sortDirection, setSortDirection] = React.useState('asc');
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
 
   const handleIncomeDateChange = (event) => {
     let inputDate = event.target.value;
@@ -187,6 +208,19 @@ export default function IncomeSection({
     return { min: firstDay, max: lastDay };
   }
 
+  const getSortIcon = (column) => {
+    if (sortColumn !== column) return <FontAwesomeIcon icon={faSort} style={{ marginLeft: 4, opacity: 0.5, fontSize: '0.8em' }} />;
+    return sortDirection === 'asc' 
+      ? <FontAwesomeIcon icon={faSortUp} style={{ marginLeft: 4, fontSize: '0.9em' }} />
+      : <FontAwesomeIcon icon={faSortDown} style={{ marginLeft: 4, fontSize: '0.9em' }} />;
+  };
+
+  const sortableHeaderStyle = {
+    cursor: 'pointer',
+    userSelect: 'none',
+    transition: 'background-color 0.2s',
+  };
+
   function renderTableHeader() {
     const dropdownStyle = {
       background: '#fff',
@@ -202,18 +236,27 @@ export default function IncomeSection({
     return (
       <tr style={{ color: 'white', background: 'transparent' }}>
         <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-          <select
-            value={incomeCategoryFilter}
-            onChange={(e) => setIncomeCategoryFilter(e.target.value)}
-            style={dropdownStyle}
-          >
-            <option value="">{languages[language].insert.incomeSection.tableColumns.category}</option>
-            {incomesTags.map((item) => (
-              <option key={item.index} value={item.translations[language]}>
-                {item.translations[language]}
-              </option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <span 
+              onClick={() => handleSort('category')} 
+              style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
+            >
+              {languages[language].insert.incomeSection.tableColumns.category}
+              {getSortIcon('category')}
+            </span>
+            <select
+              value={incomeCategoryFilter}
+              onChange={(e) => setIncomeCategoryFilter(e.target.value)}
+              style={{ ...dropdownStyle, minWidth: 100, fontSize: '0.85em' }}
+            >
+              <option value="">{languages[language].general.all}</option>
+              {incomesTags.map((item) => (
+                <option key={item.index} value={item.translations[language]}>
+                  {item.translations[language]}
+                </option>
+              ))}
+            </select>
+          </div>
         </th>
         <th
           style={{
@@ -222,7 +265,13 @@ export default function IncomeSection({
             minWidth: 100,
           }}
         >
-          {languages[language].general.value}
+          <span 
+            onClick={() => handleSort('amount')} 
+            style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
+          >
+            {languages[language].general.value}
+            {getSortIcon('amount')}
+          </span>
         </th>
         <th
           style={{
@@ -234,80 +283,119 @@ export default function IncomeSection({
           <div
             style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
+              gap: '4px',
             }}
           >
-            {!showIncomeNoteInput ? (
-              <span
-                style={{ color: 'white', marginRight: 6, cursor: 'pointer' }}
-                onClick={() => setShowIncomeNoteInput(true)}
-              >
-                {languages[language].insert.incomeSection.tableColumns.note} <FontAwesomeIcon icon={faSearch} />
-              </span>
-            ) : (
-              <input
-                type="text"
-                placeholder={languages[language].insert.incomeSection.tableColumns.note}
-                value={incomeNoteFilter}
-                onChange={(e) => setIncomeNoteFilter(e.target.value)}
-                className="w-full"
-                style={{
-                  color: 'white',
-                  background: 'transparent',
-                  textAlign: 'center',
-                  marginTop: 2,
-                }}
-                onBlur={() => setShowIncomeNoteInput(false)}
-                autoFocus
-              />
-            )}
+            <span 
+              onClick={() => handleSort('note')} 
+              style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
+            >
+              {languages[language].insert.incomeSection.tableColumns.note}
+              {getSortIcon('note')}
+            </span>
+            <input
+              type="text"
+              placeholder={languages[language].general.clearFilter || 'Filtra...'}
+              value={incomeNoteFilter}
+              onChange={(e) => setIncomeNoteFilter(e.target.value)}
+              style={{
+                color: '#111',
+                background: 'white',
+                textAlign: 'center',
+                padding: '2px 4px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                fontSize: '0.8em',
+                width: '100px',
+              }}
+            />
           </div>
         </th>
         <th
           style={{
             textAlign: 'center',
             verticalAlign: 'middle',
-            minWidth: 120,
+            minWidth: 180,
           }}
         >
           <div
             style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
+              gap: '4px',
             }}
           >
-            {!showIncomeDatePicker ? (
-              <span
-                style={{ color: 'white', marginRight: 6, cursor: 'pointer' }}
-                onClick={() => setShowIncomeDatePicker(true)}
-              >
-                <FontAwesomeIcon icon={faCalendarAlt} />{' '}
-                {incomeDateFilter
-                  ? incomeDateFilter.split('-').reverse().join('/')
-                  : 'Data'}
-              </span>
-            ) : (
+            <span 
+              onClick={() => handleSort('date')} 
+              style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
+            >
+              <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: 4 }} />
+              {languages[language].general.date || 'Data'}
+              {getSortIcon('date')}
+            </span>
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <input
                 type="date"
-                value={incomeDateFilter}
-                onChange={(e) => {
-                  setIncomeDateFilter(e.target.value);
-                  setShowIncomeDatePicker(false);
-                }}
-                className="w-full"
+                value={incomeDateFilterStart || ''}
+                onChange={(e) => setIncomeDateFilterStart(e.target.value)}
                 style={{
-                  color: 'white',
-                  background: 'transparent',
+                  color: '#111',
+                  background: 'white',
                   textAlign: 'center',
-                  marginTop: 2,
+                  padding: '2px 4px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  fontSize: '0.8em',
+                  width: '110px',
                 }}
                 min={min}
                 max={max}
-                onBlur={() => setShowIncomeDatePicker(false)}
-                autoFocus
+                placeholder="Da"
               />
+              <span style={{ color: 'white', fontSize: '0.75em' }}>-</span>
+              <input
+                type="date"
+                value={incomeDateFilterEnd || ''}
+                onChange={(e) => setIncomeDateFilterEnd(e.target.value)}
+                style={{
+                  color: '#111',
+                  background: 'white',
+                  textAlign: 'center',
+                  padding: '2px 4px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  fontSize: '0.8em',
+                  width: '110px',
+                }}
+                min={min}
+                max={max}
+                placeholder="A"
+              />
+            </div>
+            {(incomeDateFilterStart || incomeDateFilterEnd) && (
+              <button
+                onClick={() => {
+                  setIncomeDateFilterStart('');
+                  setIncomeDateFilterEnd('');
+                }}
+                style={{
+                  color: 'white',
+                  background: 'rgba(46,204,113,0.6)',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  fontSize: '0.7em',
+                  cursor: 'pointer',
+                  marginTop: '2px'
+                }}
+              >
+                {languages[language].general.clearFilter || 'Clear'}
+              </button>
             )}
           </div>
         </th>
@@ -317,8 +405,20 @@ export default function IncomeSection({
   }
 
   function renderIncomeItems(chosenIncomesToShow) {
-    const filtered = chosenIncomesToShow.filter(
-      (add) =>
+    let filtered = chosenIncomesToShow.filter((add) => {
+      const addDate = new Date(add.date).toISOString().slice(0, 10);
+      
+      // Date range filter
+      let dateMatch = true;
+      if (incomeDateFilterStart && incomeDateFilterEnd) {
+        dateMatch = addDate >= incomeDateFilterStart && addDate <= incomeDateFilterEnd;
+      } else if (incomeDateFilterStart) {
+        dateMatch = addDate >= incomeDateFilterStart;
+      } else if (incomeDateFilterEnd) {
+        dateMatch = addDate <= incomeDateFilterEnd;
+      }
+      
+      return (
         (!incomeCategoryFilter ||
           add.categoryTag.translations[language] === incomeCategoryFilter) &&
         (!incomeNoteFilter ||
@@ -326,12 +426,45 @@ export default function IncomeSection({
             add.notes
               .toLowerCase()
               .includes(incomeNoteFilter.toLowerCase()))) &&
-        (!incomeDateFilter ||
-          new Date(add.date).toISOString().slice(0, 10) === incomeDateFilter),
-    );
+        dateMatch
+      );
+    });
+
+    // Apply sorting
+    if (sortColumn) {
+      filtered = [...filtered].sort((a, b) => {
+        let aVal, bVal;
+        switch (sortColumn) {
+          case 'category':
+            aVal = a.categoryTag?.translations?.[language] || '';
+            bVal = b.categoryTag?.translations?.[language] || '';
+            break;
+          case 'amount':
+            aVal = a.amount || 0;
+            bVal = b.amount || 0;
+            break;
+          case 'note':
+            aVal = a.notes || '';
+            bVal = b.notes || '';
+            break;
+          case 'date':
+            aVal = new Date(a.date).getTime();
+            bVal = new Date(b.date).getTime();
+            break;
+          default:
+            return 0;
+        }
+        if (typeof aVal === 'string') {
+          const cmp = aVal.localeCompare(bVal);
+          return sortDirection === 'asc' ? cmp : -cmp;
+        }
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      });
+    }
+
     const totals = getTotals(filtered, chosenIncomesToShow);
     const filtersActive =
-      incomeCategoryFilter || incomeNoteFilter || incomeDateFilter;
+      incomeCategoryFilter || incomeNoteFilter || incomeDateFilterStart || incomeDateFilterEnd;
     const rows = [
       ...filtered.map((add, index) => {
         let colorKey = undefined;
@@ -624,6 +757,41 @@ export default function IncomeSection({
               width: '100%'
             }}
           />
+        </div>
+
+        {/* Balance Destination Select */}
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
+          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
+            {languages[language].insert.incomeSection.increaseWhichBalance || 'Aggiungi a'}
+          </label>
+          <Select
+            value={selectedOption}
+            onChange={(e) => setSelectedOption(e.target.value)}
+            style={{ 
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              minHeight: '48px',
+              width: '100%'
+            }}
+            displayEmpty
+            renderValue={(value) => {
+              if (value === '') {
+                return languages[language].general.selectAnOption || 'Nessuno (opzionale)';
+              }
+              return value;
+            }}
+          >
+            <MenuItem value="">
+              <em>{languages[language].general.selectAnOption || 'Nessuno (opzionale)'}</em>
+            </MenuItem>
+            {balanceOptions && Object.keys(balanceOptions).map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
         </div>
       </div>
 

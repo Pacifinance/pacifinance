@@ -67,8 +67,7 @@ export default function InsertModals({
     }
     
     // Otherwise, show the last day of the selected month
-    const lastDayOfMonth = new Date(monthYearObj.year, monthYearObj.month, 0).getDate();
-    const date = new Date(monthYearObj.year, monthYearObj.month - 1, lastDayOfMonth);
+    const date = new Date(monthYearObj.year, monthYearObj.month, 0);
     return date.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US');
   };
 

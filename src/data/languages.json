@@ -23,6 +23,7 @@
             "saved": "Risparmiato",
             "balance": "Bilancio",
             "total": "Totale",
+            "totalFiltered": "Totale Filtrato",
             "value": "Valore",
             "note": "Nota",
             "noData": "Mancanza di dati",
@@ -37,8 +38,10 @@
             "deposited": "Depositati",
             "comingSoon": "Prossimamente",
             "weAreWorking": "Stiamo lavorando a questa funzionalità",
-            "selectAnOption": "Seleziona un'opzione",
-            "objective": "Obiettivo"
+            "selectAnOption": "Nessuno (opzionale)",
+            "objective": "Obiettivo",
+            "clearFilter": "Cancella",
+            "all": "Tutti"
         },
         "months": {
             "january": "Gennaio",
@@ -152,7 +155,7 @@
                     }
                 },
                 "cta": {
-                    "title": "Smetti di Navigare a Vista nelle Tue",
+                    "title": "Vuoi Smettere di Navigare a Vista nelle Tue",
                     "subtitle": "Finanze",
                     "description": "Basta conti sparsi e confusione. Unifica tutto in PaciFinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
                     "button": "Apri il Tuo Account Gratuito",
@@ -1286,6 +1289,7 @@
             "saved": "Saved",
             "balance": "Balance",
             "total": "Total",
+            "totalFiltered": "Total Filtered",
             "value": "Value",
             "note": "Note",
             "noData": "No data",
@@ -1300,8 +1304,10 @@
             "deposited": "Deposited",
             "comingSoon": "Coming soon",
             "weAreWorking": "We are working on this feature",
-            "selectAnOption": "Select an option",
-            "objective": "Objective"
+            "selectAnOption": "None (optional)",
+            "objective": "Objective",
+            "clearFilter": "Clear",
+            "all": "All"
         },
         "cookie": {
             "title": "We use cookies",

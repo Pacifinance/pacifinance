@@ -177,7 +177,7 @@ const SectionContainer = styled.div`
   box-shadow: ${(props) => props.theme.mode === 'dark' 
     ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
     : '0 4px 20px rgba(0, 0, 0, 0.08)'};
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,7 +186,6 @@ const SectionContainer = styled.div`
   max-width: 1000px;
   
   &:hover {
-    transform: translateY(-4px);
     box-shadow: ${(props) => props.theme.mode === 'dark' 
       ? '0 12px 40px rgba(0, 0, 0, 0.4)' 
       : '0 8px 30px rgba(0, 0, 0, 0.12)'};
@@ -278,10 +277,12 @@ export default function InsertValue({
 
   // Filtering states
   const [incomeCategoryFilter, setIncomeCategoryFilter] = useState("");
-  const [incomeDateFilter, setIncomeDateFilter] = useState("");
+  const [incomeDateFilterStart, setIncomeDateFilterStart] = useState("");
+  const [incomeDateFilterEnd, setIncomeDateFilterEnd] = useState("");
   const [incomeNoteFilter, setIncomeNoteFilter] = useState("");
   const [outflowCategoryFilter, setOutflowCategoryFilter] = useState("");
-  const [outflowDateFilter, setOutflowDateFilter] = useState("");
+  const [outflowDateFilterStart, setOutflowDateFilterStart] = useState("");
+  const [outflowDateFilterEnd, setOutflowDateFilterEnd] = useState("");
   const [outflowNoteFilter, setOutflowNoteFilter] = useState("");
   const [outflowTypologyFilter, setOutflowTypologyFilter] = useState("");
 
@@ -330,9 +331,12 @@ export default function InsertValue({
     }
     
     // Otherwise, use the last day of the selected month
-    const lastDayOfMonth = new Date(monthYearObj.year, monthYearObj.month, 0).getDate();
-    const date = new Date(monthYearObj.year, monthYearObj.month - 1, lastDayOfMonth);
-    return date.toISOString().split('T')[0];
+    // monthYearObj.month è 1-based (1=Gennaio, 11=Novembre, 12=Dicembre)
+    // Per ottenere l'ultimo giorno: creiamo il primo giorno del mese successivo e sottraiamo 1 giorno
+    //return date.toISOString().split('T')[0];
+    const date = new Date(monthYearObj.year, monthYearObj.month, 0);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   };
 
   const options = {
@@ -532,7 +536,8 @@ export default function InsertValue({
       alert(languages[language].insert.errors.insertValidValue);
       return;
     }
-    setIsConfirmIncomeOpen(true);
+    // Directly submit without confirmation modal
+    handleConfirmInEx(false);
   };
 
   const handleAddOutflow = () => {
@@ -547,7 +552,8 @@ export default function InsertValue({
       return;
     }
     
-    setIsConfirmOutflowOpen(true);
+    // Directly submit without confirmation modal
+    handleConfirmInEx(true);
   };
 
   const handleDeleteIncome = (date, amount) => {
@@ -606,9 +612,9 @@ export default function InsertValue({
   const handleConfirmInEx = async (isOutflow) => {
     let inExJson = {};
     const originalOutflowAmount = outflow; // Store original value for limit check
+    const originalIncomeAmount = income; // Store original value for balance update
     
     if (isOutflow) {
-      setIsConfirmOutflowOpen(false);
       inExJson = createInExJson(
         true,
         outflowDate,
@@ -617,12 +623,11 @@ export default function InsertValue({
         typoOutflow.key,
         categoryOutflow.key,
       );
+      // Only reset note, value and date - keep category, typology and balance source for quick re-entry
       setNoteOutflowAreaValue("");
-      setCategoryOutflow({ key: "", value: "" });
-      setTypoOutflow({ key: "", value: "" });
+      setOutflow("");
       setOutflowDate(currentDate);
     } else {
-      setIsConfirmIncomeOpen(false);
       inExJson = createInExJson(
         false,
         incomeDate,
@@ -631,15 +636,16 @@ export default function InsertValue({
         0,
         categoryIncome.key,
       );
+      // Only reset note, value and date - keep category and balance destination for quick re-entry
       setNoteIncomeAreaValue("");
-      setCategoryIncome({ key: "", value: "" });
+      setIncome("");
       setIncomeDate(currentDate);
     }
     try {
       const inExAdd = await axios.post("/expenses/add", inExJson, {
         withCredentials: true,
       });
-      const balanceOptions = {
+      const balanceOptionsMap = {
         [languages[language].assets.bank]: bankValue,
         [languages[language].assets.cash]: cashValue,
         [languages[language].assets.digitalServices]: digitalServicesValue,
@@ -672,14 +678,14 @@ export default function InsertValue({
         }
         
         if (selectedOption !== "") {
-          const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+          const valueBalanceSelected = parseFloat(balanceOptionsMap[selectedOption]);
           const outflowNumber = parseFloat(originalOutflowAmount);
-          const incomeNumber = parseFloat(income);
+          const incomeNumber = parseFloat(originalIncomeAmount);
           let newValue = 0;
           if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
           else newValue = valueBalanceSelected + incomeNumber;
 
-          const balancesJson = createBalancesJson(balanceDate, selectedOption, newValue);
+          const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
 
           const balancesChange = await axios.post(
             "/balances/add",
@@ -689,7 +695,7 @@ export default function InsertValue({
 
           if (balancesChange.status === 200) {
             handleSetIsUpdated(false);
-            setBalanceDate(currentDate);
+            setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
             setUpdateInExBalanceSuccess(true);
             fetchData();
           } else {
@@ -887,14 +893,19 @@ export default function InsertValue({
             setIncomeCategoryFilter={setIncomeCategoryFilter}
             incomeNoteFilter={incomeNoteFilter}
             setIncomeNoteFilter={setIncomeNoteFilter}
-            incomeDateFilter={incomeDateFilter}
-            setIncomeDateFilter={setIncomeDateFilter}
+            incomeDateFilterStart={incomeDateFilterStart}
+            setIncomeDateFilterStart={setIncomeDateFilterStart}
+            incomeDateFilterEnd={incomeDateFilterEnd}
+            setIncomeDateFilterEnd={setIncomeDateFilterEnd}
             showIncomeNoteInput={showIncomeNoteInput}
             setShowIncomeNoteInput={setShowIncomeNoteInput}
             showIncomeDatePicker={showIncomeDatePicker}
             setShowIncomeDatePicker={setShowIncomeDatePicker}
             onAddIncome={handleAddIncome}
             onDeleteIncome={handleDeleteIncome}
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
+            balanceOptions={options}
           />
         </SectionContainer>
       );
@@ -927,14 +938,19 @@ export default function InsertValue({
             setOutflowTypologyFilter={setOutflowTypologyFilter}
             outflowNoteFilter={outflowNoteFilter}
             setOutflowNoteFilter={setOutflowNoteFilter}
-            outflowDateFilter={outflowDateFilter}
-            setOutflowDateFilter={setOutflowDateFilter}
+            outflowDateFilterStart={outflowDateFilterStart}
+            setOutflowDateFilterStart={setOutflowDateFilterStart}
+            outflowDateFilterEnd={outflowDateFilterEnd}
+            setOutflowDateFilterEnd={setOutflowDateFilterEnd}
             showOutflowNoteInput={showOutflowNoteInput}
             setShowOutflowNoteInput={setShowOutflowNoteInput}
             showOutflowDatePicker={showOutflowDatePicker}
             setShowOutflowDatePicker={setShowOutflowDatePicker}
             onAddOutflow={handleAddOutflow}
             onDeleteOutflow={handleDeleteOutflow}
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
+            balanceOptions={options}
           />
         </SectionContainer>
       );

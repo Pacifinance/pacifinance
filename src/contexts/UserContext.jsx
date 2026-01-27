@@ -334,6 +334,26 @@ export const UserProvider = ({ children }) => {
             // console.log('rankOnExpense:', rankOnExpense);
             // console.log('percentageRankOnExpense:', percentageRankOnExpenses);
 
+            //************************************* STATS AVERAGES **********************************************/
+            
+            const statsAveragesResponse = await axios.post('/stats/averages', null, { withCredentials: true });
+            const statsAveragesData = statsAveragesResponse.data;
+            
+            // Struttura attuale: { balances, expenses, incomes }
+            // Struttura futura: { general: { balances, expenses, incomes }, similar: { balances, expenses, incomes } }
+            const averages = {
+              general: {
+                balances: statsAveragesData.general?.balances ?? statsAveragesData.balances ?? 0,
+                expenses: statsAveragesData.general?.expenses ?? statsAveragesData.expenses ?? 0,
+                incomes: statsAveragesData.general?.incomes ?? statsAveragesData.incomes ?? 0
+              },
+              similar: {
+                balances: statsAveragesData.similar?.balances ?? null,
+                expenses: statsAveragesData.similar?.expenses ?? null,
+                incomes: statsAveragesData.similar?.incomes ?? null
+              }
+            };
+
             // Create assets array for Financial Insights from current balance
             const currentBalance = balancesData[0]?.balance || {};
             const assets = [
@@ -430,7 +450,10 @@ export const UserProvider = ({ children }) => {
               // Goals, limits and assets for Financial Insights
               goals,
               limits,
-              assets
+              assets,
+              
+              // Stats averages for comparison page
+              averages
             });
             handleSetIsUpdated(true);
         }

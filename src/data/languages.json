@@ -730,17 +730,28 @@
                 "savingsRate": {
                     "title": "Tasso di Risparmio",
                     "description": "I tuoi risparmi come percentuale delle entrate",
-                    "comingSoon": "Prossimamente"
+                    "yourRate": "Il tuo tasso",
+                    "avgAll": "Media Tutti gli Utenti",
+                    "avgSimilar": "Media Utenti Simili",
+                    "last12Months": "Ultimi 12 mesi",
+                    "noData": "Dati insufficienti"
                 },
                 "assetAllocation": {
                     "title": "Allocazione Asset",
                     "description": "Come distribuisci la tua ricchezza",
-                    "comingSoon": "Prossimamente"
+                    "currentDistribution": "Distribuzione attuale",
+                    "liquid": "Liquidità",
+                    "investments": "Investimenti",
+                    "crypto": "Crypto",
+                    "other": "Altro",
+                    "noAssets": "Nessun asset registrato"
                 },
                 "spendingCategories": {
                     "title": "Uscite per Categoria",
-                    "description": "Dove spendi i tuoi soldi",
-                    "comingSoon": "Prossimamente"
+                    "description": "Dove spendi i tuoi soldi (ultimi 12 mesi)",
+                    "topCategories": "Categorie principali",
+                    "otherCategories": "Altre categorie",
+                    "noExpenses": "Nessuna spesa registrata"
                 }
             },
             "insights": {
@@ -1998,17 +2009,28 @@
                 "savingsRate": {
                     "title": "Savings Rate",
                     "description": "Your savings as percentage of income",
-                    "comingSoon": "Coming Soon"
+                    "yourRate": "Your rate",
+                    "avgAll": "All Users Avg",
+                    "avgSimilar": "Similar Users Avg",
+                    "last12Months": "Last 12 months",
+                    "noData": "Insufficient data"
                 },
                 "assetAllocation": {
                     "title": "Asset Allocation",
                     "description": "How you distribute your wealth",
-                    "comingSoon": "Coming Soon"
+                    "currentDistribution": "Current distribution",
+                    "liquid": "Liquid",
+                    "investments": "Investments",
+                    "crypto": "Crypto",
+                    "other": "Other",
+                    "noAssets": "No assets recorded"
                 },
                 "spendingCategories": {
                     "title": "Spending by Category",
-                    "description": "Where you spend your money",
-                    "comingSoon": "Coming Soon"
+                    "description": "Where you spend your money (last 12 months)",
+                    "topCategories": "Top categories",
+                    "otherCategories": "Other categories",
+                    "noExpenses": "No expenses recorded"
                 }
             },
             "insights": {

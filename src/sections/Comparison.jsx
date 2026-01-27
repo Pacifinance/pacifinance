@@ -12,7 +12,8 @@ import {
     getIncomesArray,
     getOutflowsArray,
     getBalanceGrowth12Months,
-    getProfileCompletionPercentage
+    getProfileCompletionPercentage,
+    getTotalOutflowsPerCategoryPerMonth
 } from '../utils/userDataSelectors';
 import { 
   StyledMonth, 
@@ -299,6 +300,112 @@ const InsightCard = styled.div`
     margin: 0;
     line-height: 1.5;
     font-weight: 500;
+  }
+`;
+
+// Progress bar for percentages
+const ProgressBarContainer = styled.div`
+  width: 100%;
+  margin: 0.5rem 0;
+`;
+
+const ProgressBarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  
+  .label {
+    min-width: 80px;
+    font-size: 0.85rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
+    font-weight: 500;
+  }
+  
+  .bar-wrapper {
+    flex: 1;
+    height: 10px;
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e5e7eb'};
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+  
+  .percentage {
+    min-width: 45px;
+    text-align: right;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: ${props => props.theme.textColor};
+  }
+`;
+
+const SavingsRateDisplay = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  
+  .rate-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: ${props => props.positive ? '#27ae60' : props.negative ? '#e74c3c' : props.theme.textColor};
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    
+    span {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .rate-label {
+    font-size: 0.85rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'};
+    margin-top: 0.25rem;
+  }
+`;
+
+const CategoryBar = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  
+  .color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .category-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .category-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: ${props => props.theme.textColor};
+    min-width: 60px;
+    text-align: right;
+  }
+  
+  .category-percent {
+    font-size: 0.8rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'};
+    min-width: 40px;
+    text-align: right;
   }
 `;
 
@@ -739,33 +846,119 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         return validValues.length > 0 ? validValues.reduce((sum, val) => sum + val, 0) / validValues.length : 0;
     };
 
-    const mockData = {
+    // Get averages from userData (fetched from /stats/averages API)
+    const userAverages = userData?.averages || { general: {}, similar: {} };
+    
+    const comparisonData = {
         avgBalance: {
             user: {
                 current: getTotalValue(userData) || 0,
                 growth12Months: getBalanceGrowth12Months(userData)
             },
             similarUsers: {
-                current: 45000,
-                growth12Months: 8.5
+                current: userAverages.similar?.balances ?? null,
+                growth12Months: null // Will be added when API provides this data
             },
             allUsers: {
-                current: 38000,
-                growth12Months: 6.2
+                current: userAverages.general?.balances ?? 0,
+                growth12Months: null // Will be added when API provides this data
             }
         },
         avgIncome: {
             user: calculateAverage(userIncomesArray),
-            similarUsers: 3200,
-            allUsers: 2800
+            similarUsers: userAverages.similar?.incomes ?? null,
+            allUsers: userAverages.general?.incomes ?? 0
         },
         avgOutflows: {
             user: calculateAverage(userOutflowsArray),
-            similarUsers: 2400,
-            allUsers: 2200
+            similarUsers: userAverages.similar?.expenses ?? null,
+            allUsers: userAverages.general?.expenses ?? 0
         }
-    };    const formatCurrency = (value) => {
+    };
+
+    // Calculate Savings Rate (last 12 months)
+    const calculateSavingsRate = () => {
+        const totalIncomes = userIncomesArray.slice(0, 12).reduce((sum, val) => sum + (val || 0), 0);
+        const totalOutflows = userOutflowsArray.slice(0, 12).reduce((sum, val) => sum + (val || 0), 0);
+        
+        if (totalIncomes <= 0) return null;
+        return ((totalIncomes - totalOutflows) / totalIncomes) * 100;
+    };
+    
+    const userSavingsRate = calculateSavingsRate();
+
+    // Calculate Asset Allocation
+    const calculateAssetAllocation = () => {
+        const currentBalance = userData?.balances?.[0]?.balance || {};
+        const totalValue = getTotalValue(userData) || 0;
+        
+        if (totalValue <= 0) return [];
+        
+        // Group assets into categories
+        const liquid = (currentBalance.cash || 0) + (currentBalance.bank || 0) + (currentBalance.digitalServices || 0) + (currentBalance.emergencyFund || 0);
+        const investments = (currentBalance.stocks || 0) + (currentBalance.etf || 0) + (currentBalance.bonds || 0) + (currentBalance.funds || 0) + (currentBalance.gold || 0);
+        const crypto = (currentBalance.bitcoin || 0) + (currentBalance.crypto || 0);
+        
+        const allocations = [
+            { name: languages[language].comparison.cards.assetAllocation.liquid || 'Liquidità', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
+            { name: languages[language].comparison.cards.assetAllocation.investments || 'Investimenti', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
+            { name: languages[language].comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
+        ].filter(a => a.value > 0);
+        
+        return allocations.sort((a, b) => b.percentage - a.percentage);
+    };
+    
+    const assetAllocation = calculateAssetAllocation();
+
+    // Calculate Spending by Category (last 12 months)
+    const calculateSpendingByCategory = () => {
+        const totalOutflowsPerCategory = getTotalOutflowsPerCategoryPerMonth(userData);
+        const categoryTotals = {};
+        
+        // Sum up all categories across 12 months
+        for (let i = 0; i < 12; i++) {
+            const monthData = totalOutflowsPerCategory[i] || {};
+            Object.entries(monthData).forEach(([category, amount]) => {
+                categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+            });
+        }
+        
+        const totalSpending = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
+        if (totalSpending <= 0) return [];
+        
+        // Category colors mapping
+        const categoryColors = {
+            'Food': '#e74c3c',
+            'Transport': '#3498db',
+            'House': '#9b59b6',
+            'Entertainment': '#e67e22',
+            'Health': '#1abc9c',
+            'Shopping': '#f1c40f',
+            'Education': '#2980b9',
+            'Subscriptions': '#8e44ad',
+            'Travel': '#16a085',
+            'Gift': '#d35400',
+            'Bills': '#c0392b',
+            'Other': '#7f8c8d'
+        };
+        
+        const categories = Object.entries(categoryTotals)
+            .map(([name, value]) => ({
+                name,
+                value,
+                percentage: (value / totalSpending) * 100,
+                color: categoryColors[name] || '#7f8c8d'
+            }))
+            .sort((a, b) => b.value - a.value);
+        
+        return categories;
+    };
+    
+    const spendingByCategory = calculateSpendingByCategory();
+
+    const formatCurrency = (value) => {
         if (isHidden) return '****';
+        if (value === null || value === undefined) return languages[language].general.comingSoon || 'Coming soon';
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'EUR',
@@ -776,6 +969,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
     const formatGrowthPercentage = (value) => {
         if (isHidden) return '****';
+        if (value === null || value === undefined) return '';
         if (value === 0) return languages[language].comparison.cards.avgBalance.noGrowthData;
         
         const sign = value > 0 ? '+' : '';
@@ -783,12 +977,14 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     };
 
     const getComparisonIcon = (userValue, compareValue) => {
+        if (compareValue === null || compareValue === undefined) return null;
         if (userValue > compareValue) return <TrendingUpIcon style={{ color: '#27ae60' }} />;
         if (userValue < compareValue) return <TrendingDownIcon style={{ color: '#e74c3c' }} />;
         return <EqualIcon style={{ color: '#f39c12' }} />;
     };
 
     const getBalanceComparisonIcon = (userBalance, compareBalance) => {
+        if (compareBalance?.current === null || compareBalance?.current === undefined) return null;
         if (userBalance.current > compareBalance.current) return <TrendingUpIcon style={{ color: '#27ae60' }} />;
         if (userBalance.current < compareBalance.current) return <TrendingDownIcon style={{ color: '#e74c3c' }} />;
         return <EqualIcon style={{ color: '#f39c12' }} />;
@@ -796,9 +992,10 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
     const generateInsights = () => {
         const insights = [];
-        const { avgBalance, avgIncome, avgOutflows } = mockData;
+        const { avgBalance, avgIncome, avgOutflows } = comparisonData;
         
-        if (avgBalance.user.current > avgBalance.similarUsers.current) {
+        // Only generate insight if similarUsers data is available
+        if (avgBalance.similarUsers.current !== null && avgBalance.user.current > avgBalance.similarUsers.current) {
             insights.push({
                 type: 'positive',
                 title: languages[language].comparison.insights.betterThan + ' 70% ' + languages[language].comparison.insights.ofUsers,
@@ -850,36 +1047,36 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     </CardHeader>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgBalance.yourBalance}</span>
-                        <BalanceValueContainer theme={theme} growth={mockData.avgBalance.user.growth12Months}>
+                        <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.user.growth12Months}>
                             <div className="main-value">
-                                {formatCurrency(mockData.avgBalance.user.current)}
+                                {formatCurrency(comparisonData.avgBalance.user.current)}
                             </div>
                             <div className="growth-value">
-                                {formatGrowthPercentage(mockData.avgBalance.user.growth12Months)}
+                                {formatGrowthPercentage(comparisonData.avgBalance.user.growth12Months)}
                             </div>
                         </BalanceValueContainer>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgBalance.avgSimilar}</span>
-                        <BalanceValueContainer theme={theme} growth={mockData.avgBalance.similarUsers.growth12Months}>
+                        <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.similarUsers.growth12Months}>
                             <div className="main-value">
-                                {formatCurrency(mockData.avgBalance.similarUsers.current)}
-                                {getBalanceComparisonIcon(mockData.avgBalance.user, mockData.avgBalance.similarUsers)}
+                                {formatCurrency(comparisonData.avgBalance.similarUsers.current)}
+                                {getBalanceComparisonIcon(comparisonData.avgBalance.user, comparisonData.avgBalance.similarUsers)}
                             </div>
                             <div className="growth-value">
-                                {formatGrowthPercentage(mockData.avgBalance.similarUsers.growth12Months)}
+                                {formatGrowthPercentage(comparisonData.avgBalance.similarUsers.growth12Months)}
                             </div>
                         </BalanceValueContainer>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgBalance.avgAll}</span>
-                        <BalanceValueContainer theme={theme} growth={mockData.avgBalance.allUsers.growth12Months}>
+                        <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.allUsers.growth12Months}>
                             <div className="main-value">
-                                {formatCurrency(mockData.avgBalance.allUsers.current)}
-                                {getBalanceComparisonIcon(mockData.avgBalance.user, mockData.avgBalance.allUsers)}
+                                {formatCurrency(comparisonData.avgBalance.allUsers.current)}
+                                {getBalanceComparisonIcon(comparisonData.avgBalance.user, comparisonData.avgBalance.allUsers)}
                             </div>
                             <div className="growth-value">
-                                {formatGrowthPercentage(mockData.avgBalance.allUsers.growth12Months)}
+                                {formatGrowthPercentage(comparisonData.avgBalance.allUsers.growth12Months)}
                             </div>
                         </BalanceValueContainer>
                     </MetricRow>
@@ -895,21 +1092,21 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgIncome.yourIncome}</span>
                         <span className="value">
-                            {formatCurrency(mockData.avgIncome.user)}
+                            {formatCurrency(comparisonData.avgIncome.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgIncome.avgSimilar}</span>
                         <span className="value">
-                            {formatCurrency(mockData.avgIncome.similarUsers)}
-                            {getComparisonIcon(mockData.avgIncome.user, mockData.avgIncome.similarUsers)}
+                            {formatCurrency(comparisonData.avgIncome.similarUsers)}
+                            {getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.similarUsers)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgIncome.avgAll}</span>
                         <span className="value">
-                            {formatCurrency(mockData.avgIncome.allUsers)}
-                            {getComparisonIcon(mockData.avgIncome.user, mockData.avgIncome.allUsers)}
+                            {formatCurrency(comparisonData.avgIncome.allUsers)}
+                            {getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.allUsers)}
                         </span>
                     </MetricRow>
                 </ComparisonCard>
@@ -924,45 +1121,156 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgOutflows.yourOutflows}</span>
                         <span className="value">
-                            {formatCurrency(mockData.avgOutflows.user)}
+                            {formatCurrency(comparisonData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgOutflows.avgSimilar}</span>
                         <span className="value">
-                            {formatCurrency(mockData.avgOutflows.similarUsers)}
-                            {getComparisonIcon(mockData.avgOutflows.similarUsers, mockData.avgOutflows.user)}
+                            {formatCurrency(comparisonData.avgOutflows.similarUsers)}
+                            {getComparisonIcon(comparisonData.avgOutflows.similarUsers, comparisonData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
                         <span className="label">{languages[language].comparison.cards.avgOutflows.avgAll}</span>
                         <span className="value">
-                            {formatCurrency(mockData.avgOutflows.allUsers)}
-                            {getComparisonIcon(mockData.avgOutflows.allUsers, mockData.avgOutflows.user)}
+                            {formatCurrency(comparisonData.avgOutflows.allUsers)}
+                            {getComparisonIcon(comparisonData.avgOutflows.allUsers, comparisonData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                 </ComparisonCard>
 
-                <ComingSoonCard theme={theme}>
-                    <SavingsIcon style={{ fontSize: '3rem', color: theme.buttonBackgroundColor }} />
-                    <h3>{languages[language].comparison.cards.savingsRate.title}</h3>
-                    <p>{languages[language].comparison.cards.savingsRate.description}</p>
-                    <div className="coming-soon-text">{languages[language].comparison.cards.savingsRate.comingSoon}</div>
-                </ComingSoonCard>
+                {/* Savings Rate Card */}
+                <ComparisonCard theme={theme} accent="#9b59b6">
+                    <CardHeader theme={theme}>
+                        <h3><SavingsIcon /> {languages[language].comparison.cards.savingsRate.title}</h3>
+                        <Tooltip title={languages[language].comparison.cards.savingsRate.description}>
+                            <InfoIcon style={{ color: theme.textColor }} />
+                        </Tooltip>
+                    </CardHeader>
+                    {userSavingsRate !== null ? (
+                        <>
+                            <SavingsRateDisplay theme={theme} positive={userSavingsRate >= 20} negative={userSavingsRate < 0}>
+                                <div className="rate-value">
+                                    {isHidden ? '****' : `${userSavingsRate.toFixed(1)}`}<span>%</span>
+                                </div>
+                                <div className="rate-label">{languages[language].comparison.cards.savingsRate.last12Months}</div>
+                            </SavingsRateDisplay>
+                            <MetricRow theme={theme}>
+                                <span className="label">{languages[language].comparison.cards.savingsRate.yourRate}</span>
+                                <span className="value" style={{ color: userSavingsRate >= 20 ? '#27ae60' : userSavingsRate < 0 ? '#e74c3c' : theme.textColor }}>
+                                    {isHidden ? '****' : `${userSavingsRate.toFixed(1)}%`}
+                                </span>
+                            </MetricRow>
+                            <MetricRow theme={theme}>
+                                <span className="label">{languages[language].comparison.cards.savingsRate.avgSimilar}</span>
+                                <span className="value">
+                                    {languages[language].general.comingSoon || 'Coming soon'}
+                                </span>
+                            </MetricRow>
+                        </>
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
+                            {languages[language].comparison.cards.savingsRate.noData}
+                        </div>
+                    )}
+                </ComparisonCard>
 
-                <ComingSoonCard theme={theme}>
-                    <PieChartIcon style={{ fontSize: '3rem', color: theme.buttonBackgroundColor }} />
-                    <h3>{languages[language].comparison.cards.assetAllocation.title}</h3>
-                    <p>{languages[language].comparison.cards.assetAllocation.description}</p>
-                    <div className="coming-soon-text">{languages[language].comparison.cards.assetAllocation.comingSoon}</div>
-                </ComingSoonCard>
+                {/* Asset Allocation Card */}
+                <ComparisonCard theme={theme} accent="#16a085">
+                    <CardHeader theme={theme}>
+                        <h3><PieChartIcon /> {languages[language].comparison.cards.assetAllocation.title}</h3>
+                        <Tooltip title={languages[language].comparison.cards.assetAllocation.description}>
+                            <InfoIcon style={{ color: theme.textColor }} />
+                        </Tooltip>
+                    </CardHeader>
+                    {assetAllocation.length > 0 ? (
+                        <ProgressBarContainer>
+                            {assetAllocation.map((asset, index) => (
+                                <ProgressBarRow key={index} theme={theme}>
+                                    <span className="label">{asset.name}</span>
+                                    <div className="bar-wrapper">
+                                        <div 
+                                            className="bar-fill" 
+                                            style={{ 
+                                                width: `${asset.percentage}%`, 
+                                                background: asset.color 
+                                            }} 
+                                        />
+                                    </div>
+                                    <span className="percentage">
+                                        {isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}
+                                    </span>
+                                </ProgressBarRow>
+                            ))}
+                            <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'}` }}>
+                                {assetAllocation.map((asset, index) => (
+                                    <CategoryBar key={index} theme={theme}>
+                                        <div className="color-dot" style={{ background: asset.color }} />
+                                        <span className="category-name">{asset.name}</span>
+                                        <span className="category-value">
+                                            {isHidden ? '****' : formatCurrency(asset.value)}
+                                        </span>
+                                    </CategoryBar>
+                                ))}
+                            </div>
+                        </ProgressBarContainer>
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
+                            {languages[language].comparison.cards.assetAllocation.noAssets}
+                        </div>
+                    )}
+                </ComparisonCard>
 
-                <ComingSoonCard theme={theme}>
-                    <BarChartIcon style={{ fontSize: '3rem', color: theme.buttonBackgroundColor }} />
-                    <h3>{languages[language].comparison.cards.spendingCategories.title}</h3>
-                    <p>{languages[language].comparison.cards.spendingCategories.description}</p>
-                    <div className="coming-soon-text">{languages[language].comparison.cards.spendingCategories.comingSoon}</div>
-                </ComingSoonCard>
+                {/* Spending by Category Card */}
+                <ComparisonCard theme={theme} accent="#e67e22">
+                    <CardHeader theme={theme}>
+                        <h3><BarChartIcon /> {languages[language].comparison.cards.spendingCategories.title}</h3>
+                        <Tooltip title={languages[language].comparison.cards.spendingCategories.description}>
+                            <InfoIcon style={{ color: theme.textColor }} />
+                        </Tooltip>
+                    </CardHeader>
+                    {spendingByCategory.length > 0 ? (
+                        <>
+                            <div style={{ fontSize: '0.85rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', marginBottom: '0.5rem' }}>
+                                {languages[language].comparison.cards.spendingCategories.topCategories}
+                            </div>
+                            {spendingByCategory.slice(0, 5).map((category, index) => (
+                                <CategoryBar key={index} theme={theme}>
+                                    <div className="color-dot" style={{ background: category.color }} />
+                                    <span className="category-name">{category.name}</span>
+                                    <span className="category-value">
+                                        {isHidden ? '****' : formatCurrency(category.value)}
+                                    </span>
+                                    <span className="category-percent">
+                                        {isHidden ? '**%' : `${category.percentage.toFixed(0)}%`}
+                                    </span>
+                                </CategoryBar>
+                            ))}
+                            {spendingByCategory.length > 5 && (
+                                <>
+                                    <div style={{ fontSize: '0.8rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', marginTop: '0.75rem', marginBottom: '0.25rem' }}>
+                                        {languages[language].comparison.cards.spendingCategories.otherCategories} ({spendingByCategory.length - 5})
+                                    </div>
+                                    <CategoryBar theme={theme}>
+                                        <div className="color-dot" style={{ background: '#7f8c8d' }} />
+                                        <span className="category-name">{languages[language].comparison.cards.assetAllocation.other || 'Other'}</span>
+                                        <span className="category-value">
+                                            {isHidden ? '****' : formatCurrency(spendingByCategory.slice(5).reduce((sum, c) => sum + c.value, 0))}
+                                        </span>
+                                        <span className="category-percent">
+                                            {isHidden ? '**%' : `${spendingByCategory.slice(5).reduce((sum, c) => sum + c.percentage, 0).toFixed(0)}%`}
+                                        </span>
+                                    </CategoryBar>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
+                            {languages[language].comparison.cards.spendingCategories.noExpenses}
+                        </div>
+                    )}
+                </ComparisonCard>
             </GridContainer>
 
             {generateInsights().map((insight, index) => (

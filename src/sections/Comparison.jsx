@@ -48,6 +48,7 @@ import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { getCategoryColor } from '../data/categoryColors';
 import Leaderboard from './Leaderboard';
 
 const ComparisonContainer = styled.div`
@@ -926,28 +927,12 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         const totalSpending = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
         if (totalSpending <= 0) return [];
         
-        // Category colors mapping
-        const categoryColors = {
-            'Food': '#e74c3c',
-            'Transport': '#3498db',
-            'House': '#9b59b6',
-            'Entertainment': '#e67e22',
-            'Health': '#1abc9c',
-            'Shopping': '#f1c40f',
-            'Education': '#2980b9',
-            'Subscriptions': '#8e44ad',
-            'Travel': '#16a085',
-            'Gift': '#d35400',
-            'Bills': '#c0392b',
-            'Other': '#7f8c8d'
-        };
-        
         const categories = Object.entries(categoryTotals)
             .map(([name, value]) => ({
                 name,
                 value,
                 percentage: (value / totalSpending) * 100,
-                color: categoryColors[name] || '#7f8c8d'
+                color: getCategoryColor(name)
             }))
             .sort((a, b) => b.value - a.value);
         

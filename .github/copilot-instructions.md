@@ -155,6 +155,38 @@ src/data/categoryColors.js
 src/data/categoryIcons.js
 ```
 
+### 6. **Use Centralized Colors and Icons (MANDATORY)**
+When displaying assets or categories, **ALWAYS** use the centralized color and icon files:
+
+```jsx
+// ❌ WRONG - Hardcoded colors
+const categoryColors = { 'Food': '#e74c3c', 'House': '#9b59b6' };
+const color = categoryColors[category];
+
+// ✅ CORRECT - Use centralized colors
+import { getCategoryColor } from '../data/categoryColors';
+const color = getCategoryColor(category);
+
+// ❌ WRONG - Hardcoded asset colors
+const assetColor = '#27ae60';
+
+// ✅ CORRECT - Use centralized asset colors
+import { getAssetColor } from '../data/assetColors';
+const color = getAssetColor('stocks');
+
+// ✅ CORRECT - Use centralized icons
+import { getAssetIcon } from '../data/assetIcons';
+import { getCategoryIcon } from '../data/categoryIcons';
+const icon = getAssetIcon('etf');
+const catIcon = getCategoryIcon('Food');
+```
+
+**Available files:**
+- `src/data/assetColors.js` - Colors for assets (bank, stocks, ETF, crypto, etc.)
+- `src/data/assetIcons.js` - Icons for assets
+- `src/data/categoryColors.js` - Colors for income/outflow categories
+- `src/data/categoryIcons.js` - Icons for categories
+
 ---
 
 ## 🎨 Styling Guidelines

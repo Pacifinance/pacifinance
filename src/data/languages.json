@@ -1002,7 +1002,7 @@
                                 "kakeibo": "Kakeibo (giapponese): Registra ogni spesa a mano, rifletti su ogni acquisto chiedendoti 'Ne ho davvero bisogno?'. Aumenta la consapevolezza."
                             }
                         },
-                        "expense_tracking": {
+                        "outflow_tracking": {
                             "title": "Tracciamento Intelligente delle Uscite",
                             "tips": [
                                 "Usa PaciFinance per avere una visione unificata di tutti i conti",
@@ -2436,8 +2436,8 @@
                                 "kakeibo": "Kakeibo (Japanese): Record every expense by hand, reflect on each purchase asking 'Do I really need this?'. Increases awareness."
                             }
                         },
-                        "expense_tracking": {
-                            "title": "Smart Expense Tracking",
+                        "outflow_tracking": {
+                            "title": "Smart Outflow Tracking",
                             "tips": [
                                 "Use PaciFinance for a unified view of all accounts",
                                 "Categorize expenses immediately - don't procrastinate",

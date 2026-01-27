@@ -564,7 +564,7 @@ const Knowledge = () => {
       saving_strategies: <TipsIcon />,
       budget_creation: <AccountBalanceWalletIcon />,
       budget_methods: <TipsIcon />,
-      expense_tracking: <AutoGraphIcon />,
+      outflow_tracking: <AutoGraphIcon />,
       salary_allocation: <PaidIcon />,
       tax_optimization: <LightbulbIcon />,
       income_growth: <TrendingUpIcon />,

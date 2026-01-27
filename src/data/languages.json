@@ -1002,7 +1002,7 @@
                                 "kakeibo": "Kakeibo (giapponese): Registra ogni spesa a mano, rifletti su ogni acquisto chiedendoti 'Ne ho davvero bisogno?'. Aumenta la consapevolezza."
                             }
                         },
-                        "outflow_tracking": {
+                        "expense_tracking": {
                             "title": "Tracciamento Intelligente delle Uscite",
                             "tips": [
                                 "Usa PaciFinance per avere una visione unificata di tutti i conti",
@@ -2485,6 +2485,7 @@
                                 "Track deductible expenses: student loan interest, home office",
                                 "Harvest tax losses to offset capital gains",
                                 "Use company benefits: 401k matching is free money",
+                                "Meal vouchers are often tax-exempt (up to $8/day for electronic ones)",
                                 "Consult a tax professional for complex situations"
                             ]
                         },

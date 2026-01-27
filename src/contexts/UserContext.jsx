@@ -336,23 +336,34 @@ export const UserProvider = ({ children }) => {
 
             //************************************* STATS AVERAGES **********************************************/
             
-            const statsAveragesResponse = await axios.post('/stats/averages', null, { withCredentials: true });
-            const statsAveragesData = statsAveragesResponse.data;
-            
-            // Struttura attuale: { balances, expenses, incomes }
-            // Struttura futura: { general: { balances, expenses, incomes }, similar: { balances, expenses, incomes } }
-            const averages = {
-              general: {
-                balances: statsAveragesData.general?.balances ?? statsAveragesData.balances ?? 0,
-                expenses: statsAveragesData.general?.expenses ?? statsAveragesData.expenses ?? 0,
-                incomes: statsAveragesData.general?.incomes ?? statsAveragesData.incomes ?? 0
-              },
-              similar: {
-                balances: statsAveragesData.similar?.balances ?? null,
-                expenses: statsAveragesData.similar?.expenses ?? null,
-                incomes: statsAveragesData.similar?.incomes ?? null
-              }
+            // Try to fetch stats averages - endpoint may not be available in production yet
+            let averages = {
+              general: { balances: null, expenses: null, incomes: null },
+              similar: { balances: null, expenses: null, incomes: null }
             };
+            
+            try {
+              const statsAveragesResponse = await axios.post('/stats/averages', null, { withCredentials: true });
+              const statsAveragesData = statsAveragesResponse.data;
+              
+              // Struttura attuale: { balances, expenses, incomes }
+              // Struttura futura: { general: { balances, expenses, incomes }, similar: { balances, expenses, incomes } }
+              averages = {
+                general: {
+                  balances: statsAveragesData.general?.balances ?? statsAveragesData.balances ?? null,
+                  expenses: statsAveragesData.general?.expenses ?? statsAveragesData.expenses ?? null,
+                  incomes: statsAveragesData.general?.incomes ?? statsAveragesData.incomes ?? null
+                },
+                similar: {
+                  balances: statsAveragesData.similar?.balances ?? null,
+                  expenses: statsAveragesData.similar?.expenses ?? null,
+                  incomes: statsAveragesData.similar?.incomes ?? null
+                }
+              };
+            } catch (statsError) {
+              // Endpoint not available yet - silently use default null values
+              console.debug('/stats/averages endpoint not available, using defaults');
+            }
 
             // Create assets array for Financial Insights from current balance
             const currentBalance = balancesData[0]?.balance || {};

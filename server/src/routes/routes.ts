@@ -5,6 +5,7 @@ import balancesRouter from "./private/balances"
 import expensesRouter from "./private/expenses"
 import tagsRouter from "./private/tags";
 import rankRouter from "./private/rank";
+import statsRouter from "./private/stats";
 import pricesRouter from "./private/prices";
 
 export default {
@@ -15,5 +16,6 @@ export default {
     expensesRouter,
     tagsRouter,
     rankRouter,
+    statsRouter,
     pricesRouter,
 }

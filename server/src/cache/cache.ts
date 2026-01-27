@@ -1,4 +1,5 @@
 import cachestorage from "../db/models/cachestorage";
+import averages from "./items/averages";
 import prices from "./items/prices";
 
 interface CacheItemInfo {
@@ -15,6 +16,7 @@ interface CacheItemData {
  * Dictionary of expected keys of the cache
  */
 const expectedItems: {[key: string]: CacheItemInfo} = {
+    "userAverages": { durationSec: 86400, fetch: averages.fetchUserAverages },
     "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices }
 };
 

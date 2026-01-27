@@ -45,6 +45,7 @@ app.use("/balances", routes.balancesRouter)
 app.use("/expenses", routes.expensesRouter)
 app.use("/tags", routes.tagsRouter)
 app.use("/rank", routes.rankRouter)
+app.use("/stats", routes.statsRouter)
 app.use("/prices", routes.pricesRouter)
 
 // Refresh handler

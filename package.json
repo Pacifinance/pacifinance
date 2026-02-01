@@ -54,6 +54,7 @@
     "react-router-dom": "^7.9.1",
     "recharts": "^3.2.1",
     "styled-components": "^6.1.19",
+    "terser": "^5.46.0",
     "typescript": "^5.9.2"
   },
   "devDependencies": {

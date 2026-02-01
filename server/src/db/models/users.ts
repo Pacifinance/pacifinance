@@ -182,7 +182,7 @@ async function getReferenceByUserId(user_id: string) {
 
 /**
  * Gets all user IDs, filtering by "similar" users if a reference user is provided
- * @param reference_user_id ID of the user to use as a reference for filtering
+ * @param reference_user_id ID or reference of the user to use as a reference for filtering
  * @param ignore_test_users True if test and demo users must be ignored, false otherwise
  * @returns List of User documents
  */
@@ -190,7 +190,10 @@ async function getAllUsersIds(reference_user_id: string | undefined = undefined,
     let filter: any = {};
     if (reference_user_id !== undefined) {
         // Get the data of the reference user
-        const reference_user = await getOne({userId: reference_user_id}, "");
+        if (reference_user_id.length < 24) // length of a mongodb ObjectID converted to hex string
+            var reference_user = await getOne({userId: reference_user_id}, "");
+        else
+            var reference_user = await getOne({_id: reference_user_id}, "");
         // Create a filter to only retrieve data of "similar" users
         if (reference_user !== null) {
             filter = {
@@ -204,7 +207,7 @@ async function getAllUsersIds(reference_user_id: string | undefined = undefined,
     if (ignore_test_users) {
         filter.type = {$lt: UserType.test.value}
     }
-    return await get(filter, "-_id userId");
+    return await get(filter, "_id userId");
 }
 
 /**

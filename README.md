@@ -380,49 +380,90 @@ userData = {
 ## 🌍 Internationalization
 
 ### Supported Languages
-- 🇮🇹 Italian (it)
-- 🇬🇧 English (en)
+- 🇮🇹 Italian (it) - Auto-detected for Italian browsers
+- 🇬🇧 English (en) - Default fallback
 
-### Adding Translations
+### Modern i18n Structure
+```
+src/i18n/
+├── index.js              # Centralized i18n system
+├── locales/
+│   ├── it.json          # Italian translations
+│   └── en.json          # English translations
+└── README.md            # Complete i18n documentation
+```
 
-1. Open `src/data/languages.json`
-2. Add keys to both `it` and `en` sections
+### Key Features
+- ✅ **Auto-detection**: Automatically detects browser language
+- ✅ **User Priority**: Saved user preference overrides auto-detection
+- ✅ **Scalable**: Easy to add new languages
+- ✅ **Backward Compatible**: Old import method still works
+- ✅ **Professional Structure**: Follows industry standards
+
+### Usage in Components
+
+**Recommended way (using Context):**
+```jsx
+import { LanguageContext } from '../contexts/LanguageContext';
+
+function MyComponent() {
+  const { language, translations } = useContext(LanguageContext);
+  
+  return (
+    <button>{translations.form.submitButton}</button>
+  );
+}
+```
+
+**Alternative way (backward compatible):**
+```jsx
+import languages from '../data/languages.json';
+import { LanguageContext } from '../contexts/LanguageContext';
+
+const { language } = useContext(LanguageContext);
+const text = languages[language].form.submitButton;
+```
+
+### Adding New Translations
+1. Edit `src/i18n/locales/it.json` for Italian
+2. Edit `src/i18n/locales/en.json` for English
 3. Use nested structure:
-
 ```json
 {
-  "it": {
-    "pageName": {
-      "sectionName": {
-        "title": "Italian title"
-      }
-    }
-  },
-  "en": {
-    "pageName": {
-      "sectionName": {
-        "title": "Title in English"
-      }
+  "pageName": {
+    "sectionName": {
+      "elementName": "Translated text"
     }
   }
 }
 ```
 
-### Usage in Components
-
-```jsx
-import { useContext } from 'react';
-import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../data/languages.json';
-
-const MyComponent = () => {
-  const { language } = useContext(LanguageContext);
-  
-  return (
-    <h1>{languages[language].pageName.sectionName.title}</h1>
-  );
-};
+### Adding a New Language
+1. Create `src/i18n/locales/es.json` (example: Spanish)
+2. Copy structure from `it.json` and translate
+3. Update `src/i18n/index.js`:
+```js
+import es from './locales/es.json';
+const languages = { it, en, es };
 ```
+4. Update auto-detection in `LanguageContext.jsx` if needed
+
+### Never Hardcode Text
+```jsx
+// ❌ WRONG
+<button>Submit</button>
+
+// ✅ CORRECT
+const { translations } = useContext(LanguageContext);
+<button>{translations.form.submitButton}</button>
+```
+
+### Language Auto-Detection Flow
+1. Check localStorage for saved preference → **Use if found**
+2. Detect browser language (`navigator.language`)
+3. Match with supported languages (it, en)
+4. Fallback to 'en' if not supported
+5. Save detected language for future visits
 
 ---
 

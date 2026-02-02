@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import languages from '../data/languages.json';
 import {
   TrendingUp as TrendingUpIcon,
   Savings as SavingsIcon,
@@ -535,12 +534,12 @@ const ProgressIndicator = styled.div`
 
 const Knowledge = () => {
   const { theme } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [activeSection, setActiveSection] = useState(null);
   const [expandedSubsections, setExpandedSubsections] = useState({});
 
-  const knowledge = languages[language].knowledge;
+  const knowledge = translations.knowledge;
 
   const sectionIcons = {
     investments: <TrendingUpIcon />,

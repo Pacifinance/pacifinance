@@ -19,10 +19,9 @@ import Logo from "../assets/Brand/PacifinanceLogoPNG3NoBg.webp";
 const ConsentBanner = lazy(() => import("../components/ConsentBanner"));
 const BuyMeACoffeeWidget = lazy(() => import("../components/BuyMeACoffeeWidget"));
 import { LanguageContext } from "../contexts/LanguageContext";
-import languages from "../data/languages.json";
 
 export default function NewLandingContent({ theme }) {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -72,16 +71,16 @@ export default function NewLandingContent({ theme }) {
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 <span style={{ color: theme.secondaryColor }}>
-                  {languages[language].landing.new.hero.title}
+                  {translations.landing.new.hero.title}
                 </span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">
-                  {languages[language].landing.new.hero.subtitle}
+                  {translations.landing.new.hero.subtitle}
                 </span>
               </h1>
 
               <p className="text-xl md:text-2xl opacity-80 max-w-2xl">
-                {languages[language].landing.new.hero.description}
+                {translations.landing.new.hero.description}
               </p>
             </div>
 
@@ -95,7 +94,7 @@ export default function NewLandingContent({ theme }) {
                   style={{ color: theme.secondaryColor }}
                   fontSize="small"
                 />
-                <span className="text-sm font-medium">{languages[language].landing.new.benefits.freeForever}</span>
+                <span className="text-sm font-medium">{translations.landing.new.benefits.freeForever}</span>
               </div>
               <div
                 className="flex items-center space-x-2 px-4 py-2 rounded-full"
@@ -105,7 +104,7 @@ export default function NewLandingContent({ theme }) {
                   style={{ color: theme.secondaryColor }}
                   fontSize="small"
                 />
-                <span className="text-sm font-medium">{languages[language].landing.new.benefits.privacyFirst}</span>
+                <span className="text-sm font-medium">{translations.landing.new.benefits.privacyFirst}</span>
               </div>
               <div
                 className="flex items-center space-x-2 px-4 py-2 rounded-full"
@@ -115,7 +114,7 @@ export default function NewLandingContent({ theme }) {
                   style={{ color: theme.secondaryColor }}
                   fontSize="small"
                 />
-                <span className="text-sm font-medium">{languages[language].landing.new.benefits.smartAnalytics}</span>
+                <span className="text-sm font-medium">{translations.landing.new.benefits.smartAnalytics}</span>
               </div>
             </div>
 
@@ -127,7 +126,7 @@ export default function NewLandingContent({ theme }) {
                 style={{ backgroundColor: theme.secondaryColor }}
                 data-umami-event="hero-get-started"
               >
-                {languages[language].landing.new.hero.getStarted}
+                {translations.landing.new.hero.getStarted}
               </button>
               <button
                 onClick={handleLearnMore}
@@ -139,7 +138,7 @@ export default function NewLandingContent({ theme }) {
                 }}
                 data-umami-event="hero-learn-more"
               >
-                {languages[language].landing.new.hero.learnMore}
+                {translations.landing.new.hero.learnMore}
               </button>
             </div>
 
@@ -155,7 +154,7 @@ export default function NewLandingContent({ theme }) {
                 ))}
               </div>
               <span className="text-sm">
-                {languages[language].landing.new.hero.socialProof}
+                {translations.landing.new.hero.socialProof}
               </span>
             </div>
           </div>
@@ -210,12 +209,12 @@ export default function NewLandingContent({ theme }) {
           {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              {languages[language].landing.new.features.title.split('PaciFinance')[0]}
+              {translations.landing.new.features.title.split('PaciFinance')[0]}
               <span style={{ color: theme.secondaryColor }}>PaciFinance</span>
-              {languages[language].landing.new.features.title.split('PaciFinance')[1] || '?'}
+              {translations.landing.new.features.title.split('PaciFinance')[1] || '?'}
             </h2>
             <p className="text-xl opacity-80 max-w-3xl mx-auto">
-              {languages[language].landing.new.features.subtitle}
+              {translations.landing.new.features.subtitle}
             </p>
           </div>
 
@@ -238,12 +237,12 @@ export default function NewLandingContent({ theme }) {
               >
                 <ShieldIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.privacy.title}</h3>
+              <h3 className="text-2xl font-bold mb-4">{translations.landing.new.features.privacy.title}</h3>
               <p className="opacity-80 mb-4">
-                {languages[language].landing.new.features.privacy.description}
+                {translations.landing.new.features.privacy.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                {languages[language].landing.new.features.privacy.features.map((feature, index) => (
+                {translations.landing.new.features.privacy.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
@@ -266,12 +265,12 @@ export default function NewLandingContent({ theme }) {
               >
                 <AnalyticsIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.analytics.title}</h3>
+              <h3 className="text-2xl font-bold mb-4">{translations.landing.new.features.analytics.title}</h3>
               <p className="opacity-80 mb-4">
-                {languages[language].landing.new.features.analytics.description}
+                {translations.landing.new.features.analytics.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                {languages[language].landing.new.features.analytics.features.map((feature, index) => (
+                {translations.landing.new.features.analytics.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
@@ -295,13 +294,13 @@ export default function NewLandingContent({ theme }) {
                 <CompareArrowsIcon className="text-white" fontSize="large" />
               </div>
               <h3 className="text-2xl font-bold mb-4">
-                {languages[language].landing.new.features.comparisons.title}
+                {translations.landing.new.features.comparisons.title}
               </h3>
               <p className="opacity-80 mb-4">
-                {languages[language].landing.new.features.comparisons.description}
+                {translations.landing.new.features.comparisons.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                {languages[language].landing.new.features.comparisons.features.map((feature, index) => (
+                {translations.landing.new.features.comparisons.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
@@ -324,12 +323,12 @@ export default function NewLandingContent({ theme }) {
               >
                 <TrendingUpIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.investment.title}</h3>
+              <h3 className="text-2xl font-bold mb-4">{translations.landing.new.features.investment.title}</h3>
               <p className="opacity-80 mb-4">
-                {languages[language].landing.new.features.investment.description}
+                {translations.landing.new.features.investment.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                {languages[language].landing.new.features.investment.features.map((feature, index) => (
+                {translations.landing.new.features.investment.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
@@ -352,12 +351,12 @@ export default function NewLandingContent({ theme }) {
               >
                 <PaidIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.free.title}</h3>
+              <h3 className="text-2xl font-bold mb-4">{translations.landing.new.features.free.title}</h3>
               <p className="opacity-80 mb-4">
-                {languages[language].landing.new.features.free.description}
+                {translations.landing.new.features.free.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                {languages[language].landing.new.features.free.features.map((feature, index) => (
+                {translations.landing.new.features.free.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
@@ -380,12 +379,12 @@ export default function NewLandingContent({ theme }) {
               >
                 <VisibilityOffIcon className="text-white" fontSize="large" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">{languages[language].landing.new.features.security.title}</h3>
+              <h3 className="text-2xl font-bold mb-4">{translations.landing.new.features.security.title}</h3>
               <p className="opacity-80 mb-4">
-                {languages[language].landing.new.features.security.description}
+                {translations.landing.new.features.security.description}
               </p>
               <ul className="space-y-2 text-sm opacity-70">
-                {languages[language].landing.new.features.security.features.map((feature, index) => (
+                {translations.landing.new.features.security.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
@@ -401,14 +400,14 @@ export default function NewLandingContent({ theme }) {
       >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            {languages[language].landing.new.cta.title}{" "}
+            {translations.landing.new.cta.title}{" "}
             <span style={{ color: theme.secondaryColor }}>
-              {languages[language].landing.new.cta.subtitle}
+              {translations.landing.new.cta.subtitle}
             </span>
             ?
           </h2>
           <p className="text-xl opacity-80 mb-8 max-w-2xl mx-auto">
-            {languages[language].landing.new.cta.description}
+            {translations.landing.new.cta.description}
           </p>
 
           <div className="space-y-4">
@@ -418,11 +417,11 @@ export default function NewLandingContent({ theme }) {
               style={{ backgroundColor: theme.secondaryColor }}
               data-umami-event="cta-get-started"
             >
-              {languages[language].landing.new.cta.button}
+              {translations.landing.new.cta.button}
             </button>
 
             <p className="text-sm opacity-60">
-              {languages[language].landing.new.cta.disclaimer}
+              {translations.landing.new.cta.disclaimer}
             </p>
           </div>
 
@@ -435,7 +434,7 @@ export default function NewLandingContent({ theme }) {
               >
                 480-bit
               </div>
-              <div className="text-sm">{languages[language].landing.new.trust.encryption}</div>
+              <div className="text-sm">{translations.landing.new.trust.encryption}</div>
             </div>
             <div className="text-center">
               <div
@@ -444,7 +443,7 @@ export default function NewLandingContent({ theme }) {
               >
                 0%
               </div>
-              <div className="text-sm">{languages[language].landing.new.trust.dataCollection}</div>
+              <div className="text-sm">{translations.landing.new.trust.dataCollection}</div>
             </div>
             <div className="text-center">
               <div
@@ -453,7 +452,7 @@ export default function NewLandingContent({ theme }) {
               >
                 100%
               </div>
-              <div className="text-sm">{languages[language].landing.new.trust.freeForever}</div>
+              <div className="text-sm">{translations.landing.new.trust.freeForever}</div>
             </div>
           </div>
         </div>
@@ -466,10 +465,10 @@ export default function NewLandingContent({ theme }) {
       >
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl font-bold mb-4">
-            {languages[language].landing.new.donation.title}
+            {translations.landing.new.donation.title}
           </h3>
           <p className="opacity-80 mb-6">
-            {languages[language].landing.new.donation.description}
+            {translations.landing.new.donation.description}
           </p>
           <Suspense fallback={<div></div>}>
             <BuyMeACoffeeWidget showLink={true} />

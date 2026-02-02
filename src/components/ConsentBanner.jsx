@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { slideIn } from '../styles/MyStyled';
 import { themes } from '../styles/Themes';
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../data/languages.json';
 
 function ConsentBanner() {
   const [showBanner, setShowBanner] = useState(false);
@@ -14,7 +13,7 @@ function ConsentBanner() {
     marketing: false
   });
   const [showDetails, setShowDetails] = useState(false);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -80,12 +79,12 @@ function ConsentBanner() {
     <CookieBannerContainer>
       <div className="cookie-content">
         <div className="cookie-header">
-          <h3>🍪 {languages[language]?.cookie?.title || 'We use cookies'}</h3>
+          <h3>🍪 {translations?.cookie?.title || 'We use cookies'}</h3>
         </div>
 
         <div className="cookie-body">
           <p>
-            {languages[language]?.cookie?.description || 
+            {translations?.cookie?.description || 
             'We use cookies to enhance your experience, analyze site traffic, and for marketing purposes. You can choose which cookies to accept.'}
           </p>
 

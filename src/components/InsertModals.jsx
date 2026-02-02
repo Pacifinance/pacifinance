@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Select, MenuItem, Typography } from '@mui/material';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import {
   MuiCustomDialog,
@@ -53,7 +52,7 @@ export default function InsertModals({
   onConfirmDeleteIncome,
   onConfirmDeleteOutflow,
 }) {
-  const { language } = React.useContext(LanguageContext);
+  const { language, translations } = React.useContext(LanguageContext);
 
   // Function to convert month/year selection to display date for popup
   const getDisplayDateForBalance = (monthYearObj) => {
@@ -85,45 +84,45 @@ export default function InsertModals({
           aria-describedby="alert-dialog-description"
         >
           <MuiCustomDialogTitle>
-            {languages[language].insert.balanceSection.confirmUpdate}
+            {translations.insert.balanceSection.confirmUpdate}
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {languages[language].assets.bank}: {bankValue}€
+              {translations.assets.bank}: {bankValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.cash}: {cashValue}€
+              {translations.assets.cash}: {cashValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.digitalServices}:{' '}
+              {translations.assets.digitalServices}:{' '}
               {digitalServicesValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.emergencyFund}: {emergencyFundValue}€
+              {translations.assets.emergencyFund}: {emergencyFundValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.stocks}: {stocksValue}€
+              {translations.assets.stocks}: {stocksValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.etf}: {etfValue}€
+              {translations.assets.etf}: {etfValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.bitcoin}: {bitcoinValue}€
+              {translations.assets.bitcoin}: {bitcoinValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.crypto}: {cryptoValue}€
+              {translations.assets.crypto}: {cryptoValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.bonds}: {bondsValue}€
+              {translations.assets.bonds}: {bondsValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.funds}: {fundsValue}€
+              {translations.assets.funds}: {fundsValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].assets.gold}: {goldValue}€
+              {translations.assets.gold}: {goldValue}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.selectedDate}: {getDisplayDateForBalance(balanceDate)}
+              {translations.general.selectedDate}: {getDisplayDateForBalance(balanceDate)}
             </MuiCustomDialogContentText>
           </MuiCustomDialogContent>
           <MuiCustomDialogActions>
@@ -131,12 +130,12 @@ export default function InsertModals({
               data-umami-event="balanceUpdate"
               onClick={onConfirmBalance}
             >
-              {languages[language].general.confirm}
+              {translations.general.confirm}
             </MuiCustomButton>
             <MuiCustomButton
               onClick={() => handleExitConfirm(setIsConfirmBalanceOpen)}
             >
-              {languages[language].general.cancel}
+              {translations.general.cancel}
             </MuiCustomButton>
           </MuiCustomDialogActions>
         </MuiCustomDialog>
@@ -150,30 +149,30 @@ export default function InsertModals({
           aria-describedby="alert-dialog-description"
         >
           <MuiCustomDialogTitle>
-            {languages[language].insert.incomeSection.confirmUpdate}
+            {translations.insert.incomeSection.confirmUpdate}
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {languages[language].general.category}: {categoryIncome.value}
+              {translations.general.category}: {categoryIncome.value}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.value}: {income}€
+              {translations.general.value}: {income}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.note}: {noteIncomeAreaValue}
+              {translations.general.note}: {noteIncomeAreaValue}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.selectedDate}: {incomeDate}
+              {translations.general.selectedDate}: {incomeDate}
             </MuiCustomDialogContentText>
-            <Typography variant="body1" style={{ marginTop: '1em' }}>
-              {languages[language].insert.incomeSection.increaseWhichBalance}:{' '}
-            </Typography>
+            <MuiCustomDialogContentText>
+              {translations.insert.incomeSection.increaseWhichBalance}:{' '}
+            </MuiCustomDialogContentText>
             <Select
               value={selectedOption}
               onChange={(e) => setSelectedOption(e.target.value)}
             >
               <MenuItem value="">
-                {languages[language].general.selectAnOption}
+                {translations.general.selectAnOption}
               </MenuItem>
               {Object.keys(options).map((option) => (
                 <MenuItem key={option} value={option}>
@@ -187,12 +186,12 @@ export default function InsertModals({
               data-umami-event="incomeUpdate"
               onClick={onConfirmIncome}
             >
-              {languages[language].general.confirm}
+              {translations.general.confirm}
             </MuiCustomButton>
             <MuiCustomButton
               onClick={() => handleExitConfirm(setIsConfirmIncomeOpen)}
             >
-              {languages[language].general.cancel}
+              {translations.general.cancel}
             </MuiCustomButton>
           </MuiCustomDialogActions>
         </MuiCustomDialog>
@@ -206,34 +205,34 @@ export default function InsertModals({
           aria-describedby="alert-dialog-description"
         >
           <MuiCustomDialogTitle>
-            {languages[language].insert.outflowSection.confirmUpdate}
+            {translations.insert.outflowSection.confirmUpdate}
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {languages[language].general.category}: {categoryOutflow.value}
+              {translations.general.category}: {categoryOutflow.value}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].insert.outflowSection.paymentType}:{' '}
+              {translations.insert.outflowSection.paymentType}:{' '}
               {typoOutflow.value}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.value}: {outflow}€
+              {translations.general.value}: {outflow}€
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.note}: {noteOutflowAreaValue}
+              {translations.general.note}: {noteOutflowAreaValue}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {languages[language].general.selectedDate}: {outflowDate}
+              {translations.general.selectedDate}: {outflowDate}
             </MuiCustomDialogContentText>
             <Typography variant="body2" style={{ marginTop: '1em' }}>
-              {languages[language].insert.outflowSection.decreaseWhichBalance}:{' '}
+              {translations.insert.outflowSection.decreaseWhichBalance}:{' '}
             </Typography>
             <Select
               value={selectedOption}
               onChange={(e) => setSelectedOption(e.target.value)}
             >
               <MenuItem value="">
-                {languages[language].general.selectAnOption}
+                {translations.general.selectAnOption}
               </MenuItem>
               {Object.keys(options).map((option) => (
                 <MenuItem key={option} value={option}>
@@ -247,12 +246,12 @@ export default function InsertModals({
               data-umami-event="outflowUpdate"
               onClick={onConfirmOutflow}
             >
-              {languages[language].general.confirm}
+              {translations.general.confirm}
             </MuiCustomButton>
             <MuiCustomButton
               onClick={() => handleExitConfirm(setIsConfirmOutflowOpen)}
             >
-              {languages[language].general.cancel}
+              {translations.general.cancel}
             </MuiCustomButton>
           </MuiCustomDialogActions>
         </MuiCustomDialog>
@@ -266,11 +265,11 @@ export default function InsertModals({
           aria-describedby="alert-dialog-description"
         >
           <MuiCustomDialogTitle>
-            {languages[language].insert.incomeSection.confirmDelete}
+            {translations.insert.incomeSection.confirmDelete}
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {languages[language].insert.incomeSection.deleteBalanceRestore ||
+              {translations.insert.incomeSection.deleteBalanceRestore ||
                 'Se vuoi, puoi scegliere da quale bilancio togliere i soldi per mantenere il saldo corretto. (Opzionale)'}
             </MuiCustomDialogContentText>
             <Select
@@ -280,7 +279,7 @@ export default function InsertModals({
               style={{ marginTop: '1em', minWidth: 200 }}
             >
               <MenuItem value="">
-                {languages[language].general.selectAnOption}
+                {translations.general.selectAnOption}
               </MenuItem>
               {Object.keys(options).map((option) => (
                 <MenuItem key={option} value={option}>
@@ -291,12 +290,12 @@ export default function InsertModals({
           </MuiCustomDialogContent>
           <MuiCustomDialogActions>
             <MuiCustomButton onClick={onConfirmDeleteIncome}>
-              {languages[language].general.confirm}
+              {translations.general.confirm}
             </MuiCustomButton>
             <MuiCustomButton
               onClick={() => setShowConfirmationDeleteIncome(false)}
             >
-              {languages[language].general.cancel}
+              {translations.general.cancel}
             </MuiCustomButton>
           </MuiCustomDialogActions>
         </MuiCustomDialog>
@@ -310,11 +309,11 @@ export default function InsertModals({
           aria-describedby="alert-dialog-description"
         >
           <MuiCustomDialogTitle>
-            {languages[language].insert.outflowSection.confirmDelete}
+            {translations.insert.outflowSection.confirmDelete}
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {languages[language].insert.outflowSection.deleteBalanceRestore ||
+              {translations.insert.outflowSection.deleteBalanceRestore ||
                 'Se vuoi, puoi scegliere dove riaggiungere i soldi per mantenere il saldo corretto. (Opzionale)'}
             </MuiCustomDialogContentText>
             <Select
@@ -324,7 +323,7 @@ export default function InsertModals({
               style={{ marginTop: '1em', minWidth: 200 }}
             >
               <MenuItem value="">
-                {languages[language].general.selectAnOption}
+                {translations.general.selectAnOption}
               </MenuItem>
               {Object.keys(options).map((option) => (
                 <MenuItem key={option} value={option}>
@@ -335,12 +334,12 @@ export default function InsertModals({
           </MuiCustomDialogContent>
           <MuiCustomDialogActions>
             <MuiCustomButton onClick={onConfirmDeleteOutflow}>
-              {languages[language].general.confirm}
+              {translations.general.confirm}
             </MuiCustomButton>
             <MuiCustomButton
               onClick={() => setShowConfirmationDeleteOutflow(false)}
             >
-              {languages[language].general.cancel}
+              {translations.general.cancel}
             </MuiCustomButton>
           </MuiCustomDialogActions>
         </MuiCustomDialog>

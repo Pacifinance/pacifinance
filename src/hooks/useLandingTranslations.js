@@ -5,7 +5,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 const translationCache = new Map();
 
 export const useLandingTranslations = () => {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   
   return useMemo(() => {
     // Controlla la cache prima

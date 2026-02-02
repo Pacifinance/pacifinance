@@ -103,6 +103,9 @@ describe('Category Colors Integration', () => {
 });
 
 describe('Languages Integration', () => {
+  // Basic backward compatibility tests
+  // For comprehensive i18n tests, see languages.test.js
+  
   it('should have Italian translations', () => {
     expect(languages.it).toBeDefined();
     expect(languages.it.assets).toBeDefined();

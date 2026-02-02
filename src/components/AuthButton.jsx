@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import languages from '../data/languages.json';
 
 export default function AuthButton() {
   const { theme } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const navigate = useNavigate();
 
   const handleAuthClick = () => {

@@ -9,7 +9,6 @@ import styled from 'styled-components';
 import InOutStats from '../components/InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utils/customGraphsInfo';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
@@ -463,7 +462,7 @@ export default function StatsCharts() {
     const auth = useAuth();
     const { userData } = auth;
     const { theme } = useContext(ThemeContext);
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);
     const [activePage, setActivePage] = useState("statsBilancio");
     const [isLoading, setIsLoading] = useState(true);
@@ -518,7 +517,7 @@ export default function StatsCharts() {
                             animation: 'spin 1s linear infinite',
                             margin: '0 auto 1rem auto'
                         }}></div>
-                        <p>{languages[language].graphs.loading.balance}</p>
+                        <p>{translations.graphs.loading.balance}</p>
                     </div>
                 </LoadingContainer>
             );
@@ -527,9 +526,9 @@ export default function StatsCharts() {
         if (!hasData) {
             return (
                 <EmptyStateContainer theme={theme}>
-                    <h3>{languages[language].graphs.emptyState.title}</h3>
+                    <h3>{translations.graphs.emptyState.title}</h3>
                     <p>
-                        {languages[language].graphs.emptyState.balanceDescription}
+                        {translations.graphs.emptyState.balanceDescription}
                     </p>
                 </EmptyStateContainer>
             );
@@ -540,10 +539,10 @@ export default function StatsCharts() {
                 <SectionContainer>
                     <SectionHeader>
                         <SectionTitle theme={theme}>
-                            {languages[language].graphs.statsBalance.titleGraph}
+                            {translations.graphs.statsBalance.titleGraph}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            {languages[language].graphs.descriptions.balanceOverview}
+                            {translations.graphs.descriptions.balanceOverview}
                         </SectionDescription>
                     </SectionHeader>
                     
@@ -572,10 +571,10 @@ export default function StatsCharts() {
                 <SectionContainer>
                     <SectionHeader>
                         <SectionTitle theme={theme}>
-                            {languages[language].graphs.statsBalance.detailedVision}
+                            {translations.graphs.statsBalance.detailedVision}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            {languages[language].graphs.descriptions.balanceDetails}
+                            {translations.graphs.descriptions.balanceDetails}
                         </SectionDescription>
                     </SectionHeader>
                     
@@ -606,7 +605,7 @@ export default function StatsCharts() {
                             animation: 'spin 1s linear infinite',
                             margin: '0 auto 1rem auto'
                         }}></div>
-                        <p>{languages[language].graphs.loading.incomeOutflow}</p>
+                        <p>{translations.graphs.loading.incomeOutflow}</p>
                     </div>
                 </LoadingContainer>
             );
@@ -615,9 +614,9 @@ export default function StatsCharts() {
         if (!hasData) {
             return (
                 <EmptyStateContainer theme={theme}>
-                    <h3>{languages[language].graphs.emptyState.title}</h3>
+                    <h3>{translations.graphs.emptyState.title}</h3>
                     <p>
-                        {languages[language].graphs.emptyState.incomeOutflowDescription}
+                        {translations.graphs.emptyState.incomeOutflowDescription}
                     </p>
                 </EmptyStateContainer>
             );
@@ -628,10 +627,10 @@ export default function StatsCharts() {
                 <SectionContainer>
                     <SectionHeader>
                         <SectionTitle theme={theme}>
-                            {languages[language].graphs.statsOutflows.titleGraph}
+                            {translations.graphs.statsOutflows.titleGraph}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            {languages[language].graphs.descriptions.incomeOutflowOverview}
+                            {translations.graphs.descriptions.incomeOutflowOverview}
                         </SectionDescription>
                     </SectionHeader>
                     
@@ -658,10 +657,10 @@ export default function StatsCharts() {
                 <SectionContainer>
                     <SectionHeader>
                         <SectionTitle theme={theme}>
-                            {languages[language].graphs.statsOutflows.detailedVision}
+                            {translations.graphs.statsOutflows.detailedVision}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            {languages[language].graphs.descriptions.incomeOutflowDetails}
+                            {translations.graphs.descriptions.incomeOutflowDetails}
                         </SectionDescription>
                     </SectionHeader>
                     
@@ -699,10 +698,10 @@ export default function StatsCharts() {
         <StatsContainer theme={theme}>
             <HeaderSection>
                 <StatsTitle theme={theme}>
-                    {languages[language].graphs.title}
+                    {translations.graphs.title}
                 </StatsTitle>
                 <StatsSubtitle theme={theme}>
-                    {languages[language].graphs.subtitle}
+                    {translations.graphs.subtitle}
                 </StatsSubtitle>
                 
                 <NavigationTabs>
@@ -712,7 +711,7 @@ export default function StatsCharts() {
                         onClick={() => handlePageChange("statsBilancio")}
                     >
                         <BarChart3 />
-                        <span>{languages[language].graphs.statsBalance.title}</span>
+                        <span>{translations.graphs.statsBalance.title}</span>
                     </TabButton>
                     <TabButton
                         theme={theme}
@@ -720,7 +719,7 @@ export default function StatsCharts() {
                         onClick={() => handlePageChange("statsIncomesOutflows")}
                     >
                         <TrendingUp />
-                        <span>{languages[language].graphs.statsOutflows.title}</span>
+                        <span>{translations.graphs.statsOutflows.title}</span>
                     </TabButton>
                     <TabButton
                         theme={theme}

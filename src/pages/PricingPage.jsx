@@ -5,12 +5,11 @@ import { Header } from '../sections/LandingHeader';
 import SEOHead from '../components/SEOHead';
 import { PageWrapper } from '../styles/MyStyled';
 import LandingFooter from '../sections/LandingFooter';
-import languages from '../data/languages.json';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 
 export default function PricingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   return (
@@ -30,11 +29,11 @@ export default function PricingPage() {
 
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-10 flex flex-col items-center" style={{ color: theme.textColor }}>
         <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: theme.secondaryColor }}>
-          {languages[language].pricing.title}
+          {translations.pricing.title}
         </h1>
 
         <p className="text-xl text-center mb-10 opacity-80" style={{ color: theme.textColor, maxWidth: 600, margin: '0 auto' }}>
-          {languages[language].pricing.subtitle}
+          {translations.pricing.subtitle}
         </p>
 
         {/* Plans Section - always centered, responsive */}
@@ -59,25 +58,25 @@ export default function PricingPage() {
                     color: "white",
                   }}
                 >
-                  {languages[language].pricing.popular}
+                  {translations.pricing.popular}
                 </span>
               </div>
 
               <h3 className="text-2xl font-bold mb-4 mt-6" style={{ color: theme.secondaryColor }}>
-                {languages[language].pricing.freePlan.title}
+                {translations.pricing.freePlan.title}
               </h3>
 
               <div className="mb-6">
                 <span className="text-6xl font-bold" style={{ color: theme.secondaryColor }}>
-                  {languages[language].pricing.freePlan.price}
+                  {translations.pricing.freePlan.price}
                 </span>
                 <span className="text-lg opacity-60 ml-2" style={{ color: theme.textColor }}>
-                  {languages[language].pricing.freePlan.period}
+                  {translations.pricing.freePlan.period}
                 </span>
               </div>
 
               <ul className="space-y-3 mb-8 flex-1">
-                {languages[language].pricing.freePlan.features.map(
+                {translations.pricing.freePlan.features.map(
                   (feature, index) => (
                     <li
                       key={index}
@@ -98,7 +97,7 @@ export default function PricingPage() {
                   color: "white",
                 }}
               >
-                {languages[language].pricing.freePlan.button}
+                {translations.pricing.freePlan.button}
               </button>
             </div>
           </div>
@@ -113,20 +112,20 @@ export default function PricingPage() {
               }}
             >
               <h3 className="text-2xl font-bold mb-4" style={{ color: theme.textColor }}>
-                {languages[language].pricing.premiumPlan.title}
+                {translations.pricing.premiumPlan.title}
               </h3>
 
               <div className="mb-6">
                 <span className="text-6xl font-bold line-through" style={{ color: theme.textColor }}>
-                  {languages[language].pricing.premiumPlan.price}
+                  {translations.pricing.premiumPlan.price}
                 </span>
                 <span className="text-lg opacity-60 ml-2" style={{ color: theme.textColor }}>
-                  {languages[language].pricing.premiumPlan.period}
+                  {translations.pricing.premiumPlan.period}
                 </span>
               </div>
 
               <ul className="space-y-3 mb-8 flex-1">
-                {languages[language].pricing.premiumPlan.features.map(
+                {translations.pricing.premiumPlan.features.map(
                   (feature, index) => (
                     <li
                       key={index}
@@ -147,7 +146,7 @@ export default function PricingPage() {
                 }}
                 disabled
               >
-                {languages[language].pricing.premiumPlan.button}
+                {translations.pricing.premiumPlan.button}
               </button>
             </div>
           </div>
@@ -162,20 +161,20 @@ export default function PricingPage() {
               }}
             >
               <h3 className="text-2xl font-bold mb-4" style={{ color: theme.textColor }}>
-                {languages[language].pricing.enterprisePlan.title}
+                {translations.pricing.enterprisePlan.title}
               </h3>
 
               <div className="mb-6">
                 <span className="text-6xl font-bold line-through" style={{ color: theme.textColor }}>
-                  {languages[language].pricing.enterprisePlan.price}
+                  {translations.pricing.enterprisePlan.price}
                 </span>
                 <span className="text-lg opacity-60 ml-2" style={{ color: theme.textColor }}>
-                  {languages[language].pricing.enterprisePlan.period}
+                  {translations.pricing.enterprisePlan.period}
                 </span>
               </div>
 
               <ul className="space-y-3 mb-8 flex-1">
-                {languages[language].pricing.enterprisePlan.features.map(
+                {translations.pricing.enterprisePlan.features.map(
                   (feature, index) => (
                     <li
                       key={index}
@@ -196,7 +195,7 @@ export default function PricingPage() {
                 }}
                 disabled
               >
-                {languages[language].pricing.enterprisePlan.button}
+                {translations.pricing.enterprisePlan.button}
               </button>
             </div>
           </div>
@@ -205,10 +204,10 @@ export default function PricingPage() {
         {/* Donation Section */}
         <div className="text-center p-8 rounded-lg w-full max-w-2xl mx-auto" style={{ backgroundColor: theme.primaryColor, marginBottom: 32 }}>
           <h2 className="text-3xl font-bold mb-4" style={{ color: theme.secondaryColor }}>
-            {languages[language].pricing.donation.title}
+            {translations.pricing.donation.title}
           </h2>
           <p className="text-lg mb-6 opacity-80" style={{ color: theme.textColor }}>
-            {languages[language].pricing.donation.description}
+            {translations.pricing.donation.description}
           </p>
           <div className="flex flex-col items-center space-y-4 mb-5">
             <BuyMeACoffeeWidget />
@@ -220,7 +219,7 @@ export default function PricingPage() {
           </div>
           <BuyMeACoffeeWidget showLink={true} />
           <p className="text-xs mt-4 opacity-60" style={{ color: theme.textColor }}>
-            {languages[language].pricing.donation.disclaimer}
+            {translations.pricing.donation.disclaimer}
           </p>
         </div>
       </main>

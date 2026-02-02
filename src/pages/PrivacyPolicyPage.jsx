@@ -5,12 +5,11 @@ import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import SEOHead from '../components/SEOHead';
 import { PolicyContainer, PolicyTitle, /* PolicySection, PolicyText */ } from '../styles/PolicyPages';
-import languages from '../data/languages.json';
 
 
 export default function PrivacyPolicyPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   return (
@@ -44,22 +43,22 @@ export default function PrivacyPolicyPage() {
         <div className="space-y-6">
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
-                {languages[language].legal.privacy.introduction.title}
+                {translations.legal.privacy.introduction.title}
               </h2>
               <p className="mb-4 leading-relaxed">
-                {languages[language].legal.privacy.introduction.content}
+                {translations.legal.privacy.introduction.content}
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
-                {languages[language].legal.privacy.dataCollection.title}
+                {translations.legal.privacy.dataCollection.title}
               </h2>
               <p className="mb-4 leading-relaxed">
-                {languages[language].legal.privacy.dataCollection.content}
+                {translations.legal.privacy.dataCollection.content}
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                {languages[language].legal.privacy.dataCollection.items.map((item, index) => (
+                {translations.legal.privacy.dataCollection.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -67,28 +66,28 @@ export default function PrivacyPolicyPage() {
 
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
-                {languages[language].legal.privacy.dataUsage.title}
+                {translations.legal.privacy.dataUsage.title}
               </h2>
               <p className="mb-4 leading-relaxed">
-                {languages[language].legal.privacy.dataUsage.content}
+                {translations.legal.privacy.dataUsage.content}
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
-                {languages[language].legal.privacy.anonymity.title}
+                {translations.legal.privacy.anonymity.title}
               </h2>
               <p className="mb-4 leading-relaxed">
-                {languages[language].legal.privacy.anonymity.content}
+                {translations.legal.privacy.anonymity.content}
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
-                {languages[language].legal.privacy.contact.title}
+                {translations.legal.privacy.contact.title}
               </h2>
               <p className="leading-relaxed">
-                {languages[language].legal.privacy.contact.content}
+                {translations.legal.privacy.contact.content}
               </p>
             </section>
           </div>

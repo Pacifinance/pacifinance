@@ -46,7 +46,6 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { getCategoryColor } from '../data/categoryColors';
 import Leaderboard from './Leaderboard';
@@ -761,7 +760,7 @@ const PopupOverlay = styled.div`
 `;
 
 function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const [activeTab, setActiveTab] = useState('insights');
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
     const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
@@ -777,22 +776,22 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     };
 
     const getRankDescription = (rank, category, isExpense = false) => {
-        if (!rank || rank === '' || isNaN(rank)) return languages[language].leaderboard.rankings.noData;
+        if (!rank || rank === '' || isNaN(rank)) return translations.leaderboard.rankings.noData;
         
         const numRank = Math.min(parseFloat(rank), 99);
         const level = getRankLevel(numRank);
         
         const categoryKey = isExpense ? 'expenses' : category;
-        const descriptions = languages[language].leaderboard.rankings.descriptions[categoryKey];
+        const descriptions = translations.leaderboard.rankings.descriptions[categoryKey];
         
         if (descriptions) {
             return descriptions[level] || descriptions.medium;
         }
         
         // Fallback generico
-        if (level === 'top') return `${languages[language].leaderboard.rankings.topPerformance} Top ${numRank}%`;
-        if (level === 'low') return `${languages[language].leaderboard.rankings.canImprove} Top ${numRank}%`;
-        return `${languages[language].leaderboard.rankings.goodPerformance} Top ${numRank}%`;
+        if (level === 'top') return `${translations.leaderboard.rankings.topPerformance} Top ${numRank}%`;
+        if (level === 'low') return `${translations.leaderboard.rankings.canImprove} Top ${numRank}%`;
+        return `${translations.leaderboard.rankings.goodPerformance} Top ${numRank}%`;
     };
 
     const showMotivationalMessage = (rank, category, isExpense = false) => {
@@ -802,7 +801,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         const level = getRankLevel(numRank);
         
         const categoryKey = isExpense ? 'expenses' : category;
-        const motivationalTexts = languages[language].leaderboard.rankings.motivational[level];
+        const motivationalTexts = translations.leaderboard.rankings.motivational[level];
         
         let content = {
             type: level,
@@ -848,7 +847,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     };
 
     // Get averages from userData (fetched from /stats/averages API)
-    const userAverages = userData?.averages || { general: {}, similar: {} };
+    const userAverages = userData?.averages || { all: {}, similar: {} };
     
     const comparisonData = {
         avgBalance: {
@@ -861,19 +860,19 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 growth12Months: null // Will be added when API provides this data
             },
             allUsers: {
-                current: userAverages.general?.balances ?? 0,
+                current: userAverages.all?.balances ?? 0,
                 growth12Months: null // Will be added when API provides this data
             }
         },
         avgIncome: {
             user: calculateAverage(userIncomesArray),
             similarUsers: userAverages.similar?.incomes ?? null,
-            allUsers: userAverages.general?.incomes ?? 0
+            allUsers: userAverages.all?.incomes ?? 0
         },
         avgOutflows: {
             user: calculateAverage(userOutflowsArray),
             similarUsers: userAverages.similar?.expenses ?? null,
-            allUsers: userAverages.general?.expenses ?? 0
+            allUsers: userAverages.all?.expenses ?? 0
         }
     };
 
@@ -901,9 +900,9 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         const crypto = (currentBalance.bitcoin || 0) + (currentBalance.crypto || 0);
         
         const allocations = [
-            { name: languages[language].comparison.cards.assetAllocation.liquid || 'Liquidità', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
-            { name: languages[language].comparison.cards.assetAllocation.investments || 'Investimenti', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
-            { name: languages[language].comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
+            { name: translations.comparison.cards.assetAllocation.liquid || 'Liquidità', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
+            { name: translations.comparison.cards.assetAllocation.investments || 'Investimenti', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
+            { name: translations.comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
         ].filter(a => a.value > 0);
         
         return allocations.sort((a, b) => b.percentage - a.percentage);
@@ -943,7 +942,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
     const formatCurrency = (value) => {
         if (isHidden) return '****';
-        if (value === null || value === undefined) return languages[language].general.comingSoon || 'Coming soon';
+        if (value === null || value === undefined) return translations.general.comingSoon || 'Coming soon';
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'EUR',
@@ -955,10 +954,10 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const formatGrowthPercentage = (value) => {
         if (isHidden) return '****';
         if (value === null || value === undefined) return '';
-        if (value === 0) return languages[language].comparison.cards.avgBalance.noGrowthData;
+        if (value === 0) return translations.comparison.cards.avgBalance.noGrowthData;
         
         const sign = value > 0 ? '+' : '';
-        return `${sign}${value.toFixed(1)}% ${languages[language].comparison.cards.avgBalance.growth12Months}`;
+        return `${sign}${value.toFixed(1)}% ${translations.comparison.cards.avgBalance.growth12Months}`;
     };
 
     const getComparisonIcon = (userValue, compareValue) => {
@@ -983,16 +982,16 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         if (avgBalance.similarUsers.current !== null && avgBalance.user.current > avgBalance.similarUsers.current) {
             insights.push({
                 type: 'positive',
-                title: languages[language].comparison.insights.betterThan + ' 70% ' + languages[language].comparison.insights.ofUsers,
-                description: languages[language].comparison.tips.goodBalance
+                title: translations.comparison.insights.betterThan + ' 70% ' + translations.comparison.insights.ofUsers,
+                description: translations.comparison.tips.goodBalance
             });
         }
         
         if (avgOutflows.user > avgIncome.user * 0.8) {
             insights.push({
                 type: 'warning',
-                title: languages[language].comparison.tips.title,
-                description: languages[language].comparison.tips.highOutflows
+                title: translations.comparison.tips.title,
+                description: translations.comparison.tips.highOutflows
             });
         }
         
@@ -1007,13 +1006,13 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 <PersonIcon style={{ fontSize: '2rem', color: 'white' }} />
             </BannerIcon>
             <BannerContent theme={theme}>
-                <h3>{languages[language].comparison.profileBanner?.title || '🚀 Sblocca confronti personalizzati!'}</h3>
+                <h3>{translations.comparison.profileBanner?.title || '🚀 Sblocca confronti personalizzati!'}</h3>
                 <p>
-                    {languages[language].comparison.profileBanner?.description || 'Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!'}
+                    {translations.comparison.profileBanner?.description || 'Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!'}
                 </p>
             </BannerContent>
             <BannerAction theme={theme}>
-                {languages[language].comparison.profileBanner?.action || 'Completa profilo'}
+                {translations.comparison.profileBanner?.action || 'Completa profilo'}
                 <ArrowForwardIcon />
             </BannerAction>
         </ProfileBanner>
@@ -1025,13 +1024,13 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
             <GridContainer>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
-                        <h3><AccountBalanceIcon /> {languages[language].comparison.cards.avgBalance.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.avgBalance.description}>
+                        <h3><AccountBalanceIcon /> {translations.comparison.cards.avgBalance.title}</h3>
+                        <Tooltip title={translations.comparison.cards.avgBalance.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgBalance.yourBalance}</span>
+                        <span className="label">{translations.comparison.cards.avgBalance.yourBalance}</span>
                         <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.user.growth12Months}>
                             <div className="main-value">
                                 {formatCurrency(comparisonData.avgBalance.user.current)}
@@ -1042,7 +1041,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         </BalanceValueContainer>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgBalance.avgSimilar}</span>
+                        <span className="label">{translations.comparison.cards.avgBalance.avgSimilar}</span>
                         <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.similarUsers.growth12Months}>
                             <div className="main-value">
                                 {formatCurrency(comparisonData.avgBalance.similarUsers.current)}
@@ -1054,7 +1053,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         </BalanceValueContainer>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgBalance.avgAll}</span>
+                        <span className="label">{translations.comparison.cards.avgBalance.avgAll}</span>
                         <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.allUsers.growth12Months}>
                             <div className="main-value">
                                 {formatCurrency(comparisonData.avgBalance.allUsers.current)}
@@ -1069,26 +1068,26 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
                 <ComparisonCard theme={theme} accent="#27ae60">
                     <CardHeader theme={theme}>
-                        <h3><MonetizationOnIcon /> {languages[language].comparison.cards.avgIncome.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.avgIncome.description}>
+                        <h3><MonetizationOnIcon /> {translations.comparison.cards.avgIncome.title}</h3>
+                        <Tooltip title={translations.comparison.cards.avgIncome.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgIncome.yourIncome}</span>
+                        <span className="label">{translations.comparison.cards.avgIncome.yourIncome}</span>
                         <span className="value">
                             {formatCurrency(comparisonData.avgIncome.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgIncome.avgSimilar}</span>
+                        <span className="label">{translations.comparison.cards.avgIncome.avgSimilar}</span>
                         <span className="value">
                             {formatCurrency(comparisonData.avgIncome.similarUsers)}
                             {getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.similarUsers)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgIncome.avgAll}</span>
+                        <span className="label">{translations.comparison.cards.avgIncome.avgAll}</span>
                         <span className="value">
                             {formatCurrency(comparisonData.avgIncome.allUsers)}
                             {getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.allUsers)}
@@ -1098,26 +1097,26 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
 
                 <ComparisonCard theme={theme} accent="#e74c3c">
                     <CardHeader theme={theme}>
-                        <h3><TrendingDownIcon /> {languages[language].comparison.cards.avgOutflows.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.avgOutflows.description}>
+                        <h3><TrendingDownIcon /> {translations.comparison.cards.avgOutflows.title}</h3>
+                        <Tooltip title={translations.comparison.cards.avgOutflows.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgOutflows.yourOutflows}</span>
+                        <span className="label">{translations.comparison.cards.avgOutflows.yourOutflows}</span>
                         <span className="value">
                             {formatCurrency(comparisonData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgOutflows.avgSimilar}</span>
+                        <span className="label">{translations.comparison.cards.avgOutflows.avgSimilar}</span>
                         <span className="value">
                             {formatCurrency(comparisonData.avgOutflows.similarUsers)}
                             {getComparisonIcon(comparisonData.avgOutflows.similarUsers, comparisonData.avgOutflows.user)}
                         </span>
                     </MetricRow>
                     <MetricRow theme={theme}>
-                        <span className="label">{languages[language].comparison.cards.avgOutflows.avgAll}</span>
+                        <span className="label">{translations.comparison.cards.avgOutflows.avgAll}</span>
                         <span className="value">
                             {formatCurrency(comparisonData.avgOutflows.allUsers)}
                             {getComparisonIcon(comparisonData.avgOutflows.allUsers, comparisonData.avgOutflows.user)}
@@ -1128,8 +1127,8 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 {/* Savings Rate Card */}
                 <ComparisonCard theme={theme} accent="#9b59b6">
                     <CardHeader theme={theme}>
-                        <h3><SavingsIcon /> {languages[language].comparison.cards.savingsRate.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.savingsRate.description}>
+                        <h3><SavingsIcon /> {translations.comparison.cards.savingsRate.title}</h3>
+                        <Tooltip title={translations.comparison.cards.savingsRate.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
@@ -1139,24 +1138,24 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                                 <div className="rate-value">
                                     {isHidden ? '****' : `${userSavingsRate.toFixed(1)}`}<span>%</span>
                                 </div>
-                                <div className="rate-label">{languages[language].comparison.cards.savingsRate.last12Months}</div>
+                                <div className="rate-label">{translations.comparison.cards.savingsRate.last12Months}</div>
                             </SavingsRateDisplay>
                             <MetricRow theme={theme}>
-                                <span className="label">{languages[language].comparison.cards.savingsRate.yourRate}</span>
+                                <span className="label">{translations.comparison.cards.savingsRate.yourRate}</span>
                                 <span className="value" style={{ color: userSavingsRate >= 20 ? '#27ae60' : userSavingsRate < 0 ? '#e74c3c' : theme.textColor }}>
                                     {isHidden ? '****' : `${userSavingsRate.toFixed(1)}%`}
                                 </span>
                             </MetricRow>
                             <MetricRow theme={theme}>
-                                <span className="label">{languages[language].comparison.cards.savingsRate.avgSimilar}</span>
+                                <span className="label">{translations.comparison.cards.savingsRate.avgSimilar}</span>
                                 <span className="value">
-                                    {languages[language].general.comingSoon || 'Coming soon'}
+                                    {translations.general.comingSoon || 'Coming soon'}
                                 </span>
                             </MetricRow>
                         </>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
-                            {languages[language].comparison.cards.savingsRate.noData}
+                            {translations.comparison.cards.savingsRate.noData}
                         </div>
                     )}
                 </ComparisonCard>
@@ -1164,8 +1163,8 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 {/* Asset Allocation Card */}
                 <ComparisonCard theme={theme} accent="#16a085">
                     <CardHeader theme={theme}>
-                        <h3><PieChartIcon /> {languages[language].comparison.cards.assetAllocation.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.assetAllocation.description}>
+                        <h3><PieChartIcon /> {translations.comparison.cards.assetAllocation.title}</h3>
+                        <Tooltip title={translations.comparison.cards.assetAllocation.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
@@ -1202,7 +1201,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         </ProgressBarContainer>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
-                            {languages[language].comparison.cards.assetAllocation.noAssets}
+                            {translations.comparison.cards.assetAllocation.noAssets}
                         </div>
                     )}
                 </ComparisonCard>
@@ -1210,15 +1209,15 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 {/* Spending by Category Card */}
                 <ComparisonCard theme={theme} accent="#e67e22">
                     <CardHeader theme={theme}>
-                        <h3><BarChartIcon /> {languages[language].comparison.cards.spendingCategories.title}</h3>
-                        <Tooltip title={languages[language].comparison.cards.spendingCategories.description}>
+                        <h3><BarChartIcon /> {translations.comparison.cards.spendingCategories.title}</h3>
+                        <Tooltip title={translations.comparison.cards.spendingCategories.description}>
                             <InfoIcon style={{ color: theme.textColor }} />
                         </Tooltip>
                     </CardHeader>
                     {spendingByCategory.length > 0 ? (
                         <>
                             <div style={{ fontSize: '0.85rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', marginBottom: '0.5rem' }}>
-                                {languages[language].comparison.cards.spendingCategories.topCategories}
+                                {translations.comparison.cards.spendingCategories.topCategories}
                             </div>
                             {spendingByCategory.slice(0, 5).map((category, index) => (
                                 <CategoryBar key={index} theme={theme}>
@@ -1235,11 +1234,11 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                             {spendingByCategory.length > 5 && (
                                 <>
                                     <div style={{ fontSize: '0.8rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', marginTop: '0.75rem', marginBottom: '0.25rem' }}>
-                                        {languages[language].comparison.cards.spendingCategories.otherCategories} ({spendingByCategory.length - 5})
+                                        {translations.comparison.cards.spendingCategories.otherCategories} ({spendingByCategory.length - 5})
                                     </div>
                                     <CategoryBar theme={theme}>
                                         <div className="color-dot" style={{ background: '#7f8c8d' }} />
-                                        <span className="category-name">{languages[language].comparison.cards.assetAllocation.other || 'Other'}</span>
+                                        <span className="category-name">{translations.comparison.cards.assetAllocation.other || 'Other'}</span>
                                         <span className="category-value">
                                             {isHidden ? '****' : formatCurrency(spendingByCategory.slice(5).reduce((sum, c) => sum + c.value, 0))}
                                         </span>
@@ -1252,7 +1251,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         </>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
-                            {languages[language].comparison.cards.spendingCategories.noExpenses}
+                            {translations.comparison.cards.spendingCategories.noExpenses}
                         </div>
                     )}
                 </ComparisonCard>
@@ -1307,11 +1306,11 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                 <RankingsHeader theme={theme}>
                     <h2>
                         <EmojiEventsIcon style={{ fontSize: '2.5rem', color: theme.buttonBackgroundColor }} />
-                        {languages[language].leaderboard.rankings.title}
+                        {translations.leaderboard.rankings.title}
                     </h2>
                     <div className="month-indicator">
                         <CalendarTodayIcon style={{ fontSize: '1rem' }} />
-                        {languages[language].leaderboard.rankings.monthData} {getCurrentMonth()}
+                        {translations.leaderboard.rankings.monthData} {getCurrentMonth()}
                     </div>
                 </RankingsHeader>
 
@@ -1323,33 +1322,33 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                                 <PublicIcon style={{ fontSize: '1.5rem', color: 'white' }} />
                             </div>
                             <div>
-                                <h3>{languages[language].leaderboard.rankings.generalRanking}</h3>
+                                <h3>{translations.leaderboard.rankings.generalRanking}</h3>
                                 <p style={{ 
                                     color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', 
                                     margin: 0, 
                                     fontSize: '0.9rem' 
                                 }}>
-                                    {languages[language].leaderboard.rankings.generalSubtitle}
+                                    {translations.leaderboard.rankings.generalSubtitle}
                                 </p>
                             </div>
                         </div>
                         
                         <RankCard 
-                            title={languages[language].leaderboard.rankings.balance} 
+                            title={translations.leaderboard.rankings.balance} 
                             rank={balanceRank}
                             icon={<AccountBalanceIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
                             category="balance"
                         />
                         
                         <RankCard 
-                            title={languages[language].leaderboard.rankings.income} 
+                            title={translations.leaderboard.rankings.income} 
                             rank={incomeRank}
                             icon={<MonetizationOnIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
                             category="income"
                         />
                         
                         <RankCard 
-                            title={languages[language].leaderboard.rankings.expenses} 
+                            title={translations.leaderboard.rankings.expenses} 
                             rank={expenseRank}
                             icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
                             category="expenses"
@@ -1364,33 +1363,33 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                                 <GroupIcon style={{ fontSize: '1.5rem', color: 'white' }} />
                             </div>
                             <div>
-                                <h3>{languages[language].leaderboard.rankings.similarRanking}</h3>
+                                <h3>{translations.leaderboard.rankings.similarRanking}</h3>
                                 <p style={{ 
                                     color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', 
                                     margin: 0, 
                                     fontSize: '0.9rem' 
                                 }}>
-                                    {languages[language].leaderboard.rankings.similarSubtitle}
+                                    {translations.leaderboard.rankings.similarSubtitle}
                                 </p>
                             </div>
                         </div>
                         
                         <RankCard 
-                            title={languages[language].leaderboard.rankings.balance} 
+                            title={translations.leaderboard.rankings.balance} 
                             rank={balanceSimilarRank}
                             icon={<AccountBalanceIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
                             category="balance"
                         />
                         
                         <RankCard 
-                            title={languages[language].leaderboard.rankings.income} 
+                            title={translations.leaderboard.rankings.income} 
                             rank={incomeSimilarRank}
                             icon={<MonetizationOnIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
                             category="income"
                         />
                         
                         <RankCard 
-                            title={languages[language].leaderboard.rankings.expenses} 
+                            title={translations.leaderboard.rankings.expenses} 
                             rank={expenseSimilarRank}
                             icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
                             category="expenses"
@@ -1408,7 +1407,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                             <h3>{popupContent.title}</h3>
                             <p>{popupContent.message}</p>
                             <button onClick={() => setShowMotivationalPopup(false)}>
-                                {languages[language].leaderboard.rankings.popup.close}
+                                {translations.leaderboard.rankings.popup.close}
                             </button>
                         </MotivationalPopup>
                     </>
@@ -1421,8 +1420,8 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         <Section theme={theme}>
             <ComparisonContainer>
                 <SectionHeader theme={theme}>
-                    <h1>{languages[language].comparison.title}</h1>
-                    <p>{languages[language].comparison.subtitle}</p>
+                    <h1>{translations.comparison.title}</h1>
+                    <p>{translations.comparison.subtitle}</p>
                 </SectionHeader>
 
                 <SectionTabs theme={theme}>
@@ -1433,7 +1432,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         data-umami-event="comparison-tab-insights"
                     >
                         <BarChartIcon />
-                        {languages[language].comparison.sections.insights.title}
+                        {translations.comparison.sections.insights.title}
                     </TabButton>
                     <TabButton 
                         theme={theme} 
@@ -1442,7 +1441,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         data-umami-event="comparison-tab-rankings"
                     >
                         <CompareArrowsIcon />
-                        {languages[language].comparison.sections.rankings.title}
+                        {translations.comparison.sections.rankings.title}
                     </TabButton>
                 </SectionTabs>
 

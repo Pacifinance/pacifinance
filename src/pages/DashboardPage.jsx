@@ -16,7 +16,7 @@ const DashboardPage = () => {
     const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
     const { isHidden } = useContext(PrivacyContext);
     const { theme } = useContext(ThemeContext);
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const {
         isNavigating,

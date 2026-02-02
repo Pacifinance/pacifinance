@@ -6,7 +6,6 @@ import InfoIcon from "@mui/icons-material/Info";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
-import languages from "../data/languages.json";
 
 //for the modal and styled components
 import {
@@ -33,7 +32,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.met
 // export { generated_user_id };
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { showSuccess, showError } = useToast();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -214,9 +213,9 @@ export default function SignUpForm() {
                 showError(
                     `
                 <div>
-                    <strong>${languages[language].header.register.errorPopup.title}</strong><br/>
-                    ${languages[language].header.register.errorPopup.message}<br/>
-                    ${languages[language].header.register.errorPopup.message2}
+                    <strong>${translations.header.register.errorPopup.title}</strong><br/>
+                    ${translations.header.register.errorPopup.message}<br/>
+                    ${translations.header.register.errorPopup.message2}
                 </div>
             `,
                     5000,
@@ -237,9 +236,9 @@ export default function SignUpForm() {
             showError(
                 `
                 <div>
-                    <strong>${languages[language].header.register.errorPopup.title}</strong><br/>
-                    ${languages[language].header.register.errorPopup.message}<br/>
-                    ${languages[language].header.register.errorPopup.message2}
+                    <strong>${translations.header.register.errorPopup.title}</strong><br/>
+                    ${translations.header.register.errorPopup.message}<br/>
+                    ${translations.header.register.errorPopup.message2}
                 </div>
             `,
                 5000,
@@ -299,7 +298,7 @@ export default function SignUpForm() {
                     <MuiCustomTextField
                         theme={theme}
                         id="passwordSignUp"
-                        label={languages[language].header.register.password}
+                        label={translations.header.register.password}
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={handlePasswordChange}
@@ -333,7 +332,7 @@ export default function SignUpForm() {
                         theme={theme}
                         id="confirmPassword"
                         label={
-                            languages[language].header.register.confirmPassword
+                            translations.header.register.confirmPassword
                         }
                         type={showConfirmPassword ? "text" : "password"}
                         value={confirmPassword}
@@ -388,7 +387,7 @@ export default function SignUpForm() {
                                 ? language === "it"
                                     ? "Verifica sicurezza..."
                                     : "Security check..."
-                                : languages[language].header.register
+                                : translations.header.register
                                       .titleButton}
                         </SignUpButton>
                     </div>
@@ -407,12 +406,12 @@ export default function SignUpForm() {
                     fullWidth
                 >
                     <MuiCustomDialogTitle id="success-dialog-title">
-                        {languages[language].header.register.successPopup.title}
+                        {translations.header.register.successPopup.title}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="success-dialog-description">
                             <div className="space-y-4">
-                                <p>{languages[language].header.register.successPopup.message}</p>
+                                <p>{translations.header.register.successPopup.message}</p>
                                 
                                 {/* ID Display Box */}
                                 <div 
@@ -456,7 +455,7 @@ export default function SignUpForm() {
                                 </div>
                                 
                                 <div dangerouslySetInnerHTML={{
-                                    __html: languages[language].header.register.successPopup.securityMessage
+                                    __html: translations.header.register.successPopup.securityMessage
                                 }} />
                             </div>
                         </MuiCustomDialogContentText>

@@ -10,7 +10,6 @@ import { useAuth } from "../hooks/useAuth";
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
-import languages from "../data/languages.json";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import {
     Section,
@@ -49,7 +48,7 @@ const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, toggleLanguage } = useContext(LanguageContext);
+    const { language, translations, toggleLanguage } = useContext(LanguageContext);
     // Usa l'hook unificato che gestisce sia UserContext che MockAuth
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
@@ -110,7 +109,7 @@ const SettingsPage = () => {
             setPassword("");
             setShowChangeID(false);
             setSuccessMessage(
-                languages[language].sidebar.changeID.successPopup.message +
+                translations.sidebar.changeID.successPopup.message +
                     newIDValue,
             );
             setTimeout(() => setSuccessMessage(""), 5000);
@@ -139,7 +138,7 @@ const SettingsPage = () => {
                     setOldPassword("");
                     setConfirmPassword("");
                     setSuccessMessage(
-                        languages[language].sidebar.changePassword.successPopup
+                        translations.sidebar.changePassword.successPopup
                             .message,
                     );
                     setTimeout(() => setSuccessMessage(""), 5000);
@@ -315,7 +314,7 @@ const SettingsPage = () => {
                         }}
                     >
                         <FontAwesomeIcon icon={faUserCog} style={{ marginRight: "0.5rem" }} />
-                        {languages[language].sidebar.settings.title}
+                        {translations.sidebar.settings.title}
                     </TitleDashboard>
 
                     {successMessage && (
@@ -655,7 +654,7 @@ const SettingsPage = () => {
                                     marginRight: "0.75rem",
                                     color: theme.buttonBackgroundColor 
                                 }} />
-                                {languages[language].sidebar.settings.themeSection ||
+                                {translations.sidebar.settings.themeSection ||
                                     (language === "it" ? "Tema e Aspetto" : "Theme and Appearance")}
                             </h3>
                             
@@ -683,7 +682,7 @@ const SettingsPage = () => {
                                             display: "block",
                                             marginBottom: "0.25rem"
                                         }}>
-                                            {languages[language].sidebar.settings.light}
+                                            {translations.sidebar.settings.light}
                                         </label>
                                         <span style={{
                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
@@ -718,7 +717,7 @@ const SettingsPage = () => {
                                             display: "block",
                                             marginBottom: "0.25rem"
                                         }}>
-                                            {languages[language].sidebar.settings.privacy}
+                                            {translations.sidebar.settings.privacy}
                                         </label>
                                         <span style={{
                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
@@ -755,7 +754,7 @@ const SettingsPage = () => {
                                             marginBottom: "0.25rem"
                                         }}>
                                             <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.5rem" }} />
-                                            {languages[language].sidebar.settings.language}
+                                            {translations.sidebar.settings.language}
                                         </label>
                                         <span style={{
                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
@@ -806,7 +805,7 @@ const SettingsPage = () => {
                                     marginRight: "0.75rem",
                                     color: theme.buttonBackgroundColor 
                                 }} />
-                                {languages[language].sidebar.settings.securitySection ||
+                                {translations.sidebar.settings.securitySection ||
                                     (language === "it" ? "Sicurezza" : "Security")}
                             </h3>
 
@@ -841,7 +840,7 @@ const SettingsPage = () => {
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faKey} style={{ marginRight: "0.75rem" }} />
-                                    {languages[language].sidebar.changeID.title}
+                                    {translations.sidebar.changeID.title}
                                 </MyButton>
 
                                 {showChangeID && (
@@ -897,7 +896,7 @@ const SettingsPage = () => {
                                             style={{ marginTop: "1rem" }}
                                         >
                                             {
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .changeID.confirmButton
                                             }
                                         </MyButton>
@@ -938,7 +937,7 @@ const SettingsPage = () => {
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faShieldAlt} style={{ marginRight: "0.75rem" }} />
-                                    {languages[language].sidebar.changePassword.title}
+                                    {translations.sidebar.changePassword.title}
                                 </MyButton>
 
                                 {showChangePassword && (
@@ -954,7 +953,7 @@ const SettingsPage = () => {
                                         <MuiCustomTextField
                                             theme={theme}
                                             label={
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .changePassword.oldPassword
                                             }
                                             type={
@@ -995,7 +994,7 @@ const SettingsPage = () => {
                                         <MuiCustomTextField
                                             theme={theme}
                                             label={
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .changePassword.newPassword
                                             }
                                             type={
@@ -1036,7 +1035,7 @@ const SettingsPage = () => {
                                         <MuiCustomTextField
                                             theme={theme}
                                             label={
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .changePassword
                                                     .confirmPassword
                                             }
@@ -1079,7 +1078,7 @@ const SettingsPage = () => {
                                         />
                                         <MyButton type="submit" theme={theme}>
                                             {
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .changePassword
                                                     .confirmButton
                                             }
@@ -1112,7 +1111,7 @@ const SettingsPage = () => {
                                     marginRight: "0.75rem",
                                     color: "#dc3545" 
                                 }} />
-                                {languages[language].sidebar.settings.dangerZone ||
+                                {translations.sidebar.settings.dangerZone ||
                                     (language === "it" ? "Zona Pericolosa" : "Danger Zone")}
                             </h3>
                             
@@ -1164,7 +1163,7 @@ const SettingsPage = () => {
                                     icon={faTrashCan}
                                     style={{ marginRight: "0.75rem" }}
                                 />
-                                {languages[language].sidebar.settings.deleteAccount}
+                                {translations.sidebar.settings.deleteAccount}
                             </MyButton>
 
                             {showDeleteAccount && (
@@ -1183,7 +1182,7 @@ const SettingsPage = () => {
                                         }}
                                     >
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .deleteAccount.info
                                         }
                                     </p>
@@ -1198,7 +1197,7 @@ const SettingsPage = () => {
                                             }}
                                         >
                                             {
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .deleteAccount.confirmButton
                                             }
                                         </MyButton>
@@ -1209,7 +1208,7 @@ const SettingsPage = () => {
                                             theme={theme}
                                         >
                                             {
-                                                languages[language].sidebar
+                                                translations.sidebar
                                                     .deleteAccount.cancelButton
                                             }
                                         </MyButton>
@@ -1238,7 +1237,7 @@ const SettingsPage = () => {
                                     transition: "all 0.3s ease"
                                 }}
                             >
-                                {languages[language].sidebar.settings.backToDashboard || "Torna alla Dashboard"}
+                                {translations.sidebar.settings.backToDashboard || "Torna alla Dashboard"}
                             </MyButton>
                         </div>
                     </div>

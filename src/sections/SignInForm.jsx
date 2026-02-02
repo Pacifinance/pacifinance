@@ -3,7 +3,6 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { UserContext } from "../contexts/UserContext";
 import { useToast } from "../contexts/ToastContext";
-import languages from "../data/languages.json";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -33,7 +32,7 @@ import {
 
 export default function SignInForm() {
   const { theme } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showUsername, setShowUsername] = useState(true);
@@ -75,11 +74,11 @@ export default function SignInForm() {
         navigate("/dashboard"); //direct redirect
         //window.umami.trackEvent('signIn', 'SignIn');
       } else {
-        showError(languages[language].header.login.errorPopup.message, 4000);
+        showError(translations.header.login.errorPopup.message, 4000);
       }
     } catch (error) {
       console.error("Login error:", error);
-      showError(languages[language].header.login.errorPopup.message, 4000);
+      showError(translations.header.login.errorPopup.message, 4000);
     }
   };
 
@@ -94,7 +93,7 @@ export default function SignInForm() {
           <MuiCustomTextField
             theme={theme}
             id="username"
-            label={languages[language].header.login.username}
+            label={translations.header.login.username}
             type={showUsername ? "text" : "password"}
             value={username}
             onChange={(event) => setUsername(event.target.value)}
@@ -120,7 +119,7 @@ export default function SignInForm() {
           <MuiCustomTextField
             theme={theme}
             id="passwordSignIn"
-            label={languages[language].header.login.password}
+            label={translations.header.login.password}
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -145,7 +144,7 @@ export default function SignInForm() {
           />
           <div className="button-wrapper">
             <SignInButton theme={theme} type="submit" $fullWidth>
-              {languages[language].header.login.titleButton}
+              {translations.header.login.titleButton}
             </SignInButton>
           </div>
         </form>
@@ -158,19 +157,19 @@ export default function SignInForm() {
           aria-describedby="alert-dialog-description"
         >
           <MuiCustomDialogTitle id="alert-dialog-title">
-            {languages[language].header.login.errorPopup.title}
+            {translations.header.login.errorPopup.title}
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText
               id="alert-dialog-description"
               dangerouslySetInnerHTML={{
-                __html: languages[language].header.login.errorPopup.message,
+                __html: translations.header.login.errorPopup.message,
               }}
             ></MuiCustomDialogContentText>
           </MuiCustomDialogContent>
           <MuiCustomDialogActions>
             <MuiCustomButton onClick={handleCloseModal} autoFocus>
-              {languages[language].header.login.errorPopup.okButton}
+              {translations.header.login.errorPopup.okButton}
             </MuiCustomButton>
           </MuiCustomDialogActions>
         </MuiCustomDialog>

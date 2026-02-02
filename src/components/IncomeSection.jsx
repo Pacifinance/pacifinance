@@ -2,7 +2,6 @@ import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
@@ -91,7 +90,7 @@ export default function IncomeSection({
   incomeDateFilterEnd,
   setIncomeDateFilterEnd,
 }) {
-  const { language } = React.useContext(LanguageContext);
+  const { language, translations } = React.useContext(LanguageContext);
   
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
@@ -241,7 +240,7 @@ export default function IncomeSection({
               onClick={() => handleSort('category')} 
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
-              {languages[language].insert.incomeSection.tableColumns.category}
+              {translations.insert.incomeSection.tableColumns.category}
               {getSortIcon('category')}
             </span>
             <select
@@ -249,7 +248,7 @@ export default function IncomeSection({
               onChange={(e) => setIncomeCategoryFilter(e.target.value)}
               style={{ ...dropdownStyle, minWidth: 100, fontSize: '0.85em' }}
             >
-              <option value="">{languages[language].general.all}</option>
+              <option value="">{translations.general.all}</option>
               {incomesTags.map((item) => (
                 <option key={item.index} value={item.translations[language]}>
                   {item.translations[language]}
@@ -269,7 +268,7 @@ export default function IncomeSection({
             onClick={() => handleSort('amount')} 
             style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
           >
-            {languages[language].general.value}
+            {translations.general.value}
             {getSortIcon('amount')}
           </span>
         </th>
@@ -293,12 +292,12 @@ export default function IncomeSection({
               onClick={() => handleSort('note')} 
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
-              {languages[language].insert.incomeSection.tableColumns.note}
+              {translations.insert.incomeSection.tableColumns.note}
               {getSortIcon('note')}
             </span>
             <input
               type="text"
-              placeholder={languages[language].general.clearFilter || 'Filtra...'}
+              placeholder={translations.general.clearFilter || 'Filtra...'}
               value={incomeNoteFilter}
               onChange={(e) => setIncomeNoteFilter(e.target.value)}
               style={{
@@ -335,7 +334,7 @@ export default function IncomeSection({
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
               <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: 4 }} />
-              {languages[language].general.date || 'Data'}
+              {translations.general.date || 'Data'}
               {getSortIcon('date')}
             </span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -394,7 +393,7 @@ export default function IncomeSection({
                   marginTop: '2px'
                 }}
               >
-                {languages[language].general.clearFilter || 'Clear'}
+                {translations.general.clearFilter || 'Clear'}
               </button>
             )}
           </div>
@@ -579,7 +578,7 @@ export default function IncomeSection({
               color: '#1a2b2b',
             }}
           >
-            {languages[language].general.totalFiltered || 'Total Filtered'}
+            {translations.general.totalFiltered || 'Total Filtered'}
           </td>
           <td
             colSpan={1}
@@ -630,7 +629,7 @@ export default function IncomeSection({
             color: '#fff',
           }}
         >
-          {languages[language].general.total}
+          {translations.general.total}
         </td>
         <td
           colSpan={1}
@@ -666,7 +665,7 @@ export default function IncomeSection({
         {/* Category Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.category}
+            {translations.general.category}
           </label>
           <Select
             value={categoryIncome.value}
@@ -695,7 +694,7 @@ export default function IncomeSection({
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
-                return languages[language].insert.incomeSection
+                return translations.insert.incomeSection
                   .placeholderCategory;
               }
               return value;
@@ -704,7 +703,7 @@ export default function IncomeSection({
             <MenuItem value="">
               <em>
                 {
-                  languages[language].insert.incomeSection
+                  translations.insert.incomeSection
                     .placeholderCategory
                 }
               </em>
@@ -720,7 +719,7 @@ export default function IncomeSection({
         {/* Amount Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.value}
+            {translations.general.value}
           </label>
           <div style={inputCurrencyWrapper}>
             <span style={currencySymbolStyle}>€</span>
@@ -738,7 +737,7 @@ export default function IncomeSection({
         {/* Date Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.date}
+            {translations.general.date}
           </label>
           <StyledDateInput
             type="date"
@@ -762,7 +761,7 @@ export default function IncomeSection({
         {/* Balance Destination Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].insert.incomeSection.increaseWhichBalance || 'Aggiungi a'}
+            {translations.insert.incomeSection.increaseWhichBalance || 'Aggiungi a'}
           </label>
           <Select
             value={selectedOption}
@@ -778,13 +777,13 @@ export default function IncomeSection({
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
-                return languages[language].general.selectAnOption || 'Nessuno (opzionale)';
+                return translations.general.selectAnOption || 'Nessuno (opzionale)';
               }
               return value;
             }}
           >
             <MenuItem value="">
-              <em>{languages[language].general.selectAnOption || 'Nessuno (opzionale)'}</em>
+              <em>{translations.general.selectAnOption || 'Nessuno (opzionale)'}</em>
             </MenuItem>
             {balanceOptions && Object.keys(balanceOptions).map((option) => (
               <MenuItem key={option} value={option}>
@@ -803,7 +802,7 @@ export default function IncomeSection({
             onChange={(e) => setNoteIncomeAreaValue(e.target.value)}
             maxLength={64}
             placeholder={
-              languages[language].insert.incomeSection.placeholderNote
+              translations.insert.incomeSection.placeholderNote
             }
             style={{
               width: '100%',
@@ -822,7 +821,7 @@ export default function IncomeSection({
         </div>
         <div style={{display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '24px'}}>
           <ModernActionButton theme={theme} onClick={onAddIncome}>
-            {languages[language].insert.incomeSection.updateButton}
+            {translations.insert.incomeSection.updateButton}
           </ModernActionButton>
         </div>
       </div>
@@ -865,7 +864,7 @@ export default function IncomeSection({
             letterSpacing: '-0.01em',
             margin: 0
           }}>
-            {languages[language].insert.incomeSection.titleListing}
+            {translations.insert.incomeSection.titleListing}
           </h3>
           <select
             className="text-black text-center font-medium"

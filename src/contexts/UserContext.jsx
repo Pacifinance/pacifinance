@@ -338,7 +338,7 @@ export const UserProvider = ({ children }) => {
             
             // Try to fetch stats averages - endpoint may not be available in production yet
             let averages = {
-              general: { balances: null, expenses: null, incomes: null },
+              all: { balances: null, expenses: null, incomes: null },
               similar: { balances: null, expenses: null, incomes: null }
             };
             
@@ -349,10 +349,10 @@ export const UserProvider = ({ children }) => {
               // Struttura attuale: { balances, expenses, incomes }
               // Struttura futura: { general: { balances, expenses, incomes }, similar: { balances, expenses, incomes } }
               averages = {
-                general: {
-                  balances: statsAveragesData.general?.balances ?? statsAveragesData.balances ?? null,
-                  expenses: statsAveragesData.general?.expenses ?? statsAveragesData.expenses ?? null,
-                  incomes: statsAveragesData.general?.incomes ?? statsAveragesData.incomes ?? null
+                all: {
+                  balances: statsAveragesData.all?.balances ?? statsAveragesData.general?.balances ?? null,
+                  expenses: statsAveragesData.all?.expenses ?? statsAveragesData.general?.expenses ?? null,
+                  incomes: statsAveragesData.all?.incomes ?? statsAveragesData.general?.incomes ?? null
                 },
                 similar: {
                   balances: statsAveragesData.similar?.balances ?? null,

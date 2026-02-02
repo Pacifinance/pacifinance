@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import languages from "../data/languages.json";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
@@ -34,7 +33,7 @@ import { BsShield, BsBarChart, BsPhone, BsGear, BsHeart, BsLightbulb } from 'rea
 // I styled components sono ora nel file ModernInfoStyled.jsx
 
 function Info({ theme }) {
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const [openFAQ, setOpenFAQ] = useState(null);
 
@@ -42,10 +41,10 @@ function Info({ theme }) {
         setOpenFAQ(openFAQ === index ? null : index);
     };
 
-    // Gestione più robusta dei testi da languages.json
+    // Gestione più robusta dei testi da translations
     const getTranslation = (path) => {
         const keys = path.split('.');
-        let result = languages[language];
+        let result = translations;
         
         for (const key of keys) {
             if (result && typeof result === 'object' && result[key] !== undefined) {

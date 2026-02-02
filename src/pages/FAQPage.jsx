@@ -3,12 +3,11 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
-import languages from '../data/languages.json';
 import SEOHead from '../components/SEOHead';
 
 export default function FAQPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
   const [openQuestion, setOpenQuestion] = useState(null);
 
@@ -47,11 +46,11 @@ export default function FAQPage() {
                   : '0 2px 4px rgba(0, 0, 0, 0.1)'
               }}
             >
-              {languages[language].faq.title}
+              {translations.faq.title}
             </h1>
 
             <div className="space-y-6">
-              {languages[language].faq.questions.map((faq, index) => (
+              {translations.faq.questions.map((faq, index) => (
                 <div 
                   key={index}
                   className="border-2 rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
@@ -111,10 +110,10 @@ export default function FAQPage() {
               }}
             >
               <h3 className="text-2xl font-bold mb-4" style={{ color: '#079164' }}>
-                {languages[language].faq.stillHaveQuestions}
+                {translations.faq.stillHaveQuestions}
               </h3>
               <p className="text-lg" style={{ opacity: 0.8 }}>
-                {languages[language].faq.contactInfo}
+                {translations.faq.contactInfo}
               </p>
             </div>
           </div>

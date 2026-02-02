@@ -1,4 +1,5 @@
 // Theme.js
+// Note: Keep import for backward compatibility with code that hasn't been migrated yet
 import languages from '../data/languages.json';
 
 export const themes = {
@@ -32,20 +33,20 @@ export const primaryColor = '#079164';
 export const secondaryColor = '#0d0f13';
 export const backgroundColor = '#0d0f13';
 
-export const getColorsBalances = (language) => ({
-  [languages[language].assets.stocks]: '#FF6600',
-  [languages[language].assets.etf]: '#a29bfe',
-  [languages[language].assets.bank]: '#0D579B',
-  [languages[language].assets.cash]: '#329239',
-  [languages[language].assets.crypto]: '#d63031',
-  [languages[language].assets.bitcoin]: '#F7B510',
-  [languages[language].assets.digitalServices]: '#74b9ff',
+export const getColorsBalances = (translations) => ({
+  [translations.assets.stocks]: '#FF6600',
+  [translations.assets.etf]: '#a29bfe',
+  [translations.assets.bank]: '#0D579B',
+  [translations.assets.cash]: '#329239',
+  [translations.assets.crypto]: '#d63031',
+  [translations.assets.bitcoin]: '#F7B510',
+  [translations.assets.digitalServices]: '#74b9ff',
 });
 
-export const getColorsIncExp = (language) => ({
-  [languages[language].general.incomes]: '#079164',
-  [languages[language].general.expenses]: '#FF0000',
-  [languages[language].general.saved]: '#90EE90',
+export const getColorsIncExp = (translations) => ({
+  [translations.general.incomes]: '#079164',
+  [translations.general.expenses]: '#FF0000',
+  [translations.general.saved]: '#90EE90',
 });
 
 // export const GlobalStyle = createGlobalStyle`

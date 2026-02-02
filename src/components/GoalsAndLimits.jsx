@@ -5,7 +5,6 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
-import languages from '../data/languages.json';
 import {
   getMonthlySpendingLimit,
   getSavingsGoalPercentage,
@@ -318,7 +317,7 @@ const CancelButton = styled.button`
 `;
 
 const ProfileSettings = ({ theme }) => {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();

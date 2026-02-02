@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-import languages from '../data/languages.json';
 import FinancialInsights from '../components/FinancialInsights';
 import GoalTracker from '../components/GoalTracker';
 import { 
@@ -78,7 +77,7 @@ const ContentContainer = styled.div`
 `;
 
 const AdvancedInsightsSection = ({ theme, userData, isHidden = false }) => {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [activeTab, setActiveTab] = useState('insights');
 

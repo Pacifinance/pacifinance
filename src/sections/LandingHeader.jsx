@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
-import languages from "../data/languages.json";
 // import MyStyled from '../contexts/MyStyled';
 import { MyButton, ButtonContainer } from "../styles/MyStyled";
 
@@ -18,7 +17,7 @@ function Header({
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
   const [showDemoButton, setShowDemoButton] = useState(false);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const handleLanguageToggle = propToggleLanguage || toggleLanguage;
   const [username, setUsername] = useState("913418");
   const [password, setPassword] = useState("vbwifc9u");
@@ -91,7 +90,7 @@ function Header({
               onClick={DemoLogin}
             >
               <span className="md:hidden">Demo</span>
-              <span className="hidden md:inline">{languages[language].header.demo.titleButton}</span>
+              <span className="hidden md:inline">{translations.header.demo.titleButton}</span>
             </button>
           )}
           <ButtonContainer>
@@ -105,7 +104,7 @@ function Header({
               {language === "it" ? "IT" : "EN"}
             </MyButton>
             <MyButton theme={theme} onClick={handleAuthNavigation}>
-              {languages[language].header.signIn}
+              {translations.header.signIn}
             </MyButton>
           </ButtonContainer>
         </div>

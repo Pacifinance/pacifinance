@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import languages from '../data/languages.json';
 import { 
     FaBullseye, 
     FaPiggyBank, 
@@ -266,7 +265,7 @@ const generateSampleGoals = (userData, language) => {
 };
 
 const GoalTracker = ({ theme, userData, isHidden = false }) => {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [goals, setGoals] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);

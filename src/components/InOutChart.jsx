@@ -17,7 +17,6 @@ import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../data/languages.json';
 import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
@@ -26,7 +25,7 @@ import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 
 export default function InOutChart({theme, userData, isHidden, CustomTick, type = "line"}) {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   
   // Line chart state
   const [incomesArray, setIncomesArray] = useState([]);
@@ -56,11 +55,11 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     let lineKey;
     
     // Mappa le dataKeys alle keys di visibilità
-    if (key === languages[language].general.incomes) {
+    if (key === translations.general.incomes) {
       lineKey = 'incomes';
-    } else if (key === languages[language].general.outflows) {
+    } else if (key === translations.general.outflows) {
       lineKey = 'outflows';
-    } else if (key === languages[language].general.saved) {
+    } else if (key === translations.general.saved) {
       lineKey = 'saved';
     }
     
@@ -133,9 +132,9 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
   }, [userData, type]);
 
   const headers = [
-    { label: languages[language]?.graphs?.statsOutflows?.titleGraph || 'Month', key: 'name' },
-    { label: languages[language]?.general?.incomes || 'Inflows', key: 'incomes' },
-    { label: languages[language]?.general?.outflows || 'Outflows', key: 'outflows' },
+    { label: translations?.graphs?.statsOutflows?.titleGraph || 'Month', key: 'name' },
+    { label: translations?.general?.incomes || 'Inflows', key: 'incomes' },
+    { label: translations?.general?.outflows || 'Outflows', key: 'outflows' },
   ];
 
   const today = new Date();
@@ -166,9 +165,9 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
 
       lastTwelveMonths.push({
         name: displayName,
-        [languages[language].general.outflows]: outflowsValue,
-        [languages[language].general.incomes]: incomesValue,
-        [languages[language].general.saved]: Math.max(incomesValue - outflowsValue, 0),
+        [translations.general.outflows]: outflowsValue,
+        [translations.general.incomes]: incomesValue,
+        [translations.general.saved]: Math.max(incomesValue - outflowsValue, 0),
         amt: 0, // Aggiungi eventuali dati aggiuntivi
       });
     }
@@ -199,7 +198,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
       pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
         .filter(([key, value]) => value > 0)
         .map(([key, value], index) => ({
-          name: languages[language]?.categories?.[key] || key,
+          name: translations?.categories?.[key] || key,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,
           fill: isHidden 
             ? getGrayscaleColor(getCategoryColor(key), index)
@@ -276,18 +275,18 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
 
   const renderMonthSelector = () => {
     const monthNames = {
-      1: [languages[language].months.january],
-      2: [languages[language].months.february],
-      3: [languages[language].months.march],
-      4: [languages[language].months.april],
-      5: [languages[language].months.may],
-      6: [languages[language].months.june],
-      7: [languages[language].months.july],
-      8: [languages[language].months.august],
-      9: [languages[language].months.september],
-      10: [languages[language].months.october],
-      11: [languages[language].months.november],
-      12: [languages[language].months.december]
+      1: [translations.months.january],
+      2: [translations.months.february],
+      3: [translations.months.march],
+      4: [translations.months.april],
+      5: [translations.months.may],
+      6: [translations.months.june],
+      7: [translations.months.july],
+      8: [translations.months.august],
+      9: [translations.months.september],
+      10: [translations.months.october],
+      11: [translations.months.november],
+      12: [translations.months.december],
     };
 
     const currentMonth = new Date().getMonth() + 1;
@@ -547,18 +546,18 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
                 const monthIndex = parseInt(monthNum);
                 
                 const monthNames = {
-                  1: languages[language].months.january,
-                  2: languages[language].months.february,
-                  3: languages[language].months.march,
-                  4: languages[language].months.april,
-                  5: languages[language].months.may,
-                  6: languages[language].months.june,
-                  7: languages[language].months.july,
-                  8: languages[language].months.august,
-                  9: languages[language].months.september,
-                  10: languages[language].months.october,
-                  11: languages[language].months.november,
-                  12: languages[language].months.december
+                  1: translations.months.january,
+                  2: translations.months.february,
+                  3: translations.months.march,
+                  4: translations.months.april,
+                  5: translations.months.may,
+                  6: translations.months.june,
+                  7: translations.months.july,
+                  8: translations.months.august,
+                  9: translations.months.september,
+                  10: translations.months.october,
+                  11: translations.months.november,
+                  12: translations.months.december
                 };
                 
                 const monthName = monthNames[monthIndex] || monthNum;
@@ -571,7 +570,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             {lineVisibility.incomes && (
               <Line 
                 type="monotone" 
-                dataKey={languages[language].general.incomes} 
+                dataKey={translations.general.incomes} 
                 stroke={isHidden ? greyColor1 : "#079164"} 
                 strokeWidth={3}
                 connectNulls={false}
@@ -597,7 +596,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             {lineVisibility.outflows && (
               <Line 
                 type="monotone" 
-                dataKey={languages[language].general.outflows} 
+                dataKey={translations.general.outflows} 
                 stroke={isHidden ? greyColor2 : "#ff3838"} 
                 strokeWidth={3}
                 connectNulls={false}
@@ -623,7 +622,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
             {lineVisibility.saved && (
               <Line 
                 type="monotone" 
-                dataKey={languages[language].general.saved} 
+                dataKey={translations.general.saved} 
                 stroke={isHidden ? greyColor1 : "#06b6d4"} 
                 strokeWidth={3}
                 connectNulls={false}
@@ -670,7 +669,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
               (() => {
                 // Calcola la media delle entrate per determinare l'obiettivo di risparmio
                 const avgIncome = data.length > 0 ? 
-                  data.reduce((sum, item) => sum + (item[languages[language].general.incomes] || 0), 0) / data.length : 0;
+                  data.reduce((sum, item) => sum + (item[translations.general.incomes] || 0), 0) / data.length : 0;
                 const savingsTarget = (avgIncome * userData.limits.savingsGoalPercentage) / 100;
                 
                 return savingsTarget > 0 ? (
@@ -706,9 +705,9 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
           width: '100%'
         }}>
           {[
-            { key: 'incomes', label: languages[language].general.incomes, color: "#079164" },
-            { key: 'outflows', label: languages[language].general.outflows, color: "#ff3838" },
-            { key: 'saved', label: languages[language].general.saved, color: "#06b6d4" }
+            { key: 'incomes', label: translations.general.incomes, color: "#079164" },
+            { key: 'outflows', label: translations.general.outflows, color: "#ff3838" },
+            { key: 'saved', label: translations.general.saved, color: "#06b6d4" }
           ].map(({ key, label, color }) => (
             <div
               key={key}

@@ -5,12 +5,11 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import { PolicyContainer, PolicyHeader } from '../styles/PolicyPages';
-import languages from '../data/languages.json';
 import SEOHead from '../components/SEOHead';
 
 export default function ContactPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   return (

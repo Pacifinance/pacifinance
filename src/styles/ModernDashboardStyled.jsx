@@ -147,12 +147,12 @@ export const ModernBalanceOverview = styled.div`
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(7, 145, 100, 0.2)'
   };
-  border-radius: 1.5rem; /* Bordi meno arrotondati */
-  padding: 2rem 1.5rem; /* Padding ridotto */
-  margin-bottom: 2rem; /* Margine ridotto */
+  border-radius: 1.2rem;
+  padding: 1.5rem 1rem;
+  margin-bottom: 1.5rem;
   box-shadow: ${props => props.theme.mode === 'dark' 
-    ? '0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(7, 145, 100, 0.1)'
-    : '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 30px rgba(7, 145, 100, 0.1)'
+    ? '0 15px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(7, 145, 100, 0.1)'
+    : '0 15px 30px rgba(0, 0, 0, 0.08), 0 0 20px rgba(7, 145, 100, 0.1)'
   };
   position: relative;
   overflow: hidden;
@@ -171,21 +171,21 @@ export const ModernBalanceOverview = styled.div`
 
   .balance-main {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.2rem;
 
     h2 {
       color: ${props => props.theme.textColor};
-      font-size: 1.2rem; /* Dimensione ridotta */
+      font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 0.8rem; /* Margine ridotto */
+      margin-bottom: 0.5rem;
       opacity: 0.8;
     }
 
     .balance-value {
-      font-size: clamp(2.5rem, 5vw, 3.5rem); /* Dimensione ridotta */
+      font-size: clamp(2rem, 4vw, 2.8rem);
       font-weight: 800;
       color: #079164;
-      margin-bottom: 0.4rem; /* Margine ridotto */
+      margin-bottom: 0.3rem;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
@@ -194,31 +194,31 @@ export const ModernBalanceOverview = styled.div`
       align-items: center;
       justify-content: center;
       color: ${props => props.theme.textColor};
-      font-size: 0.95rem; /* Dimensione ridotta */
+      font-size: 0.85rem;
       opacity: 0.7;
     }
   }
 
   .balance-metrics {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
 
     @media (max-width: 768px) {
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
     }
   }
 
   @media (max-width: 768px) {
-    padding: 2rem 1.5rem;
-    margin-bottom: 2rem;
+    padding: 1.2rem 1rem;
+    margin-bottom: 1.5rem;
   }
 `;
 
 export const ModernMetricCard = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   background: ${props => props.theme.mode === 'dark' 
     ? 'rgba(255, 255, 255, 0.05)' 
     : 'rgba(255, 255, 255, 0.8)'
@@ -227,40 +227,53 @@ export const ModernMetricCard = styled.div`
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(7, 145, 100, 0.2)'
   };
-  border-radius: 1rem;
-  padding: 1.5rem;
-  min-width: 200px;
+  border-radius: 0.8rem;
+  padding: 1rem;
+  min-width: 160px;
   transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   }
 
   .metric-icon {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
     color: #079164;
   }
 
   .metric-content {
     .metric-value {
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: ${props => props.theme.textColor};
       line-height: 1;
     }
 
     .metric-label {
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       color: ${props => props.theme.textColor};
       opacity: 0.7;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
 
     .metric-percentage {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       color: #079164;
       font-weight: 600;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    min-width: auto;
+    
+    .metric-icon {
+      font-size: 1.5rem;
+    }
+    
+    .metric-content .metric-value {
+      font-size: 1.2rem;
     }
   }
 `;
@@ -268,34 +281,34 @@ export const ModernMetricCard = styled.div`
 // Grid per i bilanci tradizionali
 export const ModernAssetsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 `;
 
 // Grid per gli investimenti
 export const ModernInvestmentsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 `;
 
 // Card per i bilanci tradizionali
 export const ModernAssetCard = styled.div`
   background: ${props => props.gradient || 'linear-gradient(135deg, #079164 0%, #27ae60 100%)'};
-  border-radius: 1.2rem;
-  padding: 1.2rem;
+  border-radius: 1rem;
+  padding: 1rem;
   color: white;
   position: relative;
   overflow: hidden;
@@ -327,16 +340,16 @@ export const ModernAssetCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     .icon-container {
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 1rem;
+      border-radius: 0.8rem;
+      padding: 0.75rem;
       backdrop-filter: blur(10px);
 
       .asset-icon {
-        font-size: 2rem;
+        font-size: 1.5rem;
         color: white;
       }
     }
@@ -345,13 +358,13 @@ export const ModernAssetCard = styled.div`
       background: rgba(255, 255, 255, 0.2);
       border: none;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       cursor: pointer;
       transition: all 0.3s ease;
       text-decoration: none;
@@ -364,24 +377,24 @@ export const ModernAssetCard = styled.div`
   }
 
   .card-content {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     .asset-name {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.3rem;
       opacity: 0.9;
     }
 
     .asset-value {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 800;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.3rem;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .asset-percentage {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       opacity: 0.8;
     }
   }
@@ -415,8 +428,8 @@ export const ModernInvestmentCard = styled.div`
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(0, 0, 0, 0.1)'
   };
-  border-radius: 1.2rem;
-  padding: 1.2rem;
+  border-radius: 1rem;
+  padding: 1rem;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -450,16 +463,16 @@ export const ModernInvestmentCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     .icon-container {
       background: ${props => props.gradient || 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)'};
-      border-radius: 1rem;
-      padding: 1rem;
+      border-radius: 0.8rem;
+      padding: 0.75rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
       .investment-icon {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         color: white;
       }
     }
@@ -470,7 +483,7 @@ export const ModernInvestmentCard = styled.div`
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -479,39 +492,39 @@ export const ModernInvestmentCard = styled.div`
   }
 
   .card-content {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     .investment-name {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 700;
+      color: ${props => props.theme.textColor};
+      margin-bottom: 0.4rem;
+    }
+
+    .investment-value {
+      font-size: 1.4rem;
+      font-weight: 800;
       color: ${props => props.theme.textColor};
       margin-bottom: 0.6rem;
     }
 
-    .investment-value {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: ${props => props.theme.textColor};
-      margin-bottom: 0.8rem;
-    }
-
     .investment-stats {
       display: flex;
-      gap: 1.5rem;
+      gap: 1rem;
 
       .stat {
         display: flex;
         flex-direction: column;
 
         .stat-label {
-          font-size: 0.8rem;
+          font-size: 0.7rem;
           color: ${props => props.theme.textColor};
           opacity: 0.6;
-          margin-bottom: 0.2rem;
+          margin-bottom: 0.15rem;
         }
 
         .stat-value {
-          font-size: 1rem;
+          font-size: 0.85rem;
           font-weight: 600;
           color: #079164;
         }
@@ -527,15 +540,16 @@ export const ModernInvestmentCard = styled.div`
       background: ${props => props.gradient || 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)'};
       color: white;
       border: none;
-      border-radius: 0.8rem;
-      padding: 0.8rem 1.5rem;
+      border-radius: 0.6rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.85rem;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.3s ease;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
       }
     }
   }
@@ -673,7 +687,7 @@ export const ModernIncomeExpenseCard = styled.div`
     : 'rgba(255, 255, 255, 0.9)'
   };
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
   border: 1px solid ${props => props.itemColor}20;
   box-shadow: ${props => props.theme.mode === 'dark' 
@@ -683,7 +697,7 @@ export const ModernIncomeExpenseCard = styled.div`
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  min-width: 250px;
+  min-width: 220px;
   flex: 1;
 
   &::before {
@@ -706,26 +720,26 @@ export const ModernIncomeExpenseCard = styled.div`
   }
 
   .expense-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: ${props => props.itemColor};
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     display: flex;
     justify-content: center;
   }
 
   .expense-content {
     h4.expense-name {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       color: ${props => props.theme.textColor};
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.6rem;
     }
 
     .expense-value {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: ${props => props.itemColor};
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
 
     .expense-description {
@@ -760,15 +774,15 @@ export const ModernIncomeExpenseCard = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
+    padding: 1.2rem;
     min-width: auto;
 
     .expense-icon {
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
 
     .expense-content .expense-value {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
     }
   }
 `;

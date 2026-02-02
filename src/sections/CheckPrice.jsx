@@ -274,7 +274,7 @@
 
 // function CheckPrice() {
 //   const { theme } = useContext(ThemeContext);
-//   const { language } = useContext(LanguageContext);
+//   const { language, translations } = useContext(LanguageContext);
 //   const { isMobileScreen } = useContext(MediaQueryContext);
   
 //   const [activeTab, setActiveTab] = useState('stocks');

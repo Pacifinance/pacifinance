@@ -1,0 +1,1375 @@
+{
+    "assets": {
+        "total": "Totale",
+        "bank": "Banca",
+        "cash": "Contanti",
+        "digitalServices": "Servizi digitali",
+        "emergencyFund": "Fondo di Emergenza",
+        "stocks": "Azioni",
+        "etf": "ETF",
+        "bitcoin": "Bitcoin",
+        "crypto": "Criptovalute",
+        "bonds": "Obbligazioni",
+        "funds": "Fondi",
+        "gold": "Oro"
+    },
+    "general": {
+        "ok": "ok",
+        "month": "Mese",
+        "year": "Anno",
+        "incomes": "Entrate",
+        "outflows": "Uscite",
+        "saved": "Risparmiato",
+        "balance": "Bilancio",
+        "total": "Totale",
+        "totalFiltered": "Totale Filtrato",
+        "value": "Valore",
+        "note": "Nota",
+        "noData": "Mancanza di dati",
+        "date": "Data",
+        "selectedDate": "Data selezionata",
+        "confirm": "Conferma",
+        "cancel": "Annulla",
+        "category": "Categoria",
+        "typology": "Tipologia",
+        "invested": "Investito",
+        "investments": "Investimenti",
+        "deposited": "Depositati",
+        "comingSoon": "Prossimamente",
+        "weAreWorking": "Stiamo lavorando a questa funzionalità",
+        "selectAnOption": "Nessuno (opzionale)",
+        "objective": "Obiettivo",
+        "clearFilter": "Cancella",
+        "all": "Tutti"
+    },
+    "months": {
+        "january": "Gennaio",
+        "february": "Febbraio",
+        "march": "Marzo",
+        "april": "Aprile",
+        "may": "Maggio",
+        "june": "Giugno",
+        "july": "Luglio",
+        "august": "Agosto",
+        "september": "Settembre",
+        "october": "Ottobre",
+        "november": "Novembre",
+        "december": "Dicembre"
+    },
+    "cookie": {
+        "title": "Utilizziamo i cookie",
+        "description": "Utilizziamo i cookie per migliorare la tua esperienza, analizzare il traffico del sito e per scopi di marketing. Puoi scegliere quali cookie accettare.",
+        "catchyPhrase": "Accetta i nostri cookie e goditi un'esperienza migliore! 🍪",
+        "acceptButton": "Accetta Tutti",
+        "acceptNecessary": "Solo Cookie Necessari",
+        "customize": "Personalizza",
+        "savePreferences": "Salva Preferenze",
+        "hideDetails": "Nascondi Dettagli",
+        "necessary": {
+            "title": "Cookie Necessari",
+            "description": "Essenziali per il corretto funzionamento del sito web. Non possono essere disabilitati.",
+            "required": "(Obbligatori)"
+        },
+        "analytics": {
+            "title": "Cookie Analitici",
+            "description": "Ci aiutano a capire come i visitatori interagiscono con il nostro sito web (Umami Analytics)."
+        },
+        "marketing": {
+            "title": "Cookie di Marketing",
+            "description": "Utilizzati per tracciare i visitatori per pubblicità personalizzata (attualmente non utilizzati)."
+        },
+        "footer": "Puoi modificare le tue preferenze in qualsiasi momento nella nostra Politica sulla Privacy"
+    },
+    "landing": {
+        "new": {
+            "hero": {
+                "title": "Unifica le Tue Finanze",
+                "subtitle": "in Un'Unica Piattaforma",
+                "description": "Hai conti sparsi tra banche diverse? Investimenti su più piattaforme? PaciFinance ti offre una visione completa dall'alto della tua situazione finanziaria, tutto in un posto.",
+                "getStarted": "Inizia Gratis",
+                "learnMore": "Scopri di Più",
+                "socialProof": "Affidabile da utenti attenti alla privacy in tutto il mondo"
+            },
+            "benefits": {
+                "freeForever": "100% Gratuito per Sempre",
+                "privacyFirst": "Confronti Anonimi",
+                "smartAnalytics": "Visione Unificata"
+            },
+            "features": {
+                "title": "Perché Hai Bisogno di PaciFinance?",
+                "subtitle": "Basta con conti sparsi e informazioni frammentate. È tempo di avere una visione completa della tua situazione finanziaria.",
+                "privacy": {
+                    "title": "Confronti Anonimi Intelligenti",
+                    "description": "Scopri come ti posizioni rispetto ad altri utenti con profilo simile. Confronta stipendi, uscite e investimenti in totale anonimato per capire dove puoi migliorare.",
+                    "features": [
+                        "• Confronti per età e professione",
+                        "• Statistiche di mercato anonime",
+                        "• Scopri se sei pagato adeguatamente"
+                    ]
+                },
+                "analytics": {
+                    "title": "Visione Unificata e Completa",
+                    "description": "Ogni banca ha i suoi grafici, ogni app i suoi dati. PaciFinance riunisce tutto: conti correnti, investimenti, crypto in un'unica dashboard dall'alto.",
+                    "features": [
+                        "• Tutti i conti in una vista",
+                        "• Patrimonio totale in tempo reale",
+                        "• Analisi cross-platform"
+                    ]
+                },
+                "comparisons": {
+                    "title": "Rompi il Tabù del Denaro",
+                    "description": "Non parliamo mai di soldi, ma la consapevolezza è potere. Confronta anonimamente le tue finanze con chi fa il tuo stesso lavoro per capire il tuo valore sul mercato.",
+                    "features": [
+                        "• Il tuo stipendio è nella media?",
+                        "• Come gestiscono i soldi i tuoi pari?",
+                        "• Dove puoi migliorare?"
+                    ]
+                },
+                "investment": {
+                    "title": "Investimenti Multi-Piattaforma",
+                    "description": "Hai investimenti sparsi su Fineco, Degiro, eToro, Binance? Finalmente puoi vedere tutto insieme e capire la tua vera diversificazione.",
+                    "features": [
+                        "• Portfolio unificato",
+                        "• Diversificazione reale",
+                        "• Performance totale"
+                    ]
+                },
+                "free": {
+                    "title": "100% Gratuito",
+                    "description": "Nessun abbonamento, nessuna commissione nascosta, nessun livello premium. Supportato interamente dalle donazioni della community.",
+                    "features": [
+                        "• Nessuna carta di credito richiesta",
+                        "• Tutte le funzionalità incluse",
+                        "• Supportato dalla community"
+                    ]
+                },
+                "security": {
+                    "title": "Sicurezza e Privacy",
+                    "description": "I tuoi dati finanziari sono protetti con crittografia avanzata e rimangono completamente anonimi. Zero tracciamento, massima privacy.",
+                    "features": [
+                        "• Crittografia avanzata",
+                        "• Dati completamente anonimi",
+                        "• Nessun tracciamento pubblicitario"
+                    ]
+                }
+            },
+            "cta": {
+                "title": "Vuoi Smettere di Navigare a Vista nelle Tue",
+                "subtitle": "Finanze",
+                "description": "Basta conti sparsi e confusione. Unifica tutto in PaciFinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
+                "button": "Apri il Tuo Account Gratuito",
+                "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente"
+            },
+            "trust": {
+                "encryption": "Sicurezza Avanzata",
+                "dataCollection": "Raccolta Dati",
+                "freeForever": "Gratuito per Sempre"
+            },
+            "donation": {
+                "title": "Ti piace PaciFinance? Aiutaci a Mantenerlo Gratuito!",
+                "description": "Questa piattaforma è mantenuta interamente attraverso le donazioni della community. Il tuo supporto ci aiuta a continuare a migliorare e aggiungere nuove funzionalità."
+            }
+        }
+    },
+    "header": {
+        "signIn": "Accedi",
+        "signUp": "Registrati",
+        "login": {
+            "title": "Accedi",
+            "titleButton": "Accedi",
+            "info": "Inserisci il tuo ID e la tua password per continuare",
+            "username": "ID o Username",
+            "password": "Password",
+            "errorPopup": {
+                "title": "Errore in fase di accesso",
+                "message": "Si è verificato un errore nell'accesso con il tuo account. <br><br> Controlla di digitare correttamente id e password. <br><br>",
+                "okButton": "ok va bene"
+            }
+        },
+        "register": {
+            "title": "Registrazione",
+            "titleButton": "Registrati",
+            "info": "Nessuna email richiesta - il sistema genererà automaticamente il tuo ID utente",
+            "username": "ID o Username",
+            "password": "Password",
+            "confirmPassword": "Conferma Password",
+            "errorPopup": {
+                "title": "Errore in fase di registrazione",
+                "message": "Si è verificato un errore nella registrazione del tuo account.",
+                "message2": "Per favore riprova tra un istante.",
+                "okButton": "ok va bene"
+            },
+            "successPopup": {
+                "title": "🎉 Account creato con successo!",
+                "message": "Ecco le tue credenziali di accesso:",
+                "securityMessage": "<strong>💾 Salva queste credenziali ora!</strong><br/>Utilizza un gestore di password come Bitwarden, 1Password o LastPass per conservare in sicurezza sia l'ID che la password.",
+                "copied": "Copiato negli appunti!",
+                "toCopy": "Copia il tuo ID",
+                "okButton": "ok va bene"
+            }
+        },
+        "logout": "Esci",
+        "demo": {
+            "titleButton": "Prova la versione Demo",
+            "info": "Per accedere velocemente, clicca sul pulsante sottostante",
+            "button": "Accesso rapido",
+            "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
+        }
+    },
+    "footer": {
+        "rights": "Tutti i diritti riservati.",
+        "description": "La piattaforma sicura e privacy-oriented per la finanza personale. Confrontati anonimamente con altri utenti mantenendo la tua privacy.",
+        "legal": {
+            "title": "Legale",
+            "privacy": "Privacy Policy",
+            "terms": "Termini di Servizio",
+            "cookies": "Cookie Policy",
+            "disclaimer": "Disclaimer"
+        },
+        "support": {
+            "title": "Supporto",
+            "faq": "FAQ",
+            "pricing": "Prezzi",
+            "contact": "Contatti",
+            "sitemap": "Mappa del Sito"
+        },
+        "community": {
+            "title": "Comunità",
+            "donationText": "PaciFinance è completamente gratuito e vive solo attraverso le donazioni.",
+            "supportTitle": "Sostieni il Progetto",
+            "supportDescription": "Il tuo contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità. Ogni donazione è molto apprezzata!"
+        },
+        "madeWith": "Fatto con",
+        "forPrivacy": "per la tua privacy"
+    },
+    "sidebar": {
+        "chartsStatistics": "Grafici e Statistiche",
+        "insert": "Inserisci",
+        "check": "Controlla Prezzi",
+        "leaderboard": "Classifica",
+        "comparison": "Confronto",
+        "knowledge": "Conoscenza",
+        "info": "Info",
+        "logout": "Esci",
+        "privacy": "Privacy",
+        "account": {
+            "title": "Profilo",
+            "subtitle": "Gestisci e personalizza le tue informazioni personali",
+            "id": "ID utente: ",
+            "userType": "Tipo utente: ",
+            "nationality": "Nazionalità: ",
+            "selectNationality": "Seleziona una nazionalità",
+            "whereWork": "Dove lavori: ",
+            "work": "Lavoro: ",
+            "workType": "Tipo di lavoro: ",
+            "selectWork": "Seleziona il tuo lavoro",
+            "selectWhereWork": "Seleziona dove lavori",
+            "selectWorkType": "Seleziona il tipo di lavoro",
+            "hoursContract": "Part-time | Full-time",
+            "selectHoursContract": "Seleziona il tuo orario di lavoro",
+            "remoteWork": "Lavoro da remoto",
+            "selectRemoteWork": "Seleziona se lavori da remoto",
+            "yearsExperience": "Anni di esperienza nel settore",
+            "selectYearsExperience": "Seleziona gli anni di esperienza",
+            "age": "Età",
+            "selectAge": "Seleziona la tua età",
+            "livingStatus": "Situazione abitativa",
+            "selectLivingStatus": "Seleziona la tua situazione abitativa",
+            "livingAlone": "Vivo da solo",
+            "livingWithOthers": "Vivo con altre persone",
+            "livingWithPartner": "Vivo con il partner",
+            "livingWithFamily": "Vivo con la famiglia",
+            "housingType": "Tipo di abitazione",
+            "selectHousingType": "Seleziona il tipo di abitazione",
+            "rent": "Affitto",
+            "mortgage": "Mutuo",
+            "owned": "Di proprietà",
+            "familyHome": "Casa di famiglia",
+            "hasChildren": "Hai figli?",
+            "selectHasChildren": "Seleziona se hai figli",
+            "yes": "Sì",
+            "no": "No",
+            "saveButton": "Salva profilo",
+            "errorPopup": {
+                "title": "Errore in fase di salvataggio profilo",
+                "message": "Si è verificato un errore nel salvataggio del tuo profilo.",
+                "message2": "Per favore riprova tra un istante.",
+                "okButton": "ok va bene"
+            },
+            "successPopup": {
+                "title": "Profilo aggiornato con successo",
+                "message": "Le informazioni del tuo profilo sono state aggiornate e salvate correttamente.",
+                "okButton": "ok va bene"
+            },
+            "profileCompletion": {
+                "title": "Completezza Profilo:",
+                "completedFields": "campi completati",
+                "of": "di"
+            },
+            "benefits": {
+                "title": "Perché completare il tuo profilo?",
+                "subtitle": "Inserire i tuoi dati personali permetterà alla piattaforma di fornirti analisi e confronti molto più accurati:",
+                "personalizedComparisons": "I tuoi dati ci permettono di confrontare le tue finanze con utenti che hanno profili simili al tuo (stesso lavoro, età, situazione abitativa, ecc.).",
+                "personalizedComparisonsLabel": "Confronti personalizzati:",
+                "anonymousNote": "Tutti i confronti sono completamente anonimi e i tuoi dati personali rimangono sempre privati e sicuri.",
+                "clickToHide": "Clicca per nascondere",
+                "clickToLearnMore": "Clicca per saperne di più"
+            },
+            "sections": {
+                "basicInfo": "Informazioni Base",
+                "profileDetails": "Dettagli Profilo",
+                "editMode": "Modalità Modifica Attiva"
+            },
+            "accountType": "Tipo Account",
+            "buttons": {
+                "editProfile": "Modifica Profilo",
+                "cancelEdit": "Annulla Modifica",
+                "cancel": "Annulla",
+                "save": "Salva Modifiche",
+                "saveChanges": "Salva Modifiche"
+            }
+        },
+        "deleteAccount": {
+            "title": "Elimina account",
+            "info": "Sei sicuro di voler eliminare il tuo account? tutti i dati andranno persi.",
+            "deleteButton": "Elimina Account",
+            "confirmButton": "Si voglio eliminare il mio account",
+            "cancelButton": "Annulla",
+            "errorPopup": {
+                "title": "Errore in fase di eliminazione account",
+                "message": "Si è verificato un errore nell'eliminazione del tuo account.",
+                "message2": "Per favore riprova tra un istante.",
+                "okButton": "ok va bene"
+            },
+            "successPopup": {
+                "title": "Account eliminato con successo",
+                "message": "Verrai reindirizzato alla pagina di registrazione. L'eliminazione effettiva dell'account avverrà tra 30 giorni, a partire da oggi. Per annullare la cancellazione, ti basterà loggare anche solo una volta all'interno di questi 30 giorni.",
+                "okButton": "ok va bene"
+            }
+        },
+        "changeUsername": {
+            "title": "Genera username",
+            "info": "Il sistema genererà per te un username univoco e casuale",
+            "username": "Username",
+            "confirmButton": "Voglio cambiare il mio username",
+            "errorPopup": {
+                "title": "Errore in fase di generazione username",
+                "message": "Si è verificato un errore nella generazione del tuo username.",
+                "message2": "Per favore riprova tra un istante.",
+                "okButton": "ok va bene"
+            },
+            "successPopup": {
+                "title": "Generazione avvenuta con successo",
+                "message": "Il tuo username è: ",
+                "securityMessage": "Ti consigliamo di salvarlo in un posto sicuro per i prossimi accessi.",
+                "redirectMessage": "Verrai reindirizzato alla pagina di accesso.",
+                "copied": "Copiato negli appunti!",
+                "toCopy": "Copia il tuo username",
+                "okButton": "ok va bene"
+            }
+        },
+        "changeID": {
+            "title": "Cambia ID",
+            "info": "Il sistema genererà per te un id univoco e casuale",
+            "username": "ID",
+            "confirmButton": "Voglio cambiare il mio ID",
+            "errorPopup": {
+                "title": "Errore in fase di generazione ID",
+                "message": "Si è verificato un errore nella generazione del tuo ID.",
+                "message2": "Per favore riprova tra un istante.",
+                "okButton": "ok va bene"
+            },
+            "successPopup": {
+                "title": "Generazione avvenuta con successo",
+                "message": "Il tuo nuovo ID è: ",
+                "securityMessage": "Salvalo, in un posto sicuro, per i tuoi prossimi accessi. <br></br> Cliccando sul pulsante 'Copia il tuo id', verrai reinderizzato <br></br> alla pagina di accesso e l'id verrà salvato nei tuoi appunti. <br></br> Per poterlo incollare nella pagina d'accesso. <br></br>",
+                "copied": "Copiato negli appunti!",
+                "toCopy": "Copia il tuo ID",
+                "okButton": "ok va bene"
+            }
+        },
+        "changePassword": {
+            "title": "Cambio password",
+            "info": "Inserisci la tua vecchia password e la nuova password",
+            "oldPassword": "Vecchia password",
+            "newPassword": "Nuova password",
+            "confirmPassword": "Conferma password",
+            "confirmButton": "Cambia password",
+            "errorPopup": {
+                "title": "Errore in fase di cambio password",
+                "message": "Sembra che la nuova password e la confirm non siano uguali <br></br> o che la vecchia password non sia corretta <br></br>",
+                "message2": "Per favore riprova tra un istante.",
+                "okButton": "ok va bene"
+            },
+            "successPopup": {
+                "title": "La tua password è stata reimpostata correttamente",
+                "message": "Verrai renderizzato alla pagina di accesso.",
+                "okButton": "ok va bene"
+            }
+        },
+        "settings": {
+            "title": "Impostazioni",
+            "light": "Modalità chiara/scura",
+            "privacy": "Modalità privacy",
+            "language": "Cambia Lingua",
+            "deleteAccount": "Elimina account (!)",
+            "saveSettings": "Salva impostazioni",
+            "themeSection": "Tema e Aspetto",
+            "securitySection": "Sicurezza",
+            "dangerZone": "Zona Pericolosa",
+            "backToDashboard": "Torna alla Dashboard"
+        }
+    },
+
+    "dashboard": {
+        "title": "Dashboard",
+        "totalBalance": "Il tuo patrimonio totale è: ",
+        "titleGraph": "Distribuzione Capitale",
+        "titleGraph2": "Distribuzione Patrimonio",
+        "titleGraph3": "Entrate | Uscite",
+        "updateValue": "Aggiorna valore",
+        "noData": "Assenza di dati:",
+        "noData2": "Inserire i valori <br></br>cliccando qui: ",
+        "liquidity": "Liquidità",
+        "liquidityAvailability": "Liquidità & Disponibilità",
+        "emergencySecurity": "Emergenza & Sicurezza",
+        "portfolioInvestments": "Portfolio Investimenti",
+        "patrimonialAnalysis": "Analisi Patrimoniale",
+        "capitalAt": "Il tuo capitale al",
+        "ofTotal": "del totale",
+        "ofPortfolio": "Del portafoglio",
+        "saved": "Risparmiato",
+        "thisMonth": "Questo mese",
+        "stockDescription": "Azioni individuali",
+        "etfDescription": "Fondi diversificati",
+        "bitcoinDescription": "Bitcoin",
+        "cryptoDescription": "Crypto",
+        "bondsDescription": "Obbligazioni",
+        "fundsDescription": "Fondi",
+        "goldDescription": "Oro"
+    },
+    "graphs": {
+        "title": "Grafici e Statistiche",
+        "Title": "Le tue statistiche",
+        "subtitle": "Analizza i tuoi dati finanziari con grafici avanzati e statistiche dettagliate",
+        "loading": {
+            "balance": "Caricamento grafici dei bilanci...",
+            "incomeOutflow": "Caricamento grafici entrate e uscite..."
+        },
+        "comparison": {
+            "vsLastMonth": "vs mese precedente",
+            "vsLastYear": "vs anno precedente", 
+            "monthlyComparison": "Confronto mensile",
+            "yearlyComparison": "Confronto annuale"
+        },
+        "emptyState": {
+            "title": "Nessun dato disponibile",
+            "balanceDescription": "Inizia ad inserire i tuoi dati finanziari per visualizzare grafici e statistiche dettagliate dei tuoi asset.",
+            "incomeOutflowDescription": "Aggiungi le tue entrate e uscite mensili per visualizzare grafici dettagliati e analisi comparative."
+        },
+        "descriptions": {
+            "balanceOverview": "Visualizza l'andamento dei tuoi asset nel tempo con grafici interattivi",
+            "balanceDetails": "Analisi dettagliata delle variazioni mensili e annuali",
+            "incomeOutflowOverview": "Monitora entrate e uscite per una gestione finanziaria ottimale",
+            "incomeOutflowDetails": "Confronta i dati attuali con i periodi precedenti"
+        },
+        "statsBalance": {
+            "title": "Statistiche bilancio",
+            "titleGraph": "Andamento del tuo bilancio negli ultimi 12 mesi",
+            "titleGraph2": "Distribuzione del tuo bilancio negli ultimi 12 mesi",
+            "detailedVision": "Visione dettagliata",
+            "titleDetailsMonth": "Il tuo patrimonio rispetto al mese scorso è variato di: ",
+            "variation": "Variazione ",
+            "titleDetailsYear": "Il tuo patrimonio rispetto ad un anno fa è variato di: "
+        },
+        "statsOutflows": {
+            "title": "Statistiche Entrate e Uscite",
+            "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
+            "titleGraph2": "Distribuzione delle tue uscite per categoria",
+            "detailedVision": "Comparazione finanziaria con i periodi precedenti",
+            "titleDetailsMonth": "Variazione entrate, uscite e risparmi rispetto al mese scorso: ",
+            "variation": "Variazione ",
+            "titleDetailsYear": "Variazione entrate, uscite e risparmi rispetto all'anno scorso: ",
+            "outflowAnalysis": {
+                "title": "Analisi Dettagliata Uscite",
+                "subtitle": "Analisi approfondita delle tue uscite per categoria, metodi di pagamento e pattern ricorrenti",
+                "currentMonthTotal": "Totale Spese Mese",
+                "currentMonthOutflows": "Uscite Mese Corrente",
+                "currentMonthExpenses": "Spese Mese Corrente",
+                "totalTransactions": "Transazioni Totali",
+                "monthlyAverage12M": "Media Mensile 12M",
+                "recurringOutflows": "Uscite Ricorrenti",
+                "recurringExpenses": "Pagamenti Ricorrenti",
+                "recurringThisMonth": "Ricorrenti Questo Mese",
+                "vsPrevMonth": "vs Mese Prec.",
+                "vs12MAvg": "vs Media 12M",
+                "transactions": "Transazioni",
+                "avgAmount": "Importo Medio",
+                "paymentMethodsTitle": "Analisi Metodi di Pagamento",
+                "paymentMethodsSubtitle": "Distribuzione delle uscite per metodo di pagamento e identificazione degli abbonamenti",
+                "total": "Totale",
+                "ofTotal": "del Totale",
+                "topCategories": "Categorie Principali:",
+                "recurringIdentified": "Uscite Ricorrenti Identificate",
+                "recurringIdentifiedThisMonth": "Pagamenti Ricorrenti Rilevati Questo Mese",
+                "recurringIdentifiedLast12M": "Tutti i Pagamenti Ricorrenti (Ultimi 12 Mesi)",
+                "totalMonthlyRecurring": "Totale mensile ricorrente:",
+                "times": "volte",
+                "activeSubscriptions": "Sottoscrizioni Attive",
+                "monthlyRecurringSpending": "Uscita Mensile Ricorrente",
+                "budgetImpact": "Impatto sul Budget",
+                "paymentTypologiesTitle": "Analisi Tipologie di Pagamento",
+                "paymentTypologiesSubtitle": "Categorizzazione degli acquisti per tipologia",
+                "notSpecified": "Non Specificato",
+                "subscription": "Sottoscrizione",
+                "selectMonth": "Seleziona Mese",
+                "currentMonth": "Mese Corrente",
+                "previousMonth": "Mese Precedente",
+                "showRecurringFor": "Mostra ricorrenti per:"
+            }
+        },
+        "dashboard": {
+            "vsLastMonth": "vs mese precedente",
+            "vsLastYear": "vs anno precedente",
+            "monthlyComparison": "Confronto mensile", 
+            "yearlyComparison": "Confronto annuale",
+            "loadingStats": "Caricamento statistiche...",
+            "loadingCharts": "Caricamento grafici...",
+            "noDataAvailable": "Nessun dato disponibile",
+            "addDataFirst": "Aggiungi i tuoi dati per visualizzare le statistiche"
+        },
+        "insights": {
+            "title": "Insights Finanziari",
+            "subtitle": "Analisi intelligente dei tuoi dati finanziari",
+            "spendingRate": {
+                "title": "Velocità di uscita",
+                "low": "Spendi il {percentage}% delle tue entrate",
+                "moderate": "Spendi il {percentage}% delle tue entrate", 
+                "high": "Spendi il {percentage}% delle tue entrate",
+                "recommendation": {
+                    "low": "Ottima gestione! Continua a risparmiare",
+                    "moderate": "Buona gestione, considera di aumentare i risparmi",
+                    "high": "Attenzione: potresti ridurre alcune uscite"
+                }
+            },
+            "diversification": {
+                "title": "Diversificazione portafoglio",
+                "poor": "Portafoglio poco diversificato",
+                "good": "Buona diversificazione",
+                "excellent": "Ottima diversificazione",
+                "recommendation": {
+                    "poor": "Considera di diversificare maggiormente i tuoi investimenti",
+                    "good": "Continua a mantenere una buona diversificazione",
+                    "excellent": "Perfetto! Il tuo portafoglio è ben bilanciato"
+                }
+            },
+            "liquidity": {
+                "title": "Riserva di liquidità",
+                "low": "Liquidità insufficiente",
+                "adequate": "Liquidità adeguata",
+                "high": "Liquidità elevata",
+                "recommendation": {
+                    "low": "Mantieni almeno 3-6 mesi di uscite in liquidità",
+                    "adequate": "La tua riserva di emergenza è adeguata",
+                    "high": "Potresti investire parte della liquidità in eccesso"
+                }
+            }
+        },
+        "goals": {
+            "title": "Obiettivi Finanziari",
+            "subtitle": "Traccia i tuoi progressi verso gli obiettivi",
+            "addGoal": "Aggiungi Obiettivo",
+            "progress": "Progresso",
+            "completed": "Completato",
+            "targetAmount": "Importo obiettivo",
+            "currentAmount": "Importo attuale",
+            "timeline": "Scadenza",
+            "types": {
+                "savings": "Risparmio",
+                "investment": "Investimento", 
+                "debt": "Riduzione debiti"
+            },
+            "examples": {
+                "emergency": "Fondo emergenza",
+                "vacation": "Vacanze",
+                "house": "Casa",
+                "retirement": "Pensione",
+                "debt_payoff": "Estinzione debito"
+            }
+        }
+    },
+    "insert": {
+        "title": "Inserimento Dati",
+        "buttonBalance": "Aggiorna Bilancio",
+        "buttonIncome": "Aggiungi Entrate",
+        "buttonOutflow": "Aggiungi Uscite",
+        "buttonInvestment": "Aggiungi Investimenti",
+        "balanceSection": {
+            "titleLiquidity": "Liquidità",
+            "titleInvestments": "Investimenti",
+            "updateButton": "Aggiorna il tuo bilancio",
+            "confirmUpdate": "Conferma aggiornamento bilancio",
+            "successUpdate": "Bilancio aggiornato con successo",
+            "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo"
+        },
+        "incomeSection": {
+            "placeholderCategory": "Seleziona una categoria",
+            "placeholderNote": "Inserisci una nota (opzionale)",
+            "updateButton": "Aggiungi entrata",
+            "titleListing": "Le entrate del mese selezionato",
+            "tableColumns": {
+                "category": "Categoria",
+                "value": "Valore",
+                "note": "Nota",
+                "date": "Data Entrata"
+            },
+            "confirmUpdate": "Conferma inserimento entrata",
+            "successUpdate": "Entrata inserita con successo",
+            "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
+            "successDelete": "Entrata eliminata con successo",
+            "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
+            "increaseWhichBalance": "Seleziona dove aggiungere l'entrata: "
+        },
+        "outflowSection": {
+            "placeholderCategory": "Seleziona una categoria",
+            "placeholderTypology": "Seleziona una tipologia",
+            "placeholderNote": "Inserisci una nota (opzionale)",
+            "updateButton": "Aggiungi uscita",
+            "titleListing": "Le uscite del mese selezionato",
+            "paymentType": "Tipologia pagamento",
+            "tableColumns": {
+                "category": "Categoria",
+                "typology": "Tipologia",
+                "value": "Valore",
+                "note": "Nota",
+                "date": "Data Uscita"
+            },
+            "confirmUpdate": "Conferma inserimento uscita",
+            "successUpdate": "Uscita inserita con successo",
+            "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
+            "successDelete": "Uscita eliminata con successo",
+            "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
+            "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: "
+        },
+        "investmentSection": {
+            "placeholderCategory": "Seleziona una categoria",
+            "placeholderNote": "Inserisci una nota (opzionale)",
+            "updateButton": "Aggiungi investimento",
+            "titleListing": "Gli investimenti del mese selezionato",
+            "tableColumns": {
+                "category": "Categoria",
+                "value": "Valore",
+                "note": "Nota",
+                "date": "Data Investimento"
+            },
+            "confirmUpdate": "Conferma inserimento investimento",
+            "successUpdate": "Investimento inserito con successo",
+            "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
+            "successDelete": "Investimento eliminato con successo",
+            "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
+        },
+        "errors": {
+            "balanceUpdateFailed": "Errore nell'aggiornamento del bilancio. Riprova più tardi.",
+            "incomeAddFailed": "Errore nell'inserimento dell'entrata. Riprova più tardi.",
+            "outflowAddFailed": "Errore nell'inserimento dell'uscita. Riprova più tardi.",
+            "incomeDeleteFailed": "Errore nell'eliminazione dell'entrata. Riprova più tardi.",
+            "outflowDeleteFailed": "Errore nell'eliminazione dell'uscita. Riprova più tardi.",
+            "serverConnectionFailed": "Errore di connessione al server. Controlla la connessione e riprova.",
+            "requestFailed": "Richiesta non riuscita. Controlla i dati inseriti e riprova.",
+            "selectCategory": "Seleziona una categoria",
+            "selectPaymentType": "Seleziona un tipo di pagamento",
+            "insertValidValue": "Inserisci un valore valido maggiore di 0"
+        }
+    },
+    "comparison": {
+        "title": "Confronto Anonimo",
+        "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
+        "sections": {
+            "rankings": {
+                "title": "Classifiche",
+                "description": "Vedi come ti posizioni rispetto ad altri utenti"
+            },
+            "insights": {
+                "title": "Confronto Finanziario",
+                "description": "Scopri pattern e opportunità"
+            },
+            "spending": {
+                "title": "Analisi Uscite",
+                "description": "Confronta le tue abitudini di uscita"
+            },
+            "benchmarks": {
+                "title": "Benchmark",
+                "description": "Confronti per settore e demografia"
+            }
+        },
+        "cards": {
+            "avgBalance": {
+                "title": "Patrimonio Medio",
+                "description": "Confronta il tuo patrimonio attuale e la crescita negli ultimi 12 mesi con altri utenti",
+                "yourBalance": "Il Tuo Patrimonio",
+                "avgSimilar": "Media Utenti Simili",
+                "avgAll": "Media Tutti gli Utenti",
+                "growth12Months": "ultimi 12 mesi",
+                "noGrowthData": "Dati crescita non disponibili"
+            },
+            "avgIncome": {
+                "title": "Entrate Mensili",
+                "description": "Confronta le tue entrate mensili medie degli ultimi 12 mesi",
+                "yourIncome": "Media tue entrate",
+                "avgSimilar": "Media Utenti Simili",
+                "avgAll": "Media Tutti gli Utenti"
+            },
+            "avgOutflows": {
+                "title": "Uscite Mensili",
+                "description": "Confronta le tue uscite mensili medie degli ultimi 12 mesi",
+                "yourOutflows": "Media tue uscite",
+                "avgSimilar": "Media Utenti Simili",
+                "avgAll": "Media Tutti gli Utenti"
+            },
+            "savingsRate": {
+                "title": "Tasso di Risparmio",
+                "description": "I tuoi risparmi come percentuale delle entrate",
+                "yourRate": "Il tuo tasso",
+                "avgAll": "Media Tutti gli Utenti",
+                "avgSimilar": "Media Utenti Simili",
+                "last12Months": "Ultimi 12 mesi",
+                "noData": "Dati insufficienti"
+            },
+            "assetAllocation": {
+                "title": "Allocazione Asset",
+                "description": "Come distribuisci la tua ricchezza",
+                "currentDistribution": "Distribuzione attuale",
+                "liquid": "Liquidità",
+                "investments": "Investimenti",
+                "crypto": "Crypto",
+                "other": "Altro",
+                "noAssets": "Nessun asset registrato"
+            },
+            "spendingCategories": {
+                "title": "Uscite per Categoria",
+                "description": "Dove spendi i tuoi soldi (ultimi 12 mesi)",
+                "topCategories": "Categorie principali",
+                "otherCategories": "Altre categorie",
+                "noExpenses": "Nessuna spesa registrata"
+            }
+        },
+        "insights": {
+            "betterThan": "Stai andando meglio del",
+            "worseThan": "C'è margine di miglioramento rispetto al",
+            "average": "Stai performando nella media",
+            "ofUsers": "degli utenti",
+            "inCategory": "nella tua categoria"
+        },
+        "profileBanner": {
+            "title": "🚀 Sblocca confronti personalizzati!",
+            "description": "Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!",
+            "action": "Completa profilo"
+        },
+        "tips": {
+            "title": "Suggerimenti Personalizzati",
+            "highOutflows": "Considera di rivedere le tue uscite - sono sopra la media per il tuo livello di reddito",
+            "lowSavings": "Prova ad aumentare il tuo tasso di risparmio per una migliore salute finanziaria",
+            "goodBalance": "Ottimo lavoro! Il tuo equilibrio finanziario è sopra la media",
+            "diversify": "Considera di diversificare i tuoi asset per una migliore gestione del rischio"
+        }
+    },
+    "leaderboard": {
+        "title": "Classifica nel tempo",
+        "monthRanking": "Classifica relativa al mese: ",
+        "yearRanking": "Classifica relativa all'anno: ",
+        "generalRanking": "Classifiche generali : ",
+        "similarRanking": "Classifiche utenti simili: ",
+        "balanceRanking": "Classifica Patrimonio ",
+        "incomeRanking": "Classifica Entrate ",
+        "outflowRanking": "Classifica Uscite ",
+        "infoOutflowRank": "Questo rank mostra nelle posizioni alte chi spende di più.",
+        "noRank": "Rankings non disponibili",
+        "compliments": "Complimenti! Sei nella top ",
+        "superCompliments": "Incredibile!! Sei nella top ",
+        "top": "Sei nella top ",
+        "users": " degli utenti!",
+        "lowerOutflow": " Sei tra gli utenti che spendono di meno!",
+        "higherOutflow": " Attenzione! Sei tra gli utenti che spendono di più!",
+        "higherIncome": " Sei tra gli utenti che guadagnano di più!",
+        "mediumRank": "Sei nella media degli utenti!",
+        "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio.",
+        "rankings": {
+            "title": "Le tue classifiche",
+            "monthData": "Dati di",
+            "generalRanking": "Classifica Generale",
+            "generalSubtitle": "Confronto con tutti gli utenti",
+            "similarRanking": "Utenti Simili",
+            "similarSubtitle": "Confronto con profili simili al tuo",
+            "balance": "Patrimonio",
+            "income": "Entrate",
+            "outflows": "Uscite",
+            "topPerformance": "Ottima posizione!",
+            "goodPerformance": "Buona posizione",
+            "canImprove": "Spazio per crescere",
+            "noData": "Dati non disponibili",
+            "descriptions": {
+                "balance": {
+                    "top": "Eccellente gestione del patrimonio! Continua così",
+                    "medium": "Stai costruendo bene il tuo patrimonio",
+                    "low": "Ogni piccolo passo conta, continua a risparmiare!"
+                },
+                "income": {
+                    "top": "Ottime entrate! Sei sulla strada giusta",
+                    "medium": "Buone entrate, hai una base solida",
+                    "low": "Ci sono opportunità di crescita per le tue entrate"
+                },
+                "outflows": {
+                    "top": "Eccellente controllo delle uscite!",
+                    "medium": "Gestisci bene le tue uscite",
+                    "low": "Potresti ottimizzare alcune uscite, ma sei sulla buona strada"
+                }
+            },
+            "motivational": {
+                "top": {
+                    "title": "🎉 Fantastico!",
+                    "balance": "La tua gestione del patrimonio è eccellente! Continua con questa strategia vincente.",
+                    "income": "Le tue entrate sono ottime! Hai costruito una base finanziaria solida.",
+                    "outflows": "Controlli benissimo le uscite! La tua disciplina finanziaria è ammirevole."
+                },
+                "medium": {
+                    "title": "👍 Sulla buona strada!",
+                    "balance": "Stai costruendo bene il tuo patrimonio. Con costanza raggiungerai i tuoi obiettivi!",
+                    "income": "Hai una buona base di entrate. Continua a lavorare sui tuoi obiettivi finanziari!",
+                    "outflows": "Gestisci bene le tue uscite. Piccoli aggiustamenti possono portare grandi risultati!"
+                },
+                "low": {
+                    "title": "💪 Opportunità di crescita!",
+                    "balance": "Ogni grande patrimonio inizia con piccoli passi. Continua a risparmiare, anche poco alla volta!",
+                    "income": "Ci sono opportunità per aumentare le tue entrate. Considera nuove strade e competenze!",
+                    "outflows": "Rivedere alcune uscite può liberare risorse preziose. Un budget dettagliato può aiutarti!"
+                }
+            },
+            "popup": {
+                "close": "Perfetto!"
+            }
+        }
+    },
+    "knowledge": {
+        "title": "Conoscenze Finanziarie",
+        "subtitle": "Impara a gestire meglio le tue finanze personali con guide pratiche e consigli esperti",
+        "disclaimer": "⚠️ Le informazioni fornite sono a scopo educativo e non costituiscono consigli finanziari personalizzati. Consulta sempre un consulente finanziario qualificato per decisioni importanti.",
+        "advantages": "Vantaggi",
+        "disadvantages": "Svantaggi",
+        "frequency": "Frequenza",
+        "trigger": "Trigger",
+        "method": "Metodo",
+        "example": "Esempio",
+        "protection": "Protezione",
+        "riskLevels": {
+            "low": "BASSO",
+            "medium": "MEDIO",
+            "high": "ALTO"
+        },
+        "sections": {
+            "investments": {
+                "title": "Investimenti",
+                "subtitle": "Guida completa agli strumenti di investimento",
+                "content": {
+                    "intro": "Investire significa mettere i propri soldi in strumenti finanziari con l'obiettivo di ottenere un rendimento nel tempo. È fondamentale diversificare il portafoglio, comprendere i rischi associati a ogni strumento e avere un orizzonte temporale chiaro. Ricorda: il tempo è il tuo migliore alleato negli investimenti.",
+                    "etf": {
+                        "title": "ETF (Exchange Traded Fund)",
+                        "description": "Gli ETF sono fondi che replicano un indice (es. S&P 500, MSCI World, FTSE MIB) e si possono comprare/vendere in borsa come azioni. Permettono di diversificare con piccole somme e sono ideali per chi inizia. Esistono ETF azionari, obbligazionari, settoriali e tematici. I costi di gestione (TER) sono tipicamente tra 0.05% e 0.50% annuo.",
+                        "pros": "• Diversificazione automatica su centinaia di titoli\n• Costi di gestione molto bassi (TER 0.05%-0.50%)\n• Alta liquidità - vendibili in qualsiasi momento\n• Totale trasparenza sulla composizione\n• Ideali per PAC (Piani di Accumulo)\n• Nessuna gestione attiva richiesta",
+                        "cons": "• Seguono il mercato anche nelle discese\n• Non battono mai l'indice di riferimento\n• Rischio valutario per ETF in valuta estera\n• Spread bid-ask su ETF meno liquidi"
+                    },
+                    "stocks": {
+                        "title": "Azioni",
+                        "description": "Le azioni rappresentano quote di proprietà di un'azienda. Il loro valore dipende dalle performance aziendali, dal sentiment del mercato e dalle condizioni macroeconomiche. Investire in singole azioni richiede tempo per l'analisi fondamentale e tecnica. È consigliato solo dopo aver acquisito esperienza con strumenti più semplici.",
+                        "pros": "• Potenziali rendimenti elevati (storicamente 7-10% annuo)\n• Dividendi periodici da aziende mature\n• Diritti di voto nelle assemblee degli azionisti\n• Possibilità di battere il mercato con buone scelte\n• Liquidità immediata sui mercati principali",
+                        "cons": "• Rischio elevato di perdita del capitale\n• Richiede tempo per analisi e monitoraggio\n• Alta volatilità nel breve termine\n• Rischio concentrazione se pochi titoli\n• Bias emotivi possono portare a decisioni sbagliate"
+                    },
+                    "bonds": {
+                        "title": "Obbligazioni",
+                        "description": "Le obbligazioni sono prestiti che fai a enti (stati, aziende). In cambio ricevi interessi periodici (cedole) e il capitale a scadenza. Il rischio varia: obbligazioni governative di paesi stabili sono sicure, quelle corporate o high-yield più rischiose ma con rendimenti maggiori. Il prezzo delle obbligazioni si muove inversamente ai tassi di interesse.",
+                        "pros": "• Rendimento più prevedibile delle azioni\n• Cedole periodiche come flusso di cassa\n• Rischio generalmente più basso\n• Ottima diversificazione dal mercato azionario\n• Protezione del capitale a scadenza",
+                        "cons": "• Rendimenti storicamente più bassi delle azioni\n• Rischio inflazione erode il valore reale\n• Rischio tasso: se i tassi salgono, i prezzi scendono\n• Rischio default per emittenti meno solidi\n• Minore liquidità per obbligazioni corporate"
+                    },
+                    "crypto": {
+                        "title": "Criptovalute",
+                        "description": "Valute digitali decentralizzate basate su tecnologia blockchain. Bitcoin è la più conosciuta e 'stabile', Ethereum la seconda per capitalizzazione. Esistono migliaia di altcoin con caratteristiche diverse. È un mercato altamente speculativo, aperto 24/7, con poca regolamentazione. Consigliato solo per una piccola percentuale del portafoglio (max 5-10%).",
+                        "pros": "• Potenziali rendimenti molto elevati\n• Decentralizzazione e indipendenza da banche\n• Innovazione tecnologica continua\n• Mercato aperto 24/7\n• Possibilità di staking per rendite passive\n• Accessibilità globale senza intermediari",
+                        "cons": "• Estrema volatilità (oscillazioni 20-50% comuni)\n• Regolamentazione incerta e variabile\n• Rischio tecnologico e di hacking\n• Nessuna protezione in caso di perdita\n• Difficoltà di valutazione fondamentale\n• Rischio di progetti fraudolenti (scam)"
+                    },
+                    "government_bonds": {
+                        "title": "Titoli di Stato",
+                        "description": "Obbligazioni emesse dallo Stato per finanziare il debito pubblico. In Italia: BTP (scadenze lunghe), BOT (breve termine), CCT (tasso variabile). In USA: Treasury Bonds. In Germania: Bund. Sono tra gli investimenti più sicuri se emessi da paesi stabili, garantiti dalla capacità di tassazione dello Stato.",
+                        "pros": "• Sicurezza elevata (rischio default minimo)\n• Garanzia dello Stato emittente\n• Rendimento fisso e prevedibile\n• Vantaggi fiscali in Italia (12.5% vs 26%)\n• Alta liquidità sui mercati secondari\n• Protezione del capitale a scadenza",
+                        "cons": "• Rendimenti generalmente bassi\n• Rischio inflazione in periodi di alta inflazione\n• Rischio paese per stati meno stabili\n• Rischio tasso di interesse\n• Rendimenti reali a volte negativi"
+                    },
+                    "real_estate": {
+                        "title": "Immobili e REIT",
+                        "description": "L'investimento immobiliare può essere diretto (acquisto di immobili) o indiretto tramite REIT (Real Estate Investment Trust) e fondi immobiliari. I REIT permettono di investire nel settore immobiliare con piccole somme e alta liquidità, diversificando su molti immobili.",
+                        "pros": "• Asset tangibile e comprensibile\n• Protezione dall'inflazione nel lungo termine\n• Reddito da affitti o dividendi REIT\n• Diversificazione dal mercato azionario\n• REIT offrono liquidità e accessibilità",
+                        "cons": "• Immobili diretti richiedono capitale elevato\n• Costi di manutenzione e gestione\n• Bassa liquidità per immobili diretti\n• Rischio concentrazione geografica\n• Sensibilità ai tassi di interesse"
+                    },
+                    "beginner_tips": {
+                        "title": "Consigli per Principianti",
+                        "tips": [
+                            "Inizia con ETF diversificati su indici mondiali (es. MSCI World, S&P 500)",
+                            "Non investire mai soldi che ti servono nei prossimi 3-5 anni",
+                            "Usa il PAC (Piano di Accumulo): investi la stessa somma ogni mese",
+                            "Non cercare di 'battere il mercato' - anche i professionisti faticano",
+                            "Studia almeno 6 mesi prima di comprare singole azioni",
+                            "Tieni massimo 5-10% del portafoglio in criptovalute",
+                            "Diversifica sempre: mai più del 5% su un singolo titolo",
+                            "Ignora le notizie quotidiane - pensa al lungo termine (10+ anni)",
+                            "Reinvesti i dividendi per sfruttare l'interesse composto",
+                            "Tieni un fondo di emergenza PRIMA di iniziare a investire"
+                        ]
+                    }
+                }
+            },
+            "saving": {
+                "title": "Risparmio",
+                "subtitle": "Come mettere da parte i tuoi soldi",
+                "content": {
+                    "intro": "Il risparmio è la base della salute finanziaria. Prima di investire, è fondamentale avere un fondo di emergenza e obiettivi chiari.",
+                    "emergency_fund": {
+                        "title": "Fondo di Emergenza",
+                        "description": "Un fondo di emergenza dovrebbe coprire 3-6 mesi di uscite. Va tenuto in conti deposito o conti correnti facilmente accessibili.",
+                        "tips": [
+                            "Calcola le tue uscite mensili essenziali",
+                            "Moltiplica per 3-6 mesi",
+                            "Tieni questi soldi in conti sicuri e liquidi",
+                            "Non toccare tranne per vere emergenze",
+                            "Rivedi il fondo ogni anno in base ai cambiamenti di vita"
+                        ]
+                    },
+                    "savings_goals": {
+                        "title": "Obiettivi di Risparmio",
+                        "description": "Avere obiettivi chiari e quantificabili aiuta a rimanere motivati. Usa il metodo SMART: Specifici, Misurabili, Raggiungibili, Rilevanti, con Tempo definito. Distingui tra obiettivi a breve, medio e lungo termine.",
+                        "short_term": "Breve termine (1-2 anni): Vacanze (€1,000-3,000), elettrodomestici, corso di formazione, fondo emergenza",
+                        "medium_term": "Medio termine (2-5 anni): Auto (€10,000-30,000), matrimonio, ristrutturazione casa, anticipo mutuo",
+                        "long_term": "Lungo termine (5+ anni): Casa, pensione integrativa, educazione figli, indipendenza finanziaria"
+                    },
+                    "saving_strategies": {
+                        "title": "Strategie di Risparmio",
+                        "strategies": [
+                            "Regola del 50/30/20: 50% bisogni, 30% desideri, 20% risparmio",
+                            "Paga te stesso per primo: imposta bonifico automatico il giorno dello stipendio",
+                            "Automatizza i risparmi su conti separati per obiettivi diversi",
+                            "Traccia TUTTE le uscite per almeno 1 mese - rimarrai sorpreso",
+                            "Elimina abbonamenti non utilizzati (fai audit ogni 6 mesi)",
+                            "Confronta prezzi e usa cashback per acquisti importanti",
+                            "Applica la regola delle 24-48 ore per acquisti impulsivi",
+                            "Sfida dei 30 giorni senza acquisti non essenziali"
+                        ]
+                    },
+                    "high_yield_savings": {
+                        "title": "Conti Deposito e Risparmio",
+                        "description": "I conti deposito offrono rendimenti superiori ai conti correnti standard. Confronta le offerte delle banche online che spesso offrono tassi migliori. Distingui tra conti vincolati (tassi più alti ma soldi bloccati) e conti liberi (meno rendimento ma accesso immediato).",
+                        "tips": [
+                            "Confronta i tassi su comparatori come ConfrontaConti o SOStariffe",
+                            "Considera banche online per tassi migliori (fino a 3-4% vincolato)",
+                            "Verifica la copertura del Fondo Interbancario (€100,000 per banca)",
+                            "Usa conti liberi per il fondo emergenza, vincolati per obiettivi a termine",
+                            "Attenzione alle promozioni temporanee - leggi le condizioni"
+                        ]
+                    }
+                }
+            },
+            "budgeting": {
+                "title": "Gestione Budget",
+                "subtitle": "Come pianificare e controllare le tue uscite",
+                "content": {
+                    "intro": "Un budget ti aiuta a controllare dove vanno i tuoi soldi e a raggiungere i tuoi obiettivi finanziari. Non deve essere rigido, ma una guida flessibile che si adatta alla tua vita. Chi tiene un budget risparmia in media il 20% in più di chi non lo fa.",
+                    "budget_creation": {
+                        "title": "Come Creare un Budget Efficace",
+                        "steps": [
+                            "Calcola il tuo reddito netto mensile (stipendio + altre entrate)",
+                            "Elenca tutte le uscite fisse: affitto/mutuo, utenze, assicurazioni, abbonamenti",
+                            "Analizza 3 mesi di estratti conto per le uscite variabili reali",
+                            "Categorizza: cibo, trasporti, svago, shopping, salute, altro",
+                            "Assegna una percentuale realistica al risparmio (inizia con 10%)",
+                            "Usa PaciFinance per monitorare automaticamente",
+                            "Rivedi il budget ogni mese e aggiusta le categorie",
+                            "Celebra i piccoli successi per mantenere la motivazione"
+                        ]
+                    },
+                    "budget_methods": {
+                        "title": "Metodi di Budgeting Popolari",
+                        "methods": {
+                            "50_30_20": "50/30/20: 50% bisogni essenziali (affitto, cibo, utenze), 30% desideri (svago, hobby), 20% risparmio e investimenti. Semplice e flessibile.",
+                            "envelope": "Metodo delle buste: Preleva contanti e dividili in buste per categoria. Quando la busta è vuota, stop spese. Ottimo per controllare le spese impulsive.",
+                            "zero_based": "Budget a base zero: Ogni euro deve avere uno scopo assegnato. Entrate - Uscite = 0. Richiede più tempo ma massimo controllo.",
+                            "pay_yourself_first": "Paga te stesso per primo: Automatizza il risparmio il giorno dello stipendio, poi vivi con il resto. Semplice ed efficace.",
+                            "kakeibo": "Kakeibo (giapponese): Registra ogni spesa a mano, rifletti su ogni acquisto chiedendoti 'Ne ho davvero bisogno?'. Aumenta la consapevolezza."
+                        }
+                    },
+                    "outflow_tracking": {
+                        "title": "Tracciamento Intelligente delle Uscite",
+                        "tips": [
+                            "Usa PaciFinance per avere una visione unificata di tutti i conti",
+                            "Categorizza le spese subito - non rimandare",
+                            "Controlla il conto almeno 2 volte a settimana",
+                            "Identifica le 'spese fantasma': piccoli acquisti che sommati pesano",
+                            "Analizza i pattern: quando spendi di più? (weekend, sera, stress)",
+                            "Confronta mese su mese per vedere i progressi",
+                            "Imposta alert per categorie a rischio di sforamento"
+                        ]
+                    },
+                    "reduce_expenses": {
+                        "title": "Come Ridurre le Spese Senza Soffrire",
+                        "tips": [
+                            "Rinegozia contratti: telefono, internet, assicurazioni (risparmio 10-30%)",
+                            "Cucina a casa 2-3 volte in più a settimana (risparmio €100-200/mese)",
+                            "Usa la biblioteca invece di comprare libri",
+                            "Condividi abbonamenti streaming con famiglia/amici",
+                            "Compra usato per elettronica, vestiti, mobili",
+                            "Usa mezzi pubblici o bici quando possibile",
+                            "Pianifica i pasti settimanalmente per evitare sprechi",
+                            "Porta il pranzo al lavoro 3+ volte a settimana"
+                        ]
+                    }
+                }
+            },
+            "salary_management": {
+                "title": "Gestione Stipendio",
+                "subtitle": "Come ottimizzare il tuo reddito e farlo crescere",
+                "content": {
+                    "intro": "La gestione dello stipendio non riguarda solo come spenderlo, ma anche come ottimizzarlo, proteggerlo e farlo crescere nel tempo. Un approccio strategico può fare la differenza tra vivere stipendio per stipendio e costruire ricchezza.",
+                    "salary_allocation": {
+                        "title": "Allocazione Strategica dello Stipendio",
+                        "breakdown": {
+                            "needs": "Bisogni Essenziali (50-60%): Affitto/mutuo, bollette, spesa alimentare, trasporti necessari, assicurazioni obbligatorie. Se superi il 60%, cerca di ridurre o aumentare le entrate.",
+                            "wants": "Desideri (20-30%): Ristoranti, streaming, hobby, shopping non essenziale, palestra, viaggi. Questa è la categoria più flessibile.",
+                            "savings": "Risparmio e Investimenti (20%+): Fondo emergenza (priorità 1), investimenti a lungo termine, pensione integrativa. L'obiettivo è arrivare al 30% nel tempo."
+                        }
+                    },
+                    "tax_optimization": {
+                        "title": "Ottimizzazione Fiscale Legale",
+                        "tips": [
+                            "Detrazioni sanitarie: conserva tutte le ricevute mediche (19% sopra €129)",
+                            "Fondo pensione: fino a €5,164/anno deducibili (risparmio IRPEF fino a €2,220)",
+                            "Interessi mutuo prima casa: detraibili al 19% fino a €4,000",
+                            "Spese istruzione: detraibili al 19% (università, master, corsi)",
+                            "Bonus ristrutturazione: 50% in 10 anni su lavori casa",
+                            "Buoni pasto aziendali: esentasse fino a €8/giorno (elettronici)",
+                            "Welfare aziendale: sfrutta rimborsi salute, istruzione figli",
+                            "Consulta un CAF o commercialista per il 730 - costa poco"
+                        ]
+                    },
+                    "income_growth": {
+                        "title": "Far Crescere il Reddito",
+                        "strategies": [
+                            "Aggiorna le competenze: corsi online, certificazioni di settore",
+                            "Negozia lo stipendio: prepara dati di mercato, risultati ottenuti",
+                            "Cambia azienda ogni 2-4 anni: spesso unico modo per salti salariali significativi",
+                            "Freelancing serale/weekend: sfrutta le tue competenze",
+                            "Side hustle: crea contenuti, consulenze, vendita online",
+                            "Investi in te stesso: lingue straniere, soft skills, networking",
+                            "Reddito passivo: dividendi, affitti, royalties (richiede capitale iniziale)"
+                        ]
+                    },
+                    "first_salary": {
+                        "title": "Primo Stipendio: Come Iniziare Bene",
+                        "tips": [
+                            "Non aumentare subito il tenore di vita - vivi come da studente per 1-2 anni",
+                            "Imposta subito un bonifico automatico di risparmio (almeno 10%)",
+                            "Costruisci il fondo emergenza prima di tutto (3 mesi di spese)",
+                            "Non comprare auto nuova - è la peggior spesa finanziaria",
+                            "Inizia a investire anche €50-100/mese - il tempo è dalla tua parte",
+                            "Evita debiti al consumo (finanziamenti, carte revolving)",
+                            "Approfitta del fondo pensione aziendale se c'è matching"
+                        ]
+                    }
+                }
+            },
+            "portfolio_management": {
+                "title": "Gestione Portafoglio",
+                "subtitle": "Come bilanciare e ottimizzare i tuoi investimenti",
+                "content": {
+                    "intro": "Un portafoglio diversificato riduce i rischi e ottimizza i rendimenti nel lungo termine. La chiave è l'allocazione strategica tra diverse classi di investimento, in base al tuo orizzonte temporale e tolleranza al rischio. Non esiste un portafoglio perfetto per tutti.",
+                    "asset_allocation": {
+                        "title": "Allocazione degli Asset per Profilo",
+                        "description": "Distribuisci i tuoi investimenti tra diverse categorie in base alla tua età, obiettivi e tolleranza al rischio. Una regola semplice: 100 meno la tua età = % in azioni.",
+                        "conservative": "Conservativo (vicino pensione, bassa tolleranza rischio): 70-80% obbligazioni/liquidità, 20-30% azioni. Priorità: preservazione capitale.",
+                        "moderate": "Moderato (30-50 anni, media tolleranza): 50-60% azioni, 30-40% obbligazioni, 10% alternative. Bilanciamento crescita/sicurezza.",
+                        "aggressive": "Aggressivo (giovani, alta tolleranza, orizzonte lungo): 80-90% azioni, 10-15% obbligazioni, 5% alternative. Massimizza crescita, accetta volatilità."
+                    },
+                    "diversification": {
+                        "title": "Principi di Diversificazione",
+                        "principles": [
+                            "Mai più del 5-10% su un singolo titolo - anche le migliori aziende possono fallire",
+                            "Diversifica per area geografica: 40-50% USA, 20-30% Europa, 10-20% Emergenti, 10% Italia",
+                            "Diversifica per settore: tecnologia, sanità, finanza, energia, consumi - evita concentrazione",
+                            "Diversifica per dimensione: large cap (stabilità), mid cap, small cap (crescita)",
+                            "Multi-asset: azioni, obbligazioni, immobiliare (REIT), materie prime, oro",
+                            "Diversifica nel tempo: PAC mensile invece di tutto insieme (dollar cost averaging)",
+                            "Decorrelazione: asset che si muovono diversamente (azioni vs oro)"
+                        ]
+                    },
+                    "rebalancing": {
+                        "title": "Ribilanciamento del Portafoglio",
+                        "description": "Nel tempo, alcuni asset crescono più di altri, sbilanciando il portafoglio. Il ribilanciamento riporta le proporzioni all'obiettivo, vendendo ciò che è cresciuto e comprando ciò che è sceso.",
+                        "frequency": "Controlla ogni 6 mesi, ribilancia 1-2 volte l'anno massimo",
+                        "trigger": "Ribilancia quando una categoria si discosta >5-10% dall'obiettivo",
+                        "method": "Metodo 1: Vendi gli asset cresciuti, compra quelli scesi. Metodo 2: Dirigi i nuovi apporti verso le categorie sottopesate."
+                    },
+                    "common_mistakes": {
+                        "title": "Errori Comuni da Evitare",
+                        "tips": [
+                            "Vendere in panico durante i crolli - storicamente sempre ripreso",
+                            "Comprare dopo grandi rialzi per FOMO (Fear Of Missing Out)",
+                            "Controllare il portafoglio ogni giorno - crea ansia inutile",
+                            "Cercare di prevedere il mercato (market timing) - quasi impossibile",
+                            "Concentrare tutto su azioni del proprio paese (home bias)",
+                            "Ignorare i costi: TER, commissioni, spread erodono i rendimenti",
+                            "Seguire i consigli di 'guru' su social media",
+                            "Non avere un piano scritto - porta a decisioni emotive"
+                        ]
+                    }
+                }
+            },
+            "general_knowledge": {
+                "title": "Concetti Fondamentali",
+                "subtitle": "Le basi della finanza personale che tutti dovrebbero conoscere",
+                "content": {
+                    "compound_interest": {
+                        "title": "L'Interesse Composto - L'Ottava Meraviglia",
+                        "description": "L'interesse composto è il concetto più potente della finanza. Significa guadagnare interesse non solo sul capitale iniziale, ma anche sugli interessi già maturati. Einstein lo chiamò 'l'ottava meraviglia del mondo'. Prima inizi, più tempo ha per lavorare.",
+                        "example": "€10,000 investiti al 7% annuo:\n• Anno 10: €19,672 (+97%)\n• Anno 20: €38,697 (+287%)\n• Anno 30: €76,123 (+661%)\n• Anno 40: €149,745 (+1,397%)"
+                    },
+                    "risk_return": {
+                        "title": "Rapporto Rischio-Rendimento",
+                        "description": "Regola fondamentale: maggiore è il potenziale rendimento, maggiore è il rischio. Non esistono rendimenti alti senza rischio - se qualcuno te lo promette, è una truffa. È cruciale capire il proprio profilo di rischio e dormire tranquilli di notte.",
+                        "risk_levels": [
+                            "Basso rischio: Conti deposito, BOT, BTP brevi (1-3% annuo). Capitale praticamente garantito.",
+                            "Medio rischio: ETF azionari diversificati, fondi bilanciati (5-8% annuo storico). Possibili cali del 20-30%.",
+                            "Alto rischio: Azioni singole, criptovalute, derivati. Possibili guadagni 100%+ ma anche perdite 50%+."
+                        ]
+                    },
+                    "inflation": {
+                        "title": "Inflazione - Il Nemico Silenzioso",
+                        "description": "L'inflazione erode il potere d'acquisto del denaro nel tempo. €1,000 oggi compreranno meno tra 10 anni. Con un'inflazione media del 2%, in 20 anni i tuoi soldi perdono circa il 33% del valore reale. Per questo non bisogna tenere troppa liquidità.",
+                        "protection": "Proteggi i risparmi investendo in asset che storicamente battono l'inflazione: azioni (7-10% storico), immobili, TIPS/BTP indicizzati all'inflazione. Tieni in liquidità solo fondo emergenza e spese previste entro 1-2 anni."
+                    },
+                    "financial_independence": {
+                        "title": "Indipendenza Finanziaria (FIRE)",
+                        "description": "L'obiettivo finale per molti: avere abbastanza investimenti da vivere dei rendimenti senza dover lavorare. Il movimento FIRE (Financial Independence, Retire Early) ha reso popolare questo concetto. Richiede un alto tasso di risparmio (40-70%) per molti anni.",
+                        "rule_25": "Regola del 25: Accumula 25 volte le tue spese annuali in investimenti. Se spendi €30,000/anno, ti servono €750,000.",
+                        "withdrawal_rate": "Regola del 4%: Preleva massimo il 4% annuo dal portafoglio per mantenerlo nel tempo (basato sul Trinity Study). Alcuni suggeriscono 3.5% per maggiore sicurezza."
+                    },
+                    "debt_management": {
+                        "title": "Gestione del Debito",
+                        "description": "Non tutti i debiti sono uguali. Debito 'buono' (mutuo casa, prestito studio) può essere strategico. Debito 'cattivo' (carte di credito, prestiti al consumo ad alto tasso) va eliminato prioritariamente.",
+                        "tips": [
+                            "Priorità 1: Eliminare debiti ad alto interesse (>10%) prima di investire",
+                            "Metodo valanga: paga prima il debito con tasso più alto",
+                            "Metodo palla di neve: paga prima il debito più piccolo (vittorie psicologiche)",
+                            "Mai finanziare acquisti che perdono valore (auto, elettronica, vestiti)",
+                            "Mutuo casa: considera come affitto + investimento forzato, non 'debito cattivo'"
+                        ]
+                    },
+                    "financial_scams": {
+                        "title": "Come Riconoscere le Truffe Finanziarie",
+                        "tips": [
+                            "Rendimenti garantiti alti = TRUFFA (nessuno può garantire rendimenti)",
+                            "Pressione a decidere subito = segnale di allarme",
+                            "'Opportunità esclusiva' = quasi sempre schema Ponzi",
+                            "Non capisco come funziona = non investire",
+                            "Promesse di raddoppiare i soldi in poco tempo = scam",
+                            "Verifica sempre: CONSOB per Italia, autorità per altri paesi",
+                            "Se sembra troppo bello per essere vero, lo è"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "info": {
+        "title": "Informazioni e FAQ",
+        "title2": "Progetto Pacifinance",
+        "description": "Pacifinance è una piattaforma di finanza personale e di confronto che si pone come obiettivo principale la privacy e permettere la comprensione della propria situazione finanziaria.",
+        "description2": "Il confronto con altri utenti è possibile in modo anonimo e non sensibile.",
+        "description3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
+        "description4": "Il progetto è no-profit ed è unicamente sostenuto da donazioni volontarie.",
+        "description5": "La piattaforma è in continuo sviluppo e nuove funzionalità verranno aggiunte in futuro.",
+        "calltoaction": "Supporta il progetto",
+        "features": {
+            "title": "Caratteristiche Principali",
+            "security": {
+                "title": "Privacy e Sicurezza",
+                "description": "I tuoi dati sono completamente anonimi e protetti. Nessuna informazione personale viene mai condivisa."
+            },
+            "analytics": {
+                "title": "Analisi Avanzate",
+                "description": "Grafici e statistiche dettagliate per comprendere meglio le tue finanze personali."
+            },
+            "responsive": {
+                "title": "Design Responsivo",
+                "description": "Piattaforma ottimizzata per tutti i dispositivi: desktop, tablet e smartphone."
+            },
+            "customization": {
+                "title": "Personalizzazione",
+                "description": "Tema scuro/chiaro, modalità privacy e personalizzazione dell'interfaccia."
+            },
+            "insights": {
+                "title": "Insights Finanziari",
+                "description": "Confronti anonimi con altri utenti per migliorare la tua gestione finanziaria."
+            },
+            "support": {
+                "title": "Supporto Continuo",
+                "description": "Sviluppo costante di nuove funzionalità basate sui feedback degli utenti."
+            }
+        },
+        "about": {
+            "title": "Il Nostro Impegno"
+        },
+        "faq": {
+            "title": "Domande frequenti",
+            "question1": "Come posso aggiungere un'entrata o un'uscita?",
+            "answer1": "Per aggiungere un'entrata o un'uscita, vai nella sezione 'Inserimento dati' e seleziona il tipo di inserimento che vuoi fare.  Compila i campi richiesti e conferma l'inserimento. ",
+            "question2": "Come posso aggiornare il mio bilancio?",
+            "answer2": "Per aggiornare il tuo bilancio, vai nella sezione 'Inserimento dati' e seleziona la sezione 'Aggiorna Bilancio'.  Compila i campi richiesti e conferma l'aggiornamento. ",
+            "question3": "Come posso eliminare un'entrata o un'uscita?",
+            "answer3": "Per eliminare un'entrata o un'uscita, vai nella sezione 'Inserimento dati' e seleziona la sezione 'Aggiungi Entrate' o 'Aggiungi Uscite'.  Nella tabella delle entrate o delle uscite, seleziona l'entrata o l'uscita che vuoi eliminare e clicca su 'Elimina'. ",
+            "question4": "Come posso cambiare il mio id?",
+            "answer4": "Per cambiare il tuo id, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia ID'.  Compila i campi richiesti e conferma il cambio id. ",
+            "question5": "Come posso cambiare la mia password?",
+            "answer5": "Per cambiare la tua password, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia password'.  Compila i campi richiesti e conferma il cambio password. ",
+            "question6": "Come posso supportare il progetto?",
+            "answer6": "Il progetto è no-profit e viene sostenuto da donazioni volontarie. Se pensi che il servizio offerto sia utile e vuoi contribuire, puoi lasciare feedback e/o supportarci tramite donazione.",
+            "answer6CallToAction": "In ogni pagina in basso a destra troverai un pop-up per supportare il progetto. Grazie da parte di tutto il team!.",
+            "question7": "Come posso eliminare il mio account?",
+            "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. "
+        },
+        "developers": {
+            "title": "Team",
+            "description": "Pacifinance è sviluppata e viene aggiornata e mantenuta da un team di sviluppatori appassionati di finanza e di sviluppo.",
+            "description2": "Il team di sviluppo è sempre disponibile a ricevere feedback e suggerimenti per migliorare la piattaforma. ",
+            "description3": "La piattaforma è stata creata con l'obiettivo di offrire un servizio utile e gratuito per gli utenti.",
+            "calltoaction": "Il costo del mantenimento dei server e del servizio è sostenuto dal team, se pensi che il servizio offerto sia utile e vuoi contribuire, puoi supportarci tramite donazione. ",
+            "contact": "Contattaci"
+        }
+    },
+    "legal": {
+        "privacy": {
+            "title": "Privacy Policy",
+            "introduction": {
+                "title": "Introduzione",
+                "content": "La tua privacy è la nostra priorità assoluta. PaciFinance è stato progettato fin dall'inizio con la privacy al centro. Questa politica spiega come gestiamo i tuoi dati con il massimo rispetto per la tua privacy."
+            },
+            "dataCollection": {
+                "title": "Raccolta Dati",
+                "content": "Raccogliamo solo i dati essenziali per il funzionamento del servizio:",
+                "items": [
+                    "Dati finanziari inseriti volontariamente (sempre anonimi)",
+                    "Cookie tecnici necessari per il funzionamento",
+                    "Dati di utilizzo aggregati e anonimi"
+                ]
+            },
+            "dataUsage": {
+                "title": "Utilizzo dei Dati",
+                "content": "I tuoi dati vengono utilizzati esclusivamente per fornire le funzionalità della piattaforma e per confronti anonimi. Non vendiamo, condividiamo o utilizziamo i tuoi dati per scopi commerciali."
+            },
+            "anonymity": {
+                "title": "Anonimato",
+                "content": "Tutti i confronti e le statistiche sono completamente anonimi. I tuoi dati personali non vengono mai associati ai dati finanziari utilizzati per i confronti."
+            },
+            "contact": {
+                "title": "Contatti",
+                "content": "Per qualsiasi domanda riguardo questa privacy policy, contattaci tramite i canali ufficiali della piattaforma."
+            },
+            "lastUpdated": "Ultimo aggiornamento"
+        }
+    },
+    "faq": {
+        "title": "Domande Frequenti",
+        "questions": [
+            {
+                "question": "PaciFinance è davvero gratuito?",
+                "answer": "Sì, PaciFinance è completamente gratuito. Non ci sono costi nascosti, abbonamenti o limitazioni. La piattaforma è sostenuta da donazioni volontarie."
+            },
+            {
+                "question": "Come funziona la privacy su PaciFinance?",
+                "answer": "La privacy è al centro di tutto ciò che facciamo. I tuoi dati sono sempre anonimi e non vengono mai condivisi. Utilizziamo solo cookie tecnici necessari per il funzionamento."
+            },
+            {
+                "question": "Come posso confrontarmi con altri utenti?",
+                "answer": "I confronti sono completamente anonimi e basati su dati aggregati. Puoi vedere statistiche generali per categoria, settore o area geografica senza mai rivelare la tua identità."
+            },
+            {
+                "question": "Che tipo di dati posso inserire?",
+                "answer": "Puoi inserire entrate, uscite, investimenti, risparmi e altri dati finanziari. Tutti i dati rimangono anonimi e sono utilizzati solo per le tue analisi personali."
+            },
+            {
+                "question": "Come posso supportare il progetto?",
+                "answer": "Il modo migliore per supportare PaciFinance è attraverso donazioni volontarie via Buy Me a Coffee. Ogni contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità."
+            }
+        ],
+        "stillHaveQuestions": "Hai ancora domande?",
+        "contactInfo": "Contattaci attraverso i nostri canali ufficiali per ricevere assistenza."
+    },
+    "pricing": {
+        "title": "Prezzi",
+        "subtitle": "Semplice, trasparente e completamente gratuito. Per sempre.",
+        "popular": "Più Popolare",
+        "freePlan": {
+            "title": "Gratuito",
+            "price": "0€",
+            "period": "/sempre",
+            "features": [
+                "Tutte le funzionalità",
+                "Privacy garantita",
+                "Confronti anonimi",
+                "Grafici e statistiche",
+                "Nessun limite",
+                "Supporto della community"
+            ],
+            "button": "Inizia Gratis"
+        },
+        "premiumPlan": {
+            "title": "Premium",
+            "price": "∞€",
+            "period": "/mese",
+            "features": [
+                "Non esiste",
+                "Serio, è tutto gratis",
+                "Non ci credi?",
+                "Controlla il codice sorgente"
+            ],
+            "button": "Non Disponibile"
+        },
+        "enterprisePlan": {
+            "title": "Enterprise",
+            "price": "∞∞€",
+            "period": "/anno",
+            "features": [
+                "Ancora non esiste",
+                "Ma se vuoi donare...",
+                "Saremo felici",
+                "Davvero, grazie! ❤️"
+            ],
+            "button": "Dona Invece"
+        },
+        "donation": {
+            "title": "Supporta PaciFinance",
+            "description": "Se PaciFinance ti è utile, considera una donazione per aiutarci a mantenere la piattaforma online e sviluppare nuove funzionalità. Ogni contributo è molto apprezzato!",
+            "disclaimer": "Le donazioni sono completamente volontarie e non sbloccano funzionalità aggiuntive."
+        }
+    },
+    "categories": {
+        "Casa": "Casa",
+        "Alimentari": "Alimentari", 
+        "Trasporti": "Trasporti",
+        "Intrattenimento": "Intrattenimento",
+        "Salute": "Salute",
+        "Abbigliamento": "Abbigliamento",
+        "Altri": "Altri",
+        "Viaggi": "Viaggi",
+        "Digital": "Digital",
+        "Auto": "Auto",
+        "Stipendio": "Stipendio",
+        "Freelance": "Freelance",
+        "Entrate extra": "Entrate extra",
+        "Regalo": "Regalo",
+        "Pensione": "Pensione"
+    }
+    
+}

@@ -11,11 +11,10 @@ import Comparison from '../sections/Comparison';
 import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
 import SEOHead from '../components/SEOHead';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
-import languages from '../data/languages.json';
 
 function ComparisonPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
@@ -63,8 +62,8 @@ function ComparisonPage() {
   return (
     <>
       <SEOHead 
-        title={`${languages[language].comparison.title} - Pacifinance`}
-        description={`${languages[language].comparison.subtitle} - Confronta le tue finanze con utenti simili in modo anonimo e sicuro`}
+        title={`${translations.comparison.title} - Pacifinance`}
+        description={`${translations.comparison.subtitle} - Confronta le tue finanze con utenti simili in modo anonimo e sicuro`}
         keywords="confronto finanziario, benchmark finanze personali, comparazione stipendi, analisi finanziaria, confronto budget"
         canonicalUrl="https://pacifinance.com/comparison"
       />

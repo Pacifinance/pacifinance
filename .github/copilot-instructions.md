@@ -36,36 +36,58 @@ build/                   # Production build output
 
 ## 🚨 CRITICAL RULES - ALWAYS FOLLOW
 
-### 1. **Language Files (MANDATORY)**
-Every time you add user-facing text, you **MUST** update both language entries in:
+### 1. **Internationalization (i18n) - MANDATORY**
+Every time you add user-facing text, you **MUST** update both language files:
 ```
-src/data/languages.json
+src/i18n/locales/it.json
+src/i18n/locales/en.json
 ```
 
-**Structure:**
+**File Structure:**
+```
+src/i18n/
+├── index.js           # Centralized i18n export
+├── locales/
+│   ├── it.json       # Italian translations
+│   └── en.json       # English translations
+└── README.md         # i18n documentation
+```
+
+**Translation File Structure:**
 ```json
 {
-  "it": {
-    "sectionName": {
-      "key": "Testo italiano"
-    }
-  },
-  "en": {
-    "sectionName": {
-      "key": "English text"
-    }
+  "sectionName": {
+    "key": "Testo tradotto"
   }
 }
 ```
 
-**Usage in components:**
+**Usage in components (RECOMMENDED):**
 ```jsx
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../data/languages.json';
 
+const { language, translations } = useContext(LanguageContext);
+const text = translations.sectionName.key;
+```
+
+**Alternative usage (backward compatible):**
+```jsx
+import languages from '../data/languages.json';
 const { language } = useContext(LanguageContext);
 const text = languages[language].sectionName.key;
 ```
+
+**Adding a new language:**
+1. Create `src/i18n/locales/xx.json` with translations
+2. Add import in `src/i18n/index.js`:
+   ```js
+   import xx from './locales/xx.json';
+   const languages = { it, en, xx };
+   ```
+3. Update `LanguageContext` if needed for auto-detection
+
+**Auto-detection:**
+The system automatically detects browser language on first visit. User preferences saved in localStorage always take priority.
 
 ### 2. **Mock Data for Testing (MANDATORY)**
 When adding new data structures or features, you **MUST** update the mock user data in:

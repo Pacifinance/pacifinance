@@ -10,7 +10,7 @@ import { useHTMLLang } from '../hooks/useHTMLLang';
 
 export default function NewLandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { mode } = theme;
 
@@ -45,7 +45,7 @@ export default function NewLandingPage() {
       <link rel="preload" href="/src/assets/LandingPage/PacifinanceArt2NoBg.webp" as="image" />
       <link rel="preload" href="/src/assets/Brand/PacifinanceLogoPNG3NoBg.webp" as="image" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://api.pacifinance.com" />
       
       {/* Canonical URL - Unico URL per tutte le lingue */}

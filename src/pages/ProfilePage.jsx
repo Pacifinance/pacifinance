@@ -52,7 +52,6 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import Sidebar from '../sections/Sidebar';
 import SEOHead from '../components/SEOHead';
-import languages from '../data/languages.json';
 import {
     Section,
     MyButton,
@@ -60,7 +59,7 @@ import {
 } from '../styles/MyStyled';
 
 // Profile Completion Indicator Component
-const ProfileCompletionIndicator = ({ completionPercentage, theme, isMobileScreen, language }) => {
+const ProfileCompletionIndicator = ({ completionPercentage, theme, isMobileScreen, translations }) => {
     return (
         <div style={{
             background: theme.mode === 'dark' 
@@ -89,7 +88,7 @@ const ProfileCompletionIndicator = ({ completionPercentage, theme, isMobileScree
                         fontWeight: '600',
                         color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
                     }}>
-                        {languages[language].sidebar.account.profileCompletion.title} {completionPercentage}%
+                        {translations.sidebar.account.profileCompletion.title} {completionPercentage}%
                     </h3>
                 </div>
                 <div style={{
@@ -121,7 +120,7 @@ const ProfileCompletionIndicator = ({ completionPercentage, theme, isMobileScree
 const ProfilePage = () => {
     const { theme } = useContext(ThemeContext);
     const { isHidden } = useContext(PrivacyContext);
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useNavigate();
@@ -316,7 +315,7 @@ const ProfilePage = () => {
                 setIsEditMode(false);
                 setTimeout(() => setShowUpdateSuccess(false), 3000);
             } else {
-                alert(languages[language].sidebar.account.errorUpdateProfile);
+                alert(translations.sidebar.account.errorUpdateProfile);
             }
         } catch (error) {
             console.error(error);
@@ -707,8 +706,8 @@ const ProfilePage = () => {
     return (
         <>
             <SEOHead 
-                title={`${languages[language].sidebar.account.title} - Pacifinance`}
-                description={`${languages[language].sidebar.account.title} - Gestisci il tuo profilo Pacifinance`}
+                title={`${translations.sidebar.account.title} - Pacifinance`}
+                description={`${translations.sidebar.account.title} - Gestisci il tuo profilo Pacifinance`}
             />
             <Sidebar 
                 userData={userData} 
@@ -856,7 +855,7 @@ const ProfilePage = () => {
                                 gap: '0.75rem'
                             }}>
                                 <FaUser size={isMobileScreen ? 24 : 28} color="white" />
-                                {languages[language].sidebar.account.title}
+                                {translations.sidebar.account.title}
                             </h1>
                         </div>
 
@@ -913,12 +912,12 @@ const ProfilePage = () => {
                                 }}>
                                     <InfoCard
                                         icon={<FaUser />}
-                                        title={languages[language].sidebar.account.id || "User ID"}
+                                        title={translations.sidebar.account.id || "User ID"}
                                         value={userId}
                                     />
                                     <InfoCard
                                         icon={<Star />}
-                                        title={languages[language].sidebar.account.accountType || "Tipo Account"}
+                                        title={translations.sidebar.account.accountType || "Tipo Account"}
                                         value={userType}
                                     />
                                 </div>
@@ -937,7 +936,7 @@ const ProfilePage = () => {
                                     completionPercentage={profileCompletionPercentage}
                                     theme={theme}
                                     isMobileScreen={isMobileScreen}
-                                    language={language}
+                                    translations={translations}
                                 />
 
                                 {/* Why Complete Profile Section - Compact */}
@@ -983,14 +982,14 @@ const ProfilePage = () => {
                                                     fontWeight: '600',
                                                     color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937'
                                                 }}>
-                                                    {languages[language].sidebar.account.benefits.title}
+                                                    {translations.sidebar.account.benefits.title}
                                                 </h3>
                                                 <p style={{
                                                     margin: '0.25rem 0 0 0',
                                                     fontSize: '0.8rem',
                                                     color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280'
                                                 }}>
-                                                    {showBenefitsInfo ? languages[language].sidebar.account.benefits.clickToHide : languages[language].sidebar.account.benefits.clickToLearnMore}
+                                                    {showBenefitsInfo ? translations.sidebar.account.benefits.clickToHide : translations.sidebar.account.benefits.clickToLearnMore}
                                                 </p>
                                             </div>
                                         </div>
@@ -1016,7 +1015,7 @@ const ProfilePage = () => {
                                                 lineHeight: '1.5',
                                                 color: theme.mode === 'dark' ? '#d1d5db' : '#4b5563'
                                             }}>
-                                                {languages[language].sidebar.account.benefits.subtitle}
+                                                {translations.sidebar.account.benefits.subtitle}
                                             </p>
                                             <p style={{
                                                 margin: '0 0 0.5rem 0',
@@ -1024,7 +1023,7 @@ const ProfilePage = () => {
                                                 lineHeight: '1.5',
                                                 color: theme.mode === 'dark' ? '#d1d5db' : '#4b5563'
                                             }}>
-                                                <strong>{languages[language].sidebar.account.benefits.personalizedComparisonsLabel}</strong> {languages[language].sidebar.account.benefits.personalizedComparisons}
+                                                <strong>{translations.sidebar.account.benefits.personalizedComparisonsLabel}</strong> {translations.sidebar.account.benefits.personalizedComparisons}
                                             </p>
                                             <p style={{
                                                 margin: 0,
@@ -1032,7 +1031,7 @@ const ProfilePage = () => {
                                                 lineHeight: '1.4',
                                                 color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280'
                                             }}>
-                                                🔒 <em>{languages[language].sidebar.account.benefits.anonymousNote}</em>
+                                                🔒 <em>{translations.sidebar.account.benefits.anonymousNote}</em>
                                             </p>
                                         </div>
                                     )}
@@ -1076,7 +1075,7 @@ const ProfilePage = () => {
                                                 }}>
                                                     <Briefcase size={20} color="white" />
                                                 </div>
-                                                {languages[language].sidebar.account.sections.profileDetails}
+                                                {translations.sidebar.account.sections.profileDetails}
                                             </h2>
                                             
                                             <MyButton
@@ -1107,7 +1106,7 @@ const ProfilePage = () => {
                                                 }}
                                             >
                                                 <Edit size={18} />
-                                                {isEditMode ? languages[language].sidebar.account.buttons.cancelEdit : languages[language].sidebar.account.buttons.editProfile}
+                                                {isEditMode ? translations.sidebar.account.buttons.cancelEdit : translations.sidebar.account.buttons.editProfile}
                                             </MyButton>
                                         </div>
                                     </div>
@@ -1142,37 +1141,37 @@ const ProfilePage = () => {
                                         }}>
                                             <InfoCard
                                                 icon={<MapPin />}
-                                                title={languages[language].sidebar.account.nationality}
+                                                title={translations.sidebar.account.nationality}
                                                 value={translateValueToCurrentLanguage(userNationality.value, nationalityTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<MapPin />}
-                                                title={languages[language].sidebar.account.whereWork}
+                                                title={translations.sidebar.account.whereWork}
                                                 value={translateValueToCurrentLanguage(userWhereWorks.value, nationalityTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Briefcase />}
-                                                title={languages[language].sidebar.account.work}
+                                                title={translations.sidebar.account.work}
                                                 value={translateValueToCurrentLanguage(userJob.value, jobTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Briefcase />}
-                                                title={languages[language].sidebar.account.workType}
+                                                title={translations.sidebar.account.workType}
                                                 value={translateValueToCurrentLanguage(userJobType.value, jobTypeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Clock />}
-                                                title={languages[language].sidebar.account.hoursContract}
+                                                title={translations.sidebar.account.hoursContract}
                                                 value={translateValueToCurrentLanguage(userWorkTime.value, workTimeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Home />}
-                                                title={languages[language].sidebar.account.remoteWork}
+                                                title={translations.sidebar.account.remoteWork}
                                                 value={translateValueToCurrentLanguage(userRemoteType.value, remoteTypeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Star />}
-                                                title={languages[language].sidebar.account.yearsExperience}
+                                                title={translations.sidebar.account.yearsExperience}
                                                 value={userYearsExperience.value}
                                             />
                                         </div>
@@ -1209,22 +1208,22 @@ const ProfilePage = () => {
                                         }}>
                                             <InfoCard
                                                 icon={<Calendar />}
-                                                title={languages[language].sidebar.account.age}
+                                                title={translations.sidebar.account.age}
                                                 value={userAge.value}
                                             />
                                             <InfoCard
                                                 icon={<Users />}
-                                                title={languages[language].sidebar.account.livingStatus}
+                                                title={translations.sidebar.account.livingStatus}
                                                 value={translateValueToCurrentLanguage(userLivingStatus.value, livingStatusTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Home />}
-                                                title={languages[language].sidebar.account.housingType}
+                                                title={translations.sidebar.account.housingType}
                                                 value={translateValueToCurrentLanguage(userHousingType.value, housingTypeTags, language)}
                                             />
                                             <InfoCard
                                                 icon={<Baby />}
-                                                title={languages[language].sidebar.account.hasChildren}
+                                                title={translations.sidebar.account.hasChildren}
                                                 value={translateValueToCurrentLanguage(userHasChildren.value, hasChildrenTags, language)}
                                             />
                                         </div>
@@ -1254,7 +1253,7 @@ const ProfilePage = () => {
                                     }}>
                                         <Edit size={20} color="white" />
                                     </div>
-                                    {languages[language].sidebar.account.sections.editMode}
+                                    {translations.sidebar.account.sections.editMode}
                                 </h2>
                                 
                                 {/* Sezione Form Profilo Professionale */}
@@ -1297,65 +1296,65 @@ const ProfilePage = () => {
                                             alignItems: 'start'
                                         }}>
                                         <SelectField
-                                            label={languages[language].sidebar.account.nationality}
+                                            label={translations.sidebar.account.nationality}
                                             value={userNationality.value}
                                             onChange={(event) => setUserNationality({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedNationalityTags}
-                                            placeholder={languages[language].sidebar.account.selectNationality}
+                                            placeholder={translations.sidebar.account.selectNationality}
                                             icon={<MapPin />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.whereWork}
+                                            label={translations.sidebar.account.whereWork}
                                             value={userWhereWorks.value}
                                             onChange={(event) => setUserWhereWorks({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedNationalityTags}
-                                            placeholder={languages[language].sidebar.account.selectWhereWork}
+                                            placeholder={translations.sidebar.account.selectWhereWork}
                                             icon={<MapPin />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.work}
+                                            label={translations.sidebar.account.work}
                                             value={userJob.value}
                                             onChange={(event) => setUserJob({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedJobTags}
-                                            placeholder={languages[language].sidebar.account.selectWork}
+                                            placeholder={translations.sidebar.account.selectWork}
                                             icon={<Briefcase />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.workType}
+                                            label={translations.sidebar.account.workType}
                                             value={userJobType.value}
                                             onChange={(event) => setUserJobType({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedJobTypeTags}
-                                            placeholder={languages[language].sidebar.account.selectWorkType}
+                                            placeholder={translations.sidebar.account.selectWorkType}
                                             icon={<Briefcase />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.hoursContract}
+                                            label={translations.sidebar.account.hoursContract}
                                             value={userWorkTime.value}
                                             onChange={(event) => setUserWorkTime({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedWorkTimeTags}
-                                            placeholder={languages[language].sidebar.account.selectHoursContract}
+                                            placeholder={translations.sidebar.account.selectHoursContract}
                                             icon={<Clock />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.remoteWork}
+                                            label={translations.sidebar.account.remoteWork}
                                             value={userRemoteType.value}
                                             onChange={(event) => setUserRemoteType({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedRemoteTypeTags}
-                                            placeholder={languages[language].sidebar.account.selectRemoteWork}
+                                            placeholder={translations.sidebar.account.selectRemoteWork}
                                             icon={<Home />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.yearsExperience}
+                                            label={translations.sidebar.account.yearsExperience}
                                             value={userYearsExperience.value}
                                             onChange={(event) => setUserYearsExperience({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedYearsExperienceTags}
-                                            placeholder={languages[language].sidebar.account.selectYearsExperience}
+                                            placeholder={translations.sidebar.account.selectYearsExperience}
                                             icon={<Star />}
                                         />
                                     </div>
@@ -1400,38 +1399,38 @@ const ProfilePage = () => {
                                             alignItems: 'start'
                                         }}>
                                         <SelectField
-                                            label={languages[language].sidebar.account.age}
+                                            label={translations.sidebar.account.age}
                                             value={userAge.value}
                                             onChange={(event) => setUserAge({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedAgeTags}
-                                            placeholder={languages[language].sidebar.account.selectAge}
+                                            placeholder={translations.sidebar.account.selectAge}
                                             icon={<Calendar />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.livingStatus}
+                                            label={translations.sidebar.account.livingStatus}
                                             value={userLivingStatus.value}
                                             onChange={(event) => setUserLivingStatus({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedLivingStatusTags}
-                                            placeholder={languages[language].sidebar.account.selectLivingStatus}
+                                            placeholder={translations.sidebar.account.selectLivingStatus}
                                             icon={<Users />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.housingType}
+                                            label={translations.sidebar.account.housingType}
                                             value={userHousingType.value}
                                             onChange={(event) => setUserHousingType({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedHousingTypeTags}
-                                            placeholder={languages[language].sidebar.account.selectHousingType}
+                                            placeholder={translations.sidebar.account.selectHousingType}
                                             icon={<Home />}
                                         />
 
                                         <SelectField
-                                            label={languages[language].sidebar.account.hasChildren}
+                                            label={translations.sidebar.account.hasChildren}
                                             value={userHasChildren.value}
                                             onChange={(event) => setUserHasChildren({key: event.target.value.key, value: event.target.value.label})}
                                             options={sortedHasChildrenTags}
-                                            placeholder={languages[language].sidebar.account.selectHasChildren}
+                                            placeholder={translations.sidebar.account.selectHasChildren}
                                             icon={<Baby />}
                                         />
                                     </div>
@@ -1464,7 +1463,7 @@ const ProfilePage = () => {
                                         }}
                                     >
                                         <ArrowLeft size={18} />
-                                        {languages[language].sidebar.account.buttons.cancel}
+                                        {translations.sidebar.account.buttons.cancel}
                                     </MyButton>
                                     
                                     <MyButton
@@ -1485,7 +1484,7 @@ const ProfilePage = () => {
                                         }}
                                     >
                                         <Save size={20} />
-                                        {languages[language].sidebar.account.buttons.saveChanges}
+                                        {translations.sidebar.account.buttons.saveChanges}
                                     </MyButton>
                                 </div>
                             </form>

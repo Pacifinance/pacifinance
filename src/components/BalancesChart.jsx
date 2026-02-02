@@ -10,7 +10,6 @@ import { Area } from "recharts/lib/cartesian/Area";
 import { Legend } from "recharts/lib/component/Legend";
 import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
@@ -28,7 +27,7 @@ import { getBalanceChartData } from '../utils/userDataSelectors.js';
  * @param {Component} CustomTick - Componente custom per i tick degli assi
  */
 export default function BalancesChart({ type = "bar", theme, userData, isHidden, CustomTick }) {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
@@ -120,18 +119,18 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
 
   // Headers per export comuni
   const headers = [
-    { label: languages[language].general.month, key: 'name' },
-    { label: languages[language].assets.cash, key: 'cash' },
-    { label: languages[language].assets.digitalServices, key: 'digitalServices' },
-    { label: languages[language].assets.stocks, key: 'stocks' },
-    { label: languages[language].assets.bank, key: 'bank' },
-    { label: languages[language].assets.crypto, key: 'crypto' },
-    { label: languages[language].assets.etf, key: 'etf' },
-    { label: languages[language].assets.bitcoin, key: 'bitcoin' },
-    { label: languages[language].assets.bonds, key: 'bonds' },
-    { label: languages[language].assets.funds, key: 'funds' },
-    { label: languages[language].assets.gold, key: 'gold' },
-    { label: languages[language].assets.total, key: 'total' },
+    { label: translations.general.month, key: 'name' },
+    { label: translations.assets.cash, key: 'cash' },
+    { label: translations.assets.digitalServices, key: 'digitalServices' },
+    { label: translations.assets.stocks, key: 'stocks' },
+    { label: translations.assets.bank, key: 'bank' },
+    { label: translations.assets.crypto, key: 'crypto' },
+    { label: translations.assets.etf, key: 'etf' },
+    { label: translations.assets.bitcoin, key: 'bitcoin' },
+    { label: translations.assets.bonds, key: 'bonds' },
+    { label: translations.assets.funds, key: 'funds' },
+    { label: translations.assets.gold, key: 'gold' },
+    { label: translations.assets.total, key: 'total' },
   ];
 
   const today = new Date();
@@ -166,18 +165,18 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         const monthIndex = parseInt(monthNum);
         
         const monthNames = {
-          1: languages[language].months.january,
-          2: languages[language].months.february,
-          3: languages[language].months.march,
-          4: languages[language].months.april,
-          5: languages[language].months.may,
-          6: languages[language].months.june,
-          7: languages[language].months.july,
-          8: languages[language].months.august,
-          9: languages[language].months.september,
-          10: languages[language].months.october,
-          11: languages[language].months.november,
-          12: languages[language].months.december
+          1: translations.months.january,
+          2: translations.months.february,
+          3: translations.months.march,
+          4: translations.months.april,
+          5: translations.months.may,
+          6: translations.months.june,
+          7: translations.months.july,
+          8: translations.months.august,
+          9: translations.months.september,
+          10: translations.months.october,
+          11: translations.months.november,
+          12: translations.months.december,
         };
         
         const monthName = monthNames[monthIndex] || monthNum;
@@ -194,17 +193,17 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         
         // Mappa i nomi inglesi a quelli localizzati
         const nameMap = {
-          'cash': languages[language].assets.cash,
-          'digitalServices': languages[language].assets.digitalServices,
-          'stocks': languages[language].assets.stocks,
-          'bank': languages[language].assets.bank,
-          'crypto': languages[language].assets.crypto,
-          'etf': languages[language].assets.etf,
-          'bitcoin': languages[language].assets.bitcoin,
-          'bonds': languages[language].assets.bonds,
-          'funds': languages[language].assets.funds,
-          'gold': languages[language].assets.gold,
-          'total': languages[language].assets.total
+          'cash': translations.assets.cash,
+          'digitalServices': translations.assets.digitalServices,
+          'stocks': translations.assets.stocks,
+          'bank': translations.assets.bank,
+          'crypto': translations.assets.crypto,
+          'etf': translations.assets.etf,
+          'bitcoin': translations.assets.bitcoin,
+          'bonds': translations.assets.bonds,
+          'funds': translations.assets.funds,
+          'gold': translations.assets.gold,
+          'total': translations.assets.total
         };
 
         const translatedName = nameMap[name] || name;

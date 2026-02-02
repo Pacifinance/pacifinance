@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styled from "styled-components";
 import { LanguageContext } from '../contexts/LanguageContext';
-import languages from '../data/languages.json';
 import { assetIcons } from '../data/assetIcons';
 import { assetColors } from '../data/assetColors';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
@@ -208,7 +207,7 @@ const Section = styled.section`
 `;
 
 export default function BalancesStats({ theme, userData, isHidden, period = "month" }) {
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     
     // Current values
     const [stocksValue, setStocksValue] = useState(0);
@@ -314,7 +313,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: bankValuePrev,
             icon: assetIcons.bank,
             color: assetColors.bank.primary,
-            label: languages[language].assets.bank
+            label: translations.assets.bank
         },
         {
             key: 'cash',
@@ -322,7 +321,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: cashValuePrev,
             icon: assetIcons.cash,
             color: assetColors.cash.primary,
-            label: languages[language].assets.cash
+            label: translations.assets.cash
         },
         {
             key: 'emergencyFund',
@@ -330,7 +329,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: emergencyFundValuePrev,
             icon: assetIcons.emergencyFund,
             color: assetColors.emergencyFund.primary,
-            label: languages[language].assets.emergencyFund
+            label: translations.assets.emergencyFund
         },
         {
             key: 'digitalServices',
@@ -338,7 +337,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: digitalServicesValuePrev,
             icon: assetIcons.digitalServices,
             color: assetColors.digitalServices.primary,
-            label: languages[language].assets.digitalServices
+            label: translations.assets.digitalServices
         },
         {
             key: 'stocks',
@@ -346,7 +345,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: stocksValuePrev,
             icon: assetIcons.stocks,
             color: assetColors.stocks.primary,
-            label: languages[language].assets.stocks
+            label: translations.assets.stocks
         },
         {
             key: 'etf',
@@ -354,7 +353,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: etfValuePrev,
             icon: assetIcons.etf,
             color: assetColors.etf.primary,
-            label: languages[language].assets.etf
+            label: translations.assets.etf
         },
         {
             key: 'bitcoin',
@@ -362,7 +361,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: bitcoinValuePrev,
             icon: assetIcons.bitcoin,
             color: assetColors.bitcoin.primary,
-            label: languages[language].assets.bitcoin
+            label: translations.assets.bitcoin
         },
         {
             key: 'crypto',
@@ -370,7 +369,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: cryptoValuePrev,
             icon: assetIcons.crypto,
             color: assetColors.crypto.primary,
-            label: languages[language].assets.crypto
+            label: translations.assets.crypto
         },
         {
             key: 'bonds',
@@ -378,7 +377,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: bondsValuePrev,
             icon: assetIcons.bonds,
             color: assetColors.bonds.primary,
-            label: languages[language].assets.bonds
+            label: translations.assets.bonds
         },
         {
             key: 'funds',
@@ -386,7 +385,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: fundsValuePrev,
             icon: assetIcons.funds,
             color: assetColors.funds.primary,
-            label: languages[language].assets.funds
+            label: translations.assets.funds
         },
         {
             key: 'gold',
@@ -394,7 +393,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
             previous: goldValuePrev,
             icon: assetIcons.gold,
             color: assetColors.gold.primary,
-            label: languages[language].assets.gold
+            label: translations.assets.gold
         }
     ];
 
@@ -446,7 +445,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                                 </div>
                             </div>
                             <div className="transfer">
-                                <h2>{languages[language].graphs.statsBalance.variation}</h2>
+                                <h2>{translations.graphs.statsBalance.variation}</h2>
                                 <h6>{asset.label}</h6>
                             </div>
                             <div className="money">

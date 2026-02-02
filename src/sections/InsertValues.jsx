@@ -3,7 +3,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { ButtonGroup } from "@mui/material";
 import axios from "axios";
-import languages from "../data/languages.json";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import {
@@ -215,7 +214,7 @@ export default function InsertValue({
   isHidden,
   initialSection,
 }) {
-  const { language } = React.useContext(LanguageContext);
+  const { language, translations } = React.useContext(LanguageContext);
   const { showSuccess, showError } = useToast();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
@@ -295,7 +294,7 @@ export default function InsertValue({
   // Helper function to create balances JSON - simplified with component context access
   const createBalancesJson = (date, selectedOption = null, newValue = null) => {
     const getValue = (assetKey, currentValue) => {
-      if (selectedOption?.includes(languages[language].assets[assetKey])) {
+      if (selectedOption?.includes(translations.assets[assetKey])) {
         return Number(newValue) || 0;
       }
       return Number(currentValue) || 0;
@@ -340,17 +339,17 @@ export default function InsertValue({
   };
 
   const options = {
-    [languages[language].assets.bank]: [bankValue, setBankValue],
-    [languages[language].assets.cash]: [cashValue, setCashValue],
-    [languages[language].assets.digitalServices]: [digitalServicesValue, setDigitalServicesValue],
-    [languages[language].assets.emergencyFund]: [emergencyFundValue, setEmergencyFundValue],
-    [languages[language].assets.stocks]: [stocksValue, setStocksValue],
-    [languages[language].assets.etf]: [etfValue, setETFValue],
-    [languages[language].assets.bitcoin]: [bitcoinValue, setBitcoinValue],
-    [languages[language].assets.crypto]: [cryptoValue, setCryptoValue],
-    [languages[language].assets.bonds]: [bondsValue, setBondsValue],
-    [languages[language].assets.funds]: [fundsValue, setFundsValue],
-    [languages[language].assets.gold]: [goldValue, setGoldValue],
+    [translations.assets.bank]: [bankValue, setBankValue],
+    [translations.assets.cash]: [cashValue, setCashValue],
+    [translations.assets.digitalServices]: [digitalServicesValue, setDigitalServicesValue],
+    [translations.assets.emergencyFund]: [emergencyFundValue, setEmergencyFundValue],
+    [translations.assets.stocks]: [stocksValue, setStocksValue],
+    [translations.assets.etf]: [etfValue, setETFValue],
+    [translations.assets.bitcoin]: [bitcoinValue, setBitcoinValue],
+    [translations.assets.crypto]: [cryptoValue, setCryptoValue],
+    [translations.assets.bonds]: [bondsValue, setBondsValue],
+    [translations.assets.funds]: [fundsValue, setFundsValue],
+    [translations.assets.gold]: [goldValue, setGoldValue],
   };
 
   const fetchData = async () => {
@@ -416,7 +415,7 @@ export default function InsertValue({
   // Auto-hide success notifications with toast
   useEffect(() => {
     if (updateBalanceSuccess) {
-      showSuccess(languages[language].insert.balanceSection.successUpdate);
+      showSuccess(translations.insert.balanceSection.successUpdate);
       // Reset immediatamente per evitare loop
       setUpdateBalanceSuccess(false);
     }
@@ -424,7 +423,7 @@ export default function InsertValue({
 
   useEffect(() => {
     if (updateInExBalanceSuccess) {
-      showSuccess(languages[language].insert.balanceSection.successFullUpdate);
+      showSuccess(translations.insert.balanceSection.successFullUpdate);
       // Reset immediatamente per evitare loop
       setUpdateInExBalanceSuccess(false);
     }
@@ -432,46 +431,46 @@ export default function InsertValue({
 
   useEffect(() => {
     if (updateIncomesSuccess) {
-      showSuccess(languages[language].insert.incomeSection.successUpdate);
+      showSuccess(translations.insert.incomeSection.successUpdate);
       setUpdateIncomesSuccess(false);
     }
   }, [updateIncomesSuccess, language, showSuccess]);
 
   useEffect(() => {
     if (updateOutflowsSuccess) {
-      showSuccess(languages[language].insert.outflowSection.successUpdate);
+      showSuccess(translations.insert.outflowSection.successUpdate);
       setUpdateOutflowsSuccess(false);
     }
   }, [updateOutflowsSuccess, language, showSuccess]);
 
   useEffect(() => {
     if (deleteIncomesSuccess) {
-      showSuccess(languages[language].insert.incomeSection.successDelete);
+      showSuccess(translations.insert.incomeSection.successDelete);
       setDeleteIncomesSuccess(false);
     }
   }, [deleteIncomesSuccess, language, showSuccess]);
 
   useEffect(() => {
     if (deleteOutflowsSuccess) {
-      showSuccess(languages[language].insert.outflowSection.successDelete);
+      showSuccess(translations.insert.outflowSection.successDelete);
       setDeleteOutflowsSuccess(false);
     }
   }, [deleteOutflowsSuccess, language, showSuccess]);
 
   // Array of month names
   const monthNames = {
-    1: [languages[language].months.january],
-    2: [languages[language].months.february],
-    3: [languages[language].months.march],
-    4: [languages[language].months.april],
-    5: [languages[language].months.may],
-    6: [languages[language].months.june],
-    7: [languages[language].months.july],
-    8: [languages[language].months.august],
-    9: [languages[language].months.september],
-    10: [languages[language].months.october],
-    11: [languages[language].months.november],
-    12: [languages[language].months.december],
+    1: [translations.months.january],
+    2: [translations.months.february],
+    3: [translations.months.march],
+    4: [translations.months.april],
+    5: [translations.months.may],
+    6: [translations.months.june],
+    7: [translations.months.july],
+    8: [translations.months.august],
+    9: [translations.months.september],
+    10: [translations.months.october],
+    11: [translations.months.november],
+    12: [translations.months.december],
   };
 
   // Get the current month and year
@@ -530,10 +529,10 @@ export default function InsertValue({
 
   const handleAddIncome = () => {
     if (categoryIncome.value === "") {
-      alert(languages[language].insert.errors.selectCategory);
+      alert(translations.insert.errors.selectCategory);
       return;
     } else if (Number(income) === 0 || income === "" || income === undefined) {
-      alert(languages[language].insert.errors.insertValidValue);
+      alert(translations.insert.errors.insertValidValue);
       return;
     }
     // Directly submit without confirmation modal
@@ -542,13 +541,13 @@ export default function InsertValue({
 
   const handleAddOutflow = () => {
     if (categoryOutflow.value === "") {
-      alert(languages[language].insert.errors.selectCategory);
+      alert(translations.insert.errors.selectCategory);
       return;
     } else if (typoOutflow.value === "") {
-      alert(languages[language].insert.errors.selectPaymentType);
+      alert(translations.insert.errors.selectPaymentType);
       return;
     } else if (Number(outflow) === 0 || outflow === "" || outflow === undefined) {
-      alert(languages[language].insert.errors.insertValidValue);
+      alert(translations.insert.errors.insertValidValue);
       return;
     }
     
@@ -584,14 +583,14 @@ export default function InsertValue({
         // Reset to current month/year after successful update
         setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
       } else {
-        showError(languages[language].insert.errors.balanceUpdateFailed);
+        showError(translations.insert.errors.balanceUpdateFailed);
       }
     } catch (error) {
       console.error("Error updating balance:", error);
       if (error.response?.status === 404) {
-        showError(languages[language].insert.errors.serverConnectionFailed);
+        showError(translations.insert.errors.serverConnectionFailed);
       } else {
-        showError(languages[language].insert.errors.balanceUpdateFailed);
+        showError(translations.insert.errors.balanceUpdateFailed);
       }
     }
   };
@@ -646,16 +645,16 @@ export default function InsertValue({
         withCredentials: true,
       });
       const balanceOptionsMap = {
-        [languages[language].assets.bank]: bankValue,
-        [languages[language].assets.cash]: cashValue,
-        [languages[language].assets.digitalServices]: digitalServicesValue,
-        [languages[language].assets.stocks]: stocksValue,
-        [languages[language].assets.etf]: etfValue,
-        [languages[language].assets.bitcoin]: bitcoinValue,
-        [languages[language].assets.crypto]: cryptoValue,
-        [languages[language].assets.bonds]: bondsValue,
-        [languages[language].assets.funds]: fundsValue,
-        [languages[language].assets.gold]: goldValue,
+        [translations.assets.bank]: bankValue,
+        [translations.assets.cash]: cashValue,
+        [translations.assets.digitalServices]: digitalServicesValue,
+        [translations.assets.stocks]: stocksValue,
+        [translations.assets.etf]: etfValue,
+        [translations.assets.bitcoin]: bitcoinValue,
+        [translations.assets.crypto]: cryptoValue,
+        [translations.assets.bonds]: bondsValue,
+        [translations.assets.funds]: fundsValue,
+        [translations.assets.gold]: goldValue,
       };
       if (inExAdd.status === 200) {
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
@@ -699,7 +698,7 @@ export default function InsertValue({
             setUpdateInExBalanceSuccess(true);
             fetchData();
           } else {
-            showError(languages[language].insert.errors.balanceUpdateFailed);
+            showError(translations.insert.errors.balanceUpdateFailed);
           }
         } else {
           handleSetIsUpdated(false);
@@ -709,19 +708,19 @@ export default function InsertValue({
         }
       } else {
         if (isOutflow) {
-          showError(languages[language].insert.errors.outflowAddFailed);
+          showError(translations.insert.errors.outflowAddFailed);
         } else {
-          showError(languages[language].insert.errors.incomeAddFailed);
+          showError(translations.insert.errors.incomeAddFailed);
         }
       }
     } catch (error) {
       console.error("Error:", error);
       if (error.response?.status === 404) {
-        showError(languages[language].insert.errors.serverConnectionFailed);
+        showError(translations.insert.errors.serverConnectionFailed);
       } else if (isOutflow) {
-        showError(languages[language].insert.errors.outflowAddFailed);
+        showError(translations.insert.errors.outflowAddFailed);
       } else {
-        showError(languages[language].insert.errors.incomeAddFailed);
+        showError(translations.insert.errors.incomeAddFailed);
       }
     }
   };
@@ -746,16 +745,16 @@ export default function InsertValue({
         if (selectedOption) {
           // Find the current value for the selected balance
           const balanceOptions = {
-            [languages[language].assets.bank]: bankValue,
-            [languages[language].assets.cash]: cashValue,
-            [languages[language].assets.digitalServices]: digitalServicesValue,
-            [languages[language].assets.stocks]: stocksValue,
-            [languages[language].assets.etf]: etfValue,
-            [languages[language].assets.bitcoin]: bitcoinValue,
-            [languages[language].assets.crypto]: cryptoValue,
-            [languages[language].assets.bonds]: bondsValue,
-            [languages[language].assets.funds]: fundsValue,
-            [languages[language].assets.gold]: goldValue,
+            [translations.assets.bank]: bankValue,
+            [translations.assets.cash]: cashValue,
+            [translations.assets.digitalServices]: digitalServicesValue,
+            [translations.assets.stocks]: stocksValue,
+            [translations.assets.etf]: etfValue,
+            [translations.assets.bitcoin]: bitcoinValue,
+            [translations.assets.crypto]: cryptoValue,
+            [translations.assets.bonds]: bondsValue,
+            [translations.assets.funds]: fundsValue,
+            [translations.assets.gold]: goldValue,
           };
           const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
           const incomeNumber = parseFloat(deleteIncomeAmount);
@@ -768,14 +767,14 @@ export default function InsertValue({
         setDeleteIncomesSuccess(true);
         fetchData();
       } else {
-        showError(languages[language].insert.errors.incomeDeleteFailed);
+        showError(translations.insert.errors.incomeDeleteFailed);
       }
     } catch (error) {
       console.error("Error deleting income:", error);
       if (error.response?.status === 404) {
-        showError(languages[language].insert.errors.serverConnectionFailed);
+        showError(translations.insert.errors.serverConnectionFailed);
       } else {
-        showError(languages[language].insert.errors.incomeDeleteFailed);
+        showError(translations.insert.errors.incomeDeleteFailed);
       }
     }
     setShowConfirmationDeleteIncome(false);
@@ -799,16 +798,16 @@ export default function InsertValue({
       if (outflowsDelete.status === 200) {
         if (selectedOption) {
           const balanceOptions = {
-            [languages[language].assets.bank]: bankValue,
-            [languages[language].assets.cash]: cashValue,
-            [languages[language].assets.digitalServices]: digitalServicesValue,
-            [languages[language].assets.stocks]: stocksValue,
-            [languages[language].assets.etf]: etfValue,
-            [languages[language].assets.bitcoin]: bitcoinValue,
-            [languages[language].assets.crypto]: cryptoValue,
-            [languages[language].assets.bonds]: bondsValue,
-            [languages[language].assets.funds]: fundsValue,
-            [languages[language].assets.gold]: goldValue,
+            [translations.assets.bank]: bankValue,
+            [translations.assets.cash]: cashValue,
+            [translations.assets.digitalServices]: digitalServicesValue,
+            [translations.assets.stocks]: stocksValue,
+            [translations.assets.etf]: etfValue,
+            [translations.assets.bitcoin]: bitcoinValue,
+            [translations.assets.crypto]: cryptoValue,
+            [translations.assets.bonds]: bondsValue,
+            [translations.assets.funds]: fundsValue,
+            [translations.assets.gold]: goldValue,
           };
           const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
           const outflowNumber = parseFloat(deleteOutflowAmount);
@@ -820,14 +819,14 @@ export default function InsertValue({
         setDeleteOutflowsSuccess(true);
         fetchData();
       } else {
-        showError(languages[language].insert.errors.outflowDeleteFailed);
+        showError(translations.insert.errors.outflowDeleteFailed);
       }
     } catch (error) {
       console.error("Error deleting outflow:", error);
       if (error.response?.status === 404) {
-        showError(languages[language].insert.errors.serverConnectionFailed);
+        showError(translations.insert.errors.serverConnectionFailed);
       } else {
-        showError(languages[language].insert.errors.outflowDeleteFailed);
+        showError(translations.insert.errors.outflowDeleteFailed);
       }
     }
     setShowConfirmationDeleteOutflow(false);
@@ -961,7 +960,7 @@ export default function InsertValue({
     <ModernContainer theme={theme}>
       <ContentWrapper>
         <ModernTitle theme={theme}>
-          {languages[language].insert.title}
+          {translations.insert.title}
         </ModernTitle>
         
         <ModernButtonGroup>
@@ -970,21 +969,21 @@ export default function InsertValue({
             $isActive={activePage === "bilancio"}
             onClick={() => setActivePage("bilancio")}
           >
-            {languages[language].insert.buttonBalance}
+            {translations.insert.buttonBalance}
           </ModernSectionButton>
           <ModernSectionButton
             theme={theme}
             $isActive={activePage === "income"}
             onClick={() => setActivePage("income")}
           >
-            {languages[language].insert.buttonIncome}
+            {translations.insert.buttonIncome}
           </ModernSectionButton>
           <ModernSectionButton
             theme={theme}
             $isActive={activePage === "outflows"}
             onClick={() => setActivePage("outflows")}
           >
-            {languages[language].insert.buttonOutflow}
+            {translations.insert.buttonOutflow}
           </ModernSectionButton>
         </ModernButtonGroup>
 

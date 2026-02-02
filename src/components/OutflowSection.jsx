@@ -2,7 +2,6 @@ import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
@@ -95,7 +94,7 @@ export default function OutflowSection({
   outflowDateFilterEnd,
   setOutflowDateFilterEnd,
 }) {
-  const { language } = React.useContext(LanguageContext);
+  const { language, translations } = React.useContext(LanguageContext);
   
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
@@ -245,7 +244,7 @@ export default function OutflowSection({
               onClick={() => handleSort('category')} 
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
-              {languages[language].insert.outflowSection.tableColumns.category}
+              {translations.insert.outflowSection.tableColumns.category}
               {getSortIcon('category')}
             </span>
             <select
@@ -253,7 +252,7 @@ export default function OutflowSection({
               onChange={(e) => setOutflowCategoryFilter(e.target.value)}
               style={{ ...dropdownStyle, minWidth: 100, fontSize: '0.85em' }}
             >
-              <option value="">{languages[language].general.all}</option>
+              <option value="">{translations.general.all}</option>
               {OutflowsTags.map((item) => (
                 <option key={item.index} value={item.translations[language]}>
                   {item.translations[language]}
@@ -268,7 +267,7 @@ export default function OutflowSection({
               onClick={() => handleSort('typology')} 
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
-              {languages[language].insert.outflowSection.tableColumns.typology}
+              {translations.insert.outflowSection.tableColumns.typology}
               {getSortIcon('typology')}
             </span>
             <select
@@ -276,7 +275,7 @@ export default function OutflowSection({
               onChange={(e) => setOutflowTypologyFilter(e.target.value)}
               style={{ ...dropdownStyle, minWidth: 100, fontSize: '0.85em' }}
             >
-              <option value="">{languages[language].general.all}</option>
+              <option value="">{translations.general.all}</option>
               {paymentTags.map(
                 (item) =>
                   item.label !== 'none' && (
@@ -302,7 +301,7 @@ export default function OutflowSection({
             onClick={() => handleSort('amount')} 
             style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
           >
-            {languages[language].general.value}
+            {translations.general.value}
             {getSortIcon('amount')}
           </span>
         </th>
@@ -326,12 +325,12 @@ export default function OutflowSection({
               onClick={() => handleSort('note')} 
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
-              {languages[language].insert.outflowSection.tableColumns.note}
+              {translations.insert.outflowSection.tableColumns.note}
               {getSortIcon('note')}
             </span>
             <input
               type="text"
-              placeholder={languages[language].general.clearFilter || 'Filtra...'}
+              placeholder={translations.general.clearFilter || 'Filtra...'}
               value={outflowNoteFilter}
               onChange={(e) => setOutflowNoteFilter(e.target.value)}
               style={{
@@ -368,7 +367,7 @@ export default function OutflowSection({
               style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
             >
               <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: 4 }} />
-              {languages[language].general.date || 'Data'}
+              {translations.general.date || 'Data'}
               {getSortIcon('date')}
             </span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -427,7 +426,7 @@ export default function OutflowSection({
                   marginTop: '2px'
                 }}
               >
-                {languages[language].general.clearFilter || 'Clear'}
+                {translations.general.clearFilter || 'Clear'}
               </button>
             )}
           </div>
@@ -626,7 +625,7 @@ export default function OutflowSection({
               color: '#6b1a1a',
             }}
           >
-            {languages[language].general.totalFiltered || 'Total Filtered'}
+            {translations.general.totalFiltered || 'Total Filtered'}
           </td>
           <td
             colSpan={1}
@@ -680,7 +679,7 @@ export default function OutflowSection({
             color: '#fff',
           }}
         >
-          {languages[language].general.total}
+          {translations.general.total}
         </td>
         <td
           colSpan={1}
@@ -716,7 +715,7 @@ export default function OutflowSection({
         {/* Category Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.category}
+            {translations.general.category}
           </label>
           <Select
             value={categoryOutflow.value}
@@ -745,7 +744,7 @@ export default function OutflowSection({
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
-                return languages[language].insert.outflowSection
+                return translations.insert.outflowSection
                   .placeholderCategory;
               }
               return value;
@@ -754,7 +753,7 @@ export default function OutflowSection({
             <MenuItem value="">
               <em>
                 {
-                  languages[language].insert.outflowSection
+                  translations.insert.outflowSection
                     .placeholderCategory
                 }
               </em>
@@ -770,7 +769,7 @@ export default function OutflowSection({
         {/* Payment Type Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.typology}
+            {translations.general.typology}
           </label>
           <Select
             value={typoOutflow.value}
@@ -796,7 +795,7 @@ export default function OutflowSection({
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
-                return languages[language].insert.outflowSection
+                return translations.insert.outflowSection
                   .placeholderTypology;
               }
               return value;
@@ -805,7 +804,7 @@ export default function OutflowSection({
             <MenuItem value="">
               <em>
                 {
-                  languages[language].insert.outflowSection
+                  translations.insert.outflowSection
                     .placeholderTypology
                 }
               </em>
@@ -825,7 +824,7 @@ export default function OutflowSection({
         {/* Amount Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.value}
+            {translations.general.value}
           </label>
           <div style={inputCurrencyWrapper}>
             <span style={currencySymbolStyle}>€</span>
@@ -843,7 +842,7 @@ export default function OutflowSection({
         {/* Date Input */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].general.date}
+            {translations.general.date}
           </label>
           <StyledDateInput
             type="date"
@@ -867,7 +866,7 @@ export default function OutflowSection({
         {/* Balance Source Select */}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180, maxWidth: 250}}>
           <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {languages[language].insert.outflowSection.decreaseWhichBalance || 'Sottrai da'}
+            {translations.insert.outflowSection.decreaseWhichBalance || 'Sottrai da'}
           </label>
           <Select
             value={selectedOption}
@@ -883,13 +882,13 @@ export default function OutflowSection({
             displayEmpty
             renderValue={(value) => {
               if (value === '') {
-                return languages[language].general.selectAnOption || 'Nessuno (opzionale)';
+                return translations.general.selectAnOption || 'Nessuno (opzionale)';
               }
               return value;
             }}
           >
             <MenuItem value="">
-              <em>{languages[language].general.selectAnOption || 'Nessuno (opzionale)'}</em>
+              <em>{translations.general.selectAnOption || 'Nessuno (opzionale)'}</em>
             </MenuItem>
             {balanceOptions && Object.keys(balanceOptions).map((option) => (
               <MenuItem key={option} value={option}>
@@ -908,7 +907,7 @@ export default function OutflowSection({
             onChange={(e) => setNoteOutflowAreaValue(e.target.value)}
             maxLength={64}
             placeholder={
-              languages[language].insert.outflowSection.placeholderNote
+              translations.insert.outflowSection.placeholderNote
             }
             style={{
               width: '100%',
@@ -927,7 +926,7 @@ export default function OutflowSection({
         </div>
         <div style={{display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '24px'}}>
           <ModernActionButton theme={theme} onClick={onAddOutflow}>
-            {languages[language].insert.outflowSection.updateButton}
+            {translations.insert.outflowSection.updateButton}
           </ModernActionButton>
         </div>
       </div>
@@ -970,7 +969,7 @@ export default function OutflowSection({
             letterSpacing: '-0.01em',
             margin: 0
           }}>
-            {languages[language].insert.outflowSection.titleListing}
+            {translations.insert.outflowSection.titleListing}
           </h3>
           <select
             className="text-black text-center font-medium"

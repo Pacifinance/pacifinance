@@ -1,15 +1,45 @@
 import React, { useState, createContext, useEffect } from 'react';
+import { getTranslations, getAvailableLanguages } from '../i18n';
 
 export const LanguageContext = createContext();
 
+/**
+ * Detects browser language and matches with available languages
+ * @returns {string} Detected language code (it, en, etc.) or 'en' as fallback
+ */
+const detectBrowserLanguage = () => {
+    const availableLanguages = getAvailableLanguages();
+    
+    // Get browser language
+    const browserLang = navigator.language || navigator.userLanguage;
+    
+    // Extract language code (e.g., 'it-IT' -> 'it')
+    const langCode = browserLang.split('-')[0].toLowerCase();
+    
+    // Return if supported, otherwise fallback to English
+    return availableLanguages.includes(langCode) ? langCode : 'en';
+};
+
 export const LanguageProvider = ({ children }) => {
-    // Carica la lingua salvata dal localStorage, altrimenti usa 'en' come default
     const [language, setLanguage] = useState(() => {
+        // Priority 1: Check for saved user preference
         const savedLanguage = localStorage.getItem('pacifinance-language');
-        return savedLanguage || 'en';
+        if (savedLanguage) {
+            return savedLanguage;
+        }
+        
+        // Priority 2: Auto-detect browser language
+        const detectedLanguage = detectBrowserLanguage();
+        
+        // Save detected language for future visits
+        localStorage.setItem('pacifinance-language', detectedLanguage);
+        
+        return detectedLanguage;
     });
 
-    // Salva la lingua nel localStorage ogni volta che cambia
+    // Carica le traduzioni per la lingua corrente
+    const translations = getTranslations(language);
+
     useEffect(() => {
         localStorage.setItem('pacifinance-language', language);
     }, [language]);
@@ -26,10 +56,11 @@ export const LanguageProvider = ({ children }) => {
     return (
       <LanguageContext.Provider value={{ 
         language, 
+        translations, // Nuovo: fornisce le traduzioni direttamente
         setLanguage: setLanguageWithPersistence, 
         toggleLanguage 
       }}>
         {children}
       </LanguageContext.Provider>
     );
-  };
+};

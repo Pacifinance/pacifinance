@@ -10,12 +10,11 @@ import LockIcon from '@mui/icons-material/Lock';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SecurityIcon from '@mui/icons-material/Security';
 import WarningIcon from '@mui/icons-material/Warning';
-import languages from '../data/languages.json';
 import SEOHead from '../components/SEOHead';
 
 export default function AuthPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { mode } = theme;
   const [isSignUp, setIsSignUp] = useState(false);
@@ -64,8 +63,8 @@ export default function AuthPage() {
                 </h1>
                 <p className="text-lg opacity-80 mb-4">
                   {isSignUp 
-                    ? languages[language].header.register.info
-                    : languages[language].header.login.info
+                    ? translations.header.register.info
+                    : translations.header.login.info
                   }
                 </p>
                 
@@ -135,14 +134,14 @@ export default function AuthPage() {
                   {isSignUp ? (
                     <div>
                       <h2 className="text-xl font-bold mb-4 text-center">
-                        {languages[language].header.register.title}
+                        {translations.header.register.title}
                       </h2>
                       <SignUpForm />
                     </div>
                   ) : (
                     <div>
                       <h2 className="text-xl font-bold mb-4 text-center">
-                        {languages[language].header.login.title}
+                        {translations.header.login.title}
                       </h2>
                       <SignInForm />
                     </div>
@@ -271,8 +270,8 @@ export default function AuthPage() {
                   </h1>
                   <p className="text-xl opacity-80 mb-6">
                     {isSignUp 
-                      ? languages[language].header.register.info
-                      : languages[language].header.login.info
+                      ? translations.header.register.info
+                      : translations.header.login.info
                     }
                   </p>
                   
@@ -445,14 +444,14 @@ export default function AuthPage() {
                     {isSignUp ? (
                       <div>
                         <h2 className="text-2xl font-bold mb-6 text-center">
-                          {languages[language].header.register.title}
+                          {translations.header.register.title}
                         </h2>
                         <SignUpForm />
                       </div>
                     ) : (
                       <div>
                         <h2 className="text-2xl font-bold mb-6 text-center">
-                          {languages[language].header.login.title}
+                          {translations.header.login.title}
                         </h2>
                         <SignInForm />
                       </div>

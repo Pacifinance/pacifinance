@@ -1,5 +1,4 @@
 import React from 'react';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { Select, MenuItem } from '@mui/material';
 import {
@@ -83,18 +82,18 @@ export default function BalanceSection({
   const currentYear = currentDate.getFullYear();
   
   const monthNames = {
-    1: languages[language].months.january,
-    2: languages[language].months.february,
-    3: languages[language].months.march,
-    4: languages[language].months.april,
-    5: languages[language].months.may,
-    6: languages[language].months.june,
-    7: languages[language].months.july,
-    8: languages[language].months.august,
-    9: languages[language].months.september,
-    10: languages[language].months.october,
-    11: languages[language].months.november,
-    12: languages[language].months.december,
+    1: translations.months.january,
+    2: translations.months.february,
+    3: translations.months.march,
+    4: translations.months.april,
+    5: translations.months.may,
+    6: translations.months.june,
+    7: translations.months.july,
+    8: translations.months.august,
+    9: translations.months.september,
+    10: translations.months.october,
+    11: translations.months.november,
+    12: translations.months.december,
   };
 
   // Build the last 12 months (including current) - newest first
@@ -153,13 +152,13 @@ export default function BalanceSection({
     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
       <div style={{textAlign: 'center', width: '100%', marginBottom: '2rem'}}>
         <h3 style={{color: theme.textColor, fontSize: '1.5rem', fontWeight: '600', margin: '0 0 1.5rem 0'}}>
-          {languages[language].insert.balanceSection.titleLiquidity}
+          {translations.insert.balanceSection.titleLiquidity}
         </h3>
         <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '0'}}>
           {/* Bank */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.bank}
+              {translations.assets.bank}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -175,7 +174,7 @@ export default function BalanceSection({
           {/* Cash */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.cash}
+              {translations.assets.cash}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -191,7 +190,7 @@ export default function BalanceSection({
           {/* Digital Services */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.digitalServices}
+              {translations.assets.digitalServices}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -207,7 +206,7 @@ export default function BalanceSection({
           {/* Emergency Fund */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.emergencyFund}
+              {translations.assets.emergencyFund}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -225,13 +224,13 @@ export default function BalanceSection({
 
       <div style={{textAlign: 'center', width: '100%', marginBottom: '2rem'}}>
         <h3 style={{color: theme.textColor, fontSize: '1.5rem', fontWeight: '600', margin: '0 0 1.5rem 0'}}>
-          {languages[language].insert.balanceSection.titleInvestments}
+          {translations.insert.balanceSection.titleInvestments}
         </h3>
         <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '0'}}>
           {/* Stocks */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.stocks}
+              {translations.assets.stocks}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -247,7 +246,7 @@ export default function BalanceSection({
           {/* ETF */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.etf}
+              {translations.assets.etf}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -263,7 +262,7 @@ export default function BalanceSection({
           {/* Bitcoin */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.bitcoin}
+              {translations.assets.bitcoin}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -279,7 +278,7 @@ export default function BalanceSection({
           {/* Crypto */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.crypto}
+              {translations.assets.crypto}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -295,7 +294,7 @@ export default function BalanceSection({
           {/* Bonds */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.bonds}
+              {translations.assets.bonds}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -311,7 +310,7 @@ export default function BalanceSection({
           {/* Funds */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.funds}
+              {translations.assets.funds}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -327,7 +326,7 @@ export default function BalanceSection({
           {/* Gold */}
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
             <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {languages[language].assets.gold}
+              {translations.assets.gold}
             </label>
             <div style={inputCurrencyWrapper}>
               <span style={currencySymbolStyle}>€</span>
@@ -384,7 +383,7 @@ export default function BalanceSection({
         </div>
         <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
           <ModernActionButton theme={theme} onClick={onUpdateBalance}>
-            {languages[language].insert.balanceSection.updateButton}
+            {translations.insert.balanceSection.updateButton}
           </ModernActionButton>
         </div>
       </div>

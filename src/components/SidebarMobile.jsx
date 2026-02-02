@@ -5,12 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faSignOutAlt, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { FaBullseye, FaUser } from 'react-icons/fa';
 import avatarImage from '../assets/account-logo.png';
-import languages from '../data/languages.json';
 import { DropdownContainer } from '../styles/MyStyled';
 
 const SidebarMobile = ({
     theme,
     language,
+    translations,
     isSideBarMenuOpen,
     setIsSideBarMenuOpen,
     showDropdown,
@@ -124,7 +124,7 @@ const SidebarMobile = ({
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.chartsStatistics}
+                        {translations.sidebar.chartsStatistics}
                     </button>
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
@@ -151,7 +151,7 @@ const SidebarMobile = ({
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.insert}
+                        {translations.sidebar.insert}
                     </button>
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
@@ -178,7 +178,7 @@ const SidebarMobile = ({
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.comparison}
+                        {translations.sidebar.comparison}
                     </button>
                     <button
                         className="text-left p-3 rounded-md mb-1 transition-all duration-200 hover:scale-105"
@@ -205,7 +205,7 @@ const SidebarMobile = ({
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.knowledge}
+                        {translations.sidebar.knowledge}
                     </button>
                     <button
                         className="text-left p-3 rounded-md transition-all duration-200 hover:scale-105"
@@ -232,7 +232,7 @@ const SidebarMobile = ({
                             setIsSideBarMenuOpen(false);
                         }}
                     >
-                        {languages[language].sidebar.info}
+                        {translations.sidebar.info}
                     </button>
                 </div>
             ) : null}
@@ -263,7 +263,7 @@ const SidebarMobile = ({
                 }}>
                     <img
                         src={avatarImage}
-                        title={languages[language].sidebar.account.title}
+                        title={translations.sidebar.account.title}
                         width="100%"
                         height="100%"
                         alt="Account"
@@ -327,7 +327,7 @@ const SidebarMobile = ({
                             }}
                         >
                             <FaUser size={14} />
-                            {languages[language].sidebar.account.title}
+                            {translations.sidebar.account.title}
                         </button>
                         <button
                             className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
@@ -383,7 +383,7 @@ const SidebarMobile = ({
                             }}
                         >
                             <FontAwesomeIcon icon={faUserCog} size="sm" />
-                            {languages[language].sidebar.settings.title}
+                            {translations.sidebar.settings.title}
                         </button>
                         <button
                             data-umami-event="logoutButton"
@@ -406,7 +406,7 @@ const SidebarMobile = ({
                             onClick={handleLogout}
                         >
                             <FontAwesomeIcon icon={faSignOutAlt} />
-                            {languages[language].sidebar.logout}
+                            {translations.sidebar.logout}
                         </button>
                     </div>
                 )}

@@ -22,7 +22,6 @@ import { PrivacyContext } from "../contexts/PrivacyContext";
 import { IconContext } from "../contexts/PageContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
-import languages from "../data/languages.json";
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
     SidebarPrivacyToggleModeButton,
@@ -57,7 +56,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, toggleLanguage } = useContext(LanguageContext);
+    const { language, translations, toggleLanguage } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const [isSideBarMenuOpen, setIsSideBarMenuOpen] = useState(false);
     const { activeIcon, setActiveIcon } = useContext(IconContext);
@@ -207,10 +206,10 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         navigator.clipboard
             .writeText(newID)
             .then(() => {
-                alert(languages[language].sidebar.changeID.message + newID);
+                alert(translations.sidebar.changeID.message + newID);
             })
             .catch((error) => {
-                console.error(languages[language].sidebar.changeID.errorCopy + error);
+                console.error(translations.sidebar.changeID.errorCopy + error);
             });
         handleCloseModalAndLogout();
     };
@@ -332,7 +331,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 setShowUpdateProfileSuccess(true);
             } else {
                 console.log("Update failed");
-                alert(languages[language].sidebar.account.errorUpdateProfile);
+                alert(translations.sidebar.account.errorUpdateProfile);
             }
         } catch (error) {
             console.error(error);
@@ -408,31 +407,31 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 {
                                     icon: AiOutlineDotChart,
                                     route: "/charts-statistics",
-                                    tooltip: languages[language].sidebar.chartsStatistics,
+                                    tooltip: translations.sidebar.chartsStatistics,
                                     index: 1,
                                 },
                                 {
                                     icon: HiOutlinePencilAlt,
                                     route: "/insert-values",
-                                    tooltip: languages[language].sidebar.insert,
+                                    tooltip: translations.sidebar.insert,
                                     index: 2,
                                 },
                                 {
                                     icon: CompareArrowsIcon,
                                     route: "/comparison",
-                                    tooltip: languages[language].sidebar.comparison,
+                                    tooltip: translations.sidebar.comparison,
                                     index: 3,
                                 },
                                 {
                                     icon: BsBook,
                                     route: "/knowledge",
-                                    tooltip: languages[language].sidebar.knowledge,
+                                    tooltip: translations.sidebar.knowledge,
                                     index: 4,
                                 },
                                 {
                                     icon: BsInfoCircle,
                                     route: "/info",
-                                    tooltip: languages[language].sidebar.info,
+                                    tooltip: translations.sidebar.info,
                                     index: 5,
                                 },
                             ].map(({ icon: Icon, route, tooltip, index }) => (
@@ -520,7 +519,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 <div className="account-image-wrapper">
                                     <img
                                         src={avatarImage}
-                                        title={languages[language].sidebar.account.title}
+                                        title={translations.sidebar.account.title}
                                         width="100%"
                                         height="100%"
                                         alt="Account"
@@ -573,7 +572,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             }}
                                         >
                                             <FaUser size={14} />
-                                            {languages[language].sidebar.account.title}
+                                            {translations.sidebar.account.title}
                                         </button>
                                         <button
                                             className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
@@ -629,7 +628,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             }}
                                         >
                                             <FontAwesomeIcon icon={faUserCog} size="sm" />
-                                            {languages[language].sidebar.settings.title}
+                                            {translations.sidebar.settings.title}
                                         </button>
                                         <button
                                             data-umami-event="logoutButton"
@@ -652,14 +651,14 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             onClick={handleLogout}
                                         >
                                             <FontAwesomeIcon icon={faSignOutAlt} />
-                                            {languages[language].sidebar.logout}
+                                            {translations.sidebar.logout}
                                         </button>
                                     </div>
                                 )}
                             </DropdownContainer>
                         </Notification>
 
-                        <ToggleButton title={languages[language].sidebar.settings.privacy}>
+                        <ToggleButton title={translations.sidebar.settings.privacy}>
                             <SidebarPrivacyToggleModeButton
                                 theme={theme}
                                 mode={mode}

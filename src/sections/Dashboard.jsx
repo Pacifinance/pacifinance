@@ -30,7 +30,6 @@ import { primaryColor, secondaryColor, getColorsBalances, getColorsIncExp } from
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
-import languages from '../data/languages.json';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
@@ -72,10 +71,10 @@ const ResponsivePadding = styled.div`
 
 const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const colorsBalances = getColorsBalances(language);
-    const colorsIncExp = getColorsIncExp(language);
+    const colorsBalances = getColorsBalances(translations);
+    const colorsIncExp = getColorsIncExp(translations);
     
     // Stati per i bilanci
     const [stocksValue, setStocksValue] = useState(0);
@@ -134,21 +133,21 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     // Dati per i bilanci tradizionali (Banca, Contanti, Servizi Digitali)
     const traditionalAssets = [
         { 
-            name: languages[language].assets.bank, 
+            name: translations.assets.bank, 
             value: bankValue >= 0 ? bankValue : 0,
             icon: assetIcons.bank,
             color: assetColors.bank.primary,
             gradient: assetColors.bank.gradient
         },
         { 
-            name: languages[language].assets.cash, 
+            name: translations.assets.cash, 
             value: cashValue >= 0 ? cashValue : 0,
             icon: assetIcons.cash,
             color: assetColors.cash.primary,
             gradient: assetColors.cash.gradient
         },
         { 
-            name: languages[language].assets.digitalServices, 
+            name: translations.assets.digitalServices, 
             value: digitalServicesValue >= 0 ? digitalServicesValue : 0,
             icon: assetIcons.digitalServices,
             color: assetColors.digitalServices.primary,
@@ -158,7 +157,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
     // Fondo di Emergenza - Sezione separata
     const emergencyFundAsset = {
-        name: languages[language].assets.emergencyFund, 
+        name: translations.assets.emergencyFund, 
         value: emergencyFund >= 0 ? emergencyFund : 0,
         icon: assetIcons.emergencyFund,
         color: assetColors.emergencyFund.primary,
@@ -168,60 +167,60 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Gold)
     const allInvestments = [
         { 
-            name: languages[language].assets.stocks, 
+            name: translations.assets.stocks, 
             value: stocksValue >= 0 ? stocksValue : 0,
             icon: assetIcons.stocks,
             color: assetColors.stocks.primary,
             gradient: assetColors.stocks.gradient,
-            description: languages[language].dashboard.stockDescription
+            description: translations.dashboard.stockDescription
         },
         { 
-            name: languages[language].assets.etf, 
+            name: translations.assets.etf, 
             value: etfValue >= 0 ? etfValue : 0,
             icon: assetIcons.etf,
             color: assetColors.etf.primary,
             gradient: assetColors.etf.gradient,
-            description: languages[language].dashboard.etfDescription
+            description: translations.dashboard.etfDescription
         },
         { 
-            name: languages[language].assets.bitcoin, 
+            name: translations.assets.bitcoin, 
             value: bitcoinValue >= 0 ? bitcoinValue : 0,
             icon: assetIcons.bitcoin,
             color: assetColors.bitcoin.primary,
             gradient: assetColors.bitcoin.gradient,
-            description: languages[language].dashboard.bitcoinDescription
+            description: translations.dashboard.bitcoinDescription
         },
         { 
-            name: languages[language].assets.crypto, 
+            name: translations.assets.crypto, 
             value: cryptoValue >= 0 ? cryptoValue : 0,
             icon: assetIcons.crypto,
             color: assetColors.crypto.primary,
             gradient: assetColors.crypto.gradient,
-            description: languages[language].dashboard.cryptoDescription
+            description: translations.dashboard.cryptoDescription
         },
         { 
-            name: languages[language].assets.bonds, 
+            name: translations.assets.bonds, 
             value: bondsValue >= 0 ? bondsValue : 0,
             icon: assetIcons.bonds,
             color: assetColors.bonds.primary,
             gradient: assetColors.bonds.gradient,
-            description: languages[language].dashboard.bondsDescription,
+            description: translations.dashboard.bondsDescription,
         },
         { 
-            name: languages[language].assets.funds, 
+            name: translations.assets.funds, 
             value: fundsValue >= 0 ? fundsValue : 0,
             icon: assetIcons.funds,
             color: assetColors.funds.primary,
             gradient: assetColors.funds.gradient,
-            description: languages[language].dashboard.fundsDescription,
+            description: translations.dashboard.fundsDescription,
         },
         { 
-            name: languages[language].assets.gold, 
+            name: translations.assets.gold, 
             value: goldValue >= 0 ? goldValue : 0,
             icon: assetIcons.gold,
             color: assetColors.gold.primary,
             gradient: assetColors.gold.gradient,
-            description: languages[language].dashboard.goldDescription,
+            description: translations.dashboard.goldDescription,
         },
     ];
 
@@ -240,9 +239,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
     // Dati per i grafici patrimoniali
     const pieData = [
-        { name: languages[language].dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
-        ...(totalEmergencySecurity > 0 ? [{ name: languages[language].dashboard.emergencySecurity, value: totalEmergencySecurity, color: emergencyFundAsset.color }] : []),
-        { name: languages[language].general.investments, value: totalInvestments, color: assetColors.totalInvestments }
+        { name: translations.dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
+        ...(totalEmergencySecurity > 0 ? [{ name: translations.dashboard.emergencySecurity, value: totalEmergencySecurity, color: emergencyFundAsset.color }] : []),
+        { name: translations.general.investments, value: totalInvestments, color: assetColors.totalInvestments }
     ];
 
     const detailedPieData = [
@@ -266,17 +265,17 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     // Dati per il grafico entrate/uscite
     const incExpData = [
         { 
-            name: languages[language].general.incomes, 
+            name: translations.general.incomes, 
             value: incomesMonth >= 0 ? incomesMonth : 0,
             color: assetColors.income
         },
         { 
-            name: languages[language].general.outflows, 
+            name: translations.general.outflows, 
             value: expensesMonth >= 0 ? expensesMonth : 0,
             color: assetColors.expense
         },
         { 
-            name: languages[language].general.saved, 
+            name: translations.general.saved, 
             value: savedMonth >= 0 ? savedMonth : 0,
             color: assetColors.savings
         },
@@ -335,16 +334,16 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 <ResponsivePadding>
                     <ModernDashboardHeader theme={theme}>
                     <ModernDashboardTitle theme={theme}>
-                        {languages[language].dashboard.title}
+                        {translations.dashboard.title}
                     </ModernDashboardTitle>                    <ModernBalanceOverview theme={theme}>
                         <div className="balance-main">
-                            <h2>{languages[language].dashboard.totalBalance}</h2>
+                            <h2>{translations.dashboard.totalBalance}</h2>
                             <div className="balance-value">
                                 {formatCurrency(totalBalance)}
                             </div>
                             <div className="balance-subtitle">
                                 <BiTrendingUp style={{ marginRight: '8px', color: assetColors.income }} />
-                                {isHidden ? '****' : `${languages[language].dashboard.capitalAt} ${new Date().toLocaleDateString('it-IT')}`}
+                                {isHidden ? '****' : `${translations.dashboard.capitalAt} ${new Date().toLocaleDateString('it-IT')}`}
                             </div>
                         </div>
                         
@@ -353,7 +352,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                 <BiWallet className="metric-icon" />
                                 <div className="metric-content">
                                     <div className="metric-value">{formatCurrency(totalTraditional)}</div>
-                                    <div className="metric-label">{languages[language].dashboard.liquidity}</div>
+                                    <div className="metric-label">{translations.dashboard.liquidity}</div>
                                     <div className="metric-percentage">{formatPercentage(totalTraditional, totalBalance)}</div>
                                 </div>
                             </ModernMetricCard>
@@ -363,7 +362,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                     <GiUmbrella className="metric-icon" />
                                     <div className="metric-content">
                                         <div className="metric-value">{formatCurrency(totalEmergencySecurity)}</div>
-                                        <div className="metric-label">{languages[language].dashboard.emergencySecurity}</div>
+                                        <div className="metric-label">{translations.dashboard.emergencySecurity}</div>
                                         <div className="metric-percentage">{formatPercentage(totalEmergencySecurity, totalBalance)}</div>
                                     </div>
                                 </ModernMetricCard>
@@ -373,7 +372,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                 <FaRocket className="metric-icon" />
                                 <div className="metric-content">
                                     <div className="metric-value">{formatCurrency(totalInvestments)}</div>
-                                    <div className="metric-label">{languages[language].general.investments}</div>
+                                    <div className="metric-label">{translations.general.investments}</div>
                                     <div className="metric-percentage">{formatPercentage(totalInvestments, totalBalance)}</div>
                                 </div>
                             </ModernMetricCard>
@@ -388,7 +387,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         <div>
                             <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
                                 <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
-                                {languages[language].dashboard.liquidityAvailability}
+                                {translations.dashboard.liquidityAvailability}
                             </h3>
                             <ModernAssetsGrid theme={theme}>
                                 {traditionalAssets.map((asset, index) => {
@@ -409,7 +408,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                     <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
                                                     <div className="asset-value">{formatCurrency(asset.value)}</div>
                                                     <div className="asset-percentage">
-                                                        {formatPercentage(asset.value, totalBalance)} {languages[language].dashboard.ofTotal}
+                                                        {formatPercentage(asset.value, totalBalance)} {translations.dashboard.ofTotal}
                                                     </div>
                                                 </div>
                                                 
@@ -433,12 +432,12 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                         {/* Sezione Fondo di Emergenza - Sotto la liquidità */}
                         {emergencyFundAsset.value > 0 && (
-                            <div>
+                            <div style={{ maxWidth: '400px' }}>
                                 <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
                                     <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
-                                    {languages[language].dashboard.emergencySecurity}
+                                    {translations.dashboard.emergencySecurity}
                                 </h3>
-                                <ModernAssetsGrid theme={theme}>
+                                <ModernAssetsGrid theme={theme} style={{ gridTemplateColumns: '1fr' }}>
                                     <ModernAssetCard theme={theme} gradient={emergencyFundAsset.gradient}>
                                         <FloatingElement delay={0.3}>
                                             <div className="card-header">
@@ -454,7 +453,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                 <h4 className="asset-name">{isHidden ? '****' : emergencyFundAsset.name}</h4>
                                                 <div className="asset-value">{formatCurrency(emergencyFundAsset.value)}</div>
                                                 <div className="asset-percentage">
-                                                    {formatPercentage(emergencyFundAsset.value, totalBalance)} {languages[language].dashboard.ofTotal}
+                                                    {formatPercentage(emergencyFundAsset.value, totalBalance)} {translations.dashboard.ofTotal}
                                                 </div>
                                                 {emergencyFundProgress !== null && !isHidden && (
                                                     <div style={{
@@ -462,7 +461,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                         color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
                                                         marginTop: '0.25rem'
                                                     }}>
-                                                        {languages[language].general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
+                                                        {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
                                                     </div>
                                                 )}
                                             </div>
@@ -489,7 +488,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     <div style={{ flex: '1' }}>
                         <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
                             <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
-                            {languages[language].dashboard.portfolioInvestments}
+                            {translations.dashboard.portfolioInvestments}
                         </h3>
                         <ModernInvestmentsGrid theme={theme}>
                             {investments.map((investment, index) => {
@@ -527,11 +526,11 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                 <div className="investment-value">{formatCurrency(investment.value)}</div>
                                                 <div className="investment-stats">
                                                     <div className="stat">
-                                                        <span className="stat-label">{languages[language].dashboard.ofPortfolio}</span>
+                                                        <span className="stat-label">{translations.dashboard.ofPortfolio}</span>
                                                         <span className="stat-value">{formatPercentage(investment.value, totalInvestments)}</span>
                                                     </div>
                                                     <div className="stat">
-                                                        <span className="stat-label">{languages[language].dashboard.ofTotal}</span>
+                                                        <span className="stat-label">{translations.dashboard.ofTotal}</span>
                                                         <span className="stat-value">{formatPercentage(investment.value, totalBalance)}</span>
                                                     </div>
                                                 </div>
@@ -540,7 +539,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                             <div className="card-footer">
                                                 <Link to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
                                                     <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
-                                                    {languages[language].dashboard.updateValue}
+                                                    {translations.dashboard.updateValue}
                                                 </Link>
                                             </div>
                                         </FloatingElement>
@@ -555,7 +554,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 <ModernIncomeExpenseSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <FaEuroSign style={{ marginRight: '12px', color: assetColors.savings }} />
-                        {languages[language].dashboard.titleGraph3}
+                        {translations.dashboard.titleGraph3}
                     </h3>
                     
                     {/* Card principali: Entrate, Uscite, Risparmiato */}
@@ -569,28 +568,28 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             <ModernIncomeExpenseCard key={index} theme={theme} itemColor={item.color}>
                                 <FloatingElement delay={index * 0.1}>
                                     <div className="expense-icon">
-                                        {item.name === languages[language].general.incomes && <BsArrowUpRight />}
-                                        {item.name === languages[language].general.outflows && <BsArrowDownLeft />}
-                                        {item.name === languages[language].general.saved && <BsWallet2 />}
+                                        {item.name === translations.general.incomes && <BsArrowUpRight />}
+                                        {item.name === translations.general.outflows && <BsArrowDownLeft />}
+                                        {item.name === translations.general.saved && <BsWallet2 />}
                                     </div>
                                     <div className="expense-content">
                                         <h4 className="expense-name">{isHidden ? '****' : item.name}</h4>
                                         <div className="expense-value">{formatCurrency(item.value)}</div>
                                         <div className="expense-description">
-                                            {item.name === languages[language].general.incomes && languages[language].dashboard.thisMonth}
-                                            {item.name === languages[language].general.outflows && languages[language].dashboard.thisMonth}
-                                            {item.name === languages[language].general.saved && languages[language].dashboard.saved}
+                                            {item.name === translations.general.incomes && translations.dashboard.thisMonth}
+                                            {item.name === translations.general.outflows && translations.dashboard.thisMonth}
+                                            {item.name === translations.general.saved && translations.dashboard.saved}
                                         </div>
-                                        {item.name === languages[language].general.incomes && (
+                                        {item.name === translations.general.incomes && (
                                             <Link to="/insert-values?section=income" className="income-outflow-button" data-umami-event="dashboard-add-income">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
-                                                {languages[language].dashboard.addIncome || 'Add Income'}
+                                                {translations.dashboard.addIncome || 'Add Income'}
                                             </Link>
                                         )}
-                                        {item.name === languages[language].general.outflows && (
+                                        {item.name === translations.general.outflows && (
                                             <Link to="/insert-values?section=outflow" className="income-outflow-button" data-umami-event="dashboard-add-outflow">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
-                                                {languages[language].dashboard.addOutflow || 'Add Outflow'}
+                                                {translations.dashboard.addOutflow || 'Add Outflow'}
                                             </Link>
                                         )}
                                     </div>
@@ -762,7 +761,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 <ModernChartsSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <BsGraphUpArrow style={{ marginRight: '12px', color: assetColors.savings }} />
-                        {languages[language].dashboard.patrimonialAnalysis}
+                        {translations.dashboard.patrimonialAnalysis}
                     </h3>
                     
                     <div style={{ 
@@ -773,7 +772,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     }}>
                         {/* Grafico Distribuzione Patrimonio Completa */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
-                            <h4>{languages[language].dashboard.titleGraph2}</h4>
+                            <h4>{translations.dashboard.titleGraph2}</h4>
                             <ResponsiveContainer width="100%" height={350}>
                                 <PieChart>
                                     <Pie
@@ -817,7 +816,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                         {/* Grafico Solo Investimenti */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
-                            <h4>Portfolio {languages[language].general.investments}</h4>
+                            <h4>Portfolio {translations.general.investments}</h4>
                             <ResponsiveContainer width="100%" height={350}>
                                 <PieChart>
                                     <Pie
@@ -861,7 +860,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                         {/* Grafico Distribuzione Patrimonio */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
-                            <h4>{languages[language].dashboard.titleGraph}</h4>
+                            <h4>{translations.dashboard.titleGraph}</h4>
                             <ResponsiveContainer width="100%" height={350}>
                                 <PieChart>
                                     <Pie
@@ -892,19 +891,19 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             <div className="chart-legend">
                                 <div className="legend-item">
                                     <div className="legend-color" style={{ backgroundColor: assetColors.totalLiquidity }} />
-                                    <span>{isHidden ? '****' : languages[language].dashboard.liquidity}</span>
+                                    <span>{isHidden ? '****' : translations.dashboard.liquidity}</span>
                                     <span className="legend-value">{formatCurrency(totalTraditional)} ({formatPercentage(totalTraditional, totalBalance)})</span>
                                 </div>
                                 {totalEmergencySecurity > 0 && (
                                     <div className="legend-item">
                                         <div className="legend-color" style={{ backgroundColor: emergencyFundAsset.color }} />
-                                        <span>{isHidden ? '****' : languages[language].dashboard.emergencySecurity}</span>
+                                        <span>{isHidden ? '****' : translations.dashboard.emergencySecurity}</span>
                                         <span className="legend-value">{formatCurrency(totalEmergencySecurity)} ({formatPercentage(totalEmergencySecurity, totalBalance)})</span>
                                     </div>
                                 )}
                                 <div className="legend-item">
                                     <div className="legend-color" style={{ backgroundColor: assetColors.totalInvestments }} />
-                                    <span>{isHidden ? '****' : languages[language].general.investments}</span>
+                                    <span>{isHidden ? '****' : translations.general.investments}</span>
                                     <span className="legend-value">{formatCurrency(totalInvestments)} ({formatPercentage(totalInvestments, totalBalance)})</span>
                                 </div>
                             </div>

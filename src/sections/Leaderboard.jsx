@@ -3,12 +3,11 @@ import { Section } from '../styles/MyStyled';
 import { StyledMonth, StyledLabel, StyledRankingsSection, StandardPageTitleGreen, StyledRankingPage, CenteredRankings, RankingsTitle, RankingPageSection, ModernStyledLabel } from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 
 // Component for the rankings section
-function RankingsSection({ theme, language, title, rankings, isHidden }) {
+function RankingsSection({ theme, language, title, rankings, isHidden, translations }) {
     // Defensive: avoid crash if title is undefined
     const safeTitle = title || '';
     // Verify if there is a title for expenses
@@ -27,28 +26,28 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
         if (isExpenseTitle) {
 
           if (isRankingsAbove50) {
-            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.lowerOutflow}`;
+            textToDisplay = `${translations.leaderboard.compliments} ${Math.min(rankings, 99)}%. ${translations.leaderboard.lowerOutflow}`;
           } else if (isRankingBelow20) {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherOutflow}`;
+            textToDisplay = `${translations.leaderboard.top} ${Math.min(rankings, 99)}%. ${translations.leaderboard.higherOutflow}`;
           } else {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.mediumRank}`;
+            textToDisplay = `${translations.leaderboard.top} ${Math.min(rankings, 99)}%. ${translations.leaderboard.mediumRank}`;
           }
 
         } else {
 
           if (!isRankingsAbove50) {
-            textToDisplay = `${languages[language].leaderboard.compliments} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
+            textToDisplay = `${translations.leaderboard.compliments} ${Math.min(rankings, 99)}% ${translations.leaderboard.users}`;
           } else if (isRankingBelow20) {
-            textToDisplay = `${languages[language].leaderboard.superCompliments} ${Math.min(rankings, 99)}%. ${languages[language].leaderboard.higherIncome}`;
+            textToDisplay = `${translations.leaderboard.superCompliments} ${Math.min(rankings, 99)}%. ${translations.leaderboard.higherIncome}`;
           } else {
-            textToDisplay = `${languages[language].leaderboard.top} ${Math.min(rankings, 99)}% ${languages[language].leaderboard.users}`;
+            textToDisplay = `${translations.leaderboard.top} ${Math.min(rankings, 99)}% ${translations.leaderboard.users}`;
           }
 
         }
       }
     } else {
         // Set the text to display if rankings is not a number
-        textToDisplay = languages[language].leaderboard.noRank;
+        textToDisplay = translations.leaderboard.noRank;
     }
 
     const areNotEmpty = (typeof rankings === 'string' && rankings.length > 0) || (typeof rankings === 'number' && rankings > 0);
@@ -58,7 +57,7 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
         <h2>
           {safeTitle}
           {isExpenseTitle && (
-            <Tooltip title={languages[language].leaderboard.infoOutflowRank} arrow>
+            <Tooltip title={translations.leaderboard.infoOutflowRank} arrow>
               <InfoIcon style={{ color: 'white' }} />
             </Tooltip>
           )}
@@ -66,14 +65,14 @@ function RankingsSection({ theme, language, title, rankings, isHidden }) {
         {areNotEmpty ? (
           <p>{textToDisplay}</p>
         ) : (
-          <p> {languages[language].general.noData} </p>
+          <p> {translations.general.noData} </p>
         )}
       </StyledRankingsSection>
     );
   }
 
 function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const [selectedMonth, setSelectedMonth] = useState(1);
     const [selectedYear, setSelectedYear] = useState(2023);
     const [userType, setUserType] = useState('');
@@ -126,27 +125,27 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
                       /> */}
                       <ModernStyledLabel theme={theme}>
                         <InfoIcon style={{ color: theme.buttonBackgroundColor, fontSize: '1.3em' }} />
-                        {languages[language].leaderboard.monthRanking} <StyledMonth>{formattedPreMonthDate}</StyledMonth>
-                        {/* <Tooltip title={languages[language].leaderboard.infoMonthRanking || 'Il ranking si riferisce al mese selezionato.'}>
+                        {translations.leaderboard.monthRanking} <StyledMonth>{formattedPreMonthDate}</StyledMonth>
+                        {/* <Tooltip title={translations.leaderboard.infoMonthRanking || 'Il ranking si riferisce al mese selezionato.'}>
                           <InfoIcon style={{ color: theme.buttonBackgroundColor, fontSize: '1.1em', marginLeft: 6 }} />
                         </Tooltip> */}
                         {userType === 'demo' && (
                           <span className="block bg-red-400 border border-black rounded-xl p-2 mt-2">
-                            {languages[language].leaderboard.demoWarning}
+                            {translations.leaderboard.demoWarning}
                           </span>
                         )}
                       </ModernStyledLabel>
-                      <RankingsTitle style={{ color: theme.textColor }}>{languages[language].leaderboard.generalRanking} </RankingsTitle>
+                      <RankingsTitle style={{ color: theme.textColor }}>{translations.leaderboard.generalRanking} </RankingsTitle>
                       <CenteredRankings theme={theme}>
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} />
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} />
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.outflowRanking} rankings={expenseRank} isHidden={isHidden} />
+                          <RankingsSection theme={theme} language={language} title={translations.leaderboard.balanceRanking} rankings={balanceRank} isHidden={isHidden} translations={translations} />
+                          <RankingsSection theme={theme} language={language} title={translations.leaderboard.incomeRanking} rankings={incomeRank} isHidden={isHidden} translations={translations} />
+                          <RankingsSection theme={theme} language={language} title={translations.leaderboard.outflowRanking} rankings={expenseRank} isHidden={isHidden} translations={translations} />
                       </CenteredRankings>
-                      <RankingsTitle style={{ color: theme.textColor }}>{languages[language].leaderboard.similarRanking} </RankingsTitle>
+                      <RankingsTitle style={{ color: theme.textColor }}>{translations.leaderboard.similarRanking} </RankingsTitle>
                       <CenteredRankings theme={theme}>
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} />
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} />
-                          <RankingsSection theme={theme} language={language} title={languages[language].leaderboard.outflowRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} />
+                          <RankingsSection theme={theme} language={language} title={translations.leaderboard.balanceRanking} rankings={balanceSimilarUsersRank} isHidden={isHidden} translations={translations} />
+                          <RankingsSection theme={theme} language={language} title={translations.leaderboard.incomeRanking} rankings={incomesSimilarUsersRank} isHidden={isHidden} translations={translations} />
+                          <RankingsSection theme={theme} language={language} title={translations.leaderboard.outflowRanking} rankings={expensesSimilarUsersRank} isHidden={isHidden} translations={translations} />
                       </CenteredRankings>
                   </StyledRankingPage>
             </div>

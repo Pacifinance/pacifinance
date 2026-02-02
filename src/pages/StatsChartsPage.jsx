@@ -11,14 +11,13 @@ import SEOHead from '../components/SEOHead';
 import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
 import { StandardPageTitle } from '../styles/MyStyled';
-import languages from '../data/languages.json';
 
 function StatsChartsPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { mode } = theme;
   const navigate = useNavigate();
 

@@ -5,7 +5,6 @@ import { SectionAMonth } from '../styles/MyStyled';
 import styled from 'styled-components';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 import { getIncomesArray, getOutflowsArray, getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
-import languages from '../data/languages.json';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 const ModernStatsCard = styled.div`
@@ -173,7 +172,7 @@ const Tooltip = styled.div`
 `;
 
 export default function InOutStats({ period = "month", theme, userData, isHidden }) {
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     
     const [incomesCurrent, setIncomesCurrent] = useState(0);
     const [outflowsCurrent, setOutflowsCurrent] = useState(0);
@@ -294,7 +293,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </StatValue>
                         
                         <StatLabel>
-                            {languages[language]?.general?.incomes || 'Entrate'}
+                            {translations?.general?.incomes || 'Entrate'}
                         </StatLabel>
                         
                         <PercentageChange 
@@ -316,7 +315,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </StatValue>
                         
                         <StatLabel>
-                            {languages[language]?.general?.outflows || 'Uscite'}
+                            {translations?.general?.outflows || 'Uscite'}
                         </StatLabel>
                         
                         <PercentageChange 
@@ -338,7 +337,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </StatValue>
                         
                         <StatLabel>
-                            {languages[language]?.general?.saved || 'Risparmiato'}
+                            {translations?.general?.saved || 'Risparmiato'}
                         </StatLabel>
                         
                         <PercentageChange 

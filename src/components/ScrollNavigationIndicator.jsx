@@ -296,7 +296,7 @@ const ScrollNavigationIndicator = ({
   navigateManually,
   isAutoScrolling = false
 }) => {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   
   // Guardia per verificare che il theme sia disponibile
   if (!theme) {

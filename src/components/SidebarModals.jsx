@@ -5,7 +5,6 @@ import { Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FaBullseye } from 'react-icons/fa';
-import languages from "../data/languages.json";
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
     MuiCustomDialog,
@@ -29,6 +28,7 @@ import {
 const SidebarModals = ({
     theme,
     language,
+    translations,
     isHidden,
     userType,
     mode,
@@ -108,14 +108,14 @@ const SidebarModals = ({
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
-                        {languages[language].sidebar.account.title}
+                        {translations.sidebar.account.title}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogProfileContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
-                            {languages[language].sidebar.account.id}{" "}
+                            {translations.sidebar.account.id}{" "}
                             {isHidden ? "****" : userId} <br></br>
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .nationality
                             }{" "}
                             <Select
@@ -138,7 +138,7 @@ const SidebarModals = ({
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
-                                        return `${languages[language].sidebar.account.selectNationality}`;
+                                        return `${translations.sidebar.account.selectNationality}`;
                                     }
                                     return value;
                                 }}
@@ -146,7 +146,7 @@ const SidebarModals = ({
                                 <MenuItem value="">
                                     <em>
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .account
                                                 .selectNationality
                                         }
@@ -168,7 +168,7 @@ const SidebarModals = ({
                             </Select>{" "}
                             <br></br>
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .whereWork
                             }{" "}
                             <Select
@@ -191,7 +191,7 @@ const SidebarModals = ({
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
-                                        return `${languages[language].sidebar.account.selectWhereWork}`;
+                                        return `${translations.sidebar.account.selectWhereWork}`;
                                     }
                                     return value;
                                 }}
@@ -199,7 +199,7 @@ const SidebarModals = ({
                                 <MenuItem value="">
                                     <em>
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .account.selectWhereWork
                                         }
                                     </em>
@@ -220,7 +220,7 @@ const SidebarModals = ({
                             </Select>{" "}
                             <br></br>
                             {
-                                languages[language].sidebar.account.work
+                                translations.sidebar.account.work
                             }{" "}
                             <Select
                                 value={
@@ -240,7 +240,7 @@ const SidebarModals = ({
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
-                                        return `${languages[language].sidebar.account.selectWork}`;
+                                        return `${translations.sidebar.account.selectWork}`;
                                     }
                                     return value;
                                 }}
@@ -248,7 +248,7 @@ const SidebarModals = ({
                                 <MenuItem value="">
                                     <em>
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .account.selectWork
                                         }
                                     </em>
@@ -269,7 +269,7 @@ const SidebarModals = ({
                             </Select>{" "}
                             <br></br>
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .workType
                             }{" "}
                             <Select
@@ -292,7 +292,7 @@ const SidebarModals = ({
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
-                                        return `${languages[language].sidebar.account.selectWorkType}`;
+                                        return `${translations.sidebar.account.selectWorkType}`;
                                     }
                                     return value;
                                 }}
@@ -300,7 +300,7 @@ const SidebarModals = ({
                                 <MenuItem value="">
                                     <em>
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .account.selectWorkType
                                         }
                                     </em>
@@ -321,7 +321,7 @@ const SidebarModals = ({
                             </Select>{" "}
                             <br></br>
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .hoursContract
                             }{" "}
                             <Select
@@ -344,14 +344,14 @@ const SidebarModals = ({
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "")
-                                        return `${languages[language].sidebar.account.selectHoursContract}`;
+                                        return `${translations.sidebar.account.selectHoursContract}`;
                                     return value;
                                 }}
                             >
                                 <MenuItem value="">
                                     <em>
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .account
                                                 .selectHoursContract
                                         }
@@ -373,7 +373,7 @@ const SidebarModals = ({
                             </Select>{" "}
                             <br></br>
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .remoteWork
                             }{" "}
                             <Select
@@ -396,14 +396,14 @@ const SidebarModals = ({
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "")
-                                        return `${languages[language].sidebar.account.selectRemoteWork}`;
+                                        return `${translations.sidebar.account.selectRemoteWork}`;
                                     return value;
                                 }}
                             >
                                 <MenuItem value="">
                                     <em>
                                         {
-                                            languages[language].sidebar
+                                            translations.sidebar
                                                 .account
                                                 .selectRemoteWork
                                         }
@@ -433,7 +433,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .saveButton
                             }
                         </MuiCustomButton>
@@ -451,13 +451,13 @@ const SidebarModals = ({
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
                         {
-                            languages[language].sidebar.changeUsername
+                            translations.sidebar.changeUsername
                                 .title
                         }
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
-                            {languages[language].sidebar.changeID.info}{" "}
+                            {translations.sidebar.changeID.info}{" "}
                             <br></br>
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
@@ -468,7 +468,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar.changeID
+                                translations.sidebar.changeID
                                     .confirmButton
                             }
                         </MuiCustomButton>
@@ -485,11 +485,11 @@ const SidebarModals = ({
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
-                        {languages[language].sidebar.changeID.title}
+                        {translations.sidebar.changeID.title}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
-                            {languages[language].sidebar.changeID.info}{" "}
+                            {translations.sidebar.changeID.info}{" "}
                             <br></br>
                             <form
                                 id="changeID"
@@ -542,7 +542,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar.changeID
+                                translations.sidebar.changeID
                                     .confirmButton
                             }
                         </MuiCustomButton>
@@ -563,7 +563,7 @@ const SidebarModals = ({
                         id="alert-dialog-title"
                     >
                         {
-                            languages[language].sidebar.changePassword
+                            translations.sidebar.changePassword
                                 .title
                         }
                     </MuiCustomDialogTitle>
@@ -573,7 +573,7 @@ const SidebarModals = ({
                             id="alert-dialog-description"
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changePassword.info
                             }{" "}
                             <br></br>
@@ -585,7 +585,7 @@ const SidebarModals = ({
                                     id="oldPasswordChangePWD"
                                     theme={theme}
                                     label={
-                                        languages[language].sidebar
+                                        translations.sidebar
                                             .changePassword.oldPassword
                                     }
                                     type={
@@ -630,7 +630,7 @@ const SidebarModals = ({
                                     id="passwordChangePWD"
                                     theme={theme}
                                     label={
-                                        languages[language].sidebar
+                                        translations.sidebar
                                             .changePassword.newPassword
                                     }
                                     type={
@@ -671,7 +671,7 @@ const SidebarModals = ({
                                     id="confirmPasswordChangePWD"
                                     theme={theme}
                                     label={
-                                        languages[language].sidebar
+                                        translations.sidebar
                                             .changePassword
                                             .confirmPassword
                                     }
@@ -720,7 +720,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changePassword.confirmButton
                             }
                         </MuiCustomButton>
@@ -737,14 +737,14 @@ const SidebarModals = ({
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
-                        {languages[language].sidebar.changeID
+                        {translations.sidebar.changeID
                             .successPopup.message + newID}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText
                             id="alert-dialog-description"
                             dangerouslySetInnerHTML={{
-                                __html: languages[language].sidebar
+                                __html: translations.sidebar
                                     .changeID.successPopup
                                     .securityMessage,
                             }}
@@ -756,7 +756,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar.changeID
+                                translations.sidebar.changeID
                                     .successPopup.toCopy
                             }
                         </MuiCustomButton>
@@ -773,19 +773,19 @@ const SidebarModals = ({
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
-                        {languages[language].sidebar.changeUsername
+                        {translations.sidebar.changeUsername
                             .successPopup.message + newUsername}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changeUsername.successPopup
                                     .securityMessage
                             }{" "}
                             <br></br>
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changeUsername.successPopup
                                     .redirectMessage
                             }{" "}
@@ -798,7 +798,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changeUsername.successPopup
                                     .okButton
                             }
@@ -817,14 +817,14 @@ const SidebarModals = ({
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
                         {
-                            languages[language].sidebar.account
+                            translations.sidebar.account
                                 .successPopup.title
                         }
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .successPopup.message
                             }{" "}
                             <br></br>
@@ -836,7 +836,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar.account
+                                translations.sidebar.account
                                     .successPopup.okButton
                             }
                         </MuiCustomButton>
@@ -854,14 +854,14 @@ const SidebarModals = ({
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
                         {
-                            languages[language].sidebar.deleteAccount
+                            translations.sidebar.deleteAccount
                                 .title
                         }
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .deleteAccount.info
                             }{" "}
                             <br></br>
@@ -873,7 +873,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .deleteAccount.confirmButton
                             }
                         </MuiCustomButton>
@@ -882,7 +882,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .deleteAccount.cancelButton
                             }
                         </MuiCustomButton>
@@ -900,14 +900,14 @@ const SidebarModals = ({
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
                         {
-                            languages[language].sidebar.deleteAccount
+                            translations.sidebar.deleteAccount
                                 .successPopup.title
                         }
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .deleteAccount.successPopup.message
                             }{" "}
                             <br></br>
@@ -919,7 +919,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .deleteAccount.successPopup.okButton
                             }
                         </MuiCustomButton>
@@ -937,14 +937,14 @@ const SidebarModals = ({
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
                         {
-                            languages[language].sidebar.changePassword
+                            translations.sidebar.changePassword
                                 .successPopup.title
                         }
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changePassword.successPopup.message
                             }{" "}
                             <br></br>
@@ -956,7 +956,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changePassword.successPopup
                                     .okButton
                             }
@@ -975,7 +975,7 @@ const SidebarModals = ({
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
                         {
-                            languages[language].sidebar.changePassword
+                            translations.sidebar.changePassword
                                 .errorPopup.title
                         }
                     </MuiCustomDialogTitle>
@@ -983,7 +983,7 @@ const SidebarModals = ({
                         <MuiCustomDialogContentText
                             id="alert-dialog-description"
                             dangerouslySetInnerHTML={{
-                                __html: languages[language].sidebar
+                                __html: translations.sidebar
                                     .changePassword.errorPopup.message,
                             }}
                         ></MuiCustomDialogContentText>
@@ -994,7 +994,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar
+                                translations.sidebar
                                     .changePassword.errorPopup.okButton
                             }
                         </MuiCustomButton>
@@ -1011,19 +1011,19 @@ const SidebarModals = ({
                     aria-describedby="alert-dialog-description"
                 >
                     <MuiCustomDialogTitle id="alert-dialog-title">
-                        {languages[language].sidebar.settings.title}
+                        {translations.sidebar.settings.title}
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <div>
                             <label>
                                 {
-                                    languages[language].sidebar.settings
+                                    translations.sidebar.settings
                                         .light
                                 }
                             </label>
                             <SettingsToggleButton
                                 title={
-                                    languages[language].sidebar.settings
+                                    translations.sidebar.settings
                                         .light
                                 }
                                 data-umami-event="setTheme-settings"
@@ -1039,13 +1039,13 @@ const SidebarModals = ({
                         <div>
                             <label>
                                 {
-                                    languages[language].sidebar.settings
+                                    translations.sidebar.settings
                                         .privacy
                                 }
                             </label>
                             <SettingsToggleButton
                                 title={
-                                    languages[language].sidebar.settings
+                                    translations.sidebar.settings
                                         .privacy
                                 }
                                 data-umami-event="setPrivacy-settings"
@@ -1062,7 +1062,7 @@ const SidebarModals = ({
                         <div>
                             <label>
                                 {
-                                    languages[language].sidebar.settings
+                                    translations.sidebar.settings
                                         .language
                                 }
                             </label>
@@ -1095,7 +1095,7 @@ const SidebarModals = ({
                             <label>
                                 {" "}
                                 {
-                                    languages[language].sidebar.settings
+                                    translations.sidebar.settings
                                         .deleteAccount
                                 }
                             </label>
@@ -1144,7 +1144,7 @@ const SidebarModals = ({
                             autoFocus
                         >
                             {
-                                languages[language].sidebar.settings
+                                translations.sidebar.settings
                                     .saveSettings
                             }
                         </MuiCustomButton>

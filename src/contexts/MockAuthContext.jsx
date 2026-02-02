@@ -283,7 +283,7 @@ export const MockAuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isUpdated, setIsUpdated] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    const { language } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     
     const [userData, setUserData] = useState(mockUserData);
 

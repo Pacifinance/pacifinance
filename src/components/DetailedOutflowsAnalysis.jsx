@@ -25,9 +25,10 @@ import {
   Wallet,
   Receipt
 } from 'lucide-react';
-import languages from '../data/languages.json';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
 import { getAllOutflows, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
+import { LanguageContext } from '../contexts/LanguageContext';
+import { useContext } from 'react';
 
 const AnalysisContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -537,13 +538,16 @@ const RecurringSection = styled.div`
     .recurring-amount {
       font-size: 0.875rem;
       font-weight: 600;
-      color: white;
+      color: white;Uncaught ReferenceError: language is not defined
+    at DetailedOutflowAnalysis (DetailedOutflowsAnalysis.jsx:572:7)
+
     }
   }
 `;
 
-export default function DetailedOutflowAnalysis({ theme, userData, language = 'it', isHidden = false }) {
-  const t = languages[language].graphs.statsOutflows.outflowAnalysis;
+export default function DetailedOutflowAnalysis({ theme, userData, isHidden = false }) {
+  const { language, translations } = useContext(LanguageContext);
+  const t = translations.graphs.statsOutflows.outflowAnalysis;
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0); // 0 = mese corrente

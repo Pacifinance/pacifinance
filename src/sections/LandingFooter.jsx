@@ -4,10 +4,9 @@ import { Link } from 'react-router-dom';
 import { LanguageContext } from '../contexts/LanguageContext';
 import LogoPaci from '../components/Logo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
-import languages from '../data/languages.json';
 
 export default function LandingFooter({ theme }) {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
 
   return (
     <footer 
@@ -26,7 +25,7 @@ export default function LandingFooter({ theme }) {
           <div className="col-span-1 md:col-span-1">
             <LogoPaci />
             <p className="mt-4 text-sm opacity-80">
-              {languages[language].footer.description}
+              {translations.footer.description}
             </p>
             <div className="mt-6">
               <BuyMeACoffeeWidget />
@@ -36,7 +35,7 @@ export default function LandingFooter({ theme }) {
           {/* Legal Links */}
           <div>
             <h3 className="font-semibold text-lg mb-4" style={{ color: theme.secondaryColor }}>
-              {languages[language].footer.legal.title}
+              {translations.footer.legal.title}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -45,7 +44,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.legal.privacy}
+                  {translations.footer.legal.privacy}
                 </Link>
               </li>
               <li>
@@ -54,7 +53,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.legal.terms}
+                  {translations.footer.legal.terms}
                 </Link>
               </li>
               <li>
@@ -63,7 +62,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.legal.cookies}
+                  {translations.footer.legal.cookies}
                 </Link>
               </li>
               <li>
@@ -72,7 +71,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.legal.disclaimer}
+                  {translations.footer.legal.disclaimer}
                 </Link>
               </li>
             </ul>
@@ -81,7 +80,7 @@ export default function LandingFooter({ theme }) {
           {/* Support Links */}
           <div>
             <h3 className="font-semibold text-lg mb-4" style={{ color: theme.secondaryColor }}>
-              {languages[language].footer.support.title}
+              {translations.footer.support.title}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -90,7 +89,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.support.faq}
+                  {translations.footer.support.faq}
                 </Link>
               </li>
               <li>
@@ -99,7 +98,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.support.pricing}
+                  {translations.footer.support.pricing}
                 </Link>
               </li>
               <li>
@@ -108,7 +107,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.support.contact}
+                  {translations.footer.support.contact}
                 </Link>
               </li>
               <li>
@@ -117,7 +116,7 @@ export default function LandingFooter({ theme }) {
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
-                  {languages[language].footer.support.sitemap}
+                  {translations.footer.support.sitemap}
                 </Link>
               </li>
             </ul>
@@ -126,18 +125,18 @@ export default function LandingFooter({ theme }) {
           {/* Community & Donation */}
           <div>
             <h3 className="font-semibold text-lg mb-4" style={{ color: theme.secondaryColor }}>
-              {languages[language].footer.community.title}
+              {translations.footer.community.title}
             </h3>
             <div className="space-y-4">
               <p className="text-sm opacity-80">
-                {languages[language].footer.community.donationText}
+                {translations.footer.community.donationText}
               </p>
               <div className="p-4 rounded-lg border" style={{ borderColor: theme.borderColor, backgroundColor: theme.primaryColor }}>
                 <p className="text-xs mb-2 font-medium" style={{ color: theme.secondaryColor }}>
-                  {languages[language].footer.community.supportTitle}
+                  {translations.footer.community.supportTitle}
                 </p>
                 <p className="text-xs opacity-80 mb-3">
-                  {languages[language].footer.community.supportDescription}
+                  {translations.footer.community.supportDescription}
                 </p>
               </div>
             </div>
@@ -148,11 +147,11 @@ export default function LandingFooter({ theme }) {
         <div className="pt-8 border-t" style={{ borderColor: theme.borderColor }}>
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm opacity-70">
-              © {new Date().getFullYear()} PaciFinance. {languages[language].footer.rights}
+              © {new Date().getFullYear()} PaciFinance. {translations.footer.rights}
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <span className="text-xs opacity-60">
-                {languages[language].footer.madeWith} ❤️ {languages[language].footer.forPrivacy}
+                {translations.footer.madeWith} ❤️ {translations.footer.forPrivacy}
               </span>
             </div>
           </div>

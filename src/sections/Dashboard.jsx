@@ -53,7 +53,11 @@ import {
     ModernIncomeExpenseSection,
     ModernIncomeExpenseCard,
     MainDashboardLayout,
-    DashboardContent
+    DashboardContent,
+    InvestmentCardWrapper,
+    InvestmentRowWrapper,
+    AssetCardWrapper,
+    AssetRowWrapper
 } from '../styles/ModernDashboardStyled';
 import FinancialInsights from '../components/FinancialInsights';
 import GoalTracker from '../components/GoalTracker';
@@ -383,33 +387,106 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: '2rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
                     <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        {/* Sezione Bilanci Tradizionali */}
+                        {/* Sezione Bilanci Tradizionali - Layout intelligente */}
                         <div>
                             <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
                                 <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
                                 {translations.dashboard.liquidityAvailability}
                             </h3>
-                            <ModernAssetsGrid theme={theme}>
-                                {traditionalAssets.map((asset, index) => {
+                            {(() => {
+                                // Filtra gli asset con valore > 0 per il layout
+                                const activeAssets = traditionalAssets.filter(a => a.value > 0);
+                                const count = activeAssets.length;
+                                
+                                // Funzione helper per renderizzare una card asset
+                                const renderAssetCard = (asset, index) => {
                                     const IconComponent = asset.icon;
                                     return (
-                                        <ModernAssetCard key={index} theme={theme} gradient={asset.gradient}>
-                                            <FloatingElement delay={index * 0.2}>
+                                        <AssetCardWrapper 
+                                            key={index} 
+                                            $itemCount={count}
+                                            $index={index}
+                                        >
+                                            <ModernAssetCard theme={theme} gradient={asset.gradient}>
+                                                <FloatingElement delay={index * 0.2}>
+                                                    <div className="card-header">
+                                                        <div className="icon-container">
+                                                            <IconComponent className="asset-icon" />
+                                                        </div>
+                                                        <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                            <AiOutlinePlusCircle />
+                                                        </Link>
+                                                    </div>
+                                                    
+                                                    <div className="card-content">
+                                                        <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
+                                                        <div className="asset-value">{formatCurrency(asset.value)}</div>
+                                                        <div className="asset-percentage">
+                                                            {formatPercentage(asset.value, totalBalance)} {translations.dashboard.ofTotal}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="card-footer">
+                                                        <div className="progress-bar">
+                                                            <div 
+                                                                className="progress-fill" 
+                                                                style={{ 
+                                                                    width: `${formatPercentage(asset.value, totalBalance)}%`,
+                                                                    backgroundColor: asset.color
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </FloatingElement>
+                                            </ModernAssetCard>
+                                        </AssetCardWrapper>
+                                    );
+                                };
+
+                                // Layout standard - solo asset con valore > 0
+                                return (
+                                    <ModernAssetsGrid theme={theme} $itemCount={activeAssets.length}>
+                                        {activeAssets.map((asset, index) => renderAssetCard(asset, index))}
+                                    </ModernAssetsGrid>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Sezione Fondo di Emergenza - Layout intelligente */}
+                        {emergencyFundAsset.value > 0 && (
+                            <div>
+                                <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
+                                    <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
+                                    {translations.dashboard.emergencySecurity}
+                                </h3>
+                                <ModernAssetsGrid theme={theme} $itemCount={1}>
+                                    <AssetCardWrapper $itemCount={1} $index={0}>
+                                        <ModernAssetCard theme={theme} gradient={emergencyFundAsset.gradient}>
+                                            <FloatingElement delay={0.3}>
                                                 <div className="card-header">
                                                     <div className="icon-container">
-                                                        <IconComponent className="asset-icon" />
+                                                        <GiUmbrella className="asset-icon" />
                                                     </div>
-                                                    <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                    <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
                                                         <AiOutlinePlusCircle />
                                                     </Link>
                                                 </div>
                                                 
                                                 <div className="card-content">
-                                                    <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
-                                                    <div className="asset-value">{formatCurrency(asset.value)}</div>
+                                                    <h4 className="asset-name">{isHidden ? '****' : emergencyFundAsset.name}</h4>
+                                                    <div className="asset-value">{formatCurrency(emergencyFundAsset.value)}</div>
                                                     <div className="asset-percentage">
-                                                        {formatPercentage(asset.value, totalBalance)} {translations.dashboard.ofTotal}
+                                                        {formatPercentage(emergencyFundAsset.value, totalBalance)} {translations.dashboard.ofTotal}
                                                     </div>
+                                                    {emergencyFundProgress !== null && !isHidden && (
+                                                        <div style={{
+                                                            fontSize: '0.8rem',
+                                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                                            marginTop: '0.25rem'
+                                                        }}>
+                                                            {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 
                                                 <div className="card-footer">
@@ -417,68 +494,15 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                         <div 
                                                             className="progress-fill" 
                                                             style={{ 
-                                                                width: `${formatPercentage(asset.value, totalBalance)}%`,
-                                                                backgroundColor: asset.color
+                                                                width: `${formatPercentage(emergencyFundAsset.value, totalBalance)}%`,
+                                                                backgroundColor: emergencyFundAsset.color
                                                             }}
                                                         />
                                                     </div>
                                                 </div>
                                             </FloatingElement>
                                         </ModernAssetCard>
-                                    );
-                                })}
-                            </ModernAssetsGrid>
-                        </div>
-
-                        {/* Sezione Fondo di Emergenza - Sotto la liquidità */}
-                        {emergencyFundAsset.value > 0 && (
-                            <div style={{ maxWidth: '400px' }}>
-                                <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
-                                    <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
-                                    {translations.dashboard.emergencySecurity}
-                                </h3>
-                                <ModernAssetsGrid theme={theme} style={{ gridTemplateColumns: '1fr' }}>
-                                    <ModernAssetCard theme={theme} gradient={emergencyFundAsset.gradient}>
-                                        <FloatingElement delay={0.3}>
-                                            <div className="card-header">
-                                                <div className="icon-container">
-                                                    <GiUmbrella className="asset-icon" />
-                                                </div>
-                                                <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
-                                                    <AiOutlinePlusCircle />
-                                                </Link>
-                                            </div>
-                                            
-                                            <div className="card-content">
-                                                <h4 className="asset-name">{isHidden ? '****' : emergencyFundAsset.name}</h4>
-                                                <div className="asset-value">{formatCurrency(emergencyFundAsset.value)}</div>
-                                                <div className="asset-percentage">
-                                                    {formatPercentage(emergencyFundAsset.value, totalBalance)} {translations.dashboard.ofTotal}
-                                                </div>
-                                                {emergencyFundProgress !== null && !isHidden && (
-                                                    <div style={{
-                                                        fontSize: '0.8rem',
-                                                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                                        marginTop: '0.25rem'
-                                                    }}>
-                                                        {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
-                                                    </div>
-                                                )}
-                                            </div>
-                                            
-                                            <div className="card-footer">
-                                                <div className="progress-bar">
-                                                    <div 
-                                                        className="progress-fill" 
-                                                        style={{ 
-                                                            width: `${formatPercentage(emergencyFundAsset.value, totalBalance)}%`,
-                                                            backgroundColor: emergencyFundAsset.color
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </FloatingElement>
-                                    </ModernAssetCard>
+                                    </AssetCardWrapper>
                                 </ModernAssetsGrid>
                             </div>
                         )}
@@ -490,63 +514,122 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
                             {translations.dashboard.portfolioInvestments}
                         </h3>
-                        <ModernInvestmentsGrid theme={theme}>
-                            {investments.map((investment, index) => {
+                        {/* Layout intelligente per gli investimenti */}
+                        {(() => {
+                            const count = investments.length;
+                            
+                            // Funzione helper per renderizzare una card
+                            const renderInvestmentCard = (investment, index) => {
                                 const IconComponent = investment.icon;
                                 return (
-                                    <ModernInvestmentCard key={index} theme={theme} gradient={investment.gradient}>
-                                        <FloatingElement delay={index * 0.15}>
-                                            <div className="card-header">
-                                                <div className="icon-container">
-                                                    <IconComponent className="investment-icon" />
-                                                    {investment.comingSoon && (
-                                                        <div style={{
-                                                            position: 'absolute',
-                                                            top: '-8px',
-                                                            right: '-8px',
-                                                            backgroundColor: '#22c55e',
-                                                            color: 'white',
-                                                            fontSize: '0.7rem',
-                                                            fontWeight: '600',
-                                                            padding: '2px 6px',
-                                                            borderRadius: '8px',
-                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                                        }}>
-                                                            {language === 'it' ? 'Presto' : 'Soon'}
+                                    <InvestmentCardWrapper 
+                                        key={index} 
+                                        $itemCount={count} 
+                                        $index={index}
+                                    >
+                                        <ModernInvestmentCard theme={theme} gradient={investment.gradient}>
+                                            <FloatingElement delay={index * 0.15}>
+                                                <div className="card-header">
+                                                    <div className="icon-container">
+                                                        <IconComponent className="investment-icon" />
+                                                        {investment.comingSoon && (
+                                                            <div style={{
+                                                                position: 'absolute',
+                                                                top: '-8px',
+                                                                right: '-8px',
+                                                                backgroundColor: '#22c55e',
+                                                                color: 'white',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: '600',
+                                                                padding: '2px 6px',
+                                                                borderRadius: '8px',
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                            }}>
+                                                                {language === 'it' ? 'Presto' : 'Soon'}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="investment-type">
+                                                        <span>{isHidden ? '****' : investment.description}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="card-content">
+                                                    <h4 className="investment-name">{isHidden ? '****' : investment.name}</h4>
+                                                    <div className="investment-value">{formatCurrency(investment.value)}</div>
+                                                    <div className="investment-stats">
+                                                        <div className="stat">
+                                                            <span className="stat-label">{translations.dashboard.ofPortfolio}</span>
+                                                            <span className="stat-value">{formatPercentage(investment.value, totalInvestments)}</span>
                                                         </div>
-                                                    )}
-                                                </div>
-                                                <div className="investment-type">
-                                                    <span>{isHidden ? '****' : investment.description}</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="card-content">
-                                                <h4 className="investment-name">{isHidden ? '****' : investment.name}</h4>
-                                                <div className="investment-value">{formatCurrency(investment.value)}</div>
-                                                <div className="investment-stats">
-                                                    <div className="stat">
-                                                        <span className="stat-label">{translations.dashboard.ofPortfolio}</span>
-                                                        <span className="stat-value">{formatPercentage(investment.value, totalInvestments)}</span>
-                                                    </div>
-                                                    <div className="stat">
-                                                        <span className="stat-label">{translations.dashboard.ofTotal}</span>
-                                                        <span className="stat-value">{formatPercentage(investment.value, totalBalance)}</span>
+                                                        <div className="stat">
+                                                            <span className="stat-label">{translations.dashboard.ofTotal}</span>
+                                                            <span className="stat-value">{formatPercentage(investment.value, totalBalance)}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            
-                                            <div className="card-footer">
-                                                <Link to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
-                                                    <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
-                                                    {translations.dashboard.updateValue}
-                                                </Link>
-                                            </div>
-                                        </FloatingElement>
-                                    </ModernInvestmentCard>
+                                                
+                                                <div className="card-footer">
+                                                    <Link to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
+                                                        <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
+                                                        {translations.dashboard.updateValue}
+                                                    </Link>
+                                                </div>
+                                            </FloatingElement>
+                                        </ModernInvestmentCard>
+                                    </InvestmentCardWrapper>
                                 );
-                            })}
-                        </ModernInvestmentsGrid>
+                            };
+
+                            // Layout per 3 card: 2 sopra + 1 centrata sotto
+                            if (count === 3) {
+                                return (
+                                    <ModernInvestmentsGrid theme={theme} $itemCount={count}>
+                                        <InvestmentRowWrapper>
+                                            {investments.slice(0, 2).map((inv, idx) => renderInvestmentCard(inv, idx))}
+                                        </InvestmentRowWrapper>
+                                        <InvestmentRowWrapper $centered>
+                                            {renderInvestmentCard(investments[2], 2)}
+                                        </InvestmentRowWrapper>
+                                    </ModernInvestmentsGrid>
+                                );
+                            }
+                            
+                            // Layout per 5 card: 3 sopra + 2 centrate sotto
+                            if (count === 5) {
+                                return (
+                                    <ModernInvestmentsGrid theme={theme} $itemCount={count}>
+                                        <InvestmentRowWrapper>
+                                            {investments.slice(0, 3).map((inv, idx) => renderInvestmentCard(inv, idx))}
+                                        </InvestmentRowWrapper>
+                                        <InvestmentRowWrapper $centered>
+                                            {investments.slice(3, 5).map((inv, idx) => renderInvestmentCard(inv, idx + 3))}
+                                        </InvestmentRowWrapper>
+                                    </ModernInvestmentsGrid>
+                                );
+                            }
+                            
+                            // Layout per 7 card: 4 sopra + 3 centrate sotto
+                            if (count === 7) {
+                                return (
+                                    <ModernInvestmentsGrid theme={theme} $itemCount={count}>
+                                        <InvestmentRowWrapper>
+                                            {investments.slice(0, 4).map((inv, idx) => renderInvestmentCard(inv, idx))}
+                                        </InvestmentRowWrapper>
+                                        <InvestmentRowWrapper $centered>
+                                            {investments.slice(4, 7).map((inv, idx) => renderInvestmentCard(inv, idx + 4))}
+                                        </InvestmentRowWrapper>
+                                    </ModernInvestmentsGrid>
+                                );
+                            }
+
+                            // Layout standard per altri numeri (1, 2, 4, 6, 8+)
+                            return (
+                                <ModernInvestmentsGrid theme={theme} $itemCount={count}>
+                                    {investments.map((investment, index) => renderInvestmentCard(investment, index))}
+                                </ModernInvestmentsGrid>
+                            );
+                        })()}
                     </div>
                 </div>
 

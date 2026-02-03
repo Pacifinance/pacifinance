@@ -278,29 +278,162 @@ export const ModernMetricCard = styled.div`
   }
 `;
 
-// Grid per i bilanci tradizionali
+// Grid per i bilanci tradizionali - Layout intelligente basato sul numero di card
 export const ModernAssetsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2rem;
+  justify-content: ${props => {
+    const count = props.$itemCount || 0;
+    if (count === 1) return 'flex-start';
+    if (count === 3) return 'center';
+    return 'flex-start';
+  }};
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 0.75rem;
   }
 `;
 
-// Grid per gli investimenti
-export const ModernInvestmentsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+// Wrapper per singola card asset (liquidità) con layout intelligente
+export const AssetCardWrapper = styled.div`
+  flex: ${props => {
+    const count = props.$itemCount || 1;
+    
+    // 1 card: dimensione fissa
+    if (count === 1) return '0 0 calc(50% - 0.5rem)';
+    
+    // 2 card: 50% ciascuna
+    if (count === 2) return '0 0 calc(50% - 0.5rem)';
+    
+    // 3 card: 33% ciascuna su una riga
+    if (count === 3) return '0 0 calc(33.333% - 0.667rem)';
+    
+    // 4 card: 2x2 grid
+    if (count === 4) return '0 0 calc(50% - 0.5rem)';
+    
+    // 5+ card: griglia a 3 colonne
+    return '0 0 calc(33.333% - 0.667rem)';
+  }};
+  
+  max-width: ${props => {
+    const count = props.$itemCount || 1;
+    if (count === 1) return '320px';
+    return 'none';
+  }};
+
+  @media (max-width: 1024px) {
+    flex: ${props => {
+      const count = props.$itemCount || 1;
+      if (count === 1) return '0 0 100%';
+      return '0 0 calc(50% - 0.5rem)';
+    }};
+    max-width: ${props => props.$itemCount === 1 ? '320px' : 'none'};
+  }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+`;
+
+// Wrapper per centrare le righe degli asset quando necessario
+export const AssetRowWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  justify-content: ${props => props.$centered ? 'center' : 'flex-start'};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+// Grid per gli investimenti - Layout intelligente basato sul numero di card
+export const ModernInvestmentsGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: ${props => {
+    const count = props.$itemCount || 0;
+    if (count === 1) return 'flex-start';
+    if (count === 3) return 'center';
+    return 'flex-start';
+  }};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
     gap: 0.75rem;
+  }
+`;
+
+// Wrapper per singola card investimento con layout intelligente
+export const InvestmentCardWrapper = styled.div`
+  flex: ${props => {
+    const count = props.$itemCount || 1;
+    const index = props.$index || 0;
+    
+    // 1 card: dimensione fissa
+    if (count === 1) return '0 0 calc(50% - 0.5rem)';
+    
+    // 2 card: 50% ciascuna
+    if (count === 2) return '0 0 calc(50% - 0.5rem)';
+    
+    // 3 card: prime 2 al 50%, terza al 50% centrata
+    if (count === 3) {
+      if (index < 2) return '0 0 calc(50% - 0.5rem)';
+      return '0 0 calc(50% - 0.5rem)';
+    }
+    
+    // 4 card: 2x2 grid
+    if (count === 4) return '0 0 calc(50% - 0.5rem)';
+    
+    // 5 card: 3 sopra + 2 centrate sotto
+    if (count === 5) {
+      if (index < 3) return '0 0 calc(33.333% - 0.667rem)';
+      return '0 0 calc(33.333% - 0.667rem)';
+    }
+    
+    // 6+ card: griglia a 3 colonne
+    return '0 0 calc(33.333% - 0.667rem)';
+  }};
+  
+  max-width: ${props => {
+    const count = props.$itemCount || 1;
+    if (count === 1) return '320px';
+    if (count <= 4) return 'none';
+    return 'none';
+  }};
+
+  @media (max-width: 1024px) {
+    flex: ${props => {
+      const count = props.$itemCount || 1;
+      if (count === 1) return '0 0 100%';
+      return '0 0 calc(50% - 0.5rem)';
+    }};
+    max-width: ${props => props.$itemCount === 1 ? '320px' : 'none'};
+  }
+
+  @media (max-width: 768px) {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+`;
+
+// Wrapper per centrare la riga delle card quando necessario (es. 3 card, la terza va centrata)
+export const InvestmentRowWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  justify-content: ${props => props.$centered ? 'center' : 'flex-start'};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
 `;
 

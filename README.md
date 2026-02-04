@@ -9,9 +9,13 @@
 [![Styled Components](https://img.shields.io/badge/Styled_Components-6.1.19-DB7093?logo=styled-components)](https://styled-components.com/)
 [![License](https://img.shields.io/badge/License-Private-red)]()
 
-[🚀 Features](#-features) • [📦 Installation](#-installation) • [🏗️ Architecture](#️-architecture) • [🧪 Testing](#-testing) • [🤝 Contributing](#-contributing)
+[🚀 Features](#-features) • [📦 Installation](#-installation) • [🏗️ Architecture](#️-architecture) • [🌍 i18n URL Routing](#-internationalization) • [🧪 Testing](#-testing) • [🤝 Contributing](#-contributing)
 
 </div>
+
+---
+
+> **🆕 NEW:** Sistema URL Multilingua implementato! Vedi [DOCS_INDEX.md](DOCS_INDEX.md) per iniziare.
 
 ---
 
@@ -398,6 +402,72 @@ src/i18n/
 - ✅ **User Priority**: Saved user preference overrides auto-detection
 - ✅ **Scalable**: Easy to add new languages
 - ✅ **Backward Compatible**: Old import method still works
+
+### 🆕 URL-based Language Routing (SEO Optimized)
+
+PaciFinance implements **URL-based internationalization** for improved SEO and user experience:
+
+#### URL Structure
+```
+pacifinance.com/it/           # Italian homepage
+pacifinance.com/en/dashboard  # English dashboard
+pacifinance.com/it/profile    # Italian profile page
+```
+
+#### How It Works
+
+1. **Automatic Language Detection**
+   - Browser language detected on first visit
+   - URL automatically updated: `pacifinance.com/` → `pacifinance.com/it/`
+
+2. **URL-based Language Switching**
+   - Changing URL changes language: `/it/dashboard` → `/en/dashboard`
+   - User preference saved to localStorage
+
+3. **Settings Integration**
+   - Language change in settings updates both:
+     - Current language state
+     - URL path (without reload)
+   - Preference persists across sessions
+
+4. **Priority System**
+   ```
+   1. URL parameter (/it/, /en/)
+   2. localStorage (user preference)
+   3. Browser language detection
+   4. Default fallback (en)
+   ```
+
+#### For Developers
+
+**Using LocalizedLink** (instead of regular Link):
+```jsx
+import { LocalizedLink } from '../components/LocalizedLink';
+
+// Automatically adds language prefix
+<LocalizedLink to="/dashboard">Dashboard</LocalizedLink>
+// Renders: <a href="/it/dashboard">Dashboard</a> (if language is Italian)
+```
+
+**Using useLocalizedNavigate** (instead of useNavigate):
+```jsx
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+
+const navigate = useLocalizedNavigate();
+navigate('/profile'); // Navigates to /it/profile (if language is Italian)
+```
+
+**Migration Helper**:
+A migration script is available to convert existing code:
+```bash
+bash migrate-i18n-routing.sh
+```
+
+#### Benefits
+- 🔍 **Better SEO**: Search engines can index language-specific pages
+- 🔗 **Shareable Links**: Users can share language-specific URLs
+- 🌐 **User Experience**: URL reflects current language
+- 💾 **Persistent**: Language preference saved in localStorage
 - ✅ **Professional Structure**: Follows industry standards
 
 ### Usage in Components

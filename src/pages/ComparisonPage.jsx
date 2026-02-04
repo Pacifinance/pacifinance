@@ -1,6 +1,6 @@
 
 import React, {useEffect, useContext, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -20,7 +20,7 @@ function ComparisonPage() {
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { mode } = theme;
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   // Hook per la navigazione con scroll
   const { 
@@ -65,7 +65,8 @@ function ComparisonPage() {
         title={`${translations.comparison.title} - Pacifinance`}
         description={`${translations.comparison.subtitle} - Confronta le tue finanze con utenti simili in modo anonimo e sicuro`}
         keywords="confronto finanziario, benchmark finanze personali, comparazione stipendi, analisi finanziaria, confronto budget"
-        canonicalUrl="https://pacifinance.com/comparison"
+        canonical="/comparison"
+        language={language}
       />
       <div style={{ display: 'flex', height: '100vh' }}>
         <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />

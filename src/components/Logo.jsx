@@ -1,9 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import LogoPacifinance from '../assets/Brand/PacifinanceLogoPNG3NoBg.webp';
 
 export default function LogoPaci() {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   const handleLogoClick = () => {
     navigate('/');

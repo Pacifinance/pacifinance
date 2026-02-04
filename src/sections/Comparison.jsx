@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { Section } from '../styles/MyStyled';
 import { 
     getTotalValue,
@@ -764,7 +764,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const [activeTab, setActiveTab] = useState('insights');
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
     const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
-    const navigate = useNavigate();
+    const navigate = useLocalizedNavigate();
 
     // Funzioni helper per Rankings
     const getRankLevel = (rank) => {

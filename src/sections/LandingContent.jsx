@@ -1,5 +1,5 @@
 import React, { useContext, lazy, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 // Lazy import delle icone MUI per performance
 import { 
   Lock as LockIcon,
@@ -22,7 +22,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 
 export default function NewLandingContent({ theme }) {
   const { language, translations } = useContext(LanguageContext);
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   const handleGetStarted = () => {
     navigate("/auth");

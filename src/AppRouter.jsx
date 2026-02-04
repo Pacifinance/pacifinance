@@ -5,10 +5,14 @@ import {
   Route,
   useNavigate,
   Navigate,
+  useLocation,
+  useParams,
 } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
+import { LanguageContext } from "./contexts/LanguageContext";
 import { useAuth } from "./hooks/useAuth";
 import { useAuthenticatedPreloading, usePublicPreloading } from "./hooks/useSimplePreloading";
+import { getLanguageFromPath, addLanguageToPath, availableLanguages, getInitialLanguage } from "./utils/i18nRouting";
 
 // Componente di loading semplice e affidabile
 const SimpleLoader = () => (
@@ -55,13 +59,42 @@ const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const auth = useAuth();
-  return auth.isAuthenticated ? children : <Navigate to="/auth" replace />;
+  const location = useLocation();
+  const { language } = useContext(LanguageContext);
+  
+  if (!auth.isAuthenticated) {
+    return <Navigate to={addLanguageToPath("/auth", language)} replace />;
+  }
+  
+  return children;
 };
 
 // Public Route Component (redirects to dashboard if already authenticated)
 const PublicRoute = ({ children }) => {
   const auth = useAuth();
-  return !auth.isAuthenticated ? children : <Navigate to="/dashboard" replace />;
+  const { language } = useContext(LanguageContext);
+  
+  if (auth.isAuthenticated) {
+    return <Navigate to={addLanguageToPath("/dashboard", language)} replace />;
+  }
+  
+  return children;
+};
+
+// Language Redirect Component - redirects root to language-prefixed URL
+const LanguageRedirect = () => {
+  const location = useLocation();
+  const { language } = useContext(LanguageContext);
+  
+  // Get initial language from URL, localStorage, or browser
+  const initialLang = getInitialLanguage(location.pathname);
+  
+  // If we're at the root, redirect to language-prefixed root
+  if (location.pathname === '/') {
+    return <Navigate to={addLanguageToPath("/", initialLang)} replace />;
+  }
+  
+  return <Navigate to={addLanguageToPath(location.pathname, initialLang)} replace />;
 };
 
 function AppRouter() {
@@ -128,113 +161,149 @@ function AppRouter() {
   return (
     <Suspense fallback={<SimpleLoader />}>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/auth"
-          element={
-            <PublicRoute>
-              <AuthPage />
-            </PublicRoute>
-          }
-        />
-
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-        <Route path="/disclaimer" element={<DisclaimerPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/sitemap" element={<SitemapPage />} />
-
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/charts-statistics"
-          element={
-            <ProtectedRoute>
-              <StatsCharts />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/insert-values"
-          element={
-            <ProtectedRoute>
-              <InsertValues />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/check-prices"
-          element={
-            <ProtectedRoute>
-              <CheckPrices />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/comparison"
-          element={
-            <ProtectedRoute>
-              <ComparisonPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/knowledge"
-          element={
-            <ProtectedRoute>
-              <Knowledge />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/info"
-          element={
-            <ProtectedRoute>
-              <Info />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <AccountPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <SettingsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/goals-limits"
-          element={
-            <ProtectedRoute>
-              <GoalsSettingsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Root redirect to language-prefixed URL */}
+        <Route path="/" element={<LanguageRedirect />} />
+        
+        {/* Language-prefixed routes */}
+        <Route path="/:lang/*" element={<LanguageRoutes />} />
+        
+        {/* Catch all route - redirect to language root */}
+        <Route path="*" element={<LanguageRedirect />} />
       </Routes>
     </Suspense>
   );
 }
+
+// Component that handles all language-prefixed routes
+const LanguageRoutes = () => {
+  const { lang } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { language, setLanguage } = useContext(LanguageContext);
+  
+  // Validate language parameter
+  useEffect(() => {
+    if (!availableLanguages.includes(lang)) {
+      // Invalid language, redirect to valid one
+      const validLang = getInitialLanguage(location.pathname);
+      navigate(addLanguageToPath(location.pathname.replace(`/${lang}`, ''), validLang), { replace: true });
+      return;
+    }
+    
+    // Sync URL language with context
+    if (lang !== language) {
+      setLanguage(lang);
+    }
+  }, [lang, language, setLanguage, navigate, location]);
+  
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route
+        path="/auth"
+        element={
+          <PublicRoute>
+            <AuthPage />
+          </PublicRoute>
+        }
+      />
+
+      <Route path="/faq" element={<FAQPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+      <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+      <Route path="/disclaimer" element={<DisclaimerPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/sitemap" element={<SitemapPage />} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/charts-statistics"
+        element={
+          <ProtectedRoute>
+            <StatsCharts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/insert-values"
+        element={
+          <ProtectedRoute>
+            <InsertValues />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/check-prices"
+        element={
+          <ProtectedRoute>
+            <CheckPrices />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/comparison"
+        element={
+          <ProtectedRoute>
+            <ComparisonPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/knowledge"
+        element={
+          <ProtectedRoute>
+            <Knowledge />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/info"
+        element={
+          <ProtectedRoute>
+            <Info />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <AccountPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/goals-limits"
+        element={
+          <ProtectedRoute>
+            <GoalsSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Catch all route within language */}
+      <Route path="*" element={<Navigate to="" replace />} />
+    </Routes>
+  );
+};
 
 export default AppRouter;

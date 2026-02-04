@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";
@@ -7,6 +7,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { UserContext } from "../contexts/UserContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { useAuth } from "../hooks/useAuth";
+import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
@@ -48,12 +49,13 @@ const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, translations, toggleLanguage } = useContext(LanguageContext);
+    const { language, translations, setLanguage } = useContext(LanguageContext);
     // Usa l'hook unificato che gestisce sia UserContext che MockAuth
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [showChangeID, setShowChangeID] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
@@ -95,6 +97,17 @@ const SettingsPage = () => {
 
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, i) => currentYear - i); // Ultimi 5 anni
+
+    // Handle language toggle with URL update
+    const handleLanguageToggle = () => {
+        const newLanguage = language === 'it' ? 'en' : 'it';
+        setLanguage(newLanguage);
+        
+        // Update URL with new language
+        const currentPath = removeLanguageFromPath(location.pathname);
+        const newPath = addLanguageToPath(currentPath, newLanguage);
+        navigate(newPath, { replace: true });
+    };
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -754,7 +767,7 @@ const SettingsPage = () => {
                                             marginBottom: "0.25rem"
                                         }}>
                                             <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.5rem" }} />
-                                            {translations.sidebar.settings.language}
+                                            {tranhandleLanguageTogglbar.settings.language}
                                         </label>
                                         <span style={{
                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',

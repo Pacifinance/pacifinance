@@ -1,51 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage IT -->
   <url>
-    <loc>https://pacifinance.com/</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://pacifinance.com/it/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <!-- Homepage EN -->
   <url>
-    <loc>https://pacifinance.com/dashboard</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://pacifinance.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
+    <lastmod>2025-01-30</lastmod>
     <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Dashboard IT -->
+  <url>
+    <loc>https://pacifinance.com/it/dashboard</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/dashboard"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/dashboard"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/dashboard"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Dashboard EN -->
+  <url>
+    <loc>https://pacifinance.com/en/dashboard</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/dashboard"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/dashboard"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/dashboard"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Comparison IT -->
+  <url>
+    <loc>https://pacifinance.com/it/comparison</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/comparison"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/comparison"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/comparison"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <!-- Comparison EN -->
   <url>
-    <loc>https://pacifinance.com/account</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://pacifinance.com/en/comparison</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/comparison"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/comparison"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/comparison"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Pricing IT -->
+  <url>
+    <loc>https://pacifinance.com/it/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <!-- Pricing EN -->
+  <url>
+    <loc>https://pacifinance.com/en/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Knowledge IT -->
+  <url>
+    <loc>https://pacifinance.com/it/knowledge</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/knowledge"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/knowledge"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/knowledge"/>
+    <lastmod>2025-01-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Knowledge EN -->
   <url>
-    <loc>https://pacifinance.com/analytics</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://pacifinance.com/en/knowledge</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/knowledge"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/knowledge"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/knowledge"/>
+    <lastmod>2025-01-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  
+  <!-- Info IT -->
   <url>
-    <loc>https://pacifinance.com/comparisons</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pacifinance.com/investments</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pacifinance.com/knowledge</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://pacifinance.com/it/info</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/info"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/info"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/info"/>
+    <lastmod>2025-01-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <!-- Info EN -->
   <url>
-    <loc>https://pacifinance.com/info</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://pacifinance.com/en/info</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/info"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/info"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/info"/>
+    <lastmod>2025-01-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 </urlset>

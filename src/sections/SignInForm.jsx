@@ -4,7 +4,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { UserContext } from "../contexts/UserContext";
 import { useToast } from "../contexts/ToastContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import {
   MuiCustomDialog,
   MuiCustomDialogTitle,
@@ -39,7 +39,7 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { showSuccess, showError } = useToast();
 
   const handleCloseModal = () => {

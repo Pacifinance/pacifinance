@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faSignOutAlt, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { FaBullseye, FaUser } from 'react-icons/fa';
@@ -17,7 +18,7 @@ const SidebarMobile = ({
     setShowDropdown,
     handleLogout
 }) => {
-    const navigate = useNavigate();
+    const navigate = useLocalizedNavigate();
     const location = useLocation();
     
     // Guardia per verificare che il theme sia disponibile

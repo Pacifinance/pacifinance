@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import axios from "axios";
 // import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from "@mui/icons-material/Info";
@@ -45,7 +45,7 @@ export default function SignUpForm() {
     const inputRef = useRef(null);
     const turnstileRef = useRef(null);
 
-    const navigate = useNavigate();
+    const navigate = useLocalizedNavigate();
 
     // Turnstile callback functions
     const onTurnstileSuccess = (token) => {

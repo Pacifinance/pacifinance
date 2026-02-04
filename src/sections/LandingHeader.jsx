@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import ToggleModeButton from "../components/ToggleModeButton";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
@@ -21,7 +21,7 @@ function Header({
   const handleLanguageToggle = propToggleLanguage || toggleLanguage;
   const [username, setUsername] = useState("913418");
   const [password, setPassword] = useState("vbwifc9u");
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {

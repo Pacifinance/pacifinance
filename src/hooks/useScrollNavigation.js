@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useLocalizedNavigate } from './useLocalizedNavigate';
 
 // Ordine delle pagine per la navigazione con scroll
 const PAGE_ORDER = [
@@ -34,7 +35,7 @@ const TRIGGER_CHECK_DEBOUNCE = 100;
 const MIN_PAGE_HEIGHT = 600;
 
 export const useScrollNavigation = (enabled = true) => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const location = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
   const [showTriggerZone, setShowTriggerZone] = useState(false);

@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -8,7 +8,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 export default function AuthButton() {
   const { theme } = useContext(ThemeContext);
   const { language, translations } = useContext(LanguageContext);
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   const handleAuthClick = () => {
     navigate('/auth');

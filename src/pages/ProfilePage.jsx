@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { Select, MenuItem, TextField, Switch, FormControlLabel } from "@mui/material";
 import { 
     Edit, 

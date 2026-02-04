@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { LocalizedLink } from '../components/LocalizedLink';
 import styled from 'styled-components';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { 
@@ -413,9 +413,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                         <div className="icon-container">
                                                             <IconComponent className="asset-icon" />
                                                         </div>
-                                                        <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                        <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
                                                             <AiOutlinePlusCircle />
-                                                        </Link>
+                                                        </LocalizedLink>
                                                     </div>
                                                     
                                                     <div className="card-content">
@@ -467,9 +467,9 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                     <div className="icon-container">
                                                         <GiUmbrella className="asset-icon" />
                                                     </div>
-                                                    <Link to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
+                                                    <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
                                                         <AiOutlinePlusCircle />
-                                                    </Link>
+                                                    </LocalizedLink>
                                                 </div>
                                                 
                                                 <div className="card-content">
@@ -570,10 +570,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                 </div>
                                                 
                                                 <div className="card-footer">
-                                                    <Link to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
+                                                    <LocalizedLink to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
                                                         <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
                                                         {translations.dashboard.updateValue}
-                                                    </Link>
+                                                    </LocalizedLink>
                                                 </div>
                                             </FloatingElement>
                                         </ModernInvestmentCard>
@@ -664,16 +664,16 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                             {item.name === translations.general.saved && translations.dashboard.saved}
                                         </div>
                                         {item.name === translations.general.incomes && (
-                                            <Link to="/insert-values?section=income" className="income-outflow-button" data-umami-event="dashboard-add-income">
+                                            <LocalizedLink to="/insert-values?section=income" className="income-outflow-button" data-umami-event="dashboard-add-income">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
                                                 {translations.dashboard.addIncome || 'Add Income'}
-                                            </Link>
+                                            </LocalizedLink>
                                         )}
                                         {item.name === translations.general.outflows && (
-                                            <Link to="/insert-values?section=outflow" className="income-outflow-button" data-umami-event="dashboard-add-outflow">
+                                            <LocalizedLink to="/insert-values?section=outflow" className="income-outflow-button" data-umami-event="dashboard-add-outflow">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
                                                 {translations.dashboard.addOutflow || 'Add Outflow'}
-                                            </Link>
+                                            </LocalizedLink>
                                         )}
                                     </div>
                                 </FloatingElement>

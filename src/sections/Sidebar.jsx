@@ -10,10 +10,11 @@ import { BsBook, BsInfoCircle } from "react-icons/bs";
 import { FaUser, FaBullseye } from "react-icons/fa";
 import Tooltip from "@mui/material/Tooltip";
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { LocalizedLink } from "../components/LocalizedLink";
 import avatarImage from "../assets/account-logo.png";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import SidebarMobile from "../components/SidebarMobile";
 import SidebarModals from "../components/SidebarModals";
@@ -105,7 +106,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const navigate = useNavigate();
+    const navigate = useLocalizedNavigate();
 
     // Funzione per verificare se una pagina è attiva
     const isActivePage = (path) => {

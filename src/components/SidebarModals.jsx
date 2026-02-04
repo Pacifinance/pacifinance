@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { LocalizedLink } from './LocalizedLink';
 import { Select, MenuItem } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -1078,7 +1078,7 @@ const SidebarModals = ({
                             <label>
                                 {language === 'it' ? 'Obiettivi e Limiti' : 'Goals & Limits'}
                             </label>
-                            <Link to="/goals-limits" style={{ textDecoration: 'none' }}>
+                            <LocalizedLink to="/goals-limits" style={{ textDecoration: 'none' }}>
                                 <SettingsToggleButton
                                     data-umami-event="goalsSettings-settings"
                                     title="goalsSettingsButton"
@@ -1086,7 +1086,7 @@ const SidebarModals = ({
                                 >
                                     <FaBullseye />
                                 </SettingsToggleButton>
-                            </Link>
+                            </LocalizedLink>
                         </div>
 
                         <div

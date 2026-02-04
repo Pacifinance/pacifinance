@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { Header } from "../sections/LandingHeader";
@@ -70,7 +70,7 @@ export default function SitemapPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {pages.map((page, index) => (
-                <Link
+                <LocalizedLink
                   key={index}
                   to={page.path}
                   className="block p-6 rounded-xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl group"
@@ -98,7 +98,7 @@ export default function SitemapPage() {
                   >
                     {page.path}
                   </p>
-                </Link>
+                </LocalizedLink>
               ))}
             </div>
           </div>

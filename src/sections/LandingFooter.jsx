@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { LocalizedLink } from '../components/LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
 import LogoPaci from '../components/Logo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
@@ -39,40 +39,40 @@ export default function LandingFooter({ theme }) {
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/privacy-policy" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.legal.privacy}
-                </Link>
+                </LocalizedLink>
               </li>
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/terms-of-service" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.legal.terms}
-                </Link>
+                </LocalizedLink>
               </li>
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/cookie-policy" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.legal.cookies}
-                </Link>
+                </LocalizedLink>
               </li>
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/disclaimer" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.legal.disclaimer}
-                </Link>
+                </LocalizedLink>
               </li>
             </ul>
           </div>
@@ -84,40 +84,40 @@ export default function LandingFooter({ theme }) {
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/faq" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.support.faq}
-                </Link>
+                </LocalizedLink>
               </li>
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/pricing" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.support.pricing}
-                </Link>
+                </LocalizedLink>
               </li>
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/contact" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.support.contact}
-                </Link>
+                </LocalizedLink>
               </li>
               <li>
-                <Link 
+                <LocalizedLink 
                   to="/sitemap" 
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
                   {translations.footer.support.sitemap}
-                </Link>
+                </LocalizedLink>
               </li>
             </ul>
           </div>

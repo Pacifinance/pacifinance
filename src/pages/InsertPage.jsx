@@ -1,5 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PageWrapper } from '../styles/MyStyled';
@@ -16,7 +17,7 @@ function InsertPage() {
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
   const { mode } = theme;
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [searchParams] = useSearchParams();
   const [initialSection, setInitialSection] = useState(null);
 

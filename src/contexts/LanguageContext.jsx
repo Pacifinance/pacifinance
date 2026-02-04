@@ -1,5 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react';
 import { getTranslations, getAvailableLanguages } from '../i18n';
+import { getInitialLanguage } from '../utils/i18nRouting';
 
 export const LanguageContext = createContext();
 
@@ -22,25 +23,27 @@ const detectBrowserLanguage = () => {
 
 export const LanguageProvider = ({ children }) => {
     const [language, setLanguage] = useState(() => {
-        // Priority 1: Check for saved user preference
+        // Get initial language from URL, localStorage, or browser
+        // Note: window.location.pathname might not be available on first render
+        // so we'll also handle this in useEffect
+        if (typeof window !== 'undefined') {
+            return getInitialLanguage(window.location.pathname);
+        }
+        
+        // Fallback for SSR or initial load
         const savedLanguage = localStorage.getItem('pacifinance-language');
         if (savedLanguage) {
             return savedLanguage;
         }
         
-        // Priority 2: Auto-detect browser language
-        const detectedLanguage = detectBrowserLanguage();
-        
-        // Save detected language for future visits
-        localStorage.setItem('pacifinance-language', detectedLanguage);
-        
-        return detectedLanguage;
+        return detectBrowserLanguage();
     });
 
     // Carica le traduzioni per la lingua corrente
     const translations = getTranslations(language);
 
     useEffect(() => {
+        // Save language preference to localStorage when it changes
         localStorage.setItem('pacifinance-language', language);
     }, [language]);
 

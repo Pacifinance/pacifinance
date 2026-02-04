@@ -17,8 +17,9 @@ export default function PricingPage() {
       <SEOHead 
         title={language === 'it' ? 'Prezzi e Piani | PaciFinance' : 'Pricing and Plans | PaciFinance'}
         description={language === 'it' ? 'Scopri i piani e i prezzi di PaciFinance per la gestione delle tue finanze personali. Scegli il piano più adatto alle tue esigenze.' : 'Discover PaciFinance plans and pricing for managing your personal finances. Choose the plan that best suits your needs.'}
-        keywords={language === 'it' ? 'prezzi, piani, abbonamento, PaciFinance, finanze personali' : 'pricing, plans, subscription, PaciFinance, personal finance'}
+        keywords={language === 'it' ? 'prezzi, piani, abbonamento, PaciFinance, finanze personali, costo app finanze, piano gratuito, piano premium' : 'pricing, plans, subscription, PaciFinance, personal finance, finance app cost, free plan, premium plan'}
         canonical="/pricing"
+        language={language}
       />
       <Header
         theme={theme}

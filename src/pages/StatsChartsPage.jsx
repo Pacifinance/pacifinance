@@ -1,5 +1,5 @@
 import React, {useEffect, useContext} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -19,7 +19,7 @@ function StatsChartsPage() {
   const { isHidden, toggleHidden } = useContext(PrivacyContext);
   const { language, translations } = useContext(LanguageContext);
   const { mode } = theme;
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   // Hook per la navigazione con scroll
   const { 

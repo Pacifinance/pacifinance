@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { LocalizedLink } from './LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { 
@@ -66,7 +66,7 @@ const GoalsHeader = styled.div`
   }
 `;
 
-const AddGoalButton = styled(Link)`
+const AddGoalButton = styled(LocalizedLink)`
   background: rgba(168, 85, 247, 0.15);
   border: 1px solid rgba(168, 85, 247, 0.4);
   border-radius: 8px;

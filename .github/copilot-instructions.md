@@ -89,7 +89,74 @@ const text = languages[language].sectionName.key;
 **Auto-detection:**
 The system automatically detects browser language on first visit. User preferences saved in localStorage always take priority.
 
-### 2. **Mock Data for Testing (MANDATORY)**
+### 2. **URL-based Language Routing (MANDATORY)**
+
+PaciFinance uses **URL-based internationalization** for SEO and UX. All routes must include language prefix.
+
+**URL Structure:**
+```
+/it/                  # Italian root
+/en/dashboard         # English dashboard
+/it/profile           # Italian profile
+```
+
+**ALWAYS use LocalizedLink instead of Link:**
+```jsx
+// ❌ WRONG
+import { Link } from 'react-router-dom';
+<Link to="/dashboard">Dashboard</Link>
+
+// ✅ CORRECT
+import { LocalizedLink } from '../components/LocalizedLink';
+<LocalizedLink to="/dashboard">Dashboard</LocalizedLink>
+// Auto-renders: /it/dashboard or /en/dashboard based on current language
+```
+
+**ALWAYS use useLocalizedNavigate instead of useNavigate:**
+```jsx
+// ❌ WRONG
+import { useNavigate } from 'react-router-dom';
+const navigate = useNavigate();
+navigate('/dashboard');
+
+// ✅ CORRECT
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+const navigate = useLocalizedNavigate();
+navigate('/dashboard'); // Auto-navigates to /it/dashboard or /en/dashboard
+```
+
+**Available i18n routing utilities:**
+```javascript
+// From src/utils/i18nRouting.js
+import { 
+  getLanguageFromPath,      // Extract language from URL
+  removeLanguageFromPath,    // Remove language prefix
+  addLanguageToPath,         // Add language prefix
+  getLocalizedPath,          // Get full localized path
+  isValidLanguage            // Validate language code
+} from '../utils/i18nRouting';
+```
+
+**When changing language in settings:**
+```jsx
+import { useLocation, useNavigate } from 'react-router-dom';
+import { addLanguageToPath, removeLanguageFromPath } from '../utils/i18nRouting';
+
+const handleLanguageChange = (newLanguage) => {
+  setLanguage(newLanguage);
+  const currentPath = removeLanguageFromPath(location.pathname);
+  const newPath = addLanguageToPath(currentPath, newLanguage);
+  navigate(newPath, { replace: true });
+};
+```
+
+**Priority System:**
+1. URL parameter (`/it/`, `/en/`)
+2. localStorage (user preference)
+3. Browser language detection
+4. Default fallback (`en`)
+
+### 3. **Mock Data for Testing (MANDATORY)**
 When adding new data structures or features, you **MUST** update the mock user data in:
 ```
 src/contexts/MockAuthContext.jsx
@@ -97,7 +164,7 @@ src/contexts/MockAuthContext.jsx
 
 The `mockUserData` object must mirror the structure returned by the API in `UserContext.jsx`. This allows local development without database connection.
 
-### 3. **Data Selectors (MANDATORY)**
+### 4. **Data Selectors (MANDATORY)**
 When accessing userData properties, **ALWAYS** use or create selectors in:
 ```
 src/utils/userDataSelectors.js
@@ -113,17 +180,49 @@ import { getBankValue } from '../utils/userDataSelectors';
 const balance = getBankValue(userData);
 ```
 
-### 4. **Tests (MANDATORY)**
+### 5. **Tests (MANDATORY)**
 After adding new functionality:
 1. Create or update tests in `src/__tests__/`
 2. Run all tests: `npm test`
 3. Ensure all tests pass before committing
 
-### 5. **Build Verification (MANDATORY)**
+### 6. **Build Verification (MANDATORY)**
 After any change:
 1. Run `npm run lint` - fix any errors
 2. Run `npm run build` - ensure production build succeeds
 3. Run `npm test` - ensure all tests pass
+
+### 7. **Use Centralized Colors and Icons (MANDATORY)**
+When displaying assets or categories, **ALWAYS** use the centralized color and icon files:
+
+```jsx
+// ❌ WRONG - Hardcoded colors
+const categoryColors = { 'Food': '#e74c3c', 'House': '#9b59b6' };
+const color = categoryColors[category];
+
+// ✅ CORRECT - Use centralized colors
+import { getCategoryColor } from '../data/categoryColors';
+const color = getCategoryColor(category);
+
+// ❌ WRONG - Hardcoded asset colors
+const assetColor = '#27ae60';
+
+// ✅ CORRECT - Use centralized asset colors
+import { getAssetColor } from '../data/assetColors';
+const color = getAssetColor('stocks');
+
+// ✅ CORRECT - Use centralized icons
+import { getAssetIcon } from '../data/assetIcons';
+import { getCategoryIcon } from '../data/categoryIcons';
+const icon = getAssetIcon('etf');
+const catIcon = getCategoryIcon('Food');
+```
+
+**Available files:**
+- `src/data/assetColors.js` - Colors for assets (bank, stocks, ETF, crypto, etc.)
+- `src/data/assetIcons.js` - Icons for assets
+- `src/data/categoryColors.js` - Colors for income/outflow categories
+- `src/data/categoryIcons.js` - Icons for categories
 
 ---
 

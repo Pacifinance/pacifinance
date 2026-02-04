@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { LocalizedLink } from '../components/LocalizedLink';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
@@ -69,13 +69,13 @@ export default function ContactPage() {
                     : 'Before contacting us, check our FAQ section where you might find the answer to your question.'
                   }
                 </p>
-                <Link 
+                <LocalizedLink 
                   to="/faq" 
                   className="inline-block px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   style={{ backgroundColor: '#079164', color: 'white' }}
                 >
                   {language === 'it' ? 'Visita le FAQ' : 'Visit FAQ'}
-                </Link>
+                </LocalizedLink>
               </section>
 
               <section>

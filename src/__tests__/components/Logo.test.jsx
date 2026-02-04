@@ -3,10 +3,11 @@
  * Logo display and navigation
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { LanguageContext } from '../../contexts/LanguageContext';
 
 // Mock the navigate function
 const mockNavigate = vi.fn();
@@ -26,6 +27,24 @@ vi.mock('../assets/Brand/PacifinanceLogoPNG3NoBg.webp', () => ({
 
 import LogoPaci from '../../components/Logo';
 
+// Wrapper con LanguageContext
+const Wrapper = ({ children }) => {
+  const value = {
+    language: 'en',
+    translations: {},
+    setLanguage: vi.fn(),
+    toggleLanguage: vi.fn()
+  };
+
+  return (
+    <MemoryRouter>
+      <LanguageContext.Provider value={value}>
+        {children}
+      </LanguageContext.Provider>
+    </MemoryRouter>
+  );
+};
+
 describe('Logo Component', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
@@ -33,33 +52,21 @@ describe('Logo Component', () => {
 
   describe('rendering', () => {
     it('should render the logo', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       expect(logo).toBeInTheDocument();
     });
 
     it('should have correct alt text', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       expect(logo).toHaveAttribute('alt', 'PaciFinance Logo');
     });
 
     it('should have src attribute', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       expect(logo).toHaveAttribute('src');
@@ -68,24 +75,16 @@ describe('Logo Component', () => {
 
   describe('navigation', () => {
     it('should navigate to home on click', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       fireEvent.click(logo.parentElement);
       
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockNavigate).toHaveBeenCalledWith('/en', undefined);
     });
 
     it('should navigate only once per click', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       fireEvent.click(logo.parentElement);
@@ -96,11 +95,7 @@ describe('Logo Component', () => {
 
   describe('styling', () => {
     it('should have cursor pointer on container', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       const container = logo.parentElement;
@@ -111,11 +106,7 @@ describe('Logo Component', () => {
 
   describe('hover interactions', () => {
     it('should handle mouse enter event', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       const container = logo.parentElement;
@@ -125,11 +116,7 @@ describe('Logo Component', () => {
     });
 
     it('should handle mouse leave event', () => {
-      render(
-        <MemoryRouter>
-          <LogoPaci />
-        </MemoryRouter>
-      );
+      render(<LogoPaci />, { wrapper: Wrapper });
       
       const logo = screen.getByAltText('PaciFinance Logo');
       const container = logo.parentElement;

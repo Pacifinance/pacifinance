@@ -4,6 +4,7 @@ import { LocalizedLink } from '../components/LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
 import LogoPaci from '../components/Logo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
+import { SUPPORTED_LANGUAGES } from '../i18n/languagesConfig';
 
 export default function LandingFooter({ theme }) {
   const { language, translations } = useContext(LanguageContext);
@@ -139,6 +140,46 @@ export default function LandingFooter({ theme }) {
                   {translations.footer.community.supportDescription}
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Languages Section */}
+        <div className="pt-8 border-t mb-8" style={{ borderColor: theme.borderColor }}>
+          <div className="text-center">
+            <h3 className="font-semibold text-lg mb-3" style={{ color: theme.secondaryColor }}>
+              {translations.footer.languages.title}
+            </h3>
+            <p className="text-sm opacity-70 mb-4">
+              {translations.footer.languages.description}
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <div
+                  key={lang.code}
+                  className={`
+                    inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
+                    transition-all duration-200
+                    ${language === lang.code 
+                      ? 'ring-2 ring-offset-2' 
+                      : 'opacity-80 hover:opacity-100'
+                    }
+                  `}
+                  style={{ 
+                    backgroundColor: language === lang.code 
+                      ? theme.secondaryColor 
+                      : theme.primaryColor,
+                    color: language === lang.code 
+                      ? '#fff' 
+                      : theme.textColor,
+                    borderColor: theme.borderColor,
+                    ringColor: theme.secondaryColor
+                  }}
+                >
+                  <span className="text-lg">{lang.flag}</span>
+                  <span className="font-medium">{lang.name}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

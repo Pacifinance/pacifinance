@@ -69,6 +69,7 @@ export default function BalanceSection({
   setBalanceDate,
   onUpdateBalance,
   language,
+  translations,
 }) {
 
   const handleBalanceDateChange = (event) => {

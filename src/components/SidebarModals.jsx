@@ -97,6 +97,11 @@ const SidebarModals = ({
     handleCloseSecondaryModal,
     handleCloseModalAndLogout,
 }) => {
+    // Guardia per verificare che theme e translations siano disponibili
+    if (!theme || !translations) {
+        return null;
+    }
+
     return (
         <>
             {showAccountModal && (

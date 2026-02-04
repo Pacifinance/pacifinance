@@ -47,6 +47,7 @@ src/i18n/locales/en.json
 ```
 src/i18n/
 ├── index.js           # Centralized i18n export
+├── languagesConfig.js # SINGLE SOURCE OF TRUTH for languages
 ├── locales/
 │   ├── it.json       # Italian translations
 │   └── en.json       # English translations
@@ -447,30 +448,152 @@ Before every commit, ensure:
 ## 🌐 Internationalization (i18n)
 
 ### Supported Languages
-- Italian (`it`)
-- English (`en`)
+Languages are configured centrally in `src/i18n/languagesConfig.js`. Currently supported:
+- Italian (`it`) 🇮🇹
+- English (`en`) 🇬🇧
 
-### Adding New Text
-1. Open `src/data/languages.json`
-2. Add key to both `it` and `en` sections
-3. Use nested structure for organization:
+### URL-based Language Routing
+PaciFinance uses **URL-based internationalization** for SEO and UX. All routes include a language prefix.
+
+**URL Structure:**
+```
+/it/                  # Italian root
+/en/dashboard         # English dashboard
+/it/profile           # Italian profile
+```
+
+**ALWAYS use LocalizedLink instead of Link:**
+```jsx
+// ❌ WRONG
+import { Link } from 'react-router-dom';
+<Link to="/dashboard">Dashboard</Link>
+
+// ✅ CORRECT
+import { LocalizedLink } from '../components/LocalizedLink';
+<LocalizedLink to="/dashboard">Dashboard</LocalizedLink>
+// Auto-renders: /it/dashboard or /en/dashboard based on current language
+```
+
+**ALWAYS use useLocalizedNavigate instead of useNavigate:**
+```jsx
+// ❌ WRONG
+import { useNavigate } from 'react-router-dom';
+const navigate = useNavigate();
+navigate('/dashboard');
+
+// ✅ CORRECT
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+const navigate = useLocalizedNavigate();
+navigate('/dashboard'); // Auto-navigates to /it/dashboard or /en/dashboard
+```
+
+**Language Detection Priority:**
+1. URL parameter (`/it/`, `/en/`)
+2. localStorage (user preference)
+3. Browser language detection
+4. Default fallback (`en`)
+
+### 🆕 Adding a New Language - COMPLETE CHECKLIST
+
+When adding a new language (e.g., Spanish `es`), follow these steps **in order**:
+
+#### Step 1: Create Translation File
+Create `src/i18n/locales/es.json` by copying an existing translation file:
+```bash
+cp src/i18n/locales/en.json src/i18n/locales/es.json
+```
+Then translate all strings in the new file.
+
+#### Step 2: Update Language Configuration (SINGLE SOURCE OF TRUTH)
+Edit `src/i18n/languagesConfig.js` and add the new language:
+```javascript
+export const SUPPORTED_LANGUAGES = [
+  { code: 'it', name: 'Italiano', englishName: 'Italian', flag: '🇮🇹', isRTL: false },
+  { code: 'en', name: 'English', englishName: 'English', flag: '🇬🇧', isRTL: false },
+  // Add new language here:
+  { code: 'es', name: 'Español', englishName: 'Spanish', flag: '🇪🇸', isRTL: false }
+];
+```
+
+#### Step 3: Import Translation in i18n Index
+Edit `src/i18n/index.js`:
+```javascript
+import it from './locales/it.json';
+import en from './locales/en.json';
+import es from './locales/es.json'; // Add import
+
+const languages = {
+  it,
+  en,
+  es  // Add to languages object
+};
+```
+
+#### Step 4: Verify Automatic Updates
+The following components will **automatically** pick up the new language:
+- ✅ Landing page footer (shows available languages)
+- ✅ URL routing (`/es/dashboard` will work)
+- ✅ Language detection from browser
+- ✅ SEO components
+- ✅ Language selector in settings
+
+#### Step 5: Test the New Language
+```bash
+npm run lint          # Check for errors
+npm run build         # Verify build
+npm test              # Run tests
+```
+
+Then manually test:
+- Navigate to `/{newLang}/` URL
+- Check language selector shows new language
+- Verify translations appear correctly
+- Test language switching
+
+### Translation File Structure
 ```json
 {
-  "it": {
-    "pageName": {
-      "sectionName": {
-        "elementName": "Testo"
-      }
-    }
-  },
-  "en": {
-    "pageName": {
-      "sectionName": {
-        "elementName": "Text"
-      }
-    }
+  "sectionName": {
+    "key": "Translated text"
   }
 }
+```
+
+### Using Translations in Components
+```jsx
+import { LanguageContext } from '../contexts/LanguageContext';
+
+const { language, translations } = useContext(LanguageContext);
+const text = translations.sectionName.key;
+```
+
+### i18n Routing Utilities
+Available from `src/utils/i18nRouting.js`:
+```javascript
+import { 
+  getLanguageFromPath,      // Extract language from URL
+  removeLanguageFromPath,    // Remove language prefix
+  addLanguageToPath,         // Add language prefix
+  getLocalizedPath,          // Get full localized path
+  isValidLanguage,           // Validate language code
+  supportedLanguages,        // Full language config array
+  availableLanguages,        // Language codes array
+  defaultLanguage            // Default language code
+} from '../utils/i18nRouting';
+```
+
+### Language Configuration Exports
+Available from `src/i18n/languagesConfig.js`:
+```javascript
+import { 
+  SUPPORTED_LANGUAGES,      // Array of language objects
+  DEFAULT_LANGUAGE,         // Default language code ('en')
+  getLanguageCodes,         // Returns ['it', 'en', ...]
+  getLanguageByCode,        // Get full config by code
+  isValidLanguage,          // Check if code is valid
+  getLanguageName,          // Get native name
+  getLanguageFlag           // Get flag emoji
+} from '../i18n/languagesConfig';
 ```
 
 ### Never Hardcode Text
@@ -479,7 +602,7 @@ Before every commit, ensure:
 <button>Submit</button>
 
 // ✅ CORRECT
-<button>{languages[language].form.submitButton}</button>
+<button>{translations.form.submitButton}</button>
 ```
 
 ---

@@ -123,7 +123,7 @@ const ProfilePage = () => {
     const { language, translations } = useContext(LanguageContext);
     const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const navigate = useNavigate();
+    const navigate = useLocalizedNavigate();
 
     const [isEditMode, setIsEditMode] = useState(false);
     const [showBenefitsInfo, setShowBenefitsInfo] = useState(false);

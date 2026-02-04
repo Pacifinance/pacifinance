@@ -239,6 +239,10 @@
             "supportTitle": "Sostieni il Progetto",
             "supportDescription": "Il tuo contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità. Ogni donazione è molto apprezzata!"
         },
+        "languages": {
+            "title": "Lingue Disponibili",
+            "description": "PaciFinance è disponibile in più lingue"
+        },
         "madeWith": "Fatto con",
         "forPrivacy": "per la tua privacy"
     },

@@ -3,18 +3,29 @@
  * Manages URL-based internationalization for SEO and UX
  */
 
-import { getAvailableLanguages } from '../i18n';
+import { 
+  getLanguageCodes, 
+  DEFAULT_LANGUAGE, 
+  isValidLanguage as checkValidLanguage,
+  SUPPORTED_LANGUAGES
+} from '../i18n';
 
 /**
- * Get available languages
+ * Get available languages (dynamically from config)
  * @returns {Array<string>} Array of language codes
  */
-export const availableLanguages = getAvailableLanguages();
+export const availableLanguages = getLanguageCodes();
 
 /**
- * Default language fallback
+ * Default language fallback (from central config)
  */
-export const defaultLanguage = 'en';
+export const defaultLanguage = DEFAULT_LANGUAGE;
+
+/**
+ * Get full language configuration
+ * Useful for displaying language info in UI
+ */
+export const supportedLanguages = SUPPORTED_LANGUAGES;
 
 /**
  * Extract language code from URL pathname

@@ -49,7 +49,7 @@ const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, translations, setLanguage } = useContext(LanguageContext);
+    const { language, translations, setLanguage, toggleLanguage } = useContext(LanguageContext);
     // Usa l'hook unificato che gestisce sia UserContext che MockAuth
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
@@ -78,6 +78,11 @@ const SettingsPage = () => {
     const [selectedYear, setSelectedYear] = useState("");
 
     const userType = userData?.userType || "";
+
+    // Guardia per verificare che theme e translations siano disponibili
+    if (!theme || !translations || !translations.sidebar?.settings) {
+        return null;
+    }
 
     // Genera opzioni per mesi e anni
     const months = [
@@ -767,7 +772,7 @@ const SettingsPage = () => {
                                             marginBottom: "0.25rem"
                                         }}>
                                             <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.5rem" }} />
-                                            {tranhandleLanguageTogglbar.settings.language}
+                                            {translations.sidebar.settings.language}
                                         </label>
                                         <span style={{
                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
@@ -778,7 +783,7 @@ const SettingsPage = () => {
                                     </div>
                                     <MyButton
                                         theme={theme}
-                                        onClick={toggleLanguage}
+                                        onClick={handleLanguageToggle}
                                         style={{
                                             padding: "0.75rem 1.5rem",
                                             borderRadius: "10px",

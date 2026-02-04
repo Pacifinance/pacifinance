@@ -239,6 +239,10 @@
             "supportTitle": "Support the Project",
             "supportDescription": "Your contribution helps us keep the platform online and develop new features. Every donation is highly appreciated!"
         },
+        "languages": {
+            "title": "Available Languages",
+            "description": "PaciFinance is available in multiple languages"
+        },
         "madeWith": "Made with",
         "forPrivacy": "for your privacy"
     },

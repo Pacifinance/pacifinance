@@ -1,10 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ToggleModeButton from "../components/ToggleModeButton";
 import axios from "axios";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
+import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
 // import MyStyled from '../contexts/MyStyled';
 import { MyButton, ButtonContainer } from "../styles/MyStyled";
 
@@ -17,11 +19,24 @@ function Header({
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
   const [showDemoButton, setShowDemoButton] = useState(false);
-  const { language, translations, toggleLanguage } = useContext(LanguageContext);
-  const handleLanguageToggle = propToggleLanguage || toggleLanguage;
+  const { language, translations, setLanguage } = useContext(LanguageContext);
+  const localizedNavigate = useLocalizedNavigate();
+  const rawNavigate = useNavigate();
+  const location = useLocation();
+  
+  // Handle language toggle with URL update
+  const handleLanguageToggle = () => {
+    const newLanguage = language === 'it' ? 'en' : 'it';
+    setLanguage(newLanguage);
+    
+    // Update URL with new language (use rawNavigate since path already has language prefix)
+    const currentPath = removeLanguageFromPath(location.pathname);
+    const newPath = addLanguageToPath(currentPath, newLanguage);
+    rawNavigate(newPath, { replace: true });
+  };
+  
   const [username, setUsername] = useState("913418");
   const [password, setPassword] = useState("vbwifc9u");
-  const navigate = useLocalizedNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,7 +56,7 @@ function Header({
     if (isReplit || isLocalhost) {
       // Development/testing environment: bypass authentication
       handleSetIsAuthenticated(true);
-      navigate("/dashboard");
+      localizedNavigate("/dashboard");
       return;
     }
 
@@ -55,7 +70,7 @@ function Header({
       );
       if (response.status === 200) {
         handleSetIsAuthenticated(true);
-        navigate("/dashboard");
+        localizedNavigate("/dashboard");
       } else {
         console.log("Error in the demo login");
       }
@@ -66,7 +81,7 @@ function Header({
   };
 
   const handleAuthNavigation = () => {
-    navigate("/auth");
+    localizedNavigate("/auth");
   };
 
   return (

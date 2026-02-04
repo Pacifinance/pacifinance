@@ -437,7 +437,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 },
                             ].map(({ icon: Icon, route, tooltip, index }) => (
                                 <Tooltip key={index} title={tooltip} placement="right">
-                                    <Link
+                                    <LocalizedLink
                                         to={route}
                                         onClick={() => handleIconClick(index, route.substring(1))}
                                         style={{
@@ -510,7 +510,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                 pointerEvents: "none",
                                             }}
                                         />
-                                    </Link>
+                                    </LocalizedLink>
                                 </Tooltip>
                             ))}
                         </div>

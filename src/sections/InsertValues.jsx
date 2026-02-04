@@ -865,6 +865,7 @@ export default function InsertValue({
             setBalanceDate={setBalanceDate}
             onUpdateBalance={handleUpdateBalance}
             language={language}
+            translations={translations}
           />
         </SectionContainer>
       );

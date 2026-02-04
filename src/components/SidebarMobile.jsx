@@ -21,8 +21,8 @@ const SidebarMobile = ({
     const navigate = useLocalizedNavigate();
     const location = useLocation();
     
-    // Guardia per verificare che il theme sia disponibile
-    if (!theme) {
+    // Guardia per verificare che theme e translations siano disponibili
+    if (!theme || !translations) {
         return null;
     }
 

@@ -13,7 +13,11 @@ import {
     getOutflowsArray,
     getBalanceGrowth12Months,
     getProfileCompletionPercentage,
-    getTotalOutflowsPerCategoryPerMonth
+    getTotalOutflowsPerCategoryPerMonth,
+    getAveragesAllSavingsRates,
+    getAveragesSimilarSavingsRates,
+    getAveragesAllExpensesByCategory,
+    getAveragesSimilarExpensesByCategory
 } from '../utils/userDataSelectors';
 import { 
   StyledMonth, 
@@ -887,6 +891,14 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     
     const userSavingsRate = calculateSavingsRate();
 
+    // Get averages savings rates from API
+    const allUsersSavingsRate = getAveragesAllSavingsRates(userData);
+    const similarUsersSavingsRate = getAveragesSimilarSavingsRates(userData);
+
+    // Get averages expenses by category from API
+    const allUsersExpensesByCategory = getAveragesAllExpensesByCategory(userData);
+    const similarUsersExpensesByCategory = getAveragesSimilarExpensesByCategory(userData);
+
     // Calculate Asset Allocation
     const calculateAssetAllocation = () => {
         const currentBalance = userData?.balances?.[0]?.balance || {};
@@ -1149,7 +1161,27 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                             <MetricRow theme={theme}>
                                 <span className="label">{translations.comparison.cards.savingsRate.avgSimilar}</span>
                                 <span className="value">
-                                    {translations.general.comingSoon || 'Coming soon'}
+                                    {similarUsersSavingsRate !== null ? (
+                                        <>
+                                            {isHidden ? '****' : `${similarUsersSavingsRate.toFixed(1)}%`}
+                                            {getComparisonIcon(userSavingsRate, similarUsersSavingsRate)}
+                                        </>
+                                    ) : (
+                                        translations.general.comingSoon || 'Coming soon'
+                                    )}
+                                </span>
+                            </MetricRow>
+                            <MetricRow theme={theme}>
+                                <span className="label">{translations.comparison.cards.savingsRate.avgAll}</span>
+                                <span className="value">
+                                    {allUsersSavingsRate !== null ? (
+                                        <>
+                                            {isHidden ? '****' : `${allUsersSavingsRate.toFixed(1)}%`}
+                                            {getComparisonIcon(userSavingsRate, allUsersSavingsRate)}
+                                        </>
+                                    ) : (
+                                        translations.general.comingSoon || 'Coming soon'
+                                    )}
                                 </span>
                             </MetricRow>
                         </>
@@ -1219,18 +1251,64 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                             <div style={{ fontSize: '0.85rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', marginBottom: '0.5rem' }}>
                                 {translations.comparison.cards.spendingCategories.topCategories}
                             </div>
-                            {spendingByCategory.slice(0, 5).map((category, index) => (
-                                <CategoryBar key={index} theme={theme}>
-                                    <div className="color-dot" style={{ background: category.color }} />
-                                    <span className="category-name">{category.name}</span>
-                                    <span className="category-value">
-                                        {isHidden ? '****' : formatCurrency(category.value)}
-                                    </span>
-                                    <span className="category-percent">
-                                        {isHidden ? '**%' : `${category.percentage.toFixed(0)}%`}
-                                    </span>
-                                </CategoryBar>
-                            ))}
+                            {spendingByCategory.slice(0, 5).map((category, index) => {
+                                // Find the category index to look up averages
+                                const categoryIndex = userData?.tags?.outflowsTags?.find(
+                                    t => t.translations?.en === category.name || t.translations?.it === category.name || t.label === category.name.toLowerCase()
+                                )?.index;
+                                
+                                const similarAvg = categoryIndex && similarUsersExpensesByCategory ? similarUsersExpensesByCategory[categoryIndex] : null;
+                                const allAvg = categoryIndex && allUsersExpensesByCategory ? allUsersExpensesByCategory[categoryIndex] : null;
+                                
+                                return (
+                                    <div key={index} style={{ marginBottom: '0.75rem' }}>
+                                        <CategoryBar theme={theme}>
+                                            <div className="color-dot" style={{ background: category.color }} />
+                                            <span className="category-name">{category.name}</span>
+                                            <span className="category-value">
+                                                {isHidden ? '****' : formatCurrency(category.value)}
+                                            </span>
+                                            <span className="category-percent">
+                                                {isHidden ? '**%' : `${category.percentage.toFixed(0)}%`}
+                                            </span>
+                                        </CategoryBar>
+                                        {(similarAvg !== null && similarAvg !== undefined && similarAvg > 0) && (
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                justifyContent: 'space-between', 
+                                                alignItems: 'center',
+                                                paddingLeft: '1.5rem', 
+                                                fontSize: '0.78rem', 
+                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+                                                marginTop: '2px'
+                                            }}>
+                                                <span>{translations.comparison.cards.spendingCategories.avgSimilar || translations.comparison.cards.avgOutflows.avgSimilar}</span>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    {isHidden ? '****' : formatCurrency(similarAvg)}
+                                                    {getComparisonIcon(similarAvg, category.value)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {(allAvg !== null && allAvg !== undefined && allAvg > 0) && (
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                justifyContent: 'space-between', 
+                                                alignItems: 'center',
+                                                paddingLeft: '1.5rem', 
+                                                fontSize: '0.78rem', 
+                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)',
+                                                marginTop: '1px'
+                                            }}>
+                                                <span>{translations.comparison.cards.spendingCategories.avgAll || translations.comparison.cards.avgOutflows.avgAll}</span>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    {isHidden ? '****' : formatCurrency(allAvg)}
+                                                    {getComparisonIcon(allAvg, category.value)}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                             {spendingByCategory.length > 5 && (
                                 <>
                                     <div style={{ fontSize: '0.8rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', marginTop: '0.75rem', marginBottom: '0.25rem' }}>

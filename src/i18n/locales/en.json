@@ -756,7 +756,9 @@
                 "description": "Where you spend your money (last 12 months)",
                 "topCategories": "Top categories",
                 "otherCategories": "Other categories",
-                "noExpenses": "No expenses recorded"
+                "noExpenses": "No expenses recorded",
+                "avgSimilar": "Similar Users Avg",
+                "avgAll": "All Users Avg"
             }
         },
         "insights": {

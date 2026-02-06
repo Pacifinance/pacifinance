@@ -754,7 +754,9 @@
                 "description": "Dove spendi i tuoi soldi (ultimi 12 mesi)",
                 "topCategories": "Categorie principali",
                 "otherCategories": "Altre categorie",
-                "noExpenses": "Nessuna spesa registrata"
+                "noExpenses": "Nessuna spesa registrata",
+                "avgSimilar": "Media Utenti Simili",
+                "avgAll": "Media Tutti gli Utenti"
             }
         },
         "insights": {

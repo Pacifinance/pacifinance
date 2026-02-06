@@ -248,6 +248,23 @@ export const getFormattedPreYearSameMonthDateLocalized = (userData, language = '
 };
 
 
+// Averages selectors (from /stats/averages API)
+export const getAverages = (userData) => userData?.averages || { all: {}, similar: {} };
+export const getAveragesAll = (userData) => userData?.averages?.all || {};
+export const getAveragesSimilar = (userData) => userData?.averages?.similar || {};
+
+export const getAveragesAllBalances = (userData) => userData?.averages?.all?.balances ?? null;
+export const getAveragesAllExpenses = (userData) => userData?.averages?.all?.expenses ?? null;
+export const getAveragesAllIncomes = (userData) => userData?.averages?.all?.incomes ?? null;
+export const getAveragesAllSavingsRates = (userData) => userData?.averages?.all?.savingsRates ?? null;
+export const getAveragesAllExpensesByCategory = (userData) => userData?.averages?.all?.expensesByCategory ?? null;
+
+export const getAveragesSimilarBalances = (userData) => userData?.averages?.similar?.balances ?? null;
+export const getAveragesSimilarExpenses = (userData) => userData?.averages?.similar?.expenses ?? null;
+export const getAveragesSimilarIncomes = (userData) => userData?.averages?.similar?.incomes ?? null;
+export const getAveragesSimilarSavingsRates = (userData) => userData?.averages?.similar?.savingsRates ?? null;
+export const getAveragesSimilarExpensesByCategory = (userData) => userData?.averages?.similar?.expensesByCategory ?? null;
+
 // Goals and limits selectors (for backward compatibility)
 export const getMonthlySpendingLimit = (userData) => userData?.limits?.monthlySpendingLimit ?? 2000;
 export const getSavingsGoalPercentage = (userData) => userData?.limits?.savingsGoalPercentage ?? 20;

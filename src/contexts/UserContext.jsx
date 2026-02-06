@@ -338,26 +338,28 @@ export const UserProvider = ({ children }) => {
             
             // Try to fetch stats averages - endpoint may not be available in production yet
             let averages = {
-              all: { balances: null, expenses: null, incomes: null },
-              similar: { balances: null, expenses: null, incomes: null }
+              all: { balances: null, expenses: null, incomes: null, savingsRates: null, expensesByCategory: null },
+              similar: { balances: null, expenses: null, incomes: null, savingsRates: null, expensesByCategory: null }
             };
             
             try {
               const statsAveragesResponse = await axios.post('/stats/averages', null, { withCredentials: true });
               const statsAveragesData = statsAveragesResponse.data;
               
-              // Struttura attuale: { balances, expenses, incomes }
-              // Struttura futura: { general: { balances, expenses, incomes }, similar: { balances, expenses, incomes } }
               averages = {
                 all: {
                   balances: statsAveragesData.all?.balances ?? statsAveragesData.general?.balances ?? null,
                   expenses: statsAveragesData.all?.expenses ?? statsAveragesData.general?.expenses ?? null,
-                  incomes: statsAveragesData.all?.incomes ?? statsAveragesData.general?.incomes ?? null
+                  incomes: statsAveragesData.all?.incomes ?? statsAveragesData.general?.incomes ?? null,
+                  savingsRates: statsAveragesData.all?.savingsRates ?? null,
+                  expensesByCategory: statsAveragesData.all?.expensesByCategory ?? null
                 },
                 similar: {
                   balances: statsAveragesData.similar?.balances ?? null,
                   expenses: statsAveragesData.similar?.expenses ?? null,
-                  incomes: statsAveragesData.similar?.incomes ?? null
+                  incomes: statsAveragesData.similar?.incomes ?? null,
+                  savingsRates: statsAveragesData.similar?.savingsRates ?? null,
+                  expensesByCategory: statsAveragesData.similar?.expensesByCategory ?? null
                 }
               };
             } catch (statsError) {

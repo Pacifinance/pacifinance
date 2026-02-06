@@ -12,6 +12,12 @@ const expenseSchema = new mongoose.Schema({
     categoryTag: {type: mongoose.Types.ObjectId, ref: "Tag", required: true}
 });
 
+type Tag = Awaited<ReturnType<typeof tags.getAllTagsByType>>[0]
+type PopulatedExpense = 
+    Omit<typeof Expense, "categoryTag"> & {
+        categoryTag: Tag
+    }
+
 /* ==================== Template queries ==================== */
 
 /**
@@ -33,7 +39,7 @@ async function addOne(data: object) {
 async function getSorted(where: object, select: string, sort: any) {
     return await Expense.find(where, select)
     .populate({path: "paymentType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "paymentType"
-    .populate({path: "categoryTag", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "categoryTag"
+    .populate<PopulatedExpense>({path: "categoryTag", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "categoryTag"
     .sort(sort).lean().exec();
 }
 

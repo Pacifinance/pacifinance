@@ -1,6 +1,7 @@
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
 import expenses from "../../db/models/expenses"
+import tags from "../../db/models/tags"
 
 /**
  * Contains all the relevant averages of a user
@@ -8,7 +9,11 @@ import expenses from "../../db/models/expenses"
 type Averages = {
     balances: number,
     expenses: number,
-    incomes: number
+    incomes: number,
+    savingsRates: number,
+    expensesByCategory: {
+        [categoryIndex: number]: number
+    }
 }
 
 /**
@@ -42,11 +47,23 @@ class AveragesData {
     private balances: Accumulator
     private expenses: Accumulator
     private incomes: Accumulator
+    private savingRates: Accumulator
+    private expensesByCategory: {
+        [categoryIndex: number]: Accumulator
+    }
 
     public constructor() {
         this.balances = new Accumulator()
         this.expenses = new Accumulator()
         this.incomes = new Accumulator()
+        this.savingRates = new Accumulator()
+        this.expensesByCategory = {}
+
+        tags.getAllTagsByType(tags.TagType.expense.value)
+        .then((expenseTags) => {
+            for (const category of expenseTags)
+                this.expensesByCategory[category.index] = new Accumulator()
+        })
     }
 
     public addBalance(value: number) {
@@ -61,11 +78,24 @@ class AveragesData {
         this.incomes.accumulate(value)
     }
 
-    public getAverages(): Averages {
+    public addSavingRate(value: number) {
+        this.savingRates.accumulate(value)
+    }
+
+    public addExpenseByCategory(categoryIndex: number, value: number) {
+        this.expensesByCategory[categoryIndex].accumulate(value)
+    }
+
+    public getAverages(): Averages {        
         return {
             balances: this.balances.getAverage(),
             expenses: this.expenses.getAverage(),
-            incomes: this.incomes.getAverage()
+            incomes: this.incomes.getAverage(),
+            savingsRates: this.savingRates.getAverage(),
+            expensesByCategory: Object.entries(this.expensesByCategory).reduce(
+                (obj, [categoryIndex, acc]) => ({...obj, [Number(categoryIndex)]: acc.getAverage()}),
+                {}
+            )
         }
     }
 }
@@ -79,6 +109,7 @@ type AveragesCachedData = {
 }
 
 type UsersList = Awaited<ReturnType<typeof users.getAllUsersIds>>
+type Expense = Awaited<ReturnType<typeof expenses.getMonthlyExpensesByUserId>>[0]
 
 /**
  * Computes the averages given a list of users
@@ -90,63 +121,62 @@ async function computeAverages(usersList: UsersList, now: Date): Promise<Average
     const thisMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()))
     const lastMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()-1))
 
-    // let averages = new AveragesData()
-
-    // let allBalances: number[] = []
-    // let allExpenses: number[] = []
-    // let allIncomes: number[] = []
-
-    // for (const user of usersList) {
-    //     if (user.type >= users.UserType.test.value)
-    //         continue
-
-    //     const balanceTotal = await balances.getTotalLatestByUserId(user.userId, thisMonthStart)
-    //     if (balanceTotal !== null)
-    //         allBalances.push(balanceTotal)
-
-    //     const expensesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.userId, lastMonthStart, true)
-    //     if (expensesTotal !== null)
-    //         allExpenses.push(expensesTotal)
-
-    //     const incomesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.userId, lastMonthStart, false)
-    //     if (incomesTotal !== null)
-    //         allIncomes.push(incomesTotal)
-    // }
-
-    // if (allBalances.length === 0)
-    //     averages.balances = 0.0
-    // else
-    //     averages.balances = allBalances.reduce((accumulator, balance) => accumulator + balance, 0) / allBalances.length
-    
-    // if (allExpenses.length === 0)
-    //     averages.expenses = 0.0
-    // else
-    //     averages.expenses = allExpenses.reduce((accumulator, expense) => accumulator + expense, 0) / allExpenses.length
-    
-    // if (allIncomes.length === 0)
-    //     averages.incomes = 0.0
-    // else
-    //     averages.incomes = allIncomes.reduce((accumulator, income) => accumulator + income, 0) / allIncomes.length
-
-    // return averages
-
     let averagesData = new AveragesData()
 
     for (const user of usersList) {
         if (user.type >= users.UserType.test.value)
             continue
 
+        // User balance up to last month
         const balanceTotal = await balances.getTotalLatestByUserId(user.userId, thisMonthStart)
         if (balanceTotal !== null)
             averagesData.addBalance(balanceTotal)
 
+        // User total expenses of the last month
         const expensesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.userId, lastMonthStart, true)
         if (expensesTotal !== null)
             averagesData.addExpense(expensesTotal)
 
+        // User total incomes of the last month
         const incomesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.userId, lastMonthStart, false)
         if (incomesTotal !== null)
             averagesData.addIncome(incomesTotal)
+
+        // User expenses, total expenses and total incomes for the full year
+        let yearlyExpenses: Expense[] = []
+        let expensesYearlyTotal = 0
+        let incomesYearlyTotal = 0
+        let month = thisMonthStart
+        let countedMonths = 0
+        while (countedMonths < 12) {
+            countedMonths++
+            month.setUTCMonth(month.getUTCMonth()-1) // previous month
+        
+            yearlyExpenses = [
+                ...yearlyExpenses,
+                ...(await expenses.getMonthlyExpensesByUserId(user.userId, month, true))
+            ]
+            expensesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.userId, month, true) ?? 0
+            incomesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.userId, month, false) ?? 0
+        }
+
+        // User saving rate for the full year
+        if (incomesYearlyTotal !== 0) {
+            const savingRate = (incomesYearlyTotal - expensesYearlyTotal) / incomesYearlyTotal * 100
+            averagesData.addSavingRate(savingRate)
+        }
+
+        // User expenses by category for the full year
+        let yearlyTotalExpensesByCategory: {[categoryIndex: number]: number} = {}
+        for (const expense of yearlyExpenses) {
+            const categoryIndex = expense.categoryTag.index
+            yearlyTotalExpensesByCategory[categoryIndex] =
+                (yearlyTotalExpensesByCategory[categoryIndex] || 0) + expense.amount
+        }
+        for (const categoryIndexStr of Object.keys(yearlyTotalExpensesByCategory)) {
+            const categoryIndex = Number(categoryIndexStr)
+            averagesData.addExpenseByCategory(categoryIndex, yearlyTotalExpensesByCategory[categoryIndex])
+        }
     }
 
     return averagesData.getAverages()
@@ -166,7 +196,9 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         all: {
             balances: 0,
             expenses: 0,
-            incomes: 0
+            incomes: 0,
+            savingsRates: 0,
+            expensesByCategory: {}
         }
     }
 

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import axios from "axios";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";
@@ -54,7 +55,7 @@ const SettingsPage = () => {
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const navigate = useNavigate();
+    const navigate = useLocalizedNavigate();
     const location = useLocation();
 
     const [showChangeID, setShowChangeID] = useState(false);
@@ -376,278 +377,6 @@ const SettingsPage = () => {
                             padding: isMobileScreen ? "1rem" : "2rem",
                         }}
                     >
-                        {/* Data Export Section */}
-                        <div
-                            style={{
-                                marginBottom: "2rem",
-                                padding: "2rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "16px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                                backdropFilter: "blur(10px)",
-                            }}
-                        >
-                            <h3 style={{ 
-                                marginBottom: "1.5rem", 
-                                color: theme.textColor,
-                                fontSize: "1.4rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faDownload} style={{ 
-                                    marginRight: "0.75rem",
-                                    color: theme.buttonBackgroundColor 
-                                }} />
-                                {language === "it" ? "Esportazione Dati" : "Data Export"}
-                            </h3>
-                            <p style={{ 
-                                color: theme.textColor, 
-                                marginBottom: "1.5rem",
-                                fontSize: "1rem",
-                                lineHeight: "1.5"
-                            }}>
-                                {language === "it" 
-                                    ? "Scarica tutti i tuoi dati dalla piattaforma in diversi formati"
-                                    : "Download all your platform data in different formats"}
-                            </p>
-
-                            {/* Filtri Export */}
-                            <div style={{
-                                backgroundColor: theme.cardColor,
-                                border: `1px solid ${theme.borderColor}`,
-                                borderRadius: "12px",
-                                padding: "1.5rem",
-                                marginBottom: "2rem"
-                            }}>
-                                <h4 style={{ 
-                                    color: theme.textColor, 
-                                    marginBottom: "1rem",
-                                    fontSize: "1.1rem"
-                                }}>
-                                    {language === "it" ? "Filtro Dati" : "Data Filter"}
-                                </h4>
-                                
-                                <div style={{
-                                    display: "grid",
-                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
-                                    gap: "1rem",
-                                    alignItems: "end"
-                                }}>
-                                    <div>
-                                        <label style={{ 
-                                            color: theme.textColor, 
-                                            fontSize: "0.9rem",
-                                            marginBottom: "0.5rem",
-                                            display: "block"
-                                        }}>
-                                            {language === "it" ? "Periodo" : "Period"}
-                                        </label>
-                                        <select
-                                            value={exportFilter}
-                                            onChange={(e) => setExportFilter(e.target.value)}
-                                            style={{
-                                                width: "100%",
-                                                padding: "0.75rem",
-                                                border: `1px solid ${theme.borderColor}`,
-                                                borderRadius: "8px",
-                                                backgroundColor: theme.inputBackground,
-                                                color: "#000000",
-                                                fontSize: "0.9rem"
-                                            }}
-                                        >
-                                            <option value="all" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                {language === "it" ? "Tutti i dati" : "All data"}
-                                            </option>
-                                            <option value="last12" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                {language === "it" ? "Ultimi 12 mesi" : "Last 12 months"}
-                                            </option>
-                                            <option value="specific" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                {language === "it" ? "Mese specifico" : "Specific month"}
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    {exportFilter === "specific" && (
-                                        <>
-                                            <div>
-                                                <label style={{ 
-                                                    color: theme.textColor, 
-                                                    fontSize: "0.9rem",
-                                                    marginBottom: "0.5rem",
-                                                    display: "block"
-                                                }}>
-                                                    {language === "it" ? "Mese" : "Month"}
-                                                </label>
-                                                <select
-                                                    value={selectedMonth}
-                                                    onChange={(e) => setSelectedMonth(e.target.value)}
-                                                    style={{
-                                                        width: "100%",
-                                                        padding: "0.75rem",
-                                                        border: `1px solid ${theme.borderColor}`,
-                                                        borderRadius: "8px",
-                                                        backgroundColor: theme.inputBackground,
-                                                        color: "#000000",
-                                                        fontSize: "0.9rem"
-                                                    }}
-                                                >
-                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                        {language === "it" ? "Seleziona mese" : "Select month"}
-                                                    </option>
-                                                    {months.map(month => (
-                                                        <option key={month.value} value={month.value} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                            {month.label}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <label style={{ 
-                                                    color: theme.textColor, 
-                                                    fontSize: "0.9rem",
-                                                    marginBottom: "0.5rem",
-                                                    display: "block"
-                                                }}>
-                                                    {language === "it" ? "Anno" : "Year"}
-                                                </label>
-                                                <select
-                                                    value={selectedYear}
-                                                    onChange={(e) => setSelectedYear(e.target.value)}
-                                                    style={{
-                                                        width: "100%",
-                                                        padding: "0.75rem",
-                                                        border: `1px solid ${theme.borderColor}`,
-                                                        borderRadius: "8px",
-                                                        backgroundColor: theme.inputBackground,
-                                                        color: "#000000",
-                                                        fontSize: "0.9rem"
-                                                    }}
-                                                >
-                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                        {language === "it" ? "Seleziona anno" : "Select year"}
-                                                    </option>
-                                                    {years.map(year => (
-                                                        <option key={year} value={year} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                            {year}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                            
-                            <div style={{
-                                display: "grid",
-                                gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
-                                gap: "1rem",
-                            }}>
-                                {/* CSV Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('csv')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#28a745",
-                                        color: "white",
-                                        fontSize: "0.95rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(40, 167, 69, 0.3)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFileCsv} style={{ marginRight: "0.5rem" }} />
-                                    CSV
-                                </MyButton>
-
-                                {/* Excel Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('excel')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#217346",
-                                        color: "white",
-                                        fontSize: "0.95rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(33, 115, 70, 0.3)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFileExcel} style={{ marginRight: "0.5rem" }} />
-                                    Excel
-                                </MyButton>
-
-                                {/* JSON Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('json')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#17a2b8",
-                                        color: "white",
-                                        fontSize: "0.95rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(23, 162, 184, 0.3)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "0.5rem" }} />
-                                    JSON
-                                </MyButton>
-
-                                {/* PDF Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('pdf')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#dc3545",
-                                        color: "white",
-                                        fontSize: "0.95rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(220, 53, 69, 0.3)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: "0.5rem" }} />
-                                    PDF
-                                </MyButton>
-                            </div>
-
-                            {exportLoading && (
-                                <div style={{
-                                    textAlign: "center",
-                                    marginTop: "1rem",
-                                    color: theme.textColor,
-                                    fontSize: "0.9rem",
-                                    fontStyle: "italic"
-                                }}>
-                                    {language === "it" ? "Esportazione in corso..." : "Exporting data..."}
-                                </div>
-                            )}
-                        </div>
-
                         {/* Theme Settings */}
                         <div
                             style={{
@@ -1104,6 +833,278 @@ const SettingsPage = () => {
                                     </form>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Data Export Section */}
+                        <div
+                            style={{
+                                marginBottom: "2rem",
+                                padding: "2rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "16px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                                backdropFilter: "blur(10px)",
+                            }}
+                        >
+                            <h3 style={{ 
+                                marginBottom: "1.5rem", 
+                                color: theme.textColor,
+                                fontSize: "1.4rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faDownload} style={{ 
+                                    marginRight: "0.75rem",
+                                    color: theme.buttonBackgroundColor 
+                                }} />
+                                {language === "it" ? "Esportazione Dati" : "Data Export"}
+                            </h3>
+                            <p style={{ 
+                                color: theme.textColor, 
+                                marginBottom: "1.5rem",
+                                fontSize: "1rem",
+                                lineHeight: "1.5"
+                            }}>
+                                {language === "it" 
+                                    ? "Scarica tutti i tuoi dati dalla piattaforma in diversi formati"
+                                    : "Download all your platform data in different formats"}
+                            </p>
+
+                            {/* Filtri Export */}
+                            <div style={{
+                                backgroundColor: theme.cardColor,
+                                border: `1px solid ${theme.borderColor}`,
+                                borderRadius: "12px",
+                                padding: "1.5rem",
+                                marginBottom: "2rem"
+                            }}>
+                                <h4 style={{ 
+                                    color: theme.textColor, 
+                                    marginBottom: "1rem",
+                                    fontSize: "1.1rem"
+                                }}>
+                                    {language === "it" ? "Filtro Dati" : "Data Filter"}
+                                </h4>
+                                
+                                <div style={{
+                                    display: "grid",
+                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
+                                    gap: "1rem",
+                                    alignItems: "end"
+                                }}>
+                                    <div>
+                                        <label style={{ 
+                                            color: theme.textColor, 
+                                            fontSize: "0.9rem",
+                                            marginBottom: "0.5rem",
+                                            display: "block"
+                                        }}>
+                                            {language === "it" ? "Periodo" : "Period"}
+                                        </label>
+                                        <select
+                                            value={exportFilter}
+                                            onChange={(e) => setExportFilter(e.target.value)}
+                                            style={{
+                                                width: "100%",
+                                                padding: "0.75rem",
+                                                border: `1px solid ${theme.borderColor}`,
+                                                borderRadius: "8px",
+                                                backgroundColor: theme.inputBackground,
+                                                color: "#000000",
+                                                fontSize: "0.9rem"
+                                            }}
+                                        >
+                                            <option value="all" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Tutti i dati" : "All data"}
+                                            </option>
+                                            <option value="last12" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Ultimi 12 mesi" : "Last 12 months"}
+                                            </option>
+                                            <option value="specific" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Mese specifico" : "Specific month"}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    {exportFilter === "specific" && (
+                                        <>
+                                            <div>
+                                                <label style={{ 
+                                                    color: theme.textColor, 
+                                                    fontSize: "0.9rem",
+                                                    marginBottom: "0.5rem",
+                                                    display: "block"
+                                                }}>
+                                                    {language === "it" ? "Mese" : "Month"}
+                                                </label>
+                                                <select
+                                                    value={selectedMonth}
+                                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.75rem",
+                                                        border: `1px solid ${theme.borderColor}`,
+                                                        borderRadius: "8px",
+                                                        backgroundColor: theme.inputBackground,
+                                                        color: "#000000",
+                                                        fontSize: "0.9rem"
+                                                    }}
+                                                >
+                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        {language === "it" ? "Seleziona mese" : "Select month"}
+                                                    </option>
+                                                    {months.map(month => (
+                                                        <option key={month.value} value={month.value} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                            {month.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ 
+                                                    color: theme.textColor, 
+                                                    fontSize: "0.9rem",
+                                                    marginBottom: "0.5rem",
+                                                    display: "block"
+                                                }}>
+                                                    {language === "it" ? "Anno" : "Year"}
+                                                </label>
+                                                <select
+                                                    value={selectedYear}
+                                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.75rem",
+                                                        border: `1px solid ${theme.borderColor}`,
+                                                        borderRadius: "8px",
+                                                        backgroundColor: theme.inputBackground,
+                                                        color: "#000000",
+                                                        fontSize: "0.9rem"
+                                                    }}
+                                                >
+                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        {language === "it" ? "Seleziona anno" : "Select year"}
+                                                    </option>
+                                                    {years.map(year => (
+                                                        <option key={year} value={year} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                            {year}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
+                                gap: "1rem",
+                            }}>
+                                {/* CSV Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('csv')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#28a745",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(40, 167, 69, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileCsv} style={{ marginRight: "0.5rem" }} />
+                                    CSV
+                                </MyButton>
+
+                                {/* Excel Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('excel')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#217346",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(33, 115, 70, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileExcel} style={{ marginRight: "0.5rem" }} />
+                                    Excel
+                                </MyButton>
+
+                                {/* JSON Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('json')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#17a2b8",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(23, 162, 184, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "0.5rem" }} />
+                                    JSON
+                                </MyButton>
+
+                                {/* PDF Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('pdf')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "1rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#dc3545",
+                                        color: "white",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 15px rgba(220, 53, 69, 0.3)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: "0.5rem" }} />
+                                    PDF
+                                </MyButton>
+                            </div>
+
+                            {exportLoading && (
+                                <div style={{
+                                    textAlign: "center",
+                                    marginTop: "1rem",
+                                    color: theme.textColor,
+                                    fontSize: "0.9rem",
+                                    fontStyle: "italic"
+                                }}>
+                                    {language === "it" ? "Esportazione in corso..." : "Exporting data..."}
+                                </div>
+                            )}
                         </div>
 
                         {/* Danger Zone */}

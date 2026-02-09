@@ -71,9 +71,9 @@ export const DashboardContent = styled.div`
   padding-bottom: 80vh; /* Spazio extra in fondo per evitare cambio pagina immediato */
   
   @media (max-width: 768px) {
-    padding: 1rem;
-    min-height: 130vh;
-    padding-bottom: 60vh;
+    padding: 0.75rem 0.5rem;
+    min-height: 120vh;
+    padding-bottom: 50vh;
   }
 `;
 
@@ -110,6 +110,10 @@ export const GradientBackground = styled.div`
 export const ModernDashboardHeader = styled.header`
   margin-bottom: 3rem;
   animation: ${fadeInUp} 0.8s ease-out;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.5rem;
+  }
 `;
 
 export const ModernDashboardTitle = styled.h1`
@@ -204,14 +208,31 @@ export const ModernBalanceOverview = styled.div`
     gap: 1rem;
 
     @media (max-width: 768px) {
-      flex-direction: column;
-      gap: 0.75rem;
+      flex-direction: row;
+      gap: 0.35rem;
     }
   }
 
   @media (max-width: 768px) {
-    padding: 1.2rem 1rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 0.8rem;
+
+    .balance-main {
+      margin-bottom: 0.75rem;
+
+      h2 {
+        font-size: 0.85rem;
+      }
+
+      .balance-value {
+        font-size: 1.8rem;
+      }
+
+      .balance-subtitle {
+        font-size: 0.75rem;
+      }
+    }
   }
 `;
 
@@ -265,15 +286,37 @@ export const ModernMetricCard = styled.div`
   }
   
   @media (max-width: 768px) {
-    padding: 0.8rem;
-    min-width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.5rem 0.35rem;
+    gap: 0.3rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-radius: 0.6rem;
     
     .metric-icon {
-      font-size: 1.5rem;
+      font-size: 1rem;
     }
     
+    .metric-content {
+      width: 100%;
+    }
+
     .metric-content .metric-value {
-      font-size: 1.2rem;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .metric-content .metric-label {
+      font-size: 0.6rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .metric-content .metric-percentage {
+      font-size: 0.55rem;
     }
   }
 `;
@@ -292,8 +335,8 @@ export const ModernAssetsGrid = styled.div`
   }};
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -334,8 +377,8 @@ export const AssetCardWrapper = styled.div`
   }
 
   @media (max-width: 768px) {
-    flex: 0 0 100%;
-    max-width: 100%;
+    flex: 0 0 calc(50% - 0.25rem);
+    max-width: calc(50% - 0.25rem);
   }
 `;
 
@@ -343,12 +386,12 @@ export const AssetCardWrapper = styled.div`
 export const AssetRowWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
   width: 100%;
   justify-content: ${props => props.$centered ? 'center' : 'flex-start'};
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    gap: 0.5rem;
   }
 `;
 
@@ -366,8 +409,8 @@ export const ModernInvestmentsGrid = styled.div`
   }};
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -419,8 +462,8 @@ export const InvestmentCardWrapper = styled.div`
   }
 
   @media (max-width: 768px) {
-    flex: 0 0 100%;
-    max-width: 100%;
+    flex: 0 0 calc(50% - 0.25rem);
+    max-width: calc(50% - 0.25rem);
   }
 `;
 
@@ -428,12 +471,12 @@ export const InvestmentCardWrapper = styled.div`
 export const InvestmentRowWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
   width: 100%;
   justify-content: ${props => props.$centered ? 'center' : 'flex-start'};
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    gap: 0.5rem;
   }
 `;
 
@@ -548,9 +591,53 @@ export const ModernAssetCard = styled.div`
       }
     }
   }
-`;
 
-// Card per gli investimenti
+  @media (max-width: 768px) {
+    border-radius: 0.75rem;
+    padding: 0.6rem;
+
+    .card-header {
+      margin-bottom: 0.5rem;
+
+      .icon-container {
+        padding: 0.4rem;
+        border-radius: 0.5rem;
+
+        .asset-icon {
+          font-size: 1rem;
+        }
+      }
+
+      .action-button {
+        width: 26px;
+        height: 26px;
+        font-size: 0.85rem;
+      }
+    }
+
+    .card-content {
+      margin-bottom: 0.5rem;
+
+      .asset-name {
+        font-size: 0.7rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .asset-value {
+        font-size: 1rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .asset-percentage {
+        font-size: 0.6rem;
+      }
+    }
+
+    .card-footer .progress-bar {
+      height: 3px;
+    }
+  }
+`;
 export const ModernInvestmentCard = styled.div`
   background: ${props => props.theme.mode === 'dark' 
     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)'
@@ -686,12 +773,76 @@ export const ModernInvestmentCard = styled.div`
       }
     }
   }
+
+  @media (max-width: 768px) {
+    border-radius: 0.75rem;
+    padding: 0.6rem;
+
+    &::before {
+      width: 3px;
+    }
+
+    .card-header {
+      margin-bottom: 0.5rem;
+
+      .icon-container {
+        padding: 0.4rem;
+        border-radius: 0.5rem;
+
+        .investment-icon {
+          font-size: 1rem;
+        }
+      }
+
+      .investment-type span {
+        font-size: 0.55rem;
+      }
+    }
+
+    .card-content {
+      margin-bottom: 0.5rem;
+
+      .investment-name {
+        font-size: 0.75rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .investment-value {
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .investment-stats {
+        gap: 0.5rem;
+
+        .stat {
+          .stat-label {
+            font-size: 0.55rem;
+          }
+
+          .stat-value {
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
+
+    .card-footer .update-button {
+      padding: 0.35rem 0.6rem;
+      font-size: 0.7rem;
+      border-radius: 0.4rem;
+    }
+  }
 `;
 
 // Sezione grafici
 export const ModernChartsSection = styled.section`
   margin-top: 4rem;
   animation: ${fadeInUp} 0.8s ease-out 0.4s both;
+
+  @media (max-width: 768px) {
+    margin-top: 2rem;
+  }
 `;
 
 export const ModernChartContainer = styled.div`
@@ -724,6 +875,16 @@ export const ModernChartContainer = styled.div`
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    border-radius: 1rem;
+    padding: 1rem;
+
+    h4 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
   }
 
   .chart-legend {
@@ -809,8 +970,9 @@ export const ModernIncomeExpenseSection = styled.section`
   animation: ${fadeInUp} 0.8s ease-out 0.6s both;
 
   @media (max-width: 768px) {
-    margin: 2rem 0;
-    padding: 1.5rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: 12px;
   }
 `;
 
@@ -907,15 +1069,32 @@ export const ModernIncomeExpenseCard = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 1.2rem;
+    padding: 0.75rem;
     min-width: auto;
+    border-radius: 12px;
 
     .expense-icon {
-      font-size: 1.8rem;
+      font-size: 1.4rem;
+      margin-bottom: 0.4rem;
     }
 
-    .expense-content .expense-value {
-      font-size: 1.4rem;
+    .expense-content {
+      h4.expense-name {
+        font-size: 0.85rem;
+      }
+
+      .expense-value {
+        font-size: 1.2rem;
+      }
+
+      .expense-description {
+        font-size: 0.75rem;
+      }
+
+      .income-outflow-button {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+      }
     }
   }
 `;
@@ -924,9 +1103,17 @@ export const ModernIncomeExpenseCard = styled.div`
 export const FloatingElement = styled.div`
   animation: ${float} 3s ease-in-out infinite;
   animation-delay: ${props => props.delay || 0}s;
+
+  @media (max-width: 768px) {
+    animation: none;
+  }
 `;
 
 export const PulseAnimation = styled.div`
   animation: ${pulse} 2s ease-in-out infinite;
   animation-delay: ${props => props.delay || 0}s;
+
+  @media (max-width: 768px) {
+    animation: none;
+  }
 `;

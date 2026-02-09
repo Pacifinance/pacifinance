@@ -17,6 +17,7 @@ import axios from "axios";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import SidebarMobile from "../components/SidebarMobile";
+import BottomNavBar from "../components/BottomNavBar";
 import SidebarModals from "../components/SidebarModals";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";
@@ -378,15 +379,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             >
                 <LogoPaci />
                 {isMobileScreen ? (
-                    <SidebarMobile
-                        theme={theme}
-                        language={language}
-                        isSideBarMenuOpen={isSideBarMenuOpen}
-                        setIsSideBarMenuOpen={setIsSideBarMenuOpen}
-                        showDropdown={showDropdown}
-                        setShowDropdown={setShowDropdown}
-                        handleLogout={handleLogout}
-                    />
+                    null /* Navigation moved to BottomNavBar */
                 ) : (
                     <>
                         <div
@@ -670,6 +663,10 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     </>
                 )}
             </Top>
+
+            {isMobileScreen && (
+                <BottomNavBar handleLogout={handleLogout} />
+            )}
 
             <SidebarModals
                 theme={theme}

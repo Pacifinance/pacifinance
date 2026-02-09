@@ -106,8 +106,10 @@ const BottomLoadingIndicator = styled.div`
   align-items: center;
   justify-content: center;
   
-  @media (max-width: 768px) {
+  @media (max-width: 839px) {
+    bottom: 68px;
     min-height: 100px;
+    border-radius: 16px 16px 0 0;
   }
 `;
 

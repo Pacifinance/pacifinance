@@ -247,6 +247,7 @@
         "forPrivacy": "per la tua privacy"
     },
     "sidebar": {
+        "dashboard": "Dashboard",
         "chartsStatistics": "Grafici e Statistiche",
         "insert": "Inserisci",
         "check": "Controlla Prezzi",
@@ -254,6 +255,8 @@
         "comparison": "Confronto",
         "knowledge": "Conoscenza",
         "info": "Info",
+        "more": "Altro",
+        "goalsLimits": "Obiettivi e Limiti",
         "logout": "Esci",
         "privacy": "Privacy",
         "account": {

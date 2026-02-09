@@ -63,7 +63,8 @@ const ProtectedRoute = ({ children }) => {
   const { language } = useContext(LanguageContext);
   
   if (!auth.isAuthenticated) {
-    return <Navigate to={addLanguageToPath("/auth", language)} replace />;
+    // Redirect to landing page (where the user can login again)
+    return <Navigate to={addLanguageToPath("/", language)} replace />;
   }
   
   return children;

@@ -10,6 +10,7 @@ import SEOHead from '../components/SEOHead';
 import Sidebar from '../sections/Sidebar';
 import Dashboard from '../sections/Dashboard';
 import { CustomTick } from '../utils/chartsLegends';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 
 const DashboardPage = () => {
     const auth = useAuth();
@@ -18,6 +19,7 @@ const DashboardPage = () => {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
+    const navigate = useLocalizedNavigate();
     const {
         isNavigating,
         showTriggerZone,
@@ -32,10 +34,12 @@ const DashboardPage = () => {
       dismissTrigger,
       navigateManually,
       isAutoScrolling
-    } = useScrollNavigation(true);    const handlePageClick = (pageIndex) => {
+    } = useScrollNavigation(true);
+
+    const handlePageClick = (pageIndex) => {
         const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
         if (pageIndex >= 0 && pageIndex < pages.length) {
-            window.location.href = pages[pageIndex];
+            navigate(pages[pageIndex]);
         }
     };
 

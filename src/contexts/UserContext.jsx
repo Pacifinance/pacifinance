@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { createLegacyBalanceData } from '../utils/userDataSelectors';
 
@@ -12,11 +12,29 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const isAuthenticatedRef = useRef(isAuthenticated);
 
-  // Development mode bypass
-  // const isDevelopment = process.env.NODE_ENV === 'development' || 
-  //                      window.location.hostname === 'localhost' || 
-  //                      window.location.hostname.includes('replit.dev');
+  // Keep ref in sync with state for use in interceptor
+  useEffect(() => {
+    isAuthenticatedRef.current = isAuthenticated;
+  }, [isAuthenticated]);
+
+  // Axios interceptor: detect 401 responses (expired session / logged in elsewhere)
+  // and automatically deauthenticate the user
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401 && isAuthenticatedRef.current) {
+          // Session expired or invalidated (e.g. logged in from another device)
+          setIsAuthenticated(false);
+          setUserData(null);
+        }
+        return Promise.reject(error);
+      }
+    );
+    return () => axios.interceptors.response.eject(interceptor);
+  }, []);
 
   // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
   useEffect(() => {

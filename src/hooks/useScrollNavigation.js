@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLocalizedNavigate } from './useLocalizedNavigate';
+import { removeLanguageFromPath } from '../utils/i18nRouting';
 
 // Ordine delle pagine per la navigazione con scroll
 const PAGE_ORDER = [
@@ -52,7 +53,8 @@ export const useScrollNavigation = (enabled = true) => {
 const PAGE_LOAD_GRACE_PERIOD = 3000;
 
   const getCurrentPageIndex = useCallback(() => {
-    return PAGE_ORDER.indexOf(location.pathname);
+    const cleanPath = removeLanguageFromPath(location.pathname);
+    return PAGE_ORDER.indexOf(cleanPath);
   }, [location.pathname]);
 
   const navigateToPage = useCallback((direction) => {
@@ -169,7 +171,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
     const currentIndex = getCurrentPageIndex();
     
     // Ottieni le soglie specifiche per la pagina corrente
-    const currentPath = location.pathname;
+    const currentPath = removeLanguageFromPath(location.pathname);
     const thresholds = PAGE_SPECIFIC_THRESHOLDS[currentPath] || PAGE_SPECIFIC_THRESHOLDS.default;
     
     // Mostra pulsante per andare alla pagina successiva quando si è vicini al fondo

@@ -69,7 +69,7 @@ const ResponsivePadding = styled.div`
   padding: 0 2rem;
   
   @media (max-width: 768px) {
-    padding: 0 1rem;
+    padding: 0 0.5rem;
   }
 `;
 
@@ -384,12 +384,12 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     </ModernBalanceOverview>
                 </ModernDashboardHeader>
 
-                <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '1rem' : '2rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
-                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '2rem' }}>
                         {/* Sezione Bilanci Tradizionali - Layout intelligente */}
                         <div>
-                            <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
+                            <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1.5rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
                                 <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
                                 {translations.dashboard.liquidityAvailability}
                             </h3>
@@ -455,7 +455,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         {/* Sezione Fondo di Emergenza - Layout intelligente */}
                         {emergencyFundAsset.value > 0 && (
                             <div>
-                                <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
+                                <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1.5rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
                                     <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
                                     {translations.dashboard.emergencySecurity}
                                 </h3>
@@ -480,9 +480,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                                     </div>
                                                     {emergencyFundProgress !== null && !isHidden && (
                                                         <div style={{
-                                                            fontSize: '0.8rem',
+                                                            fontSize: isMobileScreen ? '0.55rem' : '0.8rem',
                                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                                            marginTop: '0.25rem'
+                                                            marginTop: '0.15rem',
+                                                            lineHeight: '1.2'
                                                         }}>
                                                             {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
                                                         </div>
@@ -510,7 +511,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                     {/* Colonna Destra - Investimenti */}
                     <div style={{ flex: '1' }}>
-                        <h3 style={{ color: theme.textColor, marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600' }}>
+                        <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1.5rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
                             <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
                             {translations.dashboard.portfolioInvestments}
                         </h3>
@@ -635,8 +636,8 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                 {/* Sezione Entrate e Uscite */}
                 <ModernIncomeExpenseSection theme={theme}>
-                    <h3 style={{ color: theme.textColor, marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '600', textAlign: 'center' }}>
-                        <FaEuroSign style={{ marginRight: '12px', color: assetColors.savings }} />
+                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '1rem' : '2rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
+                        <FaEuroSign style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
                         {translations.dashboard.titleGraph3}
                     </h3>
                     
@@ -842,21 +843,21 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
 
                 {/* Sezione Grafici */}
                 <ModernChartsSection theme={theme}>
-                    <h3 style={{ color: theme.textColor, marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '600', textAlign: 'center' }}>
-                        <BsGraphUpArrow style={{ marginRight: '12px', color: assetColors.savings }} />
+                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '1rem' : '2rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
+                        <BsGraphUpArrow style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
                         {translations.dashboard.patrimonialAnalysis}
                     </h3>
                     
                     <div style={{ 
                         display: 'grid',
                         gridTemplateColumns: isMobileScreen ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))',
-                        gap: '2rem',
+                        gap: isMobileScreen ? '1rem' : '2rem',
                         width: '100%'
                     }}>
                         {/* Grafico Distribuzione Patrimonio Completa */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
                             <h4>{translations.dashboard.titleGraph2}</h4>
-                            <ResponsiveContainer width="100%" height={350}>
+                            <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 350}>
                                 <PieChart>
                                     <Pie
                                         data={isHidden ? detailedPieDataShuffle : detailedPieData}
@@ -864,7 +865,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                         cy="50%"
                                         labelLine={false}
                                         label={renderCustomizedLabel}
-                                        outerRadius={120}
+                                        outerRadius={isMobileScreen ? 80 : 120}
                                         fill={assetColors.totalBalance}
                                         dataKey="value"
                                     >
@@ -900,7 +901,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         {/* Grafico Solo Investimenti */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
                             <h4>Portfolio {translations.general.investments}</h4>
-                            <ResponsiveContainer width="100%" height={350}>
+                            <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 350}>
                                 <PieChart>
                                     <Pie
                                         data={isHidden ? investmentsShuffle?.filter(inv => inv?.value > 0) || [] : investments?.filter(inv => inv?.value > 0) || []}
@@ -908,7 +909,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                         cy="50%"
                                         labelLine={false}
                                         label={renderCustomizedLabel}
-                                        outerRadius={120}
+                                        outerRadius={isMobileScreen ? 80 : 120}
                                         fill={assetColors.totalBalance}
                                         dataKey="value"
                                     >
@@ -944,7 +945,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         {/* Grafico Distribuzione Patrimonio */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
                             <h4>{translations.dashboard.titleGraph}</h4>
-                            <ResponsiveContainer width="100%" height={350}>
+                            <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 350}>
                                 <PieChart>
                                     <Pie
                                         data={isHidden ? pieDataShuffle : pieData}
@@ -952,8 +953,8 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                                         cy="50%"
                                         labelLine={false}
                                         label={renderCustomizedLabel}
-                                        outerRadius={120}
-                                        innerRadius={60}
+                                        outerRadius={isMobileScreen ? 80 : 120}
+                                        innerRadius={isMobileScreen ? 40 : 60}
                                         fill={assetColors.totalBalance}
                                         dataKey="value"
                                         startAngle={90}

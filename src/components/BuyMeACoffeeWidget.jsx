@@ -25,8 +25,8 @@ export default function Buymeacoffee({ isMobileScreen, showLink = false }) {
     );
     script.setAttribute("data-color", "#079164");
     script.setAttribute("data-position", "Right");
-    script.setAttribute("data-x_margin", isMobileScreen ? "10" : "18");
-    script.setAttribute("data-y_margin", isMobileScreen ? "10" : "18");
+    script.setAttribute("data-x_margin", "18");
+    script.setAttribute("data-y_margin", "18");
 
     script.onload = function () {
       var evt = document.createEvent("Event");

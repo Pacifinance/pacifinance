@@ -143,8 +143,7 @@ describe('BottomNavBar', () => {
     fireEvent.click(screen.getByText('Altro').closest('button'));
     
     // Backdrop should be present (it's rendered by createPortal)
-    // We check by trying to close via backdrop click
-    const backdrop = document.querySelector('[style*="backdrop-filter"]');
+    const backdrop = document.querySelector('[data-testid="bottom-nav-backdrop"]');
     expect(backdrop).toBeInTheDocument();
   });
 
@@ -155,7 +154,7 @@ describe('BottomNavBar', () => {
     expect(screen.getByText('Grafici')).toBeInTheDocument();
     
     // Click backdrop to close
-    const backdrop = document.querySelector('[style*="backdrop-filter"]');
+    const backdrop = document.querySelector('[data-testid="bottom-nav-backdrop"]');
     if (backdrop) {
       fireEvent.click(backdrop);
       expect(screen.queryByText('Grafici')).not.toBeInTheDocument();

@@ -61,7 +61,6 @@ import {
 } from '../styles/ModernDashboardStyled';
 const FinancialInsights = lazy(() => import('../components/FinancialInsights'));
 const GoalTracker = lazy(() => import('../components/GoalTracker'));
-const GamificationSection = lazy(() => import('../components/GamificationSection'));
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import DashboardToolbar from '../components/DashboardToolbar';
 import DashboardCompactView from '../components/DashboardCompactView';
@@ -370,8 +369,8 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         toggleViewMode={toggleViewMode}
                     />
 
-                    {/* Balance Overview - Always visible */}
-                    <ModernDashboardHeader theme={theme}>
+                    {/* Balance Overview */}
+                    {isSectionVisible('balance-overview') && <ModernDashboardHeader theme={theme}>
                                 <ModernDashboardTitle theme={theme}>
                                     {translations.dashboard.title}
                                 </ModernDashboardTitle>
@@ -418,7 +417,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                             </ModernMetricCard>
                         </div>
                     </ModernBalanceOverview>
-                </ModernDashboardHeader>
+                </ModernDashboardHeader>}
 
                 {/* View Mode: Compact (table) vs Cards (detailed sections) */}
                 {viewMode === 'compact' ? (
@@ -439,6 +438,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                 ) : (
                 <>
 
+                {isSectionVisible('liquidity-investments') && (
                 <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '1rem' : '2rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
                     <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '2rem' }}>
@@ -688,8 +688,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         })()}
                     </div>
                 </div>
+                )}
 
                 {/* Sezione Entrate e Uscite */}
+                {isSectionVisible('income-expense') && (
                 <ModernIncomeExpenseSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '1rem' : '2rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <FaEuroSign style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
@@ -895,8 +897,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         </div>
                     )}
                 </ModernIncomeExpenseSection>
+                )}
 
                 {/* Sezione Grafici */}
+                {isSectionVisible('charts') && (
                 <ModernChartsSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '1rem' : '2rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <BsGraphUpArrow style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
@@ -1049,21 +1053,21 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         </ModernChartContainer>
                     </div>
                 </ModernChartsSection>
+                )}
 
                 {/* Financial Insights Section (lazy loaded) */}
+                {isSectionVisible('financial-insights') && (
                 <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
                     <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
                 </Suspense>
+                )}
 
                 {/* Goal Tracking Section (lazy loaded) */}
+                {isSectionVisible('goal-tracker') && (
                 <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
                     <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
                 </Suspense>
-
-                {/* Gamification Section (lazy loaded) */}
-                <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
-                    <GamificationSection theme={theme} userData={userData} isHidden={isHidden} />
-                </Suspense>
+                )}
 
                 </>
                 )}

@@ -243,13 +243,15 @@ const Tab = styled.button`
   }
 `;
 
-const GamificationSection = ({ theme, userData, isHidden }) => {
+const GamificationSection = ({ theme, userData, isHidden, gamificationData: externalGamification }) => {
   const { translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
-  const gamification = useGamification(userData);
+  const internalGamification = useGamification(userData);
+  // Use externally provided gamification data if available, otherwise compute internally
+  const gamification = externalGamification || internalGamification;
   const [activeTab, setActiveTab] = useState('all');
 
-  if (!userData || isHidden) return null;
+  if (!userData) return null;
 
   const { badges, unlockedBadges, lockedBadges, stats, level, points, nextLevelPoints } = gamification;
   const progressPercentage = Math.min((points / nextLevelPoints) * 100, 100);

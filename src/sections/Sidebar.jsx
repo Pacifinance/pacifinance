@@ -34,7 +34,7 @@ import {
     ToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTrashCan, faSignOutAlt, faUserCog } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTrashCan, faSignOutAlt, faUserCog, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {
     SidebarToggleModeButton,
@@ -379,7 +379,27 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             >
                 <LogoPaci />
                 {isMobileScreen ? (
-                    null /* Navigation moved to BottomNavBar */
+                    <button
+                        onClick={toggleHidden}
+                        data-umami-event="mobile-privacy-toggle"
+                        aria-label={translations?.sidebar?.settings?.privacy || 'Privacy'}
+                        style={{
+                            background: 'none',
+                            border: `1.5px solid ${isHidden ? 'rgba(239,68,68,0.4)' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')}`,
+                            borderRadius: '8px',
+                            padding: '6px 8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: isHidden ? '#ef4444' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'),
+                            fontSize: '1rem',
+                            transition: 'all 0.2s ease',
+                            backgroundColor: isHidden ? 'rgba(239,68,68,0.08)' : 'transparent',
+                        }}
+                    >
+                        <FontAwesomeIcon icon={isHidden ? faEyeSlash : faEye} />
+                    </button>
                 ) : (
                     <>
                         <div

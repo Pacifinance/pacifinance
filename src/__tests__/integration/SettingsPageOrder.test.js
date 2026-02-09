@@ -40,17 +40,9 @@ describe('SettingsPage section order', () => {
     const filePath = resolve(__dirname, '../../pages/SettingsPage.jsx');
     const content = readFileSync(filePath, 'utf-8');
 
-    const securityIndex = content.indexOf('security') !== -1
-      ? content.indexOf('security')
-      : content.indexOf('Security') !== -1
-        ? content.indexOf('Security')
-        : content.indexOf('changePassword');
+    const securityIndex = content.indexOf('Security Settings');
 
-    const dataExportIndex = content.indexOf('data-export') !== -1
-      ? content.indexOf('data-export')
-      : content.indexOf('exportData') !== -1
-        ? content.indexOf('exportData')
-        : content.indexOf('Export');
+    const dataExportIndex = content.indexOf('Data Export Section');
 
     // Security should come before Data Export
     if (securityIndex !== -1 && dataExportIndex !== -1) {

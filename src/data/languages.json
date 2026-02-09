@@ -240,10 +240,15 @@
                 "supportTitle": "Sostieni il Progetto",
                 "supportDescription": "Il tuo contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità. Ogni donazione è molto apprezzata!"
             },
+            "languages": {
+                "title": "Lingue Disponibili",
+                "description": "PaciFinance è disponibile in più lingue"
+            },
             "madeWith": "Fatto con",
             "forPrivacy": "per la tua privacy"
         },
         "sidebar": {
+            "dashboard": "Dashboard",
             "chartsStatistics": "Grafici e Statistiche",
             "insert": "Inserisci",
             "check": "Controlla Prezzi",
@@ -251,6 +256,8 @@
             "comparison": "Confronto",
             "knowledge": "Conoscenza",
             "info": "Info",
+            "more": "Altro",
+            "goalsLimits": "Obiettivi e Limiti",
             "logout": "Esci",
             "privacy": "Privacy",
             "account": {
@@ -319,7 +326,9 @@
                 "sections": {
                     "basicInfo": "Informazioni Base",
                     "profileDetails": "Dettagli Profilo",
-                    "editMode": "Modalità Modifica Attiva"
+                    "editMode": "Modalità Modifica Attiva",
+                    "profileProfessional": "Profilo Professionale",
+                    "personalSituation": "Situazione Personale"
                 },
                 "accountType": "Tipo Account",
                 "buttons": {
@@ -751,7 +760,9 @@
                     "description": "Dove spendi i tuoi soldi (ultimi 12 mesi)",
                     "topCategories": "Categorie principali",
                     "otherCategories": "Altre categorie",
-                    "noExpenses": "Nessuna spesa registrata"
+                    "noExpenses": "Nessuna spesa registrata",
+                    "avgSimilar": "Media Utenti Simili",
+                    "avgAll": "Media Tutti gli Utenti"
                 }
             },
             "insights": {
@@ -1355,6 +1366,120 @@
                 "disclaimer": "Le donazioni sono completamente volontarie e non sbloccano funzionalità aggiuntive."
             }
         },
+        "gamification": {
+            "title": "I tuoi Traguardi",
+            "level": "Livello",
+            "points": "punti",
+            "badgesUnlocked": "Badge sbloccati",
+            "savingsStreak": "Mesi risparmiato",
+            "dataStreak": "Mesi consecutivi",
+            "assetTypes": "Tipi di asset",
+            "all": "Tutti",
+            "unlocked": "Sbloccati",
+            "locked": "Da sbloccare",
+            "allBadgesUnlocked": "Complimenti! Hai sbloccato tutti i badge!",
+            "badgeUnlocked": "Traguardo sbloccato!",
+            "achievementsSummary": "traguardi già sbloccati!",
+            "badges": {
+                "firstMonth": {
+                    "name": "Primo Passo",
+                    "description": "Inserisci il tuo primo mese di dati"
+                },
+                "threeMonths": {
+                    "name": "Costante",
+                    "description": "3 mesi di dati inseriti"
+                },
+                "sixMonths": {
+                    "name": "Affidabile",
+                    "description": "6 mesi di dati inseriti"
+                },
+                "oneYear": {
+                    "name": "Veterano",
+                    "description": "Un anno completo di dati"
+                },
+                "firstSave": {
+                    "name": "Risparmiatore",
+                    "description": "Primo mese con risparmio positivo"
+                },
+                "savingsStreak3": {
+                    "name": "In Serie",
+                    "description": "3 mesi consecutivi di risparmio"
+                },
+                "savingsStreak6": {
+                    "name": "Inarrestabile",
+                    "description": "6 mesi consecutivi di risparmio"
+                },
+                "netWorth1k": {
+                    "name": "Primo Traguardo",
+                    "description": "Patrimonio di €1.000"
+                },
+                "netWorth10k": {
+                    "name": "Cinque Cifre",
+                    "description": "Patrimonio di €10.000"
+                },
+                "netWorth50k": {
+                    "name": "Decollo",
+                    "description": "Patrimonio di €50.000"
+                },
+                "netWorth100k": {
+                    "name": "Club 100K",
+                    "description": "Patrimonio di €100.000"
+                },
+                "firstInvestment": {
+                    "name": "Investitore",
+                    "description": "Primo investimento effettuato"
+                },
+                "diversified3": {
+                    "name": "Diversificato",
+                    "description": "3+ tipi di asset"
+                },
+                "diversified5": {
+                    "name": "Portfolio Pro",
+                    "description": "5+ tipi di asset"
+                },
+                "emergencyFundStarted": {
+                    "name": "Rete di Sicurezza",
+                    "description": "Fondo di emergenza avviato"
+                },
+                "emergencyFundGoal": {
+                    "name": "Blindato",
+                    "description": "Obiettivo fondo emergenza raggiunto"
+                },
+                "monthlyGrowth": {
+                    "name": "In Crescita",
+                    "description": "Patrimonio in aumento vs mese precedente"
+                },
+                "yearlyGrowth": {
+                    "name": "Anno d'Oro",
+                    "description": "Patrimonio in aumento vs anno precedente"
+                }
+            }
+        },
+        "dashboardLayout": {
+            "balanceOverview": "Panoramica Bilancio",
+            "liquidityInvestments": "Liquidità & Investimenti",
+            "incomeExpense": "Entrate & Uscite",
+            "charts": "Grafici",
+            "financialInsights": "Analisi Finanziaria",
+            "goalTracker": "Obiettivi",
+            "gamification": "Traguardi",
+            "switchToCompact": "Vista compatta",
+            "switchToCards": "Vista card",
+            "compact": "Compatta",
+            "cards": "Card",
+            "customize": "Personalizza",
+            "customizeTitle": "Personalizza Dashboard",
+            "dragHint": "Trascina le sezioni per riordinarle. Clicca l'icona occhio per nasconderle.",
+            "resetLayout": "Ripristina layout predefinito",
+            "assetOverview": "Panoramica Asset",
+            "asset": "Asset",
+            "category": "Categoria",
+            "value": "Valore",
+            "ofTotal": "% Totale",
+            "categoryBreakdown": "Riepilogo per Categoria",
+            "type": "Tipo",
+            "amount": "Importo"
+        },
         "categories": {
             "Casa": "Casa",
             "Alimentari": "Alimentari", 
@@ -1371,6 +1496,12 @@
             "Entrate extra": "Entrate extra",
             "Regalo": "Regalo",
             "Pensione": "Pensione"
+        },
+        "profile": {
+            "detailsTab": "Dettagli Account",
+            "achievementsTab": "Traguardi",
+            "notSpecified": "Non specificato",
+            "updateSuccess": "Profilo aggiornato con successo!"
         }
     },
     "en": {
@@ -1614,10 +1745,15 @@
                 "supportTitle": "Support the Project",
                 "supportDescription": "Your contribution helps us keep the platform online and develop new features. Every donation is highly appreciated!"
             },
+            "languages": {
+                "title": "Available Languages",
+                "description": "PaciFinance is available in multiple languages"
+            },
             "madeWith": "Made with",
             "forPrivacy": "for your privacy"
         },
         "sidebar": {
+            "dashboard": "Dashboard",
             "chartsStatistics": "Charts and Statistics",
             "insert": "Insert",
             "check": "Check Prices",
@@ -1625,6 +1761,8 @@
             "comparison": "Comparison",
             "knowledge": "Knowledge",
             "info": "Info",
+            "more": "More",
+            "goalsLimits": "Goals & Limits",
             "logout": "Logout",
             "privacy": "Privacy",
             "account": {
@@ -1693,7 +1831,9 @@
                 "sections": {
                     "basicInfo": "Basic Information",
                     "profileDetails": "Profile Details",
-                    "editMode": "Edit Mode Active"
+                    "editMode": "Edit Mode Active",
+                    "profileProfessional": "Professional Profile",
+                    "personalSituation": "Personal Situation"
                 },
                 "accountType": "Account Type",
                 "buttons": {
@@ -2127,7 +2267,9 @@
                     "description": "Where you spend your money (last 12 months)",
                     "topCategories": "Top categories",
                     "otherCategories": "Other categories",
-                    "noExpenses": "No expenses recorded"
+                    "noExpenses": "No expenses recorded",
+                    "avgSimilar": "Similar Users Avg",
+                    "avgAll": "All Users Avg"
                 }
             },
             "insights": {
@@ -2731,6 +2873,120 @@
                 "disclaimer": "Donations are completely voluntary and do not unlock additional features."
             }
         },
+        "gamification": {
+            "title": "Your Achievements",
+            "level": "Level",
+            "points": "points",
+            "badgesUnlocked": "Badges unlocked",
+            "savingsStreak": "Months saved",
+            "dataStreak": "Consecutive months",
+            "assetTypes": "Asset types",
+            "all": "All",
+            "unlocked": "Unlocked",
+            "locked": "Locked",
+            "allBadgesUnlocked": "Congratulations! You've unlocked all badges!",
+            "badgeUnlocked": "Achievement unlocked!",
+            "achievementsSummary": "achievements already unlocked!",
+            "badges": {
+                "firstMonth": {
+                    "name": "First Step",
+                    "description": "Enter your first month of data"
+                },
+                "threeMonths": {
+                    "name": "Consistent",
+                    "description": "3 months of data entered"
+                },
+                "sixMonths": {
+                    "name": "Reliable",
+                    "description": "6 months of data entered"
+                },
+                "oneYear": {
+                    "name": "Veteran",
+                    "description": "A full year of data"
+                },
+                "firstSave": {
+                    "name": "Saver",
+                    "description": "First month with positive savings"
+                },
+                "savingsStreak3": {
+                    "name": "On a Roll",
+                    "description": "3 consecutive months of savings"
+                },
+                "savingsStreak6": {
+                    "name": "Unstoppable",
+                    "description": "6 consecutive months of savings"
+                },
+                "netWorth1k": {
+                    "name": "First Milestone",
+                    "description": "Net worth of €1,000"
+                },
+                "netWorth10k": {
+                    "name": "Five Figures",
+                    "description": "Net worth of €10,000"
+                },
+                "netWorth50k": {
+                    "name": "Liftoff",
+                    "description": "Net worth of €50,000"
+                },
+                "netWorth100k": {
+                    "name": "100K Club",
+                    "description": "Net worth of €100,000"
+                },
+                "firstInvestment": {
+                    "name": "Investor",
+                    "description": "First investment made"
+                },
+                "diversified3": {
+                    "name": "Diversified",
+                    "description": "3+ asset types"
+                },
+                "diversified5": {
+                    "name": "Portfolio Pro",
+                    "description": "5+ asset types"
+                },
+                "emergencyFundStarted": {
+                    "name": "Safety Net",
+                    "description": "Emergency fund started"
+                },
+                "emergencyFundGoal": {
+                    "name": "Shielded",
+                    "description": "Emergency fund goal reached"
+                },
+                "monthlyGrowth": {
+                    "name": "Growing",
+                    "description": "Net worth increasing vs previous month"
+                },
+                "yearlyGrowth": {
+                    "name": "Golden Year",
+                    "description": "Net worth increasing vs previous year"
+                }
+            }
+        },
+        "dashboardLayout": {
+            "balanceOverview": "Balance Overview",
+            "liquidityInvestments": "Liquidity & Investments",
+            "incomeExpense": "Income & Expenses",
+            "charts": "Charts",
+            "financialInsights": "Financial Insights",
+            "goalTracker": "Goals",
+            "gamification": "Achievements",
+            "switchToCompact": "Compact view",
+            "switchToCards": "Card view",
+            "compact": "Compact",
+            "cards": "Cards",
+            "customize": "Customize",
+            "customizeTitle": "Customize Dashboard",
+            "dragHint": "Drag sections to reorder them. Click the eye icon to hide them.",
+            "resetLayout": "Reset to default layout",
+            "assetOverview": "Asset Overview",
+            "asset": "Asset",
+            "category": "Category",
+            "value": "Value",
+            "ofTotal": "% of Total",
+            "categoryBreakdown": "Category Breakdown",
+            "type": "Type",
+            "amount": "Amount"
+        },
         "categories": {
             "Casa": "Home",
             "Alimentari": "Food", 
@@ -2747,6 +3003,12 @@
             "Entrate extra": "Extra income",
             "Regalo": "Gift",
             "Pensione": "Retirement"
+        },
+        "profile": {
+            "detailsTab": "Account Details",
+            "achievementsTab": "Achievements",
+            "notSpecified": "Not specified",
+            "updateSuccess": "Profile updated successfully!"
         }
     }
 }

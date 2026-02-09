@@ -147,6 +147,7 @@ const BottomNavBar = ({ handleLogout }) => {
             {/* Backdrop overlay */}
             {(showMoreMenu || showAccountMenu) && (
                 <div
+                    data-testid="bottom-nav-backdrop"
                     onClick={closeMenus}
                     style={{
                         position: 'fixed',

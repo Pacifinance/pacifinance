@@ -68,7 +68,7 @@ describe('SEOHead Component', () => {
       await waitFor(() => {
         const helmet = Helmet.peek();
         const canonical = helmet.linkTags.find(tag => tag.rel === 'canonical');
-        expect(canonical.href).toBe('https://pacifinance.com/test-page');
+        expect(canonical.href).toBe('https://pacifinance.com/en/test-page');
       });
     });
   });

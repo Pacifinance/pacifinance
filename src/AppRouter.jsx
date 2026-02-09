@@ -13,6 +13,8 @@ import { LanguageContext } from "./contexts/LanguageContext";
 import { useAuth } from "./hooks/useAuth";
 import { useAuthenticatedPreloading, usePublicPreloading } from "./hooks/useSimplePreloading";
 import { getLanguageFromPath, addLanguageToPath, availableLanguages, getInitialLanguage } from "./utils/i18nRouting";
+import { useGamification } from "./hooks/useGamification";
+import { useAchievementNotifications } from "./hooks/useAchievementNotifications";
 
 // Componente di loading semplice e affidabile
 const SimpleLoader = () => (
@@ -60,7 +62,11 @@ const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const ProtectedRoute = ({ children }) => {
   const auth = useAuth();
   const location = useLocation();
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
+  
+  // Global achievement notifications — fires on any authenticated page
+  const gamification = useGamification(auth.userData);
+  useAchievementNotifications(gamification, translations);
   
   if (!auth.isAuthenticated) {
     // Redirect to landing page (where the user can login again)

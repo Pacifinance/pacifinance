@@ -325,7 +325,9 @@
             "sections": {
                 "basicInfo": "Basic Information",
                 "profileDetails": "Profile Details",
-                "editMode": "Edit Mode Active"
+                "editMode": "Edit Mode Active",
+                "profileProfessional": "Professional Profile",
+                "personalSituation": "Personal Situation"
             },
             "accountType": "Account Type",
             "buttons": {
@@ -1377,6 +1379,8 @@
         "unlocked": "Unlocked",
         "locked": "Locked",
         "allBadgesUnlocked": "Congratulations! You've unlocked all badges!",
+        "badgeUnlocked": "Achievement unlocked!",
+        "achievementsSummary": "achievements already unlocked!",
         "badges": {
             "firstMonth": {
                 "name": "First Step",
@@ -1493,5 +1497,11 @@
         "Entrate extra": "Extra income",
         "Regalo": "Gift",
         "Pensione": "Retirement"
+    },
+    "profile": {
+        "detailsTab": "Account Details",
+        "achievementsTab": "Achievements",
+        "notSpecified": "Not specified",
+        "updateSuccess": "Profile updated successfully!"
     }
 }

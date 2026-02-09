@@ -325,7 +325,9 @@
             "sections": {
                 "basicInfo": "Informazioni Base",
                 "profileDetails": "Dettagli Profilo",
-                "editMode": "Modalità Modifica Attiva"
+                "editMode": "Modalità Modifica Attiva",
+                "profileProfessional": "Profilo Professionale",
+                "personalSituation": "Situazione Personale"
             },
             "accountType": "Tipo Account",
             "buttons": {
@@ -1375,6 +1377,8 @@
         "unlocked": "Sbloccati",
         "locked": "Da sbloccare",
         "allBadgesUnlocked": "Complimenti! Hai sbloccato tutti i badge!",
+        "badgeUnlocked": "Traguardo sbloccato!",
+        "achievementsSummary": "traguardi già sbloccati!",
         "badges": {
             "firstMonth": {
                 "name": "Primo Passo",
@@ -1491,6 +1495,11 @@
         "Entrate extra": "Entrate extra",
         "Regalo": "Regalo",
         "Pensione": "Pensione"
+    },
+    "profile": {
+        "detailsTab": "Dettagli Account",
+        "achievementsTab": "Traguardi",
+        "notSpecified": "Non specificato",
+        "updateSuccess": "Profilo aggiornato con successo!"
     }
-    
 }

@@ -26,7 +26,12 @@ export const mockUserData = {
         job: { key: 1, value: 'Informatica' },
         jobType: { key: 0, value: 'Lavoro dipendente' },
         workTime: { key: 1, value: 'Full time' },
-        remoteType: { key: 1, value: 'Ibrido' }
+        remoteType: { key: 1, value: 'Ibrido' },
+        age: { key: 1, value: '26-35' },
+        livingSituation: { key: 1, value: 'In Coppia' },
+        housingType: { key: 0, value: 'Appartamento in Affitto' },
+        children: { key: 1, value: 'No' },
+        yearsOfExperience: { key: 2, value: '4-5 anni' }
     },
     
     // Balance data strutturata come UserContext

@@ -71,9 +71,8 @@ export const DashboardContent = styled.div`
   padding-bottom: 80vh; /* Spazio extra in fondo per evitare cambio pagina immediato */
   
   @media (max-width: 768px) {
-    padding: 0.75rem 0.5rem;
+    padding: 80px 0.5rem 50vh 0.5rem; /* 80px top per evitare overlap con mobile header (70px) */
     min-height: 120vh;
-    padding-bottom: 50vh;
   }
 `;
 
@@ -209,7 +208,8 @@ export const ModernBalanceOverview = styled.div`
 
     @media (max-width: 768px) {
       flex-direction: row;
-      gap: 0.35rem;
+      gap: 0.5rem;
+      width: 100%;
     }
   }
 
@@ -226,7 +226,7 @@ export const ModernBalanceOverview = styled.div`
       }
 
       .balance-value {
-        font-size: 1.8rem;
+        font-size: clamp(1.4rem, 5.5vw, 1.8rem);
       }
 
       .balance-subtitle {
@@ -288,35 +288,38 @@ export const ModernMetricCard = styled.div`
   @media (max-width: 768px) {
     flex: 1 1 0;
     min-width: 0;
-    padding: 0.5rem 0.35rem;
-    gap: 0.3rem;
+    padding: 0.65rem 0.5rem;
+    gap: 0.35rem;
     flex-direction: column;
     align-items: center;
     text-align: center;
     border-radius: 0.6rem;
     
     .metric-icon {
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
     
     .metric-content {
       width: 100%;
+      overflow: hidden;
     }
 
     .metric-content .metric-value {
-      font-size: 0.9rem;
+      font-size: clamp(0.85rem, 3.5vw, 1.1rem);
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .metric-content .metric-label {
-      font-size: 0.6rem;
+      font-size: clamp(0.6rem, 2.5vw, 0.75rem);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .metric-content .metric-percentage {
-      font-size: 0.55rem;
+      font-size: 0.65rem;
     }
   }
 `;

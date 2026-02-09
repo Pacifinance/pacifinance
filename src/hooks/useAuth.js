@@ -1,6 +1,6 @@
-import { useContext, useMemo, useCallback } from 'react';
+import { useContext, useMemo } from 'react';
 import { UserContext } from '../contexts/UserContext';
-import { useMockAuth } from '../contexts/MockAuthContext';
+import MockAuthContext from '../contexts/MockAuthContext';
 
 // Hook unificato che usa automaticamente il provider giusto
 export const useAuth = () => {
@@ -10,21 +10,10 @@ export const useAuth = () => {
                 window.location.search.includes('dev=true'));
     }, []);
 
-    // Ottieni i context in modo safe
-    let mockAuth = null;
-    let userContext = null;
-    
-    try {
-        mockAuth = useMockAuth();
-    } catch (error) {
-        // MockAuth non disponibile
-    }
-    
-    try {
-        userContext = useContext(UserContext);
-    } catch (error) {
-        // UserContext non disponibile
-    }
+    // Accedi direttamente ai context senza try/catch
+    // useContext ritorna undefined/null quando il Provider non è nell'albero
+    const mockAuth = useContext(MockAuthContext);
+    const userContext = useContext(UserContext);
 
     return useMemo(() => {
         if (isDevelopmentMode && mockAuth) {

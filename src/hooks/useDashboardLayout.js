@@ -19,7 +19,6 @@ export const DEFAULT_SECTIONS = [
   { id: 'charts', visible: true },
   { id: 'financial-insights', visible: true },
   { id: 'goal-tracker', visible: true },
-  { id: 'gamification', visible: true },
 ];
 
 export const useDashboardLayout = () => {

@@ -1365,6 +1365,118 @@
             "disclaimer": "Donations are completely voluntary and do not unlock additional features."
         }
     },
+    "gamification": {
+        "title": "Your Achievements",
+        "level": "Level",
+        "points": "points",
+        "badgesUnlocked": "Badges unlocked",
+        "savingsStreak": "Months saved",
+        "dataStreak": "Consecutive months",
+        "assetTypes": "Asset types",
+        "all": "All",
+        "unlocked": "Unlocked",
+        "locked": "Locked",
+        "allBadgesUnlocked": "Congratulations! You've unlocked all badges!",
+        "badges": {
+            "firstMonth": {
+                "name": "First Step",
+                "description": "Enter your first month of data"
+            },
+            "threeMonths": {
+                "name": "Consistent",
+                "description": "3 months of data entered"
+            },
+            "sixMonths": {
+                "name": "Reliable",
+                "description": "6 months of data entered"
+            },
+            "oneYear": {
+                "name": "Veteran",
+                "description": "A full year of data"
+            },
+            "firstSave": {
+                "name": "Saver",
+                "description": "First month with positive savings"
+            },
+            "savingsStreak3": {
+                "name": "On a Roll",
+                "description": "3 consecutive months of savings"
+            },
+            "savingsStreak6": {
+                "name": "Unstoppable",
+                "description": "6 consecutive months of savings"
+            },
+            "netWorth1k": {
+                "name": "First Milestone",
+                "description": "Net worth of €1,000"
+            },
+            "netWorth10k": {
+                "name": "Five Figures",
+                "description": "Net worth of €10,000"
+            },
+            "netWorth50k": {
+                "name": "Liftoff",
+                "description": "Net worth of €50,000"
+            },
+            "netWorth100k": {
+                "name": "100K Club",
+                "description": "Net worth of €100,000"
+            },
+            "firstInvestment": {
+                "name": "Investor",
+                "description": "First investment made"
+            },
+            "diversified3": {
+                "name": "Diversified",
+                "description": "3+ asset types"
+            },
+            "diversified5": {
+                "name": "Portfolio Pro",
+                "description": "5+ asset types"
+            },
+            "emergencyFundStarted": {
+                "name": "Safety Net",
+                "description": "Emergency fund started"
+            },
+            "emergencyFundGoal": {
+                "name": "Shielded",
+                "description": "Emergency fund goal reached"
+            },
+            "monthlyGrowth": {
+                "name": "Growing",
+                "description": "Net worth increasing vs previous month"
+            },
+            "yearlyGrowth": {
+                "name": "Golden Year",
+                "description": "Net worth increasing vs previous year"
+            }
+        }
+    },
+    "dashboardLayout": {
+        "balanceOverview": "Balance Overview",
+        "liquidityInvestments": "Liquidity & Investments",
+        "incomeExpense": "Income & Expenses",
+        "charts": "Charts",
+        "financialInsights": "Financial Insights",
+        "goalTracker": "Goals",
+        "gamification": "Achievements",
+        "switchToCompact": "Compact view",
+        "switchToCards": "Card view",
+        "compact": "Compact",
+        "cards": "Cards",
+        "customize": "Customize",
+        "customizeTitle": "Customize Dashboard",
+        "dragHint": "Drag sections to reorder them. Click the eye icon to hide them.",
+        "resetLayout": "Reset to default layout",
+        "assetOverview": "Asset Overview",
+        "asset": "Asset",
+        "category": "Category",
+        "value": "Value",
+        "ofTotal": "% of Total",
+        "categoryBreakdown": "Category Breakdown",
+        "type": "Type",
+        "amount": "Amount"
+    },
     "categories": {
         "Casa": "Home",
         "Alimentari": "Food", 

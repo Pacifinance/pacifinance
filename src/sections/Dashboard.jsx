@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo, lazy, Suspense } from 'react';
 import { LocalizedLink } from '../components/LocalizedLink';
 import styled from 'styled-components';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
@@ -59,8 +59,13 @@ import {
     AssetCardWrapper,
     AssetRowWrapper
 } from '../styles/ModernDashboardStyled';
-import FinancialInsights from '../components/FinancialInsights';
-import GoalTracker from '../components/GoalTracker';
+const FinancialInsights = lazy(() => import('../components/FinancialInsights'));
+const GoalTracker = lazy(() => import('../components/GoalTracker'));
+const GamificationSection = lazy(() => import('../components/GamificationSection'));
+import DashboardSkeleton from '../components/DashboardSkeleton';
+import DashboardToolbar from '../components/DashboardToolbar';
+import DashboardCompactView from '../components/DashboardCompactView';
+import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { BsPercent } from 'react-icons/bs';
 import { GiUmbrella } from 'react-icons/gi';
@@ -77,6 +82,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const [isLoading, setIsLoading] = useState(true);
     const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
+    const { sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode } = useDashboardLayout();
     const colorsBalances = getColorsBalances(translations);
     const colorsIncExp = getColorsIncExp(translations);
     
@@ -241,14 +247,14 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
     const emergencyFundTarget = emergencyFundGoal?.target || userData?.limits?.emergencyFundTarget;
     const emergencyFundProgress = emergencyFundTarget ? Math.min((emergencyFundAsset.value / emergencyFundTarget) * 100, 100) : null;
 
-    // Dati per i grafici patrimoniali
-    const pieData = [
+    // Dati per i grafici patrimoniali (memoizzati per evitare ricalcoli)
+    const pieData = useMemo(() => [
         { name: translations.dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
         ...(totalEmergencySecurity > 0 ? [{ name: translations.dashboard.emergencySecurity, value: totalEmergencySecurity, color: emergencyFundAsset.color }] : []),
         { name: translations.general.investments, value: totalInvestments, color: assetColors.totalInvestments }
-    ];
+    ], [totalTraditional, totalEmergencySecurity, totalInvestments, translations, emergencyFundAsset.color]);
 
-    const detailedPieData = [
+    const detailedPieData = useMemo(() => [
         ...traditionalAssets.filter(asset => asset.value > 0).map(asset => ({
             name: asset.name,
             value: asset.value,
@@ -264,10 +270,10 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             value: investment.value,
             color: investment.color
         }))
-    ];
+    ], [traditionalAssets, emergencyFundAsset, investments]);
 
-    // Dati per il grafico entrate/uscite
-    const incExpData = [
+    // Dati per il grafico entrate/uscite (memoizzati)
+    const incExpData = useMemo(() => [
         { 
             name: translations.general.incomes, 
             value: incomesMonth >= 0 ? incomesMonth : 0,
@@ -283,7 +289,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             value: savedMonth >= 0 ? savedMonth : 0,
             color: assetColors.savings
         },
-    ];
+    ], [incomesMonth, expensesMonth, savedMonth, translations]);
 
     // Dati shuffled per la privacy (come nel Dashboard originale)
     const pieDataShuffle = [...pieData].sort(() => Math.random() - 0.5);
@@ -332,14 +338,44 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
         return null;
     };
 
+    if (isLoading) {
+        return (
+            <MainDashboardLayout theme={theme}>
+                <DashboardContent theme={theme}>
+                    <DashboardSkeleton theme={theme} />
+                </DashboardContent>
+            </MainDashboardLayout>
+        );
+    }
+
+    // Check if a section is visible
+    const isSectionVisible = (sectionId) => visibleSections.includes(sectionId);
+    
+    // Get section CSS order
+    const getSectionOrder = (sectionId) => visibleSections.indexOf(sectionId);
+
     return (
         <MainDashboardLayout theme={theme}>
             <DashboardContent theme={theme}>
                 <ResponsivePadding>
+
+                    {/* Dashboard Toolbar: compact view toggle + customize */}
+                    <DashboardToolbar
+                        theme={theme}
+                        sections={sections}
+                        moveSection={moveSection}
+                        toggleSection={toggleSection}
+                        resetLayout={resetLayout}
+                        viewMode={viewMode}
+                        toggleViewMode={toggleViewMode}
+                    />
+
+                    {/* Balance Overview - Always visible */}
                     <ModernDashboardHeader theme={theme}>
-                    <ModernDashboardTitle theme={theme}>
-                        {translations.dashboard.title}
-                    </ModernDashboardTitle>                    <ModernBalanceOverview theme={theme}>
+                                <ModernDashboardTitle theme={theme}>
+                                    {translations.dashboard.title}
+                                </ModernDashboardTitle>
+                                <ModernBalanceOverview theme={theme}>
                         <div className="balance-main">
                             <h2>{translations.dashboard.totalBalance}</h2>
                             <div className="balance-value">
@@ -383,6 +419,25 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                         </div>
                     </ModernBalanceOverview>
                 </ModernDashboardHeader>
+
+                {/* View Mode: Compact (table) vs Cards (detailed sections) */}
+                {viewMode === 'compact' ? (
+                    <DashboardCompactView
+                        theme={theme}
+                        isHidden={isHidden}
+                        traditionalAssets={traditionalAssets}
+                        emergencyFundAsset={emergencyFundAsset}
+                        investments={investments}
+                        incExpData={incExpData}
+                        totalBalance={totalBalance}
+                        totalTraditional={totalTraditional}
+                        totalInvestments={totalInvestments}
+                        totalEmergencySecurity={totalEmergencySecurity}
+                        formatCurrency={formatCurrency}
+                        formatPercentage={formatPercentage}
+                    />
+                ) : (
+                <>
 
                 <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '1rem' : '2rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
@@ -995,11 +1050,23 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     </div>
                 </ModernChartsSection>
 
-                {/* Financial Insights Section */}
-                <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
+                {/* Financial Insights Section (lazy loaded) */}
+                <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
+                    <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
+                </Suspense>
 
-                {/* Goal Tracking Section */}
-                <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
+                {/* Goal Tracking Section (lazy loaded) */}
+                <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
+                    <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
+                </Suspense>
+
+                {/* Gamification Section (lazy loaded) */}
+                <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
+                    <GamificationSection theme={theme} userData={userData} isHidden={isHidden} />
+                </Suspense>
+
+                </>
+                )}
 
                 </ResponsivePadding>
             </DashboardContent>

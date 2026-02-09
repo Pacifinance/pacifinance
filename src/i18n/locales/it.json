@@ -1363,6 +1363,118 @@
             "disclaimer": "Le donazioni sono completamente volontarie e non sbloccano funzionalità aggiuntive."
         }
     },
+    "gamification": {
+        "title": "I tuoi Traguardi",
+        "level": "Livello",
+        "points": "punti",
+        "badgesUnlocked": "Badge sbloccati",
+        "savingsStreak": "Mesi risparmiato",
+        "dataStreak": "Mesi consecutivi",
+        "assetTypes": "Tipi di asset",
+        "all": "Tutti",
+        "unlocked": "Sbloccati",
+        "locked": "Da sbloccare",
+        "allBadgesUnlocked": "Complimenti! Hai sbloccato tutti i badge!",
+        "badges": {
+            "firstMonth": {
+                "name": "Primo Passo",
+                "description": "Inserisci il tuo primo mese di dati"
+            },
+            "threeMonths": {
+                "name": "Costante",
+                "description": "3 mesi di dati inseriti"
+            },
+            "sixMonths": {
+                "name": "Affidabile",
+                "description": "6 mesi di dati inseriti"
+            },
+            "oneYear": {
+                "name": "Veterano",
+                "description": "Un anno completo di dati"
+            },
+            "firstSave": {
+                "name": "Risparmiatore",
+                "description": "Primo mese con risparmio positivo"
+            },
+            "savingsStreak3": {
+                "name": "In Serie",
+                "description": "3 mesi consecutivi di risparmio"
+            },
+            "savingsStreak6": {
+                "name": "Inarrestabile",
+                "description": "6 mesi consecutivi di risparmio"
+            },
+            "netWorth1k": {
+                "name": "Primo Traguardo",
+                "description": "Patrimonio di €1.000"
+            },
+            "netWorth10k": {
+                "name": "Cinque Cifre",
+                "description": "Patrimonio di €10.000"
+            },
+            "netWorth50k": {
+                "name": "Decollo",
+                "description": "Patrimonio di €50.000"
+            },
+            "netWorth100k": {
+                "name": "Club 100K",
+                "description": "Patrimonio di €100.000"
+            },
+            "firstInvestment": {
+                "name": "Investitore",
+                "description": "Primo investimento effettuato"
+            },
+            "diversified3": {
+                "name": "Diversificato",
+                "description": "3+ tipi di asset"
+            },
+            "diversified5": {
+                "name": "Portfolio Pro",
+                "description": "5+ tipi di asset"
+            },
+            "emergencyFundStarted": {
+                "name": "Rete di Sicurezza",
+                "description": "Fondo di emergenza avviato"
+            },
+            "emergencyFundGoal": {
+                "name": "Blindato",
+                "description": "Obiettivo fondo emergenza raggiunto"
+            },
+            "monthlyGrowth": {
+                "name": "In Crescita",
+                "description": "Patrimonio in aumento vs mese precedente"
+            },
+            "yearlyGrowth": {
+                "name": "Anno d'Oro",
+                "description": "Patrimonio in aumento vs anno precedente"
+            }
+        }
+    },
+    "dashboardLayout": {
+        "balanceOverview": "Panoramica Bilancio",
+        "liquidityInvestments": "Liquidità & Investimenti",
+        "incomeExpense": "Entrate & Uscite",
+        "charts": "Grafici",
+        "financialInsights": "Analisi Finanziaria",
+        "goalTracker": "Obiettivi",
+        "gamification": "Traguardi",
+        "switchToCompact": "Vista compatta",
+        "switchToCards": "Vista card",
+        "compact": "Compatta",
+        "cards": "Card",
+        "customize": "Personalizza",
+        "customizeTitle": "Personalizza Dashboard",
+        "dragHint": "Trascina le sezioni per riordinarle. Clicca l'icona occhio per nasconderle.",
+        "resetLayout": "Ripristina layout predefinito",
+        "assetOverview": "Panoramica Asset",
+        "asset": "Asset",
+        "category": "Categoria",
+        "value": "Valore",
+        "ofTotal": "% Totale",
+        "categoryBreakdown": "Riepilogo per Categoria",
+        "type": "Tipo",
+        "amount": "Importo"
+    },
     "categories": {
         "Casa": "Casa",
         "Alimentari": "Alimentari", 

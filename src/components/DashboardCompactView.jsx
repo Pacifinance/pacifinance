@@ -1,0 +1,361 @@
+/**
+ * DashboardCompactView Component
+ * 
+ * Table-based summary view of all dashboard data.
+ * Alternative to the card-based layout.
+ */
+
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import { LanguageContext } from '../contexts/LanguageContext';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import { assetColors } from '../data/assetColors';
+import { assetIcons } from '../data/assetIcons';
+import { BsArrowUpRight, BsArrowDownLeft, BsWallet2 } from 'react-icons/bs';
+import { GiUmbrella } from 'react-icons/gi';
+
+const CompactContainer = styled.div`
+  margin-bottom: 2rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+  }
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: ${props => props.theme.textColor};
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
+  
+  @media (max-width: 768px) {
+    border-radius: 0.75rem;
+  }
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const Thead = styled.thead`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'};
+`;
+
+const Th = styled.th`
+  padding: 0.75rem 1rem;
+  text-align: ${props => props.$align || 'left'};
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.65rem;
+  }
+`;
+
+const Tr = styled.tr`
+  border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'};
+  transition: background 0.15s ease;
+  
+  &:hover {
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.01)'};
+  }
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const TrTotal = styled(Tr)`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(34,197,94,0.08)' : 'rgba(34,197,94,0.04)'};
+  font-weight: 600;
+  
+  &:hover {
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(34,197,94,0.12)' : 'rgba(34,197,94,0.06)'};
+  }
+`;
+
+const Td = styled.td`
+  padding: 0.75rem 1rem;
+  text-align: ${props => props.$align || 'left'};
+  color: ${props => props.theme.textColor};
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.6rem;
+  }
+`;
+
+const AssetNameCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  
+  .icon-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .asset-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  
+  @media (max-width: 768px) {
+    gap: 0.4rem;
+    
+    .icon-dot {
+      width: 8px;
+      height: 8px;
+    }
+    .asset-icon {
+      font-size: 0.85rem;
+    }
+  }
+`;
+
+const ValueCell = styled.span`
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: ${props => props.$color || props.theme.textColor};
+`;
+
+const PercentageCell = styled.span`
+  font-size: 0.8rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.5rem;
+  background: ${props => props.$color ? `${props.$color}15` : 'transparent'};
+  color: ${props => props.$color || 'inherit'};
+  font-weight: 500;
+  
+  @media (max-width: 768px) {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.35rem;
+  }
+`;
+
+const DashboardCompactView = ({
+  theme,
+  isHidden,
+  traditionalAssets,
+  emergencyFundAsset,
+  investments,
+  incExpData,
+  totalBalance,
+  totalTraditional,
+  totalInvestments,
+  totalEmergencySecurity,
+  formatCurrency,
+  formatPercentage,
+}) => {
+  const { translations } = useContext(LanguageContext);
+  const { isMobileScreen } = useContext(MediaQueryContext);
+
+  const t = translations?.dashboardLayout || {};
+
+  // All assets for the overview table
+  const allAssetRows = [
+    ...traditionalAssets.filter(a => a.value > 0).map(a => ({
+      ...a,
+      category: translations?.dashboard?.liquidity || 'Liquidità',
+    })),
+    ...(emergencyFundAsset.value > 0 ? [{
+      ...emergencyFundAsset,
+      category: translations?.dashboard?.emergencySecurity || 'Emergenza',
+    }] : []),
+    ...investments.map(inv => ({
+      ...inv,
+      category: translations?.general?.investments || 'Investimenti',
+    })),
+  ];
+
+  return (
+    <CompactContainer>
+      {/* Assets Overview Table */}
+      <SectionTitle theme={theme}>
+        📊 {t.assetOverview || 'Panoramica Asset'}
+      </SectionTitle>
+      <TableWrapper theme={theme}>
+        <Table>
+          <Thead theme={theme}>
+            <tr>
+              <Th theme={theme}>{t.asset || 'Asset'}</Th>
+              <Th theme={theme}>{t.category || 'Categoria'}</Th>
+              <Th theme={theme} $align="right">{t.value || translations?.general?.value || 'Valore'}</Th>
+              <Th theme={theme} $align="right">{t.ofTotal || '% Totale'}</Th>
+            </tr>
+          </Thead>
+          <tbody>
+            {allAssetRows.map((asset, index) => {
+              const IconComponent = asset.icon;
+              return (
+                <Tr key={index} theme={theme}>
+                  <Td theme={theme}>
+                    <AssetNameCell>
+                      <div className="icon-dot" style={{ backgroundColor: asset.color }} />
+                      {IconComponent && <IconComponent className="asset-icon" style={{ color: asset.color }} />}
+                      <span>{isHidden ? '****' : asset.name}</span>
+                    </AssetNameCell>
+                  </Td>
+                  <Td theme={theme}>
+                    <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>{asset.category}</span>
+                  </Td>
+                  <Td theme={theme} $align="right">
+                    <ValueCell theme={theme}>{formatCurrency(asset.value)}</ValueCell>
+                  </Td>
+                  <Td theme={theme} $align="right">
+                    <PercentageCell $color={asset.color}>
+                      {formatPercentage(asset.value, totalBalance)}
+                    </PercentageCell>
+                  </Td>
+                </Tr>
+              );
+            })}
+            {/* Total Row */}
+            <TrTotal theme={theme}>
+              <Td theme={theme}>
+                <strong>{translations?.general?.total || 'Totale'}</strong>
+              </Td>
+              <Td theme={theme} />
+              <Td theme={theme} $align="right">
+                <ValueCell theme={theme} $color="#22c55e">{formatCurrency(totalBalance)}</ValueCell>
+              </Td>
+              <Td theme={theme} $align="right">
+                <PercentageCell $color="#22c55e">100%</PercentageCell>
+              </Td>
+            </TrTotal>
+          </tbody>
+        </Table>
+      </TableWrapper>
+
+      {/* Category Breakdown */}
+      <SectionTitle theme={theme} style={{ marginTop: '1.5rem' }}>
+        📋 {t.categoryBreakdown || 'Riepilogo per Categoria'}
+      </SectionTitle>
+      <TableWrapper theme={theme}>
+        <Table>
+          <Thead theme={theme}>
+            <tr>
+              <Th theme={theme}>{t.category || 'Categoria'}</Th>
+              <Th theme={theme} $align="right">{t.value || translations?.general?.value || 'Valore'}</Th>
+              <Th theme={theme} $align="right">{t.ofTotal || '% Totale'}</Th>
+            </tr>
+          </Thead>
+          <tbody>
+            <Tr theme={theme}>
+              <Td theme={theme}>
+                <AssetNameCell>
+                  <div className="icon-dot" style={{ backgroundColor: assetColors.totalLiquidity }} />
+                  {translations?.dashboard?.liquidity || 'Liquidità'}
+                </AssetNameCell>
+              </Td>
+              <Td theme={theme} $align="right">
+                <ValueCell theme={theme}>{formatCurrency(totalTraditional)}</ValueCell>
+              </Td>
+              <Td theme={theme} $align="right">
+                <PercentageCell $color={assetColors.totalLiquidity}>
+                  {formatPercentage(totalTraditional, totalBalance)}
+                </PercentageCell>
+              </Td>
+            </Tr>
+            {totalEmergencySecurity > 0 && (
+              <Tr theme={theme}>
+                <Td theme={theme}>
+                  <AssetNameCell>
+                    <div className="icon-dot" style={{ backgroundColor: emergencyFundAsset.color }} />
+                    {translations?.dashboard?.emergencySecurity || 'Emergenza & Sicurezza'}
+                  </AssetNameCell>
+                </Td>
+                <Td theme={theme} $align="right">
+                  <ValueCell theme={theme}>{formatCurrency(totalEmergencySecurity)}</ValueCell>
+                </Td>
+                <Td theme={theme} $align="right">
+                  <PercentageCell $color={emergencyFundAsset.color}>
+                    {formatPercentage(totalEmergencySecurity, totalBalance)}
+                  </PercentageCell>
+                </Td>
+              </Tr>
+            )}
+            <Tr theme={theme}>
+              <Td theme={theme}>
+                <AssetNameCell>
+                  <div className="icon-dot" style={{ backgroundColor: assetColors.totalInvestments }} />
+                  {translations?.general?.investments || 'Investimenti'}
+                </AssetNameCell>
+              </Td>
+              <Td theme={theme} $align="right">
+                <ValueCell theme={theme}>{formatCurrency(totalInvestments)}</ValueCell>
+              </Td>
+              <Td theme={theme} $align="right">
+                <PercentageCell $color={assetColors.totalInvestments}>
+                  {formatPercentage(totalInvestments, totalBalance)}
+                </PercentageCell>
+              </Td>
+            </Tr>
+          </tbody>
+        </Table>
+      </TableWrapper>
+
+      {/* Income / Expenses Summary */}
+      <SectionTitle theme={theme} style={{ marginTop: '1.5rem' }}>
+        💶 {translations?.dashboard?.titleGraph3 || 'Entrate | Uscite'}
+      </SectionTitle>
+      <TableWrapper theme={theme}>
+        <Table>
+          <Thead theme={theme}>
+            <tr>
+              <Th theme={theme}>{t.type || 'Tipo'}</Th>
+              <Th theme={theme} $align="right">{t.amount || 'Importo'}</Th>
+            </tr>
+          </Thead>
+          <tbody>
+            {incExpData.map((item, index) => (
+              <Tr key={index} theme={theme}>
+                <Td theme={theme}>
+                  <AssetNameCell>
+                    <div className="icon-dot" style={{ backgroundColor: item.color }} />
+                    {item.name === translations?.general?.incomes && <BsArrowUpRight style={{ color: item.color }} />}
+                    {item.name === translations?.general?.outflows && <BsArrowDownLeft style={{ color: item.color }} />}
+                    {item.name === translations?.general?.saved && <BsWallet2 style={{ color: item.color }} />}
+                    <span>{isHidden ? '****' : item.name}</span>
+                  </AssetNameCell>
+                </Td>
+                <Td theme={theme} $align="right">
+                  <ValueCell theme={theme} $color={item.color}>{formatCurrency(item.value)}</ValueCell>
+                </Td>
+              </Tr>
+            ))}
+          </tbody>
+        </Table>
+      </TableWrapper>
+    </CompactContainer>
+  );
+};
+
+export default DashboardCompactView;

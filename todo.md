@@ -39,6 +39,28 @@
 - [x] Fix `useNavigate` → `useLocalizedNavigate`
 - [x] Riordino sezioni: **Tema → Sicurezza → Esportazione Dati → Danger Zone**
 
+### Performance
+- [x] Lazy loading per `FinancialInsights`, `GoalTracker` e `GamificationSection` (React.lazy + Suspense)
+- [x] Memoizzazione dati pie chart con `useMemo` (pieData, detailedPieData, incExpData)
+- [x] Skeleton loading (`DashboardSkeleton`) con shimmer animation durante il caricamento dati
+
+### Test
+- [x] Test unitari per BottomNavBar (10 test cases: render, menu, logout, backdrop, dark theme)
+- [x] Test per `useScrollNavigation` con path localizzati (10 test cases)
+- [x] Test per ordine sezioni SettingsPage (2 test cases)
+
+### Gamification
+- [x] Hook `useGamification`: calcolo client-side di 17 badge in 5 categorie (consistenza dati, risparmio, patrimonio, diversificazione, fondo emergenza + crescita)
+- [x] Componente `GamificationSection`: griglia badge, barra livello, tab sbloccati/bloccati, stats
+- [x] Traduzioni IT/EN per tutti i badge, titoli e label
+
+### Dashboard Personalizzabile
+- [x] Hook `useDashboardLayout`: ordine sezioni + view mode persistiti in localStorage
+- [x] Componente `DashboardToolbar`: toggle vista compatta/card + pannello personalizzazione con drag-and-drop
+- [x] Componente `DashboardCompactView`: vista tabellare riassuntiva (panoramica asset, categorie, entrate/uscite)
+- [x] Integrazione in Dashboard.jsx: toolbar, compact/cards conditional rendering
+- [x] Traduzioni IT/EN per tutte le label della toolbar e compact view
+
 ### Varie
 - [x] BuyMeACoffee widget: CSS override per posizionarlo sopra BottomNavBar su mobile
 - [x] ScrollNavigationIndicator: `bottom: 68px` su mobile per stare sopra la nav bar
@@ -72,27 +94,23 @@
 - [ ] Export PDF: migliorare layout con grafici inclusi nel report
 
 ### Performance
-- [ ] Lazy loading per componenti FinancialInsights e GoalTracker nella Dashboard
-- [ ] Memoizzazione dei dati pie chart (useMemo) per evitare ricalcoli ad ogni render
 - [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
 
 ### Test
-- [ ] Test unitari per BottomNavBar
-- [ ] Test per `useScrollNavigation` con path localizzati
 - [ ] Test per axios interceptor 401
 - [ ] Test per `removeLanguageFromPath` edge cases
-- [ ] Test per ordine sezioni SettingsPage
+- [ ] Eseguire test suite completa (`npm test`) — terminale bloccato al momento
 
 ---
 
 ## 💡 Idee Future
 
 ### UX/UI
-- Dashboard personalizzabile: drag-and-drop delle sezioni per riordinarle
-- Modalità "compact view" per la dashboard (tabella riassuntiva invece di card)
+- ~~Dashboard personalizzabile: drag-and-drop delle sezioni per riordinarle~~ ✅
+- ~~Modalità "compact view" per la dashboard (tabella riassuntiva invece di card)~~ ✅
 - Tema personalizzato: colore primario scelto dall'utente
 - Onboarding guidato al primo accesso (tour interattivo)
-- Skeleton loading per le card durante il caricamento dati
+- ~~Skeleton loading per le card durante il caricamento dati~~ ✅
 - Swipe gesture per navigare tra le pagine su mobile (alternativa allo scroll navigation)
 - Animazioni di ingresso differenziate per ogni card asset (staggered)
 
@@ -103,14 +121,14 @@
 - Budget planner con scenari "what if"
 - Calcolo interesse composto per gli investimenti
 - Tracker dividendi (date ex-dividend, importi attesi)
-- Sezione "net worth milestones" con badge/achievement
+- ~~Sezione "net worth milestones" con badge/achievement~~ ✅
 - Multi-valuta con conversione automatica in tempo reale
 - Confronto patrimonio con media nazionale per fascia d'età/lavoro
 
 ### Gamification
-- Sistema di punti per inserimento costante dei dati
-- Badge per obiettivi raggiunti (primo mese completo, 6 mesi di dati, ecc.)
-- Streak counter per inserimenti consecutivi
+- ~~Sistema di punti per inserimento costante dei dati~~ ✅
+- ~~Badge per obiettivi raggiunti (primo mese completo, 6 mesi di dati, ecc.)~~ ✅
+- ~~Streak counter per inserimenti consecutivi~~ ✅
 - Classifica opzionale tra utenti anonimi della stessa fascia
 
 ### Sicurezza & Privacy

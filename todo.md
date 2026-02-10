@@ -1,6 +1,6 @@
 # PaciFinance - TODO & Roadmap
 
-> Ultimo aggiornamento: 09/02/2026
+> Ultimo aggiornamento: 10/02/2026
 
 ---
 
@@ -50,9 +50,21 @@
 - [x] Test per ordine sezioni SettingsPage (2 test cases)
 
 ### Gamification
-- [x] Hook `useGamification`: calcolo client-side di 17 badge in 5 categorie (consistenza dati, risparmio, patrimonio, diversificazione, fondo emergenza + crescita)
-- [x] Componente `GamificationSection`: griglia badge, barra livello, tab sbloccati/bloccati, stats
-- [x] Traduzioni IT/EN per tutti i badge, titoli e label
+- [x] Hook `useGamification`: calcolo client-side di 44 badge in 10 categorie
+  - **Costanza (7):** firstMonth, threeMonths, sixMonths, oneYear, twoYears, dataStreak6, dataStreak12
+  - **Risparmio (6):** firstSave, savingsStreak3/6/12, bigSaver (30%+), superSaver (50%+)
+  - **Patrimonio (7):** netWorth 1k/10k/50k/100k/250k/500k/1M
+  - **Diversificazione (7):** firstInvestment, diversified3/5/7, cryptoExplorer, goldHolder, bondInvestor
+  - **Emergenza e Crescita (4):** emergencyFundStarted/Goal, monthlyGrowth, yearlyGrowth
+  - **Gestione Uscite (4):** budgetMaster, frugalMonth, spendingDown, categoryTracker
+  - **Entrate (3):** firstIncome, incomeGrowth, steadyIncome
+  - **Obiettivi (3):** goalSetter, goalAchiever, multiGoal
+  - **Community (2):** topQuartile (top 25%), top10Percent (top 10%)
+  - **Profilo (1):** profileComplete
+- [x] Componente `GamificationSection`: griglia badge con filtro categoria (chip scrollabili) + raggruppamento per sezione, barra livello, tab sbloccati/bloccati, stats
+- [x] Traduzioni IT/EN per tutti i 44 badge, 10 categorie e label
+- [x] Sistema dinamico badgeTranslations (auto-mappa tutti i badge definiti)
+- [x] `BADGE_CATEGORIES` e `BADGE_CATEGORY_ORDER` esportati per uso esterno
 
 ### Dashboard Personalizzabile
 - [x] Hook `useDashboardLayout`: ordine sezioni + view mode persistiti in localStorage
@@ -66,6 +78,15 @@
 - [x] ScrollNavigationIndicator: `bottom: 68px` su mobile per stare sopra la nav bar
 - [x] `index.css`: padding-bottom mobile per safe-area + BottomNavBar
 
+### Account
+
+- [x] **Avatar generato client-side**: cerchio colorato con occhi e bocca casuali (7 stili occhi × 10 stili bocca × 20 colori = 1400+ combinazioni)
+  - `src/utils/avatarGenerator.js`: generatore canvas con palette colori PaciFinance
+  - `src/components/AvatarIcon.jsx`: componente React con rigenerazione (doppio click/tasto destro)
+  - Integrato in `Sidebar.jsx` (desktop) e `SidebarMobile.jsx` (mobile)
+  - Salvato in localStorage (`pacifinance-avatar`), rigenerabile 1x al giorno
+  - Toast notification su rigenerazione
+
 ---
 
 ## 🔧 Da Fare
@@ -73,6 +94,8 @@
 ### Bug Noti
 - [ ] BuyMeACoffee widget: lo script inline imposta stili una sola volta al mount, il CSS `!important` è un workaround — verificare se il widget si posiziona correttamente su tutti i dispositivi
 - [ ] Verificare che i grafici con label `renderCustomizedLabel` non si sovrappongano con raggio ridotto su mobile
+- [x] ~~A volte all'avvio della dashboard, rimane nella pagina bianca del caricamento e non carica la dashboard~~ → Fix: aggiunto error recovery in `UserContext` (retry su errore API), `setIsLoading(false)` nel catch di `Dashboard.jsx`, e spinner + timeout + pulsante "Riprova" in `DashboardPage.jsx`
+- [ ] da mobile la notifica dell' achievements raggiunto finisce sotto i pulsanti della sidebar in basso, spostare la notifica più in alto e renderla più compatta da mobile
 
 ### Mobile
 - [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)
@@ -129,7 +152,9 @@
 - ~~Sistema di punti per inserimento costante dei dati~~ ✅
 - ~~Badge per obiettivi raggiunti (primo mese completo, 6 mesi di dati, ecc.)~~ ✅
 - ~~Streak counter per inserimenti consecutivi~~ ✅
-- Classifica opzionale tra utenti anonimi della stessa fascia
+- ~~aggiungere molti più achievements, analizzare bene il codice~~ ✅ (da 17 a 44 badge in 10 categorie)
+- Classifica opzionale tra utenti anonimi della stessa fascia (per ora no)
+- Badge "Supporter" per chi dona via BuyMeACoffee (vedi analisi sotto in "Le Mie Idee")
 
 ### Sicurezza & Privacy
 - Autenticazione biometrica (fingerprint/face ID) su mobile
@@ -152,7 +177,53 @@
 
 ---
 
-## 📋 Note Tecniche
+## � Le Mie Idee
+
+> **Come usare questa sezione:** Scrivi qui le tue idee in formato libero. Quando le vedrò, le organizzerò nel todo, le valuterò e le implementerò.
+> Formato suggerito: una riga per idea, anche solo un appunto veloce.
+
+<!-- Scrivi le tue idee qui sotto, una per riga -->
+- ~~C'è un modo per capire se un utente fa effettivamente una donazione alla piattaforma?~~ ✅ **Analizzato** — vedi sotto
+
+### 📊 Analisi: Tracciamento Donazioni BuyMeACoffee → Achievement "Supporter"
+
+**Risposta: Sì, è possibile!** BuyMeACoffee offre **Webhooks** che notificano il tuo server in tempo reale quando qualcuno fa una donazione.
+
+**Come funzionerebbe:**
+
+1. **Setup Webhook BMC** → Registra un endpoint del tuo server (es. `POST /api/webhooks/bmc`) nella dashboard BMC ([studio.buymeacoffee.com/webhooks](https://studio.buymeacoffee.com/webhooks))
+2. **Ricezione evento** → Quando qualcuno dona, BMC invia un payload JSON con info del supporter (email, nome, messaggio)
+3. **Matching utente** → Il server confronta l'email del donatore con gli utenti registrati su PaciFinance
+4. **Flag nel database** → Se c'è match, imposta `hasDonated: true` sul documento utente (nessun dato di pagamento salvato!)
+5. **Badge "Supporter"** → Il frontend legge il flag da `userData.hasDonated` e sblocca il badge
+
+**Privacy e sicurezza:**
+- ✅ Nessun dato di pagamento salvato (no importo, no carta, no transazione)
+- ✅ Solo un flag booleano `hasDonated: true/false`
+- ✅ L'email serve solo per matching, non viene salvata separatamente
+- ✅ Token di verifica webhook per autenticità delle richieste
+- ✅ Completamente anonimo: nessuno può sapere chi ha donato quanto
+
+**Approccio alternativo (più semplice, senza webhook):**
+- L'utente dona su BMC, poi clicca "Ho donato" in PaciFinance
+- Il server verifica tramite l'API BMC (endpoint `/supporters`) se l'email corrisponde
+- Se confermato, sblocca il badge
+
+**Cosa otterrebbe il donatore (idee):**
+- 🏅 Badge esclusivo "Supporter" / "Sostenitore" nel profilo
+- ⭐ Bordo dorato sull'avatar
+- 🎨 Colori avatar esclusivi (palette premium)
+- 🔓 Funzionalità extra (es. più personalizzazione dashboard)
+
+**Implementazione richiesta:**
+- **Backend**: nuovo endpoint webhook + campo `hasDonated` nel DB + route API per verificare
+- **Frontend**: badge "Supporter" in `useGamification.js` (già predisposto, basta aggiungere `check: (data) => data.hasDonated === true`)
+
+**Stato: Pronto per implementazione backend** — il frontend è già preparato per supportare un badge `supporter` quando il server fornirà il flag `hasDonated`.
+
+---
+
+## �📋 Note Tecniche
 
 - **Breakpoint mobile**: `max-width: 839px` (MediaQueryContext `isMobileScreen`)
 - **Breakpoint CSS**: la maggior parte degli styled-components usa `max-width: 768px`

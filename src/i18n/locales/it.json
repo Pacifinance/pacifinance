@@ -395,7 +395,8 @@
                 "copied": "Copiato negli appunti!",
                 "toCopy": "Copia il tuo ID",
                 "okButton": "ok va bene"
-            }
+            },
+            "errorCopy": "Errore durante la copia negli appunti: "
         },
         "changePassword": {
             "title": "Cambio password",
@@ -455,11 +456,14 @@
         "cryptoDescription": "Crypto",
         "bondsDescription": "Obbligazioni",
         "fundsDescription": "Fondi",
-        "goldDescription": "Oro"
+        "goldDescription": "Oro",
+        "loading": "Caricamento dati dashboard...",
+        "loadingError": "Errore nel caricamento dei dati. Riprova.",
+        "loadingTimeout": "Il caricamento sta impiegando più tempo del previsto...",
+        "retry": "Riprova"
     },
     "graphs": {
         "title": "Grafici e Statistiche",
-        "Title": "Le tue statistiche",
         "subtitle": "Analizza i tuoi dati finanziari con grafici avanzati e statistiche dettagliate",
         "loading": {
             "balance": "Caricamento grafici dei bilanci...",
@@ -662,11 +666,13 @@
         },
         "investmentSection": {
             "placeholderCategory": "Seleziona una categoria",
+            "placeholderTypology": "Seleziona una tipologia",
             "placeholderNote": "Inserisci una nota (opzionale)",
             "updateButton": "Aggiungi investimento",
             "titleListing": "Gli investimenti del mese selezionato",
             "tableColumns": {
                 "category": "Categoria",
+                "typology": "Tipologia",
                 "value": "Valore",
                 "note": "Nota",
                 "date": "Data Investimento"
@@ -675,6 +681,7 @@
             "successUpdate": "Investimento inserito con successo",
             "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
             "successDelete": "Investimento eliminato con successo",
+            "decreaseWhichBalance": "Seleziona dove sottrarre l'investimento: ",
             "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
         },
         "errors": {
@@ -1376,9 +1383,22 @@
         "all": "Tutti",
         "unlocked": "Sbloccati",
         "locked": "Da sbloccare",
+        "allCategories": "Tutte",
         "allBadgesUnlocked": "Complimenti! Hai sbloccato tutti i badge!",
         "badgeUnlocked": "Traguardo sbloccato!",
         "achievementsSummary": "traguardi già sbloccati!",
+        "categories": {
+            "dataConsistency": "Costanza",
+            "savings": "Risparmio",
+            "netWorth": "Patrimonio",
+            "diversification": "Diversificazione",
+            "emergencyGrowth": "Emergenza e Crescita",
+            "outflowManagement": "Gestione Uscite",
+            "income": "Entrate",
+            "goals": "Obiettivi",
+            "community": "Community",
+            "profile": "Profilo"
+        },
         "badges": {
             "firstMonth": {
                 "name": "Primo Passo",
@@ -1396,6 +1416,18 @@
                 "name": "Veterano",
                 "description": "Un anno completo di dati"
             },
+            "twoYears": {
+                "name": "Veterano Pro",
+                "description": "Due anni completi di dati"
+            },
+            "dataStreak6": {
+                "name": "Regolare",
+                "description": "6 mesi consecutivi di inserimento dati"
+            },
+            "dataStreak12": {
+                "name": "Instancabile",
+                "description": "12 mesi consecutivi di inserimento dati"
+            },
             "firstSave": {
                 "name": "Risparmiatore",
                 "description": "Primo mese con risparmio positivo"
@@ -1407,6 +1439,18 @@
             "savingsStreak6": {
                 "name": "Inarrestabile",
                 "description": "6 mesi consecutivi di risparmio"
+            },
+            "savingsStreak12": {
+                "name": "Maratoneta",
+                "description": "12 mesi consecutivi di risparmio"
+            },
+            "bigSaver": {
+                "name": "Gran Risparmiatore",
+                "description": "Risparmiato il 30%+ del reddito in un mese"
+            },
+            "superSaver": {
+                "name": "Super Risparmiatore",
+                "description": "Risparmiato il 50%+ del reddito in un mese"
             },
             "netWorth1k": {
                 "name": "Primo Traguardo",
@@ -1424,6 +1468,18 @@
                 "name": "Club 100K",
                 "description": "Patrimonio di €100.000"
             },
+            "netWorth250k": {
+                "name": "Quarto di Milione",
+                "description": "Patrimonio di €250.000"
+            },
+            "netWorth500k": {
+                "name": "Mezzo Milione",
+                "description": "Patrimonio di €500.000"
+            },
+            "netWorth1M": {
+                "name": "Milionario",
+                "description": "Patrimonio di €1.000.000"
+            },
             "firstInvestment": {
                 "name": "Investitore",
                 "description": "Primo investimento effettuato"
@@ -1435,6 +1491,22 @@
             "diversified5": {
                 "name": "Portfolio Pro",
                 "description": "5+ tipi di asset"
+            },
+            "diversified7": {
+                "name": "Super Diversificato",
+                "description": "7+ tipi di asset diversi"
+            },
+            "cryptoExplorer": {
+                "name": "Crypto Explorer",
+                "description": "Primo investimento in crypto"
+            },
+            "goldHolder": {
+                "name": "Mani d'Oro",
+                "description": "Oro nel portafoglio"
+            },
+            "bondInvestor": {
+                "name": "Obbligazionista",
+                "description": "Obbligazioni nel portafoglio"
             },
             "emergencyFundStarted": {
                 "name": "Rete di Sicurezza",
@@ -1451,6 +1523,58 @@
             "yearlyGrowth": {
                 "name": "Anno d'Oro",
                 "description": "Patrimonio in aumento vs anno precedente"
+            },
+            "budgetMaster": {
+                "name": "Maestro del Budget",
+                "description": "Uscite entro il limite mensile"
+            },
+            "frugalMonth": {
+                "name": "Mese Frugale",
+                "description": "Uscite inferiori al mese precedente"
+            },
+            "spendingDown": {
+                "name": "Tendenza al Ribasso",
+                "description": "Uscite in calo per 3 mesi consecutivi"
+            },
+            "categoryTracker": {
+                "name": "Tracciatore Esperto",
+                "description": "5+ categorie di uscite tracciate"
+            },
+            "firstIncome": {
+                "name": "Prima Entrata",
+                "description": "Primo reddito registrato"
+            },
+            "incomeGrowth": {
+                "name": "In Ascesa",
+                "description": "Reddito aumentato vs mese precedente"
+            },
+            "steadyIncome": {
+                "name": "Reddito Costante",
+                "description": "3+ mesi consecutivi con entrate"
+            },
+            "goalSetter": {
+                "name": "Ambizioso",
+                "description": "Primo obiettivo impostato"
+            },
+            "goalAchiever": {
+                "name": "Obiettivo Raggiunto",
+                "description": "Un obiettivo completato"
+            },
+            "multiGoal": {
+                "name": "Multi-obiettivo",
+                "description": "3+ obiettivi attivi"
+            },
+            "topQuartile": {
+                "name": "Top 25%",
+                "description": "Nel top 25% di almeno una classifica"
+            },
+            "top10Percent": {
+                "name": "Top 10%",
+                "description": "Nel top 10% di almeno una classifica"
+            },
+            "profileComplete": {
+                "name": "Profilo Completo",
+                "description": "Tutti i campi del profilo compilati"
             }
         }
     },
@@ -1501,5 +1625,11 @@
         "achievementsTab": "Traguardi",
         "notSpecified": "Non specificato",
         "updateSuccess": "Profilo aggiornato con successo!"
+    },
+    "avatar": {
+        "regenerate": "Genera nuovo avatar",
+        "regenerated": "Nuovo avatar generato!",
+        "limitReached": "Puoi rigenerare il tuo avatar una volta al giorno",
+        "tooltip": "Clicca per rigenerare il tuo avatar (1x al giorno)"
     }
 }

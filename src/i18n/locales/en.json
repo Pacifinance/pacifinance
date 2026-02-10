@@ -456,7 +456,11 @@
         "cryptoDescription": "Crypto",
         "bondsDescription": "Bonds",
         "fundsDescription": "Funds",
-        "goldDescription": "Gold"
+        "goldDescription": "Gold",
+        "loading": "Loading dashboard data...",
+        "loadingError": "Error loading data. Please try again.",
+        "loadingTimeout": "Loading is taking longer than expected...",
+        "retry": "Retry"
     },
     "graphs": {
         "title": "Charts & Statistics",
@@ -677,7 +681,8 @@
             "successUpdate": "Investment inserted successfully",
             "confirmDelete": "Are you sure you want to delete this investment?",
             "successDelete": "Investment deleted successfully",
-            "decreaseWhichBalance": "Select where to subtract the investment"
+            "decreaseWhichBalance": "Select where to subtract the investment",
+            "increaseWhichBalance": "Select where to add the investment"
         },
         "errors": {
             "balanceUpdateFailed": "Error updating balance. Please try again later.",
@@ -815,7 +820,7 @@
             "similarSubtitle": "Comparison with profiles similar to yours",
             "balance": "Balance",
             "income": "Income",
-            "expenses": "Outflows",
+            "outflows": "Outflows",
             "topPerformance": "Great position!",
             "goodPerformance": "Good position",
             "canImprove": "Room for growth",
@@ -831,7 +836,7 @@
                     "medium": "Good income, you have a solid foundation",
                     "low": "There are growth opportunities for your income"
                 },
-                "expenses": {
+                "outflows": {
                     "top": "Excellent outflow control!",
                     "medium": "You manage your outflows well",
                     "low": "You could optimize some outflows, but you're on the right track"
@@ -842,19 +847,19 @@
                     "title": "🎉 Fantastic!",
                     "balance": "Your wealth management is excellent! Continue with this winning strategy.",
                     "income": "Your income is great! You've built a solid financial foundation.",
-                    "expenses": "You control outflows very well! Your financial discipline is admirable."
+                    "outflows": "You control outflows very well! Your financial discipline is admirable."
                 },
                 "medium": {
                     "title": "👍 On the right track!",
                     "balance": "You're building your wealth well. With consistency, you'll reach your goals!",
                     "income": "You have a good income base. Keep working on your financial goals!",
-                    "expenses": "You manage outflows well. Small adjustments can bring great results!"
+                    "outflows": "You manage outflows well. Small adjustments can bring great results!"
                 },
                 "low": {
                     "title": "💪 Growth opportunities!",
                     "balance": "Every great wealth starts with small steps. Keep saving, even little by little!",
                     "income": "There are opportunities to increase your income. Consider new paths and skills!",
-                    "expenses": "Reviewing some outflows can free up valuable resources. A detailed budget can help!"
+                    "outflows": "Reviewing some outflows can free up valuable resources. A detailed budget can help!"
                 }
             },
             "popup": {
@@ -1378,9 +1383,22 @@
         "all": "All",
         "unlocked": "Unlocked",
         "locked": "Locked",
+        "allCategories": "All",
         "allBadgesUnlocked": "Congratulations! You've unlocked all badges!",
         "badgeUnlocked": "Achievement unlocked!",
         "achievementsSummary": "achievements already unlocked!",
+        "categories": {
+            "dataConsistency": "Consistency",
+            "savings": "Savings",
+            "netWorth": "Net Worth",
+            "diversification": "Diversification",
+            "emergencyGrowth": "Emergency & Growth",
+            "outflowManagement": "Outflow Management",
+            "income": "Income",
+            "goals": "Goals",
+            "community": "Community",
+            "profile": "Profile"
+        },
         "badges": {
             "firstMonth": {
                 "name": "First Step",
@@ -1398,6 +1416,18 @@
                 "name": "Veteran",
                 "description": "A full year of data"
             },
+            "twoYears": {
+                "name": "Pro Veteran",
+                "description": "Two full years of data"
+            },
+            "dataStreak6": {
+                "name": "Regular",
+                "description": "6 consecutive months of data entry"
+            },
+            "dataStreak12": {
+                "name": "Tireless",
+                "description": "12 consecutive months of data entry"
+            },
             "firstSave": {
                 "name": "Saver",
                 "description": "First month with positive savings"
@@ -1409,6 +1439,18 @@
             "savingsStreak6": {
                 "name": "Unstoppable",
                 "description": "6 consecutive months of savings"
+            },
+            "savingsStreak12": {
+                "name": "Marathon Saver",
+                "description": "12 consecutive months of savings"
+            },
+            "bigSaver": {
+                "name": "Big Saver",
+                "description": "Saved 30%+ of income in a month"
+            },
+            "superSaver": {
+                "name": "Super Saver",
+                "description": "Saved 50%+ of income in a month"
             },
             "netWorth1k": {
                 "name": "First Milestone",
@@ -1426,6 +1468,18 @@
                 "name": "100K Club",
                 "description": "Net worth of €100,000"
             },
+            "netWorth250k": {
+                "name": "Quarter Million",
+                "description": "Net worth of €250,000"
+            },
+            "netWorth500k": {
+                "name": "Half Million",
+                "description": "Net worth of €500,000"
+            },
+            "netWorth1M": {
+                "name": "Millionaire",
+                "description": "Net worth of €1,000,000"
+            },
             "firstInvestment": {
                 "name": "Investor",
                 "description": "First investment made"
@@ -1437,6 +1491,22 @@
             "diversified5": {
                 "name": "Portfolio Pro",
                 "description": "5+ asset types"
+            },
+            "diversified7": {
+                "name": "Super Diversified",
+                "description": "7+ different asset types"
+            },
+            "cryptoExplorer": {
+                "name": "Crypto Explorer",
+                "description": "First crypto investment"
+            },
+            "goldHolder": {
+                "name": "Gold Holder",
+                "description": "Gold in your portfolio"
+            },
+            "bondInvestor": {
+                "name": "Bond Investor",
+                "description": "Bonds in your portfolio"
             },
             "emergencyFundStarted": {
                 "name": "Safety Net",
@@ -1453,6 +1523,58 @@
             "yearlyGrowth": {
                 "name": "Golden Year",
                 "description": "Net worth increasing vs previous year"
+            },
+            "budgetMaster": {
+                "name": "Budget Master",
+                "description": "Outflows within monthly limit"
+            },
+            "frugalMonth": {
+                "name": "Frugal Month",
+                "description": "Outflows lower than previous month"
+            },
+            "spendingDown": {
+                "name": "Downward Trend",
+                "description": "Outflows decreasing for 3 consecutive months"
+            },
+            "categoryTracker": {
+                "name": "Expert Tracker",
+                "description": "5+ outflow categories tracked"
+            },
+            "firstIncome": {
+                "name": "First Income",
+                "description": "First income recorded"
+            },
+            "incomeGrowth": {
+                "name": "Rising Income",
+                "description": "Income increased vs previous month"
+            },
+            "steadyIncome": {
+                "name": "Steady Income",
+                "description": "3+ consecutive months with income"
+            },
+            "goalSetter": {
+                "name": "Goal Setter",
+                "description": "First goal set"
+            },
+            "goalAchiever": {
+                "name": "Goal Achieved",
+                "description": "One goal completed"
+            },
+            "multiGoal": {
+                "name": "Multi-Goal",
+                "description": "3+ active goals"
+            },
+            "topQuartile": {
+                "name": "Top 25%",
+                "description": "In the top 25% of at least one ranking"
+            },
+            "top10Percent": {
+                "name": "Top 10%",
+                "description": "In the top 10% of at least one ranking"
+            },
+            "profileComplete": {
+                "name": "Profile Complete",
+                "description": "All profile fields filled"
             }
         }
     },
@@ -1503,5 +1625,11 @@
         "achievementsTab": "Achievements",
         "notSpecified": "Not specified",
         "updateSuccess": "Profile updated successfully!"
+    },
+    "avatar": {
+        "regenerate": "Generate new avatar",
+        "regenerated": "New avatar generated!",
+        "limitReached": "You can regenerate your avatar once a day",
+        "tooltip": "Click to regenerate your avatar (1x per day)"
     }
 }

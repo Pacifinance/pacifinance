@@ -465,10 +465,10 @@ export const UserProvider = ({ children }) => {
               rankings: {
                 balance: percentageRankOnBalance,
                 incomes: percentageRankOnIncomes,
-                expenses: percentageRankOnExpenses,
+                outflows: percentageRankOnExpenses,
                 balanceSimilar: percentageRankOnBalanceSimilar,
                 incomesSimilar: percentageRankOnIncomesSimilar,
-                expensesSimilar: percentageRankOnExpensesSimilar
+                outflowsSimilar: percentageRankOnExpensesSimilar
               },
               
               // Date references
@@ -490,6 +490,8 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);
+        setError(error);
+        setLoading(false);
         // if (!isDevelopment) {
         //   setIsAuthenticated(false);
         //   setUserData(null);
@@ -498,6 +500,12 @@ export const UserProvider = ({ children }) => {
     };
     fetchUserData();
   }, [isAuthenticated, isUpdated]);
+
+  // Retry function: reset error and trigger re-fetch
+  const retryFetch = () => {
+    setError(null);
+    setIsUpdated(false);
+  };
 
   const handleSetIsAuthenticated = (value) => {
     setIsAuthenticated(value);
@@ -524,7 +532,9 @@ export const UserProvider = ({ children }) => {
       isUpdated, 
       handleSetIsAuthenticated, 
       handleSetIsUpdated, 
-      isLoading 
+      isLoading,
+      error,
+      retryFetch
     }}>
       {children}
     </UserContext.Provider>

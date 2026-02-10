@@ -5,7 +5,7 @@ import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faSignOutAlt, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { FaBullseye, FaUser } from 'react-icons/fa';
-import avatarImage from '../assets/account-logo.png';
+import AvatarIcon from './AvatarIcon';
 import { DropdownContainer } from '../styles/MyStyled';
 
 const SidebarMobile = ({
@@ -262,25 +262,16 @@ const SidebarMobile = ({
                     transition: 'all 0.3s ease',
                     cursor: 'pointer'
                 }}>
-                    <img
-                        src={avatarImage}
+                    <AvatarIcon
+                        size={40}
+                        theme={theme}
                         title={translations.sidebar.account.title}
-                        width="100%"
-                        height="100%"
-                        alt="Account"
-                        className="account-image"
                         onClick={() => {
                             // Chiudi l'hamburger menu se aperto
                             if (isSideBarMenuOpen) {
                                 setIsSideBarMenuOpen(false);
                             }
                             setShowDropdown(!showDropdown);
-                        }}
-                        onContextMenu={(e) => e.preventDefault()}
-                        style={{
-                            borderRadius: '50%',
-                            cursor: 'pointer',
-                            objectFit: 'cover'
                         }}
                     />
                 </div>

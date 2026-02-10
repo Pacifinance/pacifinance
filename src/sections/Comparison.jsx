@@ -5,10 +5,10 @@ import {
     getTotalValue,
     getPercentageRankOnBalance,
     getPercentageRankOnIncomes,
-    getPercentageRankOnExpenses,
+    getPercentageRankOnOutflows,
     getPercentageRankOnBalanceSimilar,
     getPercentageRankOnIncomesSimilar,
-    getPercentageRankOnExpensesSimilar,
+    getPercentageRankOnOutflowsSimilar,
     getIncomesArray,
     getOutflowsArray,
     getBalanceGrowth12Months,
@@ -785,7 +785,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         const numRank = Math.min(parseFloat(rank), 99);
         const level = getRankLevel(numRank);
         
-        const categoryKey = isExpense ? 'expenses' : category;
+        const categoryKey = isExpense ? 'outflows' : category;
         const descriptions = translations.leaderboard.rankings.descriptions[categoryKey];
         
         if (descriptions) {
@@ -804,7 +804,7 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
         const numRank = parseFloat(rank);
         const level = getRankLevel(numRank);
         
-        const categoryKey = isExpense ? 'expenses' : category;
+        const categoryKey = isExpense ? 'outflows' : category;
         const motivationalTexts = translations.leaderboard.rankings.motivational[level];
         
         let content = {
@@ -1347,10 +1347,10 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
     const renderRankingsTab = () => {
         const balanceRank = getPercentageRankOnBalance(userData);
         const incomeRank = getPercentageRankOnIncomes(userData);
-        const expenseRank = getPercentageRankOnExpenses(userData);
+        const expenseRank = getPercentageRankOnOutflows(userData);
         const balanceSimilarRank = getPercentageRankOnBalanceSimilar(userData);
         const incomeSimilarRank = getPercentageRankOnIncomesSimilar(userData);
-        const expenseSimilarRank = getPercentageRankOnExpensesSimilar(userData);
+        const expenseSimilarRank = getPercentageRankOnOutflowsSimilar(userData);
 
         const RankCard = ({ title, rank, icon, isExpense = false, category }) => (
             <RankingCard 
@@ -1426,10 +1426,10 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         />
                         
                         <RankCard 
-                            title={translations.leaderboard.rankings.expenses} 
+                            title={translations.leaderboard.rankings.outflows} 
                             rank={expenseRank}
                             icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="expenses"
+                            category="outflows"
                             isExpense={true}
                         />
                     </RankingGroup>
@@ -1467,10 +1467,10 @@ function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
                         />
                         
                         <RankCard 
-                            title={translations.leaderboard.rankings.expenses} 
+                            title={translations.leaderboard.rankings.outflows} 
                             rank={expenseSimilarRank}
                             icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="expenses"
+                            category="outflows"
                             isExpense={true}
                         />
                     </RankingGroup>

@@ -7,7 +7,8 @@ import { describe, it, expect } from 'vitest';
 import { assetColors } from '../../data/assetColors';
 import { assetIcons } from '../../data/assetIcons';
 import { outflowCategoryColors, incomeCategoryColors, getCategoryColor } from '../../data/categoryColors';
-import languages from '../../data/languages.json';
+import itTranslations from '../../i18n/locales/it.json';
+import enTranslations from '../../i18n/locales/en.json';
 
 describe('Asset Colors Integration', () => {
   describe('structure', () => {
@@ -103,21 +104,20 @@ describe('Category Colors Integration', () => {
 });
 
 describe('Languages Integration', () => {
-  // Basic backward compatibility tests
-  // For comprehensive i18n tests, see languages.test.js
+  // Uses new i18n locale files
   
   it('should have Italian translations', () => {
-    expect(languages.it).toBeDefined();
-    expect(languages.it.assets).toBeDefined();
+    expect(itTranslations).toBeDefined();
+    expect(itTranslations.assets).toBeDefined();
   });
 
   it('should have English translations', () => {
-    expect(languages.en).toBeDefined();
-    expect(languages.en.assets).toBeDefined();
+    expect(enTranslations).toBeDefined();
+    expect(enTranslations.assets).toBeDefined();
   });
 
   it('should have asset names in both languages', () => {
-    expect(languages.it.assets.bank).toBeDefined();
-    expect(languages.en.assets.bank).toBeDefined();
+    expect(itTranslations.assets.bank).toBeDefined();
+    expect(enTranslations.assets.bank).toBeDefined();
   });
 });

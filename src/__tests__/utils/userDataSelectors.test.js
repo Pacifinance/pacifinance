@@ -56,7 +56,7 @@ import {
   // Rankings selectors
   getPercentageRankOnBalance,
   getPercentageRankOnIncomes,
-  getPercentageRankOnExpenses,
+  getPercentageRankOnOutflows,
   getPercentageRankOnBalanceSimilar,
   
   // Date selectors
@@ -201,10 +201,10 @@ const mockUserData = {
   rankings: {
     balance: 75,
     incomes: 65,
-    expenses: 45,
+    outflows: 45,
     balanceSimilar: 80,
     incomesSimilar: 70,
-    expensesSimilar: 50
+    outflowsSimilar: 50
   },
   
   dates: {
@@ -476,8 +476,8 @@ describe('userDataSelectors', () => {
       expect(getPercentageRankOnIncomes(mockUserData)).toBe(65);
     });
 
-    it('getPercentageRankOnExpenses should return expense ranking', () => {
-      expect(getPercentageRankOnExpenses(mockUserData)).toBe(45);
+    it('getPercentageRankOnOutflows should return outflow ranking', () => {
+      expect(getPercentageRankOnOutflows(mockUserData)).toBe(45);
     });
 
     it('getPercentageRankOnBalanceSimilar should return similar users balance ranking', () => {
@@ -487,7 +487,7 @@ describe('userDataSelectors', () => {
     it('should return 0 when rankings are missing', () => {
       expect(getPercentageRankOnBalance(null)).toBe(0);
       expect(getPercentageRankOnIncomes(null)).toBe(0);
-      expect(getPercentageRankOnExpenses(null)).toBe(0);
+      expect(getPercentageRankOnOutflows(null)).toBe(0);
     });
   });
 

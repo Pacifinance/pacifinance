@@ -705,3 +705,43 @@ Using React Context for global state:
 8. **Document complex logic** with comments
 9. **Use constants** for magic numbers/strings
 10. **Handle loading and error states** gracefully
+
+---
+
+## 📛 Naming Convention: "Outflows" vs "Expenses" (MANDATORY)
+
+**ALWAYS use "outflows" (Uscite) and NEVER "expenses" (Spese)** when referring to money leaving the user's wallet, because outflows include both regular expenses AND investments.
+
+The concept is: money that **exits** the wallet → **outflow** (Uscita), regardless of whether it's a grocery bill or a stock purchase.
+
+**The ONLY exception:** You may use "expenses" (Spese) **if and only if** investments are explicitly excluded in that specific part of the code.
+
+### In translation keys:
+```json
+// ✅ CORRECT
+"rankings": { "outflows": "Uscite" }
+"descriptions": { "outflows": { ... } }
+
+// ❌ WRONG
+"rankings": { "expenses": "Uscite" }
+```
+
+### In code (variable names, data properties, selectors):
+```javascript
+// ✅ CORRECT - includes investments
+rankings: { outflows: ..., outflowsSimilar: ... }
+getPercentageRankOnOutflows(userData)
+categoryKey = isExpense ? 'outflows' : category;
+
+// ❌ WRONG - "expenses" implies only spending, but investments are included
+rankings: { expenses: ..., expensesSimilar: ... }
+getPercentageRankOnExpenses(userData)
+categoryKey = isExpense ? 'expenses' : category;
+```
+
+### When "expenses" IS acceptable:
+```javascript
+// ✅ OK - investments are explicitly excluded here
+const pureExpenses = allOutflows.filter(item => item.type !== 'investment');
+const monthlySpendingLimit = ...; // spending = expenses without investments
+```

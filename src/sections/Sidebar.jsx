@@ -12,7 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
 import { LocalizedLink } from "../components/LocalizedLink";
-import avatarImage from "../assets/account-logo.png";
+import AvatarIcon from '../components/AvatarIcon';
 import axios from "axios";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
@@ -531,15 +531,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         <Notification theme={theme}>
                             <div className="account-container">
                                 <div className="account-image-wrapper">
-                                    <img
-                                        src={avatarImage}
+                                    <AvatarIcon
+                                        size={40}
+                                        theme={theme}
                                         title={translations.sidebar.account.title}
-                                        width="100%"
-                                        height="100%"
-                                        alt="Account"
-                                        className="account-image"
                                         onClick={() => setShowDropdown(!showDropdown)}
-                                        onContextMenu={(e) => e.preventDefault()}
                                     />
                                 </div>
                             </div>

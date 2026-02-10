@@ -2,12 +2,13 @@
  * GamificationSection Component
  * 
  * Displays badges, achievements, level progress, and streaks.
+ * Supports filtering by unlock status and by badge category.
  * Fully client-side — no backend needed.
  */
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import styled from 'styled-components';
-import { useGamification } from '../hooks/useGamification';
+import { useGamification, BADGE_CATEGORY_ORDER } from '../hooks/useGamification';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 
@@ -217,7 +218,7 @@ const BadgeCard = styled.div`
 const TabContainer = styled.div`
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 `;
 
 const Tab = styled.button`
@@ -243,6 +244,83 @@ const Tab = styled.button`
   }
 `;
 
+const CategoryFilterRow = styled.div`
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'};
+    border-radius: 2px;
+  }
+`;
+
+const CategoryChip = styled.button`
+  padding: 0.35rem 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid ${props => props.$active ? 'rgba(34,197,94,0.4)' : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};
+  background: ${props => props.$active
+    ? (props.theme.mode === 'dark' ? 'rgba(34,197,94,0.12)' : 'rgba(34,197,94,0.08)')
+    : 'transparent'};
+  color: ${props => props.$active ? '#22c55e' : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)')};
+  font-size: 0.75rem;
+  font-weight: ${props => props.$active ? '600' : '400'};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  
+  &:hover {
+    border-color: rgba(34,197,94,0.3);
+    color: ${props => props.$active ? '#22c55e' : props.theme.textColor};
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.65rem;
+  }
+`;
+
+const CategorySectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'};
+  
+  .category-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'};
+  }
+  
+  .category-count {
+    font-size: 0.7rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)'};
+  }
+  
+  &:first-of-type {
+    margin-top: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .category-name { font-size: 0.75rem; }
+    .category-count { font-size: 0.6rem; }
+  }
+`;
+
 const GamificationSection = ({ theme, userData, isHidden, gamificationData: externalGamification }) => {
   const { translations } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -250,19 +328,46 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
   // Use externally provided gamification data if available, otherwise compute internally
   const gamification = externalGamification || internalGamification;
   const [activeTab, setActiveTab] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('all');
 
   if (!userData) return null;
 
-  const { badges, unlockedBadges, lockedBadges, stats, level, points, nextLevelPoints } = gamification;
+  const { badges, unlockedBadges, lockedBadges, stats, level, points, nextLevelPoints, categoryTranslations } = gamification;
   const progressPercentage = Math.min((points / nextLevelPoints) * 100, 100);
 
   const t = translations?.gamification || {};
-  
-  const displayedBadges = activeTab === 'unlocked' 
+
+  // Apply status filter
+  const statusFiltered = activeTab === 'unlocked' 
     ? unlockedBadges 
     : activeTab === 'locked' 
       ? lockedBadges 
       : badges;
+
+  // Apply category filter
+  const displayedBadges = activeCategory === 'all'
+    ? statusFiltered
+    : statusFiltered.filter(b => b.category === activeCategory);
+
+  // Group badges by category for grouped display (when showing all categories)
+  const groupedBadges = useMemo(() => {
+    if (activeCategory !== 'all') return null;
+    const groups = {};
+    for (const badge of displayedBadges) {
+      if (!groups[badge.category]) groups[badge.category] = [];
+      groups[badge.category].push(badge);
+    }
+    return groups;
+  }, [displayedBadges, activeCategory]);
+
+  // Category counts for chips
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    for (const badge of statusFiltered) {
+      counts[badge.category] = (counts[badge.category] || 0) + 1;
+    }
+    return counts;
+  }, [statusFiltered]);
 
   return (
     <GamificationContainer theme={theme}>
@@ -304,7 +409,7 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
         </StatCard>
       </StatsRow>
 
-      {/* Badge Filter Tabs */}
+      {/* Badge Status Filter Tabs */}
       <TabContainer>
         <Tab theme={theme} $active={activeTab === 'all'} onClick={() => setActiveTab('all')}>
           {t.all || 'Tutti'} ({badges.length})
@@ -317,16 +422,66 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
         </Tab>
       </TabContainer>
 
-      {/* Badges Grid */}
-      <BadgesGrid>
-        {displayedBadges.map((badge) => (
-          <BadgeCard key={badge.id} theme={theme} $unlocked={badge.unlocked}>
-            <div className="badge-icon">{badge.icon}</div>
-            <div className="badge-name">{badge.name}</div>
-            <div className="badge-desc">{badge.description}</div>
-          </BadgeCard>
-        ))}
-      </BadgesGrid>
+      {/* Category Filter Chips */}
+      <CategoryFilterRow theme={theme}>
+        <CategoryChip
+          theme={theme}
+          $active={activeCategory === 'all'}
+          onClick={() => setActiveCategory('all')}
+        >
+          {t.allCategories || 'Tutte'} ({statusFiltered.length})
+        </CategoryChip>
+        {BADGE_CATEGORY_ORDER.map(cat => {
+          const count = categoryCounts[cat] || 0;
+          if (count === 0) return null;
+          return (
+            <CategoryChip
+              key={cat}
+              theme={theme}
+              $active={activeCategory === cat}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {categoryTranslations?.[cat] || cat} ({count})
+            </CategoryChip>
+          );
+        })}
+      </CategoryFilterRow>
+
+      {/* Badges - Grouped by category when showing all, flat when filtered */}
+      {activeCategory === 'all' && groupedBadges ? (
+        BADGE_CATEGORY_ORDER.map(cat => {
+          const catBadges = groupedBadges[cat];
+          if (!catBadges || catBadges.length === 0) return null;
+          const unlockedInCat = catBadges.filter(b => b.unlocked).length;
+          return (
+            <div key={cat}>
+              <CategorySectionHeader theme={theme}>
+                <span className="category-name">{categoryTranslations?.[cat] || cat}</span>
+                <span className="category-count">{unlockedInCat}/{catBadges.length}</span>
+              </CategorySectionHeader>
+              <BadgesGrid>
+                {catBadges.map((badge) => (
+                  <BadgeCard key={badge.id} theme={theme} $unlocked={badge.unlocked}>
+                    <div className="badge-icon">{badge.icon}</div>
+                    <div className="badge-name">{badge.name}</div>
+                    <div className="badge-desc">{badge.description}</div>
+                  </BadgeCard>
+                ))}
+              </BadgesGrid>
+            </div>
+          );
+        })
+      ) : (
+        <BadgesGrid>
+          {displayedBadges.map((badge) => (
+            <BadgeCard key={badge.id} theme={theme} $unlocked={badge.unlocked}>
+              <div className="badge-icon">{badge.icon}</div>
+              <div className="badge-name">{badge.name}</div>
+              <div className="badge-desc">{badge.description}</div>
+            </BadgeCard>
+          ))}
+        </BadgesGrid>
+      )}
 
       {/* Completion message */}
       {stats.completionPercentage === 100 && (

@@ -183,10 +183,14 @@ export const getYearsOfExperienceTags = (userData) => userData?.tags?.yearsOfExp
 // Rankings selectors
 export const getPercentageRankOnBalance = (userData) => userData?.rankings?.balance || 0;
 export const getPercentageRankOnIncomes = (userData) => userData?.rankings?.incomes || 0;
-export const getPercentageRankOnExpenses = (userData) => userData?.rankings?.expenses || 0;
+export const getPercentageRankOnOutflows = (userData) => userData?.rankings?.outflows || 0;
+// @deprecated Use getPercentageRankOnOutflows instead
+export const getPercentageRankOnExpenses = getPercentageRankOnOutflows;
 export const getPercentageRankOnBalanceSimilar = (userData) => userData?.rankings?.balanceSimilar || 0;
 export const getPercentageRankOnIncomesSimilar = (userData) => userData?.rankings?.incomesSimilar || 0;
-export const getPercentageRankOnExpensesSimilar = (userData) => userData?.rankings?.expensesSimilar || 0;
+export const getPercentageRankOnOutflowsSimilar = (userData) => userData?.rankings?.outflowsSimilar || 0;
+// @deprecated Use getPercentageRankOnOutflowsSimilar instead
+export const getPercentageRankOnExpensesSimilar = getPercentageRankOnOutflowsSimilar;
 
 // Dates selectors
 export const getCurrentDate = (userData) => userData?.dates?.current;

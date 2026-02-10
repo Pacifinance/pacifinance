@@ -15,7 +15,8 @@ import {
     Star,
     ChevronDown,
     Trophy,
-    User
+    User,
+    RefreshCw
 } from 'lucide-react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -59,6 +60,9 @@ import {
 } from '../styles/MyStyled';
 
 import GamificationSection from '../components/GamificationSection';
+import AvatarIcon from '../components/AvatarIcon';
+import { canRegenerateAvatar, regenerateAvatar, getAvatar } from '../utils/avatarGenerator';
+import { useToast } from '../contexts/ToastContext';
 
 // ─── Styled Components ───────────────────────────────────────────────
 
@@ -416,9 +420,12 @@ const ProfilePage = () => {
     const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useAuth();
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
+    const { showSuccess } = useToast();
 
     const [activeTab, setActiveTab] = useState('details');
     const [isEditMode, setIsEditMode] = useState(false);
+    const [avatarKey, setAvatarKey] = useState(0);
+    const [canRegen, setCanRegen] = useState(canRegenerateAvatar());
     const [showBenefitsInfo, setShowBenefitsInfo] = useState(false);
     const [userId, setUserId] = useState('');
     const [userType, setUserType] = useState('');
@@ -446,6 +453,19 @@ const ProfilePage = () => {
     const [housingTypeTags, setHousingTypeTags] = useState([]);
     const [hasChildrenTags, setHasChildrenTags] = useState([]);
     const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
+
+    const handleRegenerateAvatar = () => {
+        if (!canRegenerateAvatar()) {
+            showSuccess(translations?.avatar?.limitReached || 'You can regenerate your avatar once a day');
+            return;
+        }
+        const result = regenerateAvatar();
+        if (result.success) {
+            setAvatarKey(prev => prev + 1);
+            setCanRegen(false);
+            showSuccess(translations?.avatar?.regenerated || 'New avatar generated!');
+        }
+    };
 
     // Gamification data for achievements tab
     const gamification = useGamification(userData);
@@ -918,12 +938,78 @@ const ProfilePage = () => {
                     theme={theme} 
                     $isMobile={isMobileScreen}
                 >
-                    {/* Page Header */}
-                    <PageHeader>
-                        <PageTitle theme={theme} $isMobile={isMobileScreen}>
-                            {t.title || 'Profile'}
-                        </PageTitle>
-                    </PageHeader>
+                    {/* Page Header with Avatar */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: isMobileScreen ? 'center' : 'flex-start',
+                        gap: isMobileScreen ? '1rem' : '1.5rem',
+                        marginBottom: '1.5rem',
+                        flexDirection: isMobileScreen ? 'column' : 'row',
+                    }}>
+                        {/* Avatar with regenerate */}
+                        <div style={{
+                            position: 'relative',
+                            flexShrink: 0,
+                        }}>
+                            <div style={{
+                                width: isMobileScreen ? '80px' : '90px',
+                                height: isMobileScreen ? '80px' : '90px',
+                                borderRadius: '50%',
+                                border: `3px solid ${theme.buttonBackgroundColor}`,
+                                padding: '3px',
+                                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                boxShadow: `0 2px 12px ${theme.buttonBackgroundColor}20`,
+                            }}>
+                                <AvatarIcon
+                                    key={avatarKey}
+                                    size={isMobileScreen ? 74 : 84}
+                                    theme={theme}
+                                    title={translations?.avatar?.tooltip || ''}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                            </div>
+                            <button
+                                onClick={handleRegenerateAvatar}
+                                data-umami-event="profile-avatar-regenerate"
+                                title={translations?.avatar?.regenerate || 'Generate new avatar'}
+                                style={{
+                                    position: 'absolute',
+                                    bottom: '-2px',
+                                    right: '-2px',
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    border: `2px solid ${theme.mode === 'dark' ? '#1f2937' : '#ffffff'}`,
+                                    background: canRegen 
+                                        ? `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}dd)`
+                                        : (theme.mode === 'dark' ? 'rgba(75,85,99,0.8)' : 'rgba(209,213,219,0.9)'),
+                                    color: canRegen ? 'white' : (theme.mode === 'dark' ? '#9ca3af' : '#6b7280'),
+                                    cursor: canRegen ? 'pointer' : 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                                }}
+                            >
+                                <RefreshCw size={14} />
+                            </button>
+                        </div>
+
+                        {/* Title + subtitle */}
+                        <div style={{ textAlign: isMobileScreen ? 'center' : 'left' }}>
+                            <PageTitle theme={theme} $isMobile={isMobileScreen} style={{ marginBottom: '0.25rem' }}>
+                                {t.title || 'Profile'}
+                            </PageTitle>
+                            <p style={{
+                                margin: 0,
+                                fontSize: '0.85rem',
+                                color: theme.mode === 'dark' ? '#9ca3af' : '#6b7280',
+                            }}>
+                                {t.subtitle || (language === 'it' ? 'Gestisci e personalizza le tue informazioni personali' : 'Manage and customize your personal information')}
+                            </p>
+                        </div>
+                    </div>
 
                     {/* Tab Navigation */}
                     <TabBar theme={theme}>

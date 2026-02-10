@@ -1,14 +1,13 @@
 /**
  * Integration tests for Languages
  * Validates language file structure and completeness
- * Tests both new i18n structure and backward compatibility
+ * Tests the i18n structure (src/i18n/locales/)
  */
 
 import { describe, it, expect } from 'vitest';
 import { getTranslations, getAvailableLanguages } from '../../i18n';
 import itTranslations from '../../i18n/locales/it.json';
 import enTranslations from '../../i18n/locales/en.json';
-import languages from '../../data/languages.json'; // Backward compatibility test
 
 describe('Languages Integration', () => {
   const supportedLanguages = ['it', 'en'];
@@ -97,79 +96,44 @@ describe('Languages Integration', () => {
     });
   });
 
-  describe('Backward Compatibility', () => {
-    it('old languages.json should still exist', () => {
-      expect(languages).toBeDefined();
-    });
-
-    it('should have all supported languages in old format', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang]).toBeDefined();
-      });
-    });
-
-    it('should have same top-level keys in both languages', () => {
-      const itKeys = Object.keys(languages.it).sort();
-      const enKeys = Object.keys(languages.en).sort();
-      expect(itKeys).toEqual(enKeys);
-    });
-
-    it('should have assets section', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang].assets).toBeDefined();
-      });
-    });
-
+  describe('Comprehensive i18n Validation', () => {
     it('should have same asset keys in both languages', () => {
-      const itKeys = Object.keys(languages.it.assets).sort();
-      const enKeys = Object.keys(languages.en.assets).sort();
+      const itKeys = Object.keys(itTranslations.assets).sort();
+      const enKeys = Object.keys(enTranslations.assets).sort();
       expect(itKeys).toEqual(enKeys);
     });
 
     it('should have required asset types', () => {
       const requiredAssets = ['bank', 'cash', 'stocks', 'etf', 'bitcoin', 'crypto'];
       
-      supportedLanguages.forEach(lang => {
-        requiredAssets.forEach(asset => {
-          expect(languages[lang].assets[asset]).toBeDefined();
-          expect(languages[lang].assets[asset].length).toBeGreaterThan(0);
-        });
-      });
-    });
-
-    it('should have general section', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang].general).toBeDefined();
+      requiredAssets.forEach(asset => {
+        expect(itTranslations.assets[asset]).toBeDefined();
+        expect(itTranslations.assets[asset].length).toBeGreaterThan(0);
+        expect(enTranslations.assets[asset]).toBeDefined();
+        expect(enTranslations.assets[asset].length).toBeGreaterThan(0);
       });
     });
 
     it('should have same general keys in both languages', () => {
-      const itKeys = Object.keys(languages.it.general).sort();
-      const enKeys = Object.keys(languages.en.general).sort();
+      const itKeys = Object.keys(itTranslations.general).sort();
+      const enKeys = Object.keys(enTranslations.general).sort();
       expect(itKeys).toEqual(enKeys);
     });
 
     it('should have required general terms', () => {
       const requiredTerms = ['month', 'year', 'incomes', 'outflows', 'balance', 'total', 'confirm', 'cancel'];
       
-      supportedLanguages.forEach(lang => {
-        requiredTerms.forEach(term => {
-          expect(languages[lang].general[term]).toBeDefined();
-        });
+      requiredTerms.forEach(term => {
+        expect(itTranslations.general[term]).toBeDefined();
+        expect(enTranslations.general[term]).toBeDefined();
       });
     });
 
     it('should have comingSoon text', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang].general.comingSoon).toBeDefined();
-        expect(languages[lang].general.weAreWorking).toBeDefined();
-      });
-    });
-
-    it('should have months section', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang].months).toBeDefined();
-      });
+      expect(itTranslations.general.comingSoon).toBeDefined();
+      expect(itTranslations.general.weAreWorking).toBeDefined();
+      expect(enTranslations.general.comingSoon).toBeDefined();
+      expect(enTranslations.general.weAreWorking).toBeDefined();
     });
 
     it('should have all 12 months', () => {
@@ -179,32 +143,32 @@ describe('Languages Integration', () => {
         'september', 'october', 'november', 'december'
       ];
       
-      supportedLanguages.forEach(lang => {
-        monthKeys.forEach(month => {
-          expect(languages[lang].months[month]).toBeDefined();
-          expect(languages[lang].months[month].length).toBeGreaterThan(0);
-        });
+      monthKeys.forEach(month => {
+        expect(itTranslations.months[month]).toBeDefined();
+        expect(itTranslations.months[month].length).toBeGreaterThan(0);
+        expect(enTranslations.months[month]).toBeDefined();
+        expect(enTranslations.months[month].length).toBeGreaterThan(0);
       });
     });
 
     it('should have cookie consent texts', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang].cookie).toBeDefined();
-        expect(languages[lang].cookie.title).toBeDefined();
-        expect(languages[lang].cookie.acceptButton).toBeDefined();
-      });
+      expect(itTranslations.cookie).toBeDefined();
+      expect(itTranslations.cookie.title).toBeDefined();
+      expect(itTranslations.cookie.acceptButton).toBeDefined();
+      expect(enTranslations.cookie).toBeDefined();
+      expect(enTranslations.cookie.title).toBeDefined();
+      expect(enTranslations.cookie.acceptButton).toBeDefined();
     });
 
     it('should have same cookie keys in both languages', () => {
-      const itKeys = Object.keys(languages.it.cookie).sort();
-      const enKeys = Object.keys(languages.en.cookie).sort();
+      const itKeys = Object.keys(itTranslations.cookie).sort();
+      const enKeys = Object.keys(enTranslations.cookie).sort();
       expect(itKeys).toEqual(enKeys);
     });
 
     it('should have landing page texts', () => {
-      supportedLanguages.forEach(lang => {
-        expect(languages[lang].landing).toBeDefined();
-      });
+      expect(itTranslations.landing).toBeDefined();
+      expect(enTranslations.landing).toBeDefined();
     });
 
     it('should not have empty strings', () => {
@@ -221,15 +185,14 @@ describe('Languages Integration', () => {
         });
       };
       
-      supportedLanguages.forEach(lang => {
-        checkEmpty(languages[lang], lang);
-      });
+      checkEmpty(itTranslations, 'it');
+      checkEmpty(enTranslations, 'en');
     });
 
     it('should have different content in IT vs EN for key terms', () => {
-      expect(languages.it.general.incomes).not.toBe(languages.en.general.incomes);
-      expect(languages.it.general.outflows).not.toBe(languages.en.general.outflows);
-      expect(languages.it.months.january).not.toBe(languages.en.months.january);
+      expect(itTranslations.general.incomes).not.toBe(enTranslations.general.incomes);
+      expect(itTranslations.general.outflows).not.toBe(enTranslations.general.outflows);
+      expect(itTranslations.months.january).not.toBe(enTranslations.months.january);
     });
   });
 
@@ -247,9 +210,9 @@ describe('Languages Integration', () => {
       return keys.sort();
     };
 
-    it('should have mostly identical nested structure in both languages', () => {
-      const itKeys = getNestedKeys(languages.it);
-      const enKeys = getNestedKeys(languages.en);
+    it('should have identical nested structure in IT and EN', () => {
+      const itKeys = getNestedKeys(itTranslations);
+      const enKeys = getNestedKeys(enTranslations);
       
       const missingInEn = itKeys.filter(k => !enKeys.includes(k));
       const missingInIt = enKeys.filter(k => !itKeys.includes(k));
@@ -261,15 +224,7 @@ describe('Languages Integration', () => {
         console.warn('Keys missing in IT:', missingInIt);
       }
       
-      const totalMissing = missingInEn.length + missingInIt.length;
-      expect(totalMissing).toBeLessThan(50);
-    });
-
-    it('new i18n structure should match old structure', () => {
-      const oldItKeys = getNestedKeys(languages.it);
-      const newItKeys = getNestedKeys(itTranslations);
-      
-      expect(oldItKeys).toEqual(newItKeys);
+      expect(itKeys).toEqual(enKeys);
     });
   });
 });

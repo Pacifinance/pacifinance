@@ -1,6 +1,4 @@
 // Theme.js
-// Note: Keep import for backward compatibility with code that hasn't been migrated yet
-import languages from '../data/languages.json';
 
 export const themes = {
   light: {

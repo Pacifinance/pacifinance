@@ -1291,16 +1291,10 @@ export const Notification = styled.div`
   cursor: pointer;
   color: ${({ theme }) => theme.textColor};
   font-size: 1.5rem;
-  padding: 0.25rem;
+  padding: 0;
   border-radius: 50%;
   background: transparent;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background: ${({ theme }) => `${theme.buttonBackgroundColor}15`};
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: ${({ theme }) => `0 4px 15px ${theme.buttonBackgroundColor}20`};
-  }
+  transition: all 0.2s ease;
 
   .account-container {
     display: flex;
@@ -1309,18 +1303,24 @@ export const Notification = styled.div`
   }
 
   .account-image-wrapper {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    border: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.95)'};
+    border: 2px solid ${({ theme }) => `${theme.buttonBackgroundColor}60`};
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.25s ease;
     aspect-ratio: 1;
+  }
+
+  &:hover .account-image-wrapper {
+    border-color: ${({ theme }) => theme.buttonBackgroundColor};
+    box-shadow: 0 0 0 3px ${({ theme }) => `${theme.buttonBackgroundColor}18`};
+    transform: scale(1.05);
   }
 
   .account-image {

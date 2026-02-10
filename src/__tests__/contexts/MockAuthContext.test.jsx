@@ -82,7 +82,7 @@ describe('MockAuthContext', () => {
       expect(mockUserData.rankings).toBeDefined();
       expect(mockUserData.rankings.balance).toBeDefined();
       expect(mockUserData.rankings.incomes).toBeDefined();
-      expect(mockUserData.rankings.expenses).toBeDefined();
+      expect(mockUserData.rankings.outflows).toBeDefined();
     });
 
     it('should have dates object', () => {

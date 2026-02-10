@@ -48,7 +48,7 @@ describe('Mock Data Integration', () => {
       expect(mockUserData.rankings).toBeDefined();
       expect(mockUserData.rankings.balance).toBeDefined();
       expect(mockUserData.rankings.incomes).toBeDefined();
-      expect(mockUserData.rankings.expenses).toBeDefined();
+      expect(mockUserData.rankings.outflows).toBeDefined();
     });
 
     it('should have dates data', () => {

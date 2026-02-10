@@ -2,41 +2,113 @@
  * useGamification Hook
  * 
  * Calculates achievements, badges, and streaks entirely client-side
- * by analyzing userData (balances, expenses, incomes, goals).
+ * by analyzing userData (balances, expenses, incomes, goals, rankings, profile).
  * No backend changes needed.
+ * 
+ * 44 badges across 10 categories:
+ * - Data Consistency (7): tracking how long and consistently a user enters data
+ * - Savings (6): saving money relative to income
+ * - Net Worth (7): total patrimony milestones
+ * - Diversification (7): asset type variety and specific investments
+ * - Emergency & Growth (4): emergency fund and patrimony growth
+ * - Outflow Management (4): controlling and reducing outflows
+ * - Income (3): income tracking milestones
+ * - Goals (3): setting and achieving financial goals
+ * - Community (2): ranking among other users
+ * - Profile (1): completing user profile
  */
 
 import { useMemo, useContext } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
 
-// Badge definitions with thresholds
+// ═══════════════════════════════════════════
+// Badge Categories
+// ═══════════════════════════════════════════
+export const BADGE_CATEGORIES = {
+  dataConsistency: 'dataConsistency',
+  savings: 'savings',
+  netWorth: 'netWorth',
+  diversification: 'diversification',
+  emergencyGrowth: 'emergencyGrowth',
+  outflowManagement: 'outflowManagement',
+  income: 'income',
+  goals: 'goals',
+  community: 'community',
+  profile: 'profile',
+};
+
+// Category display order
+export const BADGE_CATEGORY_ORDER = [
+  'dataConsistency',
+  'savings',
+  'netWorth',
+  'diversification',
+  'emergencyGrowth',
+  'outflowManagement',
+  'income',
+  'goals',
+  'community',
+  'profile',
+];
+
+// ═══════════════════════════════════════════
+// Badge Definitions (44 total)
+// ═══════════════════════════════════════════
 const BADGE_DEFINITIONS = {
-  // Data consistency badges
+
+  // ─────────────────────────────────────────
+  // DATA CONSISTENCY (7 badges)
+  // ─────────────────────────────────────────
   firstMonth: {
     id: 'firstMonth',
     icon: '🌱',
+    category: BADGE_CATEGORIES.dataConsistency,
     check: (data) => data.balances?.length >= 1,
   },
   threeMonths: {
     id: 'threeMonths',
     icon: '📊',
+    category: BADGE_CATEGORIES.dataConsistency,
     check: (data) => data.balances?.length >= 3,
   },
   sixMonths: {
     id: 'sixMonths',
     icon: '📈',
+    category: BADGE_CATEGORIES.dataConsistency,
     check: (data) => data.balances?.length >= 6,
   },
   oneYear: {
     id: 'oneYear',
     icon: '🏆',
+    category: BADGE_CATEGORIES.dataConsistency,
     check: (data) => data.balances?.length >= 12,
   },
+  twoYears: {
+    id: 'twoYears',
+    icon: '🗓️',
+    category: BADGE_CATEGORIES.dataConsistency,
+    check: (data) => data.balances?.length >= 24,
+  },
+  dataStreak6: {
+    id: 'dataStreak6',
+    icon: '📅',
+    category: BADGE_CATEGORIES.dataConsistency,
+    check: (data) => calculateDataStreak(data) >= 6,
+  },
+  dataStreak12: {
+    id: 'dataStreak12',
+    icon: '🔗',
+    category: BADGE_CATEGORIES.dataConsistency,
+    check: (data) => calculateDataStreak(data) >= 12,
+  },
 
-  // Savings badges
+  // ─────────────────────────────────────────
+  // SAVINGS (6 badges)
+  // ─────────────────────────────────────────
   firstSave: {
     id: 'firstSave',
     icon: '💰',
+    category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
       const outflows = data.expenses?.outflowsArray || [];
@@ -46,46 +118,103 @@ const BADGE_DEFINITIONS = {
   savingsStreak3: {
     id: 'savingsStreak3',
     icon: '🔥',
-    check: (data) => {
-      const streak = calculateSavingsStreak(data);
-      return streak >= 3;
-    },
+    category: BADGE_CATEGORIES.savings,
+    check: (data) => calculateSavingsStreak(data) >= 3,
   },
   savingsStreak6: {
     id: 'savingsStreak6',
     icon: '⭐',
+    category: BADGE_CATEGORIES.savings,
+    check: (data) => calculateSavingsStreak(data) >= 6,
+  },
+  savingsStreak12: {
+    id: 'savingsStreak12',
+    icon: '💪',
+    category: BADGE_CATEGORIES.savings,
+    check: (data) => calculateSavingsStreak(data) >= 12,
+  },
+  bigSaver: {
+    id: 'bigSaver',
+    icon: '🤑',
+    category: BADGE_CATEGORIES.savings,
     check: (data) => {
-      const streak = calculateSavingsStreak(data);
-      return streak >= 6;
+      const incomes = data.incomes?.incomesArray || [];
+      const outflows = data.expenses?.outflowsArray || [];
+      return incomes.some((inc, i) => {
+        if (inc <= 0) return false;
+        const saved = inc - (outflows[i] || 0);
+        return saved / inc >= 0.3;
+      });
+    },
+  },
+  superSaver: {
+    id: 'superSaver',
+    icon: '🏦',
+    category: BADGE_CATEGORIES.savings,
+    check: (data) => {
+      const incomes = data.incomes?.incomesArray || [];
+      const outflows = data.expenses?.outflowsArray || [];
+      return incomes.some((inc, i) => {
+        if (inc <= 0) return false;
+        const saved = inc - (outflows[i] || 0);
+        return saved / inc >= 0.5;
+      });
     },
   },
 
-  // Net worth milestones
+  // ─────────────────────────────────────────
+  // NET WORTH MILESTONES (7 badges)
+  // ─────────────────────────────────────────
   netWorth1k: {
     id: 'netWorth1k',
     icon: '💵',
+    category: BADGE_CATEGORIES.netWorth,
     check: (data) => getTotalFromBalance(data) >= 1000,
   },
   netWorth10k: {
     id: 'netWorth10k',
     icon: '💎',
+    category: BADGE_CATEGORIES.netWorth,
     check: (data) => getTotalFromBalance(data) >= 10000,
   },
   netWorth50k: {
     id: 'netWorth50k',
     icon: '🚀',
+    category: BADGE_CATEGORIES.netWorth,
     check: (data) => getTotalFromBalance(data) >= 50000,
   },
   netWorth100k: {
     id: 'netWorth100k',
     icon: '👑',
+    category: BADGE_CATEGORIES.netWorth,
     check: (data) => getTotalFromBalance(data) >= 100000,
   },
+  netWorth250k: {
+    id: 'netWorth250k',
+    icon: '🏰',
+    category: BADGE_CATEGORIES.netWorth,
+    check: (data) => getTotalFromBalance(data) >= 250000,
+  },
+  netWorth500k: {
+    id: 'netWorth500k',
+    icon: '🌍',
+    category: BADGE_CATEGORIES.netWorth,
+    check: (data) => getTotalFromBalance(data) >= 500000,
+  },
+  netWorth1M: {
+    id: 'netWorth1M',
+    icon: '🏛️',
+    category: BADGE_CATEGORIES.netWorth,
+    check: (data) => getTotalFromBalance(data) >= 1000000,
+  },
 
-  // Diversification badges
+  // ─────────────────────────────────────────
+  // DIVERSIFICATION (7 badges)
+  // ─────────────────────────────────────────
   firstInvestment: {
     id: 'firstInvestment',
     icon: '📉',
+    category: BADGE_CATEGORIES.diversification,
     check: (data) => {
       const balance = data.balances?.[0]?.balance;
       if (!balance) return false;
@@ -96,23 +225,56 @@ const BADGE_DEFINITIONS = {
   diversified3: {
     id: 'diversified3',
     icon: '🎯',
+    category: BADGE_CATEGORIES.diversification,
     check: (data) => countActiveAssetTypes(data) >= 3,
   },
   diversified5: {
     id: 'diversified5',
     icon: '🌟',
+    category: BADGE_CATEGORIES.diversification,
     check: (data) => countActiveAssetTypes(data) >= 5,
   },
+  diversified7: {
+    id: 'diversified7',
+    icon: '🎨',
+    category: BADGE_CATEGORIES.diversification,
+    check: (data) => countActiveAssetTypes(data) >= 7,
+  },
+  cryptoExplorer: {
+    id: 'cryptoExplorer',
+    icon: '₿',
+    category: BADGE_CATEGORIES.diversification,
+    check: (data) => {
+      const balance = data.balances?.[0]?.balance;
+      return (balance?.bitcoin || 0) > 0 || (balance?.crypto || 0) > 0;
+    },
+  },
+  goldHolder: {
+    id: 'goldHolder',
+    icon: '🥇',
+    category: BADGE_CATEGORIES.diversification,
+    check: (data) => (data.balances?.[0]?.balance?.gold || 0) > 0,
+  },
+  bondInvestor: {
+    id: 'bondInvestor',
+    icon: '📜',
+    category: BADGE_CATEGORIES.diversification,
+    check: (data) => (data.balances?.[0]?.balance?.bonds || 0) > 0,
+  },
 
-  // Emergency fund badges
+  // ─────────────────────────────────────────
+  // EMERGENCY FUND + GROWTH (4 badges)
+  // ─────────────────────────────────────────
   emergencyFundStarted: {
     id: 'emergencyFundStarted',
     icon: '🛡️',
+    category: BADGE_CATEGORIES.emergencyGrowth,
     check: (data) => (data.balances?.[0]?.balance?.emergencyFund || 0) > 0,
   },
   emergencyFundGoal: {
     id: 'emergencyFundGoal',
     icon: '🏅',
+    category: BADGE_CATEGORIES.emergencyGrowth,
     check: (data) => {
       const fund = data.balances?.[0]?.balance?.emergencyFund || 0;
       const target = data.goals?.find(g => g.type === 'emergencyFund')?.target || 
@@ -120,11 +282,10 @@ const BADGE_DEFINITIONS = {
       return target && fund >= target;
     },
   },
-
-  // Growth badges
   monthlyGrowth: {
     id: 'monthlyGrowth',
-    icon: '📈',
+    icon: '⬆️',
+    category: BADGE_CATEGORIES.emergencyGrowth,
     check: (data) => {
       if (data.balances?.length < 2) return false;
       const current = data.balances[0]?.balance?.totalValue || 0;
@@ -135,6 +296,7 @@ const BADGE_DEFINITIONS = {
   yearlyGrowth: {
     id: 'yearlyGrowth',
     icon: '🎆',
+    category: BADGE_CATEGORIES.emergencyGrowth,
     check: (data) => {
       if (data.balances?.length < 12) return false;
       const current = data.balances[0]?.balance?.totalValue || 0;
@@ -142,14 +304,151 @@ const BADGE_DEFINITIONS = {
       return yearAgo > 0 && current > yearAgo;
     },
   },
+
+  // ─────────────────────────────────────────
+  // OUTFLOW MANAGEMENT (4 badges)
+  // ─────────────────────────────────────────
+  budgetMaster: {
+    id: 'budgetMaster',
+    icon: '💼',
+    category: BADGE_CATEGORIES.outflowManagement,
+    check: (data) => {
+      const limit = data.limits?.monthlySpendingLimit;
+      const outflows = data.expenses?.outflowsArray?.[0];
+      return limit > 0 && outflows > 0 && outflows <= limit;
+    },
+  },
+  frugalMonth: {
+    id: 'frugalMonth',
+    icon: '✂️',
+    category: BADGE_CATEGORIES.outflowManagement,
+    check: (data) => {
+      const outflows = data.expenses?.outflowsArray || [];
+      return outflows.length >= 2 && outflows[0] < outflows[1];
+    },
+  },
+  spendingDown: {
+    id: 'spendingDown',
+    icon: '📉',
+    category: BADGE_CATEGORIES.outflowManagement,
+    check: (data) => {
+      const outflows = data.expenses?.outflowsArray || [];
+      return outflows.length >= 3 && outflows[0] < outflows[1] && outflows[1] < outflows[2];
+    },
+  },
+  categoryTracker: {
+    id: 'categoryTracker',
+    icon: '📋',
+    category: BADGE_CATEGORIES.outflowManagement,
+    check: (data) => countActiveCategories(data) >= 5,
+  },
+
+  // ─────────────────────────────────────────
+  // INCOME (3 badges)
+  // ─────────────────────────────────────────
+  firstIncome: {
+    id: 'firstIncome',
+    icon: '📥',
+    category: BADGE_CATEGORIES.income,
+    check: (data) => {
+      const incomes = data.incomes?.incomesArray || [];
+      return incomes.some(inc => inc > 0);
+    },
+  },
+  incomeGrowth: {
+    id: 'incomeGrowth',
+    icon: '💹',
+    category: BADGE_CATEGORIES.income,
+    check: (data) => {
+      const incomes = data.incomes?.incomesArray || [];
+      return incomes.length >= 2 && incomes[0] > incomes[1] && incomes[1] > 0;
+    },
+  },
+  steadyIncome: {
+    id: 'steadyIncome',
+    icon: '🔄',
+    category: BADGE_CATEGORIES.income,
+    check: (data) => {
+      const incomes = data.incomes?.incomesArray || [];
+      let count = 0;
+      for (let i = 0; i < incomes.length; i++) {
+        if (incomes[i] > 0) count++;
+        else break;
+      }
+      return count >= 3;
+    },
+  },
+
+  // ─────────────────────────────────────────
+  // GOALS (3 badges)
+  // ─────────────────────────────────────────
+  goalSetter: {
+    id: 'goalSetter',
+    icon: '🏁',
+    category: BADGE_CATEGORIES.goals,
+    check: (data) => (data.goals?.length || 0) >= 1,
+  },
+  goalAchiever: {
+    id: 'goalAchiever',
+    icon: '🥅',
+    category: BADGE_CATEGORIES.goals,
+    check: (data) => data.goals?.some(g => g.current >= g.target) || false,
+  },
+  multiGoal: {
+    id: 'multiGoal',
+    icon: '📝',
+    category: BADGE_CATEGORIES.goals,
+    check: (data) => (data.goals?.length || 0) >= 3,
+  },
+
+  // ─────────────────────────────────────────
+  // COMMUNITY / RANKINGS (2 badges)
+  // ─────────────────────────────────────────
+  topQuartile: {
+    id: 'topQuartile',
+    icon: '🏅',
+    category: BADGE_CATEGORIES.community,
+    check: (data) => {
+      const r = data.rankings || {};
+      return Object.values(r).some(v => typeof v === 'number' && v >= 75);
+    },
+  },
+  top10Percent: {
+    id: 'top10Percent',
+    icon: '🌟',
+    category: BADGE_CATEGORIES.community,
+    check: (data) => {
+      const r = data.rankings || {};
+      return Object.values(r).some(v => typeof v === 'number' && v >= 90);
+    },
+  },
+
+  // ─────────────────────────────────────────
+  // PROFILE (1 badge)
+  // ─────────────────────────────────────────
+  profileComplete: {
+    id: 'profileComplete',
+    icon: '👤',
+    category: BADGE_CATEGORIES.profile,
+    check: (data) => {
+      const profile = data.profile;
+      if (!profile) return false;
+      const requiredFields = ['nationality', 'job', 'jobType', 'age', 'livingSituation', 'housingType'];
+      return requiredFields.every(field => profile[field]?.value);
+    },
+  },
 };
 
-// Helper: get total balance value
+// ═══════════════════════════════════════════
+// Helper Functions
+// ═══════════════════════════════════════════
+
+// Get total balance value
 function getTotalFromBalance(data) {
   return data.balances?.[0]?.balance?.totalValue || 0;
 }
 
-// Helper: count active asset types with value > 0
+// Count active asset types with value > 0
 function countActiveAssetTypes(data) {
   const balance = data.balances?.[0]?.balance;
   if (!balance) return 0;
@@ -157,7 +456,7 @@ function countActiveAssetTypes(data) {
   return assetTypes.filter(type => (balance[type] || 0) > 0).length;
 }
 
-// Helper: calculate consecutive months with positive savings
+// Calculate consecutive months with positive savings (income > outflows)
 function calculateSavingsStreak(data) {
   const incomes = data.incomes?.incomesArray || [];
   const outflows = data.expenses?.outflowsArray || [];
@@ -172,7 +471,7 @@ function calculateSavingsStreak(data) {
   return streak;
 }
 
-// Helper: calculate data entry streak (consecutive months with balance data)
+// Calculate data entry streak (consecutive months with balance data)
 function calculateDataStreak(data) {
   const balances = data.balances || [];
   if (balances.length === 0) return 0;
@@ -184,7 +483,6 @@ function calculateDataStreak(data) {
     const balanceDate = new Date(balances[i].date);
     const expectedMonth = new Date(now.getFullYear(), now.getMonth() - i, 1);
     
-    // Check if the balance month matches expected month (same year + month)
     if (balanceDate.getFullYear() === expectedMonth.getFullYear() &&
         balanceDate.getMonth() === expectedMonth.getMonth()) {
       streak++;
@@ -195,93 +493,59 @@ function calculateDataStreak(data) {
   return streak;
 }
 
+// Count unique outflow categories with spending > 0 in the current month
+function countActiveCategories(data) {
+  const categories = data.expenses?.totalOutflowsPerCategoryPerMonth;
+  if (!categories) return 0;
+  const currentMonth = categories[0] || {};
+  return Object.keys(currentMonth).filter(key => currentMonth[key] > 0).length;
+}
+
 /**
  * Main gamification hook
  * @param {Object} userData - User data from UserContext
- * @returns {Object} Gamification data: badges, stats, level
+ * @returns {Object} Gamification data: badges, stats, level, categories
  */
 export const useGamification = (userData) => {
   const { translations } = useContext(LanguageContext);
 
-  // Translation keys for badge names and descriptions
-  const badgeTranslations = useMemo(() => ({
-    firstMonth: {
-      name: translations?.gamification?.badges?.firstMonth?.name || 'Primo Passo',
-      description: translations?.gamification?.badges?.firstMonth?.description || 'Inserisci il tuo primo mese di dati',
-    },
-    threeMonths: {
-      name: translations?.gamification?.badges?.threeMonths?.name || 'Costante',
-      description: translations?.gamification?.badges?.threeMonths?.description || '3 mesi di dati inseriti',
-    },
-    sixMonths: {
-      name: translations?.gamification?.badges?.sixMonths?.name || 'Affidabile',
-      description: translations?.gamification?.badges?.sixMonths?.description || '6 mesi di dati inseriti',
-    },
-    oneYear: {
-      name: translations?.gamification?.badges?.oneYear?.name || 'Veterano',
-      description: translations?.gamification?.badges?.oneYear?.description || 'Un anno completo di dati',
-    },
-    firstSave: {
-      name: translations?.gamification?.badges?.firstSave?.name || 'Risparmiatore',
-      description: translations?.gamification?.badges?.firstSave?.description || 'Primo mese con risparmio positivo',
-    },
-    savingsStreak3: {
-      name: translations?.gamification?.badges?.savingsStreak3?.name || 'In Serie',
-      description: translations?.gamification?.badges?.savingsStreak3?.description || '3 mesi consecutivi di risparmio',
-    },
-    savingsStreak6: {
-      name: translations?.gamification?.badges?.savingsStreak6?.name || 'Inarrestabile',
-      description: translations?.gamification?.badges?.savingsStreak6?.description || '6 mesi consecutivi di risparmio',
-    },
-    netWorth1k: {
-      name: translations?.gamification?.badges?.netWorth1k?.name || 'Primo Traguardo',
-      description: translations?.gamification?.badges?.netWorth1k?.description || 'Patrimonio di €1.000',
-    },
-    netWorth10k: {
-      name: translations?.gamification?.badges?.netWorth10k?.name || 'Cinque Cifre',
-      description: translations?.gamification?.badges?.netWorth10k?.description || 'Patrimonio di €10.000',
-    },
-    netWorth50k: {
-      name: translations?.gamification?.badges?.netWorth50k?.name || 'Decollo',
-      description: translations?.gamification?.badges?.netWorth50k?.description || 'Patrimonio di €50.000',
-    },
-    netWorth100k: {
-      name: translations?.gamification?.badges?.netWorth100k?.name || 'Club 100K',
-      description: translations?.gamification?.badges?.netWorth100k?.description || 'Patrimonio di €100.000',
-    },
-    firstInvestment: {
-      name: translations?.gamification?.badges?.firstInvestment?.name || 'Investitore',
-      description: translations?.gamification?.badges?.firstInvestment?.description || 'Primo investimento effettuato',
-    },
-    diversified3: {
-      name: translations?.gamification?.badges?.diversified3?.name || 'Diversificato',
-      description: translations?.gamification?.badges?.diversified3?.description || '3+ tipi di asset',
-    },
-    diversified5: {
-      name: translations?.gamification?.badges?.diversified5?.name || 'Portfolio Pro',
-      description: translations?.gamification?.badges?.diversified5?.description || '5+ tipi di asset',
-    },
-    emergencyFundStarted: {
-      name: translations?.gamification?.badges?.emergencyFundStarted?.name || 'Rete di Sicurezza',
-      description: translations?.gamification?.badges?.emergencyFundStarted?.description || 'Fondo di emergenza avviato',
-    },
-    emergencyFundGoal: {
-      name: translations?.gamification?.badges?.emergencyFundGoal?.name || 'Blindato',
-      description: translations?.gamification?.badges?.emergencyFundGoal?.description || 'Obiettivo fondo emergenza raggiunto',
-    },
-    monthlyGrowth: {
-      name: translations?.gamification?.badges?.monthlyGrowth?.name || 'In Crescita',
-      description: translations?.gamification?.badges?.monthlyGrowth?.description || 'Patrimonio in aumento vs mese precedente',
-    },
-    yearlyGrowth: {
-      name: translations?.gamification?.badges?.yearlyGrowth?.name || 'Anno d\'Oro',
-      description: translations?.gamification?.badges?.yearlyGrowth?.description || 'Patrimonio in aumento vs anno precedente',
-    },
-  }), [translations]);
+  // Dynamic badge translations - auto-maps all BADGE_DEFINITIONS keys
+  const badgeTranslations = useMemo(() => {
+    const result = {};
+    for (const key of Object.keys(BADGE_DEFINITIONS)) {
+      result[key] = {
+        name: translations?.gamification?.badges?.[key]?.name || key,
+        description: translations?.gamification?.badges?.[key]?.description || '',
+      };
+    }
+    return result;
+  }, [translations]);
+
+  // Category name translations
+  const categoryTranslations = useMemo(() => {
+    const cats = translations?.gamification?.categories || {};
+    return {
+      dataConsistency: cats.dataConsistency || 'Costanza',
+      savings: cats.savings || 'Risparmio',
+      netWorth: cats.netWorth || 'Patrimonio',
+      diversification: cats.diversification || 'Diversificazione',
+      emergencyGrowth: cats.emergencyGrowth || 'Emergenza e Crescita',
+      outflowManagement: cats.outflowManagement || 'Gestione Uscite',
+      income: cats.income || 'Entrate',
+      goals: cats.goals || 'Obiettivi',
+      community: cats.community || 'Community',
+      profile: cats.profile || 'Profilo',
+    };
+  }, [translations]);
 
   const gamificationData = useMemo(() => {
     if (!userData) {
-      return { badges: [], unlockedBadges: [], lockedBadges: [], stats: {}, level: 1, points: 0, nextLevelPoints: 100 };
+      return {
+        badges: [], unlockedBadges: [], lockedBadges: [],
+        stats: {}, level: 1, points: 0, nextLevelPoints: 30,
+        categories: BADGE_CATEGORY_ORDER,
+        categoryTranslations: {},
+      };
     }
 
     // Calculate all badges
@@ -290,6 +554,7 @@ export const useGamification = (userData) => {
       return {
         id: def.id,
         icon: def.icon,
+        category: def.category,
         name: badgeTranslations[key]?.name || key,
         description: badgeTranslations[key]?.description || '',
         unlocked,
@@ -330,8 +595,10 @@ export const useGamification = (userData) => {
       level,
       points,
       nextLevelPoints,
+      categories: BADGE_CATEGORY_ORDER,
+      categoryTranslations,
     };
-  }, [userData, badgeTranslations]);
+  }, [userData, badgeTranslations, categoryTranslations]);
 
   return gamificationData;
 };

@@ -133,6 +133,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
                     setIsLoading(false);
                 } catch (error) {
                     console.error('Error set balances:', error);
+                    setIsLoading(false);
                 }
             }
         };

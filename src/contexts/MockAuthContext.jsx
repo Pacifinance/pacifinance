@@ -259,10 +259,10 @@ export const mockUserData = {
     rankings: {
         balance: Math.floor(Math.random() * 40) + 60, // 60-100%
         incomes: Math.floor(Math.random() * 35) + 55, // 55-90%
-        expenses: Math.floor(Math.random() * 50) + 25, // 25-75%
+        outflows: Math.floor(Math.random() * 50) + 25, // 25-75%
         balanceSimilar: Math.floor(Math.random() * 30) + 65, // 65-95%
         incomesSimilar: Math.floor(Math.random() * 25) + 60, // 60-85%
-        expensesSimilar: Math.floor(Math.random() * 40) + 30 // 30-70%
+        outflowsSimilar: Math.floor(Math.random() * 40) + 30 // 30-70%
     },
     
     // Goals and limits per Financial Insights

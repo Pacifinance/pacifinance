@@ -251,17 +251,10 @@ const CategoryFilterRow = styled.div`
   overflow-x: auto;
   padding-bottom: 0.25rem;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   
   &::-webkit-scrollbar {
-    height: 3px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'};
-    border-radius: 2px;
+    display: none;
   }
 `;
 
@@ -291,33 +284,37 @@ const CategoryChip = styled.button`
   }
 `;
 
-const CategorySectionHeader = styled.div`
+const CategoryDivider = styled.div`
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.35rem;
-  border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'};
+  padding: 0.25rem 0;
+  margin-top: ${props => props.$first ? '0' : '0.25rem'};
+  
+  &::before {
+    content: '';
+    width: 3px;
+    height: 1rem;
+    border-radius: 2px;
+    background: rgba(34,197,94,0.5);
+    flex-shrink: 0;
+  }
   
   .category-name {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'};
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'};
   }
   
   .category-count {
-    font-size: 0.7rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)'};
-  }
-  
-  &:first-of-type {
-    margin-top: 0;
+    font-size: 0.65rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)'};
   }
   
   @media (max-width: 768px) {
-    .category-name { font-size: 0.75rem; }
-    .category-count { font-size: 0.6rem; }
+    .category-name { font-size: 0.65rem; }
+    .category-count { font-size: 0.55rem; }
   }
 `;
 
@@ -424,13 +421,6 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
 
       {/* Category Filter Chips */}
       <CategoryFilterRow theme={theme}>
-        <CategoryChip
-          theme={theme}
-          $active={activeCategory === 'all'}
-          onClick={() => setActiveCategory('all')}
-        >
-          {t.allCategories || 'Tutte'} ({statusFiltered.length})
-        </CategoryChip>
         {BADGE_CATEGORY_ORDER.map(cat => {
           const count = categoryCounts[cat] || 0;
           if (count === 0) return null;
@@ -439,7 +429,7 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
               key={cat}
               theme={theme}
               $active={activeCategory === cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => setActiveCategory(prev => prev === cat ? 'all' : cat)}
             >
               {categoryTranslations?.[cat] || cat} ({count})
             </CategoryChip>
@@ -447,41 +437,38 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
         })}
       </CategoryFilterRow>
 
-      {/* Badges - Grouped by category when showing all, flat when filtered */}
-      {activeCategory === 'all' && groupedBadges ? (
-        BADGE_CATEGORY_ORDER.map(cat => {
-          const catBadges = groupedBadges[cat];
-          if (!catBadges || catBadges.length === 0) return null;
-          const unlockedInCat = catBadges.filter(b => b.unlocked).length;
-          return (
-            <div key={cat}>
-              <CategorySectionHeader theme={theme}>
+      {/* Badges - Single continuous grid, with inline category dividers */}
+      <BadgesGrid>
+        {activeCategory === 'all' && groupedBadges ? (
+          BADGE_CATEGORY_ORDER.map((cat, catIdx) => {
+            const catBadges = groupedBadges[cat];
+            if (!catBadges || catBadges.length === 0) return null;
+            const unlockedInCat = catBadges.filter(b => b.unlocked).length;
+            const isFirst = BADGE_CATEGORY_ORDER.slice(0, catIdx).every(c => !groupedBadges[c]?.length);
+            return [
+              <CategoryDivider key={`div-${cat}`} theme={theme} $first={isFirst}>
                 <span className="category-name">{categoryTranslations?.[cat] || cat}</span>
                 <span className="category-count">{unlockedInCat}/{catBadges.length}</span>
-              </CategorySectionHeader>
-              <BadgesGrid>
-                {catBadges.map((badge) => (
-                  <BadgeCard key={badge.id} theme={theme} $unlocked={badge.unlocked}>
-                    <div className="badge-icon">{badge.icon}</div>
-                    <div className="badge-name">{badge.name}</div>
-                    <div className="badge-desc">{badge.description}</div>
-                  </BadgeCard>
-                ))}
-              </BadgesGrid>
-            </div>
-          );
-        })
-      ) : (
-        <BadgesGrid>
-          {displayedBadges.map((badge) => (
+              </CategoryDivider>,
+              ...catBadges.map((badge) => (
+                <BadgeCard key={badge.id} theme={theme} $unlocked={badge.unlocked}>
+                  <div className="badge-icon">{badge.icon}</div>
+                  <div className="badge-name">{badge.name}</div>
+                  <div className="badge-desc">{badge.description}</div>
+                </BadgeCard>
+              ))
+            ];
+          })
+        ) : (
+          displayedBadges.map((badge) => (
             <BadgeCard key={badge.id} theme={theme} $unlocked={badge.unlocked}>
               <div className="badge-icon">{badge.icon}</div>
               <div className="badge-name">{badge.name}</div>
               <div className="badge-desc">{badge.description}</div>
             </BadgeCard>
-          ))}
-        </BadgesGrid>
-      )}
+          ))
+        )}
+      </BadgesGrid>
 
       {/* Completion message */}
       {stats.completionPercentage === 100 && (

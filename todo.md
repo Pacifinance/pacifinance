@@ -96,6 +96,8 @@
 - [ ] Verificare che i grafici con label `renderCustomizedLabel` non si sovrappongano con raggio ridotto su mobile
 - [x] ~~A volte all'avvio della dashboard, rimane nella pagina bianca del caricamento e non carica la dashboard~~ → Fix: aggiunto error recovery in `UserContext` (retry su errore API), `setIsLoading(false)` nel catch di `Dashboard.jsx`, e spinner + timeout + pulsante "Riprova" in `DashboardPage.jsx`
 - [ ] da mobile la notifica dell' achievements raggiunto finisce sotto i pulsanti della sidebar in basso, spostare la notifica più in alto e renderla più compatta da mobile
+- [ ] gli achievements sono buggati, vengono dati cmoe fatti anche per utenti che per esempio non hanno inserito dati negli ultimi mesi. Correggere e guardare nel dettaglio dai dati in userContext (non basta che ci siano, devono esserci i dati)
+- [ ] Dalle impostazioni non si può cambiare lingua, farlo funzionare
 
 ### Mobile
 - [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)

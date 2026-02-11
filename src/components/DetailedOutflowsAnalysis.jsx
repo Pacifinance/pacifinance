@@ -548,10 +548,7 @@ const RecurringSection = styled.div`
 export default function DetailedOutflowAnalysis({ theme, userData, isHidden = false }) {
   const { language, translations } = useContext(LanguageContext);
   const t = translations.graphs.statsOutflows.outflowAnalysis;
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0); // 0 = mese corrente
-  const [recurringDisplayMode, setRecurringDisplayMode] = useState('thisMonth'); // 'thisMonth' o 'last12Months'
 
   // Genera lista mesi per il selettore
   const monthOptions = useMemo(() => {
@@ -768,7 +765,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
         index === self.findIndex(e => e.category === outflow.category && Math.abs(e.amount - outflow.amount) < 1)
       )
     };
-  }, [userData, selectedMonthIndex]);
+  }, [userData, selectedMonthIndex, language]);
   
   // Calcola ricorrenti per tutti i 12 mesi (sempre basati su tutti i mesi)
   const recurringLast12Months = useMemo(() => {
@@ -826,16 +823,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
     );
   }
 
-  const { overview, categories, paymentMethods, paymentTypologies, subscriptionPayments, recurringExpenses } = expenseAnalysis;
-
-  // Crea analisi delle sottoscrizioni
-  const subscriptionAnalysis = {
-    activeCount: recurringExpenses?.length || 0,
-    monthlyTotal: recurringExpenses?.reduce((sum, outflow) => sum + outflow.amount, 0) || 0,
-    budgetImpact: overview?.currentMonth?.total ? 
-      ((recurringExpenses?.reduce((sum, outflow) => sum + outflow.amount, 0) || 0) / overview.currentMonth.total) * 100 
-      : 0
-  };
+  const { overview, categories, paymentMethods, subscriptionPayments, recurringExpenses } = expenseAnalysis;
 
   // Le funzioni getCategoryIcon e getCategoryColor ora vengono importate dal file categoryIcons.js
 
@@ -848,18 +836,6 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       case 'transfer': case 'bank_transfer': return <Repeat size={20} />;
       case 'installment': return <CalendarDays size={20} />;
       default: return <CreditCard size={20} />;
-    }
-  };
-
-  const getTypologyIcon = (typology) => {
-    switch (typology.toLowerCase()) {
-      case 'subscription': case 'sottoscrizione': return <Repeat size={20} />;
-      case 'one-time': case 'singolo': return <ShoppingBag size={20} />;
-      case 'recurring': case 'ricorrente': return <Calendar size={20} />;
-      case 'periodic': case 'periodico': return <Clock size={20} />;
-      case 'monthly': case 'mensile': return <CalendarDays size={20} />;
-      case 'annual': case 'annuale': return <CalendarCheck size={20} />;
-      default: return <ShoppingBag size={20} />;
     }
   };
 

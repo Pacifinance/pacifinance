@@ -61,7 +61,7 @@ import {
 
 import GamificationSection from '../components/GamificationSection';
 import AvatarIcon from '../components/AvatarIcon';
-import { canRegenerateAvatar, regenerateAvatar, getAvatar } from '../utils/avatarGenerator';
+import { canRegenerateAvatar, regenerateAvatar } from '../utils/avatarGenerator';
 import { useToast } from '../contexts/ToastContext';
 
 // ─── Styled Components ───────────────────────────────────────────────
@@ -419,7 +419,7 @@ const ProfilePage = () => {
     const { language, translations } = useContext(LanguageContext);
     const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useAuth();
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const navigate = useLocalizedNavigate();
+    useLocalizedNavigate();
     const { showSuccess } = useToast();
 
     const [activeTab, setActiveTab] = useState('details');

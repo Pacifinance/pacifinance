@@ -318,18 +318,16 @@ const CategoryDivider = styled.div`
   }
 `;
 
-const GamificationSection = ({ theme, userData, isHidden, gamificationData: externalGamification }) => {
+const GamificationSection = ({ theme, userData, gamificationData: externalGamification }) => {
   const { translations } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  useContext(MediaQueryContext);
   const internalGamification = useGamification(userData);
   // Use externally provided gamification data if available, otherwise compute internally
   const gamification = externalGamification || internalGamification;
   const [activeTab, setActiveTab] = useState('all');
   const [activeCategory, setActiveCategory] = useState('all');
 
-  if (!userData) return null;
-
-  const { badges, unlockedBadges, lockedBadges, stats, level, points, nextLevelPoints, categoryTranslations } = gamification;
+  const { badges = [], unlockedBadges = [], lockedBadges = [], stats, level, points = 0, nextLevelPoints = 1, categoryTranslations } = gamification || {};
   const progressPercentage = Math.min((points / nextLevelPoints) * 100, 100);
 
   const t = translations?.gamification || {};
@@ -365,6 +363,8 @@ const GamificationSection = ({ theme, userData, isHidden, gamificationData: exte
     }
     return counts;
   }, [statusFiltered]);
+
+  if (!userData) return null;
 
   return (
     <GamificationContainer theme={theme}>

@@ -10,7 +10,6 @@ import { DropdownContainer } from '../styles/MyStyled';
 
 const SidebarMobile = ({
     theme,
-    language,
     translations,
     isSideBarMenuOpen,
     setIsSideBarMenuOpen,

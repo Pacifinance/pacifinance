@@ -13,12 +13,11 @@ import { useScrollNavigation } from '../hooks/useScrollNavigation';
 import { StandardPageTitle } from '../styles/MyStyled';
 
 function StatsChartsPage() {
-  const { theme, toggleMode } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { language, translations } = useContext(LanguageContext);
-  const { mode } = theme;
+  useContext(PrivacyContext);
+  const { language } = useContext(LanguageContext);
   const navigate = useLocalizedNavigate();
 
   // Hook per la navigazione con scroll

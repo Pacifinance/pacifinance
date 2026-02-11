@@ -10,7 +10,6 @@ import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { assetColors } from '../data/assetColors';
-import { assetIcons } from '../data/assetIcons';
 import { BsArrowUpRight, BsArrowDownLeft, BsWallet2 } from 'react-icons/bs';
 import { GiUmbrella } from 'react-icons/gi';
 
@@ -175,7 +174,7 @@ const DashboardCompactView = ({
   formatPercentage,
 }) => {
   const { translations } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  useContext(MediaQueryContext);
 
   const t = translations?.dashboardLayout || {};
 

@@ -28,7 +28,7 @@ const ContentWrapper = styled.div`
 
 function GoalsAndLimitsPage() {
   const { theme } = useContext(ThemeContext);
-  const { language, translations } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
 

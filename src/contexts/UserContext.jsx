@@ -8,10 +8,10 @@ export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isUpdated, setIsUpdated] = useState(false);
   const [error, setError] = useState(null);
-  const [isDemo, setIsDemo] = useState(false);
+  const [, setIsDemo] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const isAuthenticatedRef = useRef(isAuthenticated);
 
   // Keep ref in sync with state for use in interceptor
@@ -46,7 +46,7 @@ export const UserProvider = ({ children }) => {
         } else {
           setIsAuthenticated(false);
         }
-      } catch (err) {
+      } catch {
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -380,7 +380,7 @@ export const UserProvider = ({ children }) => {
                   expensesByCategory: statsAveragesData.similar?.expensesByCategory ?? null
                 }
               };
-            } catch (statsError) {
+            } catch {
               // Endpoint not available yet - silently use default null values
               console.debug('/stats/averages endpoint not available, using defaults');
             }

@@ -13,12 +13,11 @@ import SEOHead from '../components/SEOHead';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
 
 function ComparisonPage() {
-  const { theme, toggleMode } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const { language, translations } = useContext(LanguageContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { mode } = theme;
+  const { isHidden } = useContext(PrivacyContext);
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
   const navigate = useLocalizedNavigate();
 

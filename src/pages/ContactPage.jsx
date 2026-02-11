@@ -9,7 +9,7 @@ import SEOHead from '../components/SEOHead';
 
 export default function ContactPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, translations, toggleLanguage } = useContext(LanguageContext);
+  const { language, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
 
   return (

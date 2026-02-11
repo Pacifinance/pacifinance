@@ -4,7 +4,7 @@ import { MdOutlineSavings } from "react-icons/md";
 import { SectionAMonth } from '../styles/MyStyled';
 import styled from 'styled-components';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
-import { getIncomesArray, getOutflowsArray, getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
+import { getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 
 const ModernStatsCard = styled.div`

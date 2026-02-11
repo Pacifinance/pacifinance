@@ -4,7 +4,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 
 const ComingSoon = () => {
-  const { language, translations } = React.useContext(LanguageContext);
+  const { translations } = React.useContext(LanguageContext);
   const { theme } = React.useContext(ThemeContext);
   
   return (

@@ -112,7 +112,7 @@
 
 ### Funzionalità
 - [ ] Dark/Light mode: transizione animata al cambio tema
-- [ ] Notifiche push (PWA) per promemoria inserimento dati mensili
+- [ ] Notifiche push (PWA) per promemoria inserimento dati mensili — vedi **Analisi PWA Push Notifications** in fondo
 - [ ] Widget "riepilogo rapido" nella home con patrimonio + variazione mese precedente
 - [ ] Import dati da CSV/Excel (inverso dell'export)
 - [ ] Grafici trend storico patrimonio (linea temporale)
@@ -224,6 +224,57 @@ Se lo si variabilizza si potrebbero mettere dei lucchetti su quelli successivi c
 - **Frontend**: badge "Supporter" in `useGamification.js` (già predisposto, basta aggiungere `check: (data) => data.hasDonated === true`)
 
 **Stato: Pronto per implementazione backend** — il frontend è già preparato per supportare un badge `supporter` quando il server fornirà il flag `hasDonated`.
+
+---
+
+### 📲 Analisi: PWA Push Notifications per Promemoria Inserimento Dati Mensili
+
+**Obiettivo:** Inviare una notifica push all'utente (es. giorno 1-3 del mese) se non ha ancora inserito i dati del mese corrente.
+
+**Architettura necessaria:**
+```
+Browser (Push API) → subscribe → Backend (Node/cron) → web-push → Web Push Service → Notification
+```
+
+**Componenti necessari:**
+
+| Componente | Stato | Lavoro stimato |
+|---|---|---|
+| Service Worker (`sw.js`) | ✅ Già presente | Aggiungere listener `push` e `notificationclick` |
+| Push API (frontend) | ❌ Da fare | `reg.pushManager.subscribe(...)` con VAPID key |
+| VAPID keys | ❌ Da fare | `web-push generate-vapid-keys` (una tantum) |
+| Backend: endpoint subscription | ❌ Da fare | `POST /api/push/subscribe` + tabella DB |
+| Backend: cron job | ❌ Da fare | Job mensile che invia push a chi non ha inserito dati |
+| UI: toggle notifiche | ❌ Da fare | Switch in SettingsPage per attivare/disattivare |
+| Permessi browser | ❌ Da fare | `Notification.requestPermission()` con UX non invasiva |
+
+**Compatibilità browser:**
+- ✅ Chrome, Firefox, Edge (desktop + Android) — funziona anche a browser chiuso
+- ⚠️ iOS Safari: solo da iOS 16.4+ e **solo** se PWA installata su home screen
+- ❌ Safari desktop: supporto limitato
+
+**Pro:**
+- Gratuito (Web Push non costa, a differenza di FCM per mobile nativo)
+- L'utente riceve promemoria anche a browser chiuso (se SW registrato)
+- Nessun servizio terzo necessario (solo libreria `web-push` lato server)
+
+**Contro:**
+- Richiede **modifiche backend** (nuovo endpoint + cron + VAPID) — viola regola "DO NOT modify server/"
+- iOS richiede PWA installata → la maggior parte degli utenti iOS non la installerà
+- Bassa adoption rate: ~50% degli utenti rifiuta le notifiche push web
+- Complessità: gestione subscription expiry, token refresh, error handling
+
+**Alternativa più semplice: Email Reminder**
+- L'utente ha già un account con email → cron job backend che invia email se non ha inserito dati
+- Zero modifiche frontend, solo backend
+- Compatibile al 100% con tutti i dispositivi
+- Open rate email ~40% vs push notification ~20%
+
+**Stima lavoro:**
+- Push Notifications: ~2 giorni frontend + ~1 giorno backend
+- Email Reminder: ~0.5 giorni backend, 0 frontend
+
+**Raccomandazione:** Parcheggiare per ora. Il rapporto costo/beneficio è basso per la base utenti attuale. Quando ci saranno più utenti attivi, l'**email reminder** (backend) è 10x più efficace e 5x più semplice da implementare. Se si decide di procedere, partire con email, poi valutare push come enhancement.
 
 ---
 

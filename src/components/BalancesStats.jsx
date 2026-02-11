@@ -298,9 +298,6 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
         fetchData();
     }, [userData, period, language]);
 
-    const primaryColor = theme === "light" ? "#4F46E5" : "#60A5FA";
-
-    const titleKey = period === "month" ? "titleDetailsMonth" : "titleDetailsYear";
     const totalChange = calculateDifference(totalValue, totalValuePrev);
     const totalPercentage = calculatePercentageChange(totalValue, totalValuePrev);
     const isPositiveChange = (((totalValue - totalValuePrev) / totalValuePrev) * 100) > 0;

@@ -22,7 +22,7 @@ export const CustomTick = ({x, y, payload, textAnchor, fill, angle, fontSize, dx
 };
 
 //used for render the label in the pie chart as a percentage inside the pie
-export const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+export const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
   const { isHidden } = useContext(PrivacyContext);
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;

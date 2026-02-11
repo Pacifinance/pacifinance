@@ -6,7 +6,6 @@
 import { 
   getLanguageCodes, 
   DEFAULT_LANGUAGE, 
-  isValidLanguage as checkValidLanguage,
   SUPPORTED_LANGUAGES
 } from '../i18n';
 

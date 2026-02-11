@@ -34,11 +34,6 @@ const slideIn = keyframes`
   to { opacity: 1; transform: translateX(0); }
 `;
 
-const pulse = keyframes`
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-`;
-
 const KnowledgeContainer = styled.div`
   flex: 1;
   padding: ${props => props.isMobile ? '1rem' : '2rem 3rem'};

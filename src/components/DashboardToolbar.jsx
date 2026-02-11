@@ -7,7 +7,7 @@
  * - Reset layout
  */
 
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
@@ -221,7 +221,7 @@ const DashboardToolbar = ({
   toggleViewMode,
 }) => {
   const { translations } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  useContext(MediaQueryContext);
   const [showPanel, setShowPanel] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);

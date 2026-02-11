@@ -44,6 +44,7 @@
     "jszip": "^3.10.1",
     "lucide-react": "^0.544.0",
     "mongoose": "^8.18.1",
+    "papaparse": "^5.4.1",
     "react": "^19.1.1",
     "react-calendar": "^6.0.0",
     "react-csv": "^2.2.2",

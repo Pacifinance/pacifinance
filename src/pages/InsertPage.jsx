@@ -1,5 +1,5 @@
 import React, {useEffect, useContext, useState} from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -11,15 +11,14 @@ import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
 
 function InsertPage() {
-  const { theme, toggleMode } = useContext(ThemeContext);
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
+  const { theme } = useContext(ThemeContext);
+  const { isHidden } = useContext(PrivacyContext);
   const auth = useAuth();
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = auth;
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
-  const { mode } = theme;
   const navigate = useLocalizedNavigate();
   const [searchParams] = useSearchParams();
-  const [initialSection, setInitialSection] = useState(null);
+  const [_initialSection, setInitialSection] = useState(null);
 
   // Hook per la navigazione con scroll
   const { 

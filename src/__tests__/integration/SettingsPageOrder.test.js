@@ -4,19 +4,15 @@
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('SettingsPage section order', () => {
   it('should have Data Export section before Danger Zone', () => {
     const filePath = resolve(__dirname, '../../pages/SettingsPage.jsx');
     const content = readFileSync(filePath, 'utf-8');
-
-    // Find the positions of key section markers
-    const themeIndex = content.indexOf('themeSettings') !== -1
-      ? content.indexOf('themeSettings')
-      : content.indexOf('Theme Settings') !== -1
-        ? content.indexOf('Theme Settings')
-        : content.indexOf('theme');
 
     const dataExportIndex = content.indexOf('data-export') !== -1
       ? content.indexOf('data-export')

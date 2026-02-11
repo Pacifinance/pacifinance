@@ -9,7 +9,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, afterEach, afterAll } from 'vitest';
 
 // Mock window.matchMedia for responsive components
 Object.defineProperty(window, 'matchMedia', {

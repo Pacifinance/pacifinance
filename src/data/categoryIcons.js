@@ -91,7 +91,7 @@ const rgbaToHex = (rgbaString) => {
 };
 
 // Funzione per ottenere il colore di una categoria (usa direttamente i colori da categoryColors.js)
-export const getCategoryColor = (category, index = 0) => {
+export const getCategoryColor = (category) => {
   if (!category) return '#079164';
   
   // Cerca prima in outflowCategoryColors

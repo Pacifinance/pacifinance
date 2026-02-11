@@ -286,19 +286,15 @@ const ScrollNavigationIndicator = ({
   isNavigating,
   showTriggerZone,
   triggerDirection,
-  triggerProgress,
   currentPageIndex, 
   totalPages, 
-  nextPage, 
-  prevPage,
   onPageClick,
   pageHasScrollableContent = true,
   cancelTrigger,
   dismissTrigger,
   navigateManually,
-  isAutoScrolling = false
 }) => {
-  const { language, translations } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
   
   // Guardia per verificare che il theme sia disponibile
   if (!theme) {

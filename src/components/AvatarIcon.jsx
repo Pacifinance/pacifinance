@@ -18,7 +18,7 @@ import { useToast } from '../contexts/ToastContext';
  * @param {string} props.title - Tooltip title
  * @param {Object} props.style - Additional styles
  */
-const AvatarIcon = ({ size = 40, theme, onClick, title, style = {} }) => {
+const AvatarIcon = ({ size = 40, onClick, title, style = {} }) => {
     const [avatarSrc, setAvatarSrc] = useState(null);
     const { translations } = useContext(LanguageContext);
     const { showSuccess } = useToast();

@@ -27,7 +27,7 @@ import { getBalanceChartData } from '../utils/userDataSelectors.js';
  * @param {Component} CustomTick - Componente custom per i tick degli assi
  */
 export default function BalancesChart({ type = "bar", theme, userData, isHidden, CustomTick }) {
-  const { language, translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
@@ -115,6 +115,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
   // Headers per export comuni
@@ -182,7 +183,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         const monthName = monthNames[monthIndex] || monthNum;
         return `${monthName} ${year}`;
       }}
-      formatter={(value, name, entry, index) => {
+      formatter={(value, name) => {
         if (isHidden) return ['****'];
         
         const formattedValue = new Intl.NumberFormat('it-IT', {
@@ -212,18 +213,18 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     />
   );
 
-  // Componente Legenda condivisa
-  const renderLegend = () => (
-    <Legend 
-      iconSize={16} 
-      wrapperStyle={{ 
-        fontSize: containerWidth < 500 ? '16px' : '18px',
-        fontWeight: 500,
-        paddingTop: type === 'bar' ? '10px' : '5px',
-        textAlign: 'center'
-      }}
-    />
-  );
+  // Componente Legenda condivisa (currently unused, kept for future use)
+  // const renderLegend = () => (
+  //   <Legend 
+  //     iconSize={16} 
+  //     wrapperStyle={{ 
+  //       fontSize: containerWidth < 500 ? '16px' : '18px',
+  //       fontWeight: 500,
+  //       paddingTop: type === 'bar' ? '10px' : '5px',
+  //       textAlign: 'center'
+  //     }}
+  //   />
+  // );
 
   // Rendering del grafico a barre
   const renderBarChart = () => (

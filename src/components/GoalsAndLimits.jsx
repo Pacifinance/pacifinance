@@ -317,8 +317,8 @@ const CancelButton = styled.button`
 `;
 
 const ProfileSettings = ({ theme }) => {
-  const { language, translations } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  const { language } = useContext(LanguageContext);
+  useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
   

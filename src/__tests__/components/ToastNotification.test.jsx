@@ -90,7 +90,7 @@ describe('ToastNotification Component', () => {
       );
       
       // Should have success background color
-      const toast = screen.getByText('Success').closest('div[style]');
+      const toast = screen.getByText('Success').closest('.fixed');
       expect(toast).toHaveStyle({ backgroundColor: '#4CAF50' });
     });
 
@@ -106,7 +106,7 @@ describe('ToastNotification Component', () => {
       );
       
       // Should have error background color
-      const toast = screen.getByText('Error').closest('div[style]');
+      const toast = screen.getByText('Error').closest('.fixed');
       expect(toast).toHaveStyle({ backgroundColor: '#f44336' });
     });
 
@@ -120,7 +120,7 @@ describe('ToastNotification Component', () => {
         />
       );
       
-      const toast = screen.getByText('Default').closest('div[style]');
+      const toast = screen.getByText('Default').closest('.fixed');
       expect(toast).toHaveStyle({ backgroundColor: '#4CAF50' });
     });
   });
@@ -229,7 +229,7 @@ describe('ToastNotification Component', () => {
         />
       );
       
-      const toast = screen.getByText('Test').closest('div[style]');
+      const toast = screen.getByText('Test').closest('.fixed');
       expect(toast).toHaveStyle({
         padding: '16px'
       });

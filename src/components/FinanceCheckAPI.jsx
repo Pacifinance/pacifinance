@@ -85,7 +85,7 @@ const ItemPrice = styled.div`
 
 function FinanceCheckAPI() {
   const { theme } = useContext(ThemeContext);
-  const { language, translations } = useContext(LanguageContext);
+  useContext(LanguageContext);
   
   const [loading, setLoading] = useState(true);
   const [marketData, setMarketData] = useState({

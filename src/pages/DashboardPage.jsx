@@ -18,7 +18,7 @@ const DashboardPage = () => {
     const { isHidden } = useContext(PrivacyContext);
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
-    const { isMobileScreen } = useContext(MediaQueryContext);
+    useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
     const [loadingTimeout, setLoadingTimeout] = useState(false);
 
@@ -41,7 +41,6 @@ const DashboardPage = () => {
         nextPage,
         prevPage,
       cancelTrigger,
-      dismissTrigger,
       navigateManually,
       isAutoScrolling
     } = useScrollNavigation(true);

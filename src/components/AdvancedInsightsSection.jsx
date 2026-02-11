@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
@@ -77,8 +77,8 @@ const ContentContainer = styled.div`
 `;
 
 const AdvancedInsightsSection = ({ theme, userData, isHidden = false }) => {
-  const { language, translations } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  const { language } = useContext(LanguageContext);
+  useContext(MediaQueryContext);
   const [activeTab, setActiveTab] = useState('insights');
 
   const tabs = [

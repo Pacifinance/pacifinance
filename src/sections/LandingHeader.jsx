@@ -14,7 +14,7 @@ function Header({
   theme,
   mode,
   toggleMode,
-  toggleLanguage: propToggleLanguage,
+  toggleLanguage: _propToggleLanguage,
 }) {
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;

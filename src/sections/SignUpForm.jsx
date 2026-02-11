@@ -33,7 +33,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.met
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
-    const { showSuccess, showError } = useToast();
+    const { showError } = useToast();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +42,6 @@ export default function SignUpForm() {
     const [turnstileToken, setTurnstileToken] = useState("");
     const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const inputRef = useRef(null);
     const turnstileRef = useRef(null);
 
     const navigate = useLocalizedNavigate();

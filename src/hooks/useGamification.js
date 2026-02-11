@@ -53,8 +53,9 @@ export const BADGE_CATEGORY_ORDER = [
 
 // ═══════════════════════════════════════════
 // Badge Definitions (44 total)
+// Exported for testing
 // ═══════════════════════════════════════════
-const BADGE_DEFINITIONS = {
+export const BADGE_DEFINITIONS = {
 
   // ─────────────────────────────────────────
   // DATA CONSISTENCY (7 badges)

@@ -21,7 +21,7 @@ vi.mock('../../components/ToastNotification', () => ({
 }));
 
 // Test component that uses the context
-const TestConsumer = ({ action, message }) => {
+const TestConsumer = ({ message }) => {
   const { showSuccess, showError } = useToast();
   
   return (

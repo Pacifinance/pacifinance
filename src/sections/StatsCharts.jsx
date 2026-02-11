@@ -477,20 +477,6 @@ export default function StatsCharts() {
         }
     }, [userData]);
     
-    const formattedPreMonthDate = userData?.preMonthDate
-      ? new Date(userData.preMonthDate).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
-          year: 'numeric', 
-          month: 'long' 
-        })
-      : "";
-
-    const formattedPreYearSameMonthDate = userData?.preYearSameMonthDate
-      ? new Date(userData.preYearSameMonthDate).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 
-          year: 'numeric', 
-          month: 'long' 
-        })
-      : "";
-
     const handlePageChange = (page) => {
         setActivePage(page);
         setIsLoading(true);

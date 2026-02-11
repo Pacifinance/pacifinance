@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { LanguageContext } from './LanguageContext';
-import { sortTagsByLanguage } from '../utils/sortingUtils';
+
 
 const MockAuthContext = createContext();
 
@@ -360,10 +360,10 @@ export const mockUserData = {
 export const MockAuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isUpdated, setIsUpdated] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
-    const { language, translations } = useContext(LanguageContext);
+    const [isLoading] = useState(false);
+    useContext(LanguageContext);
     
-    const [userData, setUserData] = useState(mockUserData);
+    const [, setUserData] = useState(mockUserData);
 
     const handleSetIsAuthenticated = (value) => {
         setIsAuthenticated(value);

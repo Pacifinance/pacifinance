@@ -73,8 +73,8 @@ function RankingsSection({ theme, language, title, rankings, isHidden, translati
 
 function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
-    const [selectedMonth, setSelectedMonth] = useState(1);
-    const [selectedYear, setSelectedYear] = useState(2023);
+    const [selectedMonth, _setSelectedMonth] = useState(1);
+    const [selectedYear, _setSelectedYear] = useState(2023);
     const [userType, setUserType] = useState('');
     const [balanceRank, setBalanceRank] = useState([]);
     const [incomeRank, setIncomeRank] = useState([]);

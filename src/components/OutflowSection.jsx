@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faSearch, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
@@ -12,7 +12,7 @@ import {
   StyledTextArea,
   TitleLastAdds,
 } from '../styles/MyStyled';
-import { outflowCategoryColors, getCategoryColor } from '../data/categoryColors';
+import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
@@ -77,12 +77,6 @@ export default function OutflowSection({
   setOutflowTypologyFilter,
   outflowNoteFilter,
   setOutflowNoteFilter,
-  outflowDateFilter,
-  setOutflowDateFilter,
-  showOutflowNoteInput,
-  setShowOutflowNoteInput,
-  showOutflowDatePicker,
-  setShowOutflowDatePicker,
   onAddOutflow,
   onDeleteOutflow,
   // New props for balance selection

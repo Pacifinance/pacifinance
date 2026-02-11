@@ -36,7 +36,7 @@ export const useDashboardLayout = () => {
         ];
         return merged;
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
     return DEFAULT_SECTIONS;
@@ -55,7 +55,7 @@ export const useDashboardLayout = () => {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sections));
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [sections]);
@@ -64,7 +64,7 @@ export const useDashboardLayout = () => {
   useEffect(() => {
     try {
       localStorage.setItem(VIEW_MODE_KEY, viewMode);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [viewMode]);

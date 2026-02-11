@@ -10,7 +10,7 @@ import { useHTMLLang } from '../hooks/useHTMLLang';
 
 export default function NewLandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, translations } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { mode } = theme;
 

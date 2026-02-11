@@ -26,6 +26,16 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* ═══ Dark/Light mode animated transition ═══ */
+body.theme-transitioning,
+body.theme-transitioning *,
+body.theme-transitioning *::before,
+body.theme-transitioning *::after {
+  transition: background-color 0.35s ease, color 0.35s ease,
+              border-color 0.35s ease, box-shadow 0.35s ease,
+              fill 0.35s ease, stroke 0.35s ease !important;
+}
+
 /* Nascondi scrollbar per Chrome, Safari e Opera */
 body::-webkit-scrollbar,
 *::-webkit-scrollbar {

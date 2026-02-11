@@ -8,13 +8,11 @@ import Sidebar from '../sections/Sidebar';
 import Knowledge from '../sections/Knowledge';
 
 function KnowledgePage() {
-  const { theme, toggleMode } = useContext(ThemeContext);
+  useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  useContext(PrivacyContext);
+  useContext(MediaQueryContext);
   const [isMobileScreenLocal, setIsMobileScreenLocal] = useState(window.innerWidth <= 768);
-
-  const { mode } = theme;
 
   // Chiamata per caricare i dati dell'utente
   const loadUserData = () => {

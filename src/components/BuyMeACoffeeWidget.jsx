@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-export default function Buymeacoffee({ isMobileScreen, showLink = false }) {
+export default function Buymeacoffee({ showLink = false }) {
   useEffect(() => {
     const div = document.getElementById("supportByBMC");
     // Check if the script is already there

@@ -20,11 +20,11 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
-import { renderCustomizedLabel } from '../utils/customGraphsInfo';
+
 import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 
-export default function InOutChart({theme, userData, isHidden, CustomTick, type = "line"}) {
+export default function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
   
   // Line chart state
@@ -129,6 +129,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, type]);
 
   const headers = [
@@ -196,7 +197,7 @@ export default function InOutChart({theme, userData, isHidden, CustomTick, type 
     
     if (totalOutflowsPerCategoryPerMonth[selectedMonth]) {
       pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
-        .filter(([key, value]) => value > 0)
+        .filter(([, value]) => value > 0)
         .map(([key, value], index) => ({
           name: translations?.categories?.[key] || key,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,

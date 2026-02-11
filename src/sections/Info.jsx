@@ -33,8 +33,8 @@ import { BsShield, BsBarChart, BsPhone, BsGear, BsHeart, BsLightbulb } from 'rea
 // I styled components sono ora nel file ModernInfoStyled.jsx
 
 function Info({ theme }) {
-    const { language, translations } = useContext(LanguageContext);
-    const { isMobileScreen } = useContext(MediaQueryContext);
+    const { translations } = useContext(LanguageContext);
+    useContext(MediaQueryContext);
     const [openFAQ, setOpenFAQ] = useState(null);
 
     const toggleFAQ = (index) => {

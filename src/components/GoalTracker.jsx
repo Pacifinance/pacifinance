@@ -212,63 +212,10 @@ const EmptyState = styled.div`
   }
 `;
 
-// Dati di esempio per gli obiettivi (in futuro questi verranno dal backend)
-const generateSampleGoals = (userData, language) => {
-  if (!userData) return [];
-  
-  // Per ora creiamo obiettivi di esempio basati sui dati dell'utente
-  const totalAssets = userData.assets?.reduce((sum, asset) => sum + (asset.value || 0), 0) || 0;
-  const totalExpenses = userData.expenses?.reduce((sum, exp) => sum + (exp.value || 0), 0) || 0;
-  
-  return [
-    {
-      id: 1,
-      type: language === 'it' ? 'Risparmio' : 'Savings',
-      title: language === 'it' ? 'Fondo Emergenze' : 'Emergency Fund',
-      description: language === 'it' 
-        ? 'Raggiungere 6 mesi di spese per sicurezza finanziaria'
-        : 'Reach 6 months of expenses for financial security',
-      targetAmount: totalExpenses * 6,
-      currentAmount: totalAssets * 0.3, // Supponiamo il 30% degli asset sia liquido
-      deadline: '2024-12-31',
-      icon: FaPiggyBank,
-      color: '#10b981'
-    },
-    {
-      id: 2,
-      type: language === 'it' ? 'Investimenti' : 'Investment',
-      title: language === 'it' ? 'Portfolio €50k' : '€50k Portfolio',
-      description: language === 'it' 
-        ? 'Costruire un portfolio diversificato di investimenti'
-        : 'Build a diversified investment portfolio',
-      targetAmount: 50000,
-      currentAmount: userData.assets?.filter(a => ['stocks', 'etf', 'crypto', 'bitcoin'].includes(a.typology))
-        .reduce((sum, asset) => sum + (asset.value || 0), 0) || 0,
-      deadline: '2025-06-30',
-      icon: FaChartLine,
-      color: '#3b82f6'
-    },
-    {
-      id: 3,
-      type: language === 'it' ? 'Debito' : 'Debt',
-      title: language === 'it' ? 'Riduzione Debiti' : 'Debt Reduction',
-      description: language === 'it' 
-        ? 'Eliminare tutti i debiti della carta di credito'
-        : 'Eliminate all credit card debt',
-      targetAmount: 5000,
-      currentAmount: 2000, // Già pagati
-      deadline: '2024-08-31',
-      icon: FaCreditCard,
-      color: '#ef4444'
-    }
-  ];
-};
-
 const GoalTracker = ({ theme, userData, isHidden = false }) => {
-  const { language, translations } = useContext(LanguageContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
+  const { language } = useContext(LanguageContext);
+  useContext(MediaQueryContext);
   const [goals, setGoals] = useState([]);
-  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     // Usa i goals dal UserContext se disponibili, altrimenti array vuoto

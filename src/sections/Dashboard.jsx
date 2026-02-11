@@ -26,11 +26,11 @@ import {
 import { assetIcons } from '../data/assetIcons';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { BiTrendingUp, BiWallet } from 'react-icons/bi';
-import { primaryColor, secondaryColor, getColorsBalances, getColorsIncExp } from '../styles/Themes';
+
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
-import { assetColors, getAssetColor } from '../data/assetColors.js';
+import { assetColors } from '../data/assetColors.js';
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
@@ -77,13 +77,12 @@ const ResponsivePadding = styled.div`
   }
 `;
 
-const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
+const Dashboard = ({ theme, userData, isHidden }) => {
     const [isLoading, setIsLoading] = useState(true);
     const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const { sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode } = useDashboardLayout();
-    const colorsBalances = getColorsBalances(translations);
-    const colorsIncExp = getColorsIncExp(translations);
+    
     
     // Stati per i bilanci
     const [stocksValue, setStocksValue] = useState(0);
@@ -270,6 +269,7 @@ const Dashboard = ({ theme, userData, isHidden, CustomTick }) => {
             value: investment.value,
             color: investment.color
         }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ], [traditionalAssets, emergencyFundAsset, investments]);
 
     // Dati per il grafico entrate/uscite (memoizzati)

@@ -6,8 +6,6 @@ import {
   ModernActionButton,
 } from '../styles/MyStyled';
 
-const currentDate = new Date().toISOString().split('T')[0];
-
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
     .replace(/,/g, '.') // Substitute commas with dots
@@ -68,7 +66,6 @@ export default function BalanceSection({
   balanceDate,
   setBalanceDate,
   onUpdateBalance,
-  language,
   translations,
 }) {
 

@@ -32,15 +32,15 @@ import {
 
 export default function SignInForm() {
   const { theme } = useContext(ThemeContext);
-  const { language, translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showUsername, setShowUsername] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const { setUserData, handleSetIsAuthenticated } = useContext(UserContext);
+  const { handleSetIsAuthenticated } = useContext(UserContext);
   const navigate = useLocalizedNavigate();
-  const { showSuccess, showError } = useToast();
+  const { showError } = useToast();
 
   const handleCloseModal = () => {
     setShowErrorModal(false);

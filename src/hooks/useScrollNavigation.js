@@ -43,7 +43,7 @@ export const useScrollNavigation = (enabled = true) => {
   const [lastDismissalTime, setLastDismissalTime] = useState(null);
   const [triggerDirection, setTriggerDirection] = useState(null); // 'up' | 'down'
   const [triggerProgress, setTriggerProgress] = useState(0);
-  const [triggerStartTime, setTriggerStartTime] = useState(null);
+  const [_triggerStartTime, setTriggerStartTime] = useState(null);
   const [pageHasScrollableContent, setPageHasScrollableContent] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [triggerIntervalId, setTriggerIntervalId] = useState(null);

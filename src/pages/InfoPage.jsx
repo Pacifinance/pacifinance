@@ -9,8 +9,7 @@ import Info from '../sections/Info';
 function InfoPage() {
   const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
-  const { isHidden, toggleHidden } = useContext(PrivacyContext);
-  const { mode } = theme;
+  useContext(PrivacyContext);
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
 
   // Chiamata per caricare i dati dell'utente

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, Suspense } from "react";
+import React, { useEffect, useContext, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,7 +12,7 @@ import { UserContext } from "./contexts/UserContext";
 import { LanguageContext } from "./contexts/LanguageContext";
 import { useAuth } from "./hooks/useAuth";
 import { useAuthenticatedPreloading, usePublicPreloading } from "./hooks/useSimplePreloading";
-import { getLanguageFromPath, addLanguageToPath, availableLanguages, getInitialLanguage } from "./utils/i18nRouting";
+import { addLanguageToPath, availableLanguages, getInitialLanguage } from "./utils/i18nRouting";
 import { useGamification } from "./hooks/useGamification";
 import { useAchievementNotifications } from "./hooks/useAchievementNotifications";
 
@@ -61,7 +61,6 @@ const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const auth = useAuth();
-  const location = useLocation();
   const { language, translations } = useContext(LanguageContext);
   
   // Global achievement notifications — fires on any authenticated page
@@ -91,7 +90,7 @@ const PublicRoute = ({ children }) => {
 // Language Redirect Component - redirects root to language-prefixed URL
 const LanguageRedirect = () => {
   const location = useLocation();
-  const { language } = useContext(LanguageContext);
+  useContext(LanguageContext);
   
   // Get initial language from URL, localStorage, or browser
   const initialLang = getInitialLanguage(location.pathname);
@@ -106,10 +105,9 @@ const LanguageRedirect = () => {
 
 function AppRouter() {
   const auth = useAuth();
-  const navigate = useNavigate();
   
   // Estrai le proprietà dal nostro hook unificato
-  const { isAuthenticated, handleSetIsAuthenticated, handleSetIsUpdated, userData, setUserData } = auth;
+  const { isAuthenticated, handleSetIsUpdated } = auth;
   
   // Attiva preloading semplice e sicuro
   useAuthenticatedPreloading(isAuthenticated);
@@ -126,13 +124,9 @@ function AppRouter() {
     s.parentNode.insertBefore(g, s);
   }, []);
 
-  // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
-
   useEffect(() => {
-    loadUserData(); // Initial load of user data
+    handleSetIsUpdated(false); // Initial load of user data
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Verify if the user is already authenticated

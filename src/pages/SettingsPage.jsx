@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate as useRawNavigate } from "react-router-dom";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import axios from "axios";
@@ -13,6 +13,8 @@ import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
+
+const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 import {
     Section,
     TitleDashboard,
@@ -27,7 +29,6 @@ import {
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faBars,
     faTrashCan,
     faEye,
     faEyeSlash,
@@ -43,14 +44,15 @@ import {
     faGlobe,
     faKey,
     faUserShield,
-    faExclamationTriangle
+    faExclamationTriangle,
+    faUpload
 } from "@fortawesome/free-solid-svg-icons";
 
 const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, translations, setLanguage, toggleLanguage } = useContext(LanguageContext);
+    const { language, translations, setLanguage } = useContext(LanguageContext);
     // Usa l'hook unificato che gestisce sia UserContext che MockAuth
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
@@ -68,11 +70,12 @@ const SettingsPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [newID, setNewID] = useState("");
-    const [showIDResult, setShowIDResult] = useState(false);
+    const [_newID, setNewID] = useState("");
+    const [_showIDResult, setShowIDResult] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [exportLoading, setExportLoading] = useState(false);
+    const [showImportWizard, setShowImportWizard] = useState(false);
     
     // Stati per il filtro dati export
     const [exportFilter, setExportFilter] = useState("all"); // "all", "last12", "specific"
@@ -1107,6 +1110,90 @@ const SettingsPage = () => {
                                 }}>
                                     {language === "it" ? "Esportazione in corso..." : "Exporting data..."}
                                 </div>
+                            )}
+                        </div>
+
+                        {/* Data Import Section */}
+                        <div
+                            style={{
+                                marginBottom: "2rem",
+                                padding: "2rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "16px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                                backdropFilter: "blur(10px)",
+                            }}
+                        >
+                            <h3 style={{
+                                marginBottom: "1.5rem",
+                                color: theme.textColor,
+                                fontSize: "1.4rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faUpload} style={{
+                                    marginRight: "0.75rem",
+                                    color: theme.buttonBackgroundColor
+                                }} />
+                                {translations.dataImport?.title || (language === "it" ? "Importa Dati" : "Import Data")}
+                            </h3>
+                            <p style={{
+                                color: theme.textColor,
+                                marginBottom: "1.5rem",
+                                fontSize: "1rem",
+                                lineHeight: "1.6",
+                                opacity: 0.8,
+                            }}>
+                                {translations.dataImport?.subtitle || (language === "it"
+                                    ? "Importa le tue transazioni da CSV o Excel"
+                                    : "Import your transactions from CSV or Excel")}
+                            </p>
+
+                            {!showImportWizard ? (
+                                <MyButton
+                                    theme={theme}
+                                    onClick={() => setShowImportWizard(true)}
+                                    style={{
+                                        backgroundColor: "#079164",
+                                        color: "white",
+                                        border: "none",
+                                        padding: "0.8rem 1.5rem",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                    }}
+                                    data-umami-event="import-wizard-opened"
+                                >
+                                    <FontAwesomeIcon icon={faUpload} />
+                                    {translations.dataImport?.openWizard || (language === "it" ? "Importa da file" : "Import from file")}
+                                </MyButton>
+                            ) : (
+                                <>
+                                    <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+                                        <button
+                                            onClick={() => setShowImportWizard(false)}
+                                            style={{
+                                                background: "none", border: "none", cursor: "pointer",
+                                                color: theme.textColor, opacity: 0.5, fontSize: "0.85rem",
+                                                textDecoration: "underline",
+                                            }}
+                                        >
+                                            ✕ {language === "it" ? "Chiudi" : "Close"}
+                                        </button>
+                                    </div>
+                                    <Suspense fallback={
+                                        <div style={{ textAlign: "center", padding: "2rem", color: theme.textColor }}>
+                                            {language === "it" ? "Caricamento..." : "Loading..."}
+                                        </div>
+                                    }>
+                                        <DataImportWizard
+                                            onClose={() => setShowImportWizard(false)}
+                                            onImportComplete={() => setShowImportWizard(false)}
+                                        />
+                                    </Suspense>
+                                </>
                             )}
                         </div>
 

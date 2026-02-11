@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { slideIn } from '../styles/MyStyled';
-import { themes } from '../styles/Themes';
+
 import { LanguageContext } from '../contexts/LanguageContext';
 
 function ConsentBanner() {
@@ -13,7 +13,7 @@ function ConsentBanner() {
     marketing: false
   });
   const [showDetails, setShowDetails] = useState(false);
-  const { language, translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
 
   useEffect(() => {
     // Check if user has already made a choice

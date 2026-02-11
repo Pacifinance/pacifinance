@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Select, MenuItem } from "@mui/material";
 import { BiTrendingUp } from "react-icons/bi";
 import {
@@ -34,7 +34,7 @@ import {
     ToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTrashCan, faSignOutAlt, faUserCog, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faUserCog, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {
     SidebarToggleModeButton,
@@ -54,13 +54,12 @@ import {
 } from "../styles/MyStyled";
 
 function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
-    const inputRef = useRef(null);
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations, toggleLanguage } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const [isSideBarMenuOpen, setIsSideBarMenuOpen] = useState(false);
+    const [_isSideBarMenuOpen, _setIsSideBarMenuOpen] = useState(false);
     const { activeIcon, setActiveIcon } = useContext(IconContext);
     const location = useLocation();
 
@@ -79,8 +78,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [jobTypeTags, setJobTypeTags] = useState([]);
     const [workTimeTags, setWorkTimeTags] = useState([]);
     const [remoteTypeTags, setRemoteTypeTags] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [showPopup, setShowPopup] = useState(false);
+    const [selectedOption, _setSelectedOption] = useState(null);
+    const [showPopup, _setShowPopup] = useState(false);
 
     // Modal states
     const [showAccountModal, setShowAccountModal] = useState(false);

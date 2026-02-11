@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
@@ -22,8 +22,6 @@ const BottomNavBar = ({ handleLogout }) => {
     const { translations } = useContext(LanguageContext);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
     const [showAccountMenu, setShowAccountMenu] = useState(false);
-    const moreMenuRef = useRef(null);
-    const accountMenuRef = useRef(null);
 
     const currentPath = removeLanguageFromPath(location.pathname);
 

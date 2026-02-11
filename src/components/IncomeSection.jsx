@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faSearch, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import {
@@ -73,12 +73,6 @@ export default function IncomeSection({
   setIncomeCategoryFilter,
   incomeNoteFilter,
   setIncomeNoteFilter,
-  incomeDateFilter,
-  setIncomeDateFilter,
-  showIncomeNoteInput,
-  setShowIncomeNoteInput,
-  showIncomeDatePicker,
-  setShowIncomeDatePicker,
   onAddIncome,
   onDeleteIncome,
   // New props for balance selection

@@ -763,7 +763,7 @@ const PopupOverlay = styled.div`
   z-index: 999;
 `;
 
-function Comparison({ theme, userData, handleSetIsUpdated, isHidden}) {
+function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
     const [activeTab, setActiveTab] = useState('insights');
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);

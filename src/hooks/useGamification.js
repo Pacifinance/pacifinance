@@ -58,36 +58,37 @@ const BADGE_DEFINITIONS = {
 
   // ─────────────────────────────────────────
   // DATA CONSISTENCY (7 badges)
+  // Check months with ACTUAL data (totalValue > 0), not just array length
   // ─────────────────────────────────────────
   firstMonth: {
     id: 'firstMonth',
     icon: '🌱',
     category: BADGE_CATEGORIES.dataConsistency,
-    check: (data) => data.balances?.length >= 1,
+    check: (data) => countMonthsWithData(data) >= 1,
   },
   threeMonths: {
     id: 'threeMonths',
     icon: '📊',
     category: BADGE_CATEGORIES.dataConsistency,
-    check: (data) => data.balances?.length >= 3,
+    check: (data) => countMonthsWithData(data) >= 3,
   },
   sixMonths: {
     id: 'sixMonths',
     icon: '📈',
     category: BADGE_CATEGORIES.dataConsistency,
-    check: (data) => data.balances?.length >= 6,
+    check: (data) => countMonthsWithData(data) >= 6,
   },
   oneYear: {
     id: 'oneYear',
     icon: '🏆',
     category: BADGE_CATEGORIES.dataConsistency,
-    check: (data) => data.balances?.length >= 12,
+    check: (data) => countMonthsWithData(data) >= 12,
   },
   twoYears: {
     id: 'twoYears',
     icon: '🗓️',
     category: BADGE_CATEGORIES.dataConsistency,
-    check: (data) => data.balances?.length >= 24,
+    check: (data) => countMonthsWithData(data) >= 24,
   },
   dataStreak6: {
     id: 'dataStreak6',
@@ -104,6 +105,7 @@ const BADGE_DEFINITIONS = {
 
   // ─────────────────────────────────────────
   // SAVINGS (6 badges)
+  // Require income > 0 AND income > outflows (can't "save" with zero income)
   // ─────────────────────────────────────────
   firstSave: {
     id: 'firstSave',
@@ -112,7 +114,7 @@ const BADGE_DEFINITIONS = {
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
       const outflows = data.expenses?.outflowsArray || [];
-      return incomes.some((inc, i) => inc > (outflows[i] || 0));
+      return incomes.some((inc, i) => inc > 0 && inc > (outflows[i] || 0));
     },
   },
   savingsStreak3: {
@@ -142,7 +144,9 @@ const BADGE_DEFINITIONS = {
       const outflows = data.expenses?.outflowsArray || [];
       return incomes.some((inc, i) => {
         if (inc <= 0) return false;
-        const saved = inc - (outflows[i] || 0);
+        const spent = outflows[i] || 0;
+        if (spent <= 0) return false; // Must have actual outflows too
+        const saved = inc - spent;
         return saved / inc >= 0.3;
       });
     },
@@ -156,7 +160,9 @@ const BADGE_DEFINITIONS = {
       const outflows = data.expenses?.outflowsArray || [];
       return incomes.some((inc, i) => {
         if (inc <= 0) return false;
-        const saved = inc - (outflows[i] || 0);
+        const spent = outflows[i] || 0;
+        if (spent <= 0) return false; // Must have actual outflows too
+        const saved = inc - spent;
         return saved / inc >= 0.5;
       });
     },
@@ -290,7 +296,8 @@ const BADGE_DEFINITIONS = {
       if (data.balances?.length < 2) return false;
       const current = data.balances[0]?.balance?.totalValue || 0;
       const previous = data.balances[1]?.balance?.totalValue || 0;
-      return current > previous;
+      // Both months must have actual data (totalValue > 0)
+      return current > 0 && previous > 0 && current > previous;
     },
   },
   yearlyGrowth: {
@@ -301,7 +308,8 @@ const BADGE_DEFINITIONS = {
       if (data.balances?.length < 12) return false;
       const current = data.balances[0]?.balance?.totalValue || 0;
       const yearAgo = data.balances[11]?.balance?.totalValue || 0;
-      return yearAgo > 0 && current > yearAgo;
+      // Both must have actual data
+      return current > 0 && yearAgo > 0 && current > yearAgo;
     },
   },
 
@@ -315,7 +323,11 @@ const BADGE_DEFINITIONS = {
     check: (data) => {
       const limit = data.limits?.monthlySpendingLimit;
       const outflows = data.expenses?.outflowsArray?.[0];
-      return limit > 0 && outflows > 0 && outflows <= limit;
+      // Require outflows > 0 (actual data) and a real user-set limit
+      // Default fallback is 2000 — check that limit was explicitly set via goalsAndLimits
+      const hasUserSetLimit = data.limits?.monthlySpendingLimit && 
+                               data.limits?.monthlySpendingLimit !== 2000; // fallback default
+      return hasUserSetLimit && limit > 0 && outflows > 0 && outflows <= limit;
     },
   },
   frugalMonth: {
@@ -324,7 +336,8 @@ const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
       const outflows = data.expenses?.outflowsArray || [];
-      return outflows.length >= 2 && outflows[0] < outflows[1];
+      // Both months must have actual outflow data
+      return outflows.length >= 2 && outflows[0] > 0 && outflows[1] > 0 && outflows[0] < outflows[1];
     },
   },
   spendingDown: {
@@ -333,7 +346,10 @@ const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
       const outflows = data.expenses?.outflowsArray || [];
-      return outflows.length >= 3 && outflows[0] < outflows[1] && outflows[1] < outflows[2];
+      // All 3 months must have actual outflow data and be decreasing
+      return outflows.length >= 3 && 
+             outflows[0] > 0 && outflows[1] > 0 && outflows[2] > 0 &&
+             outflows[0] < outflows[1] && outflows[1] < outflows[2];
     },
   },
   categoryTracker: {
@@ -361,7 +377,8 @@ const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.income,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      return incomes.length >= 2 && incomes[0] > incomes[1] && incomes[1] > 0;
+      // Both months must have actual income data and current > previous
+      return incomes.length >= 2 && incomes[0] > 0 && incomes[1] > 0 && incomes[0] > incomes[1];
     },
   },
   steadyIncome: {
@@ -409,6 +426,8 @@ const BADGE_DEFINITIONS = {
     icon: '🏅',
     category: BADGE_CATEGORIES.community,
     check: (data) => {
+      // Must have actual balance data to qualify for rankings
+      if (getTotalFromBalance(data) <= 0) return false;
       const r = data.rankings || {};
       return Object.values(r).some(v => typeof v === 'number' && v >= 75);
     },
@@ -418,6 +437,8 @@ const BADGE_DEFINITIONS = {
     icon: '🌟',
     category: BADGE_CATEGORIES.community,
     check: (data) => {
+      // Must have actual balance data to qualify for rankings
+      if (getTotalFromBalance(data) <= 0) return false;
       const r = data.rankings || {};
       return Object.values(r).some(v => typeof v === 'number' && v >= 90);
     },
@@ -433,8 +454,12 @@ const BADGE_DEFINITIONS = {
     check: (data) => {
       const profile = data.profile;
       if (!profile) return false;
+      // Profile fields use key: -1 when not set, key >= 0 when set
       const requiredFields = ['nationality', 'job', 'jobType', 'age', 'livingSituation', 'housingType'];
-      return requiredFields.every(field => profile[field]?.value);
+      return requiredFields.every(field => {
+        const fieldData = profile[field];
+        return fieldData && fieldData.key !== undefined && fieldData.key !== -1;
+      });
     },
   },
 };
@@ -448,6 +473,22 @@ function getTotalFromBalance(data) {
   return data.balances?.[0]?.balance?.totalValue || 0;
 }
 
+// Count months that actually have balance data (totalValue > 0)
+// This is the correct way to count data entries — balances array always has 13 slots
+// filled by the backend, but empty months have totalValue = 0
+function countMonthsWithData(data) {
+  const balances = data.balances || [];
+  return balances.filter(b => {
+    const bal = b?.balance;
+    if (!bal) return false;
+    // A month has data if totalValue > 0, or if any individual balance field > 0
+    if (bal.totalValue > 0) return true;
+    // Fallback: check individual fields in case totalValue isn't computed
+    const fields = ['bank', 'cash', 'digitalServices', 'emergencyFund', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold'];
+    return fields.some(f => (bal[f] || 0) > 0);
+  }).length;
+}
+
 // Count active asset types with value > 0
 function countActiveAssetTypes(data) {
   const balance = data.balances?.[0]?.balance;
@@ -457,12 +498,14 @@ function countActiveAssetTypes(data) {
 }
 
 // Calculate consecutive months with positive savings (income > outflows)
+// Requires BOTH income > 0 AND income > outflows (can't "save" with zero income)
 function calculateSavingsStreak(data) {
   const incomes = data.incomes?.incomesArray || [];
   const outflows = data.expenses?.outflowsArray || [];
   let streak = 0;
   for (let i = 0; i < Math.min(incomes.length, outflows.length); i++) {
-    if (incomes[i] > outflows[i]) {
+    // Must have actual income data to count as a savings month
+    if (incomes[i] > 0 && incomes[i] > outflows[i]) {
       streak++;
     } else {
       break;
@@ -471,7 +514,9 @@ function calculateSavingsStreak(data) {
   return streak;
 }
 
-// Calculate data entry streak (consecutive months with balance data)
+// Calculate data entry streak (consecutive months with ACTUAL balance data)
+// The backend returns 13 months with dates regardless of whether user entered data,
+// so we must check that each month actually has balance values > 0
 function calculateDataStreak(data) {
   const balances = data.balances || [];
   if (balances.length === 0) return 0;
@@ -480,11 +525,25 @@ function calculateDataStreak(data) {
   const now = new Date();
   
   for (let i = 0; i < balances.length; i++) {
-    const balanceDate = new Date(balances[i].date);
+    const entry = balances[i];
+    const balanceDate = new Date(entry.date);
     const expectedMonth = new Date(now.getFullYear(), now.getMonth() - i, 1);
     
-    if (balanceDate.getFullYear() === expectedMonth.getFullYear() &&
-        balanceDate.getMonth() === expectedMonth.getMonth()) {
+    // Check date alignment
+    const dateMatches = balanceDate.getFullYear() === expectedMonth.getFullYear() &&
+                        balanceDate.getMonth() === expectedMonth.getMonth();
+    
+    if (!dateMatches) break;
+    
+    // Check that this month has actual data (not just an empty placeholder)
+    const bal = entry.balance;
+    if (!bal) break;
+    
+    const hasData = bal.totalValue > 0 || 
+      ['bank', 'cash', 'digitalServices', 'emergencyFund', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold']
+        .some(f => (bal[f] || 0) > 0);
+    
+    if (hasData) {
       streak++;
     } else {
       break;

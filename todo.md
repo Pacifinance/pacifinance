@@ -95,9 +95,9 @@
 - [ ] BuyMeACoffee widget: lo script inline imposta stili una sola volta al mount, il CSS `!important` è un workaround — verificare se il widget si posiziona correttamente su tutti i dispositivi
 - [ ] Verificare che i grafici con label `renderCustomizedLabel` non si sovrappongano con raggio ridotto su mobile
 - [x] ~~A volte all'avvio della dashboard, rimane nella pagina bianca del caricamento e non carica la dashboard~~ → Fix: aggiunto error recovery in `UserContext` (retry su errore API), `setIsLoading(false)` nel catch di `Dashboard.jsx`, e spinner + timeout + pulsante "Riprova" in `DashboardPage.jsx`
-- [ ] da mobile la notifica dell' achievements raggiunto finisce sotto i pulsanti della sidebar in basso, spostare la notifica più in alto e renderla più compatta da mobile
-- [ ] gli achievements sono buggati, vengono dati cmoe fatti anche per utenti che per esempio non hanno inserito dati negli ultimi mesi. Correggere e guardare nel dettaglio dai dati in userContext (non basta che ci siano, devono esserci i dati)
-- [ ] Dalle impostazioni non si può cambiare lingua, farlo funzionare
+- [x] ~~da mobile la notifica dell' achievements raggiunto finisce sotto i pulsanti della sidebar in basso, spostare la notifica più in alto e renderla più compatta da mobile~~ → Fix: Toast posizionato a `bottom: 80px` su mobile (sopra BottomNavBar), stile compatto con font ridotto, animazione slide-up
+- [x] ~~gli achievements sono buggati, vengono dati come fatti anche per utenti che per esempio non hanno inserito dati negli ultimi mesi~~ → Fix: tutti i 44 badge ora verificano i dati reali (`totalValue > 0`, `income > 0`, `outflows > 0`), non solo la presenza della struttura. `calculateDataStreak` e `calculateSavingsStreak` controllano valori effettivi. Nuova helper `countMonthsWithData`. Rankings richiedono patrimonio > 0. Budget check valida che il limite sia user-set (non fallback).
+- [x] ~~Dalle impostazioni non si può cambiare lingua, farlo funzionare (forse dipende dall'url localizzato)~~ → Fix: `handleLanguageToggle` usava `useLocalizedNavigate` che aggiungeva doppio prefisso lingua (`/en/en/settings`). Ora usa `useNavigate` raw di react-router-dom per la navigazione con path già prefissato.
 
 ### Mobile
 - [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)
@@ -186,7 +186,7 @@
 
 <!-- Scrivi le tue idee qui sotto, una per riga -->
 - ~~C'è un modo per capire se un utente fa effettivamente una donazione alla piattaforma?~~ ✅ **Analizzato** — vedi sotto
-- Potrei fare che gli achievements dei traguardi di net worth siano più variabilizzati sul bilancio dell'utente e gli scalini siano coerenti per far si che siano raggiungiblili e sproni veramente l'utente. (caso studio utente con 1000€, l'obbiettivo da 50k€ è too much)
+- Potrei fare che gli achievements dei traguardi di net worth siano più variabilizzati sul bilancio dell'utente e gli scalini siano coerenti per far si che siano raggiungiblili e sproni veramente l'utente. (caso studio utente con 1000€, l'obbiettivo da 50k€ è forse troppo alto)
 Se lo si variabilizza si potrebbero mettere dei lucchetti su quelli successivi come da sbloccare, che non possa vederle (da valutare)
 
 ### 📊 Analisi: Tracciamento Donazioni BuyMeACoffee → Achievement "Supporter"

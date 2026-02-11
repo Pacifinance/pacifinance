@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate as useRawNavigate } from "react-router-dom";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import axios from "axios";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -56,6 +56,7 @@ const SettingsPage = () => {
     const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
+    const rawNavigate = useRawNavigate();
     const location = useLocation();
 
     const [showChangeID, setShowChangeID] = useState(false);
@@ -109,10 +110,12 @@ const SettingsPage = () => {
         const newLanguage = language === 'it' ? 'en' : 'it';
         setLanguage(newLanguage);
         
-        // Update URL with new language
+        // Update URL with new language prefix
+        // Use rawNavigate (not useLocalizedNavigate) because the path already
+        // includes the language prefix — useLocalizedNavigate would double-prefix it
         const currentPath = removeLanguageFromPath(location.pathname);
         const newPath = addLanguageToPath(currentPath, newLanguage);
-        navigate(newPath, { replace: true });
+        rawNavigate(newPath, { replace: true });
     };
 
     const handleGenerateID = async (event) => {

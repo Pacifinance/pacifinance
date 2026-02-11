@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,6 +14,8 @@ const ToastNotification = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const mediaQuery = useContext(MediaQueryContext);
+  const isMobile = mediaQuery?.isMobileScreen ?? false;
 
   useEffect(() => {
     if (show) {
@@ -41,34 +44,53 @@ const ToastNotification = ({
   const bgColor = isSuccess ? '#4CAF50' : '#f44336';
   const Icon = isSuccess ? CheckCircleIcon : ErrorIcon;
 
+  // On mobile: position above BottomNavBar (60px + 16px gap), compact style
+  const mobileStyles = isMobile ? {
+    bottom: '80px',
+    right: '8px',
+    left: '8px',
+    maxWidth: 'none',
+    minWidth: 'auto',
+    padding: '10px 12px',
+    fontSize: '0.85rem',
+    borderRadius: '10px',
+  } : {
+    bottom: '16px',
+    right: '16px',
+    maxWidth: '400px',
+    minWidth: '300px',
+    padding: '16px',
+    borderRadius: '8px',
+  };
+
   return (
     <div
-      className={`fixed bottom-4 right-4 z-50 transform transition-all duration-300 ${
-        isExiting ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+      className={`fixed z-50 transform transition-all duration-300 ${
+        isExiting 
+          ? (isMobile ? 'translate-y-full opacity-0' : 'translate-x-full opacity-0') 
+          : (isMobile ? 'translate-y-0 opacity-100' : 'translate-x-0 opacity-100')
       }`}
       style={{
         backgroundColor: bgColor,
         color: 'white',
-        padding: '16px',
-        borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        maxWidth: '400px',
-        minWidth: '300px'
+        ...mobileStyles,
       }}
     >
-      <div className="flex items-start space-x-3">
-        <Icon className="flex-shrink-0 mt-0.5" />
-        <div className="flex-1">
+      <div className="flex items-center" style={{ gap: isMobile ? '8px' : '12px' }}>
+        <Icon className="flex-shrink-0" style={{ fontSize: isMobile ? '18px' : '24px' }} />
+        <div className="flex-1" style={{ minWidth: 0 }}>
           <div 
-            className="text-sm font-medium"
+            className="font-medium"
+            style={{ fontSize: isMobile ? '0.8rem' : '0.875rem', lineHeight: 1.3 }}
             dangerouslySetInnerHTML={{ __html: message }}
           />
         </div>
         <button
           onClick={handleClose}
-          className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors"
+          className="flex-shrink-0 p-1 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors"
         >
-          <CloseIcon fontSize="small" />
+          <CloseIcon style={{ fontSize: isMobile ? '16px' : '20px' }} />
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { 
     FaBrain, 
@@ -158,7 +159,7 @@ const ViewMoreButton = styled.button`
 `;
 
 // Funzione per generare insights basati sui dati utente
-const generateInsights = (userData, language, isHidden, translations) => {
+const generateInsights = (userData, language, isHidden, translations, currencySymbol) => {
   if (!userData || !userData.assets) return [];
   
   const insights = [];
@@ -181,7 +182,7 @@ const generateInsights = (userData, language, isHidden, translations) => {
       color: level === 'low' ? '#10b981' : level === 'moderate' ? '#f59e0b' : '#ef4444',
       title: translations.graphs.insights.spendingRate[level].replace('{percentage}', isHidden ? '****' : spendingRate.toFixed(1)),
       description: translations.graphs.insights.spendingRate.recommendation[level],
-      value: isHidden ? '****' : `€${totalExpenses.toLocaleString()}`
+      value: isHidden ? '****' : `${currencySymbol}${totalExpenses.toLocaleString()}`
     });
   }
 
@@ -200,7 +201,7 @@ const generateInsights = (userData, language, isHidden, translations) => {
       type: translations.graphs.insights.diversification.title,
       icon: FaChartLine,
       color: level === 'excellent' ? '#10b981' : level === 'good' ? '#f59e0b' : '#ef4444',
-      title: isHidden ? `Portfolio: ****` : `Portfolio: €${investmentTotal.toLocaleString()}`,
+      title: isHidden ? `Portfolio: ****` : `Portfolio: ${currencySymbol}${investmentTotal.toLocaleString()}`,
       description: translations.graphs.insights.diversification.recommendation[level],
       value: isHidden ? '****' : `${((investmentTotal / totalAssets) * 100).toFixed(1)}%`
     });
@@ -223,7 +224,7 @@ const generateInsights = (userData, language, isHidden, translations) => {
          : liquidityLevel === 'low' ? '#ef4444' : '#f59e0b',
     title: `${translations.graphs.insights.liquidity.title}: ${isHidden ? '****' : liquidityRatio.toFixed(1)}%`,
     description: translations.graphs.insights.liquidity.recommendation[liquidityLevel],
-    value: isHidden ? '****' : `€${liquidTotal.toLocaleString()}`
+    value: isHidden ? '****' : `${currencySymbol}${liquidTotal.toLocaleString()}`
   });
 
   return insights.slice(0, 4); // Mostra max 4 insights
@@ -231,13 +232,14 @@ const generateInsights = (userData, language, isHidden, translations) => {
 
 const FinancialInsights = ({ theme, userData, isHidden = false }) => {
   const { language, translations } = useContext(LanguageContext);
+  const { currencySymbol } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [insights, setInsights] = useState([]);
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (userData) {
-      const generatedInsights = generateInsights(userData, language, isHidden, translations);
+      const generatedInsights = generateInsights(userData, language, isHidden, translations, currencySymbol);
       setInsights(generatedInsights);
     }
   }, [userData, language, isHidden, translations]);

@@ -28,6 +28,7 @@ import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { BiTrendingUp, BiWallet } from 'react-icons/bi';
 
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { renderCustomizedLabel } from '../utils/customGraphsInfo';
 import { assetColors } from '../data/assetColors.js';
@@ -298,13 +299,10 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const traditionalAssetsShuffle = [...traditionalAssets].sort(() => Math.random() - 0.5);
     const investmentsShuffle = [...investments].sort(() => Math.random() - 0.5);
 
+    const { formatAmount: ctxFormatAmount } = React.useContext(CurrencyContext);
     const formatCurrency = (value) => {
         if (isHidden) return '****';
-        return new Intl.NumberFormat('it-IT', {
-            style: 'currency',
-            currency: 'EUR',
-            maximumFractionDigits: 0,
-        }).format(value);
+        return ctxFormatAmount(value, { maximumFractionDigits: 0 });
     };
 
     const formatPercentage = (value, total) => {

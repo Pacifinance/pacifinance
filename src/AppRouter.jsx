@@ -57,6 +57,7 @@ const SitemapPage = React.lazy(() => import("./pages/SitemapPage"));
 const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 const DisclaimerPage = React.lazy(() => import("./pages/DisclaimerPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
+const RoadmapPage = React.lazy(() => import("./pages/RoadmapPage"));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -217,6 +218,7 @@ const LanguageRoutes = () => {
       <Route path="/cookie-policy" element={<CookiePolicyPage />} />
       <Route path="/disclaimer" element={<DisclaimerPage />} />
       <Route path="/contact" element={<ContactPage />} />
+      <Route path="/roadmap" element={<RoadmapPage />} />
       <Route path="/sitemap" element={<SitemapPage />} />
 
       {/* Protected Routes */}

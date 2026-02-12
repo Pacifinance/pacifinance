@@ -19,6 +19,9 @@ export const mockUserData = {
     userType: 'premium',
     username: 'Developer User',
     
+    // Currency preference (null = EUR default, until backend supports it)
+    currency: null,
+    
     // User profile data (come UserContext)
     profile: {
         nationality: { key: 107, value: 'Italia' },

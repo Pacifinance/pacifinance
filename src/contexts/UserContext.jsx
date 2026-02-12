@@ -484,7 +484,10 @@ export const UserProvider = ({ children }) => {
               assets,
               
               // Stats averages for comparison page
-              averages
+              averages,
+              
+              // Currency preference (from DB, null until backend supports it)
+              currency: infoUser.data.currency || null
             });
             handleSetIsUpdated(true);
         }

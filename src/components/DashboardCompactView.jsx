@@ -8,6 +8,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { assetColors } from '../data/assetColors';
 import { BsArrowUpRight, BsArrowDownLeft, BsWallet2 } from 'react-icons/bs';

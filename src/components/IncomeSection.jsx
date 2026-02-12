@@ -3,6 +3,7 @@ import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import styled from 'styled-components';
 import {
@@ -316,6 +317,7 @@ export default function IncomeSection({
   setIncomeDateFilterEnd,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
+  const { currencySymbol, formatNumber } = React.useContext(CurrencyContext);
   
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
@@ -577,7 +579,7 @@ export default function IncomeSection({
             <td>
               {isHidden
                 ? '****'
-                : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}€
+                : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}{currencySymbol}
             </td>
             <td>{isHidden ? '****' : add.notes}</td>
             <td>
@@ -615,7 +617,7 @@ export default function IncomeSection({
           <td style={{ textAlign: 'center' }}>
             {isHidden
               ? '****'
-              : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}€
+              : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}{currencySymbol}
             {!isHidden && totals.totalAll > 0 && (
               <>
                 {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
@@ -632,7 +634,7 @@ export default function IncomeSection({
         <td style={{ textAlign: 'center' }}>
           {isHidden
             ? '****'
-            : totals.totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}€
+            : totals.totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}{currencySymbol}
         </td>
         <td colSpan={3}></td>
       </TotalRow>,
@@ -694,7 +696,7 @@ export default function IncomeSection({
         <FormField>
           <FieldLabel theme={theme}>{translations.general.value}</FieldLabel>
           <CurrencyInputWrap>
-            <CurrencySymbol theme={theme}>€</CurrencySymbol>
+            <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
             <CurrencyInput
               type="text"
               theme={theme}

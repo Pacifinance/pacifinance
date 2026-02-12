@@ -1,5 +1,6 @@
 import React from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Select, MenuItem } from '@mui/material';
 import styled from 'styled-components';
 import {
@@ -235,6 +236,8 @@ export default function BalanceSection({
   onUpdateBalance,
   translations,
 }) {
+  const { currencySymbol } = React.useContext(CurrencyContext);
+
   const handleBalanceDateChange = (event) => {
     const [month, year] = event.target.value.split('-').map(Number);
     setBalanceDate({ month, year });
@@ -302,7 +305,7 @@ export default function BalanceSection({
           {asset.label}
         </AssetLabel>
         <CurrencyInputWrapper>
-          <CurrencySymbol theme={theme}>€</CurrencySymbol>
+          <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
           <CurrencyInput
             type="text"
             theme={theme}

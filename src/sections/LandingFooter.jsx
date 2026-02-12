@@ -120,6 +120,27 @@ export default function LandingFooter({ theme }) {
                   {translations.footer.support.sitemap}
                 </LocalizedLink>
               </li>
+              <li>
+                <LocalizedLink 
+                  to="/roadmap" 
+                  className="hover:opacity-70 transition-opacity"
+                  style={{ color: theme.textColor }}
+                >
+                  {translations.footer.support.roadmap || (language === 'it' ? 'Roadmap' : 'Roadmap')}
+                </LocalizedLink>
+              </li>
+              <li>
+                <a 
+                  href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-70 transition-opacity"
+                  style={{ color: theme.textColor }}
+                  data-umami-event="footer-feedback-click"
+                >
+                  {translations.footer.support.feedback || (language === 'it' ? 'Feedback & Bug' : 'Feedback & Bugs')}
+                </a>
+              </li>
             </ul>
           </div>
 

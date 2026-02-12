@@ -2,6 +2,7 @@
 import React from 'react';
 import { Select, MenuItem, Typography } from '@mui/material';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import {
   MuiCustomDialog,
   MuiCustomButton,
@@ -53,6 +54,7 @@ export default function InsertModals({
   onConfirmDeleteOutflow,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
+  const { currencySymbol } = React.useContext(CurrencyContext);
 
   // Function to convert month/year selection to display date for popup
   const getDisplayDateForBalance = (monthYearObj) => {
@@ -88,38 +90,38 @@ export default function InsertModals({
           </MuiCustomDialogTitle>
           <MuiCustomDialogContent>
             <MuiCustomDialogContentText>
-              {translations.assets.bank}: {bankValue}€
+              {translations.assets.bank}: {bankValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.cash}: {cashValue}€
+              {translations.assets.cash}: {cashValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {translations.assets.digitalServices}:{' '}
-              {digitalServicesValue}€
+              {digitalServicesValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.emergencyFund}: {emergencyFundValue}€
+              {translations.assets.emergencyFund}: {emergencyFundValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.stocks}: {stocksValue}€
+              {translations.assets.stocks}: {stocksValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.etf}: {etfValue}€
+              {translations.assets.etf}: {etfValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.bitcoin}: {bitcoinValue}€
+              {translations.assets.bitcoin}: {bitcoinValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.crypto}: {cryptoValue}€
+              {translations.assets.crypto}: {cryptoValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.bonds}: {bondsValue}€
+              {translations.assets.bonds}: {bondsValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.funds}: {fundsValue}€
+              {translations.assets.funds}: {fundsValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.assets.gold}: {goldValue}€
+              {translations.assets.gold}: {goldValue} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {translations.general.selectedDate}: {getDisplayDateForBalance(balanceDate)}
@@ -156,7 +158,7 @@ export default function InsertModals({
               {translations.general.category}: {categoryIncome.value}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.general.value}: {income}€
+              {translations.general.value}: {income} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {translations.general.note}: {noteIncomeAreaValue}
@@ -216,7 +218,7 @@ export default function InsertModals({
               {typoOutflow.value}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
-              {translations.general.value}: {outflow}€
+              {translations.general.value}: {outflow} {currencySymbol}
             </MuiCustomDialogContentText>
             <MuiCustomDialogContentText>
               {translations.general.note}: {noteOutflowAreaValue}

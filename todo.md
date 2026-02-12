@@ -324,3 +324,215 @@ Browser (Push API) → subscribe → Backend (Node/cron) → web-push → Web Pu
 - **BottomNavBar height**: 66px + safe-area-inset-bottom
 - **Routing**: tutte le route hanno prefisso lingua (`/it/dashboard`, `/en/dashboard`)
 - **Server folder**: NON modificare — gestito separatamente
+---
+
+### 💱 Analisi: Supporto Multi-Valuta
+
+**Problema attuale:** Tutta la piattaforma è hardcoded su EUR/€. Simbolo `€` è scritto direttamente nei componenti (~30+ occorrenze), `Intl.NumberFormat` usa `currency: 'EUR'` e `locale: 'it-IT'` fissi.
+
+**File con `€` hardcodato:**
+- `IncomeSection.jsx` — simbolo nel form + importi tabella (4 occorrenze)
+- `OutflowSection.jsx` — simbolo nel form + importi tabella (4 occorrenze)
+- `BalanceSection.jsx` — simbolo nel form (1)
+- `InsertModals.jsx` — riepilogo conferma (8)
+- `GoalsAndLimits.jsx` — label e valori obiettivi (6)
+- `FinancialInsights.jsx` — insight cards (3)
+- `DataImportWizard.jsx` — preview import (3)
+- `Dashboard.jsx` — `formatCurrency()` con `currency: 'EUR'` (15+ usi via funzione)
+- `DashboardCompactView.jsx` — riceve `formatCurrency` come prop (7)
+- `InsertValues.jsx` — messaggi limite superato (3)
+
+**Approccio consigliato: EUR come valuta base nel DB, conversione a display-time**
+
+```
+User input (USD) → conversione → DB (EUR) → lettura → conversione → display (USD)
+```
+
+**Perché questo approccio:**
+1. ✅ **Zero migrazione DB** — tutti i dati esistenti restano validi (sono già in EUR)
+2. ✅ **Rankings e confronti anonimi funzionano** — tutti comparati in EUR
+3. ✅ **Semplicità** — un solo punto di conversione in/out
+4. ✅ **Coerenza** — il DB ha una sola unità di misura
+5. ⚠️ **Trade-off** — i tassi di cambio fluttuano, i valori storici convertiti non saranno esatti al centesimo
+
+**Architettura proposta:**
+
+| Componente | Dove | Cosa fa |
+|---|---|---|
+| `CurrencyContext` | `src/contexts/` | Stato globale: valuta utente, simbolo, tasso, `formatCurrency()`, `toEUR()`, `fromEUR()` |
+| `currencyConfig.js` | `src/data/` | Mappa valute supportate: `{ USD: { symbol: '$', locale: 'en-US', position: 'before' }, EUR: { symbol: '€', locale: 'it-IT', position: 'after' }, ... }` |
+| `useFormatCurrency` | `src/hooks/` | Hook che espone `format(amount)` nella valuta utente |
+| Exchange rate API | Backend o client | API gratuita (es. exchangerate-api.com, frankfurter.app) per tassi aggiornati |
+| Preferenza utente | Profilo/Settings | Dropdown valuta in SettingsPage, salvato nel profilo utente |
+
+**Piano di implementazione step-by-step:**
+
+#### Step 1: Centralizzare la formattazione (ZERO breaking changes)
+- [ ] Creare `src/data/currencyConfig.js` con mappa valute supportate
+- [ ] Creare `src/contexts/CurrencyContext.jsx` con:
+  - `currency` (codice ISO: 'EUR', 'USD', ...)
+  - `formatAmount(value)` — formatta con simbolo e locale corretti
+  - `currencySymbol` — il simbolo da mostrare nei form
+- [ ] Creare hook `useFormatCurrency()` per accesso rapido
+- [ ] Default a EUR — comportamento identico a oggi
+
+#### Step 2: Sostituire tutti gli hardcoded €
+- [ ] `Dashboard.jsx`: sostituire `formatCurrency()` locale con quella dal context
+- [ ] `IncomeSection.jsx`: sostituire `€` con `currencySymbol` dal context
+- [ ] `OutflowSection.jsx`: idem
+- [ ] `BalanceSection.jsx`: idem
+- [ ] `InsertModals.jsx`: idem
+- [ ] `GoalsAndLimits.jsx`: idem
+- [ ] `FinancialInsights.jsx`: idem
+- [ ] `DataImportWizard.jsx`: idem
+- [ ] `DashboardCompactView.jsx`: ricevere `formatAmount` dal context anziché prop
+- [ ] `InsertValues.jsx`: messaggi limite con valuta dinamica
+- [ ] Rimuovere tutti i `toLocaleString('it-IT', ...)` sparsi → usare `formatAmount()`
+
+#### Step 3: Conversione in/out dal DB
+- [ ] In `UserContext.jsx`: dopo aver ricevuto dati dal server, convertire `fromEUR(amount)` per il display
+- [ ] Prima di inviare dati al server (`onAddIncome`, `onAddOutflow`, `onUpdateBalance`): convertire `toEUR(amount)`
+- [ ] Aggiungere endpoint/API per tassi di cambio (o usare API gratuita client-side)
+- [ ] Cache del tasso di cambio (aggiornamento 1x/giorno è sufficiente)
+
+#### Step 4: UI per selezione valuta
+- [ ] Aggiungere dropdown valuta in SettingsPage
+- [ ] Salvare preferenza nel profilo utente (backend: campo `currency` nel documento utente)
+- [ ] Traduzioni IT/EN per le label
+
+#### Step 5: Raffinamenti
+- [ ] Gestire il caso "valuta cambiata" → ricalcolo di tutti i valori a display
+- [ ] Tooltip/nota che spiega "i valori sono convertiti dal tasso corrente"
+- [ ] MockAuthContext: aggiungere campo `currency: 'EUR'` per sviluppo locale
+
+**Valute prioritarie (fase 1):**
+- 🇪🇺 EUR (€) — default, già supportato
+- 🇺🇸 USD ($)
+- 🇬🇧 GBP (£)
+- 🇨🇭 CHF (CHF)
+
+**Stima lavoro:**
+- Step 1-2 (centralizzazione): ~1 giorno — nessun cambio funzionale, solo refactoring
+- Step 3 (conversione): ~1 giorno frontend + backend (nuovo campo + API tassi)
+- Step 4-5 (UI + polish): ~0.5 giorni
+- **Totale: ~2.5 giorni**
+
+**Rischi e mitigazioni:**
+- ⚠️ **Tassi fluttuanti**: il patrimonio in USD potrebbe variare anche senza azioni dell'utente → mostrare nota "valori convertiti al tasso del giorno"
+- ⚠️ **API rate limit**: le API gratuite hanno limiti (es. 1500 req/mese) → cache aggressiva (1 fetch/giorno, salva in localStorage + backend)
+- ⚠️ **Dati storici**: non è possibile sapere il tasso esatto del giorno in cui l'utente ha inserito il dato → accettabile per uso personale, non per contabilità certificata
+
+---
+
+### 🗺️ Analisi: Pagina Roadmap Pubblica
+
+**Obiettivo:** Mostrare agli utenti lo stato del progetto in modo trasparente — cosa è stato fatto, cosa è in corso, cosa è pianificato. Permettere alla community di vedere dove va il progetto e sentirsi parte di esso.
+
+**Formato proposto: Timeline/Kanban ibrido**
+
+```
+┌─────────────┬──────────────────┬────────────────────┐
+│ ✅ Completato│  🔨 In Corso     │  📋 Pianificato    │
+├─────────────┼──────────────────┼────────────────────┤
+│ Dashboard   │ Multi-valuta     │ Push notifications │
+│ Gamification│ Tabelle migliora │ Open Banking API   │
+│ CSV Import  │                  │ AI predictions     │
+│ i18n routing│                  │ Budget planner     │
+└─────────────┴──────────────────┴────────────────────┘
+```
+
+**Struttura dati roadmap:**
+```javascript
+const roadmapItems = [
+  {
+    id: 'multi-currency',
+    title: { it: 'Supporto Multi-Valuta', en: 'Multi-Currency Support' },
+    description: { it: '...', en: '...' },
+    status: 'in-progress', // 'completed' | 'in-progress' | 'planned' | 'idea'
+    category: 'feature', // 'feature' | 'ux' | 'performance' | 'security'
+    completedDate: null, // ISO date se completato
+    votes: 0, // per futuro sistema di voto
+  }
+];
+```
+
+**Implementazione:**
+
+| Componente | Dove | Descrizione |
+|---|---|---|
+| `RoadmapPage.jsx` | `src/pages/` | Pagina dedicata con route `/roadmap` |
+| `roadmapData.js` | `src/data/` | Array di items con titoli, descrizioni, stato |
+| `RoadmapCard.jsx` | `src/components/` | Card singola con badge stato, categoria, icona |
+| Route | `AppRouter.jsx` | Aggiungere `/roadmap` (accessibile anche senza login) |
+| Link | Landing page + Sidebar | Aggiungere link "Roadmap" visibile a tutti |
+
+**Funzionalità:**
+- [ ] Vista a 3 colonne (desktop) / lista con filtri (mobile)
+- [ ] Filtro per categoria (Funzionalità, UX, Performance, Sicurezza)
+- [ ] Filtro per stato (Completato, In Corso, Pianificato, Idea)
+- [ ] Badge colorati per stato
+- [ ] Accessibile senza login (pagina pubblica per attirare utenti)
+- [ ] Opzionale: sistema di voto (futuro, richiede backend)
+- [ ] Traduzioni IT/EN complete
+
+**Stima:** ~1 giorno (frontend only, dati statici in `roadmapData.js`)
+
+---
+
+### 📝 Analisi: Sistema Feedback & Bug Report
+
+**Obiettivo:** Permettere agli utenti di segnalare bug, proporre idee e suggerire miglioramenti direttamente dall'app. Essenziale per un progetto community-centrico basato sulle donazioni.
+
+**Approccio consigliato: Form in-app + GitHub Issues (fase 1)**
+
+Il modo più rapido e trasparente: un form nell'app che crea direttamente una Issue su GitHub. La community può poi commentare e votare su GitHub.
+
+**Flusso utente:**
+```
+Utente → clicca "Feedback" → sceglie tipo (🐛 Bug / 💡 Idea / 💬 Altro)
+→ compila form (titolo + descrizione) → invio
+→ Backend crea GitHub Issue con label appropriata
+→ Utente vede conferma + link alla Issue
+```
+
+**Implementazione:**
+
+| Componente | Dove | Descrizione |
+|---|---|---|
+| `FeedbackPage.jsx` | `src/pages/` | Pagina con form feedback |
+| `FeedbackForm.jsx` | `src/components/` | Form: tipo (select), titolo (input), descrizione (textarea), screenshot opzionale |
+| Route | `AppRouter.jsx` | `/feedback` (richiede login per evitare spam) |
+| Backend endpoint | `server/` | `POST /api/feedback` → crea GitHub Issue via GitHub API |
+| Link | Sidebar + BottomNavBar "Altro" | Aggiungere "Feedback" nel menu |
+
+**Categorie feedback:**
+- 🐛 **Bug** → label `bug` su GitHub
+- 💡 **Idea/Feature Request** → label `enhancement`
+- 💬 **Feedback generico** → label `feedback`
+- ❓ **Domanda** → label `question`
+
+**Campi del form:**
+- **Tipo** (select, obbligatorio): Bug / Idea / Feedback / Domanda
+- **Titolo** (input, obbligatorio, max 100 chars)
+- **Descrizione** (textarea, obbligatorio, max 1000 chars)
+- **Pagina correlata** (select, opzionale): Dashboard / Inserimento / Grafici / ...
+- **Priorità percepita** (opzionale): Bassa / Media / Alta
+- **Screenshot** (opzionale, upload immagine)
+
+**Privacy:**
+- ✅ Il feedback è anonimo su GitHub (il backend lo posta come bot, non espone l'utente)
+- ✅ Nessun dato personale incluso nella Issue
+- ✅ L'utente può opzionalmente aggiungere il suo username per follow-up
+
+**Alternativa senza backend (fase 0 — rapida):**
+- Bottone "Feedback" che apre direttamente `https://github.com/Pacifinance/Pacifinance/issues/new/choose`
+- Template di Issue precompilati su GitHub (bug report, feature request)
+- Zero sviluppo, attivabile subito
+- Svantaggio: l'utente deve avere un account GitHub
+
+**Piano fasi:**
+1. **Fase 0 (subito):** Link a GitHub Issues con template precompilati
+2. **Fase 1 (~1 giorno):** Form in-app → backend crea Issue su GitHub
+3. **Fase 2 (futuro):** Bacheca in-app con lista feedback + upvote + stato
+
+**Stima:** Fase 0: ~15 min | Fase 1: ~1 giorno (frontend + backend) | Fase 2: ~2 giorni

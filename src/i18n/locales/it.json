@@ -242,7 +242,9 @@
             "faq": "FAQ",
             "pricing": "Prezzi",
             "contact": "Contatti",
-            "sitemap": "Mappa del Sito"
+            "sitemap": "Mappa del Sito",
+            "roadmap": "Roadmap",
+            "feedback": "Feedback & Bug"
         },
         "community": {
             "title": "Comunità",
@@ -256,6 +258,22 @@
         },
         "madeWith": "Fatto con",
         "forPrivacy": "per la tua privacy"
+    },
+    "roadmap": {
+        "title": "Roadmap",
+        "subtitle": "Scopri dove sta andando PaciFinance. Ogni funzionalità nasce dal feedback della community.",
+        "completed": "Completato",
+        "inProgress": "In Corso",
+        "planned": "Pianificato",
+        "all": "Tutto",
+        "features": "Funzionalità",
+        "experience": "Esperienza",
+        "community": "Community",
+        "security": "Sicurezza",
+        "noItems": "Nessun elemento",
+        "feedbackTitle": "Hai un'idea o hai trovato un bug?",
+        "feedbackDescription": "PaciFinance è un progetto community-centrico. Il tuo feedback è fondamentale!",
+        "feedbackButton": "Invia Feedback"
     },
     "sidebar": {
         "dashboard": "Dashboard",
@@ -433,6 +451,8 @@
             "light": "Modalità chiara/scura",
             "privacy": "Modalità privacy",
             "language": "Cambia Lingua",
+            "currency": "Valuta",
+            "currencySubtitle": "Seleziona la valuta di visualizzazione",
             "deleteAccount": "Elimina account (!)",
             "saveSettings": "Salva impostazioni",
             "themeSection": "Tema e Aspetto",

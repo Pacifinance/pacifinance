@@ -5,6 +5,7 @@ import axios from "axios";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";
 import { LanguageContext } from "../contexts/LanguageContext";
+import { CurrencyContext } from "../contexts/CurrencyContext";
 import { UserContext } from "../contexts/UserContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { useAuth } from "../hooks/useAuth";
@@ -45,7 +46,8 @@ import {
     faKey,
     faUserShield,
     faExclamationTriangle,
-    faUpload
+    faUpload,
+    faCoins
 } from "@fortawesome/free-solid-svg-icons";
 
 const SettingsPage = () => {
@@ -53,6 +55,7 @@ const SettingsPage = () => {
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations, setLanguage } = useContext(LanguageContext);
+    const { currency, setCurrency, currencySymbol } = useContext(CurrencyContext);
     // Usa l'hook unificato che gestisce sia UserContext che MockAuth
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
@@ -530,6 +533,73 @@ const SettingsPage = () => {
                                         <FontAwesomeIcon icon={faGlobe} style={{ marginRight: "0.5rem" }} />
                                         {language === "it" ? "IT" : "EN"}
                                     </MyButton>
+                                </div>
+
+                                {/* Currency Selector */}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "1rem",
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        borderRadius: "12px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
+                                    }}
+                                >
+                                    <div>
+                                        <label style={{
+                                            fontWeight: "600",
+                                            color: theme.textColor,
+                                            fontSize: "1rem",
+                                            display: "block",
+                                            marginBottom: "0.25rem"
+                                        }}>
+                                            <FontAwesomeIcon icon={faCoins} style={{ marginRight: "0.5rem" }} />
+                                            {translations.sidebar.settings.currency}
+                                        </label>
+                                        <span style={{
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                            fontSize: "0.85rem"
+                                        }}>
+                                            {translations.sidebar.settings.currencySubtitle}
+                                        </span>
+                                    </div>
+                                    <select
+                                        value={currency}
+                                        onChange={(e) => setCurrency(e.target.value)}
+                                        style={{
+                                            padding: "0.6rem 1rem",
+                                            borderRadius: "10px",
+                                            fontWeight: "600",
+                                            fontSize: "0.9rem",
+                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}`,
+                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+                                            color: theme.textColor,
+                                            cursor: "pointer",
+                                            minWidth: "100px"
+                                        }}
+                                    >
+                                        <option value="EUR">🇪🇺 EUR (€)</option>
+                                        <option value="USD">🇺🇸 USD ($)</option>
+                                        <option value="GBP">🇬🇧 GBP (£)</option>
+                                        <option value="CHF">🇨🇭 CHF (CHF)</option>
+                                        <option value="JPY">🇯🇵 JPY (¥)</option>
+                                        <option value="CAD">🇨🇦 CAD (C$)</option>
+                                        <option value="AUD">🇦🇺 AUD (A$)</option>
+                                        <option value="SEK">🇸🇪 SEK (kr)</option>
+                                        <option value="NOK">🇳🇴 NOK (kr)</option>
+                                        <option value="DKK">🇩🇰 DKK (kr)</option>
+                                        <option value="PLN">🇵🇱 PLN (zł)</option>
+                                        <option value="CZK">🇨🇿 CZK (Kč)</option>
+                                        <option value="HUF">🇭🇺 HUF (Ft)</option>
+                                        <option value="RON">🇷🇴 RON (lei)</option>
+                                        <option value="BGN">🇧🇬 BGN (лв)</option>
+                                        <option value="BRL">🇧🇷 BRL (R$)</option>
+                                        <option value="INR">🇮🇳 INR (₹)</option>
+                                        <option value="CNY">🇨🇳 CNY (¥)</option>
+                                        <option value="TRY">🇹🇷 TRY (₺)</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

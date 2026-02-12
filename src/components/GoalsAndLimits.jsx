@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
@@ -18,8 +19,7 @@ import {
     FaEdit,
     FaTrash,
     FaPlus,
-    FaBell,
-    FaEuroSign
+    FaBell
 } from 'react-icons/fa';
 import { BsPercent, BsCalendar3 } from 'react-icons/bs';
 
@@ -318,6 +318,7 @@ const CancelButton = styled.button`
 
 const ProfileSettings = ({ theme }) => {
   const { language } = useContext(LanguageContext);
+  const { currencySymbol } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
@@ -492,9 +493,9 @@ const ProfileSettings = ({ theme }) => {
           </SectionHeader>
           
           <FormGroup theme={theme}>
-            <label>{language === 'it' ? 'Limite spesa mensile (€)' : 'Monthly spending limit (€)'}</label>
+            <label>{language === 'it' ? `Limite spesa mensile (${currencySymbol})` : `Monthly spending limit (${currencySymbol})`}</label>
             <InputWithIcon theme={theme}>
-              <FaEuroSign className="input-icon" />
+              <span className="input-icon">{currencySymbol}</span>
               <input
                 type="number"
                 value={settings.monthlySpendingLimit}
@@ -519,9 +520,9 @@ const ProfileSettings = ({ theme }) => {
           </FormGroup>
 
           <FormGroup theme={theme}>
-            <label>{language === 'it' ? 'Fondo emergenza target (€)' : 'Emergency fund target (€)'}</label>
+            <label>{language === 'it' ? `Fondo emergenza target (${currencySymbol})` : `Emergency fund target (${currencySymbol})`}</label>
             <InputWithIcon theme={theme}>
-              <FaEuroSign className="input-icon" />
+              <span className="input-icon">{currencySymbol}</span>
               <input
                 type="number"
                 value={settings.emergencyFundTarget}
@@ -576,9 +577,9 @@ const ProfileSettings = ({ theme }) => {
                   </div>
                 </div>
                 <div className="goal-progress">
-                  €{goal.current.toLocaleString()} / €{goal.target.toLocaleString()} ({progress.toFixed(1)}%)
+                  {currencySymbol}{goal.current.toLocaleString()} / {currencySymbol}{goal.target.toLocaleString()} ({progress.toFixed(1)}%)
                   <br />
-                  Scadenza: {new Date(goal.deadline).toLocaleDateString('it-IT')}
+                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {new Date(goal.deadline).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}
                 </div>
               </GoalItem>
             );
@@ -613,9 +614,9 @@ const ProfileSettings = ({ theme }) => {
             </FormGroup>
 
             <FormGroup theme={theme}>
-              <label>{language === 'it' ? 'Importo target (€)' : 'Target amount (€)'}</label>
+              <label>{language === 'it' ? `Importo target (${currencySymbol})` : `Target amount (${currencySymbol})`}</label>
               <InputWithIcon theme={theme}>
-                <FaEuroSign className="input-icon" />
+                <span className="input-icon">{currencySymbol}</span>
                 <input
                   type="number"
                   value={modalGoalData.target}
@@ -626,9 +627,9 @@ const ProfileSettings = ({ theme }) => {
             </FormGroup>
 
             <FormGroup theme={theme}>
-              <label>{language === 'it' ? 'Importo attuale (€)' : 'Current amount (€)'}</label>
+              <label>{language === 'it' ? `Importo attuale (${currencySymbol})` : `Current amount (${currencySymbol})`}</label>
               <InputWithIcon theme={theme}>
-                <FaEuroSign className="input-icon" />
+                <span className="input-icon">{currencySymbol}</span>
                 <input
                   type="number"
                   value={modalGoalData.current}

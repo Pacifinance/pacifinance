@@ -15,6 +15,7 @@ if ('serviceWorker' in navigator) {
 }
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PageProvider } from './contexts/PageContext';
 import { PrivacyProvider } from './contexts/PrivacyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')).render(
         <ThemeProvider>
           <DevModeProvider>
             <UserProvider>
+              <CurrencyProvider>
               <PageProvider>
                 <PrivacyProvider>
                   <ToastProvider>
@@ -39,6 +41,7 @@ createRoot(document.getElementById('root')).render(
                   </ToastProvider>
                 </PrivacyProvider>
               </PageProvider>
+              </CurrencyProvider>
             </UserProvider>
           </DevModeProvider>
         </ThemeProvider>

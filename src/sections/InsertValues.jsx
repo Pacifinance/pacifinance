@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { LanguageContext } from "../contexts/LanguageContext";
+import { CurrencyContext } from "../contexts/CurrencyContext";
 import { useToast } from "../contexts/ToastContext";
 import BalanceSection from "../components/BalanceSection";
 import IncomeSection from "../components/IncomeSection";
@@ -340,6 +341,7 @@ export default function InsertValue({
   initialSection,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
+  const { currencySymbol } = React.useContext(CurrencyContext);
   const { showSuccess, showError } = useToast();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
@@ -795,8 +797,8 @@ export default function InsertValue({
           if (newTotal > userData.limits.monthlySpendingLimit) {
             const exceeding = newTotal - userData.limits.monthlySpendingLimit;
             const warningMessage = language === 'it' 
-              ? `⚠️ Limite mensile superato! Hai raggiunto €${newTotal.toFixed(2)}, superando il tuo limite di €${userData.limits.monthlySpendingLimit} di €${exceeding.toFixed(2)}.`
-              : `⚠️ Monthly limit exceeded! You've reached €${newTotal.toFixed(2)}, exceeding your limit of €${userData.limits.monthlySpendingLimit} by €${exceeding.toFixed(2)}.`;
+              ? `⚠️ Limite mensile superato! Hai raggiunto ${currencySymbol}${newTotal.toFixed(2)}, superando il tuo limite di ${currencySymbol}${userData.limits.monthlySpendingLimit} di ${currencySymbol}${exceeding.toFixed(2)}.`
+              : `⚠️ Monthly limit exceeded! You've reached ${currencySymbol}${newTotal.toFixed(2)}, exceeding your limit of ${currencySymbol}${userData.limits.monthlySpendingLimit} by ${currencySymbol}${exceeding.toFixed(2)}.`;
             
             // Delay per far scomparire prima la notifica di successo
             setTimeout(() => {

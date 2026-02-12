@@ -12,6 +12,7 @@ import React, { useState, useContext, useCallback, useRef, useMemo } from 'react
 import styled from 'styled-components';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useAuth } from '../hooks/useAuth';
 import axios from 'axios';
@@ -260,6 +261,7 @@ const NumberInput = styled.input.attrs({ type: 'number' })`
 const DataImportWizard = ({ onClose, onImportComplete }) => {
   const { theme } = useContext(ThemeContext);
   const { translations } = useContext(LanguageContext);
+  const { currencySymbol } = useContext(CurrencyContext);
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
   const { handleSetIsUpdated } = useAuth();
@@ -948,13 +950,13 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </div>
                 <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(220,53,69,0.08)', textAlign: 'center' }}>
                   <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#dc3545' }}>
-                    {liveSummary.outflowCount} (€{liveSummary.outflowTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
+                    {liveSummary.outflowCount} ({currencySymbol}{liveSummary.outflowTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
                   </div>
                   <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.outflows || 'Outflows'}</div>
                 </div>
                 <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(39,174,96,0.08)', textAlign: 'center' }}>
                   <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#27ae60' }}>
-                    {liveSummary.incomeCount} (€{liveSummary.incomeTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
+                    {liveSummary.incomeCount} ({currencySymbol}{liveSummary.incomeTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
                   </div>
                   <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.incomes || 'Incomes'}</div>
                 </div>
@@ -1105,7 +1107,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                         </td>
                         <td>{tx.date}</td>
                         <td style={{ color: tx.isOutflow ? '#dc3545' : '#27ae60', fontWeight: 600 }}>
-                          {tx.isOutflow ? '-' : '+'}€{tx.amount.toFixed(2)}
+                          {tx.isOutflow ? '-' : '+'}{currencySymbol}{tx.amount.toFixed(2)}
                         </td>
                         <td>
                           <Badge $variant={tx.isOutflow ? 'error' : 'success'}>

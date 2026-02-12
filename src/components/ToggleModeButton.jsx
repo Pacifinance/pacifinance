@@ -6,7 +6,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 const ToggleModeButton = ({ mode, toggleMode }) => {
 
   return (
-    <ButtonToggle mode={mode} data-umami-event="setTheme" onClick={toggleMode} >
+    <ButtonToggle mode={mode} data-umami-event="setTheme" onClick={toggleMode} aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
       {mode === 'dark' ? <Brightness4Icon/> : <LightModeIcon /> }
     </ButtonToggle>
   );
@@ -23,7 +23,6 @@ const ButtonToggle = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
-  aria-label="toggle mode";
 
   svg {
     font-size: 3em; 

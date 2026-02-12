@@ -12,7 +12,8 @@ import {
   Paid as PaidIcon,
   Star as StarIcon
 } from "@mui/icons-material";
-import LandingPageImage from "../assets/LandingPage/PacifinanceArt2NoBg.webp";
+// Hero image served from public/ for preload discoverability in index.html
+const LandingPageImage = "/PacifinanceArt2NoBg.webp";
 import Logo from "../assets/Brand/PacifinanceLogoPNG3NoBg.webp";
 
 // Lazy loading dei componenti non critici per il First Contentful Paint
@@ -166,6 +167,8 @@ export default function NewLandingContent({ theme }) {
                 src={LandingPageImage}
                 alt="PaciFinance Dashboard Preview"
                 className="max-w-full h-auto rounded-2xl shadow-2xl"
+                width={600}
+                height={400}
                 style={{ maxHeight: "600px" }}
                 loading="eager"
                 fetchPriority="high"

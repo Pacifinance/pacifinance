@@ -1,8 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Inter font loaded via <link> in index.html for non-blocking rendering */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Font fallback with size-adjust to reduce CLS during font swap */
+@font-face {
+  font-family: 'Inter-fallback';
+  src: local('Segoe UI'), local('system-ui'), local('Arial');
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
 
 
 *{
@@ -11,7 +21,7 @@
   box-sizing: border-box;
 }
 body *{
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
+  font-family: 'Inter', 'Inter-fallback', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   font-feature-settings: 'liga' 1, 'calt' 1;

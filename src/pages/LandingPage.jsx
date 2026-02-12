@@ -42,10 +42,7 @@ export default function NewLandingPage() {
   return (
     <>
       {/* Performance Resource Hints */}
-      <link rel="preload" href="/src/assets/LandingPage/PacifinanceArt2NoBg.webp" as="image" />
-      <link rel="preload" href="/src/assets/Brand/PacifinanceLogoPNG3NoBg.webp" as="image" />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      {/* LCP image preload is in index.html for initial document discoverability */}
       <link rel="dns-prefetch" href="https://api.pacifinance.com" />
       
       {/* Canonical URL - Unico URL per tutte le lingue */}

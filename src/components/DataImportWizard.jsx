@@ -2,13 +2,13 @@
  * DataImportWizard — Multi-step CSV/Excel import component
  * 
  * Steps:
- * 1. Upload: user selects a CSV/Excel file
- * 2. Mapping: user maps columns to PaciFinance fields (date, amount, category, notes)
- * 3. Review: preview parsed data, see errors, confirm
+ * 1. Upload: user selects a CSV/Excel file + privacy disclaimer
+ * 2. Mapping: user maps columns, selects header row
+ * 3. Review: preview parsed data, date range filter, per-row category, select/deselect
  * 4. Import: send data to API, show progress
  */
 
-import React, { useState, useContext, useCallback, useRef } from 'react';
+import React, { useState, useContext, useCallback, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -27,6 +27,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import WarningIcon from '@mui/icons-material/Warning';
 import CloseIcon from '@mui/icons-material/Close';
+import LockIcon from '@mui/icons-material/Lock';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 import {
   parseFile,
@@ -143,6 +145,36 @@ const SelectField = styled.select`
   background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
   color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
   font-size: 0.9rem;
+
+  option {
+    background-color: ${p => p.theme.mode === 'dark' ? '#2d2d2d' : '#ffffff'};
+    color: ${p => p.theme.mode === 'dark' ? '#ffffff' : '#000000'};
+  }
+`;
+
+const CompactSelect = styled.select`
+  padding: 0.3rem 0.5rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'};
+  border-radius: 6px;
+  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
+  color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
+  font-size: 0.78rem;
+  max-width: 160px;
+
+  option {
+    background-color: ${p => p.theme.mode === 'dark' ? '#2d2d2d' : '#ffffff'};
+    color: ${p => p.theme.mode === 'dark' ? '#ffffff' : '#000000'};
+  }
+`;
+
+const DateInput = styled.input.attrs({ type: 'date' })`
+  padding: 0.4rem 0.6rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'};
+  border-radius: 8px;
+  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
+  color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
+  font-size: 0.85rem;
+  color-scheme: ${p => p.theme.mode === 'dark' ? 'dark' : 'light'};
 `;
 
 const Btn = styled.button`
@@ -175,12 +207,6 @@ const SecondaryBtn = styled(Btn)`
   &:hover:not(:disabled) { background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}; }
 `;
 
-const DangerBtn = styled(Btn)`
-  background-color: #dc3545;
-  color: white;
-  &:hover:not(:disabled) { background-color: #c82333; }
-`;
-
 const Badge = styled.span`
   display: inline-flex;
   align-items: center;
@@ -208,6 +234,25 @@ const ProgressBar = styled.div`
   }
 `;
 
+const StyledCheckbox = styled.input.attrs({ type: 'checkbox' })`
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #079164;
+  flex-shrink: 0;
+`;
+
+const NumberInput = styled.input.attrs({ type: 'number' })`
+  width: 80px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'};
+  border-radius: 8px;
+  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
+  color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
+  font-size: 0.9rem;
+  text-align: center;
+`;
+
 // ═══════════════════════════════════════════
 // Main Component
 // ═══════════════════════════════════════════
@@ -224,6 +269,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // State
   const [step, setStep] = useState(0); // 0=upload, 1=mapping, 2=review, 3=importing
   const [file, setFile] = useState(null);
+  const [allRawRows, setAllRawRows] = useState([]); // ALL rows from file including all raw data
+  const [headerRowIndex, setHeaderRowIndex] = useState(0); // 0-based index in allRawRows of the header row
   const [headers, setHeaders] = useState([]);
   const [rows, setRows] = useState([]);
   const [dragging, setDragging] = useState(false);
@@ -245,6 +292,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [errorTx, setErrorTx] = useState([]);
   const [summary, setSummary] = useState(null);
   const [showErrors, setShowErrors] = useState(false);
+  const [selectedRows, setSelectedRows] = useState(new Set()); // Set of rowIndex values
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [rowCategories, setRowCategories] = useState({}); // { rowIndex: categoryIndex }
+  const [showAllRows, setShowAllRows] = useState(false); // toggle to show all rows in preview
 
   // Import state
   const [importing, setImporting] = useState(false);
@@ -253,6 +305,38 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
 
   const fileInputRef = useRef(null);
 
+  // ─── Derived data ───
+
+  // Apply date range filter and selection to validTx
+  const filteredTx = useMemo(() => {
+    let txList = validTx;
+    if (dateFrom) {
+      txList = txList.filter(tx => tx.date >= dateFrom);
+    }
+    if (dateTo) {
+      txList = txList.filter(tx => tx.date <= dateTo);
+    }
+    return txList;
+  }, [validTx, dateFrom, dateTo]);
+
+  // Transactions that will be imported (selected + filtered)
+  const importableTx = useMemo(() => {
+    return filteredTx.filter(tx => selectedRows.has(tx.rowIndex));
+  }, [filteredTx, selectedRows]);
+
+  // Live summary based on importable transactions (with category overrides)
+  const liveSummary = useMemo(() => {
+    if (importableTx.length === 0) return null;
+    const txWithOverrides = importableTx.map(tx => {
+      if (rowCategories[tx.rowIndex] !== undefined) {
+        const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === rowCategories[tx.rowIndex]);
+        return { ...tx, categoryIndex: rowCategories[tx.rowIndex], categoryLabel: cat?.translationKey || 'Other' };
+      }
+      return tx;
+    });
+    return summarizeImport(txWithOverrides);
+  }, [importableTx, rowCategories]);
+
   // ─── Step 0: Upload ───
 
   const handleFileSelect = useCallback(async (selectedFile) => {
@@ -260,8 +344,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     if (!selectedFile) return;
 
     try {
-      const { headers: h, rows: r } = await parseFile(selectedFile);
+      const result = await parseFile(selectedFile);
+      const rawRows = result.allRows || [result.headers, ...result.rows];
       setFile(selectedFile);
+      setAllRawRows(rawRows);
+
+      // Default: first row is the header
+      const hIdx = 0;
+      setHeaderRowIndex(hIdx);
+      const h = rawRows[hIdx] || [];
+      const r = rawRows.slice(hIdx + 1);
       setHeaders(h);
       setRows(r);
 
@@ -297,6 +389,32 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile) handleFileSelect(droppedFile);
   }, [handleFileSelect]);
+
+  // ─── Header Row Change ───
+
+  const handleHeaderRowChange = useCallback((newIdx) => {
+    const idx = Math.max(0, Math.min(newIdx, allRawRows.length - 2));
+    setHeaderRowIndex(idx);
+    const h = allRawRows[idx] || [];
+    const r = allRawRows.slice(idx + 1);
+    setHeaders(h);
+    setRows(r);
+
+    // Re-run auto-detection
+    const detected = autoDetectColumns(h, r);
+    setDateCol(detected.dateCol !== null ? detected.dateCol : -1);
+    setAmountCol(detected.amountCol !== null ? detected.amountCol : -1);
+    setCategoryCol(detected.categoryCol !== null ? detected.categoryCol : -1);
+    setNotesCol(detected.notesCol !== null ? detected.notesCol : -1);
+
+    if (detected.dateCol !== null) {
+      const samples = r.slice(0, 10).map(row => row[detected.dateCol]);
+      const fmt = detectDateFormat(samples);
+      setDateFormat(fmt || '');
+    } else {
+      setDateFormat('');
+    }
+  }, [allRawRows]);
 
   // ─── Step 1: Mapping ───
 
@@ -341,7 +459,56 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setValidTx(valid);
     setErrorTx(errors);
     setSummary(summarizeImport(valid));
+    // Initialize all valid rows as selected
+    setSelectedRows(new Set(valid.map(tx => tx.rowIndex)));
+    // Reset filters and overrides
+    setDateFrom('');
+    setDateTo('');
+    setRowCategories({});
+    setShowAllRows(false);
     setStep(2);
+  };
+
+  // ─── Step 2: Review helpers ───
+
+  const toggleRow = (rowIndex) => {
+    setSelectedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(rowIndex)) {
+        next.delete(rowIndex);
+      } else {
+        next.add(rowIndex);
+      }
+      return next;
+    });
+  };
+
+  const selectAllFiltered = () => {
+    setSelectedRows(prev => {
+      const next = new Set(prev);
+      filteredTx.forEach(tx => next.add(tx.rowIndex));
+      return next;
+    });
+  };
+
+  const deselectAllFiltered = () => {
+    setSelectedRows(prev => {
+      const next = new Set(prev);
+      filteredTx.forEach(tx => next.delete(tx.rowIndex));
+      return next;
+    });
+  };
+
+  const handleRowCategoryChange = (rowIndex, newCategoryIndex) => {
+    setRowCategories(prev => ({ ...prev, [rowIndex]: newCategoryIndex }));
+  };
+
+  const getEffectiveCategory = (tx) => {
+    if (rowCategories[tx.rowIndex] !== undefined) {
+      const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === rowCategories[tx.rowIndex]);
+      return { index: rowCategories[tx.rowIndex], label: cat?.translationKey || 'Other' };
+    }
+    return { index: tx.categoryIndex, label: tx.categoryLabel };
   };
 
   // ─── Step 3: Import ───
@@ -351,13 +518,22 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setImporting(true);
     setImportProgress(0);
 
+    // Build final list with category overrides
+    const finalTx = importableTx.map(tx => {
+      if (rowCategories[tx.rowIndex] !== undefined) {
+        const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === rowCategories[tx.rowIndex]);
+        return { ...tx, categoryIndex: rowCategories[tx.rowIndex], categoryLabel: cat?.translationKey || 'Other' };
+      }
+      return tx;
+    });
+
     let success = 0;
     let failed = 0;
-    const total = validTx.length;
-    const BATCH_SIZE = 5; // Send N at a time to avoid overwhelming server
+    const total = finalTx.length;
+    const BATCH_SIZE = 5;
 
     for (let i = 0; i < total; i += BATCH_SIZE) {
-      const batch = validTx.slice(i, i + BATCH_SIZE);
+      const batch = finalTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
         axios.post('/expenses/add', toAPIFormat(tx), { withCredentials: true })
           .then(() => { success++; })
@@ -370,7 +546,6 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setImporting(false);
     setImportResult({ success, failed, total });
 
-    // Force data refresh
     if (success > 0) {
       handleSetIsUpdated(false);
     }
@@ -384,6 +559,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     { icon: <PreviewIcon style={{ fontSize: 18 }} />, label: t.stepReview || 'Review' },
     { icon: <CheckCircleIcon style={{ fontSize: 18 }} />, label: t.stepImport || 'Import' },
   ];
+
+  const selectedFilteredCount = filteredTx.filter(tx => selectedRows.has(tx.rowIndex)).length;
+  const PREVIEW_LIMIT = 50;
 
   return (
     <WizardContainer>
@@ -401,46 +579,72 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
 
       {/* ════ STEP 0: Upload ════ */}
       {step === 0 && (
-        <Card theme={theme}>
-          <h3 style={{ color: theme.textColor, marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 600 }}>
-            {t.uploadTitle || '📂 Select your file'}
-          </h3>
-          <p style={{ color: theme.textColor, opacity: 0.7, marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
-            {t.uploadDescription || 'Upload a CSV or Excel file with your financial data. We support any format — you\'ll map the columns in the next step.'}
-          </p>
-
-          <DropZone
-            theme={theme}
-            $dragging={dragging}
-            onClick={() => fileInputRef.current?.click()}
-            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={onDrop}
-          >
-            <CloudUploadIcon style={{ fontSize: 48, color: '#079164', marginBottom: '1rem' }} />
-            <p style={{ color: theme.textColor, fontSize: '1rem', fontWeight: 500, marginBottom: '0.5rem' }}>
-              {t.dropzoneTitle || 'Drag & drop your file here'}
-            </p>
-            <p style={{ color: theme.textColor, opacity: 0.5, fontSize: '0.85rem' }}>
-              {t.dropzoneSubtitle || 'or click to browse — CSV, Excel (.xlsx)'}
-            </p>
-          </DropZone>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={ACCEPTED_EXTENSIONS}
-            style={{ display: 'none' }}
-            onChange={(e) => handleFileSelect(e.target.files[0])}
-          />
-
-          {parseError && (
-            <div style={{ marginTop: '1rem', padding: '0.8rem', borderRadius: 8, backgroundColor: 'rgba(220,53,69,0.1)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <ErrorIcon style={{ color: '#dc3545', fontSize: 20 }} />
-              <span style={{ color: '#dc3545', fontSize: '0.9rem' }}>{parseError}</span>
+        <>
+          {/* Privacy Disclaimer */}
+          <Card theme={theme} style={{ borderLeft: '4px solid #ffc107' }}>
+            <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'flex-start' }}>
+              <LockIcon style={{ color: '#ffc107', fontSize: 24, marginTop: 2, flexShrink: 0 }} />
+              <div>
+                <p style={{ color: theme.textColor, fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.95rem' }}>
+                  {t.privacyTitle || '🔒 Your privacy matters'}
+                </p>
+                <p style={{ color: theme.textColor, opacity: 0.8, fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+                  {t.privacyDescription || 'For your safety, we recommend removing any personal information (name, IBAN, address, account number, etc.) from your file before uploading.'}
+                </p>
+                <p style={{ color: theme.textColor, opacity: 0.8, fontSize: '0.85rem', lineHeight: 1.6 }}>
+                  {t.privacyReassurance || 'In any case, only the columns you explicitly select (date, amount, category, notes) will be imported — no other data from your file is sent to our servers.'}
+                </p>
+              </div>
             </div>
-          )}
-        </Card>
+          </Card>
+
+          <Card theme={theme}>
+            <h3 style={{ color: theme.textColor, marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 600 }}>
+              {t.uploadTitle || '📂 Select your file'}
+            </h3>
+            <p style={{ color: theme.textColor, opacity: 0.7, marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
+              {t.uploadDescription || 'Upload a CSV or Excel file with your financial data. We support any format — you\'ll map the columns in the next step.'}
+            </p>
+
+            <DropZone
+              theme={theme}
+              $dragging={dragging}
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDrop}
+            >
+              <CloudUploadIcon style={{ fontSize: 48, color: '#079164', marginBottom: '1rem' }} />
+              <p style={{ color: theme.textColor, fontSize: '1rem', fontWeight: 500, marginBottom: '0.5rem' }}>
+                {t.dropzoneTitle || 'Drag & drop your file here'}
+              </p>
+              <p style={{ color: theme.textColor, opacity: 0.5, fontSize: '0.85rem' }}>
+                {t.dropzoneSubtitle || 'or click to browse — CSV, Excel (.xlsx)'}
+              </p>
+            </DropZone>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPTED_EXTENSIONS}
+              style={{ display: 'none' }}
+              onChange={(e) => handleFileSelect(e.target.files[0])}
+            />
+
+            {parseError && (
+              <div style={{ marginTop: '1rem', padding: '0.8rem', borderRadius: 8, backgroundColor: 'rgba(220,53,69,0.1)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ErrorIcon style={{ color: '#dc3545', fontSize: 20 }} />
+                <span style={{ color: '#dc3545', fontSize: '0.9rem' }}>{parseError}</span>
+              </div>
+            )}
+          </Card>
+
+          <Card theme={theme} $compact>
+            <p style={{ color: theme.textColor, opacity: 0.6, fontSize: '0.8rem', lineHeight: 1.5, textAlign: 'center' }}>
+              {t.privacyFooter || 'If your file contains personal data in the first rows (name, IBAN, etc.), don\'t worry — in the next step you can select which row the actual data table starts from.'}
+            </p>
+          </Card>
+        </>
       )}
 
       {/* ════ STEP 1: Column Mapping ════ */}
@@ -452,11 +656,33 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 {t.mappingTitle || '🗺️ Map your columns'}
               </h3>
               <Badge $variant="success">
-                {file?.name} — {rows.length} {t.rows || 'rows'}
+                {file?.name} — {allRawRows.length} {t.rows || 'rows'}
               </Badge>
             </div>
 
-            {/* Preview of first 5 rows */}
+            {/* Header Row Selector */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem',
+              padding: '0.8rem', borderRadius: 8,
+              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+              flexWrap: 'wrap'
+            }}>
+              <span style={{ color: theme.textColor, fontSize: '0.9rem', fontWeight: 500 }}>
+                📌 {t.headerRowLabel || 'Header row (column names):'}
+              </span>
+              <NumberInput
+                theme={theme}
+                min={1}
+                max={allRawRows.length - 1}
+                value={headerRowIndex + 1}
+                onChange={e => handleHeaderRowChange(parseInt(e.target.value) - 1 || 0)}
+              />
+              <span style={{ color: theme.textColor, opacity: 0.6, fontSize: '0.8rem' }}>
+                {t.headerRowHint || '(rows above will be skipped)'}
+              </span>
+            </div>
+
+            {/* Preview of raw rows around header */}
             <p style={{ color: theme.textColor, opacity: 0.7, fontSize: '0.85rem', marginBottom: '0.8rem' }}>
               {t.mappingPreview || 'Preview of your data (first 5 rows):'}
             </p>
@@ -464,15 +690,37 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               <table>
                 <thead>
                   <tr>
+                    <th style={{ width: 40, textAlign: 'center' }}>#</th>
                     {headers.map((h, i) => (
                       <th key={i}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Show a few rows before header if header > 0, marked as "skipped" */}
+                  {headerRowIndex > 0 && allRawRows.slice(Math.max(0, headerRowIndex - 2), headerRowIndex).map((row, ri) => {
+                    const actualRow = Math.max(0, headerRowIndex - 2) + ri;
+                    return (
+                      <tr key={`skip-${actualRow}`} style={{ opacity: 0.4, fontStyle: 'italic' }}>
+                        <td style={{ textAlign: 'center', fontSize: '0.75rem' }}>{actualRow + 1}</td>
+                        {row.slice(0, headers.length).map((cell, ci) => (
+                          <td key={ci}>{cell}</td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                  {/* Header row highlighted */}
+                  <tr style={{ backgroundColor: theme.mode === 'dark' ? 'rgba(7,145,100,0.15)' : 'rgba(7,145,100,0.08)' }}>
+                    <td style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#079164' }}>{headerRowIndex + 1}</td>
+                    {headers.map((h, i) => (
+                      <td key={i} style={{ fontWeight: 700, color: '#079164' }}>{h}</td>
+                    ))}
+                  </tr>
+                  {/* Data rows */}
                   {rows.slice(0, 5).map((row, ri) => (
                     <tr key={ri}>
-                      {row.map((cell, ci) => (
+                      <td style={{ textAlign: 'center', fontSize: '0.75rem', opacity: 0.5 }}>{headerRowIndex + 2 + ri}</td>
+                      {row.slice(0, headers.length).map((cell, ci) => (
                         <td key={ci}>{cell}</td>
                       ))}
                     </tr>
@@ -631,30 +879,32 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               {t.reviewTitle || '📋 Review before importing'}
             </h3>
 
-            {/* Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '0.8rem', marginBottom: '1.5rem' }}>
-              <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(7,145,100,0.08)', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#079164' }}>{summary.totalTransactions}</div>
-                <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.totalTransactions || 'Total transactions'}</div>
-              </div>
-              <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(220,53,69,0.08)', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#dc3545' }}>
-                  {summary.outflowCount} (€{summary.outflowTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
+            {/* Summary Cards — based on live selection */}
+            {liveSummary && (
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(7,145,100,0.08)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#079164' }}>{liveSummary.totalTransactions}</div>
+                  <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.totalTransactions || 'Total transactions'}</div>
                 </div>
-                <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.outflows || 'Outflows'}</div>
-              </div>
-              <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(39,174,96,0.08)', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#27ae60' }}>
-                  {summary.incomeCount} (€{summary.incomeTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
+                <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(220,53,69,0.08)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#dc3545' }}>
+                    {liveSummary.outflowCount} (€{liveSummary.outflowTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.outflows || 'Outflows'}</div>
                 </div>
-                <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.incomes || 'Incomes'}</div>
+                <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(39,174,96,0.08)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#27ae60' }}>
+                    {liveSummary.incomeCount} (€{liveSummary.incomeTotal.toLocaleString('it-IT', { maximumFractionDigits: 2 })})
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.incomes || 'Incomes'}</div>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Date range */}
-            {summary.dateRange.from && (
+            {/* Date range info */}
+            {liveSummary?.dateRange?.from && (
               <p style={{ color: theme.textColor, fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                📅 {t.dateRange || 'Date range'}: <strong>{summary.dateRange.from}</strong> → <strong>{summary.dateRange.to}</strong>
+                📅 {t.dateRange || 'Date range'}: <strong>{liveSummary.dateRange.from}</strong> → <strong>{liveSummary.dateRange.to}</strong>
               </p>
             )}
 
@@ -679,7 +929,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   </thead>
                   <tbody>
                     {errorTx.slice(0, 20).map((e, i) => (
-                      <tr key={i}><td>{e.rowIndex + 2}</td><td style={{ color: '#dc3545' }}>{e.error}</td></tr>
+                      <tr key={i}><td>{e.rowIndex + headerRowIndex + 2}</td><td style={{ color: '#dc3545' }}>{e.error}</td></tr>
                     ))}
                     {errorTx.length > 20 && (
                       <tr><td colSpan={2} style={{ textAlign: 'center', fontStyle: 'italic' }}>
@@ -692,32 +942,88 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             )}
           </Card>
 
-          {/* Category Breakdown */}
+          {/* Date Range Filter */}
           <Card theme={theme} $compact>
-            <p style={{ color: theme.textColor, fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>
-              {t.categoryBreakdown || '📊 Category Breakdown'}
-            </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {Object.entries(summary.categoryCounts)
-                .sort(([, a], [, b]) => b.count - a.count)
-                .map(([cat, data]) => (
-                  <Badge key={cat} $variant="success" style={{ backgroundColor: getCategoryColor(cat) || 'rgba(7,145,100,0.15)' }}>
-                    {cat}: {data.count}
-                  </Badge>
-                ))
-              }
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexWrap: 'wrap' }}>
+              <FilterListIcon style={{ color: theme.textColor, opacity: 0.6, fontSize: 20 }} />
+              <span style={{ color: theme.textColor, fontWeight: 600, fontSize: '0.9rem' }}>
+                {t.filterByDate || 'Filter by date'}:
+              </span>
+              <DateInput
+                theme={theme}
+                value={dateFrom}
+                onChange={e => setDateFrom(e.target.value)}
+                placeholder={t.from || 'From'}
+              />
+              <span style={{ color: theme.textColor, opacity: 0.5 }}>→</span>
+              <DateInput
+                theme={theme}
+                value={dateTo}
+                onChange={e => setDateTo(e.target.value)}
+                placeholder={t.to || 'To'}
+              />
+              {(dateFrom || dateTo) && (
+                <SecondaryBtn theme={theme} onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ padding: '0.3rem 0.8rem', fontSize: '0.78rem' }}>
+                  {t.clearFilter || 'Clear'}
+                </SecondaryBtn>
+              )}
             </div>
           </Card>
 
-          {/* Preview of parsed data */}
+          {/* Category Breakdown */}
+          {liveSummary && (
+            <Card theme={theme} $compact>
+              <p style={{ color: theme.textColor, fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>
+                {t.categoryBreakdown || '📊 Category Breakdown'}
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                {Object.entries(liveSummary.categoryCounts)
+                  .sort(([, a], [, b]) => b.count - a.count)
+                  .map(([cat, data]) => (
+                    <Badge key={cat} $variant="success" style={{ backgroundColor: getCategoryColor(cat) || 'rgba(7,145,100,0.15)' }}>
+                      {cat}: {data.count}
+                    </Badge>
+                  ))
+                }
+              </div>
+            </Card>
+          )}
+
+          {/* Transactions Table with Selection & Category Editing */}
           <Card theme={theme} $compact>
-            <p style={{ color: theme.textColor, fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>
-              {t.parsedPreview || '👁️ Parsed data preview (first 10 rows)'}
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <p style={{ color: theme.textColor, fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>
+                {t.parsedPreview || '👁️ Parsed data preview'}
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <SecondaryBtn theme={theme} onClick={selectAllFiltered} style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}>
+                  {t.selectAll || 'Select all'}
+                </SecondaryBtn>
+                <SecondaryBtn theme={theme} onClick={deselectAllFiltered} style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}>
+                  {t.deselectAll || 'Deselect all'}
+                </SecondaryBtn>
+                <Badge $variant={selectedFilteredCount > 0 ? 'success' : 'warning'}>
+                  {selectedFilteredCount}/{filteredTx.length} {t.selected || 'selected'}
+                </Badge>
+              </div>
+            </div>
+
             <PreviewTable theme={theme}>
               <table>
                 <thead>
                   <tr>
+                    <th style={{ width: 40, textAlign: 'center' }}>
+                      <StyledCheckbox
+                        checked={selectedFilteredCount === filteredTx.length && filteredTx.length > 0}
+                        onChange={() => {
+                          if (selectedFilteredCount === filteredTx.length) {
+                            deselectAllFiltered();
+                          } else {
+                            selectAllFiltered();
+                          }
+                        }}
+                      />
+                    </th>
                     <th>{t.date || 'Date'}</th>
                     <th>{t.amount || 'Amount'}</th>
                     <th>{t.type || 'Type'}</th>
@@ -726,24 +1032,56 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {validTx.slice(0, 10).map((tx, i) => (
-                    <tr key={i}>
-                      <td>{tx.date}</td>
-                      <td style={{ color: tx.isOutflow ? '#dc3545' : '#27ae60', fontWeight: 600 }}>
-                        {tx.isOutflow ? '-' : '+'}€{tx.amount.toFixed(2)}
-                      </td>
-                      <td>
-                        <Badge $variant={tx.isOutflow ? 'error' : 'success'}>
-                          {tx.isOutflow ? (t.outflow || 'Outflow') : (t.income || 'Income')}
-                        </Badge>
-                      </td>
-                      <td>{tx.categoryLabel}</td>
-                      <td>{tx.notes}</td>
-                    </tr>
-                  ))}
+                  {(showAllRows ? filteredTx : filteredTx.slice(0, PREVIEW_LIMIT)).map((tx) => {
+                    const isSelected = selectedRows.has(tx.rowIndex);
+                    const effectiveCat = getEffectiveCategory(tx);
+                    return (
+                      <tr key={tx.rowIndex} style={{ opacity: isSelected ? 1 : 0.4 }}>
+                        <td style={{ textAlign: 'center' }}>
+                          <StyledCheckbox
+                            checked={isSelected}
+                            onChange={() => toggleRow(tx.rowIndex)}
+                          />
+                        </td>
+                        <td>{tx.date}</td>
+                        <td style={{ color: tx.isOutflow ? '#dc3545' : '#27ae60', fontWeight: 600 }}>
+                          {tx.isOutflow ? '-' : '+'}€{tx.amount.toFixed(2)}
+                        </td>
+                        <td>
+                          <Badge $variant={tx.isOutflow ? 'error' : 'success'}>
+                            {tx.isOutflow ? (t.outflow || 'Outflow') : (t.income || 'Income')}
+                          </Badge>
+                        </td>
+                        <td>
+                          <CompactSelect
+                            theme={theme}
+                            value={effectiveCat.index}
+                            onChange={e => handleRowCategoryChange(tx.rowIndex, parseInt(e.target.value))}
+                          >
+                            {EXPENSE_CATEGORY_CODES.map(c => (
+                              <option key={c.index} value={c.index}>{c.translationKey}</option>
+                            ))}
+                          </CompactSelect>
+                        </td>
+                        <td>{tx.notes}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </PreviewTable>
+
+            {/* Show more / less toggle */}
+            {filteredTx.length > PREVIEW_LIMIT && (
+              <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+                <SecondaryBtn theme={theme} onClick={() => setShowAllRows(!showAllRows)} style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}>
+                  {showAllRows
+                    ? (t.showLess || 'Show less')
+                    : `${t.showAll || 'Show all'} (${filteredTx.length})`
+                  }
+                </SecondaryBtn>
+              </div>
+            )}
           </Card>
 
           {/* Navigation */}
@@ -751,9 +1089,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             <SecondaryBtn theme={theme} onClick={() => setStep(1)}>
               <ArrowBackIcon style={{ fontSize: 18 }} /> {t.back || 'Back'}
             </SecondaryBtn>
-            <PrimaryBtn onClick={handleImport} disabled={validTx.length === 0}>
+            <PrimaryBtn onClick={handleImport} disabled={importableTx.length === 0}>
               <CloudUploadIcon style={{ fontSize: 18 }} />
-              {t.importButton || 'Import'} {validTx.length} {t.transactions || 'transactions'}
+              {t.importButton || 'Import'} {importableTx.length} {t.transactions || 'transactions'}
             </PrimaryBtn>
           </div>
         </>

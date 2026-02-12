@@ -29,9 +29,13 @@ export const parseCSV = (file) => {
           reject(new Error('FILE_TOO_SHORT'));
           return;
         }
-        const headers = results.data[0].map(h => String(h).trim());
-        const rows = results.data.slice(1).map(row => row.map(cell => String(cell).trim()));
-        resolve({ headers, rows });
+        const allRows = results.data.map(row => row.map(cell => String(cell).trim()));
+        // Pad all rows to same length
+        const maxCols = Math.max(...allRows.map(r => r.length));
+        allRows.forEach(row => { while (row.length < maxCols) row.push(''); });
+        const headers = allRows[0];
+        const rows = allRows.slice(1);
+        resolve({ headers, rows, allRows });
       },
       error: (err) => reject(err),
     });
@@ -55,25 +59,42 @@ export const parseExcel = async (file) => {
     throw new Error('FILE_TOO_SHORT');
   }
 
-  const headers = [];
-  const rows = [];
+  const allRows = [];
+  let maxCols = 0;
 
-  worksheet.eachRow((row, rowIndex) => {
-    const values = row.values.slice(1); // ExcelJS is 1-indexed
-    const strValues = values.map(v => {
-      if (v instanceof Date) return formatDateForPreview(v);
-      if (v && typeof v === 'object' && v.result !== undefined) return String(v.result);
-      return v != null ? String(v).trim() : '';
-    });
-
-    if (rowIndex === 1) {
-      headers.push(...strValues);
-    } else {
-      rows.push(strValues);
+  worksheet.eachRow((row) => {
+    const rawValues = row.values || [];
+    const strValues = [];
+    // row.values is 1-indexed, iterate from index 1
+    for (let i = 1; i < rawValues.length; i++) {
+      const v = rawValues[i];
+      if (v instanceof Date) {
+        strValues.push(formatDateForPreview(v));
+      } else if (v && typeof v === 'object' && v.result !== undefined) {
+        strValues.push(String(v.result));
+      } else if (v != null) {
+        strValues.push(String(v).trim());
+      } else {
+        strValues.push('');
+      }
     }
+    if (strValues.length > maxCols) maxCols = strValues.length;
+    allRows.push(strValues);
   });
 
-  return { headers, rows, sheetNames };
+  // Pad all rows to same length to avoid undefined access
+  allRows.forEach(row => {
+    while (row.length < maxCols) row.push('');
+  });
+
+  if (allRows.length < 2) {
+    throw new Error('FILE_TOO_SHORT');
+  }
+
+  const headers = allRows[0];
+  const rows = allRows.slice(1);
+
+  return { headers, rows, sheetNames, allRows };
 };
 
 /**
@@ -175,12 +196,23 @@ export const formatDateForAPI = (d) => {
  * @returns {number|null}
  */
 export const parseAmount = (amountStr) => {
-  if (!amountStr) return null;
+  if (amountStr === null || amountStr === undefined) return null;
+  // If already a number (e.g. from Excel), return directly
+  if (typeof amountStr === 'number') {
+    return isNaN(amountStr) ? null : (amountStr === 0 ? null : amountStr);
+  }
   let s = String(amountStr).trim();
+  if (s === '' || s === 'undefined' || s === 'null') return null;
   // Remove currency symbols
   s = s.replace(/[€$£¥₹]/g, '').trim();
   // Remove spaces/non-breaking spaces
   s = s.replace(/[\s\u00A0]/g, '');
+  // Replace en-dash/em-dash with hyphen-minus
+  s = s.replace(/[\u2013\u2014\u2212]/g, '-');
+  // Handle parenthesized negatives: (27.95) → -27.95
+  if (/^\([\d.,]+\)$/.test(s)) {
+    s = '-' + s.replace(/[()]/g, '');
+  }
 
   // Detect EU format: 1.234,56 → comma is decimal separator
   if (/^-?\d{1,3}(\.\d{3})*,\d{1,2}$/.test(s) || /^-?\d+,\d{1,2}$/.test(s)) {
@@ -416,8 +448,11 @@ const processRow = (row, mapping, rowIndex) => {
   // Parse amount
   const amountStr = row[amountCol];
   const parsedAmount = parseAmount(amountStr);
-  if (parsedAmount === null || parsedAmount === 0) {
+  if (parsedAmount === null) {
     return { rowIndex, error: `INVALID_AMOUNT: "${amountStr}"`, date, amount: 0, isOutflow: true, categoryIndex: 9999, categoryLabel: 'Other', notes: '' };
+  }
+  if (parsedAmount === 0) {
+    return { rowIndex, error: `INVALID_AMOUNT: zero`, date, amount: 0, isOutflow: true, categoryIndex: 9999, categoryLabel: 'Other', notes: '' };
   }
 
   // Determine transaction type

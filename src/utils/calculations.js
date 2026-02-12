@@ -43,12 +43,15 @@ export function calculateDifference(currentValue, previousValue) {
     return currentValue - previousValue;
 }
 
-export function formatCurrencyDifference(difference) {
+export function formatCurrencyDifference(difference, formatter) {
     if (isNaN(difference) || difference === null || difference === undefined) {
         return 'N/A';
     }
     
     const sign = difference >= 0 ? '+' : '';
+    if (formatter) {
+        return sign + formatter(Math.abs(difference));
+    }
     return sign + new Intl.NumberFormat('it-IT', {
         style: 'currency',
         currency: 'EUR',

@@ -579,7 +579,7 @@ export default function IncomeSection({
             <td>
               {isHidden
                 ? '****'
-                : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}{currencySymbol}
+                : formatNumber(add.amount)}{' '}{currencySymbol}
             </td>
             <td>{isHidden ? '****' : add.notes}</td>
             <td>
@@ -617,7 +617,7 @@ export default function IncomeSection({
           <td style={{ textAlign: 'center' }}>
             {isHidden
               ? '****'
-              : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}{currencySymbol}
+              : formatNumber(totals.totalFiltered)}{' '}{currencySymbol}
             {!isHidden && totals.totalAll > 0 && (
               <>
                 {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
@@ -634,7 +634,7 @@ export default function IncomeSection({
         <td style={{ textAlign: 'center' }}>
           {isHidden
             ? '****'
-            : totals.totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}{currencySymbol}
+            : formatNumber(totals.totalAll)}{' '}{currencySymbol}
         </td>
         <td colSpan={3}></td>
       </TotalRow>,

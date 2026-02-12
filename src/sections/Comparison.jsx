@@ -51,6 +51,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { getCategoryColor } from '../data/categoryColors';
 import Leaderboard from './Leaderboard';
 
@@ -765,6 +766,7 @@ const PopupOverlay = styled.div`
 
 function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
+    const { formatAmount } = useContext(CurrencyContext);
     const [activeTab, setActiveTab] = useState('insights');
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
     const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
@@ -955,12 +957,7 @@ function Comparison({ theme, userData, isHidden}) {
     const formatCurrency = (value) => {
         if (isHidden) return '****';
         if (value === null || value === undefined) return translations.general.comingSoon || 'Coming soon';
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'EUR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(value);
+        return formatAmount(value, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     };
 
     const formatGrowthPercentage = (value) => {

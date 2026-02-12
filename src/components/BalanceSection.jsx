@@ -236,7 +236,7 @@ export default function BalanceSection({
   onUpdateBalance,
   translations,
 }) {
-  const { currencySymbol } = React.useContext(CurrencyContext);
+  const { currencySymbol, fromEUR } = React.useContext(CurrencyContext);
 
   const handleBalanceDateChange = (event) => {
     const [month, year] = event.target.value.split('-').map(Number);
@@ -312,7 +312,7 @@ export default function BalanceSection({
             $color={color}
             onChange={(e) => handleInputChange(e, asset.setter)}
             onBlur={(e) => handleInputBlur(e, asset.setter)}
-            placeholder={isHidden ? '****' : asset.value.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+            placeholder={isHidden ? '****' : fromEUR(asset.value).toLocaleString('it-IT', { minimumFractionDigits: 2 })}
           />
         </CurrencyInputWrapper>
       </AssetItem>

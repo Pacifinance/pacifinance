@@ -142,17 +142,6 @@
     "icon": "🔔"
   },
   {
-    "id": "custom-theme",
-    "todoMatch": "Tema personalizzato",
-    "title": { "it": "Tema Personalizzabile", "en": "Custom Theme" },
-    "description": {
-      "it": "Scegli il colore primario della tua interfaccia per un'esperienza unica.",
-      "en": "Choose your primary interface color for a unique experience."
-    },
-    "category": "ux",
-    "icon": "🎨"
-  },
-  {
     "id": "bank-templates",
     "todoMatch": "formati bancari noti",
     "title": { "it": "Template Bancari per Import", "en": "Bank Import Templates" },

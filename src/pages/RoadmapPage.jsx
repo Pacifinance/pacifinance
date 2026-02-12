@@ -5,6 +5,10 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import roadmapData, { getStatusCounts } from '../data/roadmapData';
 import SEOHead from '../components/SEOHead';
+import { useAuth } from '../hooks/useAuth';
+import { Header } from '../sections/LandingHeader';
+import LandingFooter from '../sections/LandingFooter';
+import Sidebar from '../sections/Sidebar';
 
 /* ─── Styled Components ─── */
 
@@ -20,7 +24,7 @@ const PageWrapper = styled.div`
   }
 `;
 
-const Header = styled.div`
+const PageHeader = styled.div`
   text-align: center;
   margin-bottom: 2.5rem;
   max-width: 700px;
@@ -269,10 +273,13 @@ const CATEGORY_LABELS = {
 /* ─── Component ─── */
 
 const RoadmapPage = () => {
-  const { theme } = useContext(ThemeContext);
-  const { language, translations } = useContext(LanguageContext);
+  const { theme, toggleMode } = useContext(ThemeContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [activeFilter, setActiveFilter] = useState('all');
+  const { isAuthenticated, userData, handleSetIsUpdated, handleSetIsAuthenticated } = useAuth();
+
+  const { mode } = theme;
 
   const counts = getStatusCounts();
   const isIt = language === 'it';
@@ -304,7 +311,7 @@ const RoadmapPage = () => {
 
   const t = translations?.roadmap || {};
 
-  return (
+  const roadmapContent = (
     <PageWrapper theme={theme}>
       <SEOHead
         title={isIt ? 'Roadmap - PaciFinance' : 'Roadmap - PaciFinance'}
@@ -314,14 +321,14 @@ const RoadmapPage = () => {
         path="/roadmap"
       />
 
-      <Header theme={theme}>
+      <PageHeader theme={theme}>
         <h1>🗺️ {t.title || (isIt ? 'Roadmap' : 'Roadmap')}</h1>
         <p>
           {t.subtitle || (isIt
             ? 'Scopri dove sta andando PaciFinance. Ogni funzionalità nasce dal feedback della community.'
             : 'Discover where PaciFinance is heading. Every feature is born from community feedback.')}
         </p>
-      </Header>
+      </PageHeader>
 
       <StatsRow>
         {statusOrder.map(status => {
@@ -412,6 +419,25 @@ const RoadmapPage = () => {
         </a>
       </FeedbackCTA>
     </PageWrapper>
+  );
+
+  if (isAuthenticated) {
+    return (
+      <>
+        <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+        {roadmapContent}
+      </>
+    );
+  }
+
+  return (
+    <div className="w-full flex overflow-auto min-h-screen flex-col" style={{ backgroundColor: theme.backgroundColor }}>
+      <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage} />
+      <main className="flex-1">
+        {roadmapContent}
+      </main>
+      <LandingFooter theme={theme} />
+    </div>
   );
 };
 

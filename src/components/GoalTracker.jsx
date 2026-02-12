@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { LocalizedLink } from './LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { 
     FaBullseye, 
@@ -214,6 +215,7 @@ const EmptyState = styled.div`
 
 const GoalTracker = ({ theme, userData, isHidden = false }) => {
   const { language } = useContext(LanguageContext);
+  const { formatAmount } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const [goals, setGoals] = useState([]);
 
@@ -232,12 +234,7 @@ const GoalTracker = ({ theme, userData, isHidden = false }) => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('it-IT', { 
-      style: 'currency', 
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
+    return formatAmount(value, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
 
   const getGoalIcon = (type) => {

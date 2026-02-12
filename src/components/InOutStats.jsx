@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 import { getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 
 const ModernStatsCard = styled.div`
   background: transparent;
@@ -173,6 +174,8 @@ const Tooltip = styled.div`
 
 export default function InOutStats({ period = "month", theme, userData, isHidden }) {
     const { language, translations } = useContext(LanguageContext);
+    const { formatAmount } = useContext(CurrencyContext);
+    const currencyFormatter = (val) => formatAmount(val, { maximumFractionDigits: 0 });
     
     const [incomesCurrent, setIncomesCurrent] = useState(0);
     const [outflowsCurrent, setOutflowsCurrent] = useState(0);
@@ -289,7 +292,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </IconContainer>
                         
                         <StatValue>
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(incomesCurrent, incomesComparison))}
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(incomesCurrent, incomesComparison), currencyFormatter)}
                         </StatValue>
                         
                         <StatLabel>
@@ -311,7 +314,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </IconContainer>
                         
                         <StatValue>
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(outflowsCurrent, outflowsComparison))}
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(outflowsCurrent, outflowsComparison), currencyFormatter)}
                         </StatValue>
                         
                         <StatLabel>
@@ -333,7 +336,7 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
                         </IconContainer>
                         
                         <StatValue>
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(savedCurrent, savedComparison))}
+                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(savedCurrent, savedComparison), currencyFormatter)}
                         </StatValue>
                         
                         <StatLabel>

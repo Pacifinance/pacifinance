@@ -17,6 +17,7 @@ import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
@@ -26,6 +27,7 @@ import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from
 
 export default function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
+  const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
   
   // Line chart state
   const [incomesArray, setIncomesArray] = useState([]);
@@ -252,11 +254,7 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
             }}
             formatter={(value, name) => {
               if (isHidden) return ['****', name];
-              const formattedValue = new Intl.NumberFormat('it-IT', {
-                style: 'currency',
-                currency: 'EUR',
-                maximumFractionDigits: 0,
-              }).format(value);
+              const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
               return [formattedValue, name];
             }}
             labelStyle={{
@@ -501,7 +499,7 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
                 fontSize: containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16,
                 fill: theme.mode === 'dark' ? '#fff' : '#333'
               }}
-              tickFormatter={(value) => isHidden ? '****' : value}
+              tickFormatter={(value) => isHidden ? '****' : Math.round(fromEUR(value)).toLocaleString()}
               axisLine={{ 
                 stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
                 strokeWidth: 1 
@@ -531,11 +529,7 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
               formatter={(value, name) => {
                 if (isHidden) return ['****', name];
                 
-                const formattedValue = new Intl.NumberFormat('it-IT', {
-                  style: 'currency',
-                  currency: 'EUR',
-                  maximumFractionDigits: 0,
-                }).format(value);
+                const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
                 
                 return [formattedValue, name];
               }}
@@ -654,7 +648,7 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
                 strokeDasharray="8 4"
                 strokeWidth={2}
                 label={{ 
-                  value: `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: €${userData.limits.monthlySpendingLimit.toLocaleString()}`,
+                  value: `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`,
                   position: "top",
                   offset: 25,
                   fill: "#ff6b35",
@@ -680,7 +674,7 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
                     strokeDasharray="6 6"
                     strokeWidth={2}
                     label={{ 
-                      value: `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: €${savingsTarget.toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
+                      value: `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
                       position: "bottom",
                       offset: 25,
                       fill: "#10b981",

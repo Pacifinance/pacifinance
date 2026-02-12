@@ -11,6 +11,7 @@ import { Legend } from "recharts/lib/component/Legend";
 import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { RiFileExcel2Line } from "react-icons/ri";
@@ -28,6 +29,7 @@ import { getBalanceChartData } from '../utils/userDataSelectors.js';
  */
 export default function BalancesChart({ type = "bar", theme, userData, isHidden, CustomTick }) {
   const { translations } = useContext(LanguageContext);
+  const { formatAmount, fromEUR } = useContext(CurrencyContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
@@ -186,11 +188,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       formatter={(value, name) => {
         if (isHidden) return ['****'];
         
-        const formattedValue = new Intl.NumberFormat('it-IT', {
-          style: 'currency',
-          currency: 'EUR',
-          maximumFractionDigits: 0,
-        }).format(value);
+        const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
         
         // Mappa i nomi inglesi a quelli localizzati
         const nameMap = {
@@ -267,14 +265,20 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       />
       
       <YAxis 
-        tick={(props) => <CustomTick 
-          {...props} 
-          textAnchor="end" 
-          fill={theme.textColor} 
-          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
-          fontWeight={500}
-          dx={-5}
-        />}
+        tick={(props) => {
+          const convertedProps = {
+            ...props,
+            payload: { ...props.payload, value: isHidden ? '****' : Math.round(fromEUR(props.payload.value)).toLocaleString() }
+          };
+          return <CustomTick 
+            {...convertedProps} 
+            textAnchor="end" 
+            fill={theme.textColor} 
+            fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
+            fontWeight={500}
+            dx={-5}
+          />;
+        }}
         tickFormatter={(value) => isHidden ? '****' : value}
         axisLine={{ 
           stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
@@ -346,14 +350,20 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
       />
       
       <YAxis 
-        tick={(props) => <CustomTick 
-          {...props} 
-          textAnchor="end" 
-          fill={theme.textColor} 
-          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
-          fontWeight={500}
-          dx={-5}
-        />}
+        tick={(props) => {
+          const convertedProps = {
+            ...props,
+            payload: { ...props.payload, value: isHidden ? '****' : Math.round(fromEUR(props.payload.value)).toLocaleString() }
+          };
+          return <CustomTick 
+            {...convertedProps} 
+            textAnchor="end" 
+            fill={theme.textColor} 
+            fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
+            fontWeight={500}
+            dx={-5}
+          />;
+        }}
         tickFormatter={(value) => isHidden ? '****' : value}
         axisLine={{ 
           stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',

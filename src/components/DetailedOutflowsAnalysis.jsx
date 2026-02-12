@@ -28,6 +28,7 @@ import {
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
 import { getAllOutflows, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { useContext } from 'react';
 
 const AnalysisContainer = styled.div`
@@ -547,6 +548,7 @@ const RecurringSection = styled.div`
 
 export default function DetailedOutflowAnalysis({ theme, userData, isHidden = false }) {
   const { language, translations } = useContext(LanguageContext);
+  const { formatAmount } = useContext(CurrencyContext);
   const t = translations.graphs.statsOutflows.outflowAnalysis;
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0); // 0 = mese corrente
 
@@ -852,10 +854,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('it-IT', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount);
+    return formatAmount(amount);
   };
 
   const formatPercentage = (percentage) => {

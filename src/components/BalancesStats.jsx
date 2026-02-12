@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styled from "styled-components";
 import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
 import { assetIcons } from '../data/assetIcons';
 import { assetColors } from '../data/assetColors';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
@@ -208,6 +209,8 @@ const Section = styled.section`
 
 export default function BalancesStats({ theme, userData, isHidden, period = "month" }) {
     const { language, translations } = useContext(LanguageContext);
+    const { formatAmount } = useContext(CurrencyContext);
+    const currencyFormatter = (val) => formatAmount(val, { maximumFractionDigits: 0 });
     
     // Current values
     const [stocksValue, setStocksValue] = useState(0);
@@ -419,7 +422,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                 
                 <ComparisonValue theme={theme} $isPositive={isPositiveChange}>
                     <div className="change-amount">
-                        {isHidden ? '****' : formatCurrencyDifference(totalChange)}
+                        {isHidden ? '****' : formatCurrencyDifference(totalChange, currencyFormatter)}
                     </div>
                     <div className="change-percentage">
                         {isHidden ? '****' : totalPercentage}
@@ -451,7 +454,7 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
                                     theme={theme} 
                                     $isPositive={isPositive}
                                 >
-                                    {isHidden ? '****' : formatCurrencyDifference(calculateDifference(asset.current, asset.previous))}
+                                    {isHidden ? '****' : formatCurrencyDifference(calculateDifference(asset.current, asset.previous), currencyFormatter)}
                                 </ColoredValue>
                                 <ColoredValue 
                                     as="h6" 

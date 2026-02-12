@@ -9,6 +9,9 @@ PaciFinance is a **personal finance management web application** built with Reac
 - Expense and income categorization
 - Anonymous comparisons with similar users
 - Multi-language support (Italian/English)
+- Multi-currency support (19 currencies with live exchange rates)
+- Public roadmap page with kanban layout
+- CSV/Excel data import wizard
 - Privacy-focused design (data anonymization)
 - PWA-ready with service worker
 
@@ -20,13 +23,15 @@ PaciFinance is a **personal finance management web application** built with Reac
 src/
 ├── components/          # Reusable UI components
 ├── contexts/            # React Context providers (state management)
-├── data/               # Static data (colors, icons, translations)
+├── data/               # Static data (colors, icons, translations, currency config)
 ├── hooks/              # Custom React hooks
+├── i18n/               # Internationalization (locales, config)
 ├── pages/              # Page-level components (route endpoints)
 ├── sections/           # Major page sections/features
 ├── styles/             # Styled-components and themes
 └── utils/              # Utility functions and helpers
 
+scripts/                 # Build-time automation scripts
 server/                  # Backend (managed separately - DO NOT modify)
 public/                  # Static assets
 build/                   # Production build output
@@ -409,8 +414,9 @@ npm run dev -- --host # Expose to network
 
 ### Production Build
 ```bash
-npm run build         # Creates production build in /build
+npm run build         # Creates production build in /build (auto-generates roadmap)
 npm run preview       # Preview production build locally
+npm run roadmap       # Manually regenerate roadmap data
 ```
 
 ### Linting
@@ -427,6 +433,7 @@ Before every commit, ensure:
 - [ ] `languages.json` updated with new text (IT and EN)
 - [ ] `MockAuthContext.jsx` updated with new data structures
 - [ ] `userDataSelectors.js` updated with new selectors
+- [ ] Currency amounts use `CurrencyContext` (no hardcoded € or EUR)
 - [ ] New tests added for new functionality
 - [ ] `npm run lint` passes
 - [ ] `npm test` passes
@@ -686,6 +693,7 @@ Using React Context for global state:
 - `ThemeContext` - Dark/Light mode
 - `LanguageContext` - IT/EN language
 - `UserContext` - User data and authentication
+- `CurrencyContext` - Multi-currency support (19 currencies, exchange rates, formatting)
 - `PageContext` - Current page state
 - `PrivacyContext` - Privacy mode (hide values)
 - `ToastContext` - Toast notifications
@@ -705,6 +713,78 @@ Using React Context for global state:
 8. **Document complex logic** with comments
 9. **Use constants** for magic numbers/strings
 10. **Handle loading and error states** gracefully
+
+---
+
+## 💱 Multi-Currency Support (MANDATORY)
+
+PaciFinance supports 19 currencies. All values in the database are stored in EUR. Conversion happens at display-time.
+
+### Architecture
+- **DB currency**: EUR (always)
+- **Display currency**: user's choice (default EUR)
+- **API**: frankfurter.app for live exchange rates, cached 24h in localStorage
+- **Fallback**: static rates in `currencyConfig.js` when API is unavailable
+
+### Key Files
+- `src/data/currencyConfig.js` - Currency definitions, fallback rates, validation utilities
+- `src/contexts/CurrencyContext.jsx` - Context provider with conversion/formatting functions
+
+### ALWAYS use CurrencyContext for amounts (MANDATORY)
+```jsx
+// ❌ WRONG - Hardcoded € symbol
+<span>{value.toLocaleString('it-IT')} €</span>
+
+// ❌ WRONG - Hardcoded Intl with EUR
+new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
+
+// ✅ CORRECT - Use CurrencyContext
+import { CurrencyContext } from '../contexts/CurrencyContext';
+const { formatAmount, formatNumber, currencySymbol, fromEUR, toEUR } = useContext(CurrencyContext);
+
+// Display a value from DB (EUR) in user's currency:
+<span>{formatAmount(eurValue)}</span>
+
+// Display just the number (no symbol):
+<span>{formatNumber(eurValue)}</span>
+
+// Show currency symbol in a form:
+<label>Amount ({currencySymbol})</label>
+
+// Convert user input to EUR before sending to API:
+const eurValue = toEUR(userInputValue);
+
+// Convert EUR from API to display currency:
+const displayValue = fromEUR(eurValueFromDB);
+```
+
+### Provider Hierarchy
+```
+MediaQueryProvider > LanguageProvider > ThemeProvider > DevModeProvider > UserProvider > CurrencyProvider > PageProvider > PrivacyProvider > ToastProvider
+```
+
+### Supported Currencies
+EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY
+
+---
+
+## 🗺️ Roadmap Automation
+
+The public roadmap page at `/roadmap` is auto-generated from project data.
+
+### How It Works
+1. `scripts/roadmap-items.json` — curated list of roadmap entries with bilingual titles/descriptions
+2. `scripts/generateRoadmap.js` — reads `roadmap-items.json` + `todo.md`, infers status, generates `src/data/roadmapData.js`
+3. `npm run roadmap` — runs the generator manually
+4. `npm run build` — auto-runs via `prebuild` hook
+
+### Adding a Roadmap Item
+1. Add entry to `scripts/roadmap-items.json` with `todoMatch` string
+2. Run `npm run roadmap` to regenerate
+3. The item will appear on the roadmap page with status inferred from `todo.md`
+
+### Excluding from Roadmap
+Items NOT in `roadmap-items.json` are automatically excluded from the public roadmap.
 
 ---
 

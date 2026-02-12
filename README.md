@@ -48,6 +48,7 @@
 - 🔒 **Privacy First**: Completely anonymous comparisons, no personal data shared
 - 🆓 **100% Free**: Community supported, no subscription required
 - 🌍 **Multi-language**: Full support for Italian and English
+- 💱 **Multi-currency**: 19 currencies with live exchange rates
 
 ---
 
@@ -81,7 +82,13 @@
 - User profile management
 - Dark/light mode theme
 - Language selection IT/EN
+- Currency selection (19 currencies)
 - Privacy mode (hides values)
+
+### Roadmap & Feedback
+- Public roadmap page (kanban layout)
+- Bug report link to GitHub Issues
+- Auto-generated roadmap from project todo
 
 ---
 
@@ -157,12 +164,13 @@ Or manually:
 
 ```bash
 npm run dev        # Start dev server
-npm run build      # Production build
+npm run build      # Production build (auto-generates roadmap)
 npm run preview    # Preview production build
 npm run lint       # Run ESLint
 npm test           # Run tests
 npm test:coverage  # Run tests with coverage
 npm test:ui        # Run tests with UI
+npm run roadmap    # Manually regenerate roadmap data
 ```
 
 ---
@@ -199,12 +207,15 @@ pacifinance/
 │   │   ├── UserContext.jsx      # User data & auth
 │   │   ├── ThemeContext.jsx     # Dark/Light mode
 │   │   ├── LanguageContext.jsx  # i18n
+│   │   ├── CurrencyContext.jsx  # Multi-currency support
 │   │   ├── PrivacyContext.jsx   # Hide values mode
 │   │   ├── MockAuthContext.jsx  # Mock data for dev
 │   │   └── ...
 │   │
 │   ├── 📁 data/                 # Static configuration data
 │   │   ├── languages.json       # 🌍 Translations (Italian/English)
+│   │   ├── currencyConfig.js    # 💱 Currency definitions & rates
+│   │   ├── roadmapData.js       # 🗺️ Roadmap items (auto-generated)
 │   │   ├── assetColors.js       # Asset color palette
 │   │   ├── categoryColors.js    # Category color palette
 │   │   └── assetIcons.js        # Asset icons mapping
@@ -257,20 +268,23 @@ pacifinance/
 
 ```
 App
-├── ThemeProvider
+├── MediaQueryProvider
 │   └── LanguageProvider
-│       └── DevModeProvider
-│           ├── UserProvider (Production)
-│           └── MockAuthProvider (Development)
-│               └── PageProvider
-│                   └── PrivacyProvider
-│                       └── ToastProvider
-│                           └── Router
-│                               └── AppRouter
-│                                   ├── DashboardPage
-│                                   ├── InsertPage
-│                                   ├── ComparisonPage
-│                                   └── ...
+│       └── ThemeProvider
+│           └── DevModeProvider
+│               ├── UserProvider (Production)
+│               └── MockAuthProvider (Development)
+│                   └── CurrencyProvider
+│                       └── PageProvider
+│                           └── PrivacyProvider
+│                               └── ToastProvider
+│                                   └── Router
+│                                       └── AppRouter
+│                                           ├── DashboardPage
+│                                           ├── InsertPage
+│                                           ├── ComparisonPage
+│                                           ├── RoadmapPage
+│                                           └── ...
 ```
 
 ### Data Flow
@@ -309,6 +323,7 @@ App
 | `UserContext` | User data & auth | `userData`, `isAuthenticated`, `setUserData` |
 | `ThemeContext` | Visual theme | `theme`, `toggleMode` |
 | `LanguageContext` | i18n | `language`, `setLanguage` |
+| `CurrencyContext` | Multi-currency | `currency`, `setCurrency`, `formatAmount`, `fromEUR`, `toEUR` |
 | `PrivacyContext` | Hide values | `isHidden`, `togglePrivacy` |
 | `PageContext` | Current page | `currentPage`, `setPage` |
 | `ToastContext` | Notifications | `showToast`, `hideToast` |

@@ -174,7 +174,52 @@ function Info({ theme }) {
                         <ModernSupportText>
                             {getTranslation('info.developers.description')}
                         </ModernSupportText>
-                        <ModernSupportText>
+
+                        {/* Roadmap CTA - subtle, between text blocks */}
+                        <div style={{
+                            position: 'relative',
+                            zIndex: 1,
+                            margin: '0.5rem 0 1.5rem',
+                        }}>
+                            <LocalizedLink
+                                to="/roadmap"
+                                style={{ textDecoration: 'none', display: 'inline-block' }}
+                                data-umami-event="info-roadmap-link-clicked"
+                            >
+                                <div style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.5rem',
+                                    padding: '0.5rem 1.25rem',
+                                    borderRadius: '2rem',
+                                    background: 'rgba(255, 255, 255, 0.12)',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    color: 'rgba(255, 255, 255, 0.9)',
+                                    fontWeight: '500',
+                                    fontSize: '0.85rem',
+                                    transition: 'all 0.3s ease',
+                                    backdropFilter: 'blur(4px)',
+                                    letterSpacing: '0.02em',
+                                }}>
+                                    🗺️ {getTranslation('info.roadmapLink')}
+                                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>→</span>
+                                </div>
+                            </LocalizedLink>
+                        </div>
+
+                        {/* Divider */}
+                        <div style={{
+                            width: '60px',
+                            height: '2px',
+                            background: 'rgba(255, 255, 255, 0.25)',
+                            margin: '0 auto 1.5rem',
+                            borderRadius: '1px',
+                            position: 'relative',
+                            zIndex: 1,
+                        }} />
+
+                        <ModernSupportText style={{ marginBottom: '1.5rem' }}>
                             {getTranslation('info.developers.calltoaction')}
                         </ModernSupportText>
                         
@@ -198,30 +243,6 @@ function Info({ theme }) {
                                 <BuyMeACoffeeWidget showLink={false} />
                             </ModernCoffeeButton>
                         </a>
-
-                        <LocalizedLink
-                            to="/roadmap"
-                            style={{ textDecoration: 'none', display: 'inline-block', marginTop: '0.75rem' }}
-                            data-umami-event="info-roadmap-link-clicked"
-                        >
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '0.4rem',
-                                padding: '0.45rem 1rem',
-                                borderRadius: '8px',
-                                background: 'rgba(255, 255, 255, 0.15)',
-                                border: '1px solid rgba(255, 255, 255, 0.35)',
-                                color: 'rgba(255, 255, 255, 0.85)',
-                                fontWeight: '500',
-                                fontSize: '0.8rem',
-                                transition: 'all 0.3s ease',
-                                backdropFilter: 'blur(4px)',
-                            }}>
-                                🗺️ {getTranslation('info.roadmapLink')}
-                            </div>
-                        </LocalizedLink>
                     </ModernSupportSection>
                 </ModernInfoSection>
 

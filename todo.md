@@ -87,6 +87,38 @@
   - Salvato in localStorage (`pacifinance-avatar`), rigenerabile 1x al giorno
   - Toast notification su rigenerazione
 
+### Multi-Valuta (Currency Support)
+- [x] **CurrencyContext**: context globale con `setCurrency`, `formatAmount`, `formatNumber`, `fromEUR`, `toEUR`, `currencySymbol`
+- [x] **currencyConfig.js**: 19 valute supportate (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)
+- [x] **Exchange rate API**: fetch da frankfurter.app con cache 24h in localStorage + fallback rates statici
+- [x] **Selezione valuta in SettingsPage**: dropdown con bandiere e nomi valuta, persistenza in localStorage
+- [x] **Conversione display-time**: tutti i valori EUR dal DB convertiti nella valuta scelta con `fromEUR()`
+- [x] **Sostituzione hardcoded €**: rimosso simbolo `€` hardcodato da tutti i componenti (Dashboard, IncomeSection, OutflowSection, BalanceSection, InsertModals, GoalsAndLimits, FinancialInsights, DataImportWizard, DashboardCompactView, InsertValues)
+- [x] **Provider tree aggiornato**: CurrencyProvider inserito nella gerarchia dei context
+- [x] **Test**: unit test per CurrencyContext (17 test) e currencyConfig (12 test)
+- [x] **Traduzioni IT/EN** per tutte le label valuta
+
+### Roadmap Page
+- [x] **RoadmapPage.jsx**: pagina pubblica con layout kanban a 3 colonne (Completato / In Corso / Pianificato)
+- [x] **roadmapData.js**: dati statici con 19 item, titoli bilingui, categorie, icone, date
+- [x] **Automazione roadmap**: script `scripts/generateRoadmap.js` genera `roadmapData.js` da `scripts/roadmap-items.json` + `todo.md`
+- [x] **npm scripts**: `npm run roadmap` e `prebuild` hook per auto-generazione
+- [x] **Filtri per categoria e stato**: chip selezionabili per filtrare gli item
+- [x] **Route pubblica**: accessibile senza login a `/roadmap`
+- [x] **Link in Info page**: pulsante "Scopri la nostra Roadmap" nella sezione supporto
+- [x] **Traduzioni IT/EN complete**
+
+### Feedback & Bug Report
+- [x] **Link a GitHub Issues**: pulsante in SettingsPage (sezione Sicurezza) con link diretto a `github.com/Pacifinance/Pacifinance/issues/new/choose`
+- [x] **Icona faBug** con testo tradotto IT/EN
+- [x] **Umami tracking**: `data-umami-event="settings-bug-report-clicked"`
+
+### SettingsPage Redesign
+- [x] **Layout compatto**: max-width ridotto (700px), padding/font/gap ridotti ovunque
+- [x] **Nuova sezione Account Preferences**: lingua + valuta raggruppate
+- [x] **Fix dropdown valuta**: colori espliciti per option su tema chiaro e scuro (niente più bianco su bianco)
+- [x] **Nuova struttura sezioni**: Account Preferences → Theme & Display → Security → Data Export → Data Import → Danger Zone
+
 ### Import Dati da CSV/Excel
 - [x] **DataImportWizard**: wizard multi-step completo (Disclaimer Privacy → Mappatura colonne → Revisione e importazione)
   - Step 0: Disclaimer privacy con icona lucchetto, conferma obbligatoria
@@ -138,13 +170,12 @@
 ### Community & Feedback
 > PaciFinance è un progetto community-centrico, basato interamente sulle donazioni. Il coinvolgimento diretto degli utenti è fondamentale.
 
-- [ ] **Pagina Roadmap pubblica**: mostrare lo stato delle funzionalità pianificate, in corso e completate (stile kanban o timeline). Permettere agli utenti di vedere dove sta andando il progetto e votare le priorità.
-- [ ] **Sistema feedback utenti**: form o sezione dedicata per segnalare bug, proporre idee o suggerire miglioramenti. Possibili approcci:
-  - Form integrato nell'app (con categorizzazione: bug / idea / altro)
-  - Integrazione con GitHub Issues/Discussions per trasparenza
-  - Bacheca pubblica delle richieste con upvote (stile Canny/UserVoice ma self-hosted)
+- [x] ~~**Pagina Roadmap pubblica**~~ → Implementato: RoadmapPage con layout kanban (3 colonne), filtri categoria/stato, 19 item, automazione da todo.md, route pubblica `/roadmap`
+- [x] ~~**Sistema feedback utenti (Fase 0)**~~ → Implementato: link diretto a GitHub Issues in SettingsPage (sezione Sicurezza) + link in Info page
+- [ ] **Sistema feedback utenti (Fase 1)**: form in-app che crea GitHub Issue via backend
 - [ ] Notifiche/changelog in-app per comunicare aggiornamenti e nuove feature alla community
 - [ ] Sezione "Contribuisci" visibile: come donare, come segnalare bug, come proporre idee
+- [ ] Sistema di voto priorità roadmap (richiede backend)
 
 ### Performance
 - [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
@@ -186,7 +217,7 @@
 - Calcolo interesse composto per gli investimenti
 - Tracker dividendi (date ex-dividend, importi attesi)
 - ~~Sezione "net worth milestones" con badge/achievement~~ ✅
-- Multi-valuta con conversione automatica in tempo reale
+- ~~Multi-valuta con conversione automatica in tempo reale~~ ✅ (19 valute, frankfurter.app API, cache 24h)
 - Confronto patrimonio con media nazionale per fascia d'età/lavoro
 
 ### Gamification

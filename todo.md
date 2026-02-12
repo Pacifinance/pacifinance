@@ -1,6 +1,6 @@
 # PaciFinance - TODO & Roadmap
 
-> Ultimo aggiornamento: 10/02/2026
+> Ultimo aggiornamento: 12/02/2026
 
 ---
 
@@ -87,6 +87,23 @@
   - Salvato in localStorage (`pacifinance-avatar`), rigenerabile 1x al giorno
   - Toast notification su rigenerazione
 
+### Import Dati da CSV/Excel
+- [x] **DataImportWizard**: wizard multi-step completo (Disclaimer Privacy → Mappatura colonne → Revisione e importazione)
+  - Step 0: Disclaimer privacy con icona lucchetto, conferma obbligatoria
+  - Step 1: Upload file CSV/Excel, selezione riga header, mappatura colonne (data, importo, categoria, note), salvataggio/caricamento preset mappatura
+  - Step 2: Tabella revisione con filtro per data (min/max auto-popolato), selezione/deselezione righe con checkbox, modifica categoria per riga, conteggio e riepilogo
+  - Step 3: Importazione con progress bar e feedback per riga
+- [x] **Modalità colonna duale**: toggle per scegliere due colonne separate (entrate/uscite) invece di una singola colonna importo
+- [x] **Fix dropdown bianchi su sfondo bianco**: stile esplicito per `option` nei SelectField e CompactSelect (tema dark/light)
+- [x] **Fix importi negativi**: `parseAmount` gestisce undefined, null, numeri, trattini en-dash, valori tra parentesi; `parseExcel` padding righe sparse alla stessa lunghezza
+- [x] **Riconoscimento categorie intelligente**: matching automatico tra testo delle transazioni e categorie PaciFinance (fuzzy matching)
+- [x] **Integrazione nella pagina Inserimento Dati**: bottone "Importa da CSV / Excel" visibile sotto i tab Entrate/Uscite (nascosto nel tab Bilancio perché l'import non supporta ancora l'aggiornamento bilancio)
+- [x] **Modal overlay full-screen**: wizard si apre in modale con lazy loading, chiusura click esterno o ✕
+- [x] **Supporto URL diretto**: `?section=import` apre il wizard direttamente
+- [x] **Landing page feature card**: sezione dedicata all'importazione CSV/Excel con layout orizzontale e tag pill
+- [x] **SEO keywords aggiornate**: "importare transazioni CSV", "import Excel expenses" nei metadata della landing page
+- [x] **Traduzioni IT/EN complete**: tutte le label, disclaimer, messaggi di errore/successo
+
 ---
 
 ## 🔧 Da Fare
@@ -114,7 +131,7 @@
 - [ ] Dark/Light mode: transizione animata al cambio tema
 - [ ] Notifiche push (PWA) per promemoria inserimento dati mensili — vedi **Analisi PWA Push Notifications** in fondo
 - [ ] Widget "riepilogo rapido" nella home con patrimonio + variazione mese precedente
-- [ ] Import dati da CSV/Excel (inverso dell'export)
+- [x] ~~Import dati da CSV/Excel (inverso dell'export)~~ → Implementato: DataImportWizard multi-step con supporto CSV/Excel, mappatura colonne, filtri data, colonna duale entrate/uscite, matching categorie automatico. Accessibile da Inserimento Dati e Impostazioni.
 - [ ] Grafici trend storico patrimonio (linea temporale)
 - [ ] Export PDF: migliorare layout con grafici inclusi nel report
 
@@ -125,6 +142,17 @@
 - [ ] Test per axios interceptor 401
 - [ ] Test per `removeLanguageFromPath` edge cases
 - [ ] Eseguire test suite completa (`npm test`) — terminale bloccato al momento
+- [ ] Test per DataImportWizard: unit test per `parseAmount`, `processRows`, `processRowDual`, `autoDetectColumns`
+
+### Import Dati (Evoluzione)
+- [ ] Supporto aggiornamento bilancio tramite import (mappare colonne asset → valori bilancio)
+- [ ] Preview grafico delle transazioni importate prima della conferma (istogramma per mese/categoria)
+- [ ] Salvataggio template di mappatura per banca (es. "UniCredit CSV", "Revolut Excel") con condivisione community
+- [ ] Supporto formati bancari noti (Fineco, Intesa, Revolut, N26) con auto-detect del formato
+- [ ] Undo/rollback dell'ultima importazione (eliminare tutte le transazioni importate in blocco)
+- [ ] Drag & drop del file (al posto del solo bottone upload)
+- [ ] Supporto file OFX/QIF (formati bancari standard)
+- [ ] Import ricorrente: ricordare l'ultimo file importato e suggerire di aggiornare
 
 ---
 

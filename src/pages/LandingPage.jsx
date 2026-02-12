@@ -25,7 +25,7 @@ export default function NewLandingPage() {
         description: "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti.",
         locale: "it_IT",
         languageCode: "it",
-        keywords: "unificare finanze, dashboard multi-piattaforma, gestione finanziaria, confronto anonimo, tracciamento spese, portafoglio investimenti, aggregazione conti bancari, analisi finanziaria"
+        keywords: "unificare finanze, dashboard multi-piattaforma, gestione finanziaria, confronto anonimo, tracciamento spese, portafoglio investimenti, aggregazione conti bancari, analisi finanziaria, importare transazioni CSV, importare Excel spese"
       };
     }
     return {
@@ -33,7 +33,7 @@ export default function NewLandingPage() {
       description: "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments.",
       locale: "en_US",
       languageCode: "en", 
-      keywords: "unify finances, multi-platform dashboard, financial management, anonymous comparison, expense tracking, investment portfolio, bank account aggregation, financial analytics"
+      keywords: "unify finances, multi-platform dashboard, financial management, anonymous comparison, expense tracking, investment portfolio, bank account aggregation, financial analytics, import CSV transactions, import Excel expenses"
     };
   };
 

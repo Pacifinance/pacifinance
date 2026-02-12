@@ -151,6 +151,17 @@
                         "• Anonymous data handling",
                         "• Complete user privacy"
                     ]
+                },
+                "import": {
+                    "title": "Quick CSV & Excel Import",
+                    "description": "Already have your transactions in a bank export or spreadsheet? Import them in a few clicks. CSV and Excel support with automatic column mapping, date filters, and smart category matching.",
+                    "features": [
+                        "CSV & Excel (.xlsx)",
+                        "Auto column mapping",
+                        "Date range filter",
+                        "Smart categories",
+                        "Separate income/outflow columns"
+                    ]
                 }
             },
             "cta": {
@@ -617,6 +628,7 @@
         "buttonIncome": "Add Income",
         "buttonOutflow": "Add Outflow",
         "buttonInvestment": "Add Investment",
+        "importFromFile": "Import from CSV / Excel",
         "balanceSection": {
             "titleLiquidity": "Liquidity",
             "titleInvestments": "Investments",

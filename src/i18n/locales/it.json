@@ -151,6 +151,17 @@
                         "• Dati completamente anonimi",
                         "• Nessun tracciamento pubblicitario"
                     ]
+                },
+                "import": {
+                    "title": "Importazione Rapida da CSV e Excel",
+                    "description": "Hai già le tue transazioni in un file della banca o un foglio di calcolo? Importale in pochi click. Supporto CSV e Excel con mappatura automatica delle colonne, filtri per data e riconoscimento intelligente delle categorie.",
+                    "features": [
+                        "CSV e Excel (.xlsx)",
+                        "Mappatura automatica",
+                        "Filtro per data",
+                        "Categorie intelligenti",
+                        "Colonne entrate/uscite separate"
+                    ]
                 }
             },
             "cta": {
@@ -617,6 +628,7 @@
         "buttonIncome": "Aggiungi Entrate",
         "buttonOutflow": "Aggiungi Uscite",
         "buttonInvestment": "Aggiungi Investimenti",
+        "importFromFile": "Importa da CSV / Excel",
         "balanceSection": {
             "titleLiquidity": "Liquidità",
             "titleInvestments": "Investimenti",

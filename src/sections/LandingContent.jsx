@@ -10,7 +10,8 @@ import {
   TrendingUp as TrendingUpIcon,
   VisibilityOff as VisibilityOffIcon,
   Paid as PaidIcon,
-  Star as StarIcon
+  Star as StarIcon,
+  UploadFile as UploadFileIcon
 } from "@mui/icons-material";
 // Hero image served from public/ for preload discoverability in index.html
 const LandingPageImage = "/PacifinanceArt2NoBg.webp";
@@ -391,6 +392,45 @@ export default function NewLandingContent({ theme }) {
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
+            </div>
+
+            {/* Feature 7 - CSV/Excel Import */}
+            <div
+              className="group p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 md:col-span-2 lg:col-span-3"
+              style={{
+                borderColor: theme.secondaryColor,
+                backgroundColor:
+                  theme.mode === "dark"
+                    ? `${theme.secondaryColor}10`
+                    : "rgba(255,255,255,0.5)",
+              }}
+            >
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div
+                  className="flex items-center justify-center w-16 h-16 rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300"
+                  style={{ backgroundColor: theme.secondaryColor }}
+                >
+                  <UploadFileIcon className="text-white" fontSize="large" />
+                </div>
+                <div className="text-center md:text-left flex-1">
+                  <h3 className="text-2xl font-bold mb-2">{translations.landing.new.features.import.title}</h3>
+                  <p className="opacity-80 mb-3">
+                    {translations.landing.new.features.import.description}
+                  </p>
+                  <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                    {translations.landing.new.features.import.features.map((feature, index) => (
+                      <span key={index} className="text-sm opacity-70 px-3 py-1 rounded-full"
+                        style={{
+                          backgroundColor: theme.mode === 'dark' ? `${theme.secondaryColor}20` : `${theme.secondaryColor}15`,
+                          border: `1px solid ${theme.secondaryColor}30`,
+                        }}
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

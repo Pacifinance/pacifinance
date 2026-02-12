@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { ButtonGroup } from "@mui/material";
 import axios from "axios";
@@ -15,6 +15,9 @@ import IncomeSection from "../components/IncomeSection";
 import OutflowSection from "../components/OutflowSection";
 import InsertModals from "../components/InsertModals";
 import styled from 'styled-components';
+import { UploadFile as UploadFileIcon } from "@mui/icons-material";
+
+const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
@@ -205,6 +208,99 @@ const SectionContainer = styled.div`
   }
 `;
 
+const ImportButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  border: 2px dashed ${(props) => props.theme.buttonBackgroundColor}80;
+  background: ${(props) => props.theme.mode === 'dark'
+    ? `${props.theme.buttonBackgroundColor}15`
+    : `${props.theme.buttonBackgroundColor}08`};
+  color: ${(props) => props.theme.buttonBackgroundColor};
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+
+  &:hover {
+    border-color: ${(props) => props.theme.buttonBackgroundColor};
+    background: ${(props) => props.theme.buttonBackgroundColor}25;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px ${(props) => props.theme.buttonBackgroundColor}30;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+`;
+
+const ImportOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: ${(props) => props.theme.mode === 'dark'
+    ? 'rgba(0, 0, 0, 0.85)'
+    : 'rgba(0, 0, 0, 0.5)'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+`;
+
+const ImportModalContent = styled.div`
+  background: ${(props) => props.theme.backgroundColor};
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid ${(props) => props.theme.mode === 'dark'
+    ? `${props.theme.buttonBackgroundColor}30`
+    : '#e2e8f0'};
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 14px;
+    max-height: 95vh;
+  }
+`;
+
+const ImportCloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${(props) => props.theme.textColor};
+  opacity: 0.5;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  z-index: 10;
+
+  &:hover {
+    opacity: 1;
+    background: ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
+  }
+`;
+
 
 
 export default function InsertValue({
@@ -225,6 +321,7 @@ export default function InsertValue({
   const [isConfirmOutflowOpen, setIsConfirmOutflowOpen] = useState(false);
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
+  const [showImportWizard, setShowImportWizard] = useState(false);
   
 
 
@@ -400,6 +497,9 @@ export default function InsertValue({
             break;
           case 'outflow':
             setActivePage('outflows');
+            break;
+          case 'import':
+            setShowImportWizard(true);
             break;
           default:
             setActivePage('outflows');
@@ -988,7 +1088,52 @@ export default function InsertValue({
           </ModernSectionButton>
         </ModernButtonGroup>
 
+        {/* Import from file button - only for income/outflows, not balance */}
+        {activePage !== "bilancio" && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '1.5rem',
+          }}>
+            <ImportButton
+              theme={theme}
+              onClick={() => setShowImportWizard(true)}
+              data-umami-event="insert-import-csv-open"
+            >
+              <UploadFileIcon fontSize="small" />
+              {translations.insert.importFromFile || (language === 'it' ? 'Importa da CSV / Excel' : 'Import from CSV / Excel')}
+            </ImportButton>
+          </div>
+        )}
+
         {renderPage()}
+
+        {/* Import Wizard Modal */}
+        {showImportWizard && (
+          <ImportOverlay theme={theme} onClick={(e) => {
+            if (e.target === e.currentTarget) setShowImportWizard(false);
+          }}>
+            <ImportModalContent theme={theme}>
+              <ImportCloseButton theme={theme} onClick={() => setShowImportWizard(false)}>
+                ✕
+              </ImportCloseButton>
+              <Suspense fallback={
+                <div style={{ textAlign: 'center', padding: '2rem', color: theme.textColor }}>
+                  {translations.dataImport?.loading || (language === 'it' ? 'Caricamento...' : 'Loading...')}
+                </div>
+              }>
+                <DataImportWizard
+                  onClose={() => setShowImportWizard(false)}
+                  onImportComplete={() => {
+                    setShowImportWizard(false);
+                    handleSetIsUpdated(false);
+                    showSuccess(translations.dataImport?.importSuccess || (language === 'it' ? 'Importazione completata!' : 'Import completed!'));
+                  }}
+                />
+              </Suspense>
+            </ImportModalContent>
+          </ImportOverlay>
+        )}
 
         <InsertModals
           isConfirmBalanceOpen={isConfirmBalanceOpen}

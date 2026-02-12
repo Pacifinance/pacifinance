@@ -6,6 +6,9 @@
 
 ## 🔧 Da Fare
 
+### Urgente
+- [ ] capire perché gli url variabilizzati con le lingue non funzionano (per ora l'url che funziona per browser senza cache è solo pacifinance.com)
+
 ### Valute & Moneta
 - [ ] Aggiungere richiesta API e sistema di cache per le valute (mettine più possibili) ★
 - [ ] Aggiungere alla route del profilo un campo currency, per permettere all'utente di scegliere la sua moneta di riferimento e salvarla a db (ora salvata in locale ) ★

@@ -4,19 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import styled from 'styled-components';
 import {
   ModernActionButton,
-  StyledDateInput,
-  StyledAddSection,
   StyledTable,
-  StyledTextArea,
-  TitleLastAdds,
 } from '../styles/MyStyled';
 import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
-
-// Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
-
 
 const currentDate = new Date().toISOString().split('T')[0];
 
@@ -51,6 +45,243 @@ const handleInputBlur = (e, setterFunction) => {
   });
   if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
+
+/* ─── Styled Components ─── */
+const SectionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1.5rem;
+`;
+
+const FormCard = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FormField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+
+const FieldLabel = styled.label`
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+`;
+
+const FieldInput = styled.input`
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.1)'
+    : '#e2e8f0'};
+  border-radius: 10px;
+  color: ${(p) => p.theme.textColor};
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.04)'
+    : 'white'};
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  min-height: 42px;
+
+  &:focus {
+    border-color: ${(p) => p.theme.buttonBackgroundColor};
+    box-shadow: 0 0 0 3px ${(p) => p.theme.buttonBackgroundColor}15;
+  }
+
+  &::placeholder {
+    color: ${(p) => p.theme.textColor};
+    opacity: 0.3;
+  }
+`;
+
+const CurrencyInputWrap = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const CurrencySymbol = styled.span`
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.35;
+  font-size: 0.85rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+const CurrencyInput = styled(FieldInput)`
+  padding-left: 1.6rem;
+  text-align: right;
+`;
+
+const NoteArea = styled.textarea`
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.1)'
+    : '#e2e8f0'};
+  border-radius: 10px;
+  color: ${(p) => p.theme.textColor};
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.04)'
+    : 'white'};
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  resize: none;
+  min-height: 42px;
+  max-height: 80px;
+
+  &:focus {
+    border-color: ${(p) => p.theme.buttonBackgroundColor};
+    box-shadow: 0 0 0 3px ${(p) => p.theme.buttonBackgroundColor}15;
+  }
+
+  &::placeholder {
+    color: ${(p) => p.theme.textColor};
+    opacity: 0.3;
+  }
+`;
+
+const FormFooter = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 0.25rem;
+`;
+
+const TableSection = styled.div`
+  width: 100%;
+  border: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.07)'
+    : '#e8ecf1'};
+  border-radius: 14px;
+  overflow: hidden;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? p.theme.backgroundColor
+    : '#fff'};
+`;
+
+const TableHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.06)'
+    : '#e8ecf1'};
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const TableTitle = styled.h3`
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${(p) => p.theme.textColor};
+  margin: 0;
+`;
+
+const MonthSelect = styled.select`
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.12)'
+    : '#e2e8f0'};
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.06)'
+    : 'white'};
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: ${(p) => p.theme.buttonBackgroundColor};
+  }
+`;
+
+const TableScroll = styled.div`
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+`;
+
+const ActionBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  cursor: ${(p) => p.disabled ? 'not-allowed' : 'pointer'};
+  font-size: 0.75rem;
+  transition: all 0.15s ease;
+  opacity: ${(p) => p.disabled ? 0.4 : 1};
+
+  &.delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    &:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.2);
+    }
+  }
+  &.edit {
+    background: rgba(156, 163, 175, 0.1);
+    color: #9ca3af;
+  }
+`;
+
+const TotalRow = styled.tr`
+  font-weight: 600;
+  
+  &.filtered {
+    background: rgba(16, 185, 129, 0.12) !important;
+    td { color: #059669; }
+  }
+  &.grand {
+    background: rgba(16, 185, 129, 0.2) !important;
+    td { color: #047857; font-weight: 700; }
+  }
+`;
+
+const PercentBadge = styled.span`
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+`;
 
 export default function IncomeSection({
   theme,
@@ -106,46 +337,6 @@ export default function IncomeSection({
 
   const handleIncomesMonthChange = (event) => {
     setSelectedIncomesMonth(event.target.value);
-  };
-
-  // Wrapper e stile per input con simbolo valuta - updated for modern design
-  const inputCurrencyWrapper = {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '0.5em',
-    minWidth: 0,
-    width: '100%',
-    maxWidth: '280px', // Ridotto da 400px a 280px
-  };
-  const inputWithCurrency = {
-    textAlign: 'center',
-    padding: '12px 16px 12px 2.5em',
-    border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-    borderRadius: '12px',
-    color: theme.textColor,
-    outline: 'none',
-    width: '100%',
-    minHeight: '48px',
-    fontSize: '1rem',
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: '500',
-    background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-    boxSizing: 'border-box',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  };
-  const currencySymbolStyle = {
-    position: 'absolute',
-    left: '1em',
-    color: '#888',
-    fontSize: '1rem',
-    pointerEvents: 'none',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    lineHeight: 1,
-    fontWeight: '500',
   };
 
   function getGradientForCategory(baseColor) {
@@ -208,31 +399,15 @@ export default function IncomeSection({
       : <FontAwesomeIcon icon={faSortDown} style={{ marginLeft: 4, fontSize: '0.9em' }} />;
   };
 
-  const sortableHeaderStyle = {
-    cursor: 'pointer',
-    userSelect: 'none',
-    transition: 'background-color 0.2s',
-  };
-
   function renderTableHeader() {
-    const dropdownStyle = {
-      background: '#fff',
-      color: '#111',
-      borderRadius: '6px',
-      textAlign: 'center',
-      minWidth: 120,
-      boxShadow: '0 2px 8px rgba(100,100,100,0.10)',
-      border: '1px solid #bbb',
-      fontWeight: 500,
-    };
     const { min, max } = getDateRangeForMonth(incomeMonthOptions[selectedIncomesMonth]);
     return (
-      <tr style={{ color: 'white', background: 'transparent' }}>
-        <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-            <span 
-              onClick={() => handleSort('category')} 
-              style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
+      <tr>
+        <th>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span
+              onClick={() => handleSort('category')}
+              style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center' }}
             >
               {translations.insert.incomeSection.tableColumns.category}
               {getSortIcon('category')}
@@ -240,7 +415,10 @@ export default function IncomeSection({
             <select
               value={incomeCategoryFilter}
               onChange={(e) => setIncomeCategoryFilter(e.target.value)}
-              style={{ ...dropdownStyle, minWidth: 100, fontSize: '0.85em' }}
+              style={{
+                background: '#fff', color: '#111', borderRadius: 6, textAlign: 'center',
+                minWidth: 100, fontSize: '0.85em', border: '1px solid #bbb', padding: '2px 4px',
+              }}
             >
               <option value="">{translations.general.all}</option>
               {incomesTags.map((item) => (
@@ -251,40 +429,20 @@ export default function IncomeSection({
             </select>
           </div>
         </th>
-        <th
-          style={{
-            textAlign: 'center',
-            verticalAlign: 'middle',
-            minWidth: 100,
-          }}
-        >
-          <span 
-            onClick={() => handleSort('amount')} 
-            style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
+        <th style={{ minWidth: 100 }}>
+          <span
+            onClick={() => handleSort('amount')}
+            style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             {translations.general.value}
             {getSortIcon('amount')}
           </span>
         </th>
-        <th
-          style={{
-            textAlign: 'center',
-            verticalAlign: 'middle',
-            minWidth: 120,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-            }}
-          >
-            <span 
-              onClick={() => handleSort('note')} 
-              style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
+        <th style={{ minWidth: 120 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span
+              onClick={() => handleSort('note')}
+              style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center' }}
             >
               {translations.insert.incomeSection.tableColumns.note}
               {getSortIcon('note')}
@@ -295,96 +453,53 @@ export default function IncomeSection({
               value={incomeNoteFilter}
               onChange={(e) => setIncomeNoteFilter(e.target.value)}
               style={{
-                color: '#111',
-                background: 'white',
-                textAlign: 'center',
-                padding: '2px 4px',
-                borderRadius: '4px',
-                border: '1px solid #ccc',
-                fontSize: '0.8em',
-                width: '100px',
+                color: '#111', background: '#fff', textAlign: 'center', padding: '2px 4px',
+                borderRadius: 6, border: '1px solid #bbb', fontSize: '0.8em', width: 100,
               }}
             />
           </div>
         </th>
-        <th
-          style={{
-            textAlign: 'center',
-            verticalAlign: 'middle',
-            minWidth: 180,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-            }}
-          >
-            <span 
-              onClick={() => handleSort('date')} 
-              style={{ ...sortableHeaderStyle, display: 'flex', alignItems: 'center', color: 'white' }}
+        <th style={{ minWidth: 180 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span
+              onClick={() => handleSort('date')}
+              style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center' }}
             >
               <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: 4 }} />
               {translations.general.date || 'Data'}
               {getSortIcon('date')}
             </span>
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               <input
                 type="date"
                 value={incomeDateFilterStart || ''}
                 onChange={(e) => setIncomeDateFilterStart(e.target.value)}
-                style={{
-                  color: '#111',
-                  background: 'white',
-                  textAlign: 'center',
-                  padding: '2px 4px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  fontSize: '0.8em',
-                  width: '110px',
-                }}
                 min={min}
                 max={max}
-                placeholder="Da"
+                style={{
+                  color: '#111', background: '#fff', textAlign: 'center', padding: '2px 4px',
+                  borderRadius: 6, border: '1px solid #bbb', fontSize: '0.8em', width: 110,
+                }}
               />
-              <span style={{ color: 'white', fontSize: '0.75em' }}>-</span>
+              <span style={{ fontSize: '0.75em', opacity: 0.7 }}>-</span>
               <input
                 type="date"
                 value={incomeDateFilterEnd || ''}
                 onChange={(e) => setIncomeDateFilterEnd(e.target.value)}
-                style={{
-                  color: '#111',
-                  background: 'white',
-                  textAlign: 'center',
-                  padding: '2px 4px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  fontSize: '0.8em',
-                  width: '110px',
-                }}
                 min={min}
                 max={max}
-                placeholder="A"
+                style={{
+                  color: '#111', background: '#fff', textAlign: 'center', padding: '2px 4px',
+                  borderRadius: 6, border: '1px solid #bbb', fontSize: '0.8em', width: 110,
+                }}
               />
             </div>
             {(incomeDateFilterStart || incomeDateFilterEnd) && (
               <button
-                onClick={() => {
-                  setIncomeDateFilterStart('');
-                  setIncomeDateFilterEnd('');
-                }}
+                onClick={() => { setIncomeDateFilterStart(''); setIncomeDateFilterEnd(''); }}
                 style={{
-                  color: 'white',
-                  background: 'rgba(46,204,113,0.6)',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '2px 8px',
-                  fontSize: '0.7em',
-                  cursor: 'pointer',
-                  marginTop: '2px'
+                  color: '#fff', background: 'rgba(46,204,113,0.6)', border: 'none',
+                  borderRadius: 4, padding: '2px 8px', fontSize: '0.7em', cursor: 'pointer',
                 }}
               >
                 {translations.general.clearFilter || 'Clear'}
@@ -392,7 +507,7 @@ export default function IncomeSection({
             )}
           </div>
         </th>
-        <th style={{ textAlign: 'center', verticalAlign: 'middle' }}></th>
+        <th></th>
       </tr>
     );
   }
@@ -400,8 +515,6 @@ export default function IncomeSection({
   function renderIncomeItems(chosenIncomesToShow) {
     let filtered = chosenIncomesToShow.filter((add) => {
       const addDate = new Date(add.date).toISOString().slice(0, 10);
-      
-      // Date range filter
       let dateMatch = true;
       if (incomeDateFilterStart && incomeDateFilterEnd) {
         dateMatch = addDate >= incomeDateFilterStart && addDate <= incomeDateFilterEnd;
@@ -410,20 +523,16 @@ export default function IncomeSection({
       } else if (incomeDateFilterEnd) {
         dateMatch = addDate <= incomeDateFilterEnd;
       }
-      
       return (
         (!incomeCategoryFilter ||
           add.categoryTag.translations[language] === incomeCategoryFilter) &&
         (!incomeNoteFilter ||
           (add.notes &&
-            add.notes
-              .toLowerCase()
-              .includes(incomeNoteFilter.toLowerCase()))) &&
+            add.notes.toLowerCase().includes(incomeNoteFilter.toLowerCase()))) &&
         dateMatch
       );
     });
 
-    // Apply sorting
     if (sortColumn) {
       filtered = [...filtered].sort((a, b) => {
         let aVal, bVal;
@@ -461,8 +570,6 @@ export default function IncomeSection({
     const rows = [
       ...filtered.map((add, index) => {
         let colorKey = undefined;
-
-        // Use the key directly as it matches the keys in incomeCategoryColors
         if (add.categoryTag && add.categoryTag.key) {
           colorKey = add.categoryTag.key;
         } else if (add.categoryTag && add.categoryTag.label) {
@@ -471,8 +578,6 @@ export default function IncomeSection({
           const keys = Object.keys(add.categoryTag.translations);
           if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
         }
-
-        // Use same color processing as pie chart
         const rawColor = incomeCategoryColors[colorKey] || 'rgba(181, 222, 209, 0.35)';
         const processedColor = isHidden 
           ? getGrayscaleColor(rawColor, index)
@@ -480,16 +585,11 @@ export default function IncomeSection({
         const rowGradient = getGradientForCategory(processedColor);
         return (
           <tr key={index} style={{ background: rowGradient }}>
-            <td>
-              {isHidden ? '****' : add.categoryTag.translations[language]}
-            </td>
+            <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
             <td>
               {isHidden
                 ? '****'
-                : add.amount.toLocaleString('it-IT', {
-                    minimumFractionDigits: 2,
-                  })}{' '}
-              €
+                : add.amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}€
             </td>
             <td>{isHidden ? '****' : add.notes}</td>
             <td>
@@ -501,56 +601,17 @@ export default function IncomeSection({
                   })()}
             </td>
             <td>
-              <div style={{
-                display: 'flex',
-                gap: '6px',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {/* Edit button - disabled for future functionality */}
-                <button
-                  disabled
-                  title="Funzionalità in arrivo - Modifica entrata"
-                  style={{
-                    background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '4px 6px',
-                    fontSize: '0.8rem',
-                    cursor: 'not-allowed',
-                    opacity: 0.6,
-                    boxShadow: '0 2px 4px rgba(156, 163, 175, 0.3)'
-                  }}
-                >
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
+                <ActionBtn className="edit" disabled title="Funzionalità in arrivo">
                   <FontAwesomeIcon icon={faPen} />
-                </button>
-                {/* Delete button */}
-                <button
+                </ActionBtn>
+                <ActionBtn
+                  className="delete"
                   data-umami-event="deleteIncome"
                   onClick={() => onDeleteIncome(add.date, add.amount)}
-                  style={{
-                    background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '4px 6px',
-                    fontSize: '0.8rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 4px rgba(255, 107, 107, 0.3)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'scale(1.05)';
-                    e.target.style.boxShadow = '0 4px 8px rgba(255, 107, 107, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'scale(1)';
-                    e.target.style.boxShadow = '0 2px 4px rgba(255, 107, 107, 0.3)';
-                  }}
                 >
                   <FontAwesomeIcon icon={faTimes} />
-                </button>
+                </ActionBtn>
               </div>
             </td>
           </tr>
@@ -559,148 +620,79 @@ export default function IncomeSection({
     ];
     if (filtersActive) {
       rows.push(
-        <tr
-          key="total-filtered-income"
-          style={{ background: '#1ec6a6', fontWeight: 700 }}
-        >
-          <td
-            colSpan={1}
-            style={{
-              textAlign: 'center',
-              fontSize: '1.08em',
-              letterSpacing: 1,
-              color: '#1a2b2b',
-            }}
-          >
+        <TotalRow key="total-filtered-income" className="filtered">
+          <td style={{ textAlign: 'center' }}>
             {translations.general.totalFiltered || 'Total Filtered'}
           </td>
-          <td
-            colSpan={1}
-            style={{
-              textAlign: 'center',
-              fontSize: '1.08em',
-              color: '#1a2b2b',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px'
-            }}
-          >
-            <div>
-              {isHidden
-                ? '****'
-                : totals.totalFiltered.toLocaleString('it-IT', {
-                    minimumFractionDigits: 2,
-                  })}{' '}
-              €
-            </div>
+          <td style={{ textAlign: 'center' }}>
+            {isHidden
+              ? '****'
+              : totals.totalFiltered.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}€
             {!isHidden && totals.totalAll > 0 && (
-              <div style={{
-                fontSize: '0.85em',
-                opacity: 0.8,
-                fontWeight: 500,
-                background: 'rgba(255,255,255,0.2)',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}>
-                {((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%
-              </div>
+              <>
+                {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
+              </>
             )}
           </td>
           <td colSpan={3}></td>
-        </tr>,
+        </TotalRow>,
       );
     }
     rows.push(
-      <tr key="total-income" style={{ background: '#0fa37f', fontWeight: 700 }}>
-        <td
-          colSpan={1}
-          style={{
-            textAlign: 'center',
-            fontSize: '1.15em',
-            letterSpacing: 1,
-            color: '#fff',
-          }}
-        >
-          {translations.general.total}
-        </td>
-        <td
-          colSpan={1}
-          style={{ textAlign: 'center', fontSize: '1.15em', color: '#fff' }}
-        >
+      <TotalRow key="total-income" className="grand">
+        <td style={{ textAlign: 'center' }}>{translations.general.total}</td>
+        <td style={{ textAlign: 'center' }}>
           {isHidden
             ? '****'
-            : totals.totalAll.toLocaleString('it-IT', {
-                minimumFractionDigits: 2,
-              })}{' '}
-          €
+            : totals.totalAll.toLocaleString('it-IT', { minimumFractionDigits: 2 })}{' '}€
         </td>
         <td colSpan={3}></td>
-      </tr>,
+      </TotalRow>,
     );
     return rows;
   }
 
+  /* ─── MUI Select shared sx ─── */
+  const selectSx = {
+    borderRadius: '10px',
+    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'}`,
+    fontSize: '0.9rem',
+    background: theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white',
+    color: theme.textColor,
+    minHeight: '42px',
+    width: '100%',
+    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+    '& .MuiSelect-select': { padding: '8px 12px' },
+    '& .MuiSvgIcon-root': { color: theme.textColor },
+  };
+
   return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
-      {/* Form Fields Container - Desktop responsive */}
-      <div style={{
-        display: 'flex', 
-        flexDirection: window.innerWidth > 768 ? 'row' : 'column',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: window.innerWidth > 768 ? '2rem' : '1rem',
-        width: '100%',
-        marginBottom: '2rem',
-        padding: '0 1rem'
-      }}>
-        {/* Category Select */}
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
-          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {translations.general.category}
-          </label>
+    <SectionWrapper>
+      {/* ── Quick-add Form ── */}
+      <FormCard>
+        {/* Category */}
+        <FormField>
+          <FieldLabel theme={theme}>{translations.general.category}</FieldLabel>
           <Select
             value={categoryIncome.value}
             onChange={(event) => {
               const selectedKey = event.target.value;
-              const selectedItem = incomesTags.find(
-                (item) => item.index === selectedKey,
-              );
-
+              const selectedItem = incomesTags.find((item) => item.index === selectedKey);
               if (selectedItem) {
-                const selectedValue = selectedItem.translations[language];
                 setCategoryIncome({
                   key: selectedKey,
-                  value: selectedValue,
+                  value: selectedItem.translations[language],
                 });
               }
             }}
-            style={{ 
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-              minHeight: '48px',
-              width: '100%'
-            }}
+            sx={selectSx}
             displayEmpty
-            renderValue={(value) => {
-              if (value === '') {
-                return translations.insert.incomeSection
-                  .placeholderCategory;
-              }
-              return value;
-            }}
+            renderValue={(value) =>
+              value === '' ? translations.insert.incomeSection.placeholderCategory : value
+            }
           >
             <MenuItem value="">
-              <em>
-                {
-                  translations.insert.incomeSection
-                    .placeholderCategory
-                }
-              </em>
+              <em>{translations.insert.incomeSection.placeholderCategory}</em>
             </MenuItem>
             {sortTagsByLanguage(incomesTags, language).map((item) => (
               <MenuItem key={item.index} value={item.index}>
@@ -708,253 +700,112 @@ export default function IncomeSection({
               </MenuItem>
             ))}
           </Select>
-        </div>
+        </FormField>
 
-        {/* Amount Input */}
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
-          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {translations.general.value}
-          </label>
-          <div style={inputCurrencyWrapper}>
-            <span style={currencySymbolStyle}>€</span>
-            <input
+        {/* Amount */}
+        <FormField>
+          <FieldLabel theme={theme}>{translations.general.value}</FieldLabel>
+          <CurrencyInputWrap>
+            <CurrencySymbol theme={theme}>€</CurrencySymbol>
+            <CurrencyInput
               type="text"
+              theme={theme}
               value={income}
               onChange={(e) => handleInputChange(e, setIncome)}
               onBlur={(e) => handleInputBlur(e, setIncome)}
               placeholder="0"
-              style={inputWithCurrency}
             />
-          </div>
-        </div>
+          </CurrencyInputWrap>
+        </FormField>
 
-        {/* Date Input */}
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
-          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
-            {translations.general.date}
-          </label>
-          <StyledDateInput
+        {/* Date */}
+        <FormField>
+          <FieldLabel theme={theme}>{translations.general.date}</FieldLabel>
+          <FieldInput
             type="date"
+            theme={theme}
             value={incomeDate}
             onChange={handleIncomeDateChange}
             max={currentDate}
-            style={{
-              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-              borderRadius: '12px',
-              padding: '12px 16px',
-              fontSize: '1rem',
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-              color: theme.textColor,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              minHeight: '48px',
-              width: '100%'
-            }}
           />
-        </div>
+        </FormField>
 
-        {/* Balance Destination Select */}
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 200, maxWidth: 280}}>
-          <label style={{color: theme.textColor, marginBottom: '8px', fontWeight: 500, textAlign: 'center'}}>
+        {/* Balance destination */}
+        <FormField>
+          <FieldLabel theme={theme}>
             {translations.insert.incomeSection.increaseWhichBalance || 'Aggiungi a'}
-          </label>
+          </FieldLabel>
           <Select
             value={selectedOption}
             onChange={(e) => setSelectedOption(e.target.value)}
-            style={{ 
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-              minHeight: '48px',
-              width: '100%'
-            }}
+            sx={selectSx}
             displayEmpty
-            renderValue={(value) => {
-              if (value === '') {
-                return translations.general.selectAnOption || 'Nessuno (opzionale)';
-              }
-              return value;
-            }}
+            renderValue={(value) =>
+              value === '' ? (translations.general.selectAnOption || 'Nessuno (opzionale)') : value
+            }
           >
             <MenuItem value="">
               <em>{translations.general.selectAnOption || 'Nessuno (opzionale)'}</em>
             </MenuItem>
             {balanceOptions && Object.keys(balanceOptions).map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
+              <MenuItem key={option} value={option}>{option}</MenuItem>
             ))}
           </Select>
-        </div>
-      </div>
+        </FormField>
 
-      {/* Note and Button Container */}
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '600px'}}>
-        <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-          <StyledTextArea
+        {/* Note — spans full width on wider screens */}
+        <FormField style={{ gridColumn: '1 / -1' }}>
+          <FieldLabel theme={theme}>
+            {translations.insert.incomeSection.tableColumns?.note || 'Note'}
+          </FieldLabel>
+          <NoteArea
+            theme={theme}
             value={noteIncomeAreaValue}
             onChange={(e) => setNoteIncomeAreaValue(e.target.value)}
             maxLength={64}
-            placeholder={
-              translations.insert.incomeSection.placeholderNote
-            }
-            style={{
-              width: '100%',
-              maxWidth: '400px',
-              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-              borderRadius: '12px',
-              padding: '12px 16px',
-              fontSize: '1rem',
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-              color: theme.textColor,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              minHeight: '80px',
-              resize: 'vertical'
-            }}
+            placeholder={translations.insert.incomeSection.placeholderNote}
+            rows={1}
           />
-        </div>
-        <div style={{display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '24px'}}>
-          <ModernActionButton theme={theme} onClick={onAddIncome}>
-            {translations.insert.incomeSection.updateButton}
-          </ModernActionButton>
-        </div>
-      </div>
+        </FormField>
+      </FormCard>
 
-      {/* Unified Table Container with Month Selection */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '100%',
-          background: theme.mode === 'dark' 
-            ? `linear-gradient(135deg, ${theme.backgroundColor}f0 0%, ${theme.backgroundColor}f8 100%)`
-            : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`,
-          border: `1px solid ${theme.mode === 'dark' 
-            ? `${theme.buttonBackgroundColor}30`
-            : '#e2e8f0'}`,
-          borderRadius: '16px',
-          backdropFilter: 'blur(10px)',
-          boxShadow: theme.mode === 'dark' 
-            ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
-            : '0 2px 12px rgba(0, 0, 0, 0.06)'
-        }}
-      >
-        {/* Header with Title and Month Selection */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1.5rem 1rem 1rem 1rem',
-          borderBottom: `1px solid ${theme.mode === 'dark' 
-            ? `${theme.buttonBackgroundColor}20`
-            : '#e2e8f0'}`,
-          gap: '1rem'
-        }}>
-          <h3 style={{
-            color: theme.textColor,
-            fontSize: '1.2rem',
-            fontWeight: '600',
-            textAlign: 'center',
-            letterSpacing: '-0.01em',
-            margin: 0
-          }}>
+      <FormFooter>
+        <ModernActionButton theme={theme} onClick={onAddIncome}>
+          {translations.insert.incomeSection.updateButton}
+        </ModernActionButton>
+      </FormFooter>
+
+      {/* ── Transaction Table ── */}
+      <TableSection theme={theme}>
+        <TableHeader theme={theme}>
+          <TableTitle theme={theme}>
             {translations.insert.incomeSection.titleListing}
-          </h3>
-          <select
-            className="text-black text-center font-medium"
-            style={{ 
-              borderRadius: '12px',
-              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}40` : '#e2e8f0'}`,
-              padding: '12px 20px',
-              fontSize: '1rem',
-              background: 'white',
-              color: '#374151',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              minWidth: '200px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
+          </TableTitle>
+          <MonthSelect
+            theme={theme}
             value={selectedIncomesMonth}
             onChange={handleIncomesMonthChange}
           >
             {incomeMonthOptions &&
               incomeMonthOptions.length > 0 &&
               incomeMonthOptions.map((option) => (
-                <option
-                  className="text-center"
-                  key={option.value}
-                  value={option.value}
-                >
+                <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
-          </select>
-        </div>
-        
-        {/* Table Container */}
-        <div style={{
-          overflowX: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          padding: '1rem',
-          display: 'flex',
-          justifyContent: 'center',
-          width: '100%'
-        }}>
-        <StyledTable theme={theme} className="income-table">
-          <thead>{renderTableHeader()}</thead>
-          <tbody>
-            {renderIncomeItems(
-              getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey),
-            )}
-          </tbody>
-        </StyledTable>
-        <style>{`
-          @media (max-width: 768px) {
-            table, .StyledTable, .StyledTable th, .StyledTable td {
-              font-size: 0.8em !important;
-              padding: 6px 4px !important;
-              min-width: 50px !important;
-            }
-            .StyledTable th, .StyledTable td {
-              line-height: 1.2 !important;
-              word-break: break-word !important;
-            }
-            .StyledTable select, .StyledTable input {
-              font-size: 0.8em !important;
-              padding: 4px 6px !important;
-              min-width: 90px !important;
-              border-radius: 4px !important;
-            }
-            .StyledTable button {
-              font-size: 0.75em !important;
-              padding: 3px 5px !important;
-              min-width: 28px !important;
-              border-radius: 4px !important;
-            }
-            .StyledTable .MuiInputBase-root, .StyledTable .MuiSelect-root {
-              font-size: 0.8em !important;
-            }
-          }
-          @media (max-width: 480px) {
-            table, .StyledTable, .StyledTable th, .StyledTable td {
-              font-size: 0.7em !important;
-              padding: 4px 2px !important;
-            }
-            .StyledTable select, .StyledTable input {
-              font-size: 0.7em !important;
-              padding: 2px 4px !important;
-              min-width: 70px !important;
-            }
-            .StyledTable button {
-              font-size: 0.7em !important;
-              padding: 2px 3px !important;
-              min-width: 24px !important;
-            }
-          }
-        `}</style>
-        </div>
-      </div>
-    </div>
+          </MonthSelect>
+        </TableHeader>
+        <TableScroll>
+          <StyledTable theme={theme} className="income-table">
+            <thead>{renderTableHeader()}</thead>
+            <tbody>
+              {renderIncomeItems(
+                getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey),
+              )}
+            </tbody>
+          </StyledTable>
+        </TableScroll>
+      </TableSection>
+    </SectionWrapper>
   );
 }

@@ -624,6 +624,7 @@
     },
     "insert": {
         "title": "Insert Data",
+        "subtitle": "Manage your balance, income and outflows",
         "buttonBalance": "Update Balance",
         "buttonIncome": "Add Income",
         "buttonOutflow": "Add Outflow",

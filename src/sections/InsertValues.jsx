@@ -1,21 +1,20 @@
 
 import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import { ButtonGroup } from "@mui/material";
 import axios from "axios";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
-import {
-  MySectionButton,
-  StyledSection,
-  StandardPageTitle,
-} from "../styles/MyStyled";
 import BalanceSection from "../components/BalanceSection";
 import IncomeSection from "../components/IncomeSection";
 import OutflowSection from "../components/OutflowSection";
 import InsertModals from "../components/InsertModals";
-import styled from 'styled-components';
-import { UploadFile as UploadFileIcon } from "@mui/icons-material";
+import styled, { css, keyframes } from 'styled-components';
+import {
+  UploadFile as UploadFileIcon,
+  AccountBalance as AccountBalanceIcon,
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+} from "@mui/icons-material";
 
 const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 import {
@@ -27,219 +26,236 @@ import {
 
 const currentDate = new Date().toISOString().split("T")[0];
 
-// Modern styled components for the redesigned page
-const ModernContainer = styled.div`
+/* ─────────────── Styled Components ─────────────── */
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const PageContainer = styled.div`
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   background: ${(props) => props.theme.backgroundColor};
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem 0;
   width: 100%;
   
   @media (max-width: 768px) {
-    padding: 4rem 0.5rem 1rem 0.5rem; /* Aumentato padding-top per mobile */
+    padding: 3.5rem 0.75rem 0;
   }
 `;
 
 const ContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   width: 100%;
 `;
 
-const ModernTitle = styled.h1`
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+const PageHeader = styled.div`
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   
   @media (max-width: 768px) {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
 `;
 
-const ModernButtonGroup = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 3rem;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  
-  @media (max-width: 768px) {
-    margin-bottom: 2rem;
-    gap: 0.25rem;
-  }
+const PageTitle = styled.h1`
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: ${(props) => props.theme.textColor};
+  margin: 0 0 0.25rem 0;
 `;
 
-const ModernSectionButton = styled.button`
-  background: ${(props) => props.$isActive 
-    ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor} 0%, ${props.theme.buttonBackgroundColor}dd 100%)`
-    : 'transparent'};
-  color: ${(props) => props.$isActive ? 'white' : props.theme.textColor};
-  border: 2px solid ${(props) => props.theme.buttonBackgroundColor};
-  padding: ${(props) => props.$isActive ? '1rem 2rem' : '0.875rem 1.5rem'};
-  border-radius: 12px;
-  font-family: 'Inter', sans-serif;
-  font-size: ${(props) => props.$isActive ? '1.1rem' : '1rem'};
-  font-weight: ${(props) => props.$isActive ? '700' : '600'};
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-  position: relative;
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  ${(props) => props.$isActive && `
-    box-shadow: 0 0 0 4px ${props.theme.buttonBackgroundColor}30, 
-                0 8px 32px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transform: scale(1.05) translateY(-3px);
-    z-index: 10;
-    border-width: 3px;
-    
-    &:before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(135deg, ${props.theme.buttonBackgroundColor}80, ${props.theme.buttonBackgroundColor}40);
-      border-radius: 14px;
-      z-index: -1;
-      opacity: 0.6;
-      filter: blur(4px);
-    }
-  `}
-  
-  &:hover {
-    background: ${(props) => props.$isActive 
-      ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}dd 0%, ${props.theme.buttonBackgroundColor}bb 100%)`
-      : `${props.theme.buttonBackgroundColor}20`};
-    transform: ${(props) => props.$isActive 
-      ? 'scale(1.05) translateY(-4px)' 
-      : 'scale(1.02) translateY(-2px)'};
-    box-shadow: ${(props) => props.$isActive 
-      ? `0 0 0 4px ${props.theme.buttonBackgroundColor}40, 0 12px 40px rgba(0, 0, 0, 0.25)`
-      : '0 6px 20px rgba(0, 0, 0, 0.15)'};
-    border-color: ${(props) => props.theme.buttonBackgroundColor};
-  }
-  
-  /* Indicatore visivo per il pulsante attivo */
-  ${(props) => props.$isActive && `
-    &:after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 3px;
-      background: ${props.theme.buttonBackgroundColor};
-      border-radius: 2px;
-      box-shadow: 0 2px 8px ${props.theme.buttonBackgroundColor}60;
-    }
-  `}
-  
-  @media (max-width: 768px) {
-    padding: ${(props) => props.$isActive ? '0.875rem 1.25rem' : '0.75rem 1rem'};
-    font-size: ${(props) => props.$isActive ? '1rem' : '0.9rem'};
-    flex: 1;
-    min-width: 100px;
-    min-height: 48px;
-    
-    ${(props) => props.$isActive && `
-      &:after {
-        bottom: -6px;
-        width: 30px;
-        height: 2px;
-      }
-    `}
-  }
-`;
-
-const SectionContainer = styled.div`
-  background: ${(props) => props.theme.mode === 'dark' 
-    ? `linear-gradient(135deg, ${props.theme.backgroundColor}f0 0%, ${props.theme.backgroundColor}f8 100%)`
-    : `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)`};
-  border: 1px solid ${(props) => props.theme.mode === 'dark' 
-    ? `${props.theme.buttonBackgroundColor}30`
-    : '#e2e8f0'};
-  border-radius: 20px;
-  padding: 2rem;
-  margin: 0 auto 2rem auto;
-  backdrop-filter: blur(10px);
-  box-shadow: ${(props) => props.theme.mode === 'dark' 
-    ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
-    : '0 4px 20px rgba(0, 0, 0, 0.08)'};
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 1000px;
-  
-  &:hover {
-    box-shadow: ${(props) => props.theme.mode === 'dark' 
-      ? '0 12px 40px rgba(0, 0, 0, 0.4)' 
-      : '0 8px 30px rgba(0, 0, 0, 0.12)'};
-  }
-  
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-    border-radius: 16px;
-    margin-bottom: 1.5rem;
-    max-width: 95%;
-  }
-
-  /* Ensure all direct children are properly centered */
-  & > * {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-`;
-
-const ImportButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: 12px;
-  border: 2px dashed ${(props) => props.theme.buttonBackgroundColor}80;
-  background: ${(props) => props.theme.mode === 'dark'
-    ? `${props.theme.buttonBackgroundColor}15`
-    : `${props.theme.buttonBackgroundColor}08`};
-  color: ${(props) => props.theme.buttonBackgroundColor};
-  font-weight: 600;
+const PageSubtitle = styled.p`
   font-size: 0.9rem;
+  color: ${(props) => props.theme.textColor};
+  opacity: 0.5;
+  margin: 0;
+  font-weight: 400;
+`;
+
+/* ── Segmented Control (Tab Bar) ── */
+const TabBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+    gap: 0;
+  }
+`;
+
+const TabGroup = styled.div`
+  display: inline-flex;
+  background: ${(props) => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.06)'
+    : 'rgba(0, 0, 0, 0.04)'};
+  border-radius: 14px;
+  padding: 4px;
+  gap: 2px;
+  border: 1px solid ${(props) => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.08)'
+    : 'rgba(0, 0, 0, 0.06)'};
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    border-radius: 12px;
+  }
+`;
+
+const TabButton = styled.button`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 11px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: ${(props) => props.$isActive ? '600' : '500'};
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  
+  background: ${(props) => props.$isActive
+    ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}dd)`
+    : 'transparent'};
+  color: ${(props) => props.$isActive 
+    ? 'white' 
+    : props.theme.textColor};
+  opacity: ${(props) => props.$isActive ? 1 : 0.7};
+  
+  ${(props) => props.$isActive && css`
+    box-shadow: 0 2px 8px ${props.theme.buttonBackgroundColor}40,
+                0 1px 2px rgba(0, 0, 0, 0.1);
+  `}
+  
+  &:hover {
+    opacity: 1;
+    background: ${(props) => props.$isActive
+      ? `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}dd)`
+      : props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'};
+  }
+  
+  & > svg {
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 768px) {
+    flex: 1;
+    padding: 0.55rem 0.5rem;
+    font-size: 0.8rem;
+    gap: 0.3rem;
+    border-radius: 10px;
+    
+    & > svg {
+      font-size: 1rem;
+    }
+  }
+`;
+
+/* ── Import CTA ── */
+const ImportLink = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid ${(props) => props.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.12)'
+    : 'rgba(0,0,0,0.1)'};
+  background: transparent;
+  color: ${(props) => props.theme.buttonBackgroundColor};
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
   white-space: nowrap;
 
   &:hover {
-    border-color: ${(props) => props.theme.buttonBackgroundColor};
-    background: ${(props) => props.theme.buttonBackgroundColor}25;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px ${(props) => props.theme.buttonBackgroundColor}30;
+    background: ${(props) => props.theme.buttonBackgroundColor}12;
+    border-color: ${(props) => props.theme.buttonBackgroundColor}50;
+    transform: translateY(-1px);
+  }
+  
+  & > svg {
+    font-size: 0.95rem;
   }
 
   @media (max-width: 768px) {
-    width: 100%;
-    justify-content: center;
-    padding: 0.75rem 1rem;
-    font-size: 0.85rem;
+    display: none;
   }
 `;
 
+const ImportLinkMobile = styled.button`
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    border: 1px solid ${(props) => props.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.1)'
+      : 'rgba(0,0,0,0.08)'};
+    background: ${(props) => props.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.03)'
+      : 'rgba(0,0,0,0.02)'};
+    color: ${(props) => props.theme.buttonBackgroundColor};
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    & > svg {
+      font-size: 1rem;
+    }
+    
+    &:hover {
+      background: ${(props) => props.theme.buttonBackgroundColor}10;
+    }
+  }
+`;
+
+/* ── Section Card ── */
+const SectionCard = styled.div`
+  background: ${(props) => props.theme.mode === 'dark' 
+    ? `linear-gradient(180deg, ${props.theme.backgroundColor} 0%, ${props.theme.backgroundColor}f5 100%)`
+    : 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)'};
+  border: 1px solid ${(props) => props.theme.mode === 'dark' 
+    ? 'rgba(255, 255, 255, 0.07)'
+    : '#e8ecf1'};
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 0 auto 1.5rem auto;
+  box-shadow: ${(props) => props.theme.mode === 'dark' 
+    ? '0 4px 24px rgba(0, 0, 0, 0.25)' 
+    : '0 2px 16px rgba(0, 0, 0, 0.05)'};
+  width: 100%;
+  max-width: 1000px;
+  animation: ${fadeIn} 0.3s ease-out;
+  
+  @media (max-width: 768px) {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+  }
+`;
+
+/* ── Import Modal ── */
 const ImportOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -248,14 +264,14 @@ const ImportOverlay = styled.div`
   bottom: 0;
   z-index: 9999;
   background: ${(props) => props.theme.mode === 'dark'
-    ? 'rgba(0, 0, 0, 0.85)'
-    : 'rgba(0, 0, 0, 0.5)'};
+    ? 'rgba(0, 0, 0, 0.8)'
+    : 'rgba(15, 23, 42, 0.4)'};
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   overflow-y: auto;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
 `;
 
 const ImportModalContent = styled.div`
@@ -266,10 +282,9 @@ const ImportModalContent = styled.div`
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  border: 1px solid ${(props) => props.theme.mode === 'dark'
-    ? `${props.theme.buttonBackgroundColor}30`
-    : '#e2e8f0'};
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3),
+              0 0 0 1px ${(props) => props.theme.mode === 'dark'
+                ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'};
   position: relative;
 
   @media (max-width: 768px) {
@@ -281,23 +296,37 @@ const ImportModalContent = styled.div`
 
 const ImportCloseButton = styled.button`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: ${(props) => props.theme.mode === 'dark' 
+    ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
   border: none;
   cursor: pointer;
   color: ${(props) => props.theme.textColor};
-  opacity: 0.5;
-  font-size: 1.5rem;
+  opacity: 0.6;
+  font-size: 1.1rem;
   line-height: 1;
-  padding: 0.25rem 0.5rem;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
   z-index: 10;
 
   &:hover {
     opacity: 1;
-    background: ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
+    background: ${(props) => props.theme.mode === 'dark' 
+      ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
+  }
+`;
+
+const BottomSpacer = styled.div`
+  height: 300px;
+  
+  @media (max-width: 768px) {
+    height: 200px;
   }
 `;
 
@@ -935,7 +964,7 @@ export default function InsertValue({
   const renderPage = () => {
     if (activePage === "bilancio") {
       return (
-        <SectionContainer theme={theme}>
+        <SectionCard theme={theme}>
           <BalanceSection
             theme={theme}
             isHidden={isHidden}
@@ -967,11 +996,11 @@ export default function InsertValue({
             language={language}
             translations={translations}
           />
-        </SectionContainer>
+        </SectionCard>
       );
     } else if (activePage === "income") {
       return (
-        <SectionContainer theme={theme}>
+        <SectionCard theme={theme}>
           <IncomeSection
             theme={theme}
             isHidden={isHidden}
@@ -1007,11 +1036,11 @@ export default function InsertValue({
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
           />
-        </SectionContainer>
+        </SectionCard>
       );
     } else if (activePage === "outflows") {
       return (
-        <SectionContainer theme={theme}>
+        <SectionCard theme={theme}>
           <OutflowSection
             theme={theme}
             isHidden={isHidden}
@@ -1052,58 +1081,74 @@ export default function InsertValue({
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
           />
-        </SectionContainer>
+        </SectionCard>
       );
     }
   };
 
   return (
-    <ModernContainer theme={theme}>
+    <PageContainer theme={theme}>
       <ContentWrapper>
-        <ModernTitle theme={theme}>
-          {translations.insert.title}
-        </ModernTitle>
+        <PageHeader>
+          <PageTitle theme={theme}>
+            {translations.insert.title}
+          </PageTitle>
+          <PageSubtitle theme={theme}>
+            {translations.insert.subtitle}
+          </PageSubtitle>
+        </PageHeader>
         
-        <ModernButtonGroup>
-          <ModernSectionButton
-            theme={theme}
-            $isActive={activePage === "bilancio"}
-            onClick={() => setActivePage("bilancio")}
-          >
-            {translations.insert.buttonBalance}
-          </ModernSectionButton>
-          <ModernSectionButton
-            theme={theme}
-            $isActive={activePage === "income"}
-            onClick={() => setActivePage("income")}
-          >
-            {translations.insert.buttonIncome}
-          </ModernSectionButton>
-          <ModernSectionButton
-            theme={theme}
-            $isActive={activePage === "outflows"}
-            onClick={() => setActivePage("outflows")}
-          >
-            {translations.insert.buttonOutflow}
-          </ModernSectionButton>
-        </ModernButtonGroup>
-
-        {/* Import from file button - only for income/outflows, not balance */}
-        {activePage !== "bilancio" && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginBottom: '1.5rem',
-          }}>
-            <ImportButton
+        <TabBar>
+          <TabGroup theme={theme}>
+            <TabButton
+              theme={theme}
+              $isActive={activePage === "bilancio"}
+              onClick={() => setActivePage("bilancio")}
+            >
+              <AccountBalanceIcon />
+              {translations.insert.buttonBalance}
+            </TabButton>
+            <TabButton
+              theme={theme}
+              $isActive={activePage === "income"}
+              onClick={() => setActivePage("income")}
+            >
+              <TrendingUpIcon />
+              {translations.insert.buttonIncome}
+            </TabButton>
+            <TabButton
+              theme={theme}
+              $isActive={activePage === "outflows"}
+              onClick={() => setActivePage("outflows")}
+            >
+              <TrendingDownIcon />
+              {translations.insert.buttonOutflow}
+            </TabButton>
+          </TabGroup>
+          
+          {/* Import button — desktop: inline next to tabs */}
+          {activePage !== "bilancio" && (
+            <ImportLink
               theme={theme}
               onClick={() => setShowImportWizard(true)}
               data-umami-event="insert-import-csv-open"
             >
-              <UploadFileIcon fontSize="small" />
-              {translations.insert.importFromFile || (language === 'it' ? 'Importa da CSV / Excel' : 'Import from CSV / Excel')}
-            </ImportButton>
-          </div>
+              <UploadFileIcon />
+              {translations.insert.importFromFile || 'CSV / Excel'}
+            </ImportLink>
+          )}
+        </TabBar>
+
+        {/* Import button — mobile: full-width below tabs */}
+        {activePage !== "bilancio" && (
+          <ImportLinkMobile
+            theme={theme}
+            onClick={() => setShowImportWizard(true)}
+            data-umami-event="insert-import-csv-open-mobile"
+          >
+            <UploadFileIcon />
+            {translations.insert.importFromFile || (language === 'it' ? 'Importa da CSV / Excel' : 'Import from CSV / Excel')}
+          </ImportLinkMobile>
         )}
 
         {renderPage()}
@@ -1177,10 +1222,8 @@ export default function InsertValue({
           onConfirmDeleteOutflow={handleOutflowsDelete}
         />
 
-        
-        {/* Spacer per evitare che il popup di navigazione appaia troppo presto su mobile */}
-        <div style={{ height: '400px' }}></div>
+        <BottomSpacer />
       </ContentWrapper>
-    </ModernContainer>
+    </PageContainer>
   );
 }

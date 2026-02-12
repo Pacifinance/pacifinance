@@ -1,43 +1,210 @@
 import React from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { Select, MenuItem } from '@mui/material';
+import styled from 'styled-components';
 import {
-  StyledDateInput,
   ModernActionButton,
 } from '../styles/MyStyled';
+import { getAssetIcon } from '../data/assetIcons';
+import { getAssetColor } from '../data/assetColors';
 
+/* ─── Helpers ─── */
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
-    .replace(/,/g, '.') // Substitute commas with dots
-    .replace(/[^\d.]/g, ''); // Remove all non-numeric characters except dots
-
-  // Remove extra dots
+    .replace(/,/g, '.')
+    .replace(/[^\d.]/g, '');
   const dotIndex = cleanedValue.indexOf('.');
   if (dotIndex !== -1) {
     cleanedValue =
       cleanedValue.substring(0, dotIndex + 1) +
       cleanedValue.substring(dotIndex + 1).replace(/\./g, '');
   }
-
-  // Add leading zero if starts with a dot
   if (cleanedValue.startsWith('.')) {
     cleanedValue = '0' + cleanedValue;
   }
-
   setterFunction(cleanedValue);
 };
 
 const handleInputBlur = (e, setterFunction) => {
   const cleanedValue = e.target.value
-    .replace(/,/g, '.') // Substitute commas with dots
-    .replace(/[^\d.]/g, '') // Remove all non-numeric characters except dots
-    .replace(/^0+(\d)/, '$1'); // Remove leading zeros
+    .replace(/,/g, '.')
+    .replace(/[^\d.]/g, '')
+    .replace(/^0+(\d)/, '$1');
   const cleanedFinalValue = Number(cleanedValue).toLocaleString('it-IT', {
     minimumFractionDigits: 2,
   });
   if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
 };
 
+/* ─── Styled Components ─── */
+const SectionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1.5rem;
+`;
+
+const GroupCard = styled.div`
+  width: 100%;
+`;
+
+const GroupHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.08)'
+    : 'rgba(0,0,0,0.06)'};
+`;
+
+const GroupTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${(p) => p.theme.textColor};
+  margin: 0;
+  letter-spacing: -0.01em;
+`;
+
+const GroupBadge = styled.span`
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.06)'
+    : 'rgba(0,0,0,0.04)'};
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.6;
+`;
+
+const AssetGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+`;
+
+const AssetItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.03)'
+    : 'rgba(0,0,0,0.015)'};
+  border: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.05)'
+    : 'rgba(0,0,0,0.04)'};
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${(p) => p.$color || p.theme.buttonBackgroundColor}40;
+    background: ${(p) => p.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.05)'
+      : 'rgba(0,0,0,0.02)'};
+  }
+
+  &:focus-within {
+    border-color: ${(p) => p.$color || p.theme.buttonBackgroundColor}80;
+    box-shadow: 0 0 0 3px ${(p) => p.$color || p.theme.buttonBackgroundColor}15;
+  }
+`;
+
+const AssetLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.8;
+`;
+
+const AssetIconWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: ${(p) => p.$color}18;
+  color: ${(p) => p.$color};
+  font-size: 0.75rem;
+  flex-shrink: 0;
+`;
+
+const CurrencyInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+
+const CurrencySymbol = styled.span`
+  position: absolute;
+  left: 0.7rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.35;
+  font-size: 0.85rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+const CurrencyInput = styled.input`
+  width: 100%;
+  padding: 0.55rem 0.7rem 0.55rem 1.6rem;
+  border: 1px solid ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.1)'
+    : '#e2e8f0'};
+  border-radius: 8px;
+  color: ${(p) => p.theme.textColor};
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'rgba(255,255,255,0.04)'
+    : 'white'};
+  outline: none;
+  transition: all 0.2s ease;
+  text-align: right;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: ${(p) => p.$color || p.theme.buttonBackgroundColor};
+    box-shadow: 0 0 0 3px ${(p) => p.$color || p.theme.buttonBackgroundColor}15;
+  }
+
+  &::placeholder {
+    color: ${(p) => p.theme.textColor};
+    opacity: 0.3;
+    font-weight: 400;
+  }
+`;
+
+const FooterBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+`;
+
+/* ─── Component ─── */
 export default function BalanceSection({
   theme,
   isHidden,
@@ -68,13 +235,11 @@ export default function BalanceSection({
   onUpdateBalance,
   translations,
 }) {
-
   const handleBalanceDateChange = (event) => {
     const [month, year] = event.target.value.split('-').map(Number);
     setBalanceDate({ month, year });
   };
 
-  // Create month/year options for the last 12 months
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
@@ -94,7 +259,6 @@ export default function BalanceSection({
     12: translations.months.december,
   };
 
-  // Build the last 12 months (including current) - newest first
   let monthsArray = [];
   for (let i = 0; i < 12; i++) {
     let d = new Date(currentYear, currentMonth - 1 - i, 1);
@@ -106,285 +270,117 @@ export default function BalanceSection({
     });
   }
 
-  // Wrapper e stile per input con simbolo valuta - updated for modern design
-  const inputCurrencyWrapper = {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '0.5em',
-    minWidth: 0,
-    width: '100%',
-    maxWidth: '280px', // Ridotto da 400px a 280px
-  };
-  const inputWithCurrency = {
-    textAlign: 'center',
-    padding: '12px 16px 12px 2.5em',
-    border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-    borderRadius: '12px',
-    color: theme.textColor,
-    outline: 'none',
-    width: '100%',
-    minHeight: '48px',
-    fontSize: '1rem',
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: '500',
-    background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-    boxSizing: 'border-box',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  };
-  const currencySymbolStyle = {
-    position: 'absolute',
-    left: '1em',
-    color: '#888',
-    fontSize: '1rem',
-    pointerEvents: 'none',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    lineHeight: 1,
-    fontWeight: '500',
+  /* Asset definitions with icons and colors */
+  const liquidityAssets = [
+    { key: 'bank', label: translations.assets.bank, value: bankValue, setter: setBankValue },
+    { key: 'cash', label: translations.assets.cash, value: cashValue, setter: setCashValue },
+    { key: 'digitalServices', label: translations.assets.digitalServices, value: digitalServicesValue, setter: setDigitalServicesValue },
+    { key: 'emergencyFund', label: translations.assets.emergencyFund, value: emergencyFund, setter: setEmergencyFund },
+  ];
+
+  const investmentAssets = [
+    { key: 'stocks', label: translations.assets.stocks, value: stocksValue, setter: setStocksValue },
+    { key: 'etf', label: translations.assets.etf, value: etfValue, setter: setETFValue },
+    { key: 'bitcoin', label: translations.assets.bitcoin, value: bitcoinValue, setter: setBitcoinValue },
+    { key: 'crypto', label: translations.assets.crypto, value: cryptoValue, setter: setCryptoValue },
+    { key: 'bonds', label: translations.assets.bonds, value: bondsValue, setter: setBondsValue },
+    { key: 'funds', label: translations.assets.funds, value: fundsValue, setter: setFundsValue },
+    { key: 'gold', label: translations.assets.gold, value: goldValue, setter: setGoldValue },
+  ];
+
+  const renderAssetInput = (asset) => {
+    const IconComponent = getAssetIcon(asset.key);
+    const colorData = getAssetColor(asset.key);
+    const color = typeof colorData === 'object' ? colorData.primary : colorData;
+
+    return (
+      <AssetItem key={asset.key} theme={theme} $color={color}>
+        <AssetLabel theme={theme}>
+          <AssetIconWrapper $color={color}>
+            <IconComponent />
+          </AssetIconWrapper>
+          {asset.label}
+        </AssetLabel>
+        <CurrencyInputWrapper>
+          <CurrencySymbol theme={theme}>€</CurrencySymbol>
+          <CurrencyInput
+            type="text"
+            theme={theme}
+            $color={color}
+            onChange={(e) => handleInputChange(e, asset.setter)}
+            onBlur={(e) => handleInputBlur(e, asset.setter)}
+            placeholder={isHidden ? '****' : asset.value.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+          />
+        </CurrencyInputWrapper>
+      </AssetItem>
+    );
   };
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
-      <div style={{textAlign: 'center', width: '100%', marginBottom: '2rem'}}>
-        <h3 style={{color: theme.textColor, fontSize: '1.5rem', fontWeight: '600', margin: '0 0 1.5rem 0'}}>
-          {translations.insert.balanceSection.titleLiquidity}
-        </h3>
-        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '0'}}>
-          {/* Bank */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.bank}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setBankValue)}
-                onBlur={(e) => handleInputBlur(e, setBankValue)}
-                placeholder={isHidden ? '****' : bankValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Cash */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.cash}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setCashValue)}
-                onBlur={(e) => handleInputBlur(e, setCashValue)}
-                placeholder={isHidden ? '****' : cashValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Digital Services */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.digitalServices}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setDigitalServicesValue)}
-                onBlur={(e) => handleInputBlur(e, setDigitalServicesValue)}
-                placeholder={isHidden ? '****' : digitalServicesValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Emergency Fund */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.emergencyFund}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setEmergencyFund)}
-                onBlur={(e) => handleInputBlur(e, setEmergencyFund)}
-                placeholder={isHidden ? '****' : emergencyFund.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <SectionWrapper>
+      {/* Liquidità Group */}
+      <GroupCard>
+        <GroupHeader theme={theme}>
+          <GroupTitle theme={theme}>{translations.insert.balanceSection.titleLiquidity}</GroupTitle>
+          <GroupBadge theme={theme}>{liquidityAssets.length}</GroupBadge>
+        </GroupHeader>
+        <AssetGrid>
+          {liquidityAssets.map(renderAssetInput)}
+        </AssetGrid>
+      </GroupCard>
 
-      <div style={{textAlign: 'center', width: '100%', marginBottom: '2rem'}}>
-        <h3 style={{color: theme.textColor, fontSize: '1.5rem', fontWeight: '600', margin: '0 0 1.5rem 0'}}>
-          {translations.insert.balanceSection.titleInvestments}
-        </h3>
-        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%', gap: '1.5rem', marginBottom: '0'}}>
-          {/* Stocks */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.stocks}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setStocksValue)}
-                onBlur={(e) => handleInputBlur(e, setStocksValue)}
-                placeholder={isHidden ? '****' : stocksValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* ETF */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.etf}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setETFValue)}
-                onBlur={(e) => handleInputBlur(e, setETFValue)}
-                placeholder={isHidden ? '****' : etfValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Bitcoin */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.bitcoin}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setBitcoinValue)}
-                onBlur={(e) => handleInputBlur(e, setBitcoinValue)}
-                placeholder={isHidden ? '****' : bitcoinValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Crypto */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.crypto}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setCryptoValue)}
-                onBlur={(e) => handleInputBlur(e, setCryptoValue)}
-                placeholder={isHidden ? '****' : cryptoValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Bonds */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.bonds}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setBondsValue)}
-                onBlur={(e) => handleInputBlur(e, setBondsValue)}
-                placeholder={isHidden ? '****' : bondsValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Funds */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.funds}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setFundsValue)}
-                onBlur={(e) => handleInputBlur(e, setFundsValue)}
-                placeholder={isHidden ? '****' : fundsValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-          {/* Gold */}
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 160, maxWidth: 200}}>
-            <label style={{color: theme.textColor, textAlign: 'center', marginBottom: 8, fontWeight: 500}}>
-              {translations.assets.gold}
-            </label>
-            <div style={inputCurrencyWrapper}>
-              <span style={currencySymbolStyle}>€</span>
-              <input
-                type="text"
-                onChange={(e) => handleInputChange(e, setGoldValue)}
-                onBlur={(e) => handleInputBlur(e, setGoldValue)}
-                placeholder={isHidden ? '****' : goldValue.toLocaleString('it-IT', { minimumFractionDigits: 2 })}
-                style={inputWithCurrency}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Investimenti Group */}
+      <GroupCard>
+        <GroupHeader theme={theme}>
+          <GroupTitle theme={theme}>{translations.insert.balanceSection.titleInvestments}</GroupTitle>
+          <GroupBadge theme={theme}>{investmentAssets.length}</GroupBadge>
+        </GroupHeader>
+        <AssetGrid>
+          {investmentAssets.map(renderAssetInput)}
+        </AssetGrid>
+      </GroupCard>
 
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%'}}>
-        <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-          <Select
-            value={`${balanceDate.month}-${balanceDate.year}`}
-            onChange={handleBalanceDateChange}
-            style={{
-              border: `2px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
-              borderRadius: '12px',
-              padding: '4px 6px',
-              fontSize: '0.9rem',
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white',
-              color: theme.textColor,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              minHeight: '40px',
-              minWidth: '160px'
-            }}
-            MenuProps={{
-              PaperProps: {
-                style: {
-                  background: theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.95)' : 'white',
-                  color: theme.textColor,
-                }
+      {/* Month selector + Update button */}
+      <FooterBar>
+        <Select
+          value={`${balanceDate.month}-${balanceDate.year}`}
+          onChange={handleBalanceDateChange}
+          sx={{
+            borderRadius: '10px',
+            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : '#e2e8f0'}`,
+            fontSize: '0.9rem',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white',
+            color: theme.textColor,
+            minHeight: '44px',
+            minWidth: '180px',
+            '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+            '& .MuiSelect-select': { padding: '10px 14px' },
+            '& .MuiSvgIcon-root': { color: theme.textColor },
+          }}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                background: theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.95)' : 'white',
+                color: theme.textColor,
+                borderRadius: '10px',
               }
-            }}
-          >
-            {monthsArray.map((option) => (
-              <MenuItem 
-                key={option.value} 
-                value={option.value}
-                style={{
-                  background: 'transparent',
-                  color: theme.textColor
-                }}
-              >
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </div>
-        <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-          <ModernActionButton theme={theme} onClick={onUpdateBalance}>
-            {translations.insert.balanceSection.updateButton}
-          </ModernActionButton>
-        </div>
-      </div>
-    </div>
+            }
+          }}
+        >
+          {monthsArray.map((option) => (
+            <MenuItem 
+              key={option.value} 
+              value={option.value}
+              style={{ background: 'transparent', color: theme.textColor }}
+            >
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+        <ModernActionButton theme={theme} onClick={onUpdateBalance}>
+          {translations.insert.balanceSection.updateButton}
+        </ModernActionButton>
+      </FooterBar>
+    </SectionWrapper>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
+import { LocalizedLink } from "../components/LocalizedLink";
 import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
 import {
     ModernInfoContainer,
@@ -197,6 +198,30 @@ function Info({ theme }) {
                                 <BuyMeACoffeeWidget showLink={false} />
                             </ModernCoffeeButton>
                         </a>
+
+                        <LocalizedLink
+                            to="/roadmap"
+                            style={{ textDecoration: 'none', display: 'inline-block', marginTop: '0.75rem' }}
+                            data-umami-event="info-roadmap-link-clicked"
+                        >
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.4rem',
+                                padding: '0.45rem 1rem',
+                                borderRadius: '8px',
+                                background: 'rgba(255, 255, 255, 0.15)',
+                                border: '1px solid rgba(255, 255, 255, 0.35)',
+                                color: 'rgba(255, 255, 255, 0.85)',
+                                fontWeight: '500',
+                                fontSize: '0.8rem',
+                                transition: 'all 0.3s ease',
+                                backdropFilter: 'blur(4px)',
+                            }}>
+                                🗺️ {getTranslation('info.roadmapLink')}
+                            </div>
+                        </LocalizedLink>
                     </ModernSupportSection>
                 </ModernInfoSection>
 

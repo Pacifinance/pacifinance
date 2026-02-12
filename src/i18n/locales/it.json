@@ -261,7 +261,7 @@
     },
     "roadmap": {
         "title": "Roadmap",
-        "subtitle": "Scopri dove sta andando PaciFinance. Ogni funzionalità nasce dal feedback della community.",
+        "subtitle": "Scopri dove sta andando PaciFinance. Ogni funzionalità è pensata in ottica community, anche grazie ai feedback degli utenti.",
         "completed": "Completato",
         "inProgress": "In Corso",
         "planned": "Pianificato",
@@ -457,8 +457,11 @@
             "saveSettings": "Salva impostazioni",
             "themeSection": "Tema e Aspetto",
             "securitySection": "Sicurezza",
+            "preferencesSection": "Preferenze Account",
             "dangerZone": "Zona Pericolosa",
-            "backToDashboard": "Torna alla Dashboard"
+            "backToDashboard": "Torna alla Dashboard",
+            "bugReport": "Segnala un bug",
+            "bugReportSubtitle": "Apri una segnalazione su GitHub"
         }
     },
 
@@ -1242,6 +1245,7 @@
         "description4": "Il progetto è no-profit ed è unicamente sostenuto da donazioni volontarie.",
         "description5": "La piattaforma è in continuo sviluppo e nuove funzionalità verranno aggiunte in futuro.",
         "calltoaction": "Supporta il progetto",
+        "roadmapLink": "Scopri la nostra Roadmap",
         "features": {
             "title": "Caratteristiche Principali",
             "security": {

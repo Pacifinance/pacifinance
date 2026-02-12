@@ -19,7 +19,9 @@
     "test:utils": "vitest run --include='src/__tests__/utils/**'",
     "test:contexts": "vitest run --include='src/__tests__/contexts/**'",
     "test:components": "vitest run --include='src/__tests__/components/**'",
-    "test:integration": "vitest run --include='src/__tests__/integration/**'"
+    "test:integration": "vitest run --include='src/__tests__/integration/**'",
+    "roadmap": "node scripts/generateRoadmap.js",
+    "prebuild": "node scripts/generateRoadmap.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

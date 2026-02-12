@@ -47,7 +47,8 @@ import {
     faUserShield,
     faExclamationTriangle,
     faUpload,
-    faCoins
+    faCoins,
+    faBug
 } from "@fortawesome/free-solid-svg-icons";
 
 const SettingsPage = () => {
@@ -332,8 +333,8 @@ const SettingsPage = () => {
                         theme={theme}
                         style={{
                             textAlign: "center",
-                            fontSize: isMobileScreen ? "1.8rem" : "2.2rem",
-                            marginBottom: "2rem",
+                            fontSize: isMobileScreen ? "1.4rem" : "1.7rem",
+                            marginBottom: "1.25rem",
                             background: "linear-gradient(135deg, #079164 0%, #0a9c73 100%)",
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
@@ -350,12 +351,12 @@ const SettingsPage = () => {
                             style={{
                                 backgroundColor: "#d4edda",
                                 color: "#155724",
-                                padding: "1rem",
-                                borderRadius: "12px",
-                                margin: "1rem 0",
+                                padding: "0.7rem 1rem",
+                                borderRadius: "10px",
+                                margin: "0.5rem 0",
                                 textAlign: "center",
                                 border: "1px solid #c3e6cb",
-                                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                                fontSize: "0.85rem",
                             }}
                         >
                             {successMessage}
@@ -367,12 +368,12 @@ const SettingsPage = () => {
                             style={{
                                 backgroundColor: "#f8d7da",
                                 color: "#721c24",
-                                padding: "1rem",
-                                borderRadius: "12px",
-                                margin: "1rem 0",
+                                padding: "0.7rem 1rem",
+                                borderRadius: "10px",
+                                margin: "0.5rem 0",
                                 textAlign: "center",
                                 border: "1px solid #f5c6cb",
-                                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                                fontSize: "0.85rem",
                             }}
                         >
                             {errorMessage}
@@ -381,68 +382,213 @@ const SettingsPage = () => {
 
                     <div
                         style={{
-                            maxWidth: "900px",
+                            maxWidth: "700px",
                             margin: "0 auto",
-                            padding: isMobileScreen ? "1rem" : "2rem",
+                            padding: isMobileScreen ? "0.5rem" : "1rem",
                         }}
                     >
-                        {/* Theme Settings */}
+                        {/* Account Preferences */}
                         <div
                             style={{
-                                marginBottom: "2rem",
-                                padding: "2rem",
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "16px",
+                                borderRadius: "14px",
                                 border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                                backdropFilter: "blur(10px)",
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
                             }}
                         >
                             <h3 style={{ 
-                                marginBottom: "1.5rem", 
+                                marginBottom: "0.75rem", 
                                 color: theme.textColor,
-                                fontSize: "1.4rem",
+                                fontSize: "1.1rem",
                                 fontWeight: "600",
                                 display: "flex",
                                 alignItems: "center"
                             }}>
-                                <FontAwesomeIcon icon={faPalette} style={{ 
-                                    marginRight: "0.75rem",
-                                    color: theme.buttonBackgroundColor 
+                                <FontAwesomeIcon icon={faGlobe} style={{ 
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
                                 }} />
-                                {translations.sidebar.settings.themeSection ||
-                                    (language === "it" ? "Tema e Aspetto" : "Theme and Appearance")}
+                                {translations.sidebar.settings.preferencesSection || (language === "it" ? "Preferenze Account" : "Account Preferences")}
                             </h3>
                             
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "1.5rem",
-                            }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                {/* Language */}
                                 <div
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "space-between",
-                                        padding: "1rem",
+                                        padding: "0.6rem 0.75rem",
                                         backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "12px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
+                                        borderRadius: "10px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
                                     }}
                                 >
                                     <div>
                                         <label style={{
                                             fontWeight: "600",
                                             color: theme.textColor,
-                                            fontSize: "1rem",
+                                            fontSize: "0.9rem",
                                             display: "block",
-                                            marginBottom: "0.25rem"
+                                            marginBottom: "0.15rem"
+                                        }}>
+                                            <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.4rem", fontSize: "0.85rem" }} />
+                                            {translations.sidebar.settings.language}
+                                        </label>
+                                        <span style={{
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+                                            fontSize: "0.75rem"
+                                        }}>
+                                            {language === "it" ? "Cambia lingua interfaccia" : "Change interface language"}
+                                        </span>
+                                    </div>
+                                    <MyButton
+                                        theme={theme}
+                                        onClick={handleLanguageToggle}
+                                        style={{
+                                            padding: "0.5rem 1.1rem",
+                                            borderRadius: "8px",
+                                            fontWeight: "600",
+                                            fontSize: "0.8rem",
+                                            minWidth: "70px"
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faGlobe} style={{ marginRight: "0.4rem" }} />
+                                        {language === "it" ? "IT" : "EN"}
+                                    </MyButton>
+                                </div>
+
+                                {/* Currency */}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "0.6rem 0.75rem",
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        borderRadius: "10px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
+                                    }}
+                                >
+                                    <div>
+                                        <label style={{
+                                            fontWeight: "600",
+                                            color: theme.textColor,
+                                            fontSize: "0.9rem",
+                                            display: "block",
+                                            marginBottom: "0.15rem"
+                                        }}>
+                                            <FontAwesomeIcon icon={faCoins} style={{ marginRight: "0.4rem", fontSize: "0.85rem" }} />
+                                            {translations.sidebar.settings.currency}
+                                        </label>
+                                        <span style={{
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+                                            fontSize: "0.75rem"
+                                        }}>
+                                            {translations.sidebar.settings.currencySubtitle}
+                                        </span>
+                                    </div>
+                                    <select
+                                        value={currency}
+                                        onChange={(e) => setCurrency(e.target.value)}
+                                        style={{
+                                            padding: "0.45rem 0.7rem",
+                                            borderRadius: "8px",
+                                            fontWeight: "600",
+                                            fontSize: "0.8rem",
+                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}`,
+                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#f5f5f5',
+                                            color: theme.mode === 'dark' ? '#fff' : '#1a1a2e',
+                                            cursor: "pointer",
+                                            minWidth: "95px"
+                                        }}
+                                    >
+                                        {[
+                                            { code: "EUR", flag: "🇪🇺", sym: "€" },
+                                            { code: "USD", flag: "🇺🇸", sym: "$" },
+                                            { code: "GBP", flag: "🇬🇧", sym: "£" },
+                                            { code: "CHF", flag: "🇨🇭", sym: "CHF" },
+                                            { code: "JPY", flag: "🇯🇵", sym: "¥" },
+                                            { code: "CAD", flag: "🇨🇦", sym: "C$" },
+                                            { code: "AUD", flag: "🇦🇺", sym: "A$" },
+                                            { code: "SEK", flag: "🇸🇪", sym: "kr" },
+                                            { code: "NOK", flag: "🇳🇴", sym: "kr" },
+                                            { code: "DKK", flag: "🇩🇰", sym: "kr" },
+                                            { code: "PLN", flag: "🇵🇱", sym: "zł" },
+                                            { code: "CZK", flag: "🇨🇿", sym: "Kč" },
+                                            { code: "HUF", flag: "🇭🇺", sym: "Ft" },
+                                            { code: "RON", flag: "🇷🇴", sym: "lei" },
+                                            { code: "BGN", flag: "🇧🇬", sym: "лв" },
+                                            { code: "BRL", flag: "🇧🇷", sym: "R$" },
+                                            { code: "INR", flag: "🇮🇳", sym: "₹" },
+                                            { code: "CNY", flag: "🇨🇳", sym: "¥" },
+                                            { code: "TRY", flag: "🇹🇷", sym: "₺" },
+                                        ].map(c => (
+                                            <option key={c.code} value={c.code} style={{ color: "#1a1a2e", backgroundColor: "#ffffff" }}>
+                                                {c.flag} {c.code} ({c.sym})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Theme & Display */}
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "14px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                            }}
+                        >
+                            <h3 style={{ 
+                                marginBottom: "0.75rem", 
+                                color: theme.textColor,
+                                fontSize: "1.1rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faPalette} style={{ 
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
+                                }} />
+                                {translations.sidebar.settings.themeSection ||
+                                    (language === "it" ? "Tema e Aspetto" : "Theme and Appearance")}
+                            </h3>
+                            
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "0.6rem 0.75rem",
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        borderRadius: "10px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
+                                    }}
+                                >
+                                    <div>
+                                        <label style={{
+                                            fontWeight: "600",
+                                            color: theme.textColor,
+                                            fontSize: "0.9rem",
+                                            display: "block",
+                                            marginBottom: "0.15rem"
                                         }}>
                                             {translations.sidebar.settings.light}
                                         </label>
                                         <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                            fontSize: "0.85rem"
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+                                            fontSize: "0.75rem"
                                         }}>
                                             {language === "it" ? "Cambia tema scuro/chiaro" : "Switch dark/light theme"}
                                         </span>
@@ -459,25 +605,25 @@ const SettingsPage = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "space-between",
-                                        padding: "1rem",
+                                        padding: "0.6rem 0.75rem",
                                         backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "12px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
+                                        borderRadius: "10px",
+                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
                                     }}
                                 >
                                     <div>
                                         <label style={{
                                             fontWeight: "600",
                                             color: theme.textColor,
-                                            fontSize: "1rem",
+                                            fontSize: "0.9rem",
                                             display: "block",
-                                            marginBottom: "0.25rem"
+                                            marginBottom: "0.15rem"
                                         }}>
                                             {translations.sidebar.settings.privacy}
                                         </label>
                                         <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                            fontSize: "0.85rem"
+                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+                                            fontSize: "0.75rem"
                                         }}>
                                             {language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts"}
                                         </span>
@@ -489,182 +635,71 @@ const SettingsPage = () => {
                                         isHidden={isHidden}
                                     />
                                 </div>
-
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "1rem",
-                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "12px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
-                                    }}
-                                >
-                                    <div>
-                                        <label style={{
-                                            fontWeight: "600",
-                                            color: theme.textColor,
-                                            fontSize: "1rem",
-                                            display: "block",
-                                            marginBottom: "0.25rem"
-                                        }}>
-                                            <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.5rem" }} />
-                                            {translations.sidebar.settings.language}
-                                        </label>
-                                        <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                            fontSize: "0.85rem"
-                                        }}>
-                                            {language === "it" ? "Cambia lingua interfaccia" : "Change interface language"}
-                                        </span>
-                                    </div>
-                                    <MyButton
-                                        theme={theme}
-                                        onClick={handleLanguageToggle}
-                                        style={{
-                                            padding: "0.75rem 1.5rem",
-                                            borderRadius: "10px",
-                                            fontWeight: "600",
-                                            fontSize: "0.9rem",
-                                            minWidth: "80px"
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faGlobe} style={{ marginRight: "0.5rem" }} />
-                                        {language === "it" ? "IT" : "EN"}
-                                    </MyButton>
-                                </div>
-
-                                {/* Currency Selector */}
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "1rem",
-                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "12px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
-                                    }}
-                                >
-                                    <div>
-                                        <label style={{
-                                            fontWeight: "600",
-                                            color: theme.textColor,
-                                            fontSize: "1rem",
-                                            display: "block",
-                                            marginBottom: "0.25rem"
-                                        }}>
-                                            <FontAwesomeIcon icon={faCoins} style={{ marginRight: "0.5rem" }} />
-                                            {translations.sidebar.settings.currency}
-                                        </label>
-                                        <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                            fontSize: "0.85rem"
-                                        }}>
-                                            {translations.sidebar.settings.currencySubtitle}
-                                        </span>
-                                    </div>
-                                    <select
-                                        value={currency}
-                                        onChange={(e) => setCurrency(e.target.value)}
-                                        style={{
-                                            padding: "0.6rem 1rem",
-                                            borderRadius: "10px",
-                                            fontWeight: "600",
-                                            fontSize: "0.9rem",
-                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}`,
-                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
-                                            color: theme.textColor,
-                                            cursor: "pointer",
-                                            minWidth: "100px"
-                                        }}
-                                    >
-                                        <option value="EUR">🇪🇺 EUR (€)</option>
-                                        <option value="USD">🇺🇸 USD ($)</option>
-                                        <option value="GBP">🇬🇧 GBP (£)</option>
-                                        <option value="CHF">🇨🇭 CHF (CHF)</option>
-                                        <option value="JPY">🇯🇵 JPY (¥)</option>
-                                        <option value="CAD">🇨🇦 CAD (C$)</option>
-                                        <option value="AUD">🇦🇺 AUD (A$)</option>
-                                        <option value="SEK">🇸🇪 SEK (kr)</option>
-                                        <option value="NOK">🇳🇴 NOK (kr)</option>
-                                        <option value="DKK">🇩🇰 DKK (kr)</option>
-                                        <option value="PLN">🇵🇱 PLN (zł)</option>
-                                        <option value="CZK">🇨🇿 CZK (Kč)</option>
-                                        <option value="HUF">🇭🇺 HUF (Ft)</option>
-                                        <option value="RON">🇷🇴 RON (lei)</option>
-                                        <option value="BGN">🇧🇬 BGN (лв)</option>
-                                        <option value="BRL">🇧🇷 BRL (R$)</option>
-                                        <option value="INR">🇮🇳 INR (₹)</option>
-                                        <option value="CNY">🇨🇳 CNY (¥)</option>
-                                        <option value="TRY">🇹🇷 TRY (₺)</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
 
                         {/* Security Settings */}
                         <div
                             style={{
-                                marginBottom: "2rem",
-                                padding: "2rem",
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "16px",
+                                borderRadius: "14px",
                                 border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                                backdropFilter: "blur(10px)",
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
                             }}
                         >
                             <h3 style={{ 
-                                marginBottom: "1.5rem", 
+                                marginBottom: "0.75rem", 
                                 color: theme.textColor,
-                                fontSize: "1.4rem",
+                                fontSize: "1.1rem",
                                 fontWeight: "600",
                                 display: "flex",
                                 alignItems: "center"
                             }}>
                                 <FontAwesomeIcon icon={faUserShield} style={{ 
-                                    marginRight: "0.75rem",
-                                    color: theme.buttonBackgroundColor 
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
                                 }} />
                                 {translations.sidebar.settings.securitySection ||
                                     (language === "it" ? "Sicurezza" : "Security")}
                             </h3>
 
-                            <div style={{ marginBottom: "1.5rem" }}>
-                                <MyButton
-                                    theme={theme}
-                                    onClick={() =>
-                                        setShowChangeID(!showChangeID)
-                                    }
-                                    disabled={["test", "demo"].includes(
-                                        userType,
-                                    )}
-                                    style={{
-                                        width: "100%",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: "1rem",
-                                        fontWeight: "500",
-                                        backgroundColor: [
-                                            "test",
-                                            "demo",
-                                        ].includes(userType)
-                                            ? "#d3d3d3"
-                                            : theme.buttonBackgroundColor,
-                                        boxShadow: ["test", "demo"].includes(userType) 
-                                            ? "none" 
-                                            : "0 4px 15px rgba(7, 145, 100, 0.3)",
-                                        transition: "all 0.3s ease"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faKey} style={{ marginRight: "0.75rem" }} />
-                                    {translations.sidebar.changeID.title}
-                                </MyButton>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                <div>
+                                    <MyButton
+                                        theme={theme}
+                                        onClick={() =>
+                                            setShowChangeID(!showChangeID)
+                                        }
+                                        disabled={["test", "demo"].includes(
+                                            userType,
+                                        )}
+                                        style={{
+                                            width: "100%",
+                                            padding: "0.7rem",
+                                            borderRadius: "10px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "0.85rem",
+                                            fontWeight: "500",
+                                            backgroundColor: [
+                                                "test",
+                                                "demo",
+                                            ].includes(userType)
+                                                ? "#d3d3d3"
+                                                : theme.buttonBackgroundColor,
+                                            boxShadow: ["test", "demo"].includes(userType) 
+                                                ? "none" 
+                                                : "0 2px 8px rgba(7, 145, 100, 0.25)",
+                                            transition: "all 0.3s ease"
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faKey} style={{ marginRight: "0.5rem" }} />
+                                        {translations.sidebar.changeID.title}
+                                    </MyButton>
 
                                 {showChangeID && (
                                     <form
@@ -725,43 +760,43 @@ const SettingsPage = () => {
                                         </MyButton>
                                     </form>
                                 )}
-                            </div>
+                                </div>
 
-                            <div style={{ marginBottom: "1.5rem" }}>
-                                <MyButton
-                                    theme={theme}
-                                    onClick={() =>
-                                        setShowChangePassword(
-                                            !showChangePassword,
-                                        )
-                                    }
-                                    disabled={["test", "demo"].includes(
-                                        userType,
-                                    )}
-                                    style={{
-                                        width: "100%",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: "1rem",
-                                        fontWeight: "500",
-                                        backgroundColor: [
-                                            "test",
-                                            "demo",
-                                        ].includes(userType)
-                                            ? "#d3d3d3"
-                                            : theme.buttonBackgroundColor,
-                                        boxShadow: ["test", "demo"].includes(userType) 
-                                            ? "none" 
-                                            : "0 4px 15px rgba(7, 145, 100, 0.3)",
-                                        transition: "all 0.3s ease"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faShieldAlt} style={{ marginRight: "0.75rem" }} />
-                                    {translations.sidebar.changePassword.title}
-                                </MyButton>
+                                <div>
+                                    <MyButton
+                                        theme={theme}
+                                        onClick={() =>
+                                            setShowChangePassword(
+                                                !showChangePassword,
+                                            )
+                                        }
+                                        disabled={["test", "demo"].includes(
+                                            userType,
+                                        )}
+                                        style={{
+                                            width: "100%",
+                                            padding: "0.7rem",
+                                            borderRadius: "10px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "0.85rem",
+                                            fontWeight: "500",
+                                            backgroundColor: [
+                                                "test",
+                                                "demo",
+                                            ].includes(userType)
+                                                ? "#d3d3d3"
+                                                : theme.buttonBackgroundColor,
+                                            boxShadow: ["test", "demo"].includes(userType) 
+                                                ? "none" 
+                                                : "0 2px 8px rgba(7, 145, 100, 0.25)",
+                                            transition: "all 0.3s ease"
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faShieldAlt} style={{ marginRight: "0.5rem" }} />
+                                        {translations.sidebar.changePassword.title}
+                                    </MyButton>
 
                                 {showChangePassword && (
                                     <form
@@ -908,73 +943,123 @@ const SettingsPage = () => {
                                         </MyButton>
                                     </form>
                                 )}
+                                </div>
+
+                                {/* Bug Report */}
+                                <a
+                                    href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ textDecoration: "none" }}
+                                    data-umami-event="settings-bug-report-clicked"
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            padding: "0.6rem 0.75rem",
+                                            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                            borderRadius: "10px",
+                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`,
+                                            cursor: "pointer",
+                                            transition: "all 0.2s ease",
+                                        }}
+                                    >
+                                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                            <FontAwesomeIcon icon={faBug} style={{ 
+                                                color: theme.buttonBackgroundColor,
+                                                fontSize: "0.85rem"
+                                            }} />
+                                            <div>
+                                                <span style={{
+                                                    fontWeight: "600",
+                                                    color: theme.textColor,
+                                                    fontSize: "0.9rem",
+                                                    display: "block",
+                                                    marginBottom: "0.1rem"
+                                                }}>
+                                                    {translations.sidebar.settings.bugReport || (language === "it" ? "Segnala un bug" : "Report a bug")}
+                                                </span>
+                                                <span style={{
+                                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+                                                    fontSize: "0.75rem"
+                                                }}>
+                                                    {translations.sidebar.settings.bugReportSubtitle || (language === "it" ? "Apri una segnalazione su GitHub" : "Open a report on GitHub")}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span style={{ color: theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)', fontSize: "0.8rem" }}>↗</span>
+                                    </div>
+                                </a>
                             </div>
                         </div>
 
                         {/* Data Export Section */}
                         <div
                             style={{
-                                marginBottom: "2rem",
-                                padding: "2rem",
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "16px",
+                                borderRadius: "14px",
                                 border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                                backdropFilter: "blur(10px)",
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
                             }}
                         >
                             <h3 style={{ 
-                                marginBottom: "1.5rem", 
+                                marginBottom: "0.75rem", 
                                 color: theme.textColor,
-                                fontSize: "1.4rem",
+                                fontSize: "1.1rem",
                                 fontWeight: "600",
                                 display: "flex",
                                 alignItems: "center"
                             }}>
                                 <FontAwesomeIcon icon={faDownload} style={{ 
-                                    marginRight: "0.75rem",
-                                    color: theme.buttonBackgroundColor 
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
                                 }} />
                                 {language === "it" ? "Esportazione Dati" : "Data Export"}
                             </h3>
                             <p style={{ 
                                 color: theme.textColor, 
-                                marginBottom: "1.5rem",
-                                fontSize: "1rem",
-                                lineHeight: "1.5"
+                                marginBottom: "0.75rem",
+                                fontSize: "0.8rem",
+                                lineHeight: "1.4",
+                                opacity: 0.7
                             }}>
                                 {language === "it" 
-                                    ? "Scarica tutti i tuoi dati dalla piattaforma in diversi formati"
-                                    : "Download all your platform data in different formats"}
+                                    ? "Scarica i tuoi dati in diversi formati"
+                                    : "Download your data in different formats"}
                             </p>
 
                             {/* Filtri Export */}
                             <div style={{
                                 backgroundColor: theme.cardColor,
                                 border: `1px solid ${theme.borderColor}`,
-                                borderRadius: "12px",
-                                padding: "1.5rem",
-                                marginBottom: "2rem"
+                                borderRadius: "10px",
+                                padding: "0.75rem",
+                                marginBottom: "0.75rem"
                             }}>
                                 <h4 style={{ 
                                     color: theme.textColor, 
-                                    marginBottom: "1rem",
-                                    fontSize: "1.1rem"
+                                    marginBottom: "0.5rem",
+                                    fontSize: "0.9rem"
                                 }}>
                                     {language === "it" ? "Filtro Dati" : "Data Filter"}
                                 </h4>
                                 
                                 <div style={{
                                     display: "grid",
-                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
-                                    gap: "1rem",
+                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(160px, 1fr))",
+                                    gap: "0.5rem",
                                     alignItems: "end"
                                 }}>
                                     <div>
                                         <label style={{ 
                                             color: theme.textColor, 
-                                            fontSize: "0.9rem",
-                                            marginBottom: "0.5rem",
+                                            fontSize: "0.8rem",
+                                            marginBottom: "0.3rem",
                                             display: "block"
                                         }}>
                                             {language === "it" ? "Periodo" : "Period"}
@@ -984,7 +1069,7 @@ const SettingsPage = () => {
                                             onChange={(e) => setExportFilter(e.target.value)}
                                             style={{
                                                 width: "100%",
-                                                padding: "0.75rem",
+                                                padding: "0.5rem",
                                                 border: `1px solid ${theme.borderColor}`,
                                                 borderRadius: "8px",
                                                 backgroundColor: theme.inputBackground,
@@ -1078,8 +1163,8 @@ const SettingsPage = () => {
                             
                             <div style={{
                                 display: "grid",
-                                gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
-                                gap: "1rem",
+                                gridTemplateColumns: isMobileScreen ? "1fr 1fr" : "repeat(4, 1fr)",
+                                gap: "0.5rem",
                             }}>
                                 {/* CSV Export */}
                                 <MyButton
@@ -1089,14 +1174,14 @@ const SettingsPage = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
                                         backgroundColor: exportLoading ? "#d3d3d3" : "#28a745",
                                         color: "white",
-                                        fontSize: "0.95rem",
+                                        fontSize: "0.8rem",
                                         fontWeight: "500",
                                         transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(40, 167, 69, 0.3)"
+                                        boxShadow: "0 2px 8px rgba(40, 167, 69, 0.2)"
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faFileCsv} style={{ marginRight: "0.5rem" }} />
@@ -1111,14 +1196,14 @@ const SettingsPage = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
                                         backgroundColor: exportLoading ? "#d3d3d3" : "#217346",
                                         color: "white",
-                                        fontSize: "0.95rem",
+                                        fontSize: "0.8rem",
                                         fontWeight: "500",
                                         transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(33, 115, 70, 0.3)"
+                                        boxShadow: "0 2px 8px rgba(33, 115, 70, 0.2)"
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faFileExcel} style={{ marginRight: "0.5rem" }} />
@@ -1133,14 +1218,14 @@ const SettingsPage = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
                                         backgroundColor: exportLoading ? "#d3d3d3" : "#17a2b8",
                                         color: "white",
-                                        fontSize: "0.95rem",
+                                        fontSize: "0.8rem",
                                         fontWeight: "500",
                                         transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(23, 162, 184, 0.3)"
+                                        boxShadow: "0 2px 8px rgba(23, 162, 184, 0.2)"
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "0.5rem" }} />
@@ -1155,14 +1240,14 @@ const SettingsPage = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        padding: "1rem",
-                                        borderRadius: "12px",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
                                         backgroundColor: exportLoading ? "#d3d3d3" : "#dc3545",
                                         color: "white",
-                                        fontSize: "0.95rem",
+                                        fontSize: "0.8rem",
                                         fontWeight: "500",
                                         transition: "all 0.3s ease",
-                                        boxShadow: "0 4px 15px rgba(220, 53, 69, 0.3)"
+                                        boxShadow: "0 2px 8px rgba(220, 53, 69, 0.2)"
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: "0.5rem" }} />
@@ -1186,35 +1271,35 @@ const SettingsPage = () => {
                         {/* Data Import Section */}
                         <div
                             style={{
-                                marginBottom: "2rem",
-                                padding: "2rem",
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "16px",
+                                borderRadius: "14px",
                                 border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                                backdropFilter: "blur(10px)",
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
                             }}
                         >
                             <h3 style={{
-                                marginBottom: "1.5rem",
+                                marginBottom: "0.75rem",
                                 color: theme.textColor,
-                                fontSize: "1.4rem",
+                                fontSize: "1.1rem",
                                 fontWeight: "600",
                                 display: "flex",
                                 alignItems: "center"
                             }}>
                                 <FontAwesomeIcon icon={faUpload} style={{
-                                    marginRight: "0.75rem",
-                                    color: theme.buttonBackgroundColor
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
                                 }} />
                                 {translations.dataImport?.title || (language === "it" ? "Importa Dati" : "Import Data")}
                             </h3>
                             <p style={{
                                 color: theme.textColor,
-                                marginBottom: "1.5rem",
-                                fontSize: "1rem",
-                                lineHeight: "1.6",
-                                opacity: 0.8,
+                                marginBottom: "0.75rem",
+                                fontSize: "0.8rem",
+                                lineHeight: "1.4",
+                                opacity: 0.7,
                             }}>
                                 {translations.dataImport?.subtitle || (language === "it"
                                     ? "Importa le tue transazioni da CSV o Excel"
@@ -1270,25 +1355,26 @@ const SettingsPage = () => {
                         {/* Danger Zone */}
                         <div
                             style={{
-                                marginBottom: "2rem",
-                                padding: "2rem",
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.1)' : '#fff5f5',
-                                borderRadius: "16px",
+                                borderRadius: "14px",
                                 border: `2px solid ${theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.3)' : '#feb2b2'}`,
-                                boxShadow: "0 8px 32px rgba(220, 53, 69, 0.15)",
+                                boxShadow: "0 4px 16px rgba(220, 53, 69, 0.1)",
                             }}
                         >
                             <h3 style={{
-                                marginBottom: "1.5rem",
+                                marginBottom: "0.75rem",
                                 color: "#dc3545",
-                                fontSize: "1.4rem",
+                                fontSize: "1.1rem",
                                 fontWeight: "600",
                                 display: "flex",
                                 alignItems: "center"
                             }}>
                                 <FontAwesomeIcon icon={faExclamationTriangle} style={{ 
-                                    marginRight: "0.75rem",
-                                    color: "#dc3545" 
+                                    marginRight: "0.6rem",
+                                    color: "#dc3545",
+                                    fontSize: "0.95rem"
                                 }} />
                                 {translations.sidebar.settings.dangerZone ||
                                     (language === "it" ? "Zona Pericolosa" : "Danger Zone")}
@@ -1296,14 +1382,14 @@ const SettingsPage = () => {
                             
                             <div style={{
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)',
-                                padding: "1rem",
-                                borderRadius: "12px",
-                                marginBottom: "1.5rem",
+                                padding: "0.6rem 0.75rem",
+                                borderRadius: "8px",
+                                marginBottom: "0.75rem",
                                 border: `1px solid ${theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.2)' : 'rgba(220, 53, 69, 0.1)'}`
                             }}>
                                 <p style={{
                                     color: "#dc3545",
-                                    fontSize: "0.9rem",
+                                    fontSize: "0.8rem",
                                     margin: "0",
                                     fontWeight: "500"
                                 }}>
@@ -1320,12 +1406,12 @@ const SettingsPage = () => {
                                 disabled={["test", "demo"].includes(userType)}
                                 style={{
                                     width: "100%",
-                                    padding: "1rem",
-                                    borderRadius: "12px",
+                                    padding: "0.7rem",
+                                    borderRadius: "10px",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    fontSize: "1rem",
+                                    fontSize: "0.85rem",
                                     fontWeight: "600",
                                     backgroundColor: ["test", "demo"].includes(userType)
                                         ? "#d3d3d3"
@@ -1334,13 +1420,13 @@ const SettingsPage = () => {
                                     border: "none",
                                     boxShadow: ["test", "demo"].includes(userType) 
                                         ? "none" 
-                                        : "0 4px 15px rgba(220, 53, 69, 0.4)",
+                                        : "0 2px 8px rgba(220, 53, 69, 0.3)",
                                     transition: "all 0.3s ease"
                                 }}
                             >
                                 <FontAwesomeIcon
                                     icon={faTrashCan}
-                                    style={{ marginRight: "0.75rem" }}
+                                    style={{ marginRight: "0.5rem" }}
                                 />
                                 {translations.sidebar.settings.deleteAccount}
                             </MyButton>
@@ -1398,21 +1484,21 @@ const SettingsPage = () => {
 
                         <div style={{ 
                             textAlign: "center",
-                            marginTop: "3rem",
-                            padding: "2rem",
+                            marginTop: "1.5rem",
+                            padding: "1rem",
                             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                            borderRadius: "16px",
+                            borderRadius: "12px",
                             border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
                         }}>
                             <MyButton
                                 theme={theme}
                                 onClick={() => navigate("/dashboard")}
                                 style={{
-                                    padding: "1rem 2rem",
-                                    borderRadius: "12px",
-                                    fontSize: "1.1rem",
+                                    padding: "0.7rem 1.5rem",
+                                    borderRadius: "10px",
+                                    fontSize: "0.9rem",
                                     fontWeight: "600",
-                                    boxShadow: "0 6px 20px rgba(7, 145, 100, 0.3)",
+                                    boxShadow: "0 3px 10px rgba(7, 145, 100, 0.25)",
                                     transition: "all 0.3s ease"
                                 }}
                             >

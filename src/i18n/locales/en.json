@@ -261,7 +261,7 @@
     },
     "roadmap": {
         "title": "Roadmap",
-        "subtitle": "Discover where PaciFinance is heading. Every feature is born from community feedback.",
+        "subtitle": "Discover where PaciFinance is heading. Every feature is designed with the community in mind, also thanks to user feedback.",
         "completed": "Completed",
         "inProgress": "In Progress",
         "planned": "Planned",
@@ -457,8 +457,11 @@
             "saveSettings": "Save settings",
             "themeSection": "Theme and Appearance",
             "securitySection": "Security",
+            "preferencesSection": "Account Preferences",
             "dangerZone": "Danger Zone",
-            "backToDashboard": "Back to Dashboard"
+            "backToDashboard": "Back to Dashboard",
+            "bugReport": "Report a bug",
+            "bugReportSubtitle": "Open a report on GitHub"
         }
     },
 
@@ -1300,6 +1303,7 @@
         "description4": "The project is ad-free and non-profit and is solely supported by voluntary donations.",
         "description5": "The platform is in continuous development and new features will be added in the future.",
         "calltoaction": "Support the project",
+        "roadmapLink": "Discover our Roadmap",
         "features": {
             "title": "Key Features",
             "security": {

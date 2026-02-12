@@ -107,7 +107,7 @@ const BottomLoadingIndicator = styled.div`
   justify-content: center;
   
   @media (max-width: 839px) {
-    bottom: 68px;
+    bottom: 74px;
     min-height: 100px;
     border-radius: 16px 16px 0 0;
   }

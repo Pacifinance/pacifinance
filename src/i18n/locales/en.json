@@ -654,7 +654,7 @@
             "confirmDelete": "Are you sure you want to delete this income?",
             "successDelete": "Income deleted successfully",
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
-            "increaseWhichBalance": "Select where to add the income"
+            "increaseWhichBalance": "Add to"
         },
         "outflowSection": {
             "placeholderCategory": "Select a category",
@@ -675,7 +675,7 @@
             "confirmDelete": "Are you sure you want to delete this outflow?",
             "successDelete": "Outflow deleted successfully",
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
-            "decreaseWhichBalance": "Select where to subtract the outflow"
+            "decreaseWhichBalance": "Subtract from"
         },
         "investmentSection": {
             "placeholderCategory": "Select a category",
@@ -694,8 +694,8 @@
             "successUpdate": "Investment inserted successfully",
             "confirmDelete": "Are you sure you want to delete this investment?",
             "successDelete": "Investment deleted successfully",
-            "decreaseWhichBalance": "Select where to subtract the investment",
-            "increaseWhichBalance": "Select where to add the investment"
+            "decreaseWhichBalance": "Subtract from",
+            "increaseWhichBalance": "Add to"
         },
         "errors": {
             "balanceUpdateFailed": "Error updating balance. Please try again later.",

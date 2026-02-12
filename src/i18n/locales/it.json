@@ -654,7 +654,7 @@
             "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
             "successDelete": "Entrata eliminata con successo",
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
-            "increaseWhichBalance": "Seleziona dove aggiungere l'entrata: "
+            "increaseWhichBalance": "Aggiungi a"
         },
         "outflowSection": {
             "placeholderCategory": "Seleziona una categoria",
@@ -675,7 +675,7 @@
             "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
             "successDelete": "Uscita eliminata con successo",
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
-            "decreaseWhichBalance": "Seleziona da dove sottrarre l'uscita: "
+            "decreaseWhichBalance": "Sottrai da"
         },
         "investmentSection": {
             "placeholderCategory": "Seleziona una categoria",
@@ -694,8 +694,8 @@
             "successUpdate": "Investimento inserito con successo",
             "confirmDelete": "Sei sicuro di voler eliminare questo investimento?",
             "successDelete": "Investimento eliminato con successo",
-            "decreaseWhichBalance": "Seleziona dove sottrarre l'investimento: ",
-            "increaseWhichBalance": "Seleziona dove aggiungere l'investimento: "
+            "decreaseWhichBalance": "Sottrai da",
+            "increaseWhichBalance": "Aggiungi a"
         },
         "errors": {
             "balanceUpdateFailed": "Errore nell'aggiornamento del bilancio. Riprova più tardi.",

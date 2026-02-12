@@ -75,7 +75,7 @@
 
 ### Varie
 - [x] BuyMeACoffee widget: CSS override per posizionarlo sopra BottomNavBar su mobile
-- [x] ScrollNavigationIndicator: `bottom: 68px` su mobile per stare sopra la nav bar
+- [x] ScrollNavigationIndicator: `bottom: 74px` su mobile per stare sopra la nav bar
 - [x] `index.css`: padding-bottom mobile per safe-area + BottomNavBar
 
 ### Account
@@ -134,6 +134,17 @@
 - [x] ~~Import dati da CSV/Excel (inverso dell'export)~~ → Implementato: DataImportWizard multi-step con supporto CSV/Excel, mappatura colonne, filtri data, colonna duale entrate/uscite, matching categorie automatico. Accessibile da Inserimento Dati e Impostazioni.
 - [ ] Grafici trend storico patrimonio (linea temporale)
 - [ ] Export PDF: migliorare layout con grafici inclusi nel report
+
+### Community & Feedback
+> PaciFinance è un progetto community-centrico, basato interamente sulle donazioni. Il coinvolgimento diretto degli utenti è fondamentale.
+
+- [ ] **Pagina Roadmap pubblica**: mostrare lo stato delle funzionalità pianificate, in corso e completate (stile kanban o timeline). Permettere agli utenti di vedere dove sta andando il progetto e votare le priorità.
+- [ ] **Sistema feedback utenti**: form o sezione dedicata per segnalare bug, proporre idee o suggerire miglioramenti. Possibili approcci:
+  - Form integrato nell'app (con categorizzazione: bug / idea / altro)
+  - Integrazione con GitHub Issues/Discussions per trasparenza
+  - Bacheca pubblica delle richieste con upvote (stile Canny/UserVoice ma self-hosted)
+- [ ] Notifiche/changelog in-app per comunicare aggiornamenti e nuove feature alla community
+- [ ] Sezione "Contribuisci" visibile: come donare, come segnalare bug, come proporre idee
 
 ### Performance
 - [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
@@ -310,6 +321,6 @@ Browser (Push API) → subscribe → Backend (Node/cron) → web-push → Web Pu
 
 - **Breakpoint mobile**: `max-width: 839px` (MediaQueryContext `isMobileScreen`)
 - **Breakpoint CSS**: la maggior parte degli styled-components usa `max-width: 768px`
-- **BottomNavBar height**: 60px + safe-area-inset-bottom
+- **BottomNavBar height**: 66px + safe-area-inset-bottom
 - **Routing**: tutte le route hanno prefisso lingua (`/it/dashboard`, `/en/dashboard`)
 - **Server folder**: NON modificare — gestito separatamente

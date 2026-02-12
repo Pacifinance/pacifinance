@@ -152,7 +152,7 @@ const MonthSelect = styled.select`
 const TableScroll = styled.div`
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0.5rem 1rem 1rem;
+  width: 100%;
 `;
 
 const ActionBtn = styled.button`
@@ -372,10 +372,7 @@ export default function OutflowSection({
             <select
               value={outflowCategoryFilter}
               onChange={(e) => setOutflowCategoryFilter(e.target.value)}
-              style={{
-                background: '#fff', color: '#111', borderRadius: 6, textAlign: 'center',
-                minWidth: 100, fontSize: '0.85em', border: '1px solid #bbb', padding: '2px 4px',
-              }}
+              style={{ minWidth: 100 }}
             >
               <option value="">{translations.general.all}</option>
               {OutflowsTags.map((item) => (
@@ -398,10 +395,7 @@ export default function OutflowSection({
             <select
               value={outflowTypologyFilter}
               onChange={(e) => setOutflowTypologyFilter(e.target.value)}
-              style={{
-                background: '#fff', color: '#111', borderRadius: 6, textAlign: 'center',
-                minWidth: 100, fontSize: '0.85em', border: '1px solid #bbb', padding: '2px 4px',
-              }}
+              style={{ minWidth: 100 }}
             >
               <option value="">{translations.general.all}</option>
               {paymentTags.map((item) =>
@@ -437,10 +431,7 @@ export default function OutflowSection({
               placeholder={translations.general.clearFilter || 'Filtra...'}
               value={outflowNoteFilter}
               onChange={(e) => setOutflowNoteFilter(e.target.value)}
-              style={{
-                color: '#111', background: '#fff', textAlign: 'center', padding: '2px 4px',
-                borderRadius: 6, border: '1px solid #bbb', fontSize: '0.8em', width: 100,
-              }}
+              style={{ width: 100 }}
             />
           </div>
         </th>
@@ -461,10 +452,7 @@ export default function OutflowSection({
                 onChange={(e) => setOutflowDateFilterStart(e.target.value)}
                 min={min}
                 max={max}
-                style={{
-                  color: '#111', background: '#fff', textAlign: 'center', padding: '2px 4px',
-                  borderRadius: 6, border: '1px solid #bbb', fontSize: '0.8em', width: 110,
-                }}
+                style={{ width: 110 }}
               />
               <span style={{ fontSize: '0.75em', opacity: 0.7 }}>-</span>
               <input
@@ -473,10 +461,7 @@ export default function OutflowSection({
                 onChange={(e) => setOutflowDateFilterEnd(e.target.value)}
                 min={min}
                 max={max}
-                style={{
-                  color: '#111', background: '#fff', textAlign: 'center', padding: '2px 4px',
-                  borderRadius: 6, border: '1px solid #bbb', fontSize: '0.8em', width: 110,
-                }}
+                style={{ width: 110 }}
               />
             </div>
             {(outflowDateFilterStart || outflowDateFilterEnd) && (

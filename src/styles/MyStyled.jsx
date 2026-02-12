@@ -922,86 +922,127 @@ export const StyledTable = styled.table`
   min-width: 600px;
   max-width: 1200px;
   color: ${(props) => props.theme.textColor};
-  margin: 0 auto 2rem auto;
+  margin: 0 auto;
+  font-size: 0.88rem;
 
-  /* Specific styling for outflow tables */
   &.outflow-table {
     min-width: 700px;
   }
 
+  /* ── Header ── */
   th {
-    background-color: ${(props) => props.theme.buttonBackgroundColor};
+    background: linear-gradient(
+      180deg,
+      ${(props) => props.theme.buttonBackgroundColor} 0%,
+      ${(props) => props.theme.buttonBackgroundColor}dd 100%
+    );
     color: white;
-    padding: 0.75rem 0.5rem;
+    padding: 0.7rem 0.5rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    &:first-child {
-      border-top-left-radius: 10px;
-    }
-    &:last-child {
-      border-top-right-radius: 10px;
-    }
-  }
-
-  td, th {
-    border: 1px solid ${(props) => props.theme.borderColor};
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
     text-align: center;
-    padding: 0.5rem;
+    white-space: nowrap;
+    border-bottom: 2px solid ${(props) => props.theme.buttonBackgroundColor};
+    &:first-child { border-top-left-radius: 10px; }
+    &:last-child  { border-top-right-radius: 10px; }
   }
 
+  /* ── Filter controls inside header ── */
+  th select,
+  th input[type="text"],
+  th input[type="date"] {
+    background: rgba(255, 255, 255, 0.92);
+    color: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-size: 0.8em;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    &:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+    }
+  }
+
+  th button {
+    font-size: 0.72em;
+    padding: 2px 8px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    &:hover { opacity: 0.85; }
+  }
+
+  /* ── Body cells ── */
+  td {
+    padding: 0.55rem 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid
+      ${(props) => props.theme.mode === 'dark'
+        ? 'rgba(255,255,255,0.045)'
+        : 'rgba(0,0,0,0.06)'};
+    font-size: 0.85rem;
+  }
+
+  /* No vertical cell borders */
+  td, th {
+    border-left: none;
+    border-right: none;
+  }
+
+  /* ── Row interactions ── */
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
   tbody tr:hover {
-    background-color: ${(props) => props.theme.jollyColor};
-    transition: background-color 0.2s ease;
+    background-color: ${(props) => props.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.035)'
+      : 'rgba(0,0,0,0.025)'} !important;
   }
 
-  /* Responsive styles for tablets */
+  /* ── Bottom corners on last row ── */
+  tbody tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+  tbody tr:last-child td:last-child  { border-bottom-right-radius: 10px; }
+
+  /* ── Responsive ── */
   @media (max-width: 768px) {
     min-width: 500px;
-    
-    &.outflow-table {
-      min-width: 580px;
-    }
-    
+    &.outflow-table { min-width: 580px; }
+    th, td { padding: 0.4rem 0.3rem; font-size: 0.8rem; }
+    th { font-size: 0.72rem; }
+  }
+
+  @media (max-width: 600px) {
+    min-width: 400px !important;
+    &.outflow-table { min-width: 450px !important; }
     th, td {
-      padding: 0.4rem 0.3rem;
-      font-size: 0.85rem;
+      font-size: 0.72rem !important;
+      padding: 0.3rem 0.2rem !important;
+      min-width: 55px !important;
+      line-height: 1.25 !important;
+    }
+    th { font-size: 0.68rem !important; }
+    select, input, button {
+      font-size: 0.72rem !important;
+      padding: 0.2rem 0.3rem !important;
     }
   }
 
-  /* Responsive styles for mobile */
-  @media (max-width: 600px) {
-    min-width: 400px !important;
-    
-    &.outflow-table {
-      min-width: 450px !important;
-    }
-    
-    th, td {
-      font-size: 0.75rem !important;
-      padding: 0.3rem 0.2rem !important;
-      min-width: 60px !important;
-      line-height: 1.2 !important;
-    }
-    select, input, button {
-      font-size: 0.75rem !important;
-      padding: 0.2rem 0.3rem !important;
-    }
-    .MuiInputBase-root, .MuiSelect-root {
-      font-size: 0.75rem !important;
-    }
-  }
-  
   @media (max-width: 480px) {
     min-width: 360px !important;
-    
-    &.outflow-table {
-      min-width: 400px !important;
-    }
-    
+    &.outflow-table { min-width: 400px !important; }
     th, td {
-      font-size: 0.7rem !important;
+      font-size: 0.68rem !important;
       padding: 0.25rem 0.15rem !important;
-      min-width: 50px !important;
+      min-width: 48px !important;
     }
   }
 `;

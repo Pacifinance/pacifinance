@@ -73,7 +73,7 @@ const BottomNavBar = ({ handleLogout }) => {
     const isMoreActive = morePages.some(p => isActive(p.path));
     const isAccountActive = accountPages.some(p => isActive(p.path));
 
-    const NAV_HEIGHT = 60;
+    const NAV_HEIGHT = 66;
     const SAFE_AREA = 'env(safe-area-inset-bottom, 0px)';
 
     const navItemStyle = (active) => ({

@@ -116,12 +116,12 @@ html, body, * {
 /* Bottom nav bar spacing for mobile - prevents content from being hidden */
 @media (max-width: 839px) {
   body {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
   }
 
   /* Reposition and shrink BuyMeACoffee floating widget above bottom nav */
   #bmc-wbtn {
-    bottom: 76px !important;
+    bottom: 82px !important;
     transform: scale(0.75) !important;
     transform-origin: bottom right !important;
   }

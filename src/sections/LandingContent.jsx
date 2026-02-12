@@ -11,7 +11,8 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Paid as PaidIcon,
   Star as StarIcon,
-  UploadFile as UploadFileIcon
+  UploadFile as UploadFileIcon,
+  CurrencyExchange as CurrencyExchangeIcon
 } from "@mui/icons-material";
 // Hero image served from public/ for preload discoverability in index.html
 const LandingPageImage = "/PacifinanceArt2NoBg.webp";
@@ -394,7 +395,56 @@ export default function NewLandingContent({ theme }) {
               </ul>
             </div>
 
-            {/* Feature 7 - CSV/Excel Import */}
+            {/* Feature 7 - Multi-Currency Support */}
+            <div
+              className="group p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 md:col-span-2 lg:col-span-3"
+              style={{
+                borderColor: theme.secondaryColor,
+                backgroundColor:
+                  theme.mode === "dark"
+                    ? `${theme.secondaryColor}10`
+                    : "rgba(255,255,255,0.5)",
+              }}
+            >
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div
+                  className="flex items-center justify-center w-16 h-16 rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300"
+                  style={{ backgroundColor: theme.secondaryColor }}
+                >
+                  <CurrencyExchangeIcon className="text-white" fontSize="large" />
+                </div>
+                <div className="text-center md:text-left flex-1">
+                  <h3 className="text-2xl font-bold mb-2">{translations.landing.new.features.currencies.title}</h3>
+                  <p className="opacity-80 mb-3">
+                    {translations.landing.new.features.currencies.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                    {translations.landing.new.features.currencies.features.map((currency, index) => (
+                      <span key={index} className="text-sm px-3 py-1 rounded-full font-medium"
+                        style={{
+                          backgroundColor: theme.mode === 'dark' ? `${theme.secondaryColor}20` : `${theme.secondaryColor}15`,
+                          border: `1px solid ${theme.secondaryColor}30`,
+                        }}
+                      >
+                        {currency}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-4 mt-3 justify-center md:justify-start">
+                    <span className="text-xs opacity-60 flex items-center gap-1">
+                      <CheckCircleIcon style={{ color: theme.secondaryColor }} sx={{ fontSize: 14 }} />
+                      {translations.landing.new.features.currencies.liveRates}
+                    </span>
+                    <span className="text-xs opacity-60 flex items-center gap-1">
+                      <CheckCircleIcon style={{ color: theme.secondaryColor }} sx={{ fontSize: 14 }} />
+                      {translations.landing.new.features.currencies.autoConversion}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 8 - CSV/Excel Import */}
             <div
               className="group p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 md:col-span-2 lg:col-span-3"
               style={{

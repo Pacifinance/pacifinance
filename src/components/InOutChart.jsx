@@ -23,6 +23,7 @@ import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 
 import { getCategoryColor } from '../data/categoryColors';
+import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 
 export default function InOutChart({theme, userData, isHidden, type = "line"}) {
@@ -499,7 +500,7 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
                 fontSize: containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16,
                 fill: theme.mode === 'dark' ? '#fff' : '#333'
               }}
-              tickFormatter={(value) => isHidden ? '****' : Math.round(fromEUR(value)).toLocaleString()}
+              tickFormatter={(value) => isHidden ? '****' : compactNumber(Math.round(fromEUR(value)))}
               axisLine={{ 
                 stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
                 strokeWidth: 1 

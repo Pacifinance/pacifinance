@@ -152,6 +152,33 @@
                         "• Complete user privacy"
                     ]
                 },
+                "currencies": {
+                    "title": "19 Currencies Supported",
+                    "description": "View your finances in your preferred currency. Live exchange rates with automatic conversion — all data displayed in the currency you choose.",
+                    "features": [
+                        "🇪🇺 EUR",
+                        "🇺🇸 USD",
+                        "🇬🇧 GBP",
+                        "🇨🇭 CHF",
+                        "🇯🇵 JPY",
+                        "🇨🇦 CAD",
+                        "🇦🇺 AUD",
+                        "🇸🇪 SEK",
+                        "🇳🇴 NOK",
+                        "🇩🇰 DKK",
+                        "🇵🇱 PLN",
+                        "🇨🇿 CZK",
+                        "🇭🇺 HUF",
+                        "🇷🇴 RON",
+                        "🇧🇬 BGN",
+                        "🇧🇷 BRL",
+                        "🇮🇳 INR",
+                        "🇨🇳 CNY",
+                        "🇹🇷 TRY"
+                    ],
+                    "liveRates": "Live exchange rates",
+                    "autoConversion": "Automatic conversion"
+                },
                 "import": {
                     "title": "Quick CSV & Excel Import",
                     "description": "Already have your transactions in a bank export or spreadsheet? Import them in a few clicks. CSV and Excel support with automatic column mapping, date filters, and smart category matching.",

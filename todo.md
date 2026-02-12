@@ -187,6 +187,7 @@
 - [ ] Test per DataImportWizard: unit test per `parseAmount`, `processRows`, `processRowDual`, `autoDetectColumns`
 
 ### Import Dati (Evoluzione)
+- [ ] Permettere la modifica di note dopo la sezione dall'excel in automatico prima dell'inserimento transazioni dal csv / excel
 - [ ] Supporto aggiornamento bilancio tramite import (mappare colonne asset → valori bilancio)
 - [ ] Preview grafico delle transazioni importate prima della conferma (istogramma per mese/categoria)
 - [ ] Salvataggio template di mappatura per banca (es. "UniCredit CSV", "Revolut Excel") con condivisione community

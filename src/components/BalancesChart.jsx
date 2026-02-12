@@ -18,6 +18,7 @@ import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
 import { getBalanceChartData } from '../utils/userDataSelectors.js';
+import { compactNumber } from '../utils/customGraphsInfo.jsx';
 
 /**
  * Componente unificato per grafici dei bilanci
@@ -268,7 +269,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         tick={(props) => {
           const convertedProps = {
             ...props,
-            payload: { ...props.payload, value: isHidden ? '****' : Math.round(fromEUR(props.payload.value)).toLocaleString() }
+            payload: { ...props.payload, value: isHidden ? '****' : compactNumber(Math.round(fromEUR(props.payload.value))) }
           };
           return <CustomTick 
             {...convertedProps} 
@@ -353,7 +354,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
         tick={(props) => {
           const convertedProps = {
             ...props,
-            payload: { ...props.payload, value: isHidden ? '****' : Math.round(fromEUR(props.payload.value)).toLocaleString() }
+            payload: { ...props.payload, value: isHidden ? '****' : compactNumber(Math.round(fromEUR(props.payload.value))) }
           };
           return <CustomTick 
             {...convertedProps} 

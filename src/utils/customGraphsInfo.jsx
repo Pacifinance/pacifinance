@@ -1,8 +1,29 @@
 import React, { useContext } from "react";
 import { PrivacyContext } from "../contexts/PrivacyContext";
 
+/**
+ * Abbreviates large numbers for chart axis readability.
+ * e.g. 1500 → "1.5K", 2300000 → "2.3M", 500 → "500"
+ */
+export const compactNumber = (value) => {
+  if (value == null || isNaN(value)) return '';
+  const abs = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  if (abs >= 1_000_000_000) return `${sign}${(abs / 1_000_000_000).toFixed(abs % 1_000_000_000 === 0 ? 0 : 1)}B`;
+  if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(abs % 1_000_000 === 0 ? 0 : 1)}M`;
+  if (abs >= 10_000) return `${sign}${(abs / 1_000).toFixed(abs % 1_000 === 0 ? 0 : 1)}K`;
+  if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(1)}K`;
+  return `${sign}${abs}`;
+};
+
 export const CustomTick = ({x, y, payload, textAnchor, fill, angle, fontSize, dx, dy }) => {
     const { isHidden } = useContext(PrivacyContext);
+    // Auto-reduce font size for long values
+    const displayValue = isHidden ? '****' : payload.value;
+    const len = String(displayValue).length;
+    const autoFontSize = len > 8 ? Math.max(8, (fontSize || 14) - (len - 8) * 0.8) 
+                        : len > 6 ? Math.max(9, (fontSize || 14) - 1) 
+                        : (fontSize || 14);
     return (
       <g transform={`translate(${x},${y})`}>
         <text
@@ -12,10 +33,10 @@ export const CustomTick = ({x, y, payload, textAnchor, fill, angle, fontSize, dx
           dx={dx}
           textAnchor={textAnchor}
           fill={fill}
-          fontSize={fontSize}
+          fontSize={autoFontSize}
           transform={angle ? `rotate(${angle})` : ''}
         >
-          {isHidden ? '****' : payload.value}
+          {displayValue}
         </text>
       </g>
     );

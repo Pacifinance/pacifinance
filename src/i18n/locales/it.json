@@ -152,6 +152,33 @@
                         "• Nessun tracciamento pubblicitario"
                     ]
                 },
+                "currencies": {
+                    "title": "19 Valute Supportate",
+                    "description": "Visualizza le tue finanze nella valuta che preferisci. Tassi di cambio in tempo reale con conversione automatica — tutti i dati mostrati nella valuta scelta.",
+                    "features": [
+                        "🇪🇺 EUR",
+                        "🇺🇸 USD",
+                        "🇬🇧 GBP",
+                        "🇨🇭 CHF",
+                        "🇯🇵 JPY",
+                        "🇨🇦 CAD",
+                        "🇦🇺 AUD",
+                        "🇸🇪 SEK",
+                        "🇳🇴 NOK",
+                        "🇩🇰 DKK",
+                        "🇵🇱 PLN",
+                        "🇨🇿 CZK",
+                        "🇭🇺 HUF",
+                        "🇷🇴 RON",
+                        "🇧🇬 BGN",
+                        "🇧🇷 BRL",
+                        "🇮🇳 INR",
+                        "🇨🇳 CNY",
+                        "🇹🇷 TRY"
+                    ],
+                    "liveRates": "Tassi di cambio in tempo reale",
+                    "autoConversion": "Conversione automatica"
+                },
                 "import": {
                     "title": "Importazione Rapida da CSV e Excel",
                     "description": "Hai già le tue transazioni in un file della banca o un foglio di calcolo? Importale in pochi click. Supporto CSV e Excel con mappatura automatica delle colonne, filtri per data e riconoscimento intelligente delle categorie.",

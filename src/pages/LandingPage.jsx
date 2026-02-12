@@ -22,18 +22,18 @@ export default function NewLandingPage() {
     if (language === 'it') {
       return {
         title: "Unifica le Tue Finanze - Dashboard Multi-Piattaforma PaciFinance",
-        description: "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti.",
+        description: "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti. Supporto per 19 valute con tassi di cambio in tempo reale: EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY.",
         locale: "it_IT",
         languageCode: "it",
-        keywords: "unificare finanze, dashboard multi-piattaforma, gestione finanziaria, confronto anonimo, tracciamento spese, portafoglio investimenti, aggregazione conti bancari, analisi finanziaria, importare transazioni CSV, importare Excel spese"
+        keywords: "unificare finanze, dashboard multi-piattaforma, gestione finanziaria, confronto anonimo, tracciamento spese, portafoglio investimenti, aggregazione conti bancari, analisi finanziaria, importare transazioni CSV, importare Excel spese, multi-valuta, conversione valute, tassi di cambio, EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY, 19 valute supportate"
       };
     }
     return {
       title: "Unify Your Finances - PaciFinance Multi-Platform Dashboard",
-      description: "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments.",
+      description: "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments. Support for 19 currencies with live exchange rates: EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY.",
       locale: "en_US",
       languageCode: "en", 
-      keywords: "unify finances, multi-platform dashboard, financial management, anonymous comparison, expense tracking, investment portfolio, bank account aggregation, financial analytics, import CSV transactions, import Excel expenses"
+      keywords: "unify finances, multi-platform dashboard, financial management, anonymous comparison, expense tracking, investment portfolio, bank account aggregation, financial analytics, import CSV transactions, import Excel expenses, multi-currency, currency conversion, exchange rates, EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY, 19 currencies supported"
     };
   };
 
@@ -116,7 +116,10 @@ export default function NewLandingPage() {
             language === 'it' ? "Unificazione conti bancari" : "Bank account unification",
             language === 'it' ? "Confronti anonimi" : "Anonymous comparisons", 
             language === 'it' ? "Gestione investimenti" : "Investment management",
-            language === 'it' ? "Analisi spese" : "Expense analytics"
+            language === 'it' ? "Analisi spese" : "Expense analytics",
+            language === 'it' ? "Supporto 19 valute (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)" : "19 currencies supported (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)",
+            language === 'it' ? "Tassi di cambio in tempo reale" : "Live exchange rates",
+            language === 'it' ? "Importazione CSV e Excel" : "CSV and Excel import"
           ]
         })}
       </script>

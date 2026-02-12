@@ -389,7 +389,10 @@ export const autoDetectColumns = (headers, rows) => {
 /**
  * @typedef {Object} ColumnMapping
  * @property {number} dateCol - Column index for date
- * @property {number} amountCol - Column index for amount
+ * @property {number} amountCol - Column index for amount (single mode)
+ * @property {boolean} [dualAmountMode] - Whether using separate income/outflow columns
+ * @property {number} [incomeCol] - Column index for income amounts (dual mode)
+ * @property {number} [outflowCol] - Column index for outflow amounts (dual mode)
  * @property {number|null} categoryCol - Column index for category (optional)
  * @property {number|null} notesCol - Column index for notes (optional)
  * @property {string} dateFormat - Date format label
@@ -419,14 +422,28 @@ export const processRows = (rows, mapping) => {
   const valid = [];
   const errors = [];
 
-  rows.forEach((row, idx) => {
-    const result = processRow(row, mapping, idx);
-    if (result.error) {
-      errors.push(result);
-    } else {
-      valid.push(result);
-    }
-  });
+  if (mapping.dualAmountMode) {
+    // Dual column mode: separate income/outflow columns
+    rows.forEach((row, idx) => {
+      const result = processRowDual(row, mapping, idx);
+      result.forEach(r => {
+        if (r.error) {
+          errors.push(r);
+        } else {
+          valid.push(r);
+        }
+      });
+    });
+  } else {
+    rows.forEach((row, idx) => {
+      const result = processRow(row, mapping, idx);
+      if (result.error) {
+        errors.push(result);
+      } else {
+        valid.push(result);
+      }
+    });
+  }
 
   return { valid, errors };
 };
@@ -487,6 +504,70 @@ const processRow = (row, mapping, rowIndex) => {
   const notes = notesCol !== null ? (row[notesCol] || '') : '';
 
   return { rowIndex, error: null, date, amount, isOutflow, categoryIndex, categoryLabel, notes };
+};
+
+/**
+ * Process a single row in dual-column mode (separate income/outflow columns).
+ * Returns an array of 0-2 transactions per row.
+ */
+const processRowDual = (row, mapping, rowIndex) => {
+  const { dateCol, incomeCol, outflowCol, categoryCol, notesCol, dateFormat, defaultCategoryIndex } = mapping;
+
+  // Parse date
+  const dateStr = row[dateCol];
+  const parsedDate = parseDate(dateStr, dateFormat);
+  if (!parsedDate) {
+    return [{ rowIndex, error: `INVALID_DATE: "${dateStr}"`, date: dateStr, amount: 0, isOutflow: true, categoryIndex: 9999, categoryLabel: 'Other', notes: '' }];
+  }
+  const date = formatDateForAPI(parsedDate);
+
+  // Match category (shared for both)
+  let categoryIndex = defaultCategoryIndex;
+  let categoryLabel = 'Other';
+  if (categoryCol !== null && row[categoryCol]) {
+    const matched = matchCategory(row[categoryCol]);
+    if (matched) {
+      categoryIndex = matched.index;
+      categoryLabel = matched.label;
+    } else {
+      categoryLabel = row[categoryCol];
+    }
+  }
+
+  const notes = notesCol !== null ? (row[notesCol] || '') : '';
+  const results = [];
+
+  // Outflow amount
+  if (outflowCol >= 0) {
+    const outStr = row[outflowCol];
+    const outAmt = parseAmount(outStr);
+    if (outAmt !== null && outAmt !== 0) {
+      results.push({ rowIndex, error: null, date, amount: Math.abs(outAmt), isOutflow: true, categoryIndex, categoryLabel, notes });
+    }
+  }
+
+  // Income amount
+  if (incomeCol >= 0) {
+    const incStr = row[incomeCol];
+    const incAmt = parseAmount(incStr);
+    if (incAmt !== null && incAmt !== 0) {
+      results.push({ rowIndex: rowIndex, error: null, date, amount: Math.abs(incAmt), isOutflow: false, categoryIndex, categoryLabel, notes });
+    }
+  }
+
+  // If neither column had a valid amount, it's a skip (empty row in both cols)
+  if (results.length === 0) {
+    // Only flag as error if the row has something in the date — not a fully empty row
+    const outStr = outflowCol >= 0 ? row[outflowCol] : '';
+    const incStr = incomeCol >= 0 ? row[incomeCol] : '';
+    if ((outStr && outStr.trim()) || (incStr && incStr.trim())) {
+      return [{ rowIndex, error: `INVALID_AMOUNT: "${outStr || incStr}"`, date, amount: 0, isOutflow: true, categoryIndex: 9999, categoryLabel: 'Other', notes: '' }];
+    }
+    // Both empty — silently skip
+    return [];
+  }
+
+  return results;
 };
 
 /**

@@ -279,6 +279,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // Mapping state
   const [dateCol, setDateCol] = useState(-1);
   const [amountCol, setAmountCol] = useState(-1);
+  const [dualAmountMode, setDualAmountMode] = useState(false); // separate income/outflow columns
+  const [incomeCol, setIncomeCol] = useState(-1);
+  const [outflowCol, setOutflowCol] = useState(-1);
   const [categoryCol, setCategoryCol] = useState(-1);
   const [notesCol, setNotesCol] = useState(-1);
   const [dateFormat, setDateFormat] = useState('');
@@ -422,6 +425,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const m = saved.mapping;
     setDateCol(m.dateCol ?? -1);
     setAmountCol(m.amountCol ?? -1);
+    setDualAmountMode(m.dualAmountMode || false);
+    setIncomeCol(m.incomeCol ?? -1);
+    setOutflowCol(m.outflowCol ?? -1);
     setCategoryCol(m.categoryCol ?? -1);
     setNotesCol(m.notesCol ?? -1);
     setDateFormat(m.dateFormat || '');
@@ -432,7 +438,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const handleSaveMapping = () => {
     if (!mappingName.trim()) return;
     const mapping = {
-      dateCol, amountCol, categoryCol: categoryCol === -1 ? null : categoryCol,
+      dateCol, amountCol, dualAmountMode,
+      incomeCol: dualAmountMode ? incomeCol : -1,
+      outflowCol: dualAmountMode ? outflowCol : -1,
+      categoryCol: categoryCol === -1 ? null : categoryCol,
       notesCol: notesCol === -1 ? null : notesCol,
       dateFormat, transactionType, defaultCategoryIndex: defaultCategory,
     };
@@ -446,11 +455,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setSavedMappings(loadSavedMappings());
   };
 
-  const isMappingValid = dateCol >= 0 && amountCol >= 0 && dateFormat !== '';
+  const isMappingValid = dateCol >= 0 && dateFormat !== '' && (
+    dualAmountMode ? (incomeCol >= 0 || outflowCol >= 0) : amountCol >= 0
+  );
 
   const handleProcessRows = () => {
     const mapping = {
-      dateCol, amountCol,
+      dateCol, amountCol: dualAmountMode ? -1 : amountCol,
+      dualAmountMode,
+      incomeCol: dualAmountMode ? incomeCol : -1,
+      outflowCol: dualAmountMode ? outflowCol : -1,
       categoryCol: categoryCol === -1 ? null : categoryCol,
       notesCol: notesCol === -1 ? null : notesCol,
       dateFormat, transactionType, defaultCategoryIndex: defaultCategory,
@@ -461,9 +475,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setSummary(summarizeImport(valid));
     // Initialize all valid rows as selected
     setSelectedRows(new Set(valid.map(tx => tx.rowIndex)));
-    // Reset filters and overrides
-    setDateFrom('');
-    setDateTo('');
+    // Pre-populate date filter with min/max from parsed data
+    const dates = valid.map(tx => tx.date).filter(Boolean).sort();
+    setDateFrom(dates[0] || '');
+    setDateTo(dates[dates.length - 1] || '');
     setRowCategories({});
     setShowAllRows(false);
     setStep(2);
@@ -780,28 +795,73 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </SelectField>
               </div>
 
-              {/* Amount Column */}
-              <div>
-                <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                  💰 {t.amountColumn || 'Amount'} *
-                </label>
-                <SelectField theme={theme} value={amountCol} onChange={e => setAmountCol(parseInt(e.target.value))}>
-                  <option value={-1}>— {t.selectColumn || 'Select column'} —</option>
-                  {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
-                </SelectField>
+              {/* Amount Column — single or dual mode */}
+              {!dualAmountMode ? (
+                <div>
+                  <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    💰 {t.amountColumn || 'Amount'} *
+                  </label>
+                  <SelectField theme={theme} value={amountCol} onChange={e => setAmountCol(parseInt(e.target.value))}>
+                    <option value={-1}>— {t.selectColumn || 'Select column'} —</option>
+                    {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                  </SelectField>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      📉 {t.outflowColumn || 'Outflow column'} ({t.optional || 'optional'})
+                    </label>
+                    <SelectField theme={theme} value={outflowCol} onChange={e => setOutflowCol(parseInt(e.target.value))}>
+                      <option value={-1}>— {t.noColumn || 'None'} —</option>
+                      {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                    </SelectField>
+                  </div>
+                  <div>
+                    <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      📈 {t.incomeColumn || 'Income column'} ({t.optional || 'optional'})
+                    </label>
+                    <SelectField theme={theme} value={incomeCol} onChange={e => setIncomeCol(parseInt(e.target.value))}>
+                      <option value={-1}>— {t.noColumn || 'None'} —</option>
+                      {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                    </SelectField>
+                  </div>
+                </>
+              )}
+
+              {/* Toggle dual amount mode */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <StyledCheckbox
+                  checked={dualAmountMode}
+                  onChange={e => {
+                    setDualAmountMode(e.target.checked);
+                    if (e.target.checked) {
+                      setAmountCol(-1);
+                      setTransactionType('auto');
+                    } else {
+                      setIncomeCol(-1);
+                      setOutflowCol(-1);
+                    }
+                  }}
+                />
+                <span style={{ color: theme.textColor, fontSize: '0.83rem', opacity: 0.8 }}>
+                  {t.dualAmountToggle || 'My file has separate columns for incomes and outflows'}
+                </span>
               </div>
 
-              {/* Transaction Type */}
-              <div>
-                <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                  📊 {t.transactionType || 'Transaction type'}
-                </label>
-                <SelectField theme={theme} value={transactionType} onChange={e => setTransactionType(e.target.value)}>
-                  <option value="auto">{t.typeAuto || 'Auto (- = outflow, + = income)'}</option>
-                  <option value="outflow">{t.typeAllOutflows || 'All outflows'}</option>
-                  <option value="income">{t.typeAllIncomes || 'All incomes'}</option>
-                </SelectField>
-              </div>
+              {/* Transaction Type — only in single mode */}
+              {!dualAmountMode && (
+                <div>
+                  <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    📊 {t.transactionType || 'Transaction type'}
+                  </label>
+                  <SelectField theme={theme} value={transactionType} onChange={e => setTransactionType(e.target.value)}>
+                    <option value="auto">{t.typeAuto || 'Auto (- = outflow, + = income)'}</option>
+                    <option value="outflow">{t.typeAllOutflows || 'All outflows'}</option>
+                    <option value="income">{t.typeAllIncomes || 'All incomes'}</option>
+                  </SelectField>
+                </div>
+              )}
 
               {/* Category Column */}
               <div>

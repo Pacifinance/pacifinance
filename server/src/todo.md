@@ -7,6 +7,7 @@
 ## 🔧 Da Fare
 
 ### Urgente
+- [ ] Aggiungere fattore 100 per convertire i valori inseriti dall'utente in centesimi così non ne perdiamo per Error floating point (ovunque) ★
 
 ### Valute & Moneta
 - [ ] Aggiungere richiesta API e sistema di cache per le valute (mettine più possibili) ★
@@ -15,6 +16,7 @@
 ### Rankings & Confronti
 
 ### Profilo Utente
+- [ ] Valutare se aggiungere email al profilo per prevenzione bot, recupero password e supporto ★
 - [ ] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
 - [ ] Profile - Back End
   - [x] Nationality
@@ -27,7 +29,6 @@
 - [ ] Permettere di vedere tutte le spese e le entrate inserite all'utente anche oltre l'anno (guardare filtri grafici) ★
 - [ ] Aggiungere limite di spesa per utente mensile a db (ora salvato in locale) ★
 - [ ] Aggiungere obbiettivo di income mensile a db (ragioniamoci)
-- [ ] Aggiungere fattore 100 per convertire i valori inseriti dall'utente in centesimi così non ne perdiamo per Error floating point (ovunque) ★
 - [ ] Permettere per gli abbonamenti di attivare la ricorrenza e scalare in automatico delle spese ogni mese
 
 ### Investimenti
@@ -51,6 +52,7 @@
 
 ### Qualità Codice
 - [ ] Controllare nomenclatura backend soprattutto per il formato dei dati e dei campi nelle route ma anche per il resto
+- [ ] Controllare qualità del codice in ottica di eventuale apertura (open source)
 
 ### Performance
 - [ ] Enable text compression Server Side

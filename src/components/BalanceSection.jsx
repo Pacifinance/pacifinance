@@ -90,6 +90,10 @@ const AssetGrid = styled.div`
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
   }
+  
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const AssetItem = styled.div`
@@ -198,6 +202,7 @@ const FooterBar = styled.div`
   gap: 1rem;
   padding-top: 0.5rem;
   flex-wrap: wrap;
+  width: 100%;
 
   @media (max-width: 480px) {
     flex-direction: column;

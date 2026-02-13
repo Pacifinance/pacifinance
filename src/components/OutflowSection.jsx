@@ -31,6 +31,10 @@ const FormCard = styled.div`
   width: 100%;
   @media (max-width: 600px) {
     grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -641,8 +645,10 @@ export default function OutflowSection({
     color: theme.textColor,
     minHeight: '42px',
     width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
     '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-    '& .MuiSelect-select': { padding: '8px 12px' },
+    '& .MuiSelect-select': { padding: '8px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
     '& .MuiSvgIcon-root': { color: theme.textColor },
   };
 

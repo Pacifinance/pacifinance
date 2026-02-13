@@ -160,6 +160,18 @@ const TabButton = styled.button`
       font-size: 1rem;
     }
   }
+  
+  @media (max-width: 480px) {
+    padding: 0.55rem 0.4rem;
+    
+    & > span {
+      display: none;
+    }
+    
+    & > svg {
+      font-size: 1.2rem;
+    }
+  }
 `;
 
 /* ── Import CTA ── */
@@ -1108,7 +1120,7 @@ export default function InsertValue({
               onClick={() => setActivePage("bilancio")}
             >
               <AccountBalanceIcon />
-              {translations.insert.buttonBalance}
+              <span>{translations.insert.buttonBalance}</span>
             </TabButton>
             <TabButton
               theme={theme}
@@ -1116,7 +1128,7 @@ export default function InsertValue({
               onClick={() => setActivePage("income")}
             >
               <TrendingUpIcon />
-              {translations.insert.buttonIncome}
+              <span>{translations.insert.buttonIncome}</span>
             </TabButton>
             <TabButton
               theme={theme}
@@ -1124,7 +1136,7 @@ export default function InsertValue({
               onClick={() => setActivePage("outflows")}
             >
               <TrendingDownIcon />
-              {translations.insert.buttonOutflow}
+              <span>{translations.insert.buttonOutflow}</span>
             </TabButton>
           </TabGroup>
           

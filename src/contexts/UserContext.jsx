@@ -335,7 +335,8 @@ export const UserProvider = ({ children }) => {
             const rankOnBalanceSimilar = await axios.post('/rank/balances', {similar: true}, { withCredentials: true } );
             const rankOnIncomeSimilar = await axios.post('/rank/expenses', {expenses: false, similar: true}, { withCredentials: true } );
             const rankOnExpenseSimilar = await axios.post('/rank/expenses', {expenses: true, similar: true}, { withCredentials: true });
-
+            
+            //aggiungere controllo per null 
             const percentageRankOnBalance = rankOnBalance.data.position;
             const percentageRankOnIncomes = rankOnIncome.data.position;
             const percentageRankOnExpenses = rankOnExpense.data.position;

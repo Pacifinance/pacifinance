@@ -651,8 +651,10 @@ export default function IncomeSection({
     color: theme.textColor,
     minHeight: '42px',
     width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
     '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-    '& .MuiSelect-select': { padding: '8px 12px' },
+    '& .MuiSelect-select': { padding: '8px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
     '& .MuiSvgIcon-root': { color: theme.textColor },
   };
 

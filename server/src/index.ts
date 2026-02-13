@@ -33,6 +33,15 @@ app.use(session({
     resave: false,
     cookie: {maxAge: day_ms}
 }));
+app.use((req, res, next) => {
+    const supportedLocales = ["en", "it", "de", "es", "fr", "ja", "nl", "zh"]
+    const segments = req.path.split("/").filter(Boolean)
+    if (supportedLocales.includes(segments[0])) {
+        req.url = req.url.replace(`/${segments[0]}`, "") || "/"
+        res.locals.locale = segments[0] // change to req.locale
+    }
+    next()
+})
 app.use(express.static(path.join(__dirname, "../../build")));
 app.use(express.json());
 

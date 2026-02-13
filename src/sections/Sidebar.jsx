@@ -297,7 +297,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const handleLogout = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post("/logout", null, {
+            const response = await axios.post("/user/logout", null, {
                 withCredentials: true,
             });
             if (response.status === 200) {

@@ -148,6 +148,7 @@
 - [x] ~~gli achievements sono buggati, vengono dati come fatti anche per utenti che per esempio non hanno inserito dati negli ultimi mesi~~ → Fix: tutti i 44 badge ora verificano i dati reali (`totalValue > 0`, `income > 0`, `outflows > 0`), non solo la presenza della struttura. `calculateDataStreak` e `calculateSavingsStreak` controllano valori effettivi. Nuova helper `countMonthsWithData`. Rankings richiedono patrimonio > 0. Budget check valida che il limite sia user-set (non fallback).
 - [x] ~~Dalle impostazioni non si può cambiare lingua, farlo funzionare (forse dipende dall'url localizzato)~~ → Fix: `handleLanguageToggle` usava `useLocalizedNavigate` che aggiungeva doppio prefisso lingua (`/en/en/settings`). Ora usa `useNavigate` raw di react-router-dom per la navigazione con path già prefissato.
 
+
 ### Mobile
 - [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)
 - [ ] Scroll navigation: valutare se disabilitare interamente su mobile (può interferire con scroll naturale)

@@ -116,6 +116,26 @@ const PreviewTable = styled.div`
   border-radius: 8px;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'};
   -webkit-overflow-scrolling: touch;
+  position: relative;
+
+  /* Custom horizontal scrollbar */
+  &::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'};
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'};
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)'};
+  }
+  scrollbar-width: thin;
+  scrollbar-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2) rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.15) rgba(0,0,0,0.03)'};
   
   table {
     width: 100%;
@@ -928,6 +948,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </tbody>
               </table>
             </PreviewTable>
+            {headers.length > 3 && (
+              <p style={{ 
+                color: theme.textColor, 
+                opacity: 0.45, 
+                fontSize: '0.75rem', 
+                textAlign: 'right', 
+                marginTop: '0.35rem',
+                fontStyle: 'italic'
+              }}>
+                {t.scrollHint || 'Scroll horizontally to see all columns →'}
+              </p>
+            )}
           </Card>
 
           {/* Saved Mappings */}

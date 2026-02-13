@@ -1717,6 +1717,7 @@
         "errorParseFailed": "Impossibile leggere il file. Controlla il formato e riprova.",
         "mappingTitle": "🗺️ Mappa le colonne",
         "mappingPreview": "Anteprima dei dati (prime 5 righe):",
+        "scrollHint": "Scorri in orizzontale per vedere tutte le colonne →",
         "mappingInstructions": "Indica quale colonna contiene cosa:",
         "headerRowLabel": "Riga intestazione (nomi colonne):",
         "headerRowHint": "(le righe sopra verranno ignorate)",

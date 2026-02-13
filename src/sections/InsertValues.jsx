@@ -302,6 +302,7 @@ const ImportModalContent = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem;
+    padding-bottom: 5rem;
     border-radius: 14px;
     max-height: 95vh;
   }

@@ -1717,6 +1717,7 @@
         "errorParseFailed": "Failed to read file. Check the format and try again.",
         "mappingTitle": "🗺️ Map your columns",
         "mappingPreview": "Preview of your data (first 5 rows):",
+        "scrollHint": "Scroll horizontally to see all columns →",
         "mappingInstructions": "Tell us which column contains what:",
         "headerRowLabel": "Header row (column names):",
         "headerRowHint": "(rows above will be skipped)",

@@ -1,20 +1,18 @@
 # PaciFinance Backend - TODO
 
-> Ultimo aggiornamento: 12/02/2026
+> Ultimo aggiornamento: 13/02/2026
 
 ---
 
 ## 🔧 Da Fare
 
 ### Urgente
-- [ ] capire perché gli url variabilizzati con le lingue non funzionano (per ora l'url che funziona per browser senza cache è solo pacifinance.com)
 
 ### Valute & Moneta
 - [ ] Aggiungere richiesta API e sistema di cache per le valute (mettine più possibili) ★
 - [ ] Aggiungere alla route del profilo un campo currency, per permettere all'utente di scegliere la sua moneta di riferimento e salvarla a db (ora salvata in locale ) ★
 
 ### Rankings & Confronti
-- [ ] Modificare la response di tutti i rank e mandare solo il rapporto tra data.position e data.total moltiplicato * 100 ★
 
 ### Profilo Utente
 - [ ] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
@@ -46,7 +44,7 @@
 
 ### Roadmap & Community
 - [ ] Sviluppare interazione backend Roadmap page ★
-- [ ] Metodo per invitare amici/conoscenti inviti limitati (magari danno dei primi agli utenti o vantaggi) (al posto dell'iscrizione) (Hype culture)
+- [ ] Metodo per implementare referral e badge per utenti che hanno fatto iscrivere un nuovo utente
 
 ### Autenticazione & Login
 - [ ] Permettere all'utente di avere il login smart (salvare in cache l'informazione e gestire dal backend due login diversi)
@@ -72,3 +70,5 @@
   - [x] Disabilitare Apache
   - [ ] Cancellare dati
 - [x] Cookie login per Backend ★
+- [x] capire perché gli url variabilizzati con le lingue non funzionano (per ora l'url che funziona per browser senza cache è solo pacifinance.com)
+- [x] Modificare la response di tutti i rank e mandare solo il rapporto tra data.position e data.total moltiplicato * 100 ★

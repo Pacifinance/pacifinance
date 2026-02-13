@@ -16,7 +16,7 @@ function computeRankOfUser(array: any[], target_user: string) {
         if (array[i].user === target_user)
             position = array.length - i;
     }
-    return {position: position, total: array.length};
+    return {position: Math.floor(position / array.length * 100)};
 }
 
 /* === /rank/* === */
@@ -96,6 +96,8 @@ rankRouter.post("/expenses", async (req, res) => {
     // Sort the array of expenses to get the rank of the user
     expenses.sort((a, b) => a.amount - b.amount);
     const rank = computeRankOfUser(expenses, target_user);
+    if (is_expense_filter)
+        rank.position = 100 - rank.position // for expenses: low values are rewarded
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(rank);

@@ -575,12 +575,12 @@ const processRowDual = (row, mapping, rowIndex) => {
  * @param {ParsedTransaction} tx
  * @returns {{ expense: Object }}
  */
-export const toAPIFormat = (tx) => ({
+export const toAPIFormat = (tx, paymentType) => ({
   expense: {
     date: tx.date,
     amount: tx.amount,
     is_expense: tx.isOutflow,
-    payment_type: 0, // Single payment by default
+    payment_type: tx.isOutflow ? (paymentType ?? 1) : 0,
     category_tag: tx.categoryIndex,
     notes: tx.notes,
   },

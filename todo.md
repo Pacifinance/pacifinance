@@ -262,6 +262,7 @@
 - ~~C'è un modo per capire se un utente fa effettivamente una donazione alla piattaforma?~~ ✅ **Analizzato** — vedi sotto
 - Potrei fare che gli achievements dei traguardi di net worth siano più variabilizzati sul bilancio dell'utente e gli scalini siano coerenti per far si che siano raggiungiblili e sproni veramente l'utente. (caso studio utente con 1000€, l'obbiettivo da 50k€ è forse troppo alto)
 Se lo si variabilizza si potrebbero mettere dei lucchetti su quelli successivi come da sbloccare, che non possa vederle (da valutare)
+- Tracker di log degli utenti per badge e punti. Tipo ti sei connesso 
 
 ### 📊 Analisi: Tracciamento Donazioni BuyMeACoffee → Achievement "Supporter"
 

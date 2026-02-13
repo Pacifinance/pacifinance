@@ -855,7 +855,7 @@ describe('API Format Conversion', () => {
       expect(result.expense.date).toBe('2024-03-15');
       expect(result.expense.amount).toBe(50);
       expect(result.expense.is_expense).toBe(true);
-      expect(result.expense.payment_type).toBe(0);
+      expect(result.expense.payment_type).toBe(1);
       expect(result.expense.category_tag).toBe(4);
       expect(result.expense.notes).toBe('Grocery');
     });
@@ -874,9 +874,16 @@ describe('API Format Conversion', () => {
       expect(result.expense.category_tag).toBe(0);
     });
 
-    it('should always set payment_type to 0', () => {
+    it('should default payment_type to 1 for outflows and 0 for incomes', () => {
+      const outflow = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999, notes: '' };
+      expect(toAPIFormat(outflow).expense.payment_type).toBe(1);
+      const income = { date: '2024-01-01', amount: 100, isOutflow: false, categoryIndex: 0, notes: '' };
+      expect(toAPIFormat(income).expense.payment_type).toBe(0);
+    });
+
+    it('should use provided paymentType parameter for outflows', () => {
       const tx = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999, notes: '' };
-      expect(toAPIFormat(tx).expense.payment_type).toBe(0);
+      expect(toAPIFormat(tx, 3).expense.payment_type).toBe(3);
     });
 
     it('should handle empty notes', () => {
@@ -1189,7 +1196,7 @@ describe('Integration Scenarios', () => {
       expect(apiData.expense.date).toBe('2024-03-15');
       expect(apiData.expense.amount).toBe(50);
       expect(apiData.expense.is_expense).toBe(true);
-      expect(apiData.expense.payment_type).toBe(0);
+      expect(apiData.expense.payment_type).toBe(1);
       expect(apiData.expense.category_tag).toBe(4); // Food
       expect(apiData.expense.notes).toBe('pranzo');
     });

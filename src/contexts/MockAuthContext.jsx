@@ -218,10 +218,11 @@ export const mockUserData = {
             { index: 9999, label: 'other', type: 1, translations: { it: 'Altro', en: 'Other' }}
         ],
         paymentTags: [
-            { index: 0, label: 'single payment', translations: { it: 'Pagamento singolo', en: 'Single Payment' }},
-            { index: 1, label: 'subscription', translations: { it: 'Abbonamento', en: 'Subscription' }},
-            { index: 2, label: 'installment', translations: { it: 'Rata', en: 'Installment' }},
-            { index: 3, label: 'periodic payment', translations: { it: 'Pagamento periodico', en: 'Periodic payment' }}
+            { index: 0, label: 'none', translations: { it: 'Nessuno', en: 'None' }},
+            { index: 1, label: 'single payment', translations: { it: 'Pagamento singolo', en: 'Single Payment' }},
+            { index: 2, label: 'subscription', translations: { it: 'Abbonamento', en: 'Subscription' }},
+            { index: 3, label: 'installment', translations: { it: 'Rata', en: 'Installment' }},
+            { index: 4, label: 'periodic payment', translations: { it: 'Pagamento periodico', en: 'Periodic payment' }}
         ],
         nationalityTags: [],
         jobTags: [],

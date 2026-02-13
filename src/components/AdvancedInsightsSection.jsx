@@ -37,13 +37,16 @@ const TabsContainer = styled.div`
 const Tab = styled.button`
   background: none;
   border: none;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  color: ${props => props.active ? props.theme.secondaryColor : '#ffffff'};
+  color: ${props => props.active 
+    ? props.theme.secondaryColor 
+    : props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.55)'
+  };
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -66,8 +69,8 @@ const Tab = styled.button`
   
   @media (max-width: 768px) {
     flex: 1;
-    padding: 0.8rem 1rem;
-    font-size: 1.1rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
   }
 `;
 

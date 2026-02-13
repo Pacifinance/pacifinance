@@ -1,7 +1,6 @@
 ﻿import React, { useEffect, useState, useContext } from 'react'
 import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { MdOutlineSavings } from "react-icons/md"; 
-import { SectionAMonth } from '../styles/MyStyled';
 import styled from 'styled-components';
 import { calculatePercentageChange, calculateDifference, formatCurrencyDifference } from '../utils/calculations';
 import { getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
@@ -9,18 +8,31 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 
 const ModernStatsCard = styled.div`
-  background: transparent;
-  border: none;
+  background: ${props => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.05)'
+    : 'rgba(255, 255, 255, 0.9)'
+  };
+  border: 1px solid ${props => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.1)'
+    : 'rgba(0, 0, 0, 0.06)'
+  };
   border-radius: 16px;
-  padding: 1rem;
-  margin: 0;
+  padding: 1.25rem;
   transition: all 0.3s ease;
   position: relative;
   display: flex;
   flex-direction: column;
   
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${props => props.theme.mode === 'dark'
+      ? '0 8px 24px rgba(0, 0, 0, 0.3)'
+      : '0 8px 24px rgba(0, 0, 0, 0.08)'
+    };
+  }
+  
   @media (max-width: 768px) {
-    padding: 0.8rem;
+    padding: 1rem;
     border-radius: 12px;
   }
 `;
@@ -28,11 +40,15 @@ const ModernStatsCard = styled.div`
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.8rem;
+  gap: 0.75rem;
   
   @media (max-width: 768px) {
-    gap: 0.6rem;
+    gap: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
     grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 `;
 
@@ -41,64 +57,63 @@ const StatCard = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0.8rem;
+  padding: 0.75rem 0.5rem;
   background: ${props => props.theme.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.05)' 
-    : 'rgba(255, 255, 255, 0.8)'
+    ? 'rgba(255, 255, 255, 0.04)' 
+    : 'rgba(0, 0, 0, 0.02)'
   };
   border-radius: 12px;
   border: 1px solid ${props => props.theme.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.08)'
+    ? 'rgba(255, 255, 255, 0.06)' 
+    : 'rgba(0, 0, 0, 0.04)'
   };
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-1px);
     background: ${props => props.theme.mode === 'dark' 
-      ? 'rgba(255, 255, 255, 0.08)' 
-      : 'rgba(255, 255, 255, 0.95)'
+      ? 'rgba(255, 255, 255, 0.07)' 
+      : 'rgba(0, 0, 0, 0.03)'
     };
   }
   
   @media (max-width: 768px) {
-    padding: 0.6rem;
+    padding: 0.6rem 0.4rem;
   }
 `;
 
 const IconContainer = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   background: ${props => props.$bgColor || '#079164'};
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   
   @media (max-width: 768px) {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
   }
 `;
 
 const StatValue = styled.div`
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: white;
-  margin-bottom: 0.3rem;
+  color: ${props => props.theme.textColor};
+  margin-bottom: 0.15rem;
   
   @media (max-width: 768px) {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 `;
 
 const StatLabel = styled.div`
   font-size: 0.75rem;
   font-weight: 500;
-  color: white;
-  margin-bottom: 0.5rem;
+  color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
+  margin-bottom: 0.4rem;
   
   @media (max-width: 768px) {
     font-size: 0.7rem;
@@ -113,12 +128,8 @@ const PercentageChange = styled.div`
     ? 'rgba(39, 174, 96, 0.1)' 
     : 'rgba(231, 76, 60, 0.1)'
   };
-  padding: 0.25rem 0.5rem;
-  border-radius: 10px;
-  border: 1px solid ${props => props.$isPositive 
-    ? 'rgba(39, 174, 96, 0.2)' 
-    : 'rgba(231, 76, 60, 0.2)'
-  };
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -126,8 +137,7 @@ const PercentageChange = styled.div`
   
   @media (max-width: 768px) {
     font-size: 0.65rem;
-    padding: 0.2rem 0.4rem;
-    border-radius: 8px;
+    padding: 0.15rem 0.4rem;
   }
 `;
 
@@ -257,100 +267,98 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
     const periodText = getPeriodText();
 
     return (
-        <SectionAMonth theme={theme}>
-            <ModernStatsCard theme={theme}>
-                <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
-                    <h3 style={{ 
-                        color: 'white', 
-                        fontSize: '1rem', 
-                        fontWeight: '600',
-                        margin: '0 0 0.3rem 0'
+        <ModernStatsCard theme={theme}>
+            <div style={{ marginBottom: '0.75rem', textAlign: 'center' }}>
+                <h3 style={{ 
+                    color: theme.textColor, 
+                    fontSize: '0.95rem', 
+                    fontWeight: '600',
+                    margin: '0 0 0.2rem 0'
+                }}>
+                    {periodText.periodLabel}
+                </h3>
+                <TooltipContainer>
+                    <p style={{ 
+                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
+                        fontSize: '0.78rem',
+                        margin: 0,
+                        fontWeight: '500'
                     }}>
-                        {periodText.periodLabel}
-                    </h3>
-                    <TooltipContainer>
-                        <p style={{ 
-                            color: 'rgba(255,255,255,0.8)',
-                            fontSize: '0.8rem',
-                            margin: 0,
-                            fontWeight: '500'
-                        }}>
-                            {periodText.vsText}
-                        </p>
-                        <Tooltip className="tooltip" theme={theme}>
-                            {periodText.tooltipText}
-                        </Tooltip>
-                    </TooltipContainer>
-                </div>
+                        {periodText.vsText}
+                    </p>
+                    <Tooltip className="tooltip" theme={theme}>
+                        {periodText.tooltipText}
+                    </Tooltip>
+                </TooltipContainer>
+            </div>
 
-                <StatsGrid>
-                    <StatCard theme={theme}>
-                        <IconContainer $bgColor="linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)">
-                            <div className="logo" style={{ color: '#fff', fontSize: '1.2rem' }}>
-                                <GiReceiveMoney />
-                            </div>
-                        </IconContainer>
-                        
-                        <StatValue>
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(incomesCurrent, incomesComparison), currencyFormatter)}
-                        </StatValue>
-                        
-                        <StatLabel>
-                            {translations?.general?.incomes || 'Entrate'}
-                        </StatLabel>
-                        
-                        <PercentageChange 
-                            $isPositive={isPositiveChange(incomesCurrent, incomesComparison, 'income')}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(incomesCurrent, incomesComparison, 'income')}
-                        </PercentageChange>
-                    </StatCard>
+            <StatsGrid>
+                <StatCard theme={theme}>
+                    <IconContainer $bgColor="linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)">
+                        <div style={{ color: '#fff', fontSize: '1.1rem', display: 'flex' }}>
+                            <GiReceiveMoney />
+                        </div>
+                    </IconContainer>
+                    
+                    <StatValue theme={theme}>
+                        {isHidden ? '****' : formatCurrencyDifference(calculateDifference(incomesCurrent, incomesComparison), currencyFormatter)}
+                    </StatValue>
+                    
+                    <StatLabel theme={theme}>
+                        {translations?.general?.incomes || 'Entrate'}
+                    </StatLabel>
+                    
+                    <PercentageChange 
+                        $isPositive={isPositiveChange(incomesCurrent, incomesComparison, 'income')}
+                    >
+                        {isHidden ? '****' : calculatePercentageChange(incomesCurrent, incomesComparison, 'income')}
+                    </PercentageChange>
+                </StatCard>
 
-                    <StatCard theme={theme}>
-                        <IconContainer $bgColor="linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)">
-                            <div className="logo" style={{ color: '#fff', fontSize: '1.2rem' }}>
-                                <GiPayMoney />
-                            </div>
-                        </IconContainer>
-                        
-                        <StatValue>
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(outflowsCurrent, outflowsComparison), currencyFormatter)}
-                        </StatValue>
-                        
-                        <StatLabel>
-                            {translations?.general?.outflows || 'Uscite'}
-                        </StatLabel>
-                        
-                        <PercentageChange 
-                            $isPositive={isPositiveChange(outflowsCurrent, outflowsComparison, 'expense')}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(outflowsCurrent, outflowsComparison, 'expense')}
-                        </PercentageChange>
-                    </StatCard>
+                <StatCard theme={theme}>
+                    <IconContainer $bgColor="linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)">
+                        <div style={{ color: '#fff', fontSize: '1.1rem', display: 'flex' }}>
+                            <GiPayMoney />
+                        </div>
+                    </IconContainer>
+                    
+                    <StatValue theme={theme}>
+                        {isHidden ? '****' : formatCurrencyDifference(calculateDifference(outflowsCurrent, outflowsComparison), currencyFormatter)}
+                    </StatValue>
+                    
+                    <StatLabel theme={theme}>
+                        {translations?.general?.outflows || 'Uscite'}
+                    </StatLabel>
+                    
+                    <PercentageChange 
+                        $isPositive={isPositiveChange(outflowsCurrent, outflowsComparison, 'expense')}
+                    >
+                        {isHidden ? '****' : calculatePercentageChange(outflowsCurrent, outflowsComparison, 'expense')}
+                    </PercentageChange>
+                </StatCard>
 
-                    <StatCard theme={theme}>
-                        <IconContainer $bgColor="linear-gradient(135deg, #3498db 0%, #2980b9 100%)">
-                            <div className="logo" style={{ color: '#fff', fontSize: '1.2rem' }}>
-                                <MdOutlineSavings />
-                            </div>
-                        </IconContainer>
-                        
-                        <StatValue>
-                            {isHidden ? '****' : formatCurrencyDifference(calculateDifference(savedCurrent, savedComparison), currencyFormatter)}
-                        </StatValue>
-                        
-                        <StatLabel>
-                            {translations?.general?.saved || 'Risparmiato'}
-                        </StatLabel>
-                        
-                        <PercentageChange 
-                            $isPositive={isPositiveChange(savedCurrent, savedComparison, 'saved')}
-                        >
-                            {isHidden ? '****' : calculatePercentageChange(savedCurrent, savedComparison, 'saved')}
-                        </PercentageChange>
-                    </StatCard>
-                </StatsGrid>
-            </ModernStatsCard>
-        </SectionAMonth>
+                <StatCard theme={theme}>
+                    <IconContainer $bgColor="linear-gradient(135deg, #3498db 0%, #2980b9 100%)">
+                        <div style={{ color: '#fff', fontSize: '1.1rem', display: 'flex' }}>
+                            <MdOutlineSavings />
+                        </div>
+                    </IconContainer>
+                    
+                    <StatValue theme={theme}>
+                        {isHidden ? '****' : formatCurrencyDifference(calculateDifference(savedCurrent, savedComparison), currencyFormatter)}
+                    </StatValue>
+                    
+                    <StatLabel theme={theme}>
+                        {translations?.general?.saved || 'Risparmiato'}
+                    </StatLabel>
+                    
+                    <PercentageChange 
+                        $isPositive={isPositiveChange(savedCurrent, savedComparison, 'saved')}
+                    >
+                        {isHidden ? '****' : calculatePercentageChange(savedCurrent, savedComparison, 'saved')}
+                    </PercentageChange>
+                </StatCard>
+            </StatsGrid>
+        </ModernStatsCard>
     );
 }

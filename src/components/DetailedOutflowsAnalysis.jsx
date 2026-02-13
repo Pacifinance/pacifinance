@@ -40,45 +40,44 @@ const AnalysisContainer = styled.div`
     ? 'rgba(255, 255, 255, 0.15)' 
     : 'rgba(0, 0, 0, 0.06)'
   };
-  border-radius: 24px;
-  padding: 2.5rem;
+  border-radius: 16px;
+  padding: 1.5rem;
   margin-top: 2rem;
   box-shadow: ${props => props.theme.mode === 'dark' 
-    ? '0 10px 40px rgba(0, 0, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2)' 
-    : '0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 15px rgba(0, 0, 0, 0.04)'
+    ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
+    : '0 4px 20px rgba(0, 0, 0, 0.06)'
   };
   backdrop-filter: blur(20px);
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
-    border-radius: 16px;
+    padding: 1rem;
+    border-radius: 12px;
   }
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   
   h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0 0 0.75rem 0;
-    color: white;
+    font-size: clamp(1.25rem, 3vw, 1.6rem);
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: ${props => props.theme.textColor};
     
     @media (max-width: 768px) {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
   }
   
   p {
-    font-size: 1rem;
-    color: white;
+    font-size: 0.9rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
     margin: 0;
-    max-width: 500px;
+    max-width: 450px;
     margin-left: auto;
     margin-right: auto;
     line-height: 1.5;
-    opacity: 0.8;
   }
 `;
 
@@ -103,7 +102,7 @@ const MonthSelector = styled.div`
   flex-wrap: wrap;
   
   label {
-    color: white;
+    color: ${props => props.theme.textColor};
     font-weight: 600;
     font-size: 1rem;
   }
@@ -259,13 +258,13 @@ const OverviewCard = styled.div`
   .value {
     font-size: 1.5rem;
     font-weight: 700;
-    color: white;
+    color: ${props => props.theme.textColor};
     margin-bottom: 0.25rem;
   }
   
   .label {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
   }
 `;
 
@@ -318,7 +317,7 @@ const CategoryHeader = styled.div`
     .category-name {
       font-size: 1.125rem;
       font-weight: 600;
-      color: white;
+      color: ${props => props.theme.textColor};
     }
     
     .category-icon {
@@ -339,12 +338,12 @@ const CategoryHeader = styled.div`
     .amount {
       font-size: 1.25rem;
       font-weight: 700;
-      color: white;
+      color: ${props => props.theme.textColor};
     }
     
     .percentage {
       font-size: 0.875rem;
-      color: white;
+      color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
     }
   }
 `;
@@ -368,7 +367,7 @@ const StatItem = styled.div`
   .stat-value {
     font-size: 1rem;
     font-weight: 600;
-    color: white;
+    color: ${props => props.theme.textColor};
     margin-bottom: 0.25rem;
     display: flex;
     align-items: center;
@@ -378,7 +377,7 @@ const StatItem = styled.div`
   
   .stat-label {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
     text-transform: uppercase;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -411,8 +410,8 @@ const TrendIndicator = styled.span`
 `;
 
 const PaymentMethodsSection = styled.div`
-  margin-top: 3rem;
-  padding-top: 3rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
   border-top: 1px solid ${props => props.theme.mode === 'dark' 
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(0, 0, 0, 0.08)'
@@ -475,13 +474,13 @@ const PaymentCard = styled.div`
       .payment-name {
         font-size: 1.125rem;
         font-weight: 600;
-        color: white;
+        color: ${props => props.theme.textColor};
         margin-bottom: 0.25rem;
       }
       
       .payment-subtitle {
         font-size: 0.875rem;
-        color: rgba(255, 255, 255, 0.8);
+        color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};
       }
     }
   }
@@ -510,7 +509,7 @@ const RecurringSection = styled.div`
     .recurring-title {
       font-size: 1rem;
       font-weight: 600;
-      color: white;
+      color: ${props => props.theme.textColor};
     }
   }
   
@@ -533,15 +532,13 @@ const RecurringSection = styled.div`
     
     .recurring-category {
       font-size: 0.875rem;
-      color: white;
+      color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'};
     }
     
     .recurring-amount {
       font-size: 0.875rem;
       font-weight: 600;
-      color: white;Uncaught ReferenceError: language is not defined
-    at DetailedOutflowAnalysis (DetailedOutflowsAnalysis.jsx:572:7)
-
+      color: ${props => props.theme.textColor};
     }
   }
 `;
@@ -817,7 +814,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   if (!expenseAnalysis) {
     return (
       <AnalysisContainer theme={theme}>
-        <SectionHeader>
+        <SectionHeader theme={theme}>
           <h2>{t.title}</h2>
           <p>{language === 'it' ? 'Nessun dato disponibile per l\'analisi' : 'No data available for analysis'}</p>
         </SectionHeader>
@@ -863,7 +860,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
 
     return (
       <AnalysisContainer theme={theme}>
-        <SectionHeader>
+        <SectionHeader theme={theme}>
           <h2>{t.title}</h2>
           <p>{t.subtitle}</p>
         </SectionHeader>
@@ -925,7 +922,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
           .sort((a, b) => b[1].currentAmount - a[1].currentAmount)
           .map(([category, data], index) => (
             <CategoryCard key={category} theme={theme}>
-              <CategoryHeader color={getCategoryColor(category, index)}>
+              <CategoryHeader theme={theme} color={getCategoryColor(category, index)}>
                 <div className="category-info">
                   <div className="category-icon">
                     {React.createElement(getCategoryIcon(category), { size: 20 })}
@@ -987,10 +984,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       </CategoryGrid>
 
       {/* Payment Methods Analysis */}
-      <PaymentMethodsSection>
-        <SectionHeader>
-          <h2 style={{ color: 'white' }}>{t.paymentMethodsTitle}</h2>
-          <p style={{ color: 'white' }}>{t.paymentMethodsSubtitle}</p>
+      <PaymentMethodsSection theme={theme}>
+        <SectionHeader theme={theme}>
+          <h2>{t.paymentMethodsTitle}</h2>
+          <p>{t.paymentMethodsSubtitle}</p>
         </SectionHeader>
 
         {/* Subscription Overview */}
@@ -1101,9 +1098,9 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
         {/* Recurring Outflows - This Month */}
         {recurringExpenses.length > 0 && (
           <>
-            <SectionHeader style={{ marginTop: '3rem', marginBottom: '2rem' }}>
-              <h2 style={{ color: 'white' }}>{t.recurringIdentifiedThisMonth}</h2>
-              <p style={{ color: 'white' }}>
+            <SectionHeader theme={theme} style={{ marginTop: '2rem', marginBottom: '1.5rem' }}>
+              <h2>{t.recurringIdentifiedThisMonth}</h2>
+              <p>
                 {language === 'it' 
                   ? 'Pagamenti ricorrenti identificati nel mese selezionato'
                   : 'Recurring payments identified in the selected month'
@@ -1140,7 +1137,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
               <div style={{ 
                 marginTop: '1rem', 
                 fontSize: '0.875rem', 
-                color: 'white',
+                color: theme.textColor,
                 textAlign: 'center'
               }}>
                 {t.totalMonthlyRecurring} {isHidden ? '****' : formatCurrency(recurringExpenses.reduce((sum, e) => sum + e.amount, 0))}
@@ -1153,9 +1150,9 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       {/* Recurring Outflows - Last 12 Months */}
       {recurringLast12Months.length > 0 && (
         <>
-          <SectionHeader style={{ marginTop: '3rem', marginBottom: '2rem' }}>
-            <h2 style={{ color: 'white' }}>{t.recurringIdentifiedLast12M}</h2>
-            <p style={{ color: 'white' }}>
+          <SectionHeader theme={theme} style={{ marginTop: '2rem', marginBottom: '1.5rem' }}>
+            <h2>{t.recurringIdentifiedLast12M}</h2>
+            <p>
               {language === 'it' 
                 ? 'Tutti i pagamenti ricorrenti identificati negli ultimi 12 mesi'
                 : 'All recurring payments identified in the last 12 months'
@@ -1189,7 +1186,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
             <div style={{ 
               marginTop: '1rem', 
               fontSize: '0.875rem', 
-              color: 'white',
+              color: theme.textColor,
               textAlign: 'center',
               opacity: 0.8
             }}>

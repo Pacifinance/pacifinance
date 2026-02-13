@@ -8,7 +8,7 @@
  * 4. Import: send data to API, show progress
  */
 
-import React, { useState, useContext, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -111,8 +111,11 @@ const DropZone = styled.div`
 
 const PreviewTable = styled.div`
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: ${p => p.$maxHeight || '400px'};
   border-radius: 8px;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'};
+  -webkit-overflow-scrolling: touch;
   
   table {
     width: 100%;
@@ -132,6 +135,9 @@ const PreviewTable = styled.div`
     background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)'};
     font-weight: 600;
     color: ${p => p.theme.textColor};
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
   td {
     color: ${p => p.theme.textColor};
@@ -244,7 +250,7 @@ const StyledCheckbox = styled.input.attrs({ type: 'checkbox' })`
 `;
 
 const NumberInput = styled.input.attrs({ type: 'number' })`
-  width: 80px;
+  width: 60px;
   padding: 0.4rem 0.6rem;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'};
   border-radius: 8px;
@@ -252,6 +258,102 @@ const NumberInput = styled.input.attrs({ type: 'number' })`
   color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
   font-size: 0.9rem;
   text-align: center;
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`;
+
+const StepperBtn = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'};
+  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
+  color: ${p => p.theme.textColor};
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  &:hover:not(:disabled) {
+    background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)'};
+  }
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+`;
+
+const NoteInput = styled.input`
+  padding: 0.25rem 0.5rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'};
+  border-radius: 6px;
+  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#fff'};
+  color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
+  font-size: 0.8rem;
+  width: 100%;
+  min-width: 100px;
+  max-width: 200px;
+  box-sizing: border-box;
+  &:focus {
+    outline: none;
+    border-color: #079164;
+  }
+`;
+
+const InfoTooltip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #079164;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 4px;
+  flex-shrink: 0;
+  position: relative;
+
+  &:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: ${p => p.theme.mode === 'dark' ? '#1a1a2e' : '#333'};
+    color: #fff;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: normal;
+    width: max-content;
+    max-width: 260px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: ${p => p.theme.mode === 'dark' ? '#1a1a2e' : '#333'};
+    z-index: 100;
+    pointer-events: none;
+  }
 `;
 
 // ═══════════════════════════════════════════
@@ -260,11 +362,14 @@ const NumberInput = styled.input.attrs({ type: 'number' })`
 
 const DataImportWizard = ({ onClose, onImportComplete }) => {
   const { theme } = useContext(ThemeContext);
-  const { translations } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { currencySymbol } = useContext(CurrencyContext);
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
-  const { handleSetIsUpdated } = useAuth();
+  const { handleSetIsUpdated, userData } = useAuth();
+
+  // Payment tags from user data (filter out 'none')
+  const paymentTags = (userData?.tags?.paymentTags || []).filter(t => t.label !== 'none');
 
   const t = translations?.dataImport || {};
 
@@ -288,7 +393,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [notesCol, setNotesCol] = useState(-1);
   const [dateFormat, setDateFormat] = useState('');
   const [transactionType, setTransactionType] = useState('auto');
-  const [defaultCategory, setDefaultCategory] = useState(9999);
+  const [defaultOutflowCategory, setDefaultOutflowCategory] = useState(9999);
+  const [defaultIncomeCategory, setDefaultIncomeCategory] = useState(9999);
+  const [defaultPaymentType, setDefaultPaymentType] = useState(-1); // -1 = not yet initialized
   const [savedMappings, setSavedMappings] = useState(() => loadSavedMappings());
   const [mappingName, setMappingName] = useState('');
 
@@ -301,6 +408,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [rowCategories, setRowCategories] = useState({}); // { rowIndex: categoryIndex }
+  const [rowNotes, setRowNotes] = useState({}); // { rowIndex: notesString }
   const [showAllRows, setShowAllRows] = useState(false); // toggle to show all rows in preview
 
   // Import state
@@ -309,6 +417,13 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [importResult, setImportResult] = useState(null);
 
   const fileInputRef = useRef(null);
+
+  // Initialize defaultPaymentType from paymentTags once available
+  useEffect(() => {
+    if (defaultPaymentType === -1 && paymentTags.length > 0) {
+      setDefaultPaymentType(paymentTags[0].index);
+    }
+  }, [paymentTags, defaultPaymentType]);
 
   // ─── Derived data ───
 
@@ -329,18 +444,31 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     return filteredTx.filter(tx => selectedRows.has(tx.rowIndex));
   }, [filteredTx, selectedRows]);
 
+  // Income tags from user data
+  const incomesTags = userData?.tags?.incomesTags || [];
+
   // Live summary based on importable transactions (with category overrides)
   const liveSummary = useMemo(() => {
     if (importableTx.length === 0) return null;
     const txWithOverrides = importableTx.map(tx => {
+      let modified = tx;
       if (rowCategories[tx.rowIndex] !== undefined) {
-        const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === rowCategories[tx.rowIndex]);
-        return { ...tx, categoryIndex: rowCategories[tx.rowIndex], categoryLabel: cat?.translationKey || 'Other' };
+        const idx = rowCategories[tx.rowIndex];
+        if (tx.isOutflow) {
+          const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === idx);
+          modified = { ...modified, categoryIndex: idx, categoryLabel: cat?.translationKey || 'Other' };
+        } else {
+          const tag = incomesTags.find(t => t.index === idx);
+          modified = { ...modified, categoryIndex: idx, categoryLabel: tag?.translations?.[language] || tag?.label || 'Other' };
+        }
       }
-      return tx;
+      if (rowNotes[tx.rowIndex] !== undefined) {
+        modified = { ...modified, notes: rowNotes[tx.rowIndex] };
+      }
+      return modified;
     });
     return summarizeImport(txWithOverrides);
-  }, [importableTx, rowCategories]);
+  }, [importableTx, rowCategories, rowNotes, incomesTags, language]);
 
   // ─── Step 0: Upload ───
 
@@ -434,7 +562,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setNotesCol(m.notesCol ?? -1);
     setDateFormat(m.dateFormat || '');
     setTransactionType(m.transactionType || 'auto');
-    setDefaultCategory(m.defaultCategoryIndex || 9999);
+    setDefaultOutflowCategory(m.defaultOutflowCategoryIndex ?? m.defaultCategoryIndex ?? 9999);
+    setDefaultIncomeCategory(m.defaultIncomeCategoryIndex ?? 9999);
+    if (m.defaultPaymentTypeIndex !== undefined) setDefaultPaymentType(m.defaultPaymentTypeIndex);
   };
 
   const handleSaveMapping = () => {
@@ -445,7 +575,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       outflowCol: dualAmountMode ? outflowCol : -1,
       categoryCol: categoryCol === -1 ? null : categoryCol,
       notesCol: notesCol === -1 ? null : notesCol,
-      dateFormat, transactionType, defaultCategoryIndex: defaultCategory,
+      dateFormat, transactionType,
+      defaultOutflowCategoryIndex: defaultOutflowCategory,
+      defaultIncomeCategoryIndex: defaultIncomeCategory,
+      defaultPaymentTypeIndex: defaultPaymentType,
     };
     saveMapping(mappingName.trim(), mapping);
     setSavedMappings(loadSavedMappings());
@@ -469,9 +602,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       outflowCol: dualAmountMode ? outflowCol : -1,
       categoryCol: categoryCol === -1 ? null : categoryCol,
       notesCol: notesCol === -1 ? null : notesCol,
-      dateFormat, transactionType, defaultCategoryIndex: defaultCategory,
+      dateFormat, transactionType, defaultCategoryIndex: defaultOutflowCategory,
     };
-    const { valid, errors } = processRows(rows, mapping);
+    const { valid: rawValid, errors } = processRows(rows, mapping);
+    // Post-process: assign correct default category for incomes
+    const valid = rawValid.map(tx => {
+      if (!tx.isOutflow && tx.categoryIndex === defaultOutflowCategory) {
+        // Row used the outflow default — replace with income default
+        const tag = incomesTags.find(it => it.index === defaultIncomeCategory);
+        return { ...tx, categoryIndex: defaultIncomeCategory, categoryLabel: tag?.translations?.[language] || tag?.label || 'Other' };
+      }
+      return tx;
+    });
     setValidTx(valid);
     setErrorTx(errors);
     setSummary(summarizeImport(valid));
@@ -482,6 +624,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setDateFrom(dates[0] || '');
     setDateTo(dates[dates.length - 1] || '');
     setRowCategories({});
+    setRowNotes({});
     setShowAllRows(false);
     setStep(2);
   };
@@ -520,10 +663,28 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setRowCategories(prev => ({ ...prev, [rowIndex]: newCategoryIndex }));
   };
 
+  const handleRowNoteChange = (rowIndex, newNote) => {
+    setRowNotes(prev => ({ ...prev, [rowIndex]: newNote }));
+  };
+
+  const getEffectiveNote = (tx) => {
+    return rowNotes[tx.rowIndex] !== undefined ? rowNotes[tx.rowIndex] : tx.notes;
+  };
+
   const getEffectiveCategory = (tx) => {
     if (rowCategories[tx.rowIndex] !== undefined) {
-      const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === rowCategories[tx.rowIndex]);
-      return { index: rowCategories[tx.rowIndex], label: cat?.translationKey || 'Other' };
+      const idx = rowCategories[tx.rowIndex];
+      if (tx.isOutflow) {
+        const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === idx);
+        return { index: idx, label: cat?.translationKey || 'Other' };
+      } else {
+        const tag = incomesTags.find(t => t.index === idx);
+        return { index: idx, label: tag?.translations?.[language] || tag?.label || 'Other' };
+      }
+    }
+    if (!tx.isOutflow && incomesTags.length > 0) {
+      const tag = incomesTags.find(t => t.index === tx.categoryIndex);
+      if (tag) return { index: tx.categoryIndex, label: tag.translations?.[language] || tag.label };
     }
     return { index: tx.categoryIndex, label: tx.categoryLabel };
   };
@@ -535,13 +696,23 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setImporting(true);
     setImportProgress(0);
 
-    // Build final list with category overrides
+    // Build final list with category and note overrides
     const finalTx = importableTx.map(tx => {
+      let modified = tx;
       if (rowCategories[tx.rowIndex] !== undefined) {
-        const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === rowCategories[tx.rowIndex]);
-        return { ...tx, categoryIndex: rowCategories[tx.rowIndex], categoryLabel: cat?.translationKey || 'Other' };
+        const idx = rowCategories[tx.rowIndex];
+        if (tx.isOutflow) {
+          const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === idx);
+          modified = { ...modified, categoryIndex: idx, categoryLabel: cat?.translationKey || 'Other' };
+        } else {
+          const tag = incomesTags.find(t => t.index === idx);
+          modified = { ...modified, categoryIndex: idx, categoryLabel: tag?.translations?.[language] || tag?.label || 'Other' };
+        }
       }
-      return tx;
+      if (rowNotes[tx.rowIndex] !== undefined) {
+        modified = { ...modified, notes: rowNotes[tx.rowIndex] };
+      }
+      return modified;
     });
 
     let success = 0;
@@ -552,7 +723,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = finalTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
-        axios.post('/expenses/add', toAPIFormat(tx), { withCredentials: true })
+        axios.post('/expenses/add', toAPIFormat(tx, defaultPaymentType), { withCredentials: true })
           .then(() => { success++; })
           .catch(() => { failed++; })
       );
@@ -687,13 +858,25 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               <span style={{ color: theme.textColor, fontSize: '0.9rem', fontWeight: 500 }}>
                 📌 {t.headerRowLabel || 'Header row (column names):'}
               </span>
-              <NumberInput
-                theme={theme}
-                min={1}
-                max={allRawRows.length - 1}
-                value={headerRowIndex + 1}
-                onChange={e => handleHeaderRowChange(parseInt(e.target.value) - 1 || 0)}
-              />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <StepperBtn
+                  theme={theme}
+                  onClick={() => handleHeaderRowChange(Math.max(0, headerRowIndex - 1))}
+                  disabled={headerRowIndex <= 0}
+                >−</StepperBtn>
+                <NumberInput
+                  theme={theme}
+                  min={1}
+                  max={allRawRows.length - 1}
+                  value={headerRowIndex + 1}
+                  onChange={e => handleHeaderRowChange(parseInt(e.target.value) - 1 || 0)}
+                />
+                <StepperBtn
+                  theme={theme}
+                  onClick={() => handleHeaderRowChange(Math.min(allRawRows.length - 2, headerRowIndex + 1))}
+                  disabled={headerRowIndex >= allRawRows.length - 2}
+                >+</StepperBtn>
+              </div>
               <span style={{ color: theme.textColor, opacity: 0.6, fontSize: '0.8rem' }}>
                 {t.headerRowHint || '(rows above will be skipped)'}
               </span>
@@ -868,7 +1051,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               {/* Category Column */}
               <div>
                 <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                  📁 {t.categoryColumn || 'Category'} ({t.optional || 'optional'})
+                  📁 {t.categoryColumnFile || 'Category column in your file'} ({t.optional || 'optional'})
                 </label>
                 <SelectField theme={theme} value={categoryCol} onChange={e => setCategoryCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.noColumn || 'None'} —</option>
@@ -876,17 +1059,55 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </SelectField>
               </div>
 
-              {/* Default Category */}
-              <div>
-                <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                  🏷️ {t.defaultCategory || 'Default category'}
-                </label>
-                <SelectField theme={theme} value={defaultCategory} onChange={e => setDefaultCategory(parseInt(e.target.value))}>
-                  {EXPENSE_CATEGORY_CODES.map(c => (
-                    <option key={c.index} value={c.index}>{c.translationKey}</option>
-                  ))}
-                </SelectField>
-              </div>
+              {/* Default Category for Outflows */}
+              {transactionType !== 'income' && (
+                <div>
+                  <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    🏷️ {t.defaultOutflowCategory || 'Default outflow category'}
+                    <InfoTooltip theme={theme} data-tip={t.defaultCategoryInfo || 'This category will be assigned to all imported transactions. You can change each one individually in the next step.'}>i</InfoTooltip>
+                  </label>
+                  <SelectField theme={theme} value={defaultOutflowCategory} onChange={e => setDefaultOutflowCategory(parseInt(e.target.value))}>
+                    {EXPENSE_CATEGORY_CODES.map(c => (
+                      <option key={c.index} value={c.index}>{c.translationKey}</option>
+                    ))}
+                  </SelectField>
+                </div>
+              )}
+
+              {/* Default Category for Incomes */}
+              {transactionType !== 'outflow' && (
+                <div>
+                  <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    🏷️ {t.defaultIncomeCategory || 'Default income category'}
+                    <InfoTooltip theme={theme} data-tip={t.defaultIncomeCategoryInfo || 'This category will be assigned to all imported incomes. You can change each one individually in the next step.'}>i</InfoTooltip>
+                  </label>
+                  <SelectField theme={theme} value={defaultIncomeCategory} onChange={e => setDefaultIncomeCategory(parseInt(e.target.value))}>
+                    {incomesTags.length > 0 ? (
+                      incomesTags.map(c => (
+                        <option key={c.index} value={c.index}>{c.translations?.[language] || c.label}</option>
+                      ))
+                    ) : (
+                      <option value={9999}>Other</option>
+                    )}
+                  </SelectField>
+                </div>
+              )}
+
+              {/* Default Payment Type */}
+              {paymentTags.length > 0 && (
+                <div>
+                  <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    💳 {t.defaultPaymentType || 'Payment type'}
+                  </label>
+                  <SelectField theme={theme} value={defaultPaymentType} onChange={e => setDefaultPaymentType(parseInt(e.target.value))}>
+                    {paymentTags.map(pt => (
+                      <option key={pt.index} value={pt.index}>
+                        {pt.translations?.[language] || pt.label}
+                      </option>
+                    ))}
+                  </SelectField>
+                </div>
+              )}
 
               {/* Notes Column */}
               <div>
@@ -1120,12 +1341,32 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             value={effectiveCat.index}
                             onChange={e => handleRowCategoryChange(tx.rowIndex, parseInt(e.target.value))}
                           >
-                            {EXPENSE_CATEGORY_CODES.map(c => (
-                              <option key={c.index} value={c.index}>{c.translationKey}</option>
-                            ))}
+                            {tx.isOutflow ? (
+                              EXPENSE_CATEGORY_CODES.map(c => (
+                                <option key={c.index} value={c.index}>{c.translationKey}</option>
+                              ))
+                            ) : (
+                              incomesTags.length > 0 ? (
+                                incomesTags.map(c => (
+                                  <option key={c.index} value={c.index}>{c.translations?.[language] || c.label}</option>
+                                ))
+                              ) : (
+                                EXPENSE_CATEGORY_CODES.map(c => (
+                                  <option key={c.index} value={c.index}>{c.translationKey}</option>
+                                ))
+                              )
+                            )}
                           </CompactSelect>
                         </td>
-                        <td>{tx.notes}</td>
+                        <td>
+                          <NoteInput
+                            theme={theme}
+                            value={getEffectiveNote(tx)}
+                            onChange={e => handleRowNoteChange(tx.rowIndex, e.target.value)}
+                            maxLength={64}
+                            placeholder={t.addNote || '—'}
+                          />
+                        </td>
                       </tr>
                     );
                   })}

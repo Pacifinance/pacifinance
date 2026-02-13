@@ -336,13 +336,13 @@ export const UserProvider = ({ children }) => {
             const rankOnIncomeSimilar = await axios.post('/rank/expenses', {expenses: false, similar: true}, { withCredentials: true } );
             const rankOnExpenseSimilar = await axios.post('/rank/expenses', {expenses: true, similar: true}, { withCredentials: true });
 
-            const percentageRankOnBalance = parseInt((rankOnBalance.data.position / rankOnBalance.data.total) * 100);
-            const percentageRankOnIncomes = parseInt((rankOnIncome.data.position / rankOnIncome.data.total) * 100);
-            const percentageRankOnExpenses = parseInt((rankOnExpense.data.position / rankOnExpense.data.total) * 100);
+            const percentageRankOnBalance = rankOnBalance.data.position;
+            const percentageRankOnIncomes = rankOnIncome.data.position;
+            const percentageRankOnExpenses = rankOnExpense.data.position;
 
-            const percentageRankOnBalanceSimilar = parseInt((rankOnBalanceSimilar.data.position / rankOnBalanceSimilar.data.total) * 100);
-            const percentageRankOnIncomesSimilar = parseInt((rankOnIncomeSimilar.data.position / rankOnIncomeSimilar.data.total) * 100);
-            const percentageRankOnExpensesSimilar = parseInt((rankOnExpenseSimilar.data.position / rankOnExpenseSimilar.data.total) * 100);
+            const percentageRankOnBalanceSimilar = rankOnBalanceSimilar.data.position;
+            const percentageRankOnIncomesSimilar = rankOnIncomeSimilar.data.position;
+            const percentageRankOnExpensesSimilar = rankOnExpenseSimilar.data.position;
 
 
             // console.log('rankOnBalance:', rankOnBalance);

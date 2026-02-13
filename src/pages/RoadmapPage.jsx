@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -281,6 +281,11 @@ const RoadmapPage = () => {
 
   const { mode } = theme;
 
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const counts = getStatusCounts();
   const isIt = language === 'it';
 
@@ -288,7 +293,7 @@ const RoadmapPage = () => {
     ? roadmapData
     : roadmapData.filter(item => item.category === activeFilter);
 
-  const statusOrder = ['in-progress', 'planned', 'completed'];
+  const statusOrder = ['planned', 'in-progress', 'completed'];
 
   const renderCards = (status) => {
     const items = filtered.filter(i => i.status === status);

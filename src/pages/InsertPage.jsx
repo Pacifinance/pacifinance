@@ -79,10 +79,13 @@ function InsertPage() {
       <div style={{ 
         marginLeft: isMobileScreen ? '0' : '5.5rem', 
         paddingTop: isMobileScreen ? '80px' : '0',
-        width: '100%',
+        width: isMobileScreen ? '100%' : 'calc(100% - 5.5rem)',
+        maxWidth: '100vw',
         minHeight: '150vh',
         paddingBottom: '60vh',
-        backgroundColor: theme.backgroundColor
+        backgroundColor: theme.backgroundColor,
+        overflowX: 'hidden',
+        boxSizing: 'border-box'
       }}>
         <InsertValues theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>
       </div>

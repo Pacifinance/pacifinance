@@ -48,7 +48,6 @@ app.use(express.json());
 /* ============================ Express.js routes ============================ */
 
 app.use("/", routes.publicRouter)
-app.use("/", routes.logoutRouter)
 app.use("/user", routes.userRouter)
 app.use("/balances", routes.balancesRouter)
 app.use("/expenses", routes.expensesRouter)

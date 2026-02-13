@@ -10,6 +10,18 @@ const userRouter = express.Router()
 
 userRouter.use(common.checkSessionMiddleware)
 
+userRouter.post("/logout", async (req, res) => {
+    // Invalidate the session in the database by setting the
+    // expiration date to 01/01/1970 and an invalid ID
+    const session = req.session as SessionData
+    await db.users.setSessionOfUserId(session.userId, session.userId, new Date(0))
+    // Destroy the session
+    req.session.destroy((err: any) => {})
+    // Send status code 200 (OK)
+    res.status(200)
+    res.send()
+})
+
 userRouter.post("/delete", async (req, res) => {
     // Check if the user has the right to delete the account.
     // Send status code 403 (Forbidden) if it doesn't

@@ -56,6 +56,7 @@ import { useAuth } from '../hooks/useAuth';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useGamification } from '../hooks/useGamification';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import { CURRENCIES } from '../data/currencyConfig';
 import Sidebar from '../sections/Sidebar';
 import SEOHead from '../components/SEOHead';
 import {
@@ -650,8 +651,26 @@ const ProfilePage = () => {
     const sortedLivingStatusTags = sortTagsByLanguage(livingStatusTags, language);
     const sortedHousingTypeTags = sortTagsByLanguage(housingTypeTags, language);
     const sortedHasChildrenTags = sortTagsByLanguage(hasChildrenTags, language);
-    // Currency tags don't need language-based sorting (they use currency codes)
-    const sortedCurrencyTags = currencyTagsList;
+    // Build enriched currency options: map DB tags (label: "eur", index: 0) to CURRENCIES config for display
+    const sortedCurrencyTags = currencyTagsList.map(tag => {
+        const code = tag.label?.toUpperCase();
+        const config = CURRENCIES[code];
+        if (config) {
+            const displayLabel = `${config.flag} ${config.code} (${config.symbol})`;
+            return {
+                ...tag,
+                translations: { it: displayLabel, en: displayLabel },
+                _currencyCode: config.code
+            };
+        }
+        // Fallback: use tag label as-is
+        const fallbackLabel = code || tag.label;
+        return {
+            ...tag,
+            translations: { it: fallbackLabel, en: fallbackLabel },
+            _currencyCode: code
+        };
+    });
 
     // Helper to translate values
     const translateValue = (currentValue, tagsArray) => {
@@ -821,7 +840,11 @@ const ProfilePage = () => {
                             <h3>{t.sections?.financialPreferences || (language === 'it' ? 'Preferenze Finanziarie' : 'Financial Preferences')}</h3>
                         </SectionHeader>
                         <ProfileGrid>
-                            {renderField(<Coins />, t.preferredCurrency || 'Preferred Currency', userPreferredCurrency.value)}
+                            {renderField(<Coins />, t.preferredCurrency || 'Preferred Currency', (() => {
+                                const code = userPreferredCurrency.value;
+                                const config = CURRENCIES[code];
+                                return config ? `${config.flag} ${config.code} (${config.symbol})` : code;
+                            })())}
                         </ProfileGrid>
                     </SectionCard>
 
@@ -873,8 +896,19 @@ const ProfilePage = () => {
                             <h3>{t.sections?.financialPreferences || (language === 'it' ? 'Preferenze Finanziarie' : 'Financial Preferences')}</h3>
                         </SectionHeader>
                         <EditFormGrid>
-                            {renderEditField(<Coins />, t.preferredCurrency || 'Preferred Currency', userPreferredCurrency.value,
-                                (e) => setUserPreferredCurrency({ key: e.target.value.key, value: e.target.value.label }), sortedCurrencyTags, t.selectPreferredCurrency)}
+                            {renderEditField(<Coins />, t.preferredCurrency || 'Preferred Currency',
+                                (() => {
+                                    const code = userPreferredCurrency.value;
+                                    const config = CURRENCIES[code];
+                                    return config ? `${config.flag} ${config.code} (${config.symbol})` : code;
+                                })(),
+                                (e) => {
+                                    const selected = e.target.value;
+                                    // Find the matching enriched tag to get the actual currency code
+                                    const matchedTag = sortedCurrencyTags.find(t => t.index === selected.key);
+                                    const currencyCode = matchedTag?._currencyCode || selected.label;
+                                    setUserPreferredCurrency({ key: selected.key, value: currencyCode });
+                                }, sortedCurrencyTags, t.selectPreferredCurrency)}
                         </EditFormGrid>
                     </SectionCard>
 

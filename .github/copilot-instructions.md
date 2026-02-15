@@ -12,8 +12,19 @@ PaciFinance is a **personal finance management web application** built with Reac
 - Multi-currency support (19 currencies with live exchange rates)
 - Public roadmap page with kanban layout
 - CSV/Excel data import wizard
-- Privacy-focused design (data anonymization)
+- Privacy-focused design (data anonymization, no email required)
 - PWA-ready with service worker
+- Gamification system (44 badges in 10 categories)
+- Customizable dashboard (drag-and-drop, compact view)
+- Client-side avatar generator
+
+**Authentication:**
+- Users register with **password only** — the system auto-generates a unique **userId**
+- Login requires **userId + password** (NO email, NO username)
+- **There is NO email in the system** — users are completely anonymous
+- If a user loses their userId or password, there is currently **no recovery mechanism**
+- Sessions use HTTP-only cookies with axios interceptor for 401 (automatic logout)
+- Cloudflare Turnstile for bot protection (dev key in `.env.development`, prod key in `.env`)
 
 ---
 
@@ -35,6 +46,7 @@ scripts/                 # Build-time automation scripts
 server/                  # Backend (managed separately - DO NOT modify)
 public/                  # Static assets
 build/                   # Production build output
+docs/                    # Documentation, analyses, and feature planning (see docs/ANALYSES.md)
 ```
 
 ---
@@ -351,15 +363,24 @@ const { theme } = useContext(ThemeContext);
 ```javascript
 userData = {
   userId, userType, username,
-  profile: { nationality, job, age, ... },
+  currency,  // Resolved currency code (e.g. 'EUR', 'USD') from preferredCurrency index via currency tags
+  profile: { nationality, job, age, preferredCurrency: { key, value }, ... },
   balances: [{ date, balance: { bank, cash, stocks, ... } }, ...],
   expenses: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
   incomes: { allIncomes, incomesArray },
-  tags: { outflowsTags, incomesTags, paymentTags, ... },
+  tags: { outflowsTags, incomesTags, paymentTags, currencyTags, ... },
   rankings: { balance, incomes, expenses, balanceSimilar, ... },
   dates: { current, preMonth, preYearSameMonth },
   goals, limits, assets, averages
 }
+```
+
+**Currency fields explained:**
+- `userData.currency` — the resolved currency code (e.g. `'EUR'`), mapped from the DB's `preferredCurrency` index using `currencyTags`
+- `userData.profile.preferredCurrency` — `{key: <dbIndex>, value: <currencyCode>}`, persisted to DB via ProfilePage
+- `userData.tags.currencyTags` — array of available currencies from `/tags/get` endpoint
+- **Settings page currency** — session-only display currency (NOT persisted to DB, NOT saved to localStorage), for quick conversion preview
+- **ProfilePage currency** — the user's preferred currency, saved to DB on profile save
 ```
 
 ### API Calls

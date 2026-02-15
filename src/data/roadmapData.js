@@ -23,30 +23,6 @@ const roadmapData = [
     completedDate: '2025-01',
   },
   {
-    id: 'gamification',
-    title: { it: 'Achievement e Badge', en: 'Achievements & Badges' },
-    description: {
-      it: '44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.',
-      en: '44 badges in 10 categories to reward your consistency in financial tracking.'
-    },
-    status: 'completed',
-    category: 'feature',
-    icon: '🏆',
-    completedDate: '2025-01',
-  },
-  {
-    id: 'csv-import',
-    title: { it: 'Importazione CSV / Excel', en: 'CSV / Excel Import' },
-    description: {
-      it: 'Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.',
-      en: 'Import your transactions from CSV or Excel files with automatic column mapping and category recognition.'
-    },
-    status: 'completed',
-    category: 'feature',
-    icon: '📥',
-    completedDate: '2025-02',
-  },
-  {
     id: 'i18n',
     title: { it: 'Supporto Multilingua', en: 'Multi-Language Support' },
     description: {
@@ -70,29 +46,6 @@ const roadmapData = [
     icon: '📱',
     completedDate: '2025-01',
   },
-  {
-    id: 'data-export',
-    title: { it: 'Esportazione Dati', en: 'Data Export' },
-    description: {
-      it: 'Esporta i tuoi dati finanziari in formato CSV, Excel, JSON o PDF.',
-      en: 'Export your financial data in CSV, Excel, JSON or PDF format.'
-    },
-    status: 'completed',
-    category: 'feature',
-    icon: '📤',
-    completedDate: '2024-11',
-  },
-  {
-    id: 'roadmap-feedback',
-    title: { it: 'Roadmap e Feedback', en: 'Roadmap & Feedback' },
-    description: {
-      it: 'Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.',
-      en: 'Public roadmap page and system to collect bug reports and suggestions from the community.'
-    },
-    status: 'completed',
-    category: 'community',
-    icon: '🗺️',
-  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'multi-currency',
@@ -105,7 +58,51 @@ const roadmapData = [
     category: 'feature',
     icon: '💱',
   },
+  {
+    id: 'roadmap-feedback',
+    title: { it: 'Roadmap e Feedback', en: 'Roadmap & Feedback' },
+    description: {
+      it: 'Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.',
+      en: 'Public roadmap page and system to collect bug reports and suggestions from the community.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '🗺️',
+  },
   /* ──────────── PLANNED ──────────── */
+  {
+    id: 'gamification',
+    title: { it: 'Achievement e Badge', en: 'Achievements & Badges' },
+    description: {
+      it: '44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.',
+      en: '44 badges in 10 categories to reward your consistency in financial tracking.'
+    },
+    status: 'planned',
+    category: 'feature',
+    icon: '🏆',
+  },
+  {
+    id: 'csv-import',
+    title: { it: 'Importazione CSV / Excel', en: 'CSV / Excel Import' },
+    description: {
+      it: 'Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.',
+      en: 'Import your transactions from CSV or Excel files with automatic column mapping and category recognition.'
+    },
+    status: 'planned',
+    category: 'feature',
+    icon: '📥',
+  },
+  {
+    id: 'data-export',
+    title: { it: 'Esportazione Dati', en: 'Data Export' },
+    description: {
+      it: 'Esporta i tuoi dati finanziari in formato CSV, Excel, JSON o PDF.',
+      en: 'Export your financial data in CSV, Excel, JSON or PDF format.'
+    },
+    status: 'planned',
+    category: 'feature',
+    icon: '📤',
+  },
   {
     id: 'anonymous-comparison',
     title: { it: 'Confronto Anonimo', en: 'Anonymous Comparison' },

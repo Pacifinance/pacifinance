@@ -7,6 +7,7 @@ import { PrivacyContext } from "../contexts/PrivacyContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
 import { UserContext } from "../contexts/UserContext";
+import { CURRENCIES } from "../data/currencyConfig";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { useAuth } from "../hooks/useAuth";
 import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
@@ -506,29 +507,9 @@ const SettingsPage = () => {
                                             minWidth: "95px"
                                         }}
                                     >
-                                        {[
-                                            { code: "EUR", flag: "🇪🇺", sym: "€" },
-                                            { code: "USD", flag: "🇺🇸", sym: "$" },
-                                            { code: "GBP", flag: "🇬🇧", sym: "£" },
-                                            { code: "CHF", flag: "🇨🇭", sym: "CHF" },
-                                            { code: "JPY", flag: "🇯🇵", sym: "¥" },
-                                            { code: "CAD", flag: "🇨🇦", sym: "C$" },
-                                            { code: "AUD", flag: "🇦🇺", sym: "A$" },
-                                            { code: "SEK", flag: "🇸🇪", sym: "kr" },
-                                            { code: "NOK", flag: "🇳🇴", sym: "kr" },
-                                            { code: "DKK", flag: "🇩🇰", sym: "kr" },
-                                            { code: "PLN", flag: "🇵🇱", sym: "zł" },
-                                            { code: "CZK", flag: "🇨🇿", sym: "Kč" },
-                                            { code: "HUF", flag: "🇭🇺", sym: "Ft" },
-                                            { code: "RON", flag: "🇷🇴", sym: "lei" },
-                                            { code: "BGN", flag: "🇧🇬", sym: "лв" },
-                                            { code: "BRL", flag: "🇧🇷", sym: "R$" },
-                                            { code: "INR", flag: "🇮🇳", sym: "₹" },
-                                            { code: "CNY", flag: "🇨🇳", sym: "¥" },
-                                            { code: "TRY", flag: "🇹🇷", sym: "₺" },
-                                        ].map(c => (
+                                        {Object.values(CURRENCIES).map(c => (
                                             <option key={c.code} value={c.code} style={{ color: "#1a1a2e", backgroundColor: "#ffffff" }}>
-                                                {c.flag} {c.code} ({c.sym})
+                                                {c.flag} {c.code} ({c.symbol})
                                             </option>
                                         ))}
                                     </select>

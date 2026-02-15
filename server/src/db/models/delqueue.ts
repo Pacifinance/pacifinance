@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 import users from "./users"
 
 const deletionQueueSchema = new mongoose.Schema({

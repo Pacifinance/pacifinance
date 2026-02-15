@@ -1,6 +1,9 @@
 import express from "express"
-import session from "express-session";
+import session from "express-session"
 import bcrypt from "bcrypt"
+import crypto from "crypto"
+
+import { ExtDate } from "../libs/datelib"
 
 import db from "../db/mongo"
 
@@ -20,40 +23,6 @@ function roundCurrency(n: number) {
 }
 
 /**
- * Converts any date to a Date object
- * @param date Date to convert
- * @returns A Date object, or undefined if the provided date is invalid
- */
-function toDateObject(date: Date | string) {
-    // If the date is of type Date, return it
-    if (date instanceof Date)
-        return date;
-    // If the date is of type string
-    else if (typeof date === "string") {
-        // If its format is "yyyy-mm-dd", parse it as Date and return it
-        const regex = /\d{4}-\d{2}-\d{2}/;
-        let match = date.match(regex);
-        if (match === null)
-            return undefined;
-        return new Date(date);
-    }
-    // Otherwise, the date is invalid
-    else
-        return undefined;
-}
-
-/**
- * Subtracts one month to a date
- * @param date Date to decrement
- * @returns Decremented date
- */
-function decrementDateByOneMonth(date: Date) {
-    let new_date = new Date(date);
-    new_date.setUTCMonth(new_date.getUTCMonth() - 1);
-    return new_date;
-}
-
-/**
  * Sanitizes user input by removing blank spaces and HTML tags
  * @param data Data to sanitize
  * @returns Sanitized data
@@ -69,43 +38,31 @@ function sanitizeInput(data: string) {
 }
 
 /**
- * Generates a random character
- * @param alpha If true an alphanumeric character is generated, numeric only otherwise
- * @returns A character
+ * Adds zeros to the left of a string until the desired string length is reached
+ * @param s The string to pad
+ * @param nCharacters Desired total length of the string after padding
+ * @returns Padded string
  */
-function generateRandomCharacter(alpha: boolean =true) {
-    let characters = "0123456789"
-    if (alpha) characters = "abcdefghijklmnopqrstuvwxyz" + characters
-    const index = Math.floor(Math.random() * characters.length)
-    return characters[index]
-}
-
-/**
- * Generates a random string (like user and session IDs)
- * @param length Length of the string to generate
- * @param alpha If true an alphanumeric string is generated, numeric only otherwise
- * @returns A random string
- */
-function generateRandomString(length: number, alpha: boolean = true) {
-    // Generate 'length' random characters
-    let characters = []
-    for (let i = 0; i < length; i++)
-        characters.push(generateRandomCharacter(alpha))
-    return characters.join('')
+function padLeftWithZeros(s: string, nCharacters: number) {
+    if (s.length >= nCharacters)
+        return s
+    return new Array(nCharacters - s.length + 1).join('0') + s
 }
 
 /**
  * Generates a random unique user ID
+ * @param nDigits Number of digits of the user ID
  * @returns A new user ID
  */
-async function generateUserId() {
+async function generateUserId(nDigits: number) {
     // Get the list of all user IDs
     const users = await db.users.getAllUsersIds()
     let ids = users.map(({userId}) => userId)
     // Generate a random user ID until a unique one is generated
     let user_id = ""
     do {
-        user_id = generateRandomString(db.users.userIdLength, false)
+        user_id = String(crypto.randomInt(0, 10 ** nDigits))
+        user_id = padLeftWithZeros(user_id, nDigits)
     } while (ids.includes(user_id))
     return user_id
 }
@@ -138,10 +95,10 @@ function checkPassword(plain_password: string, hashed_password: string) {
  * @returns true if the session is valid, false otherwise
  */
 async function checkUserSession(session: session.Session & Partial<session.SessionData>) {
-    const now = new Date(Date.now());
+    const now = ExtDate.fromNow()
     // Check if the session in the cookie is valid
     if (!session || !session.userId || !session.sessionId ||
-        !session.expirationDate || session.expirationDate < now)
+        !session.expirationDate || (new ExtDate(session.expirationDate) < now))
         return false;
     // Check if the user has session information in the database
     const user = await db.users.getSessionByUserId(session.userId);
@@ -149,7 +106,7 @@ async function checkUserSession(session: session.Session & Partial<session.Sessi
         return false;
     // Check if this session info is valid
     if (user.session.sessionId !== session.sessionId ||
-        user.session.expirationDate < now)
+        (new ExtDate(user.session.expirationDate) < now))
         return false;
     return true;
 }
@@ -177,10 +134,7 @@ async function checkSessionMiddleware(req: express.Request, res: express.Respons
 
 export default {
     roundCurrency,
-    toDateObject,
-    decrementDateByOneMonth,
     sanitizeInput,
-    generateRandomString,
     generateUserId,
     hashPassword,
     checkPassword,

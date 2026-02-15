@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 const TagType = {
     expense: {name: "expense", value: 0},

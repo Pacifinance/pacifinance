@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+
+import { ExtDate } from "../../libs/datelib"
 
 import users from "./users"
 import common from "../../routes/common"
@@ -94,7 +96,7 @@ async function insertNew(
         return null;
     const data = {
         userRef: user._id,
-        date: new Date(Date.now()),
+        date: ExtDate.fromNow(),
         userDate: user_date,
         bank: bank,
         cash: cash,
@@ -146,9 +148,9 @@ async function getLatestByUserId(user_id: string, limit_date: Date | undefined =
         return null;
     // Get the balances with the most recent user-inserted date. Among these balances, the latest one
     // is that with the most recent insertion date (the one that overwrites all the others)
-    let filter = {userRef: user._id, userDate: {$lt: new Date(Date.now())}};
+    let filter = {userRef: user._id, userDate: {$lt: ExtDate.fromNow()}};
     if (limit_date !== undefined)
-        filter.userDate = {$lt: limit_date};
+        filter.userDate = {$lt: new ExtDate(limit_date)};
     return await getOneSorted(filter, "-_id -__v -userRef", {userDate: -1, date: -1});
 }
 
@@ -176,9 +178,9 @@ async function getTotalLatestByUserId(user_id: string, limit_date: Date | undefi
  */
 async function getYearlyBalanceByUserId(user_id: string) {
     // Get start and end of the current month
-    const now = new Date(Date.now());
-    let month_start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
-    let month_end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()+1));
+    const now = ExtDate.fromNow()
+    let month_start = ExtDate.fromThisMonthStart()
+    let month_end = ExtDate.fromThisMonthEnd()
     // Find the most recent balance for each one of the last 24 months
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
@@ -197,8 +199,8 @@ async function getYearlyBalanceByUserId(user_id: string) {
         const balance = (res !== null) ? res : {};
         balances.push({date: month_start, balance: balance});
         // Decrease the month start and end by one month for the next iteration
-        month_start = common.decrementDateByOneMonth(month_start);
-        month_end = common.decrementDateByOneMonth(month_end);
+        month_start.moveByMonths(-1)
+        month_end.moveByMonths(-1)
     }
     return balances;
 }

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 const cacheSchema = new mongoose.Schema({
     key: {type: String, required: true, unique: true, dropDups: true},

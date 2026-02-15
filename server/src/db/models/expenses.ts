@@ -1,6 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+
+import { ExtDate } from "../../libs/datelib"
+
 import users from "./users"
-import tags from "./tags";
+import tags from "./tags"
 
 const expenseSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
@@ -150,8 +153,8 @@ async function getMonthlyExpensesByUserId(user_id: string, reference_date: Date,
     if (user === null)
         return [];
     // Get start and end of the current month
-    const month_start = new Date(Date.UTC(reference_date.getUTCFullYear(), reference_date.getUTCMonth()));
-    const month_end = new Date(Date.UTC(reference_date.getUTCFullYear(), reference_date.getUTCMonth()+1));
+    const month_start = ExtDate.fromThisMonthStart()
+    const month_end = ExtDate.fromThisMonthEnd()
     // Filter out expenses or incomes depending on input parameters
     let expenses_filter = {
         userRef: user._id,

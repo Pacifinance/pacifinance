@@ -1,6 +1,8 @@
 import express from "express"
 import { SessionData } from "express-session"
 
+import { ExtDate } from "../../libs/datelib"
+
 import db from "../../db/mongo"
 import common from "../common"
 
@@ -16,9 +18,9 @@ function isExpenseValid(data: any) {
     data.amount = common.roundCurrency(Number(data.amount));
     data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
-    let now = new Date(Date.now());
-    data.date = common.toDateObject(data.date);
-    if (data.date === undefined || isNaN(data.date) || data.date > now) data.date = now;
+    let now = ExtDate.fromNow()
+    data.date = new ExtDate(data.date);
+    if (data.date === undefined || isNaN(data.date.getTime()) || data.date > now) data.date = now;
     // If it's an income, the payment type is forced to 'none'
     if (!data.is_expense) data.payment_type = PAYMENT_NONE;
     // If there are no notes associated to the expense, set the notes to an empty string. Also, cast it to String for type integrity
@@ -77,14 +79,14 @@ expensesRouter.post("/add", async (req, res) => {
 expensesRouter.post("/get", async (req, res) => {
     // Retrieve the expenses for a full year
     let year = [];
-    let reference_date = new Date(Date.now());
+    let reference_date = ExtDate.fromNow()
     const session = req.session as SessionData
     for (let i = 0; i <= 12; i++) {
         // Get the expenses from the database for the desired month and add them to the year array
         const expenses = await db.expenses.getMonthlyExpensesByUserId(session.userId, reference_date);
         year.push(expenses);
         // Go to the next month
-        reference_date = common.decrementDateByOneMonth(reference_date);
+        reference_date.moveByMonths(-1)
     }
     // Send the data to the client with status code 200 (OK)
     res.status(200);

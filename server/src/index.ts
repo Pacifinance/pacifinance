@@ -1,12 +1,12 @@
-import express from "express";
-import session from "express-session";
-import cookieParser from "cookie-parser";
-import path from "path";
+import express from "express"
+import session from "express-session"
+import cookieParser from "cookie-parser"
+import path from "path"
 
 import routes from "./routes/routes"
-import db from "./db/mongo";
-import cache from "./cache/cache";
-import jobs from "./jobs/jobs";
+import db from "./db/mongo"
+import cache from "./cache/cache"
+import jobs from "./jobs/jobs"
 
 const day_ms = 24 * 60 * 60 * 1000;
 

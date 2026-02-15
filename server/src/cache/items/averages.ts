@@ -1,3 +1,5 @@
+import { ExtDate } from "../../libs/datelib"
+
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
 import expenses from "../../db/models/expenses"
@@ -117,9 +119,9 @@ type Expense = Awaited<ReturnType<typeof expenses.getMonthlyExpensesByUserId>>[0
  * @param now Current time
  * @returns Averages among the provided users
  */
-async function computeAverages(usersList: UsersList, now: Date): Promise<Averages> {
-    const thisMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()))
-    const lastMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()-1))
+async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Averages> {
+    const thisMonthStart = new ExtDate(ExtDate.UTC(now.getUTCFullYear(), now.getUTCMonth()))
+    const lastMonthStart = thisMonthStart.copy(); lastMonthStart.moveByMonths(-1)
 
     let averagesData = new AveragesData()
 
@@ -150,7 +152,7 @@ async function computeAverages(usersList: UsersList, now: Date): Promise<Average
         let countedMonths = 0
         while (countedMonths < 12) {
             countedMonths++
-            month.setUTCMonth(month.getUTCMonth()-1) // previous month
+            month.moveByMonths(-1) // previous month
         
             yearlyExpenses = [
                 ...yearlyExpenses,
@@ -202,7 +204,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         }
     }
 
-    const now = new Date(Date.now())
+    const now = ExtDate.fromNow()
 
     const allUsersList = await users.getAllUsersIds() // test users included
     averagesCachedData.all = await computeAverages(allUsersList, now)

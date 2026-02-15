@@ -1,6 +1,8 @@
 import express from "express"
 import { SessionData } from "express-session"
 
+import { ExtDate } from "../../libs/datelib"
+
 import db from "../../db/mongo"
 import common from "../common"
 
@@ -22,9 +24,9 @@ function isBalanceValid(data: any) {
     data.funds = common.roundCurrency(Number(data.funds));
     data.gold = common.roundCurrency(Number(data.gold));
     // If the date field is not set or invalid, set it to now
-    let now = new Date(Date.now());
-    data.date = common.toDateObject(data.date);
-    if (data.date === undefined || isNaN(data.date) || data.date > now) data.date = now;
+    const now = ExtDate.fromNow()
+    data.date = new ExtDate(data.date);
+    if (data.date === undefined || isNaN(data.date.getTime()) || data.date > now) data.date = now;
     // Return true if all fields exist and they are valid numbers
     return (
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&

@@ -1,10 +1,10 @@
-import { connect as _connect } from "mongoose";
-import users from "./models/users.js";
-import balances from "./models/balances.js";
-import expenses from "./models/expenses.js";
-import tags from "./models/tags.js";
-import delqueue from "./models/delqueue.js";
-import cachestorage from "./models/cachestorage.js";
+import { connect as _connect } from "mongoose"
+import users from "./models/users"
+import balances from "./models/balances"
+import expenses from "./models/expenses"
+import tags from "./models/tags"
+import delqueue from "./models/delqueue"
+import cachestorage from "./models/cachestorage"
 
 /**
  * Connects to a database instance

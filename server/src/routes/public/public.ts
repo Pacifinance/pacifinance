@@ -1,4 +1,7 @@
 import express from "express"
+import crypto from "crypto"
+
+import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/mongo"
 import common from "../common"
@@ -7,14 +10,11 @@ const publicRouter = express.Router()
 let registrationTokensCache = new Set<string>()
 
 /**
- * Adds one day to a date
- * @param date Date to increment
- * @returns Incremented date
+ * Generates a random session ID
+ * @returns A session ID
  */
-function incrementDateByOneDay(date: Date) {
-    let new_date = new Date(date)
-    new_date.setUTCDate(new_date.getUTCDate() + 1)
-    return new_date
+function generateSessionId() {
+    return crypto.randomUUID()
 }
 
 /**
@@ -85,7 +85,7 @@ publicRouter.post("/registration", async (req, res) => {
         return
     }
     // Generate a random user ID
-    const user_id = await common.generateUserId()
+    const user_id = await common.generateUserId(db.users.userIdLength)
     // Hash the password
     const hashed_password = common.hashPassword(user_pwd, Number.parseInt(process.env.SALT_ROUNDS || "0"))
     // Add the user to the DB. Send status code 500 (Internal Server Error) in
@@ -135,9 +135,9 @@ publicRouter.post("/login", async (req, res) => {
     }
     // The password is correct:
     // Generate a random session ID and set the session expiration date
-    const session_id = common.generateRandomString(db.users.sessionIdLength, true)
-    const now = new Date(Date.now())
-    const expiration_date = incrementDateByOneDay(now)
+    const session_id = generateSessionId()
+    const expiration_date = ExtDate.fromNow()
+    expiration_date.moveByDays(1)
     // Add the user ID and session information to the cookie
     req.session.userId = user_id
     req.session.sessionId = session_id

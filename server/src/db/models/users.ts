@@ -1,4 +1,7 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+
+import { ExtDate } from "../../libs/datelib"
+
 import tags from "./tags"
 
 const userIdLength = 6;
@@ -134,7 +137,7 @@ async function insertNew(user_id: string, password: string, type: number = UserT
     const data = {
         userId: user_id,
         password: password,
-        creationDate: new Date(Date.now()),
+        creationDate: ExtDate.fromNow(),
         type: type,
         nickname: "",
         age: newNullObjectId(),
@@ -155,7 +158,7 @@ async function insertNew(user_id: string, password: string, type: number = UserT
         },
         session: {
             sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
-            expirationDate: new Date(0)
+            expirationDate: new ExtDate(0)
         }
     }
     return await addOne(data);

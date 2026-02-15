@@ -1,6 +1,8 @@
-import cachestorage from "../db/models/cachestorage";
-import averages from "./items/averages";
-import prices from "./items/prices";
+import { ExtDate } from "../libs/datelib"
+
+import cachestorage from "../db/models/cachestorage"
+import averages from "./items/averages"
+import prices from "./items/prices"
 
 interface CacheItemInfo {
     durationSec: number
@@ -9,7 +11,7 @@ interface CacheItemInfo {
 
 interface CacheItemData {
     value: any
-    expiration: Date
+    expiration: ExtDate
 }
 
 /**
@@ -39,7 +41,7 @@ function getExpectedKeys() {
  * @returns true if the element is expired, false otherwise
  */
 function valueExpired(key: string) {
-    let now = new Date(Date.now());
+    let now = ExtDate.fromNow()
     return (now >= cache[key].expiration);
 }
 
@@ -103,8 +105,8 @@ async function set(key: string, value: object) {
     if ((!Object.keys(cache).includes(key)) || (!Object.keys(expectedItems).includes(key)) || (!value))
         return;
 
-    let new_expiration = new Date(Date.now());
-    new_expiration.setUTCSeconds(new_expiration.getUTCSeconds() + expectedItems[key].durationSec);
+    let new_expiration = ExtDate.fromNow()
+    new_expiration.moveBySeconds(expectedItems[key].durationSec)
 
     cache[key] = {value: value, expiration: new_expiration};
 

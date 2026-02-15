@@ -1,8 +1,8 @@
 import express from "express"
 import { SessionData } from "express-session"
 
-import cache from "../../cache/cache";
-import common from "../common";
+import cache from "../../cache/cache"
+import common from "../common"
 import users from "../../db/models/users"
 
 /* === /stats/* === */

@@ -1,5 +1,7 @@
 import express from "express"
-import { SessionData } from "express-session";
+import { SessionData } from "express-session"
+
+import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/mongo"
 import common from "../common"
@@ -47,8 +49,7 @@ rankRouter.post("/balances", async (req, res) => {
     // Get the list of all/similar users IDs
     const users = await db.users.getAllUsersIds(reference_user, true);
     // For each user get its latest balance up to the last day of the last month
-    let now = new Date(Date.now());
-    let limit_date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()));
+    let limit_date = ExtDate.fromThisMonthStart()
     let balances = [];
     for (let user of users) {
         const balance = await db.balances.getTotalLatestByUserId(user.userId, limit_date);
@@ -85,7 +86,7 @@ rankRouter.post("/expenses", async (req, res) => {
     // Get the list of all/similar users IDs
     const users = await db.users.getAllUsersIds(reference_user, true);
     // For each user get the expenses/incomes of the last month
-    let reference_date = new Date(Date.now()); reference_date.setUTCMonth(reference_date.getUTCMonth()-1);
+    let reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
     let is_expense_filter = Boolean(req.body.expenses);
     let expenses = [];
     for (let user of users) {

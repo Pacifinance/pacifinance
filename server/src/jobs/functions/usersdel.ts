@@ -1,8 +1,11 @@
-import mongoose from "mongoose";
-import balances from "../../db/models/balances.js";
-import delqueue from "../../db/models/delqueue.js";
-import expenses from "../../db/models/expenses.js";
-import users from "../../db/models/users.js";
+import mongoose from "mongoose"
+
+import { ExtDate } from "../../libs/datelib"
+
+import balances from "../../db/models/balances"
+import delqueue from "../../db/models/delqueue"
+import expenses from "../../db/models/expenses"
+import users from "../../db/models/users"
 
 /**
  * Checks if all user data has been deleted
@@ -34,7 +37,7 @@ async function deleteUsersJob() {
     // Get all users in the deletion queue
     const users = await delqueue.getAllAccountsInQueue();
     // Check all users in the queue
-    const now = new Date(Date.now());
+    const now = ExtDate.fromNow()
     for (let user of users) {
         // If the deletion date has not passed, ignore this user
         if (user.date > now)

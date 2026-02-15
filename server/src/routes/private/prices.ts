@@ -1,7 +1,7 @@
 import express from "express"
 
-import cache from "../../cache/cache";
-import common from "../common";
+import cache from "../../cache/cache"
+import common from "../common"
 
 /* === /prices/* === */
 

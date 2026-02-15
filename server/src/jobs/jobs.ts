@@ -1,6 +1,6 @@
-import { CronJob } from "cron";
-import usersdel from "./functions/usersdel.js";
-import cacheup from "./functions/cacheup.js";
+import { CronJob } from "cron"
+import usersdel from "./functions/usersdel"
+import cacheup from "./functions/cacheup"
 
 const timezone = "Europe/Berlin";
 

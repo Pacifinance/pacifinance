@@ -1,4 +1,4 @@
-import cache from "../../cache/cache.js";
+import cache from "../../cache/cache"
 
 /**
  * Periodic job that checks the validity of cache items and invalidates them to force their update

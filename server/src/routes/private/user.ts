@@ -1,6 +1,8 @@
 import express from "express"
 import { SessionData } from "express-session"
 
+import { ExtDate } from "../../libs/datelib"
+
 import db from "../../db/mongo"
 import common from "../common"
 
@@ -14,7 +16,7 @@ userRouter.post("/logout", async (req, res) => {
     // Invalidate the session in the database by setting the
     // expiration date to 01/01/1970 and an invalid ID
     const session = req.session as SessionData
-    await db.users.setSessionOfUserId(session.userId, session.userId, new Date(0))
+    await db.users.setSessionOfUserId(session.userId, session.userId, new ExtDate(0))
     // Destroy the session
     req.session.destroy((err: any) => {})
     // Send status code 200 (OK)
@@ -35,8 +37,8 @@ userRouter.post("/delete", async (req, res) => {
     }
     // Add the user to the deletion queue with a deletion delay
     const deletion_delay_days = 30
-    let deletion_date = new Date(Date.now())
-    deletion_date.setUTCDate(deletion_date.getUTCDate() + deletion_delay_days)
+    let deletion_date = ExtDate.fromNow()
+    deletion_date.moveByDays(deletion_delay_days)
     const doc = await db.delqueue.insertNew(session.userId, deletion_date)
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -90,12 +92,12 @@ userRouter.post("/set-id", async (req, res) => {
     // Invalidate the session in the database by setting the
     // expiration date to 01/01/1970 and an invalid ID
     const curr_user_id = session.userId
-    await db.users.setSessionOfUserId(curr_user_id, curr_user_id, new Date(0))
+    await db.users.setSessionOfUserId(curr_user_id, curr_user_id, new ExtDate(0))
     // Destroy the session
     req.session.destroy((err: any) => {})
     // Generate a new random user ID and update the corresponding User document.
     // Send status code 500 (Internal Server Error) in case of failure
-    const new_user_id = await common.generateUserId()
+    const new_user_id = await common.generateUserId(db.users.userIdLength)
     const result = await db.users.setUserIdByUserId(curr_user_id, new_user_id)
     if (result === null)
     {

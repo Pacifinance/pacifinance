@@ -26,6 +26,7 @@
 
 ### Spese & Entrate
 - [ ] Permettere all'utente di modificare una sua spesa o entrata inserita ★
+- [ ] Permettere agli utenti di creare delle sottocategorie delle spese personalizzate (per visualizzazione utente vedrà le sue, per le statistiche generali vedrà i raggruppamenti per macrocategoria) (potremmo anche pensare delle sottocategorie di default per aumentarne il numero e limitare quelle personalizzate. Maggiori ne abbiamo di Default migliori statistiche avremo) ★
 - [ ] Permettere di vedere tutte le spese e le entrate inserite all'utente anche oltre l'anno (guardare filtri grafici) ★
 - [ ] Aggiungere limite di spesa per utente mensile a db (ora salvato in locale) ★
 - [ ] Aggiungere obbiettivo di income mensile a db (ragioniamoci)
@@ -74,3 +75,4 @@
 - [x] Cookie login per Backend ★
 - [x] capire perché gli url variabilizzati con le lingue non funzionano (per ora l'url che funziona per browser senza cache è solo pacifinance.com)
 - [x] Modificare la response di tutti i rank e mandare solo il rapporto tra data.position e data.total moltiplicato * 100 ★
+- [x] Cambiare tag it spesa "Divertimento" in "Tempo libero"

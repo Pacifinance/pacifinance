@@ -31,10 +31,12 @@ export const CurrencyProvider = ({ children }) => {
     return FALLBACK_RATES;
   });
 
-  // Sync with DB when userData loads — DB has priority over localStorage
+  // Sync with DB when userData loads — DB preferredCurrency has priority over localStorage
   useEffect(() => {
     if (userData?.currency && isValidCurrency(userData.currency)) {
       setCurrencyState(userData.currency);
+      // Cache the DB-preferred currency in localStorage for quick reload
+      localStorage.setItem(STORAGE_KEY, userData.currency);
     }
   }, [userData?.currency]);
 
@@ -61,10 +63,11 @@ export const CurrencyProvider = ({ children }) => {
     fetchRates();
   }, []);
 
+  // setCurrency: display-only, session-only (does NOT persist to localStorage or DB)
+  // Used by Settings page for quick currency conversion
   const setCurrency = useCallback((code) => {
     if (isValidCurrency(code)) {
       setCurrencyState(code);
-      localStorage.setItem(STORAGE_KEY, code);
     }
   }, []);
 

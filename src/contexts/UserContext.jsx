@@ -120,6 +120,7 @@ export const UserProvider = ({ children }) => {
             const housingTypeTags = allTags.data.housingType;
             const childrenTags = allTags.data.children;
             const yearsOfExperienceTags = allTags.data.yearsOfExperience;
+            const currencyTags = allTags.data.currency || [];
 
 
 
@@ -137,6 +138,17 @@ export const UserProvider = ({ children }) => {
             //Obtain the user type from the dictionary
             // userType = userTypeDict[userType];
             const username = infoUser.data.nickname ?? 'Username non impostato';
+            // Map preferredCurrency index from DB to actual currency code via currency tags
+            const preferredCurrencyIndex = infoUser.data.preferredCurrency;
+            let preferredCurrencyCode = 'EUR'; // default
+            let preferredCurrencyKey = -1;
+            if (preferredCurrencyIndex != null && currencyTags.length > 0) {
+              const matchedTag = currencyTags.find(tag => tag.index === preferredCurrencyIndex);
+              if (matchedTag?.label) {
+                preferredCurrencyCode = matchedTag.label.toUpperCase();
+                preferredCurrencyKey = matchedTag.index;
+              }
+            }
             // Helper to get translation fallback
             const getTranslation = (obj, language, fallback) => {
               if (!obj?.translations) return fallback;
@@ -424,7 +436,8 @@ export const UserProvider = ({ children }) => {
                 housingType: userHousingType,
                 children: userChildren,
                 yearsOfExperience: userYearsOfExperience,
-                completionPercentage: profileCompletionPercentage
+                completionPercentage: profileCompletionPercentage,
+                preferredCurrency: { key: preferredCurrencyKey, value: preferredCurrencyCode }
               },
               
               // All balance data in structured format
@@ -459,7 +472,8 @@ export const UserProvider = ({ children }) => {
                 livingSituationTags,
                 housingTypeTags,
                 childrenTags,
-                yearsOfExperienceTags
+                yearsOfExperienceTags,
+                currencyTags
               },
               
               // Ranking data
@@ -487,8 +501,8 @@ export const UserProvider = ({ children }) => {
               // Stats averages for comparison page
               averages,
               
-              // Currency preference (from DB, null until backend supports it)
-              currency: infoUser.data.currency || null
+              // Currency preference resolved from DB (preferredCurrency index → code via currency tags)
+              currency: preferredCurrencyCode
             });
             handleSetIsUpdated(true);
         }

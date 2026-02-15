@@ -122,9 +122,10 @@ describe('CurrencyContext', () => {
   });
 
   describe('setCurrency', () => {
-    it('should change currency and save to localStorage', async () => {
+    it('should change currency display without persisting to localStorage (session-only)', async () => {
       const user = userEvent.setup();
       localStorage.getItem.mockReturnValue(null);
+      localStorage.setItem.mockClear();
 
       render(<TestConsumer />, { wrapper: createWrapper() });
 
@@ -132,7 +133,8 @@ describe('CurrencyContext', () => {
 
       expect(screen.getByTestId('currency')).toHaveTextContent('USD');
       expect(screen.getByTestId('symbol')).toHaveTextContent('$');
-      expect(localStorage.setItem).toHaveBeenCalledWith('pacifinance-currency', 'USD');
+      // setCurrency is session-only (Settings page quick conversion) — does NOT write to localStorage
+      expect(localStorage.setItem).not.toHaveBeenCalledWith('pacifinance-currency', 'USD');
     });
 
     it('should not change currency with invalid code', async () => {

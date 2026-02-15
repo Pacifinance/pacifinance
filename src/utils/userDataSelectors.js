@@ -179,6 +179,10 @@ export const getLivingSituationTags = (userData) => userData?.tags?.livingSituat
 export const getHousingTypeTags = (userData) => userData?.tags?.housingTypeTags || [];
 export const getChildrenTags = (userData) => userData?.tags?.childrenTags || [];
 export const getYearsOfExperienceTags = (userData) => userData?.tags?.yearsOfExperienceTags || [];
+export const getCurrencyTags = (userData) => userData?.tags?.currencyTags || [];
+
+// Preferred currency selector (returns {key, value} like other profile fields)
+export const getUserPreferredCurrency = (userData) => userData?.profile?.preferredCurrency || { key: -1, value: 'EUR' };
 
 // Rankings selectors
 export const getPercentageRankOnBalance = (userData) => userData?.rankings?.balance || 0;

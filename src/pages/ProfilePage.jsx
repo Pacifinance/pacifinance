@@ -16,7 +16,8 @@ import {
     ChevronDown,
     Trophy,
     User,
-    RefreshCw
+    RefreshCw,
+    Coins
 } from 'lucide-react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -34,6 +35,7 @@ import {
     getUserHousingType,
     getUserChildren,
     getUserYearsOfExperience,
+    getUserPreferredCurrency,
     getNationalityTags,
     getJobTags,
     getJobTypeTags,
@@ -44,6 +46,7 @@ import {
     getHousingTypeTags,
     getChildrenTags,
     getYearsOfExperienceTags,
+    getCurrencyTags,
     getProfileCompletionPercentage
 } from '../utils/userDataSelectors';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -440,6 +443,7 @@ const ProfilePage = () => {
     const [userLivingStatus, setUserLivingStatus] = useState({ key: "", value: "" });
     const [userHousingType, setUserHousingType] = useState({ key: "", value: "" });
     const [userHasChildren, setUserHasChildren] = useState({ key: "", value: "" });
+    const [userPreferredCurrency, setUserPreferredCurrency] = useState({ key: "", value: "" });
     const [profileCompletionPercentage, setProfileCompletionPercentage] = useState(0);
     
     const [nationalityTags, setNationalityTags] = useState([]);
@@ -452,6 +456,7 @@ const ProfilePage = () => {
     const [livingStatusTags, setLivingStatusTags] = useState([]);
     const [housingTypeTags, setHousingTypeTags] = useState([]);
     const [hasChildrenTags, setHasChildrenTags] = useState([]);
+    const [currencyTagsList, setCurrencyTagsList] = useState([]);
     const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
 
     const handleRegenerateAvatar = () => {
@@ -549,6 +554,13 @@ const ProfilePage = () => {
         { index: 1, translations: { it: "No", en: "No" } },
         { index: 2, translations: { it: "In Attesa", en: "Expecting" } }
     ];
+    const mockCurrencyTags = [
+        { label: "eur", index: 0, translations: { it: "EUR (€)", en: "EUR (€)" } },
+        { label: "usd", index: 1, translations: { it: "USD ($)", en: "USD ($)" } },
+        { label: "gbp", index: 2, translations: { it: "GBP (£)", en: "GBP (£)" } },
+        { label: "chf", index: 3, translations: { it: "CHF", en: "CHF" } },
+        { label: "jpy", index: 4, translations: { it: "JPY (¥)", en: "JPY (¥)" } },
+    ];
 
     useEffect(() => {
         if (userData) {
@@ -565,6 +577,7 @@ const ProfilePage = () => {
             setUserLivingStatus(getUserLivingSituation(userData));
             setUserHousingType(getUserHousingType(userData));
             setUserHasChildren(getUserChildren(userData));
+            setUserPreferredCurrency(getUserPreferredCurrency(userData));
             setProfileCompletionPercentage(getProfileCompletionPercentage(userData));
             
             setNationalityTags(getNationalityTags(userData) || mockNationalityTags);
@@ -577,6 +590,7 @@ const ProfilePage = () => {
             setLivingStatusTags(getLivingSituationTags(userData) || mockLivingStatusTags);
             setHousingTypeTags(getHousingTypeTags(userData) || mockHousingTypeTags);
             setHasChildrenTags(getChildrenTags(userData) || mockHasChildrenTags);
+            setCurrencyTagsList(getCurrencyTags(userData) || mockCurrencyTags);
         } else {
             setUserId('00000');
             setUserType('mockUser');
@@ -590,6 +604,7 @@ const ProfilePage = () => {
             setLivingStatusTags(mockLivingStatusTags);
             setHousingTypeTags(mockHousingTypeTags);
             setHasChildrenTags(mockHasChildrenTags);
+            setCurrencyTagsList(mockCurrencyTags);
         }
     }, [userData]);
 
@@ -607,7 +622,8 @@ const ProfilePage = () => {
                 age: userAge.key,
                 living_situation: userLivingStatus.key,
                 housing_type: userHousingType.key,
-                children: userHasChildren.key
+                children: userHasChildren.key,
+                preferred_currency: userPreferredCurrency.key
             };
             const response = await axios.post('/user/set', data, { withCredentials: true });
             if (response.status === 200) {
@@ -634,6 +650,8 @@ const ProfilePage = () => {
     const sortedLivingStatusTags = sortTagsByLanguage(livingStatusTags, language);
     const sortedHousingTypeTags = sortTagsByLanguage(housingTypeTags, language);
     const sortedHasChildrenTags = sortTagsByLanguage(hasChildrenTags, language);
+    // Currency tags don't need language-based sorting (they use currency codes)
+    const sortedCurrencyTags = currencyTagsList;
 
     // Helper to translate values
     const translateValue = (currentValue, tagsArray) => {
@@ -796,6 +814,17 @@ const ProfilePage = () => {
                         </MyButton>
                     </div>
 
+                    {/* Financial Preferences */}
+                    <SectionCard theme={theme} $isMobile={isMobileScreen}>
+                        <SectionHeader theme={theme}>
+                            <SectionIcon>💱</SectionIcon>
+                            <h3>{t.sections?.financialPreferences || (language === 'it' ? 'Preferenze Finanziarie' : 'Financial Preferences')}</h3>
+                        </SectionHeader>
+                        <ProfileGrid>
+                            {renderField(<Coins />, t.preferredCurrency || 'Preferred Currency', userPreferredCurrency.value)}
+                        </ProfileGrid>
+                    </SectionCard>
+
                     {/* Professional Profile */}
                     <SectionCard theme={theme} $isMobile={isMobileScreen}>
                         <SectionHeader theme={theme}>
@@ -836,6 +865,18 @@ const ProfilePage = () => {
                             {t.sections?.editMode || 'Edit Mode'}
                         </h2>
                     </div>
+
+                    {/* Financial Preferences */}
+                    <SectionCard theme={theme} $isMobile={isMobileScreen}>
+                        <SectionHeader theme={theme}>
+                            <SectionIcon>💱</SectionIcon>
+                            <h3>{t.sections?.financialPreferences || (language === 'it' ? 'Preferenze Finanziarie' : 'Financial Preferences')}</h3>
+                        </SectionHeader>
+                        <EditFormGrid>
+                            {renderEditField(<Coins />, t.preferredCurrency || 'Preferred Currency', userPreferredCurrency.value,
+                                (e) => setUserPreferredCurrency({ key: e.target.value.key, value: e.target.value.label }), sortedCurrencyTags, t.selectPreferredCurrency)}
+                        </EditFormGrid>
+                    </SectionCard>
 
                     {/* Professional */}
                     <SectionCard theme={theme} $isMobile={isMobileScreen}>

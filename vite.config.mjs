@@ -89,7 +89,7 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000, // Aumenta il limite per evitare warning
-    sourcemap: false,
+    sourcemap: true, 
     minify: 'terser',
     terserOptions: {
       compress: {

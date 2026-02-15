@@ -350,6 +350,8 @@
             "familyHome": "Casa di famiglia",
             "hasChildren": "Hai figli?",
             "selectHasChildren": "Seleziona se hai figli",
+            "preferredCurrency": "Valuta Preferita",
+            "selectPreferredCurrency": "Seleziona la tua valuta",
             "yes": "Sì",
             "no": "No",
             "saveButton": "Salva profilo",
@@ -383,7 +385,8 @@
                 "profileDetails": "Dettagli Profilo",
                 "editMode": "Modalità Modifica Attiva",
                 "profileProfessional": "Profilo Professionale",
-                "personalSituation": "Situazione Personale"
+                "personalSituation": "Situazione Personale",
+                "financialPreferences": "Preferenze Finanziarie"
             },
             "accountType": "Tipo Account",
             "buttons": {

@@ -19,8 +19,8 @@ export const mockUserData = {
     userType: 'premium',
     username: 'Developer User',
     
-    // Currency preference (null = EUR default, until backend supports it)
-    currency: null,
+    // Currency preference resolved from DB (preferredCurrency index → code via currency tags)
+    currency: 'EUR',
     
     // User profile data (come UserContext)
     profile: {
@@ -34,7 +34,8 @@ export const mockUserData = {
         livingSituation: { key: 1, value: 'In Coppia' },
         housingType: { key: 0, value: 'Appartamento in Affitto' },
         children: { key: 1, value: 'No' },
-        yearsOfExperience: { key: 2, value: '4-5 anni' }
+        yearsOfExperience: { key: 2, value: '4-5 anni' },
+        preferredCurrency: { key: 0, value: 'EUR' }
     },
     
     // Balance data strutturata come UserContext
@@ -233,7 +234,14 @@ export const mockUserData = {
         livingSituationTags: [],
         housingTypeTags: [],
         childrenTags: [],
-        yearsOfExperienceTags: []
+        yearsOfExperienceTags: [],
+        currencyTags: [
+            { label: "eur", index: 0, type: 13, translations: { it: "EUR (€)", en: "EUR (€)" } },
+            { label: "usd", index: 1, type: 13, translations: { it: "USD ($)", en: "USD ($)" } },
+            { label: "gbp", index: 2, type: 13, translations: { it: "GBP (£)", en: "GBP (£)" } },
+            { label: "chf", index: 3, type: 13, translations: { it: "CHF", en: "CHF" } },
+            { label: "jpy", index: 4, type: 13, translations: { it: "JPY (¥)", en: "JPY (¥)" } }
+        ]
     },
     
     // Dati per grafici ultimi 12 mesi

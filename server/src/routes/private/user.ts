@@ -49,7 +49,7 @@ userRouter.post("/delete", async (req, res) => {
         return
     }
     // If the document is correctly added, force the logout (redirect to /logout route)
-    res.redirect(307, "../logout")
+    res.redirect(307, "logout")
 })
 
 userRouter.post("/set-id", async (req, res) => {
@@ -166,7 +166,7 @@ userRouter.post("/set-password", async (req, res) => {
     // Then, force the logout (redirect to /logout route)
     let hashed_new_pwd = common.hashPassword(new_pwd, Number.parseInt(process.env.SALT_ROUNDS || "1"))
     await db.users.setPasswordOfUserId(session.userId, hashed_new_pwd)
-    res.redirect(307, "../logout")
+    res.redirect(307, "logout")
 })
 
 userRouter.post("/get", async (req, res) => {

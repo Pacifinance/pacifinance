@@ -107,20 +107,21 @@ export const UserProvider = ({ children }) => {
             /***************************** TAGS ********************************/
 
             const allTags  = await axios.post('/tags/get', null, { withCredentials: true });
-            const outflowsTags = allTags.data.expense;
-            const incomesTags = allTags.data.income;
-            const paymentTags = allTags.data.payment;
-            const nationalityTags = allTags.data.country; //used also for the country where the user works
-            const jobTags = allTags.data.job;
-            const jobTypeTags = allTags.data.jobType;
-            const workTimeTags = allTags.data.workTime;
-            const remoteTypeTags = allTags.data.remoteType;
-            const ageTags = allTags.data.age;
-            const livingSituationTags = allTags.data.livingSituation;
-            const housingTypeTags = allTags.data.housingType;
-            const childrenTags = allTags.data.children;
-            const yearsOfExperienceTags = allTags.data.yearsOfExperience;
-            const currencyTags = allTags.data.currency || [];
+            const tagsData = allTags?.data || {};
+            const outflowsTags = tagsData.expense || [];
+            const incomesTags = tagsData.income || [];
+            const paymentTags = tagsData.payment || [];
+            const nationalityTags = tagsData.country || []; //used also for the country where the user works
+            const jobTags = tagsData.job || [];
+            const jobTypeTags = tagsData.jobType || [];
+            const workTimeTags = tagsData.workTime || [];
+            const remoteTypeTags = tagsData.remoteType || [];
+            const ageTags = tagsData.age || [];
+            const livingSituationTags = tagsData.livingSituation || [];
+            const housingTypeTags = tagsData.housingType || [];
+            const childrenTags = tagsData.children || [];
+            const yearsOfExperienceTags = tagsData.yearsOfExperience || [];
+            const currencyTags = tagsData.currency || [];
 
 
 
@@ -133,13 +134,12 @@ export const UserProvider = ({ children }) => {
             };
 
             const infoUser = await axios.post('/user/get', null, { withCredentials: true });
-            const userId = infoUser.data.userId;
-            const userType = userTypeDict[infoUser.data.type]; //infoUser.data.type: 0 = regular, 1 = premium, 2 = test, 3 = demo
-            //Obtain the user type from the dictionary
-            // userType = userTypeDict[userType];
-            const username = infoUser.data.nickname ?? 'Username non impostato';
+            const infoData = infoUser?.data || {};
+            const userId = infoData.userId || '00000';
+            const userType = userTypeDict[infoData.type] || 'regular';
+            const username = infoData.nickname ?? 'Username non impostato';
             // Map preferredCurrency index from DB to actual currency code via currency tags
-            const preferredCurrencyIndex = infoUser.data.preferredCurrency;
+            const preferredCurrencyIndex = infoData.preferredCurrency;
             let preferredCurrencyCode = 'EUR'; // default
             let preferredCurrencyKey = -1;
             if (preferredCurrencyIndex != null && currencyTags.length > 0) {
@@ -161,17 +161,17 @@ export const UserProvider = ({ children }) => {
             // Get current language from localStorage or default to 'en'
             const language = localStorage.getItem('language') || 'en';
 
-            const userNationality = {key: infoUser.data.country?.index ?? -1, value: getTranslation(infoUser.data.country, language, 'Nazionalità non impostata')};
-            const userWhereWorks = {key: infoUser.data.jobCountry?.index ?? -1 ,value: getTranslation(infoUser.data.jobCountry, language, 'Dove lavora non impostato')};
-            const userJob = {key: infoUser.data.job?.index ?? -1, value: getTranslation(infoUser.data.job, language, 'Lavoro non impostato')};
-            const userJobType = {key: infoUser.data.jobType?.index ?? -1, value: getTranslation(infoUser.data.jobType, language, 'Tipo di lavoro non impostato')};
-            const userWorkTime = {key: infoUser.data.workTime?.index ?? -1, value: getTranslation(infoUser.data.workTime, language, 'Tipologia contratto non impostato')};
-            const userRemoteType = {key: infoUser.data.remoteType?.index ?? -1, value: getTranslation(infoUser.data.remoteType, language, 'Tipologia lavoro non impostata')};
-            const userAge = {key: infoUser.data.age?.index ?? -1, value: getTranslation(infoUser.data.age, language, 'Età non impostata')};
-            const userLivingSituation = {key: infoUser.data.livingSituation?.index ?? -1, value: getTranslation(infoUser.data.livingSituation, language, 'Situazione abitativa non impostata')};
-            const userHousingType = {key: infoUser.data.housingType?.index ?? -1, value: getTranslation(infoUser.data.housingType, language, 'Tipologia abitazione non impostata')};
-            const userChildren = {key: infoUser.data.children?.index ?? -1, value: getTranslation(infoUser.data.children, language, 'Figli non impostato')};
-            const userYearsOfExperience = {key: infoUser.data.yearsOfExperience?.index ?? -1, value: getTranslation(infoUser.data.yearsOfExperience, language, 'Anni di esperienza non impostati')};
+            const userNationality = {key: infoData.country?.index ?? -1, value: getTranslation(infoData.country, language, 'Nazionalità non impostata')};
+            const userWhereWorks = {key: infoData.jobCountry?.index ?? -1 ,value: getTranslation(infoData.jobCountry, language, 'Dove lavora non impostato')};
+            const userJob = {key: infoData.job?.index ?? -1, value: getTranslation(infoData.job, language, 'Lavoro non impostato')};
+            const userJobType = {key: infoData.jobType?.index ?? -1, value: getTranslation(infoData.jobType, language, 'Tipo di lavoro non impostato')};
+            const userWorkTime = {key: infoData.workTime?.index ?? -1, value: getTranslation(infoData.workTime, language, 'Tipologia contratto non impostato')};
+            const userRemoteType = {key: infoData.remoteType?.index ?? -1, value: getTranslation(infoData.remoteType, language, 'Tipologia lavoro non impostata')};
+            const userAge = {key: infoData.age?.index ?? -1, value: getTranslation(infoData.age, language, 'Età non impostata')};
+            const userLivingSituation = {key: infoData.livingSituation?.index ?? -1, value: getTranslation(infoData.livingSituation, language, 'Situazione abitativa non impostata')};
+            const userHousingType = {key: infoData.housingType?.index ?? -1, value: getTranslation(infoData.housingType, language, 'Tipologia abitazione non impostata')};
+            const userChildren = {key: infoData.children?.index ?? -1, value: getTranslation(infoData.children, language, 'Figli non impostato')};
+            const userYearsOfExperience = {key: infoData.yearsOfExperience?.index ?? -1, value: getTranslation(infoData.yearsOfExperience, language, 'Anni di esperienza non impostati')};
 
             // Calcola la percentuale di completamento del profilo
             const profileFields = [
@@ -191,7 +191,7 @@ export const UserProvider = ({ children }) => {
             const profileCompletionPercentage = Math.round((completedFields / profileFields.length) * 100);
 
             // Get goals and limits from user data
-            const userGoals = infoUser.data.goals || {
+            const userGoals = infoData.goals || {
               expensesLimit: -1,
               savingsPercent: -1,
               emergencyFundGoal: -1
@@ -216,9 +216,10 @@ export const UserProvider = ({ children }) => {
             const balancesResponse = await axios.post('/balances/get', null, { withCredentials: true });
             
             // Ensure we have valid balance data for at least current month
-            const balancesData = balancesResponse.data.map(monthData => ({
-                date: monthData.date,
-                balance: monthData.balance || {}
+            const balancesRawData = Array.isArray(balancesResponse?.data) ? balancesResponse.data : [];
+            const balancesData = balancesRawData.map(monthData => ({
+                date: monthData?.date || null,
+                balance: monthData?.balance || {}
             }));
 
             // Helper function to calculate total from balance object
@@ -237,9 +238,8 @@ export const UserProvider = ({ children }) => {
             //************************************* EXPENSES AND INCOMES **********************************************/
 
             const allOutflowsIncomesResponse = await axios.post('/expenses/get', null, { withCredentials: true }); //get all outflows and incomes
-            // console.log('Response completa  SPESE e GUADAGNI: ', allOutflowsIncomesResponse);
 
-            const allOutflowsIncomesArray = allOutflowsIncomesResponse.data;
+            const allOutflowsIncomesArray = Array.isArray(allOutflowsIncomesResponse?.data) ? allOutflowsIncomesResponse.data : [];
 
             // console.log('Array completo SPESE e GUADAGNI: ', allOutflowsIncomesArray[0]);
 
@@ -254,17 +254,19 @@ export const UserProvider = ({ children }) => {
               let totalOutflowsPerCategory = {};
 
               // Iterate through each entry in the current month
+              if (!Array.isArray(month)) return;
               month.forEach((entry) => {
                 // Check if the entry is an expense
-                if (entry.isExpense) {
+                if (entry?.isExpense) {
                   // Use English category name for consistency across the application
-                  const categoryKey = entry.categoryTag.translations.en;
+                  const categoryKey = entry.categoryTag?.translations?.en || entry.categoryTag?.label || 'Unknown';
                   // If the category exists, add the current value
+                  const amount = Number(entry.amount) || 0;
                   if (totalOutflowsPerCategory[categoryKey]) {
-                    totalOutflowsPerCategory[categoryKey] += entry.amount;
+                    totalOutflowsPerCategory[categoryKey] += amount;
                   } else {
                     // Otherwise, initialize the category with the current value
-                    totalOutflowsPerCategory[categoryKey] = entry.amount;
+                    totalOutflowsPerCategory[categoryKey] = amount;
                   }
                 }
               });
@@ -283,13 +285,16 @@ export const UserProvider = ({ children }) => {
 
             // Itera su ciascun elemento dell'array allOutflowsIncomesArray
             allOutflowsIncomesArray.forEach((outerItem, index) => {
+              if (!Array.isArray(outerItem)) return;
               // Cicla sugli elementi interni di outerItem
               outerItem.forEach((innerItem) => {
+                if (!innerItem) return;
+                const amount = Number(innerItem.amount) || 0;
                 // Aggiungi l'importo all'array corrispondente, a seconda se è un'entrata o una spesa
                 if (innerItem.isExpense) {
-                  outflowsArray[index] += innerItem.amount;
+                  outflowsArray[index] += amount;
                 } else {
-                  incomesArray[index] += innerItem.amount;
+                  incomesArray[index] += amount;
                 }
               });
             });
@@ -305,8 +310,8 @@ export const UserProvider = ({ children }) => {
             // qua potrei aggiungere un controllo che se non ci sono spese ed entrate del mese corrente, allora prendo i dati del mese precedente
             // const lastOutflows = allOutflowsIncomesArray[0].filter(data => data.isExpense);
             // const lastIncomes = allOutflowsIncomesArray[0].filter(data => !data.isExpense);
-            const allOutflows = allOutflowsIncomesArray.map(monthData => monthData.filter(data => data.isExpense));
-            const allIncomes = allOutflowsIncomesArray.map(monthData => monthData.filter(data => !data.isExpense));
+            const allOutflows = allOutflowsIncomesArray.map(monthData => Array.isArray(monthData) ? monthData.filter(data => data?.isExpense) : []);
+            const allIncomes = allOutflowsIncomesArray.map(monthData => Array.isArray(monthData) ? monthData.filter(data => data && !data.isExpense) : []);
 
             // let count = 1;
             // Print to test the amount of the expenses
@@ -340,22 +345,33 @@ export const UserProvider = ({ children }) => {
 
             //************************************* RANKING **********************************************/
 
-            const rankOnBalance = await axios.post('/rank/balances', null, { withCredentials: true });
-            const rankOnIncome = await axios.post('/rank/expenses', {expenses: false}, { withCredentials: true });
-            const rankOnExpense = await axios.post('/rank/expenses', {expenses: true}, { withCredentials: true });
+            // Ranking API calls with individual error protection
+            let percentageRankOnBalance = 0;
+            let percentageRankOnIncomes = 0;
+            let percentageRankOnExpenses = 0;
+            let percentageRankOnBalanceSimilar = 0;
+            let percentageRankOnIncomesSimilar = 0;
+            let percentageRankOnExpensesSimilar = 0;
 
-            const rankOnBalanceSimilar = await axios.post('/rank/balances', {similar: true}, { withCredentials: true } );
-            const rankOnIncomeSimilar = await axios.post('/rank/expenses', {expenses: false, similar: true}, { withCredentials: true } );
-            const rankOnExpenseSimilar = await axios.post('/rank/expenses', {expenses: true, similar: true}, { withCredentials: true });
-            
-            //aggiungere controllo per null 
-            const percentageRankOnBalance = rankOnBalance.data.position;
-            const percentageRankOnIncomes = rankOnIncome.data.position;
-            const percentageRankOnExpenses = rankOnExpense.data.position;
+            try {
+              const [rankOnBalance, rankOnIncome, rankOnExpense, rankOnBalanceSimilar, rankOnIncomeSimilar, rankOnExpenseSimilar] = await Promise.all([
+                axios.post('/rank/balances', null, { withCredentials: true }),
+                axios.post('/rank/expenses', {expenses: false}, { withCredentials: true }),
+                axios.post('/rank/expenses', {expenses: true}, { withCredentials: true }),
+                axios.post('/rank/balances', {similar: true}, { withCredentials: true }),
+                axios.post('/rank/expenses', {expenses: false, similar: true}, { withCredentials: true }),
+                axios.post('/rank/expenses', {expenses: true, similar: true}, { withCredentials: true })
+              ]);
 
-            const percentageRankOnBalanceSimilar = rankOnBalanceSimilar.data.position;
-            const percentageRankOnIncomesSimilar = rankOnIncomeSimilar.data.position;
-            const percentageRankOnExpensesSimilar = rankOnExpenseSimilar.data.position;
+              percentageRankOnBalance = rankOnBalance?.data?.position ?? 0;
+              percentageRankOnIncomes = rankOnIncome?.data?.position ?? 0;
+              percentageRankOnExpenses = rankOnExpense?.data?.position ?? 0;
+              percentageRankOnBalanceSimilar = rankOnBalanceSimilar?.data?.position ?? 0;
+              percentageRankOnIncomesSimilar = rankOnIncomeSimilar?.data?.position ?? 0;
+              percentageRankOnExpensesSimilar = rankOnExpenseSimilar?.data?.position ?? 0;
+            } catch (rankError) {
+              console.debug('Ranking endpoints error, using defaults:', rankError?.message);
+            }
 
 
             // console.log('rankOnBalance:', rankOnBalance);

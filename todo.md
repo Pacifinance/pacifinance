@@ -86,7 +86,7 @@
 - [ ] Test per DataImportWizard: parseAmount, processRows, processRowDual, autoDetectColumns
 
 ### Import Dati (Evoluzione)
-- [ ] Modifica note dall'excel prima dell'inserimento transazioni
+- [x] Modifica note dall'excel prima dell'inserimento transazioni
 - [ ] Supporto aggiornamento bilancio tramite import
 - [ ] Preview grafico transazioni importate (istogramma per mese/categoria)
 - [ ] Template di mappatura per banca (UniCredit, Revolut, N26...) con condivisione community

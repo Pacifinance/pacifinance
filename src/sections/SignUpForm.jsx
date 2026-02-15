@@ -28,6 +28,7 @@ var generated_user_id = "";
 
 // Cloudflare Turnstile configuration
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.meta.env.REACT_APP_TURNSTILE_SITE_KEY;
+const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
 
 // export { generated_user_id };
 export default function SignUpForm() {
@@ -77,8 +78,16 @@ export default function SignUpForm() {
 
     // Initialize Turnstile when component mounts
     useEffect(() => {
+        // Skip Turnstile in dev mode if no site key is configured
+        if (!TURNSTILE_SITE_KEY && IS_DEV) {
+            console.warn('[Dev] Turnstile sitekey not set — bypassing captcha');
+            setTurnstileToken('dev-bypass-token');
+            setIsTurnstileLoaded(true);
+            return;
+        }
+
         const initTurnstile = () => {
-            if (window.turnstile && turnstileRef.current) {
+            if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 window.turnstile.render(turnstileRef.current, {
                     sitekey: TURNSTILE_SITE_KEY,
                     callback: onTurnstileSuccess,

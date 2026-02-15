@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
     workTime: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     remoteType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     yearsOfExperience: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
+    preferredCurrency: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
     goals: {type: {
         expensesLimit: {type: Number, required: true},
         savingsPercent: {type: Number, required: true},
@@ -103,6 +104,7 @@ async function getOneAndPopulate(where: object, select: string) {
     .populate({path: "workTime", select: "-_id -__v -translations._id"})
     .populate({path: "remoteType", select: "-_id -__v -translations._id"})
     .populate({path: "yearsOfExperience", select: "-_id -__v -translations._id"})
+    .populate({path: "preferredCurrency", select: "-_id -__v -translations._id"})
     .lean().exec();
 }
 
@@ -151,6 +153,7 @@ async function insertNew(user_id: string, password: string, type: number = UserT
         workTime: newNullObjectId(),
         remoteType: newNullObjectId(),
         yearsOfExperience: newNullObjectId(),
+        preferredCurrency: newNullObjectId(),
         goals: {
             expensesLimit: -1,
             savingsPercent: -1,
@@ -317,11 +320,12 @@ async function getPublicInfoByUserId(user_id: string) {
  * @param workTime Index of the workTime tag to set
  * @param remoteType Index of the remoteType tag to set
  * @param yearsOfExperience Index of the yearsOfExperience tag to set
+ * @param preferredCurrency Index of the preferredCurrency tag to set
  * @returns User document
  */
 async function setPublicInfoOfUserId(user_id: string, age: number, livingSituation: number, housingType: number,
     children: number, country: number, job: number, jobType: number, jobCountry: number, workTime: number,
-    remoteType: number, yearsOfExperience: number) {
+    remoteType: number, yearsOfExperience: number, preferredCurrency: number) {
     // Get the tags references by their index and type
     // If a reference is found, add it to the object that will be used to update the User document
     const valueToTagMapping = [
@@ -336,6 +340,7 @@ async function setPublicInfoOfUserId(user_id: string, age: number, livingSituati
         {tag: tags.TagType.workTime, newSelection: workTime},
         {tag: tags.TagType.remoteType, newSelection: remoteType},
         {tag: tags.TagType.yearsOfExperience, newSelection: yearsOfExperience},
+        {tag: tags.TagType.currency, newSelection: preferredCurrency},
     ]
     let update_object: any = {};
     for (let curr of valueToTagMapping) {

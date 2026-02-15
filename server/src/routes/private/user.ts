@@ -184,7 +184,8 @@ userRouter.post("/set", async(req, res) => {
     const doc = await db.users.setPublicInfoOfUserId(
         session.userId, req.body.age, req.body.living_situation, req.body.housing_type,
         req.body.children, req.body.country, req.body.job, req.body.job_type,
-        req.body.job_country, req.body.work_time, req.body.remote_type, req.body.years_of_experience
+        req.body.job_country, req.body.work_time, req.body.remote_type,
+        req.body.years_of_experience, req.body.preferred_currency
     )
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

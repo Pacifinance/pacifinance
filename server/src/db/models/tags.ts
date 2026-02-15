@@ -13,7 +13,8 @@ const TagType = {
     age: {name: "age", value: 9},
     livingSituation: {name: "livingSituation", value: 10},
     housingType: {name: "housingType", value: 11},
-    children: {name: "children", value: 12}
+    children: {name: "children", value: 12},
+    currency: {name: "currency", value: 13},
 }
 
 const tagsSchema = new mongoose.Schema({

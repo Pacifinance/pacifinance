@@ -22,7 +22,7 @@ export const createStatsService = (apiClient) => ({
     };
 
     try {
-      const res = await apiClient.post('/stats/averages', null);
+      const res = await apiClient.post('/stats/averages', {});
       const data = res.data;
 
       return {

@@ -20,7 +20,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object|null>} User info or null
    */
   async checkSession() {
-    const res = await apiClient.post('/user/get', null);
+    const res = await apiClient.post('/user/get', {});
     return res.data?.userId ? res.data : null;
   },
 
@@ -29,7 +29,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async getTags() {
-    const res = await apiClient.post('/tags/get', null);
+    const res = await apiClient.post('/tags/get', {});
     return res.data || {};
   },
 
@@ -38,7 +38,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async getUserInfo() {
-    const res = await apiClient.post('/user/get', null);
+    const res = await apiClient.post('/user/get', {});
     return res.data || {};
   },
 
@@ -89,7 +89,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<void>}
    */
   async logout() {
-    await apiClient.post('/user/logout', null);
+    await apiClient.post('/user/logout', {});
   },
 
   /**
@@ -97,7 +97,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async deleteAccount() {
-    const res = await apiClient.post('/user/delete', null);
+    const res = await apiClient.post('/user/delete', {});
     return res;
   },
 
@@ -132,7 +132,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async resetUsername() {
-    const res = await apiClient.post('/user/set-username', null);
+    const res = await apiClient.post('/user/set-username', {});
     return res.data;
   },
 
@@ -151,7 +151,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>} Complete user data
    */
   async getAllData() {
-    const res = await apiClient.post('/user/alldata', null);
+    const res = await apiClient.post('/user/alldata', {});
     return res.data;
   },
 });

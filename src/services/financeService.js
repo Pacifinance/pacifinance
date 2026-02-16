@@ -18,7 +18,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<Array>}
    */
   async getBalances() {
-    const res = await apiClient.post('/balances/get', null);
+    const res = await apiClient.post('/balances/get', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 
@@ -37,7 +37,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<Array>}
    */
   async getExpensesAndIncomes() {
-    const res = await apiClient.post('/expenses/get', null);
+    const res = await apiClient.post('/expenses/get', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 

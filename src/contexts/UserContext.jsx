@@ -21,6 +21,7 @@ export const UserProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [retryCounter, setRetryCounter] = useState(0);
   const isAuthenticatedRef = useRef(isAuthenticated);
 
   // Inject services from DI container
@@ -145,12 +146,13 @@ export const UserProvider = ({ children }) => {
       }
     };
     fetchUserData();
-  }, [isAuthenticated, isUpdated, userService, financeService, rankingService, statsService]);
+  }, [isAuthenticated, isUpdated, retryCounter, userService, financeService, rankingService, statsService]);
 
   // Retry function: reset error and trigger re-fetch
   const retryFetch = () => {
     setError(null);
     setIsUpdated(false);
+    setRetryCounter(c => c + 1); // Force re-trigger even if isUpdated was already false
   };
 
   const handleSetIsAuthenticated = (value) => {

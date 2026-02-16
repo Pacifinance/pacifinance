@@ -31,6 +31,9 @@ body *{
 body {
   margin: 0;
   background-color: #F7F5FF;
+  /* Prevent pinch-to-zoom and double-tap zoom on mobile */
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
   /* Nascondi scrollbar mantenendo lo scroll */
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */

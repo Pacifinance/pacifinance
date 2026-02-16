@@ -165,20 +165,27 @@ export default function NewLandingContent({ theme }) {
           {/* Right Column - Hero Image */}
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
-              <img
-                src={LandingPageImage}
-                alt="PaciFinance Dashboard Preview"
-                className="max-w-full h-auto rounded-2xl shadow-2xl"
-                width={600}
-                height={400}
-                style={{ maxHeight: "600px" }}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                sizes="(max-width: 768px) 100vw, 600px"
-                draggable="false"
-                onContextMenu={(e) => e.preventDefault()}
-              />
+              <picture>
+                <source
+                  srcSet="/PacifinanceArt2NoBg.avif"
+                  type="image/avif"
+                  sizes="(max-width: 768px) 100vw, 600px"
+                />
+                <img
+                  src={LandingPageImage}
+                  alt="PaciFinance Dashboard Preview"
+                  className="max-w-full h-auto rounded-2xl shadow-2xl"
+                  width={600}
+                  height={400}
+                  style={{ maxHeight: "600px" }}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  sizes="(max-width: 768px) 100vw, 600px"
+                  draggable="false"
+                  onContextMenu={(e) => e.preventDefault()}
+                />
+              </picture>
               {/* Floating Elements */}
               <div
                 className="absolute -top-4 -right-4 w-8 h-8 rounded-full animate-bounce"

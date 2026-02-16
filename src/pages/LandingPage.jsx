@@ -41,9 +41,7 @@ export default function NewLandingPage() {
 
   return (
     <>
-      {/* Performance Resource Hints */}
-      {/* LCP image preload is in index.html for initial document discoverability */}
-      <link rel="dns-prefetch" href="https://api.pacifinance.com" />
+      {/* Performance Resource Hints - moved to index.html for earlier discovery */}
       
       {/* Canonical URL - Unico URL per tutte le lingue */}
       <link rel="canonical" href="https://pacifinance.com/" />

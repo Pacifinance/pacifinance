@@ -32,7 +32,7 @@ describe('financeService', () => {
 
       const result = await service.getBalances();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/balances/get', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/balances/get', {});
       expect(result).toEqual(mockData);
     });
 
@@ -71,7 +71,7 @@ describe('financeService', () => {
 
       const result = await service.getExpensesAndIncomes();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/expenses/get', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/expenses/get', {});
       expect(result).toEqual(mockData);
     });
 

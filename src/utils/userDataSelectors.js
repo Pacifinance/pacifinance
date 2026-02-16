@@ -127,6 +127,15 @@ export const getUserChildren = (userData) => userData?.profile?.children || { ke
 export const getUserYearsOfExperience = (userData) => userData?.profile?.yearsOfExperience || { key: -1, value: 'Anni di esperienza non impostati' };
 export const getProfileCompletionPercentage = (userData) => userData?.profileCompletionPercentage || userData?.profile?.completionPercentage || 0;
 
+// New user detection (no balances, no transactions)
+export const isNewUser = (userData) => {
+  if (!userData) return false;
+  const hasBalance = getTotalValue(userData) > 0;
+  const hasOutflows = getAllOutflows(userData).length > 0;
+  const hasIncomes = getAllIncomes(userData).length > 0;
+  return !hasBalance && !hasOutflows && !hasIncomes;
+};
+
 // Expense and income selectors
 export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || userData?.allOutflows || [];
 export const getOutflowsArray = (userData) => userData?.expenses?.outflowsArray || userData?.outflowsArray || [];

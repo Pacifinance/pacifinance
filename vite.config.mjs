@@ -89,7 +89,7 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000, // Aumenta il limite per evitare warning
-    sourcemap: true, 
+    sourcemap: false, // Disabled in production — no source maps served to users
     minify: 'terser',
     terserOptions: {
       compress: {

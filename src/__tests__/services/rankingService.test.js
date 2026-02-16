@@ -49,7 +49,7 @@ describe('rankingService', () => {
 
       await service.getAllRankings();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/balances', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/rank/balances', {});
       expect(mockClient.post).toHaveBeenCalledWith('/rank/expenses', { expenses: false });
       expect(mockClient.post).toHaveBeenCalledWith('/rank/expenses', { expenses: true });
       expect(mockClient.post).toHaveBeenCalledWith('/rank/balances', { similar: true });

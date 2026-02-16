@@ -142,6 +142,72 @@ const roadmapData = [
     category: 'feature',
     icon: '🎯',
   },
+  {
+    id: 'onboarding',
+    title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },
+    description: {
+      it: 'Un tour interattivo che ti guida nella configurazione iniziale e nelle funzionalità principali.',
+      en: 'An interactive tour that guides you through initial setup and main features.'
+    },
+    status: 'in-progress',
+    category: 'ux',
+    icon: '🚀',
+  },
+  {
+    id: 'feedback-system',
+    title: { it: 'Sistema Feedback In-App', en: 'In-App Feedback System' },
+    description: {
+      it: 'Invia segnalazioni e suggerimenti direttamente dall\'app, creando automaticamente issue su GitHub.',
+      en: 'Send bug reports and suggestions directly from the app, automatically creating GitHub issues.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '💬',
+  },
+  {
+    id: 'contribute-section',
+    title: { it: 'Sezione Contribuisci', en: 'Contribute Section' },
+    description: {
+      it: 'Scopri come donare, segnalare bug e proporre nuove idee per migliorare PaciFinance.',
+      en: 'Learn how to donate, report bugs, and propose new ideas to improve PaciFinance.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '🤝',
+  },
+  {
+    id: 'roadmap-voting',
+    title: { it: 'Voto Priorità Roadmap', en: 'Roadmap Priority Voting' },
+    description: {
+      it: 'Vota le funzionalità che vuoi vedere per prime e influenza la direzione dello sviluppo.',
+      en: 'Vote on features you want to see first and influence the development direction.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '🗳️',
+  },
+  {
+    id: 'auto-detect-bank-format',
+    title: { it: 'Riconoscimento Automatico Banca', en: 'Auto-Detect Bank Format' },
+    description: {
+      it: 'Rilevamento automatico del formato dei file esportati dalla tua banca (Fineco, Intesa, Revolut, N26).',
+      en: 'Automatic detection of exported file formats from your bank (Fineco, Intesa, Revolut, N26).'
+    },
+    status: 'in-progress',
+    category: 'feature',
+    icon: '🏧',
+  },
+  {
+    id: 'OFX/QIF-support',
+    title: { it: 'Supporto File OFX/QIF', en: 'OFX/QIF File Support' },
+    description: {
+      it: 'Importa le transazioni nel formato standard OFX e QIF usato da molte banche e software finanziari.',
+      en: 'Import transactions in standard OFX and QIF format used by many banks and financial software.'
+    },
+    status: 'in-progress',
+    category: 'feature',
+    icon: '📂',
+  },
   /* ──────────── PLANNED ──────────── */
   {
     id: 'data-export',
@@ -197,17 +263,6 @@ const roadmapData = [
     status: 'planned',
     category: 'feature',
     icon: '📄',
-  },
-  {
-    id: 'onboarding',
-    title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },
-    description: {
-      it: 'Un tour interattivo che ti guida nella configurazione iniziale e nelle funzionalità principali.',
-      en: 'An interactive tour that guides you through initial setup and main features.'
-    },
-    status: 'planned',
-    category: 'ux',
-    icon: '🚀',
   },
   {
     id: 'more-languages',

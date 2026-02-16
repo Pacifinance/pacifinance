@@ -1802,5 +1802,25 @@
         "undoing": "Annullamento in corso...",
         "undoSuccess": "✅ Annullamento completato — {count} transazioni rimosse",
         "undoPartial": "⚠️ Annullamento parziale — {success} rimosse, {failed} fallite"
+    },
+    "onboarding": {
+        "welcomeTitle": "Benvenuto su PaciFinance!",
+        "welcomeSubtitle": "Completa questi 4 passaggi per sbloccare la tua dashboard finanziaria completa con grafici, confronti e analisi.",
+        "stepsCompleted": "completati",
+        "step1Title": "Completa il Profilo",
+        "step1Desc": "Imposta nazionalità, lavoro ed età per confronti anonimi personalizzati.",
+        "step1Action": "Vai al Profilo",
+        "step2Title": "Aggiungi il tuo Patrimonio",
+        "step2Desc": "Inserisci i tuoi asset attuali: conti bancari, contanti, investimenti.",
+        "step2Action": "Inserisci Patrimonio",
+        "step3Title": "Traccia le Uscite",
+        "step3Desc": "Aggiungi le uscite mensili per vedere dove vanno i tuoi soldi.",
+        "step3Action": "Aggiungi Uscite",
+        "step4Title": "Registra le Entrate",
+        "step4Desc": "Registra le tue fonti di reddito per monitorare risparmi e crescita.",
+        "step4Action": "Aggiungi Entrate",
+        "done": "✓ Fatto",
+        "quickTip": "Consiglio: inizia con il patrimonio — appena aggiungi almeno un mese di dati, la dashboard prenderà vita con grafici e analisi!",
+        "dismiss": "Nascondi guida"
     }
 }

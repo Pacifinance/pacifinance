@@ -72,6 +72,9 @@ import {
   // Growth calculation
   getBalanceGrowth12Months,
   
+  // New user detection
+  isNewUser,
+  
   // Legacy helper
   createLegacyBalanceData,
 } from '../../utils/userDataSelectors';
@@ -584,6 +587,88 @@ describe('userDataSelectors', () => {
       expect(result.cashValue).toBe(0);
       expect(result.bankValue).toBe(0);
       expect(result.totalValue).toBe(0);
+    });
+  });
+
+  describe('isNewUser', () => {
+    it('should return false for null userData', () => {
+      expect(isNewUser(null)).toBe(false);
+    });
+
+    it('should return false for undefined userData', () => {
+      expect(isNewUser(undefined)).toBe(false);
+    });
+
+    it('should return true for a user with no balances, no outflows, no incomes', () => {
+      const emptyUser = {
+        balances: [{ date: '2026-01-01', balance: { totalValue: 0, bank: 0, cash: 0 } }],
+        expenses: { allOutflows: [], outflowsArray: [] },
+        incomes: { allIncomes: [], incomesArray: [] },
+      };
+      expect(isNewUser(emptyUser)).toBe(true);
+    });
+
+    it('should return true for a user with empty balances array', () => {
+      const emptyUser = {
+        balances: [],
+        expenses: { allOutflows: [] },
+        incomes: { allIncomes: [] },
+      };
+      expect(isNewUser(emptyUser)).toBe(true);
+    });
+
+    it('should return false when user has balance > 0', () => {
+      const userWithBalance = {
+        balances: [{ date: '2026-01-01', balance: { totalValue: 5000, bank: 5000 } }],
+        expenses: { allOutflows: [] },
+        incomes: { allIncomes: [] },
+      };
+      expect(isNewUser(userWithBalance)).toBe(false);
+    });
+
+    it('should return false when user has outflows', () => {
+      const userWithOutflows = {
+        balances: [{ date: '2026-01-01', balance: { totalValue: 0 } }],
+        expenses: { allOutflows: [{ amount: 100 }] },
+        incomes: { allIncomes: [] },
+      };
+      expect(isNewUser(userWithOutflows)).toBe(false);
+    });
+
+    it('should return false when user has incomes', () => {
+      const userWithIncomes = {
+        balances: [{ date: '2026-01-01', balance: { totalValue: 0 } }],
+        expenses: { allOutflows: [] },
+        incomes: { allIncomes: [{ amount: 2000 }] },
+      };
+      expect(isNewUser(userWithIncomes)).toBe(false);
+    });
+
+    it('should return false for fully populated user (mockUserData)', () => {
+      expect(isNewUser(mockUserData)).toBe(false);
+    });
+
+    it('should return true for user with zero totalValue and no transactions', () => {
+      const zeroUser = {
+        balances: [{
+          date: '2026-01-01',
+          balance: {
+            cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0,
+            stocks: 0, etf: 0, bitcoin: 0, crypto: 0,
+            bonds: 0, funds: 0, gold: 0, totalValue: 0
+          }
+        }],
+        expenses: { allOutflows: [], outflowsArray: [0, 0, 0] },
+        incomes: { allIncomes: [], incomesArray: [0, 0, 0] },
+      };
+      expect(isNewUser(zeroUser)).toBe(true);
+    });
+
+    it('should return true for user with missing expense/income fields', () => {
+      const sparseUser = {
+        balances: [{ date: '2026-01-01', balance: {} }],
+      };
+      expect(isNewUser(sparseUser)).toBe(true);
     });
   });
 });

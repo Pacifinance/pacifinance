@@ -40,7 +40,7 @@ describe('statsService', () => {
 
       const result = await service.getAverages();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/stats/averages', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/stats/averages', {});
       expect(result.all.balances).toBe(50000);
       expect(result.similar.incomes).toBe(2800);
     });

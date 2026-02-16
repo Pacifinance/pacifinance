@@ -91,11 +91,12 @@
 - [ ] Grafici trend storico patrimonio (linea temporale) <!-- roadmap:trend-charts -->
 - [ ] Export PDF: migliorare layout con grafici inclusi <!-- roadmap:pdf-reports -->
 - [~] Obiettivi e limiti (Goals & Limits con monitoraggio dedicato) (solo frontend fatto manca backend) <!-- roadmap:goals-limits -->
+- [~] Onboarding guidato per nuovi utenti: wizard 4 step con progress bar <!-- roadmap:onboarding -->
 
 ### Community e Feedback
-- [~] Sistema feedback utenti (Fase 1): form in-app -> GitHub Issue via backend 
-- [~] Sezione Contribuisci: come donare, segnalare bug, proporre idee
-- [~] Sistema di voto priorita roadmap (richiede backend) 
+- [~] Sistema feedback utenti (Fase 1): form in-app -> GitHub Issue via backend <!-- roadmap:feedback-system -->
+- [~] Sezione Contribuisci: come donare, segnalare bug, proporre idee <!-- roadmap:contribute-section -->
+- [~] Sistema di voto priorita roadmap (richiede backend) <!-- roadmap:roadmap-voting -->
 
 ### Performance
 - [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
@@ -105,5 +106,5 @@
 - [ ] Preview grafico transazioni importate (istogramma per mese/categoria)
 - [ ] Template di mappatura per banca (UniCredit, Revolut, N26...) con condivisione community <!-- roadmap:bank-templates -->
 - [~] Auto-detect formati bancari noti (Fineco, Intesa, Revolut, N26) <!-- roadmap:auto-detect-bank-format -->
-- [~] Supporto file OFX/QIF <!-- roadmap:OFX/QIF-support
+- [~] Supporto file OFX/QIF <!-- roadmap:OFX/QIF-support -->
 - [ ] Import ricorrente: ricordare ultimo file e suggerire aggiornamento

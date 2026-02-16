@@ -62,6 +62,7 @@ import {
 } from '../styles/ModernDashboardStyled';
 const FinancialInsights = lazy(() => import('../components/FinancialInsights'));
 const GoalTracker = lazy(() => import('../components/GoalTracker'));
+const OnboardingWelcome = lazy(() => import('../components/OnboardingWelcome'));
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import DashboardToolbar from '../components/DashboardToolbar';
 import DashboardCompactView from '../components/DashboardCompactView';
@@ -69,6 +70,7 @@ import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { BsPercent } from 'react-icons/bs';
 import { GiUmbrella } from 'react-icons/gi';
+import { isNewUser } from '../utils/userDataSelectors';
 
 const ResponsivePadding = styled.div`
   padding: 0 2rem;
@@ -358,6 +360,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         viewMode={viewMode}
                         toggleViewMode={toggleViewMode}
                     />
+
+                    {/* Onboarding for new users with no data */}
+                    {isNewUser(userData) && (
+                        <Suspense fallback={null}>
+                            <OnboardingWelcome userData={userData} theme={theme} />
+                        </Suspense>
+                    )}
 
                     {/* Balance Overview */}
                     {isSectionVisible('balance-overview') && <ModernDashboardHeader theme={theme}>

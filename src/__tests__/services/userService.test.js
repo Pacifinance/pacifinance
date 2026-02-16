@@ -32,7 +32,7 @@ describe('userService', () => {
 
       const result = await service.checkSession();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/get', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/user/get', {});
       expect(result).toEqual({ userId: 'abc123', type: 0 });
     });
 
@@ -62,7 +62,7 @@ describe('userService', () => {
 
       const result = await service.getTags();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/tags/get', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/tags/get', {});
       expect(result).toEqual(mockTags);
     });
 
@@ -81,7 +81,7 @@ describe('userService', () => {
 
       const result = await service.getUserInfo();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/get', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/user/get', {});
       expect(result).toEqual(mockInfo);
     });
 
@@ -151,7 +151,7 @@ describe('userService', () => {
 
       await service.logout();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/logout', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/user/logout', {});
     });
   });
 
@@ -161,7 +161,7 @@ describe('userService', () => {
 
       const result = await service.deleteAccount();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/delete', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/user/delete', {});
       expect(result.status).toBe(200);
     });
   });
@@ -200,7 +200,7 @@ describe('userService', () => {
 
       const result = await service.resetUsername();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/set-username', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/user/set-username', {});
       expect(result).toEqual({ username: 'NewRandom' });
     });
   });
@@ -224,7 +224,7 @@ describe('userService', () => {
 
       const result = await service.getAllData();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/alldata', null);
+      expect(mockClient.post).toHaveBeenCalledWith('/user/alldata', {});
       expect(result).toEqual(mockData);
     });
 

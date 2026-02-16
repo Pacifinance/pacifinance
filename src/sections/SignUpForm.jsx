@@ -6,6 +6,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
+import { UserContext } from "../contexts/UserContext";
 
 //for the modal and styled components
 import {
@@ -36,6 +37,7 @@ export default function SignUpForm() {
     const { language, translations } = useContext(LanguageContext);
     const { showError } = useToast();
     const { userService } = useServices();
+    const { handleSetIsAuthenticated } = useContext(UserContext);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -171,9 +173,21 @@ export default function SignUpForm() {
         setIsCopied(true);
     };
 
-    const handleCloseSuccessModal = () => {
+    const handleCloseSuccessModal = async () => {
         setShowSuccessModal(false);
-        navigate('/sign-in');
+        try {
+            // Auto-login with the just-registered credentials
+            const response = await userService.login(generated_user_id, password);
+            if (response.status === 200) {
+                handleSetIsAuthenticated(true);
+                navigate('/dashboard');
+            } else {
+                navigate('/sign-in');
+            }
+        } catch (_error) {
+            // If auto-login fails, redirect to sign-in page
+            navigate('/sign-in');
+        }
     };
 
     const handleCopyAndClose = () => {

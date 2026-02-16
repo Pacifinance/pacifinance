@@ -413,7 +413,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     tooltip: translations.sidebar.info,
                                     index: 5,
                                 },
-                            ].map(({ icon: _Icon, route, tooltip, index }) => (
+                            ].map(({ icon: Icon, route, tooltip, index }) => (
                                 <Tooltip key={index} title={tooltip} placement="right">
                                     <LocalizedLink
                                         to={route}

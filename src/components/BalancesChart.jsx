@@ -18,7 +18,7 @@ import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
 import { getBalanceChartData } from '../utils/userDataSelectors.js';
-import { compactNumber } from '../utils/customGraphsInfo.jsx';
+import { compactNumber, CustomTick } from '../utils/customGraphsInfo.jsx';
 
 /**
  * Componente unificato per grafici dei bilanci

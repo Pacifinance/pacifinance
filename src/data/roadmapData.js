@@ -46,6 +46,30 @@ const roadmapData = [
     icon: '📱',
     completedDate: '2025-01',
   },
+  {
+    id: 'stability',
+    title: { it: 'App Più Stabile e Affidabile', en: 'More Stable & Reliable App' },
+    description: {
+      it: 'Risolti problemi di caricamento dopo la registrazione e migliorato il recupero automatico in caso di errori di rete.',
+      en: 'Fixed loading issues after registration and improved automatic recovery from network errors.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '🛡️',
+    completedDate: '2026-02',
+  },
+  {
+    id: 'mobile-ux',
+    title: { it: 'Esperienza Mobile Migliorata', en: 'Improved Mobile Experience' },
+    description: {
+      it: 'Zoom accidentale eliminato, layout ottimizzato e caricamento più veloce su smartphone.',
+      en: 'Accidental zoom eliminated, optimized layout and faster loading on smartphones.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '📲',
+    completedDate: '2026-02',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'multi-currency',

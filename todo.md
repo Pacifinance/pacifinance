@@ -1,6 +1,6 @@
 ﻿# PaciFinance - TODO
 
-> Ultimo aggiornamento: 15/02/2026
+> Ultimo aggiornamento: 16/02/2026
 > Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
 
 ---
@@ -42,6 +42,15 @@
 - [x] Fix: achievements buggati (verifica dati reali, non solo struttura)
 - [x] Fix: cambio lingua da impostazioni (doppio prefisso lingua)
 - [x] Modifica note dall'excel prima dell'inserimento transazioni
+- [x] Fix: pagina bianca dopo registrazione (reset stati autenticazione al logout)
+- [x] Fix: meccanismo retry dopo errore API (retryCounter per forzare re-fetch)
+- [x] Schermata di caricamento ridisegnata con branding e contrasto migliorato
+- [x] Ottimizzazione performance immagine landing page (LCP preload, fetchpriority)
+- [x] Fix: overflow orizzontale su mobile nelle pagine di inserimento
+- [x] Prevenzione zoom/pinch accidentale su mobile (viewport + CSS touch-action)
+- [x] Test stati critici app: 79 nuovi test per autenticazione, caricamento dati, recupero errori
+- [x] Architettura Dependency Injection con ServiceContext (refactoring interno)
+- [x] Test: axios interceptor 401, auth flow completo, retry errori
 
 ---
 
@@ -81,7 +90,6 @@
 - [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
 
 ### Test
-- [ ] Test per axios interceptor 401
 - [ ] Test per removeLanguageFromPath edge cases
 - [ ] Test per DataImportWizard: parseAmount, processRows, processRowDual, autoDetectColumns
 

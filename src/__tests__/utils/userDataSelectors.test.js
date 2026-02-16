@@ -617,6 +617,16 @@ describe('userDataSelectors', () => {
       expect(isNewUser(emptyUser)).toBe(true);
     });
 
+    it('should return true for a real new user (array of 13 empty month arrays)', () => {
+      // This is the actual structure returned by the API for a brand-new user
+      const realNewUser = {
+        balances: [],
+        expenses: { allOutflows: [[], [], [], [], [], [], [], [], [], [], [], [], []], outflowsArray: [] },
+        incomes: { allIncomes: [[], [], [], [], [], [], [], [], [], [], [], [], []], incomesArray: [] },
+      };
+      expect(isNewUser(realNewUser)).toBe(true);
+    });
+
     it('should return false when user has balance > 0', () => {
       const userWithBalance = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 5000, bank: 5000 } }],
@@ -626,20 +636,20 @@ describe('userDataSelectors', () => {
       expect(isNewUser(userWithBalance)).toBe(false);
     });
 
-    it('should return false when user has outflows', () => {
+    it('should return false when user has outflows (nested month arrays)', () => {
       const userWithOutflows = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 0 } }],
-        expenses: { allOutflows: [{ amount: 100 }] },
-        incomes: { allIncomes: [] },
+        expenses: { allOutflows: [[], [{ amount: 100, isExpense: true }], [], [], [], [], [], [], [], [], [], [], []] },
+        incomes: { allIncomes: [[], [], [], [], [], [], [], [], [], [], [], [], []] },
       };
       expect(isNewUser(userWithOutflows)).toBe(false);
     });
 
-    it('should return false when user has incomes', () => {
+    it('should return false when user has incomes (nested month arrays)', () => {
       const userWithIncomes = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 0 } }],
-        expenses: { allOutflows: [] },
-        incomes: { allIncomes: [{ amount: 2000 }] },
+        expenses: { allOutflows: [[], [], [], [], [], [], [], [], [], [], [], [], []] },
+        incomes: { allIncomes: [[], [{ amount: 2000, isExpense: false }], [], [], [], [], [], [], [], [], [], [], []] },
       };
       expect(isNewUser(userWithIncomes)).toBe(false);
     });
@@ -658,8 +668,8 @@ describe('userDataSelectors', () => {
             bonds: 0, funds: 0, gold: 0, totalValue: 0
           }
         }],
-        expenses: { allOutflows: [], outflowsArray: [0, 0, 0] },
-        incomes: { allIncomes: [], incomesArray: [0, 0, 0] },
+        expenses: { allOutflows: [[], [], []], outflowsArray: [0, 0, 0] },
+        incomes: { allIncomes: [[], [], []], incomesArray: [0, 0, 0] },
       };
       expect(isNewUser(zeroUser)).toBe(true);
     });

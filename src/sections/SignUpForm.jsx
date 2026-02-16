@@ -178,9 +178,6 @@ export default function SignUpForm() {
 
     const handleCopyAndClose = () => {
         copyToClipboard();
-        setTimeout(() => {
-            handleCloseSuccessModal();
-        }, 1000);
     };
 
     const handleSubmit = async (event) => {

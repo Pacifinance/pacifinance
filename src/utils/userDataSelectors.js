@@ -128,11 +128,15 @@ export const getUserYearsOfExperience = (userData) => userData?.profile?.yearsOf
 export const getProfileCompletionPercentage = (userData) => userData?.profileCompletionPercentage || userData?.profile?.completionPercentage || 0;
 
 // New user detection (no balances, no transactions)
+// Note: allOutflows/allIncomes are arrays of month-arrays (e.g. [[], [], ...]),
+// so we must check for actual items inside, not just outer array length.
 export const isNewUser = (userData) => {
   if (!userData) return false;
   const hasBalance = getTotalValue(userData) > 0;
-  const hasOutflows = getAllOutflows(userData).length > 0;
-  const hasIncomes = getAllIncomes(userData).length > 0;
+  const outflows = getAllOutflows(userData);
+  const hasOutflows = outflows.some(month => Array.isArray(month) ? month.length > 0 : false);
+  const incomes = getAllIncomes(userData);
+  const hasIncomes = incomes.some(month => Array.isArray(month) ? month.length > 0 : false);
   return !hasBalance && !hasOutflows && !hasIncomes;
 };
 

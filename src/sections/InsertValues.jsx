@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
 import { useToast } from "../contexts/ToastContext";
@@ -356,6 +356,7 @@ export default function InsertValue({
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
   const { showSuccess, showError } = useToast();
+  const { financeService } = useServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -673,10 +674,10 @@ export default function InsertValue({
 
   const handleAddIncome = () => {
     if (categoryIncome.value === "") {
-      alert(translations.insert.errors.selectCategory);
+      showError(translations.insert.errors.selectCategory);
       return;
     } else if (Number(income) === 0 || income === "" || income === undefined) {
-      alert(translations.insert.errors.insertValidValue);
+      showError(translations.insert.errors.insertValidValue);
       return;
     }
     // Directly submit without confirmation modal
@@ -685,13 +686,13 @@ export default function InsertValue({
 
   const handleAddOutflow = () => {
     if (categoryOutflow.value === "") {
-      alert(translations.insert.errors.selectCategory);
+      showError(translations.insert.errors.selectCategory);
       return;
     } else if (typoOutflow.value === "") {
-      alert(translations.insert.errors.selectPaymentType);
+      showError(translations.insert.errors.selectPaymentType);
       return;
     } else if (Number(outflow) === 0 || outflow === "" || outflow === undefined) {
-      alert(translations.insert.errors.insertValidValue);
+      showError(translations.insert.errors.insertValidValue);
       return;
     }
     
@@ -717,9 +718,7 @@ export default function InsertValue({
     const balancesJson = createBalancesJson(dbDate);
 
     try {
-      const balancesChange = await axios.post("/balances/add", balancesJson, {
-        withCredentials: true,
-      });
+      const balancesChange = await financeService.addBalance(balancesJson);
       if (balancesChange.status === 200) {
         handleSetIsUpdated(false);
         setUpdateBalanceSuccess(true);
@@ -785,9 +784,7 @@ export default function InsertValue({
       setIncomeDate(currentDate);
     }
     try {
-      const inExAdd = await axios.post("/expenses/add", inExJson, {
-        withCredentials: true,
-      });
+      const inExAdd = await financeService.addExpenseOrIncome(inExJson);
       const balanceOptionsMap = {
         [translations.assets.bank]: bankValue,
         [translations.assets.cash]: cashValue,
@@ -830,11 +827,7 @@ export default function InsertValue({
 
           const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
 
-          const balancesChange = await axios.post(
-            "/balances/add",
-            balancesJson,
-            { withCredentials: true },
-          );
+          const balancesChange = await financeService.addBalance(balancesJson);
 
           if (balancesChange.status === 200) {
             handleSetIsUpdated(false);
@@ -880,9 +873,7 @@ export default function InsertValue({
     };
     
     try {
-      const incomesDelete = await axios.post("/expenses/delete", data, {
-        withCredentials: true,
-      });
+      const incomesDelete = await financeService.deleteExpenseOrIncome(data);
 
       // If user selected a balance to adjust, subtract the deleted income from that balance
       if (incomesDelete.status === 200) {
@@ -905,7 +896,7 @@ export default function InsertValue({
           const newValue = valueBalanceSelected - incomeNumber;
           // Build balancesJson for update
           const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-          await axios.post("/balances/add", balancesJson, { withCredentials: true });
+          await financeService.addBalance(balancesJson);
         }
         handleSetIsUpdated(false);
         setDeleteIncomesSuccess(true);
@@ -934,9 +925,7 @@ export default function InsertValue({
     };
     
     try {
-      const outflowsDelete = await axios.post("/expenses/delete", data, {
-        withCredentials: true,
-      });
+      const outflowsDelete = await financeService.deleteExpenseOrIncome(data);
 
       // If user selected a balance to adjust, add the deleted outflow back to that balance
       if (outflowsDelete.status === 200) {
@@ -957,7 +946,7 @@ export default function InsertValue({
           const outflowNumber = parseFloat(deleteOutflowAmount);
           const newValue = valueBalanceSelected + outflowNumber;
           const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-          await axios.post("/balances/add", balancesJson, { withCredentials: true });
+          await financeService.addBalance(balancesJson);
         }
         handleSetIsUpdated(false);
         setDeleteOutflowsSuccess(true);

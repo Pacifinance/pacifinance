@@ -21,30 +21,33 @@ import { PrivacyProvider } from './contexts/PrivacyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { MediaQueryProvider } from './contexts/MediaQueryContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { ServiceProvider } from './contexts/ServiceContext';
 import DevModeProvider from './contexts/DevModeProvider';
 
 createRoot(document.getElementById('root')).render(
-  <MediaQueryProvider>
+  <ServiceProvider>
+    <MediaQueryProvider>
       <LanguageProvider>
         <ThemeProvider>
           <DevModeProvider>
             <UserProvider>
               <CurrencyProvider>
-              <PageProvider>
-                <PrivacyProvider>
-                  <ToastProvider>
-                    <React.StrictMode>
-                      <Router>
-                        <AppRouter />
-                      </Router>
-                    </React.StrictMode>
-                  </ToastProvider>
-                </PrivacyProvider>
-              </PageProvider>
+                <PageProvider>
+                  <PrivacyProvider>
+                    <ToastProvider>
+                      <React.StrictMode>
+                        <Router>
+                          <AppRouter />
+                        </Router>
+                      </React.StrictMode>
+                    </ToastProvider>
+                  </PrivacyProvider>
+                </PageProvider>
               </CurrencyProvider>
             </UserProvider>
           </DevModeProvider>
         </ThemeProvider>
       </LanguageProvider>
     </MediaQueryProvider>
+  </ServiceProvider>
 )

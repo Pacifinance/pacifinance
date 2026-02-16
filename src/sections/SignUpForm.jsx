@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 // import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from "@mui/icons-material/Info";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -35,6 +35,7 @@ export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { showError } = useToast();
+    const { userService } = useServices();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -203,15 +204,7 @@ export default function SignUpForm() {
         }
 
         try {
-            const response = await axios.post(
-                "/registration",
-                {
-                    user_pwd: password,
-                    repeated_pwd: confirmPassword,
-                    turnstile_token: turnstileToken,
-                },
-                { withCredentials: true },
-            );
+            const response = await userService.register(password, confirmPassword, turnstileToken);
             if (response.status === 200) {
                 generated_user_id = response.data.user_id;
                 setShowSuccessModal(true);

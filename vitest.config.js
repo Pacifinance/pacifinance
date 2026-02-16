@@ -36,7 +36,8 @@ export default mergeConfig(
           'src/utils/**/*.{js,jsx}',
           'src/contexts/**/*.{js,jsx}',
           'src/components/**/*.{js,jsx}',
-          'src/hooks/**/*.{js,jsx}'
+          'src/hooks/**/*.{js,jsx}',
+          'src/services/**/*.{js,jsx}'
         ],
         exclude: [
           'node_modules',

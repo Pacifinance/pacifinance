@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ToggleModeButton from "../components/ToggleModeButton";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
@@ -18,6 +18,7 @@ function Header({
 }) {
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
+  const { userService } = useServices();
   const [showDemoButton, setShowDemoButton] = useState(false);
   const { language, translations, setLanguage } = useContext(LanguageContext);
   const localizedNavigate = useLocalizedNavigate();
@@ -63,11 +64,7 @@ function Header({
     // Production environment: use original demo login logic
     try {
       handleSetIsAuthenticated(false);
-      const response = await axios.post(
-        "/login",
-        { user_id: username, password: password },
-        { withCredentials: true },
-      );
+      const response = await userService.login(username, password);
       if (response.status === 200) {
         handleSetIsAuthenticated(true);
         localizedNavigate("/dashboard");

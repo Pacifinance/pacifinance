@@ -352,4 +352,4 @@ const GoalTracker = ({ theme, userData, isHidden = false }) => {
   );
 };
 
-export default GoalTracker;
+export default React.memo(GoalTracker);

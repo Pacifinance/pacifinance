@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+import { useServices } from '../contexts/ServiceContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
@@ -322,6 +322,7 @@ const ProfileSettings = ({ theme }) => {
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
+  const { userService } = useServices();
   
   // Stati per i limiti e controlli
   const [settings, setSettings] = useState({
@@ -384,11 +385,11 @@ const ProfileSettings = ({ theme }) => {
       const emergencyFundGoal = (settings.emergencyFundTarget >= 0) ? settings.emergencyFundTarget : -1;
 
       // Invia i dati al backend
-      await axios.post('/user/goals', {
+      await userService.saveGoals({
         expenses_limit: expensesLimit,
         savings_percent: savingsPercent,
         emergency_fund_goal: emergencyFundGoal
-      }, { withCredentials: true });
+      });
 
       // Aggiorna il UserContext locale
       updateUserContextData({

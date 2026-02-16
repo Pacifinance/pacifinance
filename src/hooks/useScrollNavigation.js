@@ -43,7 +43,6 @@ export const useScrollNavigation = (enabled = true) => {
   const [lastDismissalTime, setLastDismissalTime] = useState(null);
   const [triggerDirection, setTriggerDirection] = useState(null); // 'up' | 'down'
   const [triggerProgress, setTriggerProgress] = useState(0);
-  const [_triggerStartTime, setTriggerStartTime] = useState(null);
   const [pageHasScrollableContent, setPageHasScrollableContent] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [triggerIntervalId, setTriggerIntervalId] = useState(null);
@@ -119,7 +118,6 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
     setShowTriggerZone(false);
     setTriggerDirection(null);
     setTriggerProgress(0);
-    setTriggerStartTime(null);
   }, [triggerIntervalId]);
 
   // Funzione per dismissione manuale del popup

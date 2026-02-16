@@ -293,6 +293,7 @@ const DashboardToolbar = ({
           $active={viewMode === 'compact'}
           onClick={toggleViewMode}
           title={viewMode === 'cards' ? (t.switchToCompact || 'Vista compatta') : (t.switchToCards || 'Vista card')}
+          aria-label={viewMode === 'cards' ? (t.switchToCompact || 'Switch to compact view') : (t.switchToCards || 'Switch to card view')}
           data-umami-event="dashboard-toggle-view"
         >
           {viewMode === 'cards' ? <MdTableRows /> : <MdViewModule />}

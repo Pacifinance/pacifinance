@@ -20,7 +20,6 @@ import {
     Coins
 } from 'lucide-react';
 import styled from 'styled-components';
-import axios from 'axios';
 
 // Import userDataSelectors
 import {
@@ -67,6 +66,7 @@ import GamificationSection from '../components/GamificationSection';
 import AvatarIcon from '../components/AvatarIcon';
 import { canRegenerateAvatar, regenerateAvatar } from '../utils/avatarGenerator';
 import { useToast } from '../contexts/ToastContext';
+import { useServices } from '../contexts/ServiceContext';
 
 // ─── Styled Components ───────────────────────────────────────────────
 
@@ -424,7 +424,8 @@ const ProfilePage = () => {
     const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useAuth();
     const { isMobileScreen } = useContext(MediaQueryContext);
     useLocalizedNavigate();
-    const { showSuccess } = useToast();
+    const { showSuccess, showError } = useToast();
+    const { userService } = useServices();
 
     const [activeTab, setActiveTab] = useState('details');
     const [isEditMode, setIsEditMode] = useState(false);
@@ -626,17 +627,17 @@ const ProfilePage = () => {
                 children: userHasChildren.key,
                 preferred_currency: userPreferredCurrency.key
             };
-            const response = await axios.post('/user/set', data, { withCredentials: true });
+            const response = await userService.updateProfile(data);
             if (response.status === 200) {
                 handleSetIsUpdated(false);
                 setShowUpdateSuccess(true);
                 setIsEditMode(false);
                 setTimeout(() => setShowUpdateSuccess(false), 3000);
             } else {
-                alert(translations.sidebar.account.errorUpdateProfile);
+                showError(translations.sidebar.account.errorUpdateProfile);
             }
         } catch (error) {
-            console.error(error);
+            showError(translations.sidebar.account.errorUpdateProfile);
         }
     };
 

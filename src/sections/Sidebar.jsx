@@ -13,7 +13,9 @@ import { HiOutlinePencilAlt } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
 import { LocalizedLink } from "../components/LocalizedLink";
 import AvatarIcon from '../components/AvatarIcon';
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
+import { useAccountActions } from "../hooks/useAccountActions";
+import { useToast } from "../contexts/ToastContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import SidebarMobile from "../components/SidebarMobile";
@@ -59,7 +61,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations, toggleLanguage } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const [_isSideBarMenuOpen, _setIsSideBarMenuOpen] = useState(false);
+    const { userService } = useServices();
     const { activeIcon, setActiveIcon } = useContext(IconContext);
     const location = useLocation();
 
@@ -107,6 +109,41 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const navigate = useLocalizedNavigate();
+    const { showSuccess, showError } = useToast();
+
+    // Shared account actions via DI hook
+    const accountActions = useAccountActions({
+        onSuccess: (key, value) => {
+            if (key === 'idGenerated') {
+                setNewID(value);
+                setShowID(true);
+            } else if (key === 'usernameReset') {
+                setNewUsername(value);
+                setShowUsername(true);
+            } else if (key === 'passwordChanged') {
+                handleCloseModal();
+                setShowChangePWDSuccess(true);
+            } else if (key === 'profileUpdated') {
+                handleSetIsUpdated(false);
+                fetchData();
+                setShowAccountModal(false);
+                setShowUpdateProfileSuccess(true);
+            }
+        },
+        onError: (key) => {
+            if (key === 'changePasswordError') {
+                handleCloseModal();
+                setShowChangePWDError(true);
+            } else {
+                showError(translations.sidebar?.account?.errorGeneric || 'Operation failed');
+            }
+        },
+        onLogout: () => {
+            handleSetIsAuthenticated(false);
+            navigate("/");
+            setShowSuccessDeleteAccount(true);
+        },
+    });
 
     // Funzione per verificare se una pagina è attiva
     const isActivePage = (path) => {
@@ -186,90 +223,36 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     // API handlers
     const handleDeleteAccount = async (event) => {
         event.preventDefault();
-        try {
-            const response = await axios.post("/user/delete", {
-                withCredentials: true,
-            });
-            if (response.status === 200) {
-                handleSetIsAuthenticated(false);
-                navigate("/");
-                setShowSuccessDeleteAccount(true);
-            } else {
-                console.log("Delete account failed");
-            }
-        } catch (error) {
-            console.error(error);
-        }
+        await accountActions.deleteAccount();
     };
 
-    const handleCopyToClipboard = (newID) => (event) => {
+    const handleCopyToClipboard = (copiedID) => (event) => {
         event.preventDefault();
         navigator.clipboard
-            .writeText(newID)
+            .writeText(copiedID)
             .then(() => {
-                alert(translations.sidebar.changeID.message + newID);
+                showSuccess(translations.sidebar.changeID.message + copiedID);
             })
-            .catch((error) => {
-                console.error(translations.sidebar.changeID.errorCopy + error);
+            .catch(() => {
+                showError(translations.sidebar.changeID.errorCopy || 'Copy failed');
             });
         handleCloseModalAndLogout();
     };
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
-        try {
-            handleCloseModal();
-            const data = { password: password };
-            const response = await axios.post("/user/set-id", data, {
-                withCredentials: true,
-            });
-            const newID = response.data.new_id;
-            setNewID(newID);
-            setShowID(true);
-            event.preventDefault();
-        } catch (error) {
-            console.log(error);
-        }
+        handleCloseModal();
+        await accountActions.generateNewId(password);
     };
 
     const handleGenerateUsername = async (event) => {
         event.preventDefault();
-        try {
-            const response = await axios.post("/user/set-username", null, {
-                withCredentials: true,
-            });
-            const newUsername = response.data;
-            setNewUsername(newUsername);
-            setShowUsername(true);
-        } catch (error) {
-            console.log(error);
-        }
+        await accountActions.resetUsername();
     };
 
     const handleChangePassword = async (event) => {
         event.preventDefault();
-        try {
-            if (password === confirmPassword) {
-                const data = {
-                    old_pwd: OldPassword,
-                    new_pwd: password,
-                    repeated_pwd: confirmPassword,
-                };
-                const response = await axios.post("/user/set-password", data, {
-                    withCredentials: true,
-                });
-                if (response.status === 200) {
-                    handleCloseModal();
-                    setShowChangePWDSuccess(true);
-                } else {
-                    console.log("Change password failed");
-                }
-            }
-        } catch (error) {
-            console.log(error);
-            handleCloseModal();
-            setShowChangePWDError(true);
-        }
+        await accountActions.changePassword(OldPassword, password, confirmPassword);
     };
 
     // Modal close handlers
@@ -297,45 +280,27 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const handleLogout = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post("/user/logout", null, {
-                withCredentials: true,
-            });
-            if (response.status === 200) {
-                handleSetIsAuthenticated(false);
-                navigate("/");
-            } else {
-                console.log("Logout failed");
-            }
-        } catch (error) {
-            console.error(error);
+            await userService.logout();
+            handleSetIsAuthenticated(false);
+            navigate("/");
+        } catch {
+            showError(translations.sidebar?.account?.errorLogout || 'Logout failed');
         }
     };
 
     const handleUpdateProfile = async (event) => {
         event.preventDefault();
-        try {
-            const data = {
-                country: userNationality.key,
-                job: userJob.key,
-                job_type: userJobType.key,
-                job_country: userWhereWorks.key,
-                work_time: userWorkTime.key,
-                remote_type: userRemoteType.key,
-            };
-            const response = await axios.post("/user/set", data, {
-                withCredentials: true,
-            });
-            if (response.status === 200) {
-                handleSetIsUpdated(false);
-                fetchData();
-                setShowAccountModal(false);
-                setShowUpdateProfileSuccess(true);
-            } else {
-                console.log("Update failed");
-                alert(translations.sidebar.account.errorUpdateProfile);
-            }
-        } catch (error) {
-            console.error(error);
+        const data = {
+            country: userNationality.key,
+            job: userJob.key,
+            job_type: userJobType.key,
+            job_country: userWhereWorks.key,
+            work_time: userWorkTime.key,
+            remote_type: userRemoteType.key,
+        };
+        const ok = await accountActions.updateProfile(data);
+        if (!ok) {
+            showError(translations.sidebar.account.errorUpdateProfile);
         }
     };
 

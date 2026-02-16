@@ -3,6 +3,12 @@
  * These selectors maintain compatibility with existing components while using the new optimized data structure
  */
 
+import {
+  DEFAULT_MONTHLY_SPENDING_LIMIT,
+  DEFAULT_SAVINGS_GOAL_PERCENTAGE,
+  DEFAULT_EMERGENCY_FUND_TARGET,
+} from '../data/financeDefaults';
+
 // Current balance selectors
 export const getCurrentBalance = (userData) => userData?.balances?.[0]?.balance || {};
 
@@ -274,9 +280,9 @@ export const getAveragesSimilarSavingsRates = (userData) => userData?.averages?.
 export const getAveragesSimilarExpensesByCategory = (userData) => userData?.averages?.similar?.expensesByCategory ?? null;
 
 // Goals and limits selectors (for backward compatibility)
-export const getMonthlySpendingLimit = (userData) => userData?.limits?.monthlySpendingLimit ?? 2000;
-export const getSavingsGoalPercentage = (userData) => userData?.limits?.savingsGoalPercentage ?? 20;
-export const getEmergencyFundTarget = (userData) => userData?.limits?.emergencyFundTarget ?? 10000;
+export const getMonthlySpendingLimit = (userData) => userData?.limits?.monthlySpendingLimit ?? DEFAULT_MONTHLY_SPENDING_LIMIT;
+export const getSavingsGoalPercentage = (userData) => userData?.limits?.savingsGoalPercentage ?? DEFAULT_SAVINGS_GOAL_PERCENTAGE;
+export const getEmergencyFundTarget = (userData) => userData?.limits?.emergencyFundTarget ?? DEFAULT_EMERGENCY_FUND_TARGET;
 
 // Balance growth calculation
 export const getBalanceGrowth12Months = (userData) => {

@@ -26,7 +26,7 @@ import { getCategoryColor } from '../data/categoryColors';
 import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 
-export default function InOutChart({theme, userData, isHidden, type = "line"}) {
+function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
   
@@ -736,3 +736,5 @@ export default function InOutChart({theme, userData, isHidden, type = "line"}) {
     </SectionInOut>
   );
 }
+
+export default React.memo(InOutChart);

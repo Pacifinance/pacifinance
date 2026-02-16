@@ -488,4 +488,4 @@ const GamificationSection = ({ theme, userData, gamificationData: externalGamifi
   );
 };
 
-export default GamificationSection;
+export default React.memo(GamificationSection);

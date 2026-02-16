@@ -15,7 +15,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useAuth } from '../hooks/useAuth';
-import axios from 'axios';
+import { useServices } from '../contexts/ServiceContext';
 
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MapIcon from '@mui/icons-material/AccountTree';
@@ -387,6 +387,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
   const { handleSetIsUpdated, userData } = useAuth();
+  const { financeService } = useServices();
 
   // Payment tags from user data (filter out 'none')
   const paymentTags = (userData?.tags?.paymentTags || []).filter(t => t.label !== 'none');
@@ -743,7 +744,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = finalTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
-        axios.post('/expenses/add', toAPIFormat(tx, defaultPaymentType), { withCredentials: true })
+        financeService.addExpenseOrIncome(toAPIFormat(tx, defaultPaymentType))
           .then(() => { success++; })
           .catch(() => { failed++; })
       );

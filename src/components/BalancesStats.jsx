@@ -207,7 +207,7 @@ const Section = styled.section`
   }
 `;
 
-export default function BalancesStats({ theme, userData, isHidden, period = "month" }) {
+function BalancesStats({ theme, userData, isHidden, period = "month" }) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
     const currencyFormatter = (val) => formatAmount(val, { maximumFractionDigits: 0 });
@@ -472,3 +472,5 @@ export default function BalancesStats({ theme, userData, isHidden, period = "mon
         </div>
     );
 }
+
+export default React.memo(BalancesStats);

@@ -28,7 +28,7 @@ import { compactNumber } from '../utils/customGraphsInfo.jsx';
  * @param {boolean} isHidden - Privacy mode
  * @param {Component} CustomTick - Componente custom per i tick degli assi
  */
-export default function BalancesChart({ type = "bar", theme, userData, isHidden, CustomTick }) {
+function BalancesChart({ type = "bar", theme, userData, isHidden, CustomTick }) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR } = useContext(CurrencyContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
@@ -481,3 +481,5 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     </SectionBalancesCharts>
   );
 }
+
+export default React.memo(BalancesChart);

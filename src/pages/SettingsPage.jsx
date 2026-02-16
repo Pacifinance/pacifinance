@@ -1,13 +1,16 @@
 import React, { useContext, useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate as useRawNavigate } from "react-router-dom";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
+import { useAccountActions } from "../hooks/useAccountActions";
+import { useToast } from "../contexts/ToastContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
 import { UserContext } from "../contexts/UserContext";
 import { CURRENCIES } from "../data/currencyConfig";
+import { MESSAGE_AUTO_DISMISS_MS } from "../data/financeDefaults";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { useAuth } from "../hooks/useAuth";
 import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
@@ -58,13 +61,42 @@ const SettingsPage = () => {
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations, setLanguage } = useContext(LanguageContext);
     const { currency, setCurrency, currencySymbol } = useContext(CurrencyContext);
-    // Usa l'hook unificato che gestisce sia UserContext che MockAuth
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
     const rawNavigate = useRawNavigate();
     const location = useLocation();
+    const { userService } = useServices();
+    const { showSuccess, showError } = useToast();
+
+    // Shared account actions via DI hook
+    const accountActions = useAccountActions({
+        onSuccess: (key, value) => {
+            const messages = {
+                passwordChanged: translations.sidebar.changePassword.successPopup.message,
+                idGenerated: translations.sidebar.changeID.successPopup.message + value,
+            };
+            setSuccessMessage(messages[key] || '');
+            setTimeout(() => setSuccessMessage(""), MESSAGE_AUTO_DISMISS_MS);
+        },
+        onError: (key) => {
+            const messages = {
+                deleteAccountFailed: translations.sidebar?.account?.errorDeleteAccount || "Eliminazione account fallita",
+                deleteAccountError: translations.sidebar?.account?.errorDeleteAccount || "Errore nell'eliminazione account",
+                passwordMismatch: translations.sidebar?.changePassword?.errorMismatch || "Le password non corrispondono",
+                changePasswordFailed: translations.sidebar?.changePassword?.error || "Cambio password fallito",
+                changePasswordError: translations.sidebar?.changePassword?.error || "Errore nel cambio password",
+                generateIdError: translations.sidebar?.changeID?.error || "Errore nel cambio ID",
+            };
+            setErrorMessage(messages[key] || key);
+            setTimeout(() => setErrorMessage(""), MESSAGE_AUTO_DISMISS_MS);
+        },
+        onLogout: () => {
+            handleSetIsAuthenticated(false);
+            navigate("/");
+        },
+    });
 
     const [showChangeID, setShowChangeID] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
@@ -75,15 +107,13 @@ const SettingsPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [_newID, setNewID] = useState("");
-    const [_showIDResult, setShowIDResult] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [exportLoading, setExportLoading] = useState(false);
     const [showImportWizard, setShowImportWizard] = useState(false);
     
     // Stati per il filtro dati export
-    const [exportFilter, setExportFilter] = useState("all"); // "all", "last12", "specific"
+    const [exportFilter, setExportFilter] = useState("all");
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
 
@@ -128,95 +158,33 @@ const SettingsPage = () => {
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
-        try {
-            const data = { password: password };
-            const response = await axios.post("/user/set-id", data, {
-                withCredentials: true,
-            });
-            const newIDValue = response.data.new_id;
-            setNewID(newIDValue);
-            setShowIDResult(true);
+        const newIdValue = await accountActions.generateNewId(password);
+        if (newIdValue) {
             setPassword("");
             setShowChangeID(false);
-            setSuccessMessage(
-                translations.sidebar.changeID.successPopup.message +
-                    newIDValue,
-            );
-            setTimeout(() => setSuccessMessage(""), 5000);
-        } catch (error) {
-            console.log(error);
-            setErrorMessage("Errore nel cambio ID");
-            setTimeout(() => setErrorMessage(""), 5000);
         }
     };
 
     const handleChangePassword = async (event) => {
         event.preventDefault();
-        try {
-            if (password === confirmPassword) {
-                const data = {
-                    old_pwd: oldPassword,
-                    new_pwd: password,
-                    repeated_pwd: confirmPassword,
-                };
-                const response = await axios.post("/user/set-password", data, {
-                    withCredentials: true,
-                });
-                if (response.status === 200) {
-                    setShowChangePassword(false);
-                    setPassword("");
-                    setOldPassword("");
-                    setConfirmPassword("");
-                    setSuccessMessage(
-                        translations.sidebar.changePassword.successPopup
-                            .message,
-                    );
-                    setTimeout(() => setSuccessMessage(""), 5000);
-                } else {
-                    setErrorMessage("Cambio password fallito");
-                    setTimeout(() => setErrorMessage(""), 5000);
-                }
-            }
-        } catch (error) {
-            console.log(error);
-            setErrorMessage("Errore nel cambio password");
-            setTimeout(() => setErrorMessage(""), 5000);
+        const ok = await accountActions.changePassword(oldPassword, password, confirmPassword);
+        if (ok) {
+            setShowChangePassword(false);
+            setPassword("");
+            setOldPassword("");
+            setConfirmPassword("");
         }
     };
 
     const handleDeleteAccount = async () => {
-        try {
-            const response = await axios.post("/user/delete", {
-                withCredentials: true,
-            });
-            if (response.status === 200) {
-                handleSetIsAuthenticated(false);
-                navigate("/");
-            } else {
-                setErrorMessage("Eliminazione account fallita");
-                setTimeout(() => setErrorMessage(""), 5000);
-            }
-        } catch (error) {
-            console.error(error);
-            setErrorMessage("Errore nell'eliminazione account");
-            setTimeout(() => setErrorMessage(""), 5000);
-        }
+        await accountActions.deleteAccount();
     };
 
     // Funzioni per l'export dei dati
     const handleExportData = async (format) => {
         setExportLoading(true);
-        console.log('Settings Export Debug:', {
-            format,
-            userData,
-            userDataKeys: userData ? Object.keys(userData) : 'null',
-            userId: userData?.userId,
-            userType: userData?.userType,
-            isValidUserData: userData && typeof userData === 'object'
-        });
         
         try {
-            // Verifica che userData sia valido
             if (!userData || typeof userData !== 'object') {
                 throw new Error('Dati utente non disponibili per l\'export');
             }
@@ -225,32 +193,14 @@ const SettingsPage = () => {
 
             // Se l'utente è reale (non mock), fai una richiesta API per ottenere tutti i dati
             if (userData.userType !== 'mock') {
-                console.log('Fetching complete user data from API...');
                 try {
-                    const response = await fetch('/user/alldata', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const apiUserData = await response.json();
-                    
-                    // Usa direttamente i dati dall'API
-                    completeUserData = apiUserData;
-                } catch (apiError) {
-                    console.error('Error fetching complete user data:', apiError);
+                    completeUserData = await userService.getAllData();
+                } catch {
                     // Se l'API fallisce, usa i dati già disponibili nel context
-                    console.log('Using context data as fallback');
+                    completeUserData = userData;
                 }
             }
             
-            // Prepara il filtro per l'export
             const filterOptions = {
                 type: exportFilter,
                 month: selectedMonth ? parseInt(selectedMonth) : null,
@@ -273,32 +223,27 @@ const SettingsPage = () => {
                 default:
                     throw new Error('Formato non supportato');
             }
-            setSuccessMessage(
+            showSuccess(
                 language === 'it' 
                     ? `Dati esportati con successo in formato ${format.toUpperCase()}!`
                     : `Data successfully exported in ${format.toUpperCase()} format!`
             );
-            setTimeout(() => setSuccessMessage(""), 5000);
         } catch (error) {
-            console.error('Errore durante l\'export:', error);
-            
             let errorMsg = language === 'it' 
                 ? 'Errore durante l\'esportazione dei dati' 
                 : 'Error during data export';
                 
-            // Messaggi di errore più specifici
-            if (error.message.includes('HTTP error')) {
+            if (error.message?.includes('HTTP error') || error.message?.includes('Network')) {
                 errorMsg = language === 'it'
                     ? 'Errore di connessione al server'
                     : 'Server connection error';
-            } else if (error.message.includes('Dati utente non disponibili')) {
+            } else if (error.message?.includes('Dati utente non disponibili')) {
                 errorMsg = language === 'it'
                     ? 'Dati utente non disponibili'
                     : 'User data not available';
             }
             
-            setErrorMessage(errorMsg);
-            setTimeout(() => setErrorMessage(""), 5000);
+            showError(errorMsg);
         } finally {
             setExportLoading(false);
         }

@@ -617,7 +617,8 @@ export const exportToCSV = async (userData, language, filterOptions = null) => {
         ? `per ${data.filterInfo.monthName}` 
         : `per il periodo selezionato`;
         
-      alert(language === 'it' 
+      // Warning: the caller (SettingsPage) handles user-facing feedback via toast
+      console.warn(language === 'it' 
         ? `Nessun dato disponibile ${filterMsg}. Il file scaricato conterrà solo la struttura.`
         : `No data available for the selected period. The downloaded file will contain only the structure.`
       );
@@ -1010,7 +1011,8 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
         ? `per ${data.filterInfo.monthName}` 
         : `per il periodo selezionato`;
         
-      alert(language === 'it' 
+      // Warning: the caller (SettingsPage) handles user-facing feedback via toast
+      console.warn(language === 'it' 
         ? `Nessun dato disponibile ${filterMsg}. Il PDF conterrà solo le informazioni utente.`
         : `No data available for the selected period. The PDF will contain only user information.`
       );

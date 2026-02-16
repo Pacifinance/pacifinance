@@ -24,6 +24,8 @@ import { LanguageContext } from '../contexts/LanguageContext';
 // ═══════════════════════════════════════════
 // Badge Categories
 // ═══════════════════════════════════════════
+import { DEFAULT_MONTHLY_SPENDING_LIMIT } from '../data/financeDefaults';
+
 export const BADGE_CATEGORIES = {
   dataConsistency: 'dataConsistency',
   savings: 'savings',
@@ -325,9 +327,9 @@ export const BADGE_DEFINITIONS = {
       const limit = data.limits?.monthlySpendingLimit;
       const outflows = data.expenses?.outflowsArray?.[0];
       // Require outflows > 0 (actual data) and a real user-set limit
-      // Default fallback is 2000 — check that limit was explicitly set via goalsAndLimits
+      // Default fallback — check that limit was explicitly set via goalsAndLimits
       const hasUserSetLimit = data.limits?.monthlySpendingLimit && 
-                               data.limits?.monthlySpendingLimit !== 2000; // fallback default
+                               data.limits?.monthlySpendingLimit !== DEFAULT_MONTHLY_SPENDING_LIMIT;
       return hasUserSetLimit && limit > 0 && outflows > 0 && outflows <= limit;
     },
   },

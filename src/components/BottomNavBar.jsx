@@ -264,6 +264,7 @@ const BottomNavBar = ({ handleLogout }) => {
             {/* Bottom Navigation Bar */}
             <nav
                 className="bottom-nav-bar"
+                aria-label="Main navigation"
                 style={{
                     position: 'fixed',
                     bottom: 0,

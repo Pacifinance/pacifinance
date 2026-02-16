@@ -65,6 +65,7 @@ const GoalTracker = lazy(() => import('../components/GoalTracker'));
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import DashboardToolbar from '../components/DashboardToolbar';
 import DashboardCompactView from '../components/DashboardCompactView';
+import WhatsNewBanner from '../components/WhatsNewBanner';
 import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { BsPercent } from 'react-icons/bs';
@@ -358,6 +359,9 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         viewMode={viewMode}
                         toggleViewMode={toggleViewMode}
                     />
+
+                    {/* What's New Banner */}
+                    <WhatsNewBanner />
 
                     {/* Balance Overview */}
                     {isSectionVisible('balance-overview') && <ModernDashboardHeader theme={theme}>

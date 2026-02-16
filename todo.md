@@ -51,6 +51,7 @@
 - [x] Test stati critici app: 79 nuovi test per autenticazione, caricamento dati, recupero errori
 - [x] Architettura Dependency Injection con ServiceContext (refactoring interno)
 - [x] Test: axios interceptor 401, auth flow completo, retry errori
+- [x] Ranking: backend ora manda la %, adattare il frontend per usarla direttamente
 
 ---
 
@@ -60,7 +61,7 @@
 - [ ] BuyMeACoffee widget: verificare posizionamento su tutti i dispositivi (CSS !important workaround)
 - [ ] Grafici renderCustomizedLabel: verificare sovrapposizione con raggio ridotto su mobile
 - [ ] Floating point e centesimi: il DB mandera valori interi (* 100), gestire la conversione
-- [ ] Ranking: backend ora manda la %, adattare il frontend per usarla direttamente
+
 
 ### Mobile
 - [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)

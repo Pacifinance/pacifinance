@@ -33,6 +33,8 @@ const BottomNavBar = ({ handleLogout }) => {
     };
 
     const navigateTo = (path) => {
+        // Haptic feedback on supported devices
+        if (navigator.vibrate) navigator.vibrate(8);
         navigate(path);
         closeMenus();
     };
@@ -333,6 +335,7 @@ const BottomNavBar = ({ handleLogout }) => {
                 <button
                     style={navItemStyle(isMoreActive || showMoreMenu)}
                     onClick={() => {
+                        if (navigator.vibrate) navigator.vibrate(8);
                         setShowAccountMenu(false);
                         setShowMoreMenu(!showMoreMenu);
                     }}
@@ -359,6 +362,7 @@ const BottomNavBar = ({ handleLogout }) => {
                 <button
                     style={navItemStyle(isAccountActive || showAccountMenu)}
                     onClick={() => {
+                        if (navigator.vibrate) navigator.vibrate(8);
                         setShowMoreMenu(false);
                         setShowAccountMenu(!showAccountMenu);
                     }}

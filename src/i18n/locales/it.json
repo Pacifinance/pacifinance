@@ -495,6 +495,11 @@
         }
     },
 
+    "whatsNew": {
+        "title": "Novità",
+        "viewRoadmap": "Vedi la roadmap completa →"
+    },
+
     "dashboard": {
         "title": "Dashboard",
         "totalBalance": "Il tuo patrimonio totale è: ",

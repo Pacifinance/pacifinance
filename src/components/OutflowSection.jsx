@@ -33,7 +33,7 @@ const FormCard = styled.div`
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
   }
-  @media (max-width: 400px) {
+  @media (max-width: 380px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -42,6 +42,7 @@ const FormField = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 `;
 
 const FieldLabel = styled.label`

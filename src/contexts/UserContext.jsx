@@ -68,6 +68,7 @@ export const UserProvider = ({ children }) => {
     const fetchUserData = async () => {
       if (!isAuthenticated) {
         setUserData(null);
+        setIsUpdated(false); // Reset so next login triggers data fetch
         return;
       }
       try {
@@ -154,6 +155,11 @@ export const UserProvider = ({ children }) => {
 
   const handleSetIsAuthenticated = (value) => {
     setIsAuthenticated(value);
+    if (!value) {
+      // Reset on deauthentication so next login triggers data fetch
+      setIsUpdated(false);
+      setError(null);
+    }
   };
 
   const handleSetIsUpdated = (value) => {

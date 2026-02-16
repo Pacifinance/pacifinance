@@ -174,6 +174,8 @@ export default function NewLandingContent({ theme }) {
                 style={{ maxHeight: "600px" }}
                 loading="eager"
                 fetchPriority="high"
+                decoding="async"
+                sizes="(max-width: 768px) 100vw, 600px"
                 draggable="false"
                 onContextMenu={(e) => e.preventDefault()}
               />

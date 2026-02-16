@@ -259,10 +259,11 @@ const SectionCard = styled.div`
     : '0 2px 16px rgba(0, 0, 0, 0.05)'};
   width: 100%;
   max-width: 1000px;
+  overflow: hidden;
   animation: ${fadeIn} 0.3s ease-out;
   
   @media (max-width: 768px) {
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 0.75rem;
     border-radius: 16px;
     margin-bottom: 1rem;
   }

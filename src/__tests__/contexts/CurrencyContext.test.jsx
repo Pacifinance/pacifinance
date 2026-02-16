@@ -209,7 +209,7 @@ describe('CurrencyContext', () => {
       await user.click(screen.getByTestId('set-gbp'));
 
       const fromEurValue = parseFloat(screen.getByTestId('from-eur').textContent);
-      const toEurValue = parseFloat(screen.getByTestId('to-eur').textContent);
+      parseFloat(screen.getByTestId('to-eur').textContent);
 
       // fromEUR(100) * toEUR(100) should approximate 100 * 100 / rate * rate
       // Inverse check: toEUR(fromEUR(x)) ≈ x

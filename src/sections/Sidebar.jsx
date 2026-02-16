@@ -62,13 +62,13 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { language, translations, toggleLanguage } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const { userService } = useServices();
-    const { activeIcon, setActiveIcon } = useContext(IconContext);
+    const { setActiveIcon } = useContext(IconContext);
     const location = useLocation();
 
     // User data states
     const [userId, setUserId] = useState("");
     const [userType, setUserType] = useState("");
-    const [username, setUsername] = useState("");
+    const [, setUsername] = useState("");
     const [userNationality, setUserNationality] = useState({ key: "", value: "" });
     const [userWhereWorks, setUserWhereWorks] = useState({ key: "", value: "" });
     const [userJob, setUserJob] = useState({ key: "", value: "" });
@@ -80,8 +80,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [jobTypeTags, setJobTypeTags] = useState([]);
     const [workTimeTags, setWorkTimeTags] = useState([]);
     const [remoteTypeTags, setRemoteTypeTags] = useState([]);
-    const [selectedOption, _setSelectedOption] = useState(null);
-    const [showPopup, _setShowPopup] = useState(false);
+    const [selectedOption] = useState(null);
+    const [showPopup] = useState(false);
 
     // Modal states
     const [showAccountModal, setShowAccountModal] = useState(false);
@@ -191,6 +191,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
     useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userData]);
 
     const getActivePageIndex = () => {
@@ -206,7 +207,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
     const activePageIndex = getActivePageIndex();
 
-    const handleIconClick = (iconIndex, pageLink) => {
+    const handleIconClick = (iconIndex) => {
         setActiveIcon(iconIndex);
     };
 
@@ -412,7 +413,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     tooltip: translations.sidebar.info,
                                     index: 5,
                                 },
-                            ].map(({ icon: Icon, route, tooltip, index }) => (
+                            ].map(({ icon: _Icon, route, tooltip, index }) => (
                                 <Tooltip key={index} title={tooltip} placement="right">
                                     <LocalizedLink
                                         to={route}

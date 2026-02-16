@@ -60,7 +60,7 @@ const SettingsPage = () => {
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations, setLanguage } = useContext(LanguageContext);
-    const { currency, setCurrency, currencySymbol } = useContext(CurrencyContext);
+    const { currency, setCurrency } = useContext(CurrencyContext);
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);

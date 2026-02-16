@@ -14,7 +14,7 @@ function Header({
   theme,
   mode,
   toggleMode,
-  toggleLanguage: _propToggleLanguage,
+  toggleLanguage: _toggleLanguage,
 }) {
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
@@ -69,9 +69,9 @@ function Header({
         handleSetIsAuthenticated(true);
         localizedNavigate("/dashboard");
       } else {
-        console.log("Error in the demo login");
+        console.warn("Error in the demo login");
       }
-    } catch (error) {
+    } catch (_error) {
       setUsername("");
       setPassword("");
     }

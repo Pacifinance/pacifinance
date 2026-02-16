@@ -30,7 +30,7 @@ import { BiTrendingUp, BiWallet } from 'react-icons/bi';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import { renderCustomizedLabel } from '../utils/customGraphsInfo';
+import { RenderCustomizedLabel } from '../utils/customGraphsInfo';
 import { assetColors } from '../data/assetColors.js';
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
@@ -106,9 +106,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         const fetchData = async () => {
             if (userData) {
                 try {
-                    // Verify the total calculation is working
-                    const calculatedTotal = getTotalValue(userData);
-                    console.log('Dashboard total value calculated:', calculatedTotal);
                     
                     setStocksValue(getStocksValue(userData));
                     setETFValue(getEtfValue(userData));
@@ -141,7 +138,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     }, [userData]);
 
     // Dati per i bilanci tradizionali (Banca, Contanti, Servizi Digitali)
-    const traditionalAssets = [
+    const traditionalAssets = useMemo(() => [
         { 
             name: translations.assets.bank, 
             value: bankValue >= 0 ? bankValue : 0,
@@ -163,16 +160,16 @@ const Dashboard = ({ theme, userData, isHidden }) => {
             color: assetColors.digitalServices.primary,
             gradient: assetColors.digitalServices.gradient
         },
-    ];
+    ], [translations, bankValue, cashValue, digitalServicesValue]);
 
     // Fondo di Emergenza - Sezione separata
-    const emergencyFundAsset = {
+    const emergencyFundAsset = useMemo(() => ({
         name: translations.assets.emergencyFund, 
         value: emergencyFund >= 0 ? emergencyFund : 0,
         icon: assetIcons.emergencyFund,
         color: assetColors.emergencyFund.primary,
         gradient: assetColors.emergencyFund.gradient
-    };
+    }), [translations, emergencyFund]);
 
     // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Gold)
     const allInvestments = [
@@ -270,7 +267,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
             value: investment.value,
             color: investment.color
         }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     ], [traditionalAssets, emergencyFundAsset, investments]);
 
     // Dati per il grafico entrate/uscite (memoizzati)
@@ -295,8 +291,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     // Dati shuffled per la privacy (come nel Dashboard originale)
     const pieDataShuffle = [...pieData].sort(() => Math.random() - 0.5);
     const detailedPieDataShuffle = [...detailedPieData].sort(() => Math.random() - 0.5);
-    const incExpDataShuffle = [...incExpData].sort(() => Math.random() - 0.5);
-    const traditionalAssetsShuffle = [...traditionalAssets].sort(() => Math.random() - 0.5);
     const investmentsShuffle = [...investments].sort(() => Math.random() - 0.5);
 
     const { formatAmount: ctxFormatAmount } = React.useContext(CurrencyContext);
@@ -310,7 +304,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         return ((value / total) * 100).toFixed(1) + '%';
     };
 
-    const CustomTooltip = ({ active, payload, label }) => {
+    const CustomTooltip = ({ active, payload }) => {
         if (active && payload && payload.length) {
             const data = payload[0];
             return (
@@ -348,9 +342,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
     // Check if a section is visible
     const isSectionVisible = (sectionId) => visibleSections.includes(sectionId);
-    
-    // Get section CSS order
-    const getSectionOrder = (sectionId) => visibleSections.indexOf(sectionId);
 
     return (
         <MainDashboardLayout theme={theme}>
@@ -922,7 +913,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
-                                        label={renderCustomizedLabel}
+                                        label={RenderCustomizedLabel}
                                         outerRadius={isMobileScreen ? 80 : 120}
                                         fill={assetColors.totalBalance}
                                         dataKey="value"
@@ -966,7 +957,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
-                                        label={renderCustomizedLabel}
+                                        label={RenderCustomizedLabel}
                                         outerRadius={isMobileScreen ? 80 : 120}
                                         fill={assetColors.totalBalance}
                                         dataKey="value"
@@ -1010,7 +1001,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
-                                        label={renderCustomizedLabel}
+                                        label={RenderCustomizedLabel}
                                         outerRadius={isMobileScreen ? 80 : 120}
                                         innerRadius={isMobileScreen ? 40 : 60}
                                         fill={assetColors.totalBalance}

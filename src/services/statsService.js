@@ -42,7 +42,7 @@ export const createStatsService = (apiClient) => ({
         },
       };
     } catch {
-      console.debug('/stats/averages endpoint not available, using defaults');
+      console.warn('/stats/averages endpoint not available, using defaults');
       return defaults;
     }
   },

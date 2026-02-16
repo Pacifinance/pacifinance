@@ -2,7 +2,7 @@
  * Tests for i18n Routing Utilities
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   getLanguageFromPath,
   removeLanguageFromPath,

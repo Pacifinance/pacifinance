@@ -111,16 +111,9 @@ function filterDataByDateRange(data, filterOptions) {
 }
 
 // Funzione principale per preparare i dati per l'export
-export function prepareUserDataForExport(userData, language = 'en', filterOptions = null) {
+export function prepareUserDataForExport(userData, _language = 'en', filterOptions = null) {
   // Controllo di sicurezza iniziale
-  console.log('prepareUserDataForExport called with:', {
-    userData: userData ? 'present' : 'null',
-    userDataType: typeof userData,
-    language
-  });
-
   if (!userData || typeof userData !== 'object') {
-    console.log('Invalid userData, returning default structure');
     return {
       userInfo: {
         userId: 'N/A',
@@ -148,16 +141,7 @@ export function prepareUserDataForExport(userData, language = 'en', filterOption
                      userData?.username === 'Developer User' ||
                      (userData?.userId && userData.userId.startsWith('dev-'));
   
-  console.log('Export Debug:', {
-    isMockUser,
-    userId: userData?.userId,
-    userType: userData?.userType,
-    username: userData?.username,
-    hasBalances: userData?.balances ? Array.isArray(userData.balances) : false,
-    hasExpenses: userData?.expenses ? Array.isArray(userData.expenses) : false,
-    hasLast12Months: userData?.last12MonthsData ? Array.isArray(userData.last12MonthsData) : false,
-    isApiData: userData?.user && userData?.balances && userData?.expenses && !userData?.userType
-  });
+
 
   // Gestisce i dati dall'API /user/alldata
   if (userData?.user && userData?.balances && userData?.expenses) {
@@ -300,7 +284,7 @@ export function prepareUserDataForExport(userData, language = 'en', filterOption
 
   // Per utenti mock o dati nel formato context esistente
   if (isMockUser) {
-    console.log('Processing mock user data');
+
     
     const userInfo = {
       userId: userData.userId || 'dev-user-123',
@@ -383,7 +367,7 @@ export function prepareUserDataForExport(userData, language = 'en', filterOption
   }
 
   // Per utenti reali con dati context esistenti
-  console.log('Processing real user data from context');
+
   
   const userInfo = {
     userId: userData.userId || 'N/A',
@@ -1258,40 +1242,6 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
     console.error('Errore durante l\'export PDF:', error);
     throw new Error('Impossibile generare il documento PDF: ' + error.message);
   }
-};
-
-// Funzione helper per convertire array di oggetti in CSV (versione legacy)
-const convertToCSV = (data, title) => {
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return `${title}\nNo data available\n`;
-  }
-  
-  if (!data[0] || typeof data[0] !== 'object') {
-    return `${title}\nInvalid data format\n`;
-  }
-  
-  const headers = Object.keys(data[0]);
-  if (headers.length === 0) {
-    return `${title}\nNo data fields available\n`;
-  }
-  
-  const csvContent = [
-    title,
-    headers.join(','),
-    ...data.map(row => {
-      if (!row || typeof row !== 'object') return '';
-      return headers.map(header => {
-        const value = row[header];
-        if (value === null || value === undefined) return '';
-        if (typeof value === 'string' && value.includes(',')) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return String(value);
-      }).join(',');
-    })
-  ].join('\n');
-  
-  return csvContent;
 };
 
 // Funzione helper per convertire array di oggetti in CSV pulito (per fogli separati)

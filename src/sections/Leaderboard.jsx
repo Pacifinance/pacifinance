@@ -7,7 +7,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 
 
 // Component for the rankings section
-function RankingsSection({ theme, language, title, rankings, isHidden, translations }) {
+function RankingsSection({ theme, title, rankings, isHidden, translations }) {
     // Defensive: avoid crash if title is undefined
     const safeTitle = title || '';
     // Verify if there is a title for expenses
@@ -71,10 +71,8 @@ function RankingsSection({ theme, language, title, rankings, isHidden, translati
     );
   }
 
-function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
+function Leaderboard({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
-    const [selectedMonth, _setSelectedMonth] = useState(1);
-    const [selectedYear, _setSelectedYear] = useState(2023);
     const [userType, setUserType] = useState('');
     const [balanceRank, setBalanceRank] = useState([]);
     const [incomeRank, setIncomeRank] = useState([]);
@@ -102,7 +100,8 @@ function Leaderboard({ theme, userData, handleSetIsUpdated, isHidden}) {
 
     useEffect(() => {
         fetchData();
-      }, [userData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userData]);
 
       const formattedPreMonthDate = userData?.preMonthDate
           ? new Date(userData.preMonthDate).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { 

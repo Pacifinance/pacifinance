@@ -392,7 +392,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // Payment tags from user data (filter out 'none')
   const paymentTags = (userData?.tags?.paymentTags || []).filter(t => t.label !== 'none');
 
-  const t = translations?.dataImport || {};
+  const t = useMemo(() => translations?.dataImport || {}, [translations]);
 
   // State
   const [step, setStep] = useState(0); // 0=upload, 1=mapping, 2=review, 3=importing
@@ -466,7 +466,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   }, [filteredTx, selectedRows]);
 
   // Income tags from user data
-  const incomesTags = userData?.tags?.incomesTags || [];
+  const incomesTags = useMemo(() => userData?.tags?.incomesTags || [], [userData]);
 
   // Live summary based on importable transactions (with category overrides)
   const liveSummary = useMemo(() => {

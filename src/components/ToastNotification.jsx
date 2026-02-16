@@ -28,6 +28,7 @@ const ToastNotification = ({
 
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, duration]);
 
   const handleClose = () => {

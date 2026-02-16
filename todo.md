@@ -41,6 +41,7 @@
 - [x] Fix: toast achievements sopra BottomNavBar su mobile
 - [x] Fix: achievements buggati (verifica dati reali, non solo struttura)
 - [x] Fix: cambio lingua da impostazioni (doppio prefisso lingua)
+- [x] Modifica note dall'excel prima dell'inserimento transazioni
 
 ---
 
@@ -82,11 +83,9 @@
 ### Test
 - [ ] Test per axios interceptor 401
 - [ ] Test per removeLanguageFromPath edge cases
-- [ ] Eseguire test suite completa (npm test)
 - [ ] Test per DataImportWizard: parseAmount, processRows, processRowDual, autoDetectColumns
 
 ### Import Dati (Evoluzione)
-- [x] Modifica note dall'excel prima dell'inserimento transazioni
 - [ ] Supporto aggiornamento bilancio tramite import
 - [ ] Preview grafico transazioni importate (istogramma per mese/categoria)
 - [ ] Template di mappatura per banca (UniCredit, Revolut, N26...) con condivisione community

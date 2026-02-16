@@ -24,7 +24,7 @@ const BuyMeACoffeeWidget = lazy(() => import("../components/BuyMeACoffeeWidget")
 import { LanguageContext } from "../contexts/LanguageContext";
 
 export default function NewLandingContent({ theme }) {
-  const { language, translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const navigate = useLocalizedNavigate();
 
   const handleGetStarted = () => {

@@ -112,6 +112,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, selectedPeriod, incomesArray, outflowsArray]);
 
   //impostare i dati presi dell'utente per le spese e le entrate
@@ -132,7 +133,6 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, type]);
 
   const headers = [

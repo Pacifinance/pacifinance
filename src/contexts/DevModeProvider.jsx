@@ -17,7 +17,8 @@ const DevModeProvider = ({ children }) => {
         // console.log('DevModeProvider - import.meta.env.DEV:', import.meta.env.DEV);
         // console.log('DevModeProvider - hasDevParam:', hasDevParam);
         // console.log('DevModeProvider - hasLocalStorageFlag:', hasLocalStorageFlag);
-        console.log('DevModeProvider - devMode result:', devMode);
+        // DevMode result logged only in development
+        if (devMode) console.warn('DevModeProvider - devMode enabled');
         
         setIsDevelopmentMode(devMode);
         

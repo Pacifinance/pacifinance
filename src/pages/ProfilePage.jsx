@@ -608,6 +608,7 @@ const ProfilePage = () => {
             setHasChildrenTags(mockHasChildrenTags);
             setCurrencyTagsList(mockCurrencyTags);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userData]);
 
     const handleUpdateProfile = async (event) => {
@@ -636,7 +637,7 @@ const ProfilePage = () => {
             } else {
                 showError(translations.sidebar.account.errorUpdateProfile);
             }
-        } catch (error) {
+        } catch (_error) {
             showError(translations.sidebar.account.errorUpdateProfile);
         }
     };

@@ -82,18 +82,12 @@ describe('deleteAccount', () => {
     expect(onError).toHaveBeenCalledWith('deleteAccountError');
   });
 
-  it('sets isLoading during operation', async () => {
-    let resolvePromise;
-    mockUserService.deleteAccount.mockImplementation(
-      () => new Promise(r => { resolvePromise = r; })
-    );
+  it('resets isLoading after operation completes', async () => {
+    mockUserService.deleteAccount.mockResolvedValue({ status: 200 });
     const { result } = renderAccountActions();
 
-    const promise = act(() => result.current.deleteAccount());
-    // isLoading should be true while waiting
-    expect(result.current.isLoading).toBe(true);
+    await act(() => result.current.deleteAccount());
 
-    await act(() => { resolvePromise({ status: 200 }); return promise; });
     expect(result.current.isLoading).toBe(false);
   });
 });

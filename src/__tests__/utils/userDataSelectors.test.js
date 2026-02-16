@@ -3,7 +3,7 @@
  * These selectors extract data from the userData structure
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   // Balance selectors
   getCurrentBalance,

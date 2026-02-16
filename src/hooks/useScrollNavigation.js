@@ -96,6 +96,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
         setIsNavigating(false);
       }, 1500);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, isNavigating, getCurrentPageIndex, navigate]);
 
   // Funzione per navigare manualmente tramite pulsante
@@ -187,6 +188,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
       // L'utente è uscito dalla zona, nascondi i pulsanti
       stopTriggerZone();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, isNavigating, pageHasScrollableContent, isAutoScrolling, showTriggerZone, triggerDirection, getCurrentPageIndex, stopTriggerZone, lastDismissalTime, location.pathname]);
 
   useEffect(() => {

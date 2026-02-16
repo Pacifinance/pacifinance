@@ -2,15 +2,15 @@
  * Tests for URL-based i18n routing in AppRouter
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock dei contexts
 vi.mock('../../contexts/LanguageContext', () => ({
   LanguageContext: {
-    Provider: ({ children, value }) => <div data-testid="language-provider">{children}</div>,
+    Provider: ({ children, value: _value }) => <div data-testid="language-provider">{children}</div>,
     Consumer: ({ children }) => children({ language: 'en', translations: {}, setLanguage: vi.fn() })
   },
   useLanguage: () => ({ language: 'en', translations: {}, setLanguage: vi.fn() })

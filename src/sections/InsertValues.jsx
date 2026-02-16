@@ -351,7 +351,7 @@ export default function InsertValue({
   userData,
   handleSetIsUpdated,
   isHidden,
-  initialSection,
+  initialSection: _initialSection,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
@@ -521,6 +521,7 @@ export default function InsertValue({
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
     // Imposta la sezione iniziale basata sul parametro URL - solo al primo caricamento
@@ -564,6 +565,7 @@ export default function InsertValue({
       // Reset immediatamente per evitare loop
       setUpdateBalanceSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateBalanceSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -572,6 +574,7 @@ export default function InsertValue({
       // Reset immediatamente per evitare loop
       setUpdateInExBalanceSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateInExBalanceSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -579,6 +582,7 @@ export default function InsertValue({
       showSuccess(translations.insert.incomeSection.successUpdate);
       setUpdateIncomesSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateIncomesSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -586,6 +590,7 @@ export default function InsertValue({
       showSuccess(translations.insert.outflowSection.successUpdate);
       setUpdateOutflowsSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateOutflowsSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -593,6 +598,7 @@ export default function InsertValue({
       showSuccess(translations.insert.incomeSection.successDelete);
       setDeleteIncomesSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteIncomesSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -600,6 +606,7 @@ export default function InsertValue({
       showSuccess(translations.insert.outflowSection.successDelete);
       setDeleteOutflowsSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteOutflowsSuccess, language, showSuccess]);
 
   // Array of month names

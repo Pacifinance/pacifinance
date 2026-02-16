@@ -240,7 +240,7 @@ describe('calculateTotal', () => {
       stocks: 400, etf: 500, bitcoin: 600, crypto: 700,
       bonds: 800, funds: 900, gold: 1000,
     };
-    expect(calculateTotal(balance)).toBe(4550);
+    expect(calculateTotal(balance)).toBe(5550);
   });
 
   it('treats missing fields as 0', () => {

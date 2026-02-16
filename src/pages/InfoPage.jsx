@@ -12,13 +12,8 @@ function InfoPage() {
   useContext(PrivacyContext);
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
 
-  // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
-
   useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+    handleSetIsUpdated(false);
     
     const handleResize = () => {
       setIsMobileScreen(window.innerWidth <= 768);
@@ -26,6 +21,7 @@ function InfoPage() {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Matomo Tag Manager

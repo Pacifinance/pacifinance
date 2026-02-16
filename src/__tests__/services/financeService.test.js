@@ -114,7 +114,7 @@ describe('financeService', () => {
       client2.post.mockResolvedValue({ data: [] });
 
       const svc1 = createFinanceService(client1);
-      const svc2 = createFinanceService(client2);
+      createFinanceService(client2);
 
       await svc1.getBalances();
       expect(client1.post).toHaveBeenCalledTimes(1);

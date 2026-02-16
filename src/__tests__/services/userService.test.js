@@ -242,7 +242,7 @@ describe('userService', () => {
       client2.post.mockResolvedValue({ data: null });
 
       const service1 = createUserService(client1);
-      const service2 = createUserService(client2);
+      createUserService(client2);
 
       await service1.checkSession();
 

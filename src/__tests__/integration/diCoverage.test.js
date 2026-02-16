@@ -108,7 +108,7 @@ describe('DI Coverage — Architecture Health', () => {
       const client2 = { post: vi.fn().mockResolvedValue({ data: [] }) };
 
       const svc1 = createFinanceService(client1);
-      const svc2 = createFinanceService(client2);
+      createFinanceService(client2);
 
       await svc1.getBalances();
 

@@ -52,7 +52,7 @@ export const createRankingService = (apiClient) => ({
         outflowsSimilar: rankExpenseSimilar?.data?.position ?? 0,
       };
     } catch {
-      console.debug('Ranking endpoints error, using defaults');
+      console.warn('Ranking endpoints error, using defaults');
       return defaults;
     }
   },

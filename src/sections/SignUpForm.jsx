@@ -129,16 +129,18 @@ export default function SignUpForm() {
             }, 10000);
         }
 
+        const widgetId = turnstileRef.current;
         return () => {
             // Cleanup on unmount
-            if (window.turnstile && turnstileRef.current) {
+            if (window.turnstile && widgetId) {
                 try {
-                    window.turnstile.remove(turnstileRef.current);
+                    window.turnstile.remove(widgetId);
                 } catch (error) {
                     console.warn("Error removing Turnstile widget:", error);
                 }
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [theme.mode]);
 
     const handlePasswordChange = (event) => {
@@ -222,7 +224,7 @@ export default function SignUpForm() {
                     5000,
                 );
             }
-        } catch (error) {
+        } catch (_error) {
             // console.error(error);
             setPassword("");
             setConfirmPassword("");

@@ -1,6 +1,6 @@
 ﻿# PaciFinance - TODO
 
-> Ultimo aggiornamento: 16/02/2026
+> Ultimo aggiornamento: 17/02/2026
 > Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
 
 ---
@@ -52,6 +52,13 @@
 - [x] Architettura Dependency Injection con ServiceContext (refactoring interno)
 - [x] Test: axios interceptor 401, auth flow completo, retry errori
 - [x] Ranking: backend ora manda la %, adattare il frontend per usarla direttamente
+- [x] Dark/Light mode: transizione animata al cambio tema (già implementata)
+- [x] Haptic feedback sui tap della nav bar (navigator.vibrate)
+- [x] Notifiche/changelog in-app per aggiornamenti e nuove feature (WhatsNewBanner)
+- [x] Test per removeLanguageFromPath edge cases (8 test)
+- [x] Test per DataImportWizard processRowDual (15 test)
+- [x] Undo/rollback ultima importazione (saveLastImport + UI undo)
+- [x] Drag and drop file upload (già implementato nel wizard)
 
 ---
 
@@ -67,7 +74,6 @@
 - [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)
 - [ ] Scroll navigation: valutare se disabilitare su mobile (interferenza con scroll naturale)
 - [ ] Card fondo emergenza sola: ridimensionare come half-width
-- [ ] Haptic feedback sui tap della nav bar (se supportato)
 - [ ] Chart legend su mobile: verificare su schermi ~320px
 
 ### Desktop
@@ -75,7 +81,6 @@
 - [ ] Sidebar: verificare highlight link attivi con nuovo routing
 
 ### Funzionalita
-- [ ] Dark/Light mode: transizione animata al cambio tema
 - [ ] Notifiche push (PWA) per promemoria inserimento dati mensili
 - [ ] Widget riepilogo rapido home: patrimonio + variazione mese precedente
 - [ ] Grafici trend storico patrimonio (linea temporale)
@@ -83,23 +88,16 @@
 
 ### Community e Feedback
 - [ ] Sistema feedback utenti (Fase 1): form in-app -> GitHub Issue via backend
-- [ ] Notifiche/changelog in-app per aggiornamenti e nuove feature
 - [ ] Sezione Contribuisci: come donare, segnalare bug, proporre idee
 - [ ] Sistema di voto priorita roadmap (richiede backend)
 
 ### Performance
 - [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
 
-### Test
-- [ ] Test per removeLanguageFromPath edge cases
-- [ ] Test per DataImportWizard: parseAmount, processRows, processRowDual, autoDetectColumns
-
 ### Import Dati (Evoluzione)
 - [ ] Supporto aggiornamento bilancio tramite import
 - [ ] Preview grafico transazioni importate (istogramma per mese/categoria)
 - [ ] Template di mappatura per banca (UniCredit, Revolut, N26...) con condivisione community
 - [ ] Auto-detect formati bancari noti (Fineco, Intesa, Revolut, N26)
-- [ ] Undo/rollback ultima importazione
-- [ ] Drag and drop file upload
 - [ ] Supporto file OFX/QIF
 - [ ] Import ricorrente: ricordare ultimo file e suggerire aggiornamento

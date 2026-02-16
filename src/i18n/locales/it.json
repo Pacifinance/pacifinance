@@ -1796,6 +1796,11 @@
         "importPartial": "⚠️ Importazione completata con alcuni errori",
         "successful": "Riuscite",
         "failed": "Fallite",
-        "done": "Fatto"
+        "done": "Fatto",
+        "undoHint": "Hai fatto un errore? Puoi annullare questa importazione e rimuovere tutte le transazioni importate.",
+        "undoButton": "Annulla importazione",
+        "undoing": "Annullamento in corso...",
+        "undoSuccess": "✅ Annullamento completato — {count} transazioni rimosse",
+        "undoPartial": "⚠️ Annullamento parziale — {success} rimosse, {failed} fallite"
     }
 }

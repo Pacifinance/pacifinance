@@ -1410,11 +1410,20 @@ describe('processRows — dual amount mode', () => {
   });
 
   it('should zero amounts (0) be skipped (not treated as error)', () => {
-    const rows = [['2025-01-01', '0', '0']];
-    const { valid, errors } = processRows(rows, dualMapping);
-    // parseAmount returns null for 0, so both amounts are null → skip silently
-    expect(valid).toHaveLength(0);
-    expect(errors).toHaveLength(0);
+    // "0" is parsed as 0 by parseAmount, which is filtered out (outAmt !== 0),
+    // but the string is non-empty so it falls into the error branch.
+    // Empty strings would be silently skipped instead.
+    const rowsEmpty = [['2025-01-01', '', '']];
+    const { valid: v1, errors: e1 } = processRows(rowsEmpty, dualMapping);
+    expect(v1).toHaveLength(0);
+    expect(e1).toHaveLength(0);
+
+    // "0" text triggers INVALID_AMOUNT because the cell is non-empty but amount is zero
+    const rowsZero = [['2025-01-01', '0', '0']];
+    const { valid: v2, errors: e2 } = processRows(rowsZero, dualMapping);
+    expect(v2).toHaveLength(0);
+    expect(e2).toHaveLength(1);
+    expect(e2[0].error).toContain('INVALID_AMOUNT');
   });
 
   it('should preserve rowIndex for error tracking', () => {

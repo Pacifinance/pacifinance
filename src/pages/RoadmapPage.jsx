@@ -18,9 +18,11 @@ const PageWrapper = styled.div`
     ? `linear-gradient(135deg, ${p.theme.backgroundColor} 0%, #0a0a1a 100%)`
     : `linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)`};
   padding: 2rem;
+  padding-top: ${p => p.$withTopOffset ? 'calc(2rem + 72px)' : '2rem'};
 
   @media (max-width: 768px) {
     padding: 1rem;
+    padding-top: ${p => p.$withTopOffset ? 'calc(1rem + 72px)' : '1rem'};
   }
 `;
 
@@ -317,7 +319,7 @@ const RoadmapPage = () => {
   const t = translations?.roadmap || {};
 
   const roadmapContent = (
-    <PageWrapper theme={theme}>
+    <PageWrapper theme={theme} $withTopOffset={!isAuthenticated || isMobileScreen}>
       <SEOHead
         title={isIt ? 'Roadmap - PaciFinance' : 'Roadmap - PaciFinance'}
         description={isIt

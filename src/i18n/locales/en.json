@@ -1796,6 +1796,11 @@
         "importPartial": "⚠️ Import completed with some errors",
         "successful": "Successful",
         "failed": "Failed",
-        "done": "Done"
+        "done": "Done",
+        "undoHint": "Made a mistake? You can undo this import and remove all imported transactions.",
+        "undoButton": "Undo import",
+        "undoing": "Undoing...",
+        "undoSuccess": "✅ Undo completed — {count} transactions removed",
+        "undoPartial": "⚠️ Undo partial — {success} removed, {failed} failed"
     }
 }

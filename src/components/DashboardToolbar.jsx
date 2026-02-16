@@ -14,6 +14,7 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { MdDragIndicator, MdViewModule, MdTableRows, MdSettings, MdRefresh } from 'react-icons/md';
 import { IoClose } from 'react-icons/io5';
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
+import WhatsNewBanner from './WhatsNewBanner';
 
 const ToolbarContainer = styled.div`
   display: flex;
@@ -287,6 +288,9 @@ const DashboardToolbar = ({
   return (
     <>
       <ToolbarContainer>
+        {/* What's New notification */}
+        <WhatsNewBanner />
+
         {/* View Mode Toggle */}
         <ToolbarButton 
           theme={theme} 

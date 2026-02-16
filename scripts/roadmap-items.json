@@ -13,7 +13,7 @@
   },
   {
     "id": "gamification",
-    "todoMatch": "useGamification",
+    "todoMatch": "Gamification: 44 badge",
     "title": { "it": "Achievement e Badge", "en": "Achievements & Badges" },
     "description": {
       "it": "44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.",
@@ -25,7 +25,7 @@
   },
   {
     "id": "csv-import",
-    "todoMatch": "DataImportWizard",
+    "todoMatch": "Import CSV/Excel",
     "title": { "it": "Importazione CSV / Excel", "en": "CSV / Excel Import" },
     "description": {
       "it": "Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.",
@@ -97,7 +97,7 @@
   },
   {
     "id": "multi-currency",
-    "todoMatch": "Multi-Valuta",
+    "todoMatch": "Multi-valuta:",
     "title": { "it": "Supporto Multi-Valuta", "en": "Multi-Currency Support" },
     "description": {
       "it": "Visualizza i tuoi dati nella valuta che preferisci (USD, GBP, CHF e altre) con conversione automatica.",
@@ -105,11 +105,11 @@
     },
     "category": "feature",
     "icon": "💱",
-    "forceStatus": "in-progress"
+    "completedDate": "2025-02"
   },
   {
     "id": "roadmap-feedback",
-    "todoMatch": "Pagina Roadmap pubblica",
+    "todoMatch": "Roadmap: pagina pubblica",
     "title": { "it": "Roadmap e Feedback", "en": "Roadmap & Feedback" },
     "description": {
       "it": "Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.",
@@ -117,7 +117,7 @@
     },
     "category": "community",
     "icon": "🗺️",
-    "forceStatus": "in-progress"
+    "completedDate": "2025-02"
   },
   {
     "id": "trend-charts",

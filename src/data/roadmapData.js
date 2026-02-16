@@ -23,6 +23,30 @@ const roadmapData = [
     completedDate: '2025-01',
   },
   {
+    id: 'gamification',
+    title: { it: 'Achievement e Badge', en: 'Achievements & Badges' },
+    description: {
+      it: '44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.',
+      en: '44 badges in 10 categories to reward your consistency in financial tracking.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🏆',
+    completedDate: '2025-01',
+  },
+  {
+    id: 'csv-import',
+    title: { it: 'Importazione CSV / Excel', en: 'CSV / Excel Import' },
+    description: {
+      it: 'Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.',
+      en: 'Import your transactions from CSV or Excel files with automatic column mapping and category recognition.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📥',
+    completedDate: '2025-02',
+  },
+  {
     id: 'i18n',
     title: { it: 'Supporto Multilingua', en: 'Multi-Language Support' },
     description: {
@@ -45,6 +69,42 @@ const roadmapData = [
     category: 'ux',
     icon: '📱',
     completedDate: '2025-01',
+  },
+  {
+    id: 'anonymous-comparison',
+    title: { it: 'Confronto Anonimo', en: 'Anonymous Comparison' },
+    description: {
+      it: 'Confronta il tuo patrimonio, entrate e uscite con utenti simili in modo completamente anonimo.',
+      en: 'Compare your assets, income and outflows with similar users in a completely anonymous way.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📊',
+    completedDate: '2024-10',
+  },
+  {
+    id: 'multi-currency',
+    title: { it: 'Supporto Multi-Valuta', en: 'Multi-Currency Support' },
+    description: {
+      it: 'Visualizza i tuoi dati nella valuta che preferisci (USD, GBP, CHF e altre) con conversione automatica.',
+      en: 'View your data in your preferred currency (USD, GBP, CHF and more) with automatic conversion.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '💱',
+    completedDate: '2025-02',
+  },
+  {
+    id: 'roadmap-feedback',
+    title: { it: 'Roadmap e Feedback', en: 'Roadmap & Feedback' },
+    description: {
+      it: 'Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.',
+      en: 'Public roadmap page and system to collect bug reports and suggestions from the community.'
+    },
+    status: 'completed',
+    category: 'community',
+    icon: '🗺️',
+    completedDate: '2025-02',
   },
   {
     id: 'stability',
@@ -72,50 +132,17 @@ const roadmapData = [
   },
   /* ──────────── IN PROGRESS ──────────── */
   {
-    id: 'multi-currency',
-    title: { it: 'Supporto Multi-Valuta', en: 'Multi-Currency Support' },
+    id: 'goals-limits',
+    title: { it: 'Obiettivi e Limiti di Spesa', en: 'Goals & Spending Limits' },
     description: {
-      it: 'Visualizza i tuoi dati nella valuta che preferisci (USD, GBP, CHF e altre) con conversione automatica.',
-      en: 'View your data in your preferred currency (USD, GBP, CHF and more) with automatic conversion.'
+      it: 'Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.',
+      en: 'Set custom savings goals and monthly spending limits with notifications.'
     },
     status: 'in-progress',
     category: 'feature',
-    icon: '💱',
-  },
-  {
-    id: 'roadmap-feedback',
-    title: { it: 'Roadmap e Feedback', en: 'Roadmap & Feedback' },
-    description: {
-      it: 'Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.',
-      en: 'Public roadmap page and system to collect bug reports and suggestions from the community.'
-    },
-    status: 'in-progress',
-    category: 'community',
-    icon: '🗺️',
+    icon: '🎯',
   },
   /* ──────────── PLANNED ──────────── */
-  {
-    id: 'gamification',
-    title: { it: 'Achievement e Badge', en: 'Achievements & Badges' },
-    description: {
-      it: '44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.',
-      en: '44 badges in 10 categories to reward your consistency in financial tracking.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '🏆',
-  },
-  {
-    id: 'csv-import',
-    title: { it: 'Importazione CSV / Excel', en: 'CSV / Excel Import' },
-    description: {
-      it: 'Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.',
-      en: 'Import your transactions from CSV or Excel files with automatic column mapping and category recognition.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '📥',
-  },
   {
     id: 'data-export',
     title: { it: 'Esportazione Dati', en: 'Data Export' },
@@ -126,28 +153,6 @@ const roadmapData = [
     status: 'planned',
     category: 'feature',
     icon: '📤',
-  },
-  {
-    id: 'anonymous-comparison',
-    title: { it: 'Confronto Anonimo', en: 'Anonymous Comparison' },
-    description: {
-      it: 'Confronta il tuo patrimonio, entrate e uscite con utenti simili in modo completamente anonimo.',
-      en: 'Compare your assets, income and outflows with similar users in a completely anonymous way.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '📊',
-  },
-  {
-    id: 'goals-limits',
-    title: { it: 'Obiettivi e Limiti di Spesa', en: 'Goals & Spending Limits' },
-    description: {
-      it: 'Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.',
-      en: 'Set custom savings goals and monthly spending limits with notifications.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '🎯',
   },
   {
     id: 'trend-charts',

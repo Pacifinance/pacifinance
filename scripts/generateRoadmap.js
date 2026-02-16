@@ -2,25 +2,28 @@
 /**
  * generateRoadmap.js — Generates src/data/roadmapData.js from:
  *   1. scripts/roadmap-items.json  (curated roadmap entries with bilingual titles)
- *   2. todo.md                     (auto-detects status from checkboxes & sections)
+ *   2. todo.md                     (auto-detects status from checkboxes)
  *
  * Usage:
  *   node scripts/generateRoadmap.js
  *   npm run roadmap
  *
  * How it works:
- *   - Each item in roadmap-items.json has a `todoMatch` string.
- *   - The script searches todo.md for a line containing that string.
+ *   - Preferred mapping uses stable marker IDs in todo lines:
+ *       <!-- roadmap:<item-id> -->
+ *   - Fallback mapping uses `todoMatch` text for backward compatibility.
  *   - Status is inferred:
  *       • Line has [x] → 'completed'
+ *       • Line has [~] → 'in-progress'
  *       • Line has [ ] + item has forceStatus → uses forceStatus (e.g. 'in-progress')
  *       • Line has [ ] → 'planned'
  *       • No match found → keeps forceStatus or defaults to 'planned'
  *
  * To add a new roadmap item:
  *   1. Add the item to todo.md (if not already there)
- *   2. Add an entry to scripts/roadmap-items.json with a `todoMatch` string
- *   3. Run `npm run roadmap`
+ *   2. Add marker <!-- roadmap:<item-id> --> to that todo line
+ *   3. Add an entry to scripts/roadmap-items.json (todoMatch optional as fallback)
+ *   4. Run `npm run roadmap`
  *
  * To EXCLUDE a todo item from the roadmap:
  *   Simply don't add it to roadmap-items.json. Only items listed there appear.
@@ -48,18 +51,49 @@ function getCurrentSection(line, currentSection) {
   return currentSection;
 }
 
-// ── Find matching line and infer status ──
-function findStatus(todoMatch, forceStatus) {
-  let section = '';
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
+function isCompletedLine(line) {
+  return /- \[x\]/i.test(line) || /~~.*~~/.test(line);
+}
+
+function isInProgressLine(line) {
+  return /- \[~\]/i.test(line);
+}
+
+function getLineStatus(line, forceStatus) {
+  if (isCompletedLine(line)) return 'completed';
+  if (isInProgressLine(line)) return 'in-progress';
+  if (forceStatus) return forceStatus;
+  return 'planned';
+}
+
+function hasRoadmapMarker(line, itemId) {
+  const markerRegex = new RegExp(`<!--\\s*roadmap\\s*:\\s*${escapeRegex(itemId)}\\s*-->`, 'i');
+  return markerRegex.test(line);
+}
+
+// ── Find matching line and infer status ──
+function findStatus(itemId, todoMatch, forceStatus) {
+  let section = '';
+  const normalizedMatch = String(todoMatch || '').toLowerCase();
+
+  // 1) Preferred: stable marker ID
+  for (const line of todoLines) {
+    section = getCurrentSection(line, section);
+    if (hasRoadmapMarker(line, itemId)) {
+      return getLineStatus(line, forceStatus);
+    }
+  }
+
+  // 2) Fallback: legacy text match
   for (const line of todoLines) {
     section = getCurrentSection(line, section);
 
-    if (line.includes(todoMatch)) {
-      const isChecked = /- \[x\]/.test(line) || /~~.*~~/.test(line);
-      if (isChecked) return 'completed';
-      if (forceStatus) return forceStatus;
-      return 'planned';
+    if (normalizedMatch && line.toLowerCase().includes(normalizedMatch)) {
+      return getLineStatus(line, forceStatus);
     }
   }
 
@@ -70,7 +104,7 @@ function findStatus(todoMatch, forceStatus) {
 
 // ── Generate roadmap data ──
 const generated = roadmapItems.map((item) => {
-  const status = findStatus(item.todoMatch, item.forceStatus);
+  const status = findStatus(item.id, item.todoMatch, item.forceStatus);
 
   const entry = {
     id: item.id,

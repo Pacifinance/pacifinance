@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { APP_VERSION } from '../data/appVersion';
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { LocalizedLink } from "../components/LocalizedLink";
@@ -306,6 +307,18 @@ function Info({ theme }) {
                     </ModernSectionCard>
                 </ModernInfoSection>
             </ModernInfoContent>
+            <div style={{
+                textAlign: 'center',
+                padding: '1.25rem 1rem 2rem',
+                borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)'}`,
+                fontSize: '0.72rem',
+                letterSpacing: '0.08em',
+                opacity: 0.4,
+                color: theme.mode === 'dark' ? '#d1d5db' : '#374151',
+                userSelect: 'none',
+            }}>
+                v{APP_VERSION}
+            </div>
         </ModernInfoContainer>
     );
 }

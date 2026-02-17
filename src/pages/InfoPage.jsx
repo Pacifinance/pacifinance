@@ -2,11 +2,8 @@ import React, {useEffect, useContext, useState} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
-import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import Info from '../sections/Info';
-import { APP_VERSION } from '../data/appVersion';
-
 function InfoPage() {
   const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
@@ -43,20 +40,9 @@ function InfoPage() {
       }}>
         <Info theme={theme}/>
       </div>
-      <VersionBadge theme={theme}>v{APP_VERSION}</VersionBadge>
       {/* <ComingSoon /> */}
     </div>
   );
 }
 
 export default InfoPage;
-const VersionBadge = styled.div `
-  position: fixed;
-  right: 10px;
-  bottom: 8px;
-  font-size: 0.7rem;
-  opacity: 0.6;
-  z-index: 60;
-  pointer-events: none;
-  color: ${props => props.theme.mode === 'dark' ? '#d1d5db' : '#4b5563'};
-`;

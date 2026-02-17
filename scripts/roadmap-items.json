@@ -276,6 +276,18 @@
     "icon": "🏧"
   },
   {
+    "id": "inline-edit",
+    "todoMatch": "Modifica inline entrate e uscite",
+    "title": { "it": "Modifica Inline Transazioni", "en": "Inline Transaction Editing" },
+    "description": {
+      "it": "Modifica entrate e uscite direttamente nella tabella senza uscire dalla vista elenco.",
+      "en": "Edit income and outflow entries directly in the table without leaving the list view."
+    },
+    "category": "feature",
+    "icon": "✏️",
+    "completedDate": "2026-02"
+  },
+  {
     "id": "OFX/QIF-support",
     "todoMatch": "Supporto file OFX/QIF",
     "title": { "it": "Supporto File OFX/QIF", "en": "OFX/QIF File Support" },

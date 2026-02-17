@@ -700,6 +700,11 @@
             "placeholderCategory": "Seleziona una categoria",
             "placeholderNote": "Inserisci una nota (opzionale)",
             "updateButton": "Aggiungi entrata",
+            "editButton": "Salva modifiche",
+            "cancelEdit": "Annulla modifica",
+            "editingLabel": "Modifica in corso",
+            "successEdit": "Entrata modificata con successo",
+            "editFailed": "Errore nella modifica dell'entrata. Riprova più tardi.",
             "titleListing": "Le entrate del mese selezionato",
             "tableColumns": {
                 "category": "Categoria",
@@ -719,6 +724,11 @@
             "placeholderTypology": "Seleziona una tipologia",
             "placeholderNote": "Inserisci una nota (opzionale)",
             "updateButton": "Aggiungi uscita",
+            "editButton": "Salva modifiche",
+            "cancelEdit": "Annulla modifica",
+            "editingLabel": "Modifica in corso",
+            "successEdit": "Uscita modificata con successo",
+            "editFailed": "Errore nella modifica dell'uscita. Riprova più tardi.",
             "titleListing": "Le uscite del mese selezionato",
             "paymentType": "Tipologia pagamento",
             "tableColumns": {

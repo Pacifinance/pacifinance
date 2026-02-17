@@ -700,6 +700,11 @@
             "placeholderCategory": "Select a category",
             "placeholderNote": "Insert a note (optional)",
             "updateButton": "Add income",
+            "editButton": "Save changes",
+            "cancelEdit": "Cancel edit",
+            "editingLabel": "Editing",
+            "successEdit": "Income edited successfully",
+            "editFailed": "Error editing income. Please try again later.",
             "titleListing": "The income of the selected month",
             "tableColumns": {
                 "category": "Category",
@@ -720,6 +725,11 @@
             "paymentType": "Payment typology",
             "placeholderNote": "Insert a note (optional)",
             "updateButton": "Add outflow",
+            "editButton": "Save changes",
+            "cancelEdit": "Cancel edit",
+            "editingLabel": "Editing",
+            "successEdit": "Outflow edited successfully",
+            "editFailed": "Error editing outflow. Please try again later.",
             "titleListing": "The outflows of the selected month",
             "tableColumns": {
                 "category": "Category",

@@ -368,8 +368,6 @@ export default function InsertValue({
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
-  
-
 
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
@@ -720,6 +718,87 @@ export default function InsertValue({
     setShowConfirmationDeleteOutflow(true);
   };
 
+  // Inline edit save handlers — delete original + insert new
+  const handleSaveEditOutflow = async (originalAdd, editedValues) => {
+    try {
+      // 1. Delete original
+      const deleteData = {
+        expense: {
+          date: originalAdd.date,
+          amount: Number(originalAdd.amount) || 0,
+          is_expense: true,
+        },
+      };
+      const deleteResult = await financeService.deleteExpenseOrIncome(deleteData);
+      if (deleteResult.status !== 200) {
+        showError(translations.insert.outflowSection.editFailed);
+        return false;
+      }
+      // 2. Insert edited
+      const inExJson = createInExJson(
+        true,
+        editedValues.date,
+        editedValues.amount,
+        editedValues.note,
+        editedValues.typologyKey,
+        editedValues.categoryKey,
+      );
+      const insertResult = await financeService.addExpenseOrIncome(inExJson);
+      if (insertResult.status === 200) {
+        handleSetIsUpdated(false);
+        showSuccess(translations.insert.outflowSection.successEdit);
+        fetchData();
+        return true;
+      } else {
+        showError(translations.insert.outflowSection.editFailed);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error saving inline edit (outflow):", error);
+      showError(translations.insert.outflowSection.editFailed);
+      return false;
+    }
+  };
+
+  const handleSaveEditIncome = async (originalAdd, editedValues) => {
+    try {
+      const deleteData = {
+        expense: {
+          date: originalAdd.date,
+          amount: Number(originalAdd.amount) || 0,
+          is_expense: false,
+        },
+      };
+      const deleteResult = await financeService.deleteExpenseOrIncome(deleteData);
+      if (deleteResult.status !== 200) {
+        showError(translations.insert.incomeSection.editFailed);
+        return false;
+      }
+      const inExJson = createInExJson(
+        false,
+        editedValues.date,
+        editedValues.amount,
+        editedValues.note,
+        0,
+        editedValues.categoryKey,
+      );
+      const insertResult = await financeService.addExpenseOrIncome(inExJson);
+      if (insertResult.status === 200) {
+        handleSetIsUpdated(false);
+        showSuccess(translations.insert.incomeSection.successEdit);
+        fetchData();
+        return true;
+      } else {
+        showError(translations.insert.incomeSection.editFailed);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error saving inline edit (income):", error);
+      showError(translations.insert.incomeSection.editFailed);
+      return false;
+    }
+  };
+
   const handleConfirmBalance = async () => {
     setIsConfirmBalanceOpen(false);
     const dbDate = getBalanceDateForDB(balanceDate);
@@ -1044,6 +1123,7 @@ export default function InsertValue({
             setShowIncomeDatePicker={setShowIncomeDatePicker}
             onAddIncome={handleAddIncome}
             onDeleteIncome={handleDeleteIncome}
+            onSaveEdit={handleSaveEditIncome}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
@@ -1089,6 +1169,7 @@ export default function InsertValue({
             setShowOutflowDatePicker={setShowOutflowDatePicker}
             onAddOutflow={handleAddOutflow}
             onDeleteOutflow={handleDeleteOutflow}
+            onSaveEdit={handleSaveEditOutflow}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}

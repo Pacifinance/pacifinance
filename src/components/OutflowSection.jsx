@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -175,9 +175,52 @@ const ActionBtn = styled.button`
     box-shadow: 0 2px 4px rgba(255,107,107,0.3);
   }
   &.edit {
-    background: linear-gradient(135deg, #9ca3af, #6b7280);
-    opacity: 0.6;
-    cursor: not-allowed;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    box-shadow: 0 2px 4px rgba(59,130,246,0.3);
+    &:hover:not(:disabled) { transform: scale(1.08); }
+  }
+  &.cancel {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 2px 4px rgba(245,158,11,0.3);
+    &:hover:not(:disabled) { transform: scale(1.08); }
+  }
+`;
+
+const InlineInput = styled.input`
+  width: 100%;
+  min-width: 50px;
+  padding: 4px 6px;
+  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
+  color: ${p => p.theme.textColor};
+  box-sizing: border-box;
+  outline: none;
+  font-family: inherit;
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+  }
+`;
+
+const InlineSelect = styled.select`
+  width: 100%;
+  min-width: 80px;
+  padding: 4px 6px;
+  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
+  color: ${p => p.theme.textColor};
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+
+  option {
+    background: ${p => p.theme.mode === 'dark' ? '#1e293b' : '#ffffff'};
+    color: ${p => p.theme.mode === 'dark' ? '#e2e8f0' : '#1e293b'};
   }
 `;
 
@@ -269,6 +312,7 @@ export default function OutflowSection({
   setOutflowNoteFilter,
   onAddOutflow,
   onDeleteOutflow,
+  onSaveEdit,
   // New props for balance selection
   selectedOption,
   setSelectedOption,
@@ -279,11 +323,69 @@ export default function OutflowSection({
   setOutflowDateFilterEnd,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
-  const { currencySymbol, formatNumber } = React.useContext(CurrencyContext);
+  const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
   
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
+
+  // Inline editing state
+  const [editingAdd, setEditingAdd] = React.useState(null);
+  const [editValues, setEditValues] = React.useState({});
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const isEditingRow = (add) => {
+    if (!editingAdd) return false;
+    return add === editingAdd || (
+      add.date === editingAdd.date &&
+      add.amount === editingAdd.amount &&
+      add.categoryTag?.index === editingAdd.categoryTag?.index &&
+      add.paymentType?.index === editingAdd.paymentType?.index &&
+      add.notes === editingAdd.notes
+    );
+  };
+
+  const startEditing = (add) => {
+    const displayAmount = fromEUR(add.amount ?? 0);
+    setEditingAdd(add);
+    setEditValues({
+      categoryKey: add.categoryTag?.index ?? "",
+      typologyKey: add.paymentType?.index ?? "",
+      amount: String(parseFloat(displayAmount.toFixed(2))),
+      note: add.notes || "",
+      date: add.date ? new Date(add.date).toISOString().split('T')[0] : "",
+    });
+  };
+
+  const handleSaveInline = async () => {
+    if (!editValues.categoryKey && editValues.categoryKey !== 0) return;
+    if (!editValues.amount || Number(editValues.amount) === 0) return;
+    setIsSaving(true);
+    try {
+      const success = await onSaveEdit(editingAdd, editValues);
+      if (success) {
+        setEditingAdd(null);
+        setEditValues({});
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelInline = () => {
+    setEditingAdd(null);
+    setEditValues({});
+  };
+
+  const handleEditAmountChange = (e) => {
+    let cleaned = e.target.value.replace(/,/g, '.').replace(/[^\d.]/g, '');
+    const dotIdx = cleaned.indexOf('.');
+    if (dotIdx !== -1) {
+      cleaned = cleaned.substring(0, dotIdx + 1) + cleaned.substring(dotIdx + 1).replace(/\./g, '');
+    }
+    if (cleaned.startsWith('.')) cleaned = '0' + cleaned;
+    setEditValues(prev => ({ ...prev, amount: cleaned }));
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -567,6 +669,91 @@ export default function OutflowSection({
           ? getGrayscaleColor(rawColor, index)
           : getLighterSolidColor(rawColor);
         const rowGradient = getGradientForCategory(processedColor);
+
+        // Inline editing mode for this row
+        if (isEditingRow(add)) {
+          return (
+            <tr key={index} style={{ background: 'rgba(59, 130, 246, 0.08)', outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
+              <td>
+                <InlineSelect
+                  theme={theme}
+                  value={editValues.categoryKey}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, categoryKey: Number(e.target.value) }))}
+                >
+                  {sortTagsByLanguage(OutflowsTags, language).map((item) => (
+                    <option key={item.index} value={item.index}>
+                      {item.translations[language]}
+                    </option>
+                  ))}
+                </InlineSelect>
+              </td>
+              <td>
+                <InlineSelect
+                  theme={theme}
+                  value={editValues.typologyKey}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
+                >
+                  {sortTagsByLanguage(paymentTags, language).filter(item => item.label !== 'none').map((item) => (
+                    <option key={item.index} value={item.index}>
+                      {item.translations[language]}
+                    </option>
+                  ))}
+                </InlineSelect>
+              </td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <InlineInput
+                    type="text"
+                    theme={theme}
+                    value={editValues.amount}
+                    onChange={handleEditAmountChange}
+                    style={{ minWidth: 60 }}
+                  />
+                  <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+                </div>
+              </td>
+              <td>
+                <InlineInput
+                  type="text"
+                  theme={theme}
+                  value={editValues.note}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
+                  maxLength={64}
+                />
+              </td>
+              <td>
+                <InlineInput
+                  type="date"
+                  theme={theme}
+                  value={editValues.date}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
+                  max={currentDate}
+                />
+              </td>
+              <td>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
+                  <ActionBtn
+                    className="edit"
+                    onClick={handleSaveInline}
+                    disabled={isSaving}
+                    title={translations.insert.outflowSection.editButton}
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </ActionBtn>
+                  <ActionBtn
+                    className="cancel"
+                    onClick={handleCancelInline}
+                    disabled={isSaving}
+                    title={translations.insert.outflowSection.cancelEdit}
+                  >
+                    <FontAwesomeIcon icon={faRotateLeft} />
+                  </ActionBtn>
+                </div>
+              </td>
+            </tr>
+          );
+        }
+
         return (
           <tr key={index} style={{ background: rowGradient }}>
             <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
@@ -587,7 +774,12 @@ export default function OutflowSection({
             </td>
             <td>
               <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
-                <ActionBtn className="edit" disabled title="Funzionalità in arrivo">
+                <ActionBtn
+                  className="edit"
+                  data-umami-event="editOutflow"
+                  onClick={() => startEditing(add)}
+                  title={translations.insert.outflowSection.editingLabel}
+                >
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
                 <ActionBtn

@@ -61,6 +61,7 @@
 - [x] Test per DataImportWizard processRowDual (15 test)
 - [x] Undo/rollback ultima importazione (saveLastImport + UI undo)
 - [x] Drag and drop file upload (già implementato nel wizard)
+- [x] Modifica inline entrate e uscite: edit direttamente nella tabella con delete+reinsert <!-- roadmap:inline-edit -->
 
 ---
 

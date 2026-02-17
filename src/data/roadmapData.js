@@ -130,6 +130,18 @@ const roadmapData = [
     icon: '📲',
     completedDate: '2026-02',
   },
+  {
+    id: 'inline-edit',
+    title: { it: 'Modifica Inline Transazioni', en: 'Inline Transaction Editing' },
+    description: {
+      it: 'Modifica entrate e uscite direttamente nella tabella senza uscire dalla vista elenco.',
+      en: 'Edit income and outflow entries directly in the table without leaving the list view.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '✏️',
+    completedDate: '2026-02',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'goals-limits',

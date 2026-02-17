@@ -105,7 +105,7 @@ class AveragesData {
 /**
  * How the averages of all users are stored in the cache
  */
-type AveragesCachedData = {
+export type AveragesCachedData = {
     all: Averages,
     [user: string]: Averages // mongodb ObjectId converted to string
 }
@@ -121,7 +121,8 @@ type Expense = Awaited<ReturnType<typeof expenses.getMonthlyExpensesByUserId>>[0
  */
 async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Averages> {
     const thisMonthStart = new ExtDate(ExtDate.UTC(now.getUTCFullYear(), now.getUTCMonth()))
-    const lastMonthStart = thisMonthStart.copy(); lastMonthStart.moveByMonths(-1)
+    const lastMonthStart = thisMonthStart.copy()
+    lastMonthStart.moveByMonths(-1)
 
     let averagesData = new AveragesData()
 

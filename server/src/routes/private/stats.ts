@@ -2,6 +2,7 @@ import express from "express"
 import { SessionData } from "express-session"
 
 import cache from "../../cache/cache"
+import { AveragesCachedData } from "../../cache/items/averages"
 import common from "../common"
 import users from "../../db/models/users"
 
@@ -15,18 +16,20 @@ statsRouter.post("/averages", async (req, res) => {
     // Retrieve the cached value and send it to the client with status code 200 (OK)
 
     const session = req.session as SessionData
-    const userId = session.userId;
+    const userId = session.userId
     const userData = await users.getReferenceByUserId(userId)
-    var userRef = undefined
-    if (userData !== null)
-        userRef = userData._id.toString()
+    if (!userData) {
+        res.status(500).send()
+        return
+    }
 
-    const allAverages = cache.get("userAverages");
-    let userAverages = {all: allAverages.all, similar: 0}
-    if (userRef)
-        userAverages.similar = allAverages[userRef]
-
-    res.status(200).json(userAverages);
-});
+    const allAverages = await cache.get("userAverages") as AveragesCachedData
+    const userRef = userData._id.toString()
+    const userAverages: AveragesCachedData = {
+        all: allAverages.all,
+        similar: allAverages[userRef]
+    }
+    res.status(200).json(userAverages)
+})
 
 export default statsRouter

@@ -1,17 +1,18 @@
+import { createClient, RedisJSON } from "redis"
+
 import { ExtDate } from "../libs/datelib"
 
-import cachestorage from "../db/models/cachestorage"
 import averages from "./items/averages"
 import prices from "./items/prices"
 
 interface CacheItemInfo {
     durationSec: number
-    fetch: () => Promise<object | null>
+    fetch: () => Promise<RedisJSON | null>
 }
 
-interface CacheItemData {
-    value: any
-    expiration: ExtDate
+type CacheItemData = {
+    value: RedisJSON
+    expiration: string
 }
 
 /**
@@ -20,19 +21,29 @@ interface CacheItemData {
 const expectedItems: {[key: string]: CacheItemInfo} = {
     "userAverages": { durationSec: 86400, fetch: averages.fetchUserAverages },
     "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices }
-};
+}
 
 /**
- * Cached values
+ * Redis client for caching values
  */
-let cache: {[key: string]: CacheItemData} = {};
+const cacheClient = createClient({url: process.env.REDIS_URI})
+cacheClient.on("error", err => console.log("Redis cache client error: ", err))
 
 /**
  * Gets the list of expected cache items keys
  * @returns List of keys
  */
 function getExpectedKeys() {
-    return Object.keys(expectedItems);
+    return Object.keys(expectedItems)
+}
+
+/**
+ * Retrieves the data from the cache associated to the given key, and parses it as JSON
+ * @param key Key of the element to get
+ * @returns Cached data for the given key, or null if no data was found for the key
+ */
+async function getCachedItemData(key: string): Promise<CacheItemData | null> {
+    return await cacheClient.json.get(key) as CacheItemData | null
 }
 
 /**
@@ -40,28 +51,30 @@ function getExpectedKeys() {
  * @param key Key of the element to check
  * @returns true if the element is expired, false otherwise
  */
-function valueExpired(key: string) {
-    let now = ExtDate.fromNow()
-    return (now >= cache[key].expiration);
+async function valueExpired(key: string) {
+    const data = await getCachedItemData(key)
+    if (!data)
+        return true
+
+    const now = ExtDate.fromNow()
+    const expirationDate = new ExtDate(data.expiration)
+    return (now >= expirationDate)
 }
 
 /**
  * Initializes the cache
  */
 async function init() {
-    if (Object.keys(cache).length !== 0)    // initialize the cache only if it isn't already initialized
-        return;
+    // Connect the client
+    if (cacheClient.isReady)
+        return
+    await cacheClient.connect()
 
-    let stored_elements = await cachestorage.getAllElements();
-    let stored_cache: any = {};
-    for (let element of stored_elements)    // list of DB elements is converted to the same structure of the cache
-        stored_cache[element.key] = {value: element.value, expiration: element.expirationDate};
-
-    // Restore the cache, element by element, by checking the expected items
+    // Check for expired entries
     for (let key of Object.keys(expectedItems)) {
-        cache[key] = {value: stored_cache[key].value, expiration: stored_cache[key].expiration};
-        if (!Object.keys(stored_cache).includes(key) || valueExpired(key))
-            await invalidate(key);
+        const isExpired = await valueExpired(key)
+        if (isExpired)
+            await invalidate(key)
     }
 }
 
@@ -72,16 +85,16 @@ async function init() {
 async function invalidate(key: string | undefined = undefined) {
     if (key === undefined) {
         for (let k of Object.keys(expectedItems))
-            invalidate(k);
-        return;
+            invalidate(k)
+        return
     }
 
-    if ((!Object.keys(cache).includes(key)) || (!Object.keys(expectedItems).includes(key)))
-        return;
+    if (!Object.keys(expectedItems).includes(key))
+        return
 
-    const new_value = await expectedItems[key].fetch();
+    const new_value = await expectedItems[key].fetch()
     if (new_value !== null)
-        await set(key, new_value);
+        await set(key, new_value)
 }
 
 /**
@@ -89,11 +102,14 @@ async function invalidate(key: string | undefined = undefined) {
  * @param key Key of the element to get
  * @returns Cached value
  */
-function get(key: string) {
-    if (!Object.keys(cache).includes(key))
-        return null;
+async function get(key: string) {
+    if (!Object.keys(expectedItems).includes(key))
+        return null
 
-    return cache[key].value;
+    const data = await getCachedItemData(key)
+    if (!data)
+        return null
+    return data.value
 }
 
 /**
@@ -101,16 +117,19 @@ function get(key: string) {
  * @param key Key of the element to set
  * @param value New value to set
  */
-async function set(key: string, value: object) {
-    if ((!Object.keys(cache).includes(key)) || (!Object.keys(expectedItems).includes(key)) || (!value))
-        return;
+async function set(key: string, value: RedisJSON) {
+    if ((!Object.keys(expectedItems).includes(key)) || (!value))
+        return
 
     let new_expiration = ExtDate.fromNow()
     new_expiration.moveBySeconds(expectedItems[key].durationSec)
 
-    cache[key] = {value: value, expiration: new_expiration};
+    const newCacheItemData: CacheItemData = {
+        value: value,
+        expiration: new_expiration.toISOString()
+    }
 
-    await cachestorage.updateElement(key, value, new_expiration);
+    await cacheClient.json.set(key, "$", newCacheItemData)
 }
 
 export default {
@@ -120,4 +139,4 @@ export default {
     invalidate,
     get,
     set
-};
+}

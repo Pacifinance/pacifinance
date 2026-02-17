@@ -1,13 +1,26 @@
 services:
+  redis:
+    container_name: redis
+    image: redis:8.6.0-alpine
+    restart: unless-stopped
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - /var/lib/redis:/data
+    networks:
+      - backend
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
   database:
+    container_name: mongo
     image: mongo:6.0.26-jammy
     restart: unless-stopped
     volumes:
-      - /var/lib/mongodb:/data/db # Only works on the VPS
+      - /var/lib/mongodb:/data/db
     networks:
       - backend
 
   app:
+    container_name: app
     build: .
     restart: unless-stopped
     ports:
@@ -15,6 +28,7 @@ services:
     env_file:
       - .env
     depends_on:
+      - redis
       - database
     networks:
       - backend

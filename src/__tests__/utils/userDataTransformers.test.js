@@ -186,6 +186,12 @@ describe('transformUserProfile', () => {
     expect(result.preferredCurrencyKey).toBe(-1);
   });
 
+  it('matches preferred currency when preferredCurrency index is a string', () => {
+    const result = transformUserProfile({ preferredCurrency: '1' }, currencyTags, 'en');
+    expect(result.preferredCurrencyCode).toBe('USD');
+    expect(result.preferredCurrencyKey).toBe(1);
+  });
+
   it('calculates profile completion percentage', () => {
     const result = transformUserProfile(mockInfoData, currencyTags, 'en');
     // country, job, age are set (3/11 fields)

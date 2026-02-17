@@ -8,6 +8,7 @@ import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import NewLandingContent from '../sections/LandingContent';
 import { useHTMLLang } from '../hooks/useHTMLLang';
+import { APP_VERSION } from '../data/appVersion';
 
 export default function NewLandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -144,10 +145,24 @@ export default function NewLandingPage() {
         `
       }} />
       
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col relative">
         <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
         <NewLandingContent theme={theme} language={language} isMobileScreen={isMobileScreen}/>
         <LandingFooter theme={theme}/>
+        <div
+          style={{
+            position: 'fixed',
+            right: '10px',
+            bottom: '8px',
+            fontSize: '0.7rem',
+            opacity: 0.6,
+            zIndex: 60,
+            color: theme.mode === 'dark' ? '#d1d5db' : '#4b5563',
+            pointerEvents: 'none',
+          }}
+        >
+          v{APP_VERSION}
+        </div>
       </div>
     </>
   );

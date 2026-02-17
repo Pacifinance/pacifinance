@@ -421,7 +421,7 @@ const ProfilePage = () => {
     const { theme } = useContext(ThemeContext);
     const { isHidden } = useContext(PrivacyContext);
     const { language, translations } = useContext(LanguageContext);
-    const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useAuth();
+    const { userData, handleSetIsUpdated, handleSetIsAuthenticated, retryFetch } = useAuth();
     const { isMobileScreen } = useContext(MediaQueryContext);
     useLocalizedNavigate();
     const { showSuccess, showError } = useToast();
@@ -614,6 +614,7 @@ const ProfilePage = () => {
     const handleUpdateProfile = async (event) => {
         event.preventDefault();
         try {
+            const preferredCurrencyKey = Number(userPreferredCurrency?.key);
             const data = {
                 country: userNationality.key,
                 job: userJob.key,
@@ -626,11 +627,15 @@ const ProfilePage = () => {
                 living_situation: userLivingStatus.key,
                 housing_type: userHousingType.key,
                 children: userHasChildren.key,
-                preferred_currency: userPreferredCurrency.key
+                preferred_currency: Number.isFinite(preferredCurrencyKey) ? preferredCurrencyKey : -1
             };
             const response = await userService.updateProfile(data);
             if (response.status === 200) {
-                handleSetIsUpdated(false);
+                if (typeof retryFetch === 'function') {
+                    retryFetch();
+                } else {
+                    handleSetIsUpdated(false);
+                }
                 setShowUpdateSuccess(true);
                 setIsEditMode(false);
                 setTimeout(() => setShowUpdateSuccess(false), 3000);
@@ -898,19 +903,52 @@ const ProfilePage = () => {
                             <h3>{t.sections?.financialPreferences || (language === 'it' ? 'Preferenze Finanziarie' : 'Financial Preferences')}</h3>
                         </SectionHeader>
                         <EditFormGrid>
-                            {renderEditField(<Coins />, t.preferredCurrency || 'Preferred Currency',
-                                (() => {
-                                    const code = userPreferredCurrency.value;
-                                    const config = CURRENCIES[code];
-                                    return config ? `${config.flag} ${config.code} (${config.symbol})` : code;
-                                })(),
-                                (e) => {
-                                    const selected = e.target.value;
-                                    // Find the matching enriched tag to get the actual currency code
-                                    const matchedTag = sortedCurrencyTags.find(t => t.index === selected.key);
-                                    const currencyCode = matchedTag?._currencyCode || selected.label;
-                                    setUserPreferredCurrency({ key: selected.key, value: currencyCode });
-                                }, sortedCurrencyTags, t.selectPreferredCurrency)}
+                            <EditFieldCard theme={theme}>
+                                <EditFieldLabel theme={theme}>
+                                    <EditFieldIconWrap theme={theme}>
+                                        <Coins size={14} color="white" />
+                                    </EditFieldIconWrap>
+                                    {t.preferredCurrency || 'Preferred Currency'}
+                                </EditFieldLabel>
+                                <Select
+                                    value={isHidden ? '' : (userPreferredCurrency?.key ?? '')}
+                                    onChange={(e) => {
+                                        const selectedKey = Number(e.target.value);
+                                        const matchedTag = sortedCurrencyTags.find(tag => Number(tag.index) === selectedKey);
+                                        const currencyCode = matchedTag?._currencyCode || 'EUR';
+                                        setUserPreferredCurrency({ key: selectedKey, value: currencyCode });
+                                    }}
+                                    style={{
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(31,41,55,0.9)' : 'rgba(255,255,255,0.95)',
+                                        color: theme.mode === 'dark' ? '#f3f4f6' : '#1f2937',
+                                        width: '100%',
+                                        borderRadius: '8px',
+                                        fontSize: '0.875rem',
+                                        minHeight: '2.5rem',
+                                    }}
+                                    displayEmpty
+                                    renderValue={(selectedKey) => {
+                                        if (selectedKey === '' || selectedKey == null || Number(selectedKey) === -1) {
+                                            return <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>{t.selectPreferredCurrency}</span>;
+                                        }
+                                        const matchedTag = sortedCurrencyTags.find(tag => Number(tag.index) === Number(selectedKey));
+                                        return matchedTag?.translations?.[language] || String(selectedKey);
+                                    }}
+                                >
+                                    <MenuItem value="">
+                                        <em style={{ color: '#9ca3af', fontStyle: 'italic' }}>{t.selectPreferredCurrency}</em>
+                                    </MenuItem>
+                                    {sortedCurrencyTags.map((item, index) => (
+                                        <MenuItem
+                                            key={item.index ?? index}
+                                            value={item.index ?? index}
+                                            style={{ fontSize: '0.875rem', padding: '0.625rem 1rem' }}
+                                        >
+                                            {item.translations?.[language] || item.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </EditFieldCard>
                         </EditFormGrid>
                     </SectionCard>
 

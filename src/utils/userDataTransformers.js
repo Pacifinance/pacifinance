@@ -81,11 +81,12 @@ export const transformUserProfile = (infoData, currencyTags, language) => {
   const preferredCurrencyIndex = infoData.preferredCurrency;
   let preferredCurrencyCode = 'EUR';
   let preferredCurrencyKey = -1;
-  if (preferredCurrencyIndex != null && currencyTags.length > 0) {
-    const matchedTag = currencyTags.find(tag => tag.index === preferredCurrencyIndex);
+  const normalizedPreferredCurrencyIndex = Number(preferredCurrencyIndex);
+  if (Number.isFinite(normalizedPreferredCurrencyIndex) && currencyTags.length > 0) {
+    const matchedTag = currencyTags.find(tag => Number(tag.index) === normalizedPreferredCurrencyIndex);
     if (matchedTag?.label) {
       preferredCurrencyCode = matchedTag.label.toUpperCase();
-      preferredCurrencyKey = matchedTag.index;
+      preferredCurrencyKey = Number(matchedTag.index);
     }
   }
 

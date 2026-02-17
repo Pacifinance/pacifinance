@@ -3,8 +3,8 @@
  * Validates the onboarding flow for new users with no data
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 import { LanguageContext } from '../../contexts/LanguageContext';
@@ -329,7 +329,7 @@ describe('OnboardingWelcome', () => {
 
   describe('Fallback Translations', () => {
     it('should render with fallback text when translations are missing', () => {
-      const { container } = render(
+      render(
         <MemoryRouter>
           <LanguageContext.Provider
             value={{

@@ -413,7 +413,9 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     tooltip: translations.sidebar.info,
                                     index: 5,
                                 },
-                            ].map(({ icon: Icon, route, tooltip, index }) => (
+                            ].map(({ icon, route, tooltip, index }) => {
+                                const MenuIcon = icon;
+                                return (
                                 <Tooltip key={index} title={tooltip} placement="right">
                                     <LocalizedLink
                                         to={route}
@@ -478,7 +480,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                                 pointerEvents: "none",
                                             }}
                                         />
-                                        <Icon
+                                        <MenuIcon
                                             style={{
                                                 fontSize: "22px",
                                                 filter:
@@ -490,7 +492,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         />
                                     </LocalizedLink>
                                 </Tooltip>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         <Notification theme={theme}>

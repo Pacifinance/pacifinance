@@ -275,29 +275,6 @@ async function setTypeOfUserId(user_id: string, new_type: number) {
 }
 
 /**
- * Gets the session of a user
- * @param user_id ID of the user
- * @returns User document
- */
-async function getSessionByUserId(user_id: string) {
-    return await getOne({userId: user_id}, "-_id session");
-}
-
-/**
- * Updates the session of a user
- * @param user_id ID of the user
- * @param session_id ID of the session
- * @param expiration_date Expiration date of the session
- * @returns User document
- */
-async function setSessionOfUserId(user_id: string, session_id: string, expiration_date: Date) {
-    return await setOne({userId: user_id}, {session: {
-        sessionId: session_id,
-        expirationDate: expiration_date
-    }});
-}
-
-/**
  * Gets all public information of a user
  * @param user_id ID of the user
  * @returns User document
@@ -401,8 +378,6 @@ export default {
     setNicknameOfUserId,
     getTypeOfUserId,
     setTypeOfUserId,
-    getSessionByUserId,
-    setSessionOfUserId,
     getPublicInfoByUserId,
     setPublicInfoOfUserId,
     setGoalsOfUserId,

@@ -1,21 +1,10 @@
 import express from "express"
-import crypto from "crypto"
-
-import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/mongo"
 import common from "../common"
 
 const publicRouter = express.Router()
 let registrationTokensCache = new Set<string>()
-
-/**
- * Generates a random session ID
- * @returns A session ID
- */
-function generateSessionId() {
-    return crypto.randomUUID()
-}
 
 /**
  * Checks if a Turnstile token is valid
@@ -134,16 +123,8 @@ publicRouter.post("/login", async (req, res) => {
         return
     }
     // The password is correct:
-    // Generate a random session ID and set the session expiration date
-    const session_id = generateSessionId()
-    const expiration_date = ExtDate.fromNow()
-    expiration_date.moveByDays(1)
     // Add the user ID and session information to the cookie
     req.session.userId = user_id
-    req.session.sessionId = session_id
-    req.session.expirationDate = expiration_date
-    // Add the session information to the database
-    await db.users.setSessionOfUserId(user_id, session_id, expiration_date)
     // Remove the account from the deletion queue
     await db.delqueue.removeFromQueueByUserRef(user._id)
     // Send status code 200 (OK)

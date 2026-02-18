@@ -13,11 +13,7 @@ const userRouter = express.Router()
 userRouter.use(common.checkSessionMiddleware)
 
 userRouter.post("/logout", async (req, res) => {
-    // Invalidate the session in the database by setting the
-    // expiration date to 01/01/1970 and an invalid ID
-    const session = req.session as SessionData
-    await db.users.setSessionOfUserId(session.userId, session.userId, new ExtDate(0))
-    // Destroy the session
+    // Invalidate the session 
     req.session.destroy((err: any) => {})
     // Send status code 200 (OK)
     res.status(200)
@@ -89,11 +85,8 @@ userRouter.post("/set-id", async (req, res) => {
         res.send()
         return
     }
-    // Invalidate the session in the database by setting the
-    // expiration date to 01/01/1970 and an invalid ID
+    // Invalidate the session
     const curr_user_id = session.userId
-    await db.users.setSessionOfUserId(curr_user_id, curr_user_id, new ExtDate(0))
-    // Destroy the session
     req.session.destroy((err: any) => {})
     // Generate a new random user ID and update the corresponding User document.
     // Send status code 500 (Internal Server Error) in case of failure

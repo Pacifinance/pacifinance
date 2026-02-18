@@ -2,8 +2,6 @@ import 'express-session'
 
 declare module 'express-session' {
     interface SessionData {
-        userId: string;
-        sessionId: string;
-        expirationDate: Date
+        userId: string
     }
 }

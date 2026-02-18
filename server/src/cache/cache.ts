@@ -27,6 +27,7 @@ const expectedItems: {[key: string]: CacheItemInfo} = {
  * Redis client for caching values
  */
 const cacheClient = createClient({url: process.env.REDIS_URI})
+cacheClient.on("connect", () => console.log("Redis cache client connected"))
 cacheClient.on("error", err => console.log("Redis cache client error: ", err))
 
 /**

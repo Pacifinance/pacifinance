@@ -1,9 +1,7 @@
 import express from "express"
-import session from "express-session"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
-
-import { ExtDate } from "../libs/datelib"
+import { SessionData } from "express-session"
 
 import db from "../db/mongo"
 
@@ -13,13 +11,13 @@ import db from "../db/mongo"
  * @returns Rounded currency value
  */
 function roundCurrency(n: number) {
-    if (n === undefined || isNaN(n)) return 0;
+    if (n === undefined || isNaN(n)) return 0
     // Round to the second decimal digit
-	let r = +n.toFixed(2); // toFixed() returns a string, but with the + in front it becomes a number
+	let r = +n.toFixed(2) // toFixed() returns a string, but with the + in front it becomes a number
     // If the rounding was of the 'ceiling' type, make it 'floor'
-	if (r > n) r -= 0.01;
+	if (r > n) r -= 0.01
     // Round again to the second decimal digit to account for floating point shenanigans
-	return +r.toFixed(2);
+	return +r.toFixed(2)
 }
 
 /**
@@ -90,28 +88,6 @@ function checkPassword(plain_password: string, hashed_password: string) {
 }
 
 /**
- * Checks if a user session is valid
- * @param session The session to check
- * @returns true if the session is valid, false otherwise
- */
-async function checkUserSession(session: session.Session & Partial<session.SessionData>) {
-    const now = ExtDate.fromNow()
-    // Check if the session in the cookie is valid
-    if (!session || !session.userId || !session.sessionId ||
-        !session.expirationDate || (new ExtDate(session.expirationDate) < now))
-        return false;
-    // Check if the user has session information in the database
-    const user = await db.users.getSessionByUserId(session.userId);
-    if (user === null)
-        return false;
-    // Check if this session info is valid
-    if (user.session.sessionId !== session.sessionId ||
-        (new ExtDate(user.session.expirationDate) < now))
-        return false;
-    return true;
-}
-
-/**
  * Express middleware for checking the validity of a user session, to be used
  * before all private routes
  * @param req HTTP request
@@ -121,12 +97,10 @@ async function checkUserSession(session: session.Session & Partial<session.Sessi
 async function checkSessionMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
     // Check if the session is valid. Send status code 401
     // (Unauthorized) if it's not valid
-    const valid_session = await checkUserSession(req.session);
-    if (!valid_session)
-    {
-        res.status(401);
-        res.send();
-        return;
+    const session = req.session as SessionData
+    if (!session || !session.userId) {
+        res.status(401).send()
+        return
     }
 
     next()

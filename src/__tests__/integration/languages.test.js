@@ -10,7 +10,7 @@ import itTranslations from '../../i18n/locales/it.json';
 import enTranslations from '../../i18n/locales/en.json';
 
 describe('Languages Integration', () => {
-  const supportedLanguages = ['it', 'en'];
+  const _supportedLanguages = ['it', 'en'];
 
   describe('New i18n Structure', () => {
     it('should export getTranslations function', () => {

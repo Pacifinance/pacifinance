@@ -31,8 +31,12 @@ const SidebarMobile = ({
     };
 
     const HamburgerMenu = () => (
-        <div onClick={() => setIsSideBarMenuOpen(false)}>
+        <div onClick={() => setIsSideBarMenuOpen(false)} role="presentation">
             <div
+                role="button"
+                tabIndex={0}
+                aria-label={isSideBarMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isSideBarMenuOpen}
                 className={`hamburger-menu ${isSideBarMenuOpen ? "open" : ""} cursor-pointer flex flex-col`}
                 style={{
                     zIndex: 10000,
@@ -53,6 +57,12 @@ const SidebarMobile = ({
                         setShowDropdown(false);
                     }
                     setIsSideBarMenuOpen(!isSideBarMenuOpen);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIsSideBarMenuOpen(!isSideBarMenuOpen);
+                    }
                 }}
             >
                 <FontAwesomeIcon

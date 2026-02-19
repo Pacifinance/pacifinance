@@ -9,10 +9,15 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .catch((error) => {
-        console.log('SW registration failed: ', error);
+        console.warn('SW registration failed: ', error);
       });
   });
 }
+
+// Prevent pinch-to-zoom on iOS (which ignores user-scalable=no)
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+document.addEventListener('gestureend', (e) => e.preventDefault());
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
@@ -21,30 +26,33 @@ import { PrivacyProvider } from './contexts/PrivacyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { MediaQueryProvider } from './contexts/MediaQueryContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { ServiceProvider } from './contexts/ServiceContext';
 import DevModeProvider from './contexts/DevModeProvider';
 
 createRoot(document.getElementById('root')).render(
-  <MediaQueryProvider>
+  <ServiceProvider>
+    <MediaQueryProvider>
       <LanguageProvider>
         <ThemeProvider>
           <DevModeProvider>
             <UserProvider>
               <CurrencyProvider>
-              <PageProvider>
-                <PrivacyProvider>
-                  <ToastProvider>
-                    <React.StrictMode>
-                      <Router>
-                        <AppRouter />
-                      </Router>
-                    </React.StrictMode>
-                  </ToastProvider>
-                </PrivacyProvider>
-              </PageProvider>
+                <PageProvider>
+                  <PrivacyProvider>
+                    <ToastProvider>
+                      <React.StrictMode>
+                        <Router>
+                          <AppRouter />
+                        </Router>
+                      </React.StrictMode>
+                    </ToastProvider>
+                  </PrivacyProvider>
+                </PageProvider>
               </CurrencyProvider>
             </UserProvider>
           </DevModeProvider>
         </ThemeProvider>
       </LanguageProvider>
     </MediaQueryProvider>
+  </ServiceProvider>
 )

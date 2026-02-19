@@ -495,6 +495,11 @@
         }
     },
 
+    "whatsNew": {
+        "title": "What's New",
+        "viewRoadmap": "View full roadmap →"
+    },
+
     "dashboard": {
         "title": "Dashboard",
         "totalBalance": "Your total balance is: ",
@@ -695,6 +700,11 @@
             "placeholderCategory": "Select a category",
             "placeholderNote": "Insert a note (optional)",
             "updateButton": "Add income",
+            "editButton": "Save changes",
+            "cancelEdit": "Cancel edit",
+            "editingLabel": "Editing",
+            "successEdit": "Income edited successfully",
+            "editFailed": "Error editing income. Please try again later.",
             "titleListing": "The income of the selected month",
             "tableColumns": {
                 "category": "Category",
@@ -715,6 +725,11 @@
             "paymentType": "Payment typology",
             "placeholderNote": "Insert a note (optional)",
             "updateButton": "Add outflow",
+            "editButton": "Save changes",
+            "cancelEdit": "Cancel edit",
+            "editingLabel": "Editing",
+            "successEdit": "Outflow edited successfully",
+            "editFailed": "Error editing outflow. Please try again later.",
             "titleListing": "The outflows of the selected month",
             "tableColumns": {
                 "category": "Category",
@@ -1791,6 +1806,31 @@
         "importPartial": "⚠️ Import completed with some errors",
         "successful": "Successful",
         "failed": "Failed",
-        "done": "Done"
+        "done": "Done",
+        "undoHint": "Made a mistake? You can undo this import and remove all imported transactions.",
+        "undoButton": "Undo import",
+        "undoing": "Undoing...",
+        "undoSuccess": "✅ Undo completed — {count} transactions removed",
+        "undoPartial": "⚠️ Undo partial — {success} removed, {failed} failed"
+    },
+    "onboarding": {
+        "welcomeTitle": "Welcome to PaciFinance!",
+        "welcomeSubtitle": "Complete these 4 steps to unlock your full financial dashboard with charts, comparisons, and insights.",
+        "stepsCompleted": "completed",
+        "step1Title": "Complete Profile",
+        "step1Desc": "Set nationality, job, and age for personalized anonymous comparisons.",
+        "step1Action": "Go to Profile",
+        "step2Title": "Add Your Balance",
+        "step2Desc": "Enter your current assets: bank accounts, cash, investments.",
+        "step2Action": "Insert Balance",
+        "step3Title": "Track Outflows",
+        "step3Desc": "Add your monthly outflows to see where your money goes.",
+        "step3Action": "Add Outflows",
+        "step4Title": "Record Income",
+        "step4Desc": "Log your income sources to track savings and growth.",
+        "step4Action": "Add Income",
+        "done": "✓ Done",
+        "quickTip": "Tip: Start with your balance — once you add at least one month of data, your dashboard will come alive with charts and analytics!",
+        "dismiss": "Dismiss guide"
     }
 }

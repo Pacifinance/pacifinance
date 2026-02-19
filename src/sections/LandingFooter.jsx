@@ -5,6 +5,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import LogoPaci from '../components/Logo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { SUPPORTED_LANGUAGES } from '../i18n/languagesConfig';
+import { APP_VERSION } from '../data/appVersion';
 
 export default function LandingFooter({ theme }) {
   const { language, translations } = useContext(LanguageContext);
@@ -207,11 +208,14 @@ export default function LandingFooter({ theme }) {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t" style={{ borderColor: theme.borderColor }}>
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm opacity-70">
               © {new Date().getFullYear()} PaciFinance. {translations.footer.rights}
             </p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
+            <span className="text-xs opacity-50 order-last md:order-none">
+              v{APP_VERSION}
+            </span>
+            <div className="flex space-x-4">
               <span className="text-xs opacity-60">
                 {translations.footer.madeWith} ❤️ {translations.footer.forPrivacy}
               </span>

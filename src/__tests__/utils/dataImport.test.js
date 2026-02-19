@@ -1288,3 +1288,162 @@ describe('Integration Scenarios', () => {
     });
   });
 });
+
+
+// ═══════════════════════════════════════════
+// processRows — dual amount mode (processRowDual)
+// ═══════════════════════════════════════════
+
+describe('processRows — dual amount mode', () => {
+  const dualMapping = {
+    dateCol: 0,
+    amountCol: -1,
+    dualAmountMode: true,
+    incomeCol: 1,
+    outflowCol: 2,
+    categoryCol: null,
+    notesCol: null,
+    dateFormat: 'YYYY-MM-DD',
+    transactionType: 'auto',
+    defaultCategoryIndex: 9999,
+  };
+
+  it('should create separate transactions for income and outflow in same row', () => {
+    const rows = [['2025-01-01', '1000', '500']];
+    const { valid, errors } = processRows(rows, dualMapping);
+    expect(errors).toHaveLength(0);
+    expect(valid).toHaveLength(2);
+    const income = valid.find(v => !v.isOutflow);
+    const outflow = valid.find(v => v.isOutflow);
+    expect(income).toBeDefined();
+    expect(outflow).toBeDefined();
+    expect(income.amount).toBe(1000);
+    expect(outflow.amount).toBe(500);
+  });
+
+  it('should create only outflow when income column is empty', () => {
+    const rows = [['2025-01-01', '', '250']];
+    const { valid } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(1);
+    expect(valid[0].isOutflow).toBe(true);
+    expect(valid[0].amount).toBe(250);
+  });
+
+  it('should create only income when outflow column is empty', () => {
+    const rows = [['2025-01-01', '3000', '']];
+    const { valid } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(1);
+    expect(valid[0].isOutflow).toBe(false);
+    expect(valid[0].amount).toBe(3000);
+  });
+
+  it('should silently skip rows where both columns are empty', () => {
+    const rows = [['2025-01-01', '', '']];
+    const { valid, errors } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(0);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('should error on invalid date in dual mode', () => {
+    const rows = [['not-a-date', '1000', '500']];
+    const { valid, errors } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(0);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error).toContain('INVALID_DATE');
+  });
+
+  it('should error when both amount columns have non-parseable values', () => {
+    const rows = [['2025-01-01', 'abc', 'def']];
+    const { valid, errors } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(0);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error).toContain('INVALID_AMOUNT');
+  });
+
+  it('should take absolute value for outflow amounts (negative in outflow col)', () => {
+    const rows = [['2025-01-01', '', '-300']];
+    const { valid } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(1);
+    expect(valid[0].amount).toBe(300);
+    expect(valid[0].isOutflow).toBe(true);
+  });
+
+  it('should take absolute value for income amounts (negative in income col)', () => {
+    const rows = [['2025-01-01', '-1500', '']];
+    const { valid } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(1);
+    expect(valid[0].amount).toBe(1500);
+    expect(valid[0].isOutflow).toBe(false);
+  });
+
+  it('should include category in dual mode when categoryCol is set', () => {
+    const mapping = { ...dualMapping, categoryCol: 3 };
+    const rows = [['2025-01-01', '1000', '', 'salary']];
+    const { valid } = processRows(rows, mapping);
+    expect(valid).toHaveLength(1);
+    expect(valid[0].categoryIndex).toBeDefined();
+  });
+
+  it('should include notes in dual mode when notesCol is set', () => {
+    const mapping = { ...dualMapping, notesCol: 3 };
+    const rows = [['2025-01-01', '', '120', 'Supermarket']];
+    const { valid } = processRows(rows, mapping);
+    expect(valid).toHaveLength(1);
+    expect(valid[0].notes).toBe('Supermarket');
+  });
+
+  it('should handle multiple rows in dual mode correctly', () => {
+    const rows = [
+      ['2025-01-01', '3000', ''],       // 1 income
+      ['2025-01-02', '', '120'],         // 1 outflow
+      ['2025-01-03', '500', '200'],      // 1 income + 1 outflow
+      ['2025-01-04', '', ''],            // skip (both empty)
+    ];
+    const { valid, errors } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(4);
+    expect(errors).toHaveLength(0);
+    // Check types
+    const incomes = valid.filter(v => !v.isOutflow);
+    const outflows = valid.filter(v => v.isOutflow);
+    expect(incomes).toHaveLength(2);
+    expect(outflows).toHaveLength(2);
+  });
+
+  it('should zero amounts (0) be skipped (not treated as error)', () => {
+    // "0" is parsed as 0 by parseAmount, which is filtered out (outAmt !== 0),
+    // but the string is non-empty so it falls into the error branch.
+    // Empty strings would be silently skipped instead.
+    const rowsEmpty = [['2025-01-01', '', '']];
+    const { valid: v1, errors: e1 } = processRows(rowsEmpty, dualMapping);
+    expect(v1).toHaveLength(0);
+    expect(e1).toHaveLength(0);
+
+    // "0" text triggers INVALID_AMOUNT because the cell is non-empty but amount is zero
+    const rowsZero = [['2025-01-01', '0', '0']];
+    const { valid: v2, errors: e2 } = processRows(rowsZero, dualMapping);
+    expect(v2).toHaveLength(0);
+    expect(e2).toHaveLength(1);
+    expect(e2[0].error).toContain('INVALID_AMOUNT');
+  });
+
+  it('should preserve rowIndex for error tracking', () => {
+    const rows = [
+      ['2025-01-01', '1000', ''],   // valid, rowIndex 0
+      ['bad-date', '500', ''],       // error, rowIndex 1
+      ['2025-01-03', '', '200'],     // valid, rowIndex 2
+    ];
+    const { valid, errors } = processRows(rows, dualMapping);
+    expect(valid).toHaveLength(2);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].rowIndex).toBe(1);
+    expect(valid[0].rowIndex).toBe(0);
+    expect(valid[1].rowIndex).toBe(2);
+  });
+
+  it('should format dates as YYYY-MM-DD in dual mode', () => {
+    const mapping = { ...dualMapping, dateFormat: 'DD/MM/YYYY' };
+    const rows = [['25/12/2025', '1000', '']];
+    const { valid } = processRows(rows, mapping);
+    expect(valid[0].date).toBe('2025-12-25');
+  });
+});

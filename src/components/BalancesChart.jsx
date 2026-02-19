@@ -18,7 +18,7 @@ import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { assetColors, getAssetColor } from '../data/assetColors.js';
 import { getBalanceChartData } from '../utils/userDataSelectors.js';
-import { compactNumber } from '../utils/customGraphsInfo.jsx';
+import { compactNumber, CustomTick } from '../utils/customGraphsInfo.jsx';
 
 /**
  * Componente unificato per grafici dei bilanci
@@ -28,7 +28,7 @@ import { compactNumber } from '../utils/customGraphsInfo.jsx';
  * @param {boolean} isHidden - Privacy mode
  * @param {Component} CustomTick - Componente custom per i tick degli assi
  */
-export default function BalancesChart({ type = "bar", theme, userData, isHidden, CustomTick }) {
+function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR } = useContext(CurrencyContext);
   const [last12MonthsData, setLast12MonthsData] = useState([]);
@@ -102,6 +102,7 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPeriod, last12MonthsData]);
 
   useEffect(() => {
@@ -118,7 +119,6 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
   // Headers per export comuni
@@ -481,3 +481,5 @@ export default function BalancesChart({ type = "bar", theme, userData, isHidden,
     </SectionBalancesCharts>
   );
 }
+
+export default React.memo(BalancesChart);

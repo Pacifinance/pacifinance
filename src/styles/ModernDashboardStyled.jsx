@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 // Animazioni
 const fadeInUp = keyframes`
@@ -39,14 +39,6 @@ const shimmer = keyframes`
   }
 `;
 
-const gradientShift = keyframes`
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-`;
 
 // Layout principale per la dashboard
 export const MainDashboardLayout = styled.div`

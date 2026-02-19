@@ -379,17 +379,14 @@ export const MockAuthProvider = ({ children }) => {
 
     const handleSetIsAuthenticated = (value) => {
         setIsAuthenticated(value);
-        console.log('MockAuth - setIsAuthenticated:', value);
     };
 
     const handleSetIsUpdated = (value) => {
         setIsUpdated(value);
-        console.log('MockAuth - setIsUpdated:', value);
     };
 
     // Mock functions per compatibilità con AppRouter
     const loadUserData = () => {
-        console.log('MockAuth - loadUserData called');
         handleSetIsUpdated(false);
     };
 

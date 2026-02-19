@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
 import { useToast } from "../contexts/ToastContext";
@@ -259,10 +259,11 @@ const SectionCard = styled.div`
     : '0 2px 16px rgba(0, 0, 0, 0.05)'};
   width: 100%;
   max-width: 1000px;
+  overflow: hidden;
   animation: ${fadeIn} 0.3s ease-out;
   
   @media (max-width: 768px) {
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 0.75rem;
     border-radius: 16px;
     margin-bottom: 1rem;
   }
@@ -351,11 +352,12 @@ export default function InsertValue({
   userData,
   handleSetIsUpdated,
   isHidden,
-  initialSection,
+  initialSection: _initialSection,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
   const { showSuccess, showError } = useToast();
+  const { financeService } = useServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -366,8 +368,6 @@ export default function InsertValue({
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
-  
-
 
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
@@ -520,6 +520,7 @@ export default function InsertValue({
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
     // Imposta la sezione iniziale basata sul parametro URL - solo al primo caricamento
@@ -563,6 +564,7 @@ export default function InsertValue({
       // Reset immediatamente per evitare loop
       setUpdateBalanceSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateBalanceSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -571,6 +573,7 @@ export default function InsertValue({
       // Reset immediatamente per evitare loop
       setUpdateInExBalanceSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateInExBalanceSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -578,6 +581,7 @@ export default function InsertValue({
       showSuccess(translations.insert.incomeSection.successUpdate);
       setUpdateIncomesSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateIncomesSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -585,6 +589,7 @@ export default function InsertValue({
       showSuccess(translations.insert.outflowSection.successUpdate);
       setUpdateOutflowsSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateOutflowsSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -592,6 +597,7 @@ export default function InsertValue({
       showSuccess(translations.insert.incomeSection.successDelete);
       setDeleteIncomesSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteIncomesSuccess, language, showSuccess]);
 
   useEffect(() => {
@@ -599,6 +605,7 @@ export default function InsertValue({
       showSuccess(translations.insert.outflowSection.successDelete);
       setDeleteOutflowsSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteOutflowsSuccess, language, showSuccess]);
 
   // Array of month names
@@ -673,10 +680,10 @@ export default function InsertValue({
 
   const handleAddIncome = () => {
     if (categoryIncome.value === "") {
-      alert(translations.insert.errors.selectCategory);
+      showError(translations.insert.errors.selectCategory);
       return;
     } else if (Number(income) === 0 || income === "" || income === undefined) {
-      alert(translations.insert.errors.insertValidValue);
+      showError(translations.insert.errors.insertValidValue);
       return;
     }
     // Directly submit without confirmation modal
@@ -685,13 +692,13 @@ export default function InsertValue({
 
   const handleAddOutflow = () => {
     if (categoryOutflow.value === "") {
-      alert(translations.insert.errors.selectCategory);
+      showError(translations.insert.errors.selectCategory);
       return;
     } else if (typoOutflow.value === "") {
-      alert(translations.insert.errors.selectPaymentType);
+      showError(translations.insert.errors.selectPaymentType);
       return;
     } else if (Number(outflow) === 0 || outflow === "" || outflow === undefined) {
-      alert(translations.insert.errors.insertValidValue);
+      showError(translations.insert.errors.insertValidValue);
       return;
     }
     
@@ -711,15 +718,94 @@ export default function InsertValue({
     setShowConfirmationDeleteOutflow(true);
   };
 
+  // Inline edit save handlers — delete original + insert new
+  const handleSaveEditOutflow = async (originalAdd, editedValues) => {
+    try {
+      // 1. Delete original
+      const deleteData = {
+        expense: {
+          date: originalAdd.date,
+          amount: Number(originalAdd.amount) || 0,
+          is_expense: true,
+        },
+      };
+      const deleteResult = await financeService.deleteExpenseOrIncome(deleteData);
+      if (deleteResult.status !== 200) {
+        showError(translations.insert.outflowSection.editFailed);
+        return false;
+      }
+      // 2. Insert edited
+      const inExJson = createInExJson(
+        true,
+        editedValues.date,
+        editedValues.amount,
+        editedValues.note,
+        editedValues.typologyKey,
+        editedValues.categoryKey,
+      );
+      const insertResult = await financeService.addExpenseOrIncome(inExJson);
+      if (insertResult.status === 200) {
+        handleSetIsUpdated(false);
+        showSuccess(translations.insert.outflowSection.successEdit);
+        fetchData();
+        return true;
+      } else {
+        showError(translations.insert.outflowSection.editFailed);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error saving inline edit (outflow):", error);
+      showError(translations.insert.outflowSection.editFailed);
+      return false;
+    }
+  };
+
+  const handleSaveEditIncome = async (originalAdd, editedValues) => {
+    try {
+      const deleteData = {
+        expense: {
+          date: originalAdd.date,
+          amount: Number(originalAdd.amount) || 0,
+          is_expense: false,
+        },
+      };
+      const deleteResult = await financeService.deleteExpenseOrIncome(deleteData);
+      if (deleteResult.status !== 200) {
+        showError(translations.insert.incomeSection.editFailed);
+        return false;
+      }
+      const inExJson = createInExJson(
+        false,
+        editedValues.date,
+        editedValues.amount,
+        editedValues.note,
+        0,
+        editedValues.categoryKey,
+      );
+      const insertResult = await financeService.addExpenseOrIncome(inExJson);
+      if (insertResult.status === 200) {
+        handleSetIsUpdated(false);
+        showSuccess(translations.insert.incomeSection.successEdit);
+        fetchData();
+        return true;
+      } else {
+        showError(translations.insert.incomeSection.editFailed);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error saving inline edit (income):", error);
+      showError(translations.insert.incomeSection.editFailed);
+      return false;
+    }
+  };
+
   const handleConfirmBalance = async () => {
     setIsConfirmBalanceOpen(false);
     const dbDate = getBalanceDateForDB(balanceDate);
     const balancesJson = createBalancesJson(dbDate);
 
     try {
-      const balancesChange = await axios.post("/balances/add", balancesJson, {
-        withCredentials: true,
-      });
+      const balancesChange = await financeService.addBalance(balancesJson);
       if (balancesChange.status === 200) {
         handleSetIsUpdated(false);
         setUpdateBalanceSuccess(true);
@@ -785,9 +871,7 @@ export default function InsertValue({
       setIncomeDate(currentDate);
     }
     try {
-      const inExAdd = await axios.post("/expenses/add", inExJson, {
-        withCredentials: true,
-      });
+      const inExAdd = await financeService.addExpenseOrIncome(inExJson);
       const balanceOptionsMap = {
         [translations.assets.bank]: bankValue,
         [translations.assets.cash]: cashValue,
@@ -830,11 +914,7 @@ export default function InsertValue({
 
           const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
 
-          const balancesChange = await axios.post(
-            "/balances/add",
-            balancesJson,
-            { withCredentials: true },
-          );
+          const balancesChange = await financeService.addBalance(balancesJson);
 
           if (balancesChange.status === 200) {
             handleSetIsUpdated(false);
@@ -880,9 +960,7 @@ export default function InsertValue({
     };
     
     try {
-      const incomesDelete = await axios.post("/expenses/delete", data, {
-        withCredentials: true,
-      });
+      const incomesDelete = await financeService.deleteExpenseOrIncome(data);
 
       // If user selected a balance to adjust, subtract the deleted income from that balance
       if (incomesDelete.status === 200) {
@@ -905,7 +983,7 @@ export default function InsertValue({
           const newValue = valueBalanceSelected - incomeNumber;
           // Build balancesJson for update
           const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-          await axios.post("/balances/add", balancesJson, { withCredentials: true });
+          await financeService.addBalance(balancesJson);
         }
         handleSetIsUpdated(false);
         setDeleteIncomesSuccess(true);
@@ -934,9 +1012,7 @@ export default function InsertValue({
     };
     
     try {
-      const outflowsDelete = await axios.post("/expenses/delete", data, {
-        withCredentials: true,
-      });
+      const outflowsDelete = await financeService.deleteExpenseOrIncome(data);
 
       // If user selected a balance to adjust, add the deleted outflow back to that balance
       if (outflowsDelete.status === 200) {
@@ -957,7 +1033,7 @@ export default function InsertValue({
           const outflowNumber = parseFloat(deleteOutflowAmount);
           const newValue = valueBalanceSelected + outflowNumber;
           const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-          await axios.post("/balances/add", balancesJson, { withCredentials: true });
+          await financeService.addBalance(balancesJson);
         }
         handleSetIsUpdated(false);
         setDeleteOutflowsSuccess(true);
@@ -1047,6 +1123,7 @@ export default function InsertValue({
             setShowIncomeDatePicker={setShowIncomeDatePicker}
             onAddIncome={handleAddIncome}
             onDeleteIncome={handleDeleteIncome}
+            onSaveEdit={handleSaveEditIncome}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
@@ -1092,6 +1169,7 @@ export default function InsertValue({
             setShowOutflowDatePicker={setShowOutflowDatePicker}
             onAddOutflow={handleAddOutflow}
             onDeleteOutflow={handleDeleteOutflow}
+            onSaveEdit={handleSaveEditOutflow}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}

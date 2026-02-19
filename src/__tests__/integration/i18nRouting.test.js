@@ -4,12 +4,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { 
+import {
   getLanguageFromPath, 
-  addLanguageToPath, 
   removeLanguageFromPath,
   getLocalizedPath,
-  isValidLanguage 
+  isValidLanguage
 } from '../../utils/i18nRouting';
 
 describe('URL-based i18n - Route Integration', () => {

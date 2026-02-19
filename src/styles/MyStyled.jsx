@@ -1,5 +1,5 @@
 import { primaryColor, secondaryColor, backgroundColor, themes } from './Themes';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';

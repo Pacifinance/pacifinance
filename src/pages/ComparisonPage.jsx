@@ -36,13 +36,8 @@ function ComparisonPage() {
     dismissTrigger,
     navigateManually,
     isAutoScrolling 
-  } = useScrollNavigation(true);  // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
-
-  useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+  } = useScrollNavigation(true);  useEffect(() => {
+    handleSetIsUpdated(false);
     
     const handleResize = () => {
       setIsMobileScreen(window.innerWidth <= 768);
@@ -50,6 +45,7 @@ function ComparisonPage() {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Gestisce il click sui punti di navigazione

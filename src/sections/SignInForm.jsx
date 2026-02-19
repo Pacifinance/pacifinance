@@ -3,7 +3,7 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { UserContext } from "../contexts/UserContext";
 import { useToast } from "../contexts/ToastContext";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import {
   MuiCustomDialog,
@@ -41,6 +41,7 @@ export default function SignInForm() {
   const { handleSetIsAuthenticated } = useContext(UserContext);
   const navigate = useLocalizedNavigate();
   const { showError } = useToast();
+  const { userService } = useServices();
 
   const handleCloseModal = () => {
     setShowErrorModal(false);
@@ -64,11 +65,7 @@ export default function SignInForm() {
       handleSetIsAuthenticated(false); //to be sure that the user will se his data
       //navigate('/dashboard'); //must be commented for production
       //username could be user_id o username
-      const response = await axios.post(
-        "/login",
-        { user_id: username, password: password },
-        { withCredentials: true },
-      ); //the path in the db is called login
+      const response = await userService.login(username, password);
       if (response.status === 200) {
         handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
         navigate("/dashboard"); //direct redirect

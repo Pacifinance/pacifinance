@@ -13,13 +13,9 @@ function CheckPricesPage() {
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   // const { isHidden, toggleHidden } = useContext(PrivacyContext);
 
-  // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
-
   useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+    handleSetIsUpdated(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Matomo Tag Manager

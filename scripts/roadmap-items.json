@@ -13,7 +13,7 @@
   },
   {
     "id": "gamification",
-    "todoMatch": "useGamification",
+    "todoMatch": "Gamification: 44 badge",
     "title": { "it": "Achievement e Badge", "en": "Achievements & Badges" },
     "description": {
       "it": "44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.",
@@ -25,7 +25,7 @@
   },
   {
     "id": "csv-import",
-    "todoMatch": "DataImportWizard",
+    "todoMatch": "Import CSV/Excel",
     "title": { "it": "Importazione CSV / Excel", "en": "CSV / Excel Import" },
     "description": {
       "it": "Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.",
@@ -97,7 +97,7 @@
   },
   {
     "id": "multi-currency",
-    "todoMatch": "Multi-Valuta",
+    "todoMatch": "Multi-valuta:",
     "title": { "it": "Supporto Multi-Valuta", "en": "Multi-Currency Support" },
     "description": {
       "it": "Visualizza i tuoi dati nella valuta che preferisci (USD, GBP, CHF e altre) con conversione automatica.",
@@ -105,11 +105,11 @@
     },
     "category": "feature",
     "icon": "💱",
-    "forceStatus": "in-progress"
+    "completedDate": "2025-02"
   },
   {
     "id": "roadmap-feedback",
-    "todoMatch": "Pagina Roadmap pubblica",
+    "todoMatch": "Roadmap: pagina pubblica",
     "title": { "it": "Roadmap e Feedback", "en": "Roadmap & Feedback" },
     "description": {
       "it": "Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.",
@@ -117,7 +117,7 @@
     },
     "category": "community",
     "icon": "🗺️",
-    "forceStatus": "in-progress"
+    "completedDate": "2025-02"
   },
   {
     "id": "trend-charts",
@@ -206,5 +206,96 @@
     },
     "category": "security",
     "icon": "🔐"
+  },
+  {
+    "id": "stability",
+    "todoMatch": "pagina bianca dopo registrazione",
+    "title": { "it": "App Più Stabile e Affidabile", "en": "More Stable & Reliable App" },
+    "description": {
+      "it": "Risolti problemi di caricamento dopo la registrazione e migliorato il recupero automatico in caso di errori di rete.",
+      "en": "Fixed loading issues after registration and improved automatic recovery from network errors."
+    },
+    "category": "ux",
+    "icon": "🛡️",
+    "completedDate": "2026-02"
+  },
+  {
+    "id": "mobile-ux",
+    "todoMatch": "Prevenzione zoom/pinch accidentale su mobile",
+    "title": { "it": "Esperienza Mobile Migliorata", "en": "Improved Mobile Experience" },
+    "description": {
+      "it": "Zoom accidentale eliminato, layout ottimizzato e caricamento più veloce su smartphone.",
+      "en": "Accidental zoom eliminated, optimized layout and faster loading on smartphones."
+    },
+    "category": "ux",
+    "icon": "📲",
+    "completedDate": "2026-02"
+  },
+  {
+    "id": "feedback-system",
+    "todoMatch": "Sistema feedback utenti",
+    "title": { "it": "Sistema Feedback In-App", "en": "In-App Feedback System" },
+    "description": {
+      "it": "Invia segnalazioni e suggerimenti direttamente dall'app, creando automaticamente issue su GitHub.",
+      "en": "Send bug reports and suggestions directly from the app, automatically creating GitHub issues."
+    },
+    "category": "community",
+    "icon": "💬"
+  },
+  {
+    "id": "contribute-section",
+    "todoMatch": "Sezione Contribuisci",
+    "title": { "it": "Sezione Contribuisci", "en": "Contribute Section" },
+    "description": {
+      "it": "Scopri come donare, segnalare bug e proporre nuove idee per migliorare PaciFinance.",
+      "en": "Learn how to donate, report bugs, and propose new ideas to improve PaciFinance."
+    },
+    "category": "community",
+    "icon": "🤝"
+  },
+  {
+    "id": "roadmap-voting",
+    "todoMatch": "Sistema di voto priorita roadmap",
+    "title": { "it": "Voto Priorità Roadmap", "en": "Roadmap Priority Voting" },
+    "description": {
+      "it": "Vota le funzionalità che vuoi vedere per prime e influenza la direzione dello sviluppo.",
+      "en": "Vote on features you want to see first and influence the development direction."
+    },
+    "category": "community",
+    "icon": "🗳️"
+  },
+  {
+    "id": "auto-detect-bank-format",
+    "todoMatch": "Auto-detect formati bancari noti",
+    "title": { "it": "Riconoscimento Automatico Banca", "en": "Auto-Detect Bank Format" },
+    "description": {
+      "it": "Rilevamento automatico del formato dei file esportati dalla tua banca (Fineco, Intesa, Revolut, N26).",
+      "en": "Automatic detection of exported file formats from your bank (Fineco, Intesa, Revolut, N26)."
+    },
+    "category": "feature",
+    "icon": "🏧"
+  },
+  {
+    "id": "inline-edit",
+    "todoMatch": "Modifica inline entrate e uscite",
+    "title": { "it": "Modifica Inline Transazioni", "en": "Inline Transaction Editing" },
+    "description": {
+      "it": "Modifica entrate e uscite direttamente nella tabella senza uscire dalla vista elenco.",
+      "en": "Edit income and outflow entries directly in the table without leaving the list view."
+    },
+    "category": "feature",
+    "icon": "✏️",
+    "completedDate": "2026-02"
+  },
+  {
+    "id": "OFX/QIF-support",
+    "todoMatch": "Supporto file OFX/QIF",
+    "title": { "it": "Supporto File OFX/QIF", "en": "OFX/QIF File Support" },
+    "description": {
+      "it": "Importa le transazioni nel formato standard OFX e QIF usato da molte banche e software finanziari.",
+      "en": "Import transactions in standard OFX and QIF format used by many banks and financial software."
+    },
+    "category": "feature",
+    "icon": "📂"
   }
 ]

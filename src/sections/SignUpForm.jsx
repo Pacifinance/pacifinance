@@ -1,11 +1,12 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 // import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfoIcon from "@mui/icons-material/Info";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
+import { UserContext } from "../contexts/UserContext";
 
 //for the modal and styled components
 import {
@@ -35,6 +36,8 @@ export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { showError } = useToast();
+    const { userService } = useServices();
+    const { handleSetIsAuthenticated } = useContext(UserContext);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -128,16 +131,18 @@ export default function SignUpForm() {
             }, 10000);
         }
 
+        const widgetId = turnstileRef.current;
         return () => {
             // Cleanup on unmount
-            if (window.turnstile && turnstileRef.current) {
+            if (window.turnstile && widgetId) {
                 try {
-                    window.turnstile.remove(turnstileRef.current);
+                    window.turnstile.remove(widgetId);
                 } catch (error) {
                     console.warn("Error removing Turnstile widget:", error);
                 }
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [theme.mode]);
 
     const handlePasswordChange = (event) => {
@@ -168,16 +173,25 @@ export default function SignUpForm() {
         setIsCopied(true);
     };
 
-    const handleCloseSuccessModal = () => {
+    const handleCloseSuccessModal = async () => {
         setShowSuccessModal(false);
-        navigate('/sign-in');
+        try {
+            // Auto-login with the just-registered credentials
+            const response = await userService.login(generated_user_id, password);
+            if (response.status === 200) {
+                handleSetIsAuthenticated(true);
+                navigate('/dashboard');
+            } else {
+                navigate('/sign-in');
+            }
+        } catch (_error) {
+            // If auto-login fails, redirect to sign-in page
+            navigate('/sign-in');
+        }
     };
 
     const handleCopyAndClose = () => {
         copyToClipboard();
-        setTimeout(() => {
-            handleCloseSuccessModal();
-        }, 1000);
     };
 
     const handleSubmit = async (event) => {
@@ -203,15 +217,7 @@ export default function SignUpForm() {
         }
 
         try {
-            const response = await axios.post(
-                "/registration",
-                {
-                    user_pwd: password,
-                    repeated_pwd: confirmPassword,
-                    turnstile_token: turnstileToken,
-                },
-                { withCredentials: true },
-            );
+            const response = await userService.register(password, confirmPassword, turnstileToken);
             if (response.status === 200) {
                 generated_user_id = response.data.user_id;
                 setShowSuccessModal(true);
@@ -229,7 +235,7 @@ export default function SignUpForm() {
                     5000,
                 );
             }
-        } catch (error) {
+        } catch (_error) {
             // console.error(error);
             setPassword("");
             setConfirmPassword("");

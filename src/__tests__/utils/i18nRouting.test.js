@@ -2,7 +2,7 @@
  * Tests for i18n Routing Utilities
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   getLanguageFromPath,
   removeLanguageFromPath,
@@ -66,6 +66,47 @@ describe('i18nRouting utilities', () => {
     it('should handle complex paths', () => {
       expect(removeLanguageFromPath('/it/insert-values?section=balance')).toBe('/insert-values?section=balance');
       expect(removeLanguageFromPath('/en/profile#settings')).toBe('/profile#settings');
+    });
+
+    it('should return root "/" when path is just the language prefix', () => {
+      expect(removeLanguageFromPath('/it')).toBe('/');
+      expect(removeLanguageFromPath('/en')).toBe('/');
+    });
+
+    it('should handle trailing slashes on language-only paths', () => {
+      expect(removeLanguageFromPath('/it/')).toBe('/');
+      expect(removeLanguageFromPath('/en/')).toBe('/');
+    });
+
+    it('should handle deeply nested paths', () => {
+      expect(removeLanguageFromPath('/it/a/b/c/d')).toBe('/a/b/c/d');
+      expect(removeLanguageFromPath('/en/charts-statistics')).toBe('/charts-statistics');
+    });
+
+    it('should not strip segments that look like language codes but are not in supported list', () => {
+      expect(removeLanguageFromPath('/fr/dashboard')).toBe('/fr/dashboard');
+      expect(removeLanguageFromPath('/de/profile')).toBe('/de/profile');
+      expect(removeLanguageFromPath('/xx/test')).toBe('/xx/test');
+    });
+
+    it('should handle empty string', () => {
+      expect(removeLanguageFromPath('')).toBe('');
+    });
+
+    it('should handle paths with query and hash combined', () => {
+      expect(removeLanguageFromPath('/it/settings?lang=en#theme')).toBe('/settings?lang=en#theme');
+    });
+
+    it('should handle paths where a later segment matches a language code', () => {
+      // e.g. /dashboard/it should NOT strip "it" since it is not first segment
+      expect(removeLanguageFromPath('/dashboard/it')).toBe('/dashboard/it');
+      expect(removeLanguageFromPath('/profile/en/settings')).toBe('/profile/en/settings');
+    });
+
+    it('should handle double slashes gracefully', () => {
+      // filter(Boolean) removes empty segments from "//"
+      const result = removeLanguageFromPath('/it//dashboard');
+      expect(result).toBe('/dashboard');
     });
   });
 

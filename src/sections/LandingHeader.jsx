@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ToggleModeButton from "../components/ToggleModeButton";
-import axios from "axios";
+import { useServices } from "../contexts/ServiceContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
@@ -14,10 +14,11 @@ function Header({
   theme,
   mode,
   toggleMode,
-  toggleLanguage: _propToggleLanguage,
+  toggleLanguage: _toggleLanguage,
 }) {
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
+  const { userService } = useServices();
   const [showDemoButton, setShowDemoButton] = useState(false);
   const { language, translations, setLanguage } = useContext(LanguageContext);
   const localizedNavigate = useLocalizedNavigate();
@@ -63,18 +64,14 @@ function Header({
     // Production environment: use original demo login logic
     try {
       handleSetIsAuthenticated(false);
-      const response = await axios.post(
-        "/login",
-        { user_id: username, password: password },
-        { withCredentials: true },
-      );
+      const response = await userService.login(username, password);
       if (response.status === 200) {
         handleSetIsAuthenticated(true);
         localizedNavigate("/dashboard");
       } else {
-        console.log("Error in the demo login");
+        console.warn("Error in the demo login");
       }
-    } catch (error) {
+    } catch (_error) {
       setUsername("");
       setPassword("");
     }
@@ -90,18 +87,18 @@ function Header({
       style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
     >
       <div
-        className="flex-auto w-full flex p-4 md:p-2 items-center justify-between"
+        className="flex-auto w-full flex p-3 md:p-4 items-center justify-between"
         style={{
           backgroundColor: theme.backgroundColor,
           color: theme.textColor,
         }}
       >
         <LogoPaci />
-        <div className="flex flex-row md:mr-10">
+        <div className="flex flex-row items-center gap-1.5 md:gap-2 md:mr-10">
           {showDemoButton && (
             <button
               data-umami-event="tryDemo"
-              className={`animate-slide-down border border-white rounded items-center cursor-pointer bg-paciGreen text-white px-1.5 py-0.5 text-xs md:text-lg md:px-4 md:py-2 md:border-2 md:rounded-lg shadow-xl mr-2 md:mr-20`}
+              className={`animate-slide-down border border-white rounded items-center cursor-pointer bg-paciGreen text-white px-1.5 py-0.5 text-xs md:text-lg md:px-4 md:py-2 md:border-2 md:rounded-lg shadow-xl`}
               onClick={DemoLogin}
             >
               <span className="md:hidden">Demo</span>

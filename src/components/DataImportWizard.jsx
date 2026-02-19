@@ -15,7 +15,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useAuth } from '../hooks/useAuth';
-import axios from 'axios';
+import { useServices } from '../contexts/ServiceContext';
 
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MapIcon from '@mui/icons-material/AccountTree';
@@ -31,6 +31,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import LockIcon from '@mui/icons-material/Lock';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
+import UndoIcon from '@mui/icons-material/Undo';
 import {
   parseFile,
   autoDetectColumns,
@@ -43,6 +44,8 @@ import {
   saveMapping,
   loadSavedMappings,
   deleteSavedMapping,
+  saveLastImport,
+  clearLastImport,
 } from '../utils/dataImport';
 import { EXPENSE_CATEGORY_CODES } from '../data/expenseCategoryCodes';
 import { getCategoryColor } from '../data/categoryColors';
@@ -387,11 +390,12 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
   const { handleSetIsUpdated, userData } = useAuth();
+  const { financeService } = useServices();
 
   // Payment tags from user data (filter out 'none')
   const paymentTags = (userData?.tags?.paymentTags || []).filter(t => t.label !== 'none');
 
-  const t = translations?.dataImport || {};
+  const t = useMemo(() => translations?.dataImport || {}, [translations]);
 
   // State
   const [step, setStep] = useState(0); // 0=upload, 1=mapping, 2=review, 3=importing
@@ -435,6 +439,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const [importResult, setImportResult] = useState(null);
+  const [undoing, setUndoing] = useState(false);
+  const [undoResult, setUndoResult] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -465,7 +471,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   }, [filteredTx, selectedRows]);
 
   // Income tags from user data
-  const incomesTags = userData?.tags?.incomesTags || [];
+  const incomesTags = useMemo(() => userData?.tags?.incomesTags || [], [userData]);
 
   // Live summary based on importable transactions (with category overrides)
   const liveSummary = useMemo(() => {
@@ -743,7 +749,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = finalTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
-        axios.post('/expenses/add', toAPIFormat(tx, defaultPaymentType), { withCredentials: true })
+        financeService.addExpenseOrIncome(toAPIFormat(tx, defaultPaymentType))
           .then(() => { success++; })
           .catch(() => { failed++; })
       );
@@ -752,7 +758,50 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     }
 
     setImporting(false);
-    setImportResult({ success, failed, total });
+    const savedTxForUndo = finalTx.map(tx => ({
+      date: tx.date,
+      amount: tx.amount,
+      is_expense: tx.isOutflow,
+    }));
+    setImportResult({ success, failed, total, _savedTx: savedTxForUndo });
+
+    if (success > 0) {
+      saveLastImport(savedTxForUndo);
+      handleSetIsUpdated(false);
+    }
+  };
+
+  // ─── Undo last import ───
+
+  const handleUndo = async () => {
+    setUndoing(true);
+    setUndoResult(null);
+
+    // Re-read the saved transactions from the import we just did
+    const importedTx = importResult?._savedTx;
+    if (!importedTx || importedTx.length === 0) {
+      setUndoing(false);
+      setUndoResult({ success: 0, failed: 0 });
+      return;
+    }
+
+    let success = 0;
+    let failed = 0;
+    const BATCH_SIZE = 5;
+
+    for (let i = 0; i < importedTx.length; i += BATCH_SIZE) {
+      const batch = importedTx.slice(i, i + BATCH_SIZE);
+      const promises = batch.map(tx =>
+        financeService.deleteExpenseOrIncome({ expense: tx })
+          .then(() => { success++; })
+          .catch(() => { failed++; })
+      );
+      await Promise.all(promises);
+    }
+
+    setUndoing(false);
+    setUndoResult({ success, failed });
+    clearLastImport();
 
     if (success > 0) {
       handleSetIsUpdated(false);
@@ -1474,6 +1523,53 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   </div>
                 )}
               </div>
+              {/* Undo section */}
+              {!undoResult && importResult.success > 0 && (
+                <div style={{
+                  marginBottom: '1rem',
+                  padding: '0.8rem 1rem',
+                  borderRadius: 10,
+                  backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+                  border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  textAlign: 'center',
+                }}>
+                  <p style={{ color: theme.textColor, opacity: 0.7, fontSize: '0.82rem', marginBottom: '0.6rem', lineHeight: 1.5 }}>
+                    {t.undoHint || 'Made a mistake? You can undo this import and remove all imported transactions.'}
+                  </p>
+                  <SecondaryBtn
+                    theme={theme}
+                    onClick={handleUndo}
+                    disabled={undoing}
+                    style={{ padding: '0.4rem 1.2rem', fontSize: '0.85rem' }}
+                    data-umami-event="import-undo"
+                  >
+                    <UndoIcon style={{ fontSize: 16 }} />
+                    {undoing
+                      ? (t.undoing || 'Undoing...')
+                      : (t.undoButton || 'Undo import')
+                    }
+                  </SecondaryBtn>
+                </div>
+              )}
+
+              {/* Undo result */}
+              {undoResult && (
+                <div style={{
+                  marginBottom: '1rem',
+                  padding: '0.8rem 1rem',
+                  borderRadius: 10,
+                  backgroundColor: undoResult.failed === 0 ? 'rgba(7,145,100,0.08)' : 'rgba(220,53,69,0.08)',
+                  textAlign: 'center',
+                }}>
+                  <p style={{ color: undoResult.failed === 0 ? '#079164' : '#dc3545', fontSize: '0.9rem', fontWeight: 600 }}>
+                    {undoResult.failed === 0
+                      ? (t.undoSuccess || `✅ Undo completed — ${undoResult.success} transactions removed`).replace('{count}', undoResult.success)
+                      : (t.undoPartial || `⚠️ Undo partial — ${undoResult.success} removed, ${undoResult.failed} failed`).replace('{success}', undoResult.success).replace('{failed}', undoResult.failed)
+                    }
+                  </p>
+                </div>
+              )}
+
               <div style={{ textAlign: 'center' }}>
                 <PrimaryBtn onClick={() => { onImportComplete?.(); onClose?.(); }}>
                   <CheckCircleIcon style={{ fontSize: 18 }} /> {t.done || 'Done'}

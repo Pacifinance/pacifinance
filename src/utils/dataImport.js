@@ -252,10 +252,10 @@ const CATEGORY_ALIASES = {
   'casa': 5, 'affitto': 5, 'mutuo': 5, 'condominio': 5, 'bollette': 5, 'utenze': 5,
   'salute': 9, 'farmacia': 9, 'medico': 9, 'dentista': 9, 'palestra': 9,
   'istruzione': 15, 'scuola': 15, 'università': 15, 'corso': 15, 'libri': 15,
-  'viaggio': 7, 'vacanza': 7, 'hotel': 7, 'volo': 7,
+  'viaggio': 7, 'vacanza': 7, 'volo': 7,
   'shopping': 3, 'abbigliamento': 3, 'vestiti': 3, 'scarpe': 3, 'amazon': 3,
   'divertimento': 6, 'svago': 6, 'cinema': 6, 'netflix': 6, 'spotify': 6,
-  'trasporto': 12, 'treno': 12, 'bus': 12, 'metro': 12, 'benzina': 11, 'auto': 11, 'macchina': 11, 'assicurazione auto': 11,
+  'trasporto': 12, 'treno': 12, 'metro': 12, 'benzina': 11, 'auto': 11, 'macchina': 11, 'assicurazione auto': 11,
   'regalo': 2, 'regali': 2,
   'tasse': 10, 'tassa': 10, 'irpef': 10, 'iva': 10,
   'investimento': 8, 'investimenti': 8, 'azioni': 8, 'etf': 8, 'crypto': 8, 'bitcoin': 8,
@@ -675,3 +675,50 @@ export const summarizeImport = (transactions) => {
 
 // Accepted file extensions
 export const ACCEPTED_EXTENSIONS = '.csv,.tsv,.txt,.xlsx,.xls';
+
+// ═══════════════════════════════════════════
+// Undo / Rollback Last Import
+// ═══════════════════════════════════════════
+
+const LAST_IMPORT_KEY = 'pacifinance-last-import';
+
+/**
+ * Save the list of successfully imported transactions for potential undo.
+ * Stores date + amount + is_expense for each — the same fields the delete API needs.
+ * @param {Array<{date: string, amount: number, is_expense: boolean}>} transactions
+ */
+export const saveLastImport = (transactions) => {
+  try {
+    const data = {
+      transactions,
+      importedAt: new Date().toISOString(),
+      count: transactions.length,
+    };
+    localStorage.setItem(LAST_IMPORT_KEY, JSON.stringify(data));
+  } catch { /* ignore quota errors */ }
+};
+
+/**
+ * Load the last import data (for undo).
+ * @returns {{ transactions: Array, importedAt: string, count: number } | null}
+ */
+export const loadLastImport = () => {
+  try {
+    const raw = localStorage.getItem(LAST_IMPORT_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data.transactions || !Array.isArray(data.transactions)) return null;
+    return data;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Clear the saved last import (after successful undo or when no longer relevant).
+ */
+export const clearLastImport = () => {
+  try {
+    localStorage.removeItem(LAST_IMPORT_KEY);
+  } catch { /* ignore */ }
+};

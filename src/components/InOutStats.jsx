@@ -182,7 +182,7 @@ const Tooltip = styled.div`
   }
 `;
 
-export default function InOutStats({ period = "month", theme, userData, isHidden }) {
+function InOutStats({ period = "month", theme, userData, isHidden }) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
     const currencyFormatter = (val) => formatAmount(val, { maximumFractionDigits: 0 });
@@ -362,3 +362,5 @@ export default function InOutStats({ period = "month", theme, userData, isHidden
         </ModernStatsCard>
     );
 }
+
+export default React.memo(InOutStats);

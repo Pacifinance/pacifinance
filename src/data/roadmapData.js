@@ -23,6 +23,30 @@ const roadmapData = [
     completedDate: '2025-01',
   },
   {
+    id: 'gamification',
+    title: { it: 'Achievement e Badge', en: 'Achievements & Badges' },
+    description: {
+      it: '44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.',
+      en: '44 badges in 10 categories to reward your consistency in financial tracking.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🏆',
+    completedDate: '2025-01',
+  },
+  {
+    id: 'csv-import',
+    title: { it: 'Importazione CSV / Excel', en: 'CSV / Excel Import' },
+    description: {
+      it: 'Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.',
+      en: 'Import your transactions from CSV or Excel files with automatic column mapping and category recognition.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📥',
+    completedDate: '2025-02',
+  },
+  {
     id: 'i18n',
     title: { it: 'Supporto Multilingua', en: 'Multi-Language Support' },
     description: {
@@ -46,7 +70,18 @@ const roadmapData = [
     icon: '📱',
     completedDate: '2025-01',
   },
-  /* ──────────── IN PROGRESS ──────────── */
+  {
+    id: 'anonymous-comparison',
+    title: { it: 'Confronto Anonimo', en: 'Anonymous Comparison' },
+    description: {
+      it: 'Confronta il tuo patrimonio, entrate e uscite con utenti simili in modo completamente anonimo.',
+      en: 'Compare your assets, income and outflows with similar users in a completely anonymous way.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📊',
+    completedDate: '2024-10',
+  },
   {
     id: 'multi-currency',
     title: { it: 'Supporto Multi-Valuta', en: 'Multi-Currency Support' },
@@ -54,9 +89,10 @@ const roadmapData = [
       it: 'Visualizza i tuoi dati nella valuta che preferisci (USD, GBP, CHF e altre) con conversione automatica.',
       en: 'View your data in your preferred currency (USD, GBP, CHF and more) with automatic conversion.'
     },
-    status: 'in-progress',
+    status: 'completed',
     category: 'feature',
     icon: '💱',
+    completedDate: '2025-02',
   },
   {
     id: 'roadmap-feedback',
@@ -65,33 +101,126 @@ const roadmapData = [
       it: 'Pagina roadmap pubblica e sistema per raccogliere segnalazioni e suggerimenti dalla community.',
       en: 'Public roadmap page and system to collect bug reports and suggestions from the community.'
     },
-    status: 'in-progress',
+    status: 'completed',
     category: 'community',
     icon: '🗺️',
+    completedDate: '2025-02',
+  },
+  {
+    id: 'stability',
+    title: { it: 'App Più Stabile e Affidabile', en: 'More Stable & Reliable App' },
+    description: {
+      it: 'Risolti problemi di caricamento dopo la registrazione e migliorato il recupero automatico in caso di errori di rete.',
+      en: 'Fixed loading issues after registration and improved automatic recovery from network errors.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '🛡️',
+    completedDate: '2026-02',
+  },
+  {
+    id: 'mobile-ux',
+    title: { it: 'Esperienza Mobile Migliorata', en: 'Improved Mobile Experience' },
+    description: {
+      it: 'Zoom accidentale eliminato, layout ottimizzato e caricamento più veloce su smartphone.',
+      en: 'Accidental zoom eliminated, optimized layout and faster loading on smartphones.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '📲',
+    completedDate: '2026-02',
+  },
+  {
+    id: 'inline-edit',
+    title: { it: 'Modifica Inline Transazioni', en: 'Inline Transaction Editing' },
+    description: {
+      it: 'Modifica entrate e uscite direttamente nella tabella senza uscire dalla vista elenco.',
+      en: 'Edit income and outflow entries directly in the table without leaving the list view.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '✏️',
+    completedDate: '2026-02',
+  },
+  /* ──────────── IN PROGRESS ──────────── */
+  {
+    id: 'goals-limits',
+    title: { it: 'Obiettivi e Limiti di Spesa', en: 'Goals & Spending Limits' },
+    description: {
+      it: 'Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.',
+      en: 'Set custom savings goals and monthly spending limits with notifications.'
+    },
+    status: 'in-progress',
+    category: 'feature',
+    icon: '🎯',
+  },
+  {
+    id: 'onboarding',
+    title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },
+    description: {
+      it: 'Un tour interattivo che ti guida nella configurazione iniziale e nelle funzionalità principali.',
+      en: 'An interactive tour that guides you through initial setup and main features.'
+    },
+    status: 'in-progress',
+    category: 'ux',
+    icon: '🚀',
+  },
+  {
+    id: 'feedback-system',
+    title: { it: 'Sistema Feedback In-App', en: 'In-App Feedback System' },
+    description: {
+      it: 'Invia segnalazioni e suggerimenti direttamente dall\'app, creando automaticamente issue su GitHub.',
+      en: 'Send bug reports and suggestions directly from the app, automatically creating GitHub issues.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '💬',
+  },
+  {
+    id: 'contribute-section',
+    title: { it: 'Sezione Contribuisci', en: 'Contribute Section' },
+    description: {
+      it: 'Scopri come donare, segnalare bug e proporre nuove idee per migliorare PaciFinance.',
+      en: 'Learn how to donate, report bugs, and propose new ideas to improve PaciFinance.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '🤝',
+  },
+  {
+    id: 'roadmap-voting',
+    title: { it: 'Voto Priorità Roadmap', en: 'Roadmap Priority Voting' },
+    description: {
+      it: 'Vota le funzionalità che vuoi vedere per prime e influenza la direzione dello sviluppo.',
+      en: 'Vote on features you want to see first and influence the development direction.'
+    },
+    status: 'in-progress',
+    category: 'community',
+    icon: '🗳️',
+  },
+  {
+    id: 'auto-detect-bank-format',
+    title: { it: 'Riconoscimento Automatico Banca', en: 'Auto-Detect Bank Format' },
+    description: {
+      it: 'Rilevamento automatico del formato dei file esportati dalla tua banca (Fineco, Intesa, Revolut, N26).',
+      en: 'Automatic detection of exported file formats from your bank (Fineco, Intesa, Revolut, N26).'
+    },
+    status: 'in-progress',
+    category: 'feature',
+    icon: '🏧',
+  },
+  {
+    id: 'OFX/QIF-support',
+    title: { it: 'Supporto File OFX/QIF', en: 'OFX/QIF File Support' },
+    description: {
+      it: 'Importa le transazioni nel formato standard OFX e QIF usato da molte banche e software finanziari.',
+      en: 'Import transactions in standard OFX and QIF format used by many banks and financial software.'
+    },
+    status: 'in-progress',
+    category: 'feature',
+    icon: '📂',
   },
   /* ──────────── PLANNED ──────────── */
-  {
-    id: 'gamification',
-    title: { it: 'Achievement e Badge', en: 'Achievements & Badges' },
-    description: {
-      it: '44 badge in 10 categorie per premiare la tua costanza nel tracciamento finanziario.',
-      en: '44 badges in 10 categories to reward your consistency in financial tracking.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '🏆',
-  },
-  {
-    id: 'csv-import',
-    title: { it: 'Importazione CSV / Excel', en: 'CSV / Excel Import' },
-    description: {
-      it: 'Importa le tue transazioni da file CSV o Excel con mappatura automatica delle colonne e riconoscimento categorie.',
-      en: 'Import your transactions from CSV or Excel files with automatic column mapping and category recognition.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '📥',
-  },
   {
     id: 'data-export',
     title: { it: 'Esportazione Dati', en: 'Data Export' },
@@ -102,28 +231,6 @@ const roadmapData = [
     status: 'planned',
     category: 'feature',
     icon: '📤',
-  },
-  {
-    id: 'anonymous-comparison',
-    title: { it: 'Confronto Anonimo', en: 'Anonymous Comparison' },
-    description: {
-      it: 'Confronta il tuo patrimonio, entrate e uscite con utenti simili in modo completamente anonimo.',
-      en: 'Compare your assets, income and outflows with similar users in a completely anonymous way.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '📊',
-  },
-  {
-    id: 'goals-limits',
-    title: { it: 'Obiettivi e Limiti di Spesa', en: 'Goals & Spending Limits' },
-    description: {
-      it: 'Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.',
-      en: 'Set custom savings goals and monthly spending limits with notifications.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '🎯',
   },
   {
     id: 'trend-charts',
@@ -168,17 +275,6 @@ const roadmapData = [
     status: 'planned',
     category: 'feature',
     icon: '📄',
-  },
-  {
-    id: 'onboarding',
-    title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },
-    description: {
-      it: 'Un tour interattivo che ti guida nella configurazione iniziale e nelle funzionalità principali.',
-      en: 'An interactive tour that guides you through initial setup and main features.'
-    },
-    status: 'planned',
-    category: 'ux',
-    icon: '🚀',
   },
   {
     id: 'more-languages',

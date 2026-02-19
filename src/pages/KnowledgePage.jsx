@@ -1,4 +1,4 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, { useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -11,43 +11,38 @@ function KnowledgePage() {
   useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   useContext(PrivacyContext);
-  useContext(MediaQueryContext);
-  const [isMobileScreenLocal, setIsMobileScreenLocal] = useState(window.innerWidth <= 768);
-
-  // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
+  const { isMobileScreen } = useContext(MediaQueryContext);
 
   useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
-    
-    const handleResize = () => {
-      setIsMobileScreenLocal(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    handleSetIsUpdated(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Div>
-      {!isMobileScreenLocal && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
-      <div style={{ 
-        marginLeft: isMobileScreenLocal ? '0' : '5.5rem', 
-        paddingTop: isMobileScreenLocal ? '80px' : '0',
-        width: '100%',
-        minHeight: '100vh'
-      }}>
+    <PageLayout>
+      <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
+      <ContentWrapper $isMobile={isMobileScreen}>
         <Knowledge />
-      </div>
-      {isMobileScreenLocal && <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />}
-    </Div>
+      </ContentWrapper>
+    </PageLayout>
   );
 }
 
 export default KnowledgePage;
-const Div = styled.div `
+
+const PageLayout = styled.div`
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  margin-left: ${p => p.$isMobile ? '0' : '5.5rem'};
+  padding-top: ${p => p.$isMobile ? '72px' : '0'};
+
+  @media (max-width: 839px) {
+    margin-left: 0;
+    padding-top: 72px;
+  }
 `;

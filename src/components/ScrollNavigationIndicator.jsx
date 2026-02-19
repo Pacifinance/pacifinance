@@ -460,4 +460,4 @@ const ScrollNavigationIndicator = ({
   );
 };
 
-export default ScrollNavigationIndicator;
+export default React.memo(ScrollNavigationIndicator);

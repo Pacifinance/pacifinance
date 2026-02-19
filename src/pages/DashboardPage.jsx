@@ -53,7 +53,12 @@ const DashboardPage = () => {
     };
 
     if (!userData) {
-        const themeTextColor = theme?.mode === 'dark' ? 'white' : 'black';
+        const isDark = theme?.mode === 'dark';
+        const bgColor = theme?.backgroundColor || (isDark ? '#222831' : '#f5f5f5');
+        const textColor = theme?.textColor || (isDark ? '#e0e0e0' : '#333333');
+        const subtextColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
+        const brandColor = '#079164';
+
         return (
             <div style={{ 
                 display: 'flex', 
@@ -61,12 +66,52 @@ const DashboardPage = () => {
                 justifyContent: 'center', 
                 alignItems: 'center', 
                 height: '100vh',
-                gap: '1rem',
-                color: themeTextColor
+                width: '100%',
+                gap: '1.5rem',
+                backgroundColor: bgColor,
+                color: textColor,
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}>
+                <style>{`
+                    @keyframes dashSpin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(12px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    @keyframes pulse {
+                        0%, 100% { opacity: 0.4; }
+                        50% { opacity: 1; }
+                    }
+                `}</style>
+
                 {error || loadingTimeout ? (
-                    <>
-                        <p style={{ fontSize: '1.1rem', textAlign: 'center', padding: '0 1rem' }}>
+                    <div style={{ 
+                        textAlign: 'center', 
+                        padding: '0 1.5rem',
+                        animation: 'fadeInUp 0.4s ease-out',
+                        maxWidth: '400px',
+                    }}>
+                        <div style={{
+                            width: '56px', height: '56px',
+                            margin: '0 auto 1.25rem',
+                            borderRadius: '50%',
+                            backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.5rem',
+                        }}>
+                            ⚠️
+                        </div>
+                        <p style={{ 
+                            fontSize: '1rem', 
+                            lineHeight: '1.6',
+                            color: textColor,
+                            margin: '0 0 1.25rem',
+                        }}>
                             {error 
                                 ? (translations?.dashboard?.loadingError || 'Error loading data. Please try again.')
                                 : (translations?.dashboard?.loadingTimeout || 'Loading is taking longer than expected...')
@@ -79,31 +124,55 @@ const DashboardPage = () => {
                                 else window.location.reload();
                             }}
                             style={{
-                                padding: '0.7rem 1.5rem',
-                                borderRadius: '8px',
+                                padding: '0.65rem 2rem',
+                                borderRadius: '10px',
                                 border: 'none',
-                                backgroundColor: '#079164',
+                                backgroundColor: brandColor,
                                 color: 'white',
-                                fontSize: '1rem',
+                                fontSize: '0.95rem',
                                 cursor: 'pointer',
-                                fontWeight: '600'
+                                fontWeight: '600',
+                                letterSpacing: '0.02em',
+                                transition: 'transform 0.15s, box-shadow 0.15s',
+                                boxShadow: `0 4px 14px rgba(7, 145, 100, 0.3)`,
                             }}
+                            onMouseEnter={e => { e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 6px 20px rgba(7, 145, 100, 0.4)'; }}
+                            onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 14px rgba(7, 145, 100, 0.3)'; }}
                         >
                             {translations?.dashboard?.retry || 'Retry'}
                         </button>
-                    </>
+                    </div>
                 ) : (
-                    <>
+                    <div style={{ 
+                        textAlign: 'center',
+                        animation: 'fadeInUp 0.5s ease-out',
+                    }}>
+                        {/* Spinner */}
                         <div style={{
-                            width: '40px', height: '40px',
-                            border: '3px solid rgba(7, 145, 100, 0.3)',
-                            borderTopColor: '#079164',
+                            width: '44px', height: '44px',
+                            margin: '0 auto 1.25rem',
+                            border: `3px solid ${isDark ? 'rgba(7, 145, 100, 0.15)' : 'rgba(7, 145, 100, 0.2)'}`,
+                            borderTopColor: brandColor,
                             borderRadius: '50%',
-                            animation: 'spin 0.8s linear infinite'
+                            animation: 'dashSpin 0.8s linear infinite',
                         }} />
-                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                        <p>{translations?.dashboard?.loading || 'Loading dashboard data...'}</p>
-                    </>
+                        <p style={{ 
+                            fontSize: '0.95rem', 
+                            fontWeight: '500',
+                            color: textColor,
+                            margin: '0 0 0.35rem',
+                        }}>
+                            {translations?.dashboard?.loading || 'Loading dashboard data...'}
+                        </p>
+                        <p style={{
+                            fontSize: '0.8rem',
+                            color: subtextColor,
+                            margin: 0,
+                            animation: 'pulse 2s ease-in-out infinite',
+                        }}>
+                            PaciFinance
+                        </p>
+                    </div>
                 )}
             </div>
         );

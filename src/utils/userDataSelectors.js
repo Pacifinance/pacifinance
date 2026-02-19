@@ -3,6 +3,12 @@
  * These selectors maintain compatibility with existing components while using the new optimized data structure
  */
 
+import {
+  DEFAULT_MONTHLY_SPENDING_LIMIT,
+  DEFAULT_SAVINGS_GOAL_PERCENTAGE,
+  DEFAULT_EMERGENCY_FUND_TARGET,
+} from '../data/financeDefaults';
+
 // Current balance selectors
 export const getCurrentBalance = (userData) => userData?.balances?.[0]?.balance || {};
 
@@ -120,6 +126,19 @@ export const getUserHousingType = (userData) => userData?.profile?.housingType |
 export const getUserChildren = (userData) => userData?.profile?.children || { key: -1, value: 'Figli non impostati' };
 export const getUserYearsOfExperience = (userData) => userData?.profile?.yearsOfExperience || { key: -1, value: 'Anni di esperienza non impostati' };
 export const getProfileCompletionPercentage = (userData) => userData?.profileCompletionPercentage || userData?.profile?.completionPercentage || 0;
+
+// New user detection (no balances, no transactions)
+// Note: allOutflows/allIncomes are arrays of month-arrays (e.g. [[], [], ...]),
+// so we must check for actual items inside, not just outer array length.
+export const isNewUser = (userData) => {
+  if (!userData) return false;
+  const hasBalance = getTotalValue(userData) > 0;
+  const outflows = getAllOutflows(userData);
+  const hasOutflows = outflows.some(month => Array.isArray(month) ? month.length > 0 : false);
+  const incomes = getAllIncomes(userData);
+  const hasIncomes = incomes.some(month => Array.isArray(month) ? month.length > 0 : false);
+  return !hasBalance && !hasOutflows && !hasIncomes;
+};
 
 // Expense and income selectors
 export const getAllOutflows = (userData) => userData?.expenses?.allOutflows || userData?.allOutflows || [];
@@ -274,9 +293,9 @@ export const getAveragesSimilarSavingsRates = (userData) => userData?.averages?.
 export const getAveragesSimilarExpensesByCategory = (userData) => userData?.averages?.similar?.expensesByCategory ?? null;
 
 // Goals and limits selectors (for backward compatibility)
-export const getMonthlySpendingLimit = (userData) => userData?.limits?.monthlySpendingLimit ?? 2000;
-export const getSavingsGoalPercentage = (userData) => userData?.limits?.savingsGoalPercentage ?? 20;
-export const getEmergencyFundTarget = (userData) => userData?.limits?.emergencyFundTarget ?? 10000;
+export const getMonthlySpendingLimit = (userData) => userData?.limits?.monthlySpendingLimit ?? DEFAULT_MONTHLY_SPENDING_LIMIT;
+export const getSavingsGoalPercentage = (userData) => userData?.limits?.savingsGoalPercentage ?? DEFAULT_SAVINGS_GOAL_PERCENTAGE;
+export const getEmergencyFundTarget = (userData) => userData?.limits?.emergencyFundTarget ?? DEFAULT_EMERGENCY_FUND_TARGET;
 
 // Balance growth calculation
 export const getBalanceGrowth12Months = (userData) => {

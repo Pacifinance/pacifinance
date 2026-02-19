@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -65,7 +65,7 @@ const FormCard = styled.div`
     grid-template-columns: 1fr 1fr;
     gap: 0.6rem;
   }
-  @media (max-width: 400px) {
+  @media (max-width: 380px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -74,6 +74,8 @@ const FormField = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 const FieldLabel = styled.label`
@@ -94,7 +96,7 @@ const FieldInput = styled.input`
   border-radius: 10px;
   color: ${(p) => p.theme.textColor};
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 16px;
   font-weight: 500;
   background: ${(p) => p.theme.mode === 'dark'
     ? 'rgba(255,255,255,0.04)'
@@ -103,6 +105,7 @@ const FieldInput = styled.input`
   transition: all 0.2s ease;
   box-sizing: border-box;
   min-height: 42px;
+  min-width: 0;
 
   &:focus {
     border-color: ${(p) => p.theme.buttonBackgroundColor};
@@ -112,6 +115,20 @@ const FieldInput = styled.input`
   &::placeholder {
     color: ${(p) => p.theme.textColor};
     opacity: 0.3;
+  }
+
+  &[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0.6rem 0.4rem;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 16px;
+    &[type='date'] {
+      padding: 0.6rem 0.3rem;
+      font-size: 14px;
+    }
   }
 `;
 
@@ -136,6 +153,7 @@ const CurrencySymbol = styled.span`
 const CurrencyInput = styled(FieldInput)`
   padding-left: 1.6rem;
   text-align: right;
+  font-size: 16px;
 `;
 
 const NoteArea = styled.textarea`
@@ -256,8 +274,56 @@ const ActionBtn = styled.button`
     }
   }
   &.edit {
-    background: rgba(156, 163, 175, 0.1);
-    color: #9ca3af;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    &:hover:not(:disabled) {
+      background: rgba(59, 130, 246, 0.2);
+    }
+  }
+  &.cancel {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    &:hover:not(:disabled) {
+      background: rgba(245, 158, 11, 0.2);
+    }
+  }
+`;
+
+const InlineInput = styled.input`
+  width: 100%;
+  min-width: 50px;
+  padding: 4px 6px;
+  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
+  color: ${p => p.theme.textColor};
+  box-sizing: border-box;
+  outline: none;
+  font-family: inherit;
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+  }
+`;
+
+const InlineSelect = styled.select`
+  width: 100%;
+  min-width: 80px;
+  padding: 4px 6px;
+  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
+  color: ${p => p.theme.textColor};
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+
+  option {
+    background: ${p => p.theme.mode === 'dark' ? '#1e293b' : '#ffffff'};
+    color: ${p => p.theme.mode === 'dark' ? '#e2e8f0' : '#1e293b'};
   }
 `;
 
@@ -307,6 +373,7 @@ export default function IncomeSection({
   setIncomeNoteFilter,
   onAddIncome,
   onDeleteIncome,
+  onSaveEdit,
   // New props for balance selection
   selectedOption,
   setSelectedOption,
@@ -317,11 +384,67 @@ export default function IncomeSection({
   setIncomeDateFilterEnd,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
-  const { currencySymbol, formatNumber } = React.useContext(CurrencyContext);
+  const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
   
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
+
+  // Inline editing state
+  const [editingAdd, setEditingAdd] = React.useState(null);
+  const [editValues, setEditValues] = React.useState({});
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const isEditingRow = (add) => {
+    if (!editingAdd) return false;
+    return add === editingAdd || (
+      add.date === editingAdd.date &&
+      add.amount === editingAdd.amount &&
+      add.categoryTag?.index === editingAdd.categoryTag?.index &&
+      add.notes === editingAdd.notes
+    );
+  };
+
+  const startEditing = (add) => {
+    const displayAmount = fromEUR(add.amount ?? 0);
+    setEditingAdd(add);
+    setEditValues({
+      categoryKey: add.categoryTag?.index ?? "",
+      amount: String(parseFloat(displayAmount.toFixed(2))),
+      note: add.notes || "",
+      date: add.date ? new Date(add.date).toISOString().split('T')[0] : "",
+    });
+  };
+
+  const handleSaveInline = async () => {
+    if (!editValues.categoryKey && editValues.categoryKey !== 0) return;
+    if (!editValues.amount || Number(editValues.amount) === 0) return;
+    setIsSaving(true);
+    try {
+      const success = await onSaveEdit(editingAdd, editValues);
+      if (success) {
+        setEditingAdd(null);
+        setEditValues({});
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelInline = () => {
+    setEditingAdd(null);
+    setEditValues({});
+  };
+
+  const handleEditAmountChange = (e) => {
+    let cleaned = e.target.value.replace(/,/g, '.').replace(/[^\d.]/g, '');
+    const dotIdx = cleaned.indexOf('.');
+    if (dotIdx !== -1) {
+      cleaned = cleaned.substring(0, dotIdx + 1) + cleaned.substring(dotIdx + 1).replace(/\./g, '');
+    }
+    if (cleaned.startsWith('.')) cleaned = '0' + cleaned;
+    setEditValues(prev => ({ ...prev, amount: cleaned }));
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -573,6 +696,78 @@ export default function IncomeSection({
           ? getGrayscaleColor(rawColor, index)
           : getLighterSolidColor(rawColor);
         const rowGradient = getGradientForCategory(processedColor);
+
+        // Inline editing mode for this row
+        if (isEditingRow(add)) {
+          return (
+            <tr key={index} style={{ background: 'rgba(59, 130, 246, 0.08)', outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
+              <td>
+                <InlineSelect
+                  theme={theme}
+                  value={editValues.categoryKey}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, categoryKey: Number(e.target.value) }))}
+                >
+                  {sortTagsByLanguage(incomesTags, language).map((item) => (
+                    <option key={item.index} value={item.index}>
+                      {item.translations[language]}
+                    </option>
+                  ))}
+                </InlineSelect>
+              </td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <InlineInput
+                    type="text"
+                    theme={theme}
+                    value={editValues.amount}
+                    onChange={handleEditAmountChange}
+                    style={{ minWidth: 60 }}
+                  />
+                  <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+                </div>
+              </td>
+              <td>
+                <InlineInput
+                  type="text"
+                  theme={theme}
+                  value={editValues.note}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
+                  maxLength={64}
+                />
+              </td>
+              <td>
+                <InlineInput
+                  type="date"
+                  theme={theme}
+                  value={editValues.date}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
+                  max={currentDate}
+                />
+              </td>
+              <td>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
+                  <ActionBtn
+                    className="edit"
+                    onClick={handleSaveInline}
+                    disabled={isSaving}
+                    title={translations.insert.incomeSection.editButton}
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </ActionBtn>
+                  <ActionBtn
+                    className="cancel"
+                    onClick={handleCancelInline}
+                    disabled={isSaving}
+                    title={translations.insert.incomeSection.cancelEdit}
+                  >
+                    <FontAwesomeIcon icon={faRotateLeft} />
+                  </ActionBtn>
+                </div>
+              </td>
+            </tr>
+          );
+        }
+
         return (
           <tr key={index} style={{ background: rowGradient }}>
             <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
@@ -592,7 +787,12 @@ export default function IncomeSection({
             </td>
             <td>
               <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
-                <ActionBtn className="edit" disabled title="Funzionalità in arrivo">
+                <ActionBtn
+                  className="edit"
+                  data-umami-event="editIncome"
+                  onClick={() => startEditing(add)}
+                  title={translations.insert.incomeSection.editingLabel}
+                >
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
                 <ActionBtn

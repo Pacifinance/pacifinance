@@ -242,6 +242,7 @@ const FinancialInsights = ({ theme, userData, isHidden = false }) => {
       const generatedInsights = generateInsights(userData, language, isHidden, translations, currencySymbol, formatAmount);
       setInsights(generatedInsights);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, language, isHidden, translations]);
 
   if (!insights.length) return null;

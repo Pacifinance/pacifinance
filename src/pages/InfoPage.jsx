@@ -2,23 +2,16 @@ import React, {useEffect, useContext, useState} from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
-import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import Info from '../sections/Info';
-
 function InfoPage() {
   const { theme } = useContext(ThemeContext);
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   useContext(PrivacyContext);
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
 
-  // Chiamata per caricare i dati dell'utente
-  const loadUserData = () => {
-    handleSetIsUpdated(false); // Forza il re-render di UserProvider
-  };
-
   useEffect(() => {
-    loadUserData(); // Chiamata iniziale per caricare i dati dell'utente al caricamento della pagina
+    handleSetIsUpdated(false);
     
     const handleResize = () => {
       setIsMobileScreen(window.innerWidth <= 768);
@@ -26,6 +19,7 @@ function InfoPage() {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Matomo Tag Manager
@@ -37,7 +31,7 @@ function InfoPage() {
   // }, [])
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh', position: 'relative' }}>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />
       <div style={{ 
         marginLeft: isMobileScreen ? '0' : '5.5rem', 
@@ -52,6 +46,3 @@ function InfoPage() {
 }
 
 export default InfoPage;
-const Div = styled.div `
-  position: relative;
-`;

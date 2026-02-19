@@ -1,5 +1,6 @@
 
 import React, { useContext } from 'react';
+import { Helmet } from 'react-helmet';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
@@ -7,7 +8,6 @@ import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import NewLandingContent from '../sections/LandingContent';
 import { useHTMLLang } from '../hooks/useHTMLLang';
-
 export default function NewLandingPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
   const { language } = useContext(LanguageContext);
@@ -41,42 +41,97 @@ export default function NewLandingPage() {
 
   return (
     <>
-      {/* Performance Resource Hints */}
-      {/* LCP image preload is in index.html for initial document discoverability */}
-      <link rel="dns-prefetch" href="https://api.pacifinance.com" />
+      {/* Performance Resource Hints - moved to index.html for earlier discovery */}
       
-      {/* Canonical URL - Unico URL per tutte le lingue */}
-      <link rel="canonical" href="https://pacifinance.com/" />
-      
-      {/* SEO Meta Tags - Dinamici per Lingua Attuale */}
-      <title>{metadata.title}</title>
-      <meta name="description" content={`${metadata.description} ${language === 'it' ? 'Dashboard finanziario gratuito multi-piattaforma.' : 'Free multi-platform financial dashboard.'}`} />
-      <meta name="keywords" content={metadata.keywords} />
-      <meta httpEquiv="Content-Language" content={metadata.languageCode} />
-      <meta name="language" content={metadata.languageCode} />
-      <meta name="robots" content="index, follow" />
-      <meta name="google" content="notranslate" />
-      
-      {/* Open Graph Meta Tags */}
-      <meta property="og:title" content={metadata.title} />
-      <meta property="og:description" content={metadata.description} />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://pacifinance.com/" />
-      <meta property="og:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
-      <meta property="og:image:alt" content="PaciFinance - Unified Financial Dashboard" />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:site_name" content="PaciFinance" />
-      <meta property="og:locale" content={metadata.locale} />
-      
-      {/* Twitter Card Meta Tags */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@pacifinance" />
-      <meta name="twitter:creator" content="@pacifinance" />
-      <meta name="twitter:title" content={metadata.title} />
-      <meta name="twitter:description" content={metadata.description} />
-      <meta name="twitter:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
-      <meta name="twitter:image:alt" content="PaciFinance - Unified Financial Dashboard" />
+      <Helmet>
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://pacifinance.com/" />
+        
+        {/* SEO Meta Tags - Dinamici per Lingua Attuale */}
+        <title>{metadata.title}</title>
+        <meta name="description" content={`${metadata.description} ${language === 'it' ? 'Dashboard finanziario gratuito multi-piattaforma.' : 'Free multi-platform financial dashboard.'}`} />
+        <meta name="keywords" content={metadata.keywords} />
+        <meta httpEquiv="Content-Language" content={metadata.languageCode} />
+        <meta name="language" content={metadata.languageCode} />
+        <meta name="robots" content="index, follow" />
+        <meta name="google" content="notranslate" />
+        
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content={metadata.title} />
+        <meta property="og:description" content={metadata.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://pacifinance.com/" />
+        <meta property="og:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
+        <meta property="og:image:alt" content="PaciFinance - Unified Financial Dashboard" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="PaciFinance" />
+        <meta property="og:locale" content={metadata.locale} />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@pacifinance" />
+        <meta name="twitter:creator" content="@pacifinance" />
+        <meta name="twitter:title" content={metadata.title} />
+        <meta name="twitter:description" content={metadata.description} />
+        <meta name="twitter:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
+        <meta name="twitter:image:alt" content="PaciFinance - Unified Financial Dashboard" />
+        
+        {/* Schema.org Structured Data - Supporto Multilingua */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "PaciFinance",
+            "description": metadata.description,
+            "url": "https://pacifinance.com/",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": ["Web Browser", "iOS", "Android"],
+            "inLanguage": ["en", "it"],
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": {
+              "@type": "Organization",
+              "name": "PaciFinance",
+              "url": "https://pacifinance.com",
+              "sameAs": [
+                "https://twitter.com/pacifinance"
+              ]
+            },
+            "featureList": [
+              language === 'it' ? "Unificazione conti bancari" : "Bank account unification",
+              language === 'it' ? "Confronti anonimi" : "Anonymous comparisons", 
+              language === 'it' ? "Gestione investimenti" : "Investment management",
+              language === 'it' ? "Analisi spese" : "Expense analytics",
+              language === 'it' ? "Supporto 19 valute (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)" : "19 currencies supported (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)",
+              language === 'it' ? "Tassi di cambio in tempo reale" : "Live exchange rates",
+              language === 'it' ? "Importazione CSV e Excel" : "CSV and Excel import"
+            ]
+          })}
+        </script>
+
+        {/* Additional Organization Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "PaciFinance",
+            "url": "https://pacifinance.com",
+            "logo": "https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp",
+            "sameAs": [
+              "https://twitter.com/pacifinance"
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "availableLanguage": ["English", "Italian"]
+            }
+          })}
+        </script>
+      </Helmet>
       
       {/* Critical CSS per Above-the-fold */}
       <style dangerouslySetInnerHTML={{
@@ -88,62 +143,7 @@ export default function NewLandingPage() {
         `
       }} />
       
-      {/* Schema.org Structured Data - Supporto Multilingua */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "PaciFinance",
-          "description": metadata.description,
-          "url": "https://pacifinance.com/",
-          "applicationCategory": "FinanceApplication",
-          "operatingSystem": ["Web Browser", "iOS", "Android"],
-          "inLanguage": ["en", "it"], // Supporta entrambe le lingue
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-          },
-          "author": {
-            "@type": "Organization",
-            "name": "PaciFinance",
-            "url": "https://pacifinance.com",
-            "sameAs": [
-              "https://twitter.com/pacifinance"
-            ]
-          },
-          "featureList": [
-            language === 'it' ? "Unificazione conti bancari" : "Bank account unification",
-            language === 'it' ? "Confronti anonimi" : "Anonymous comparisons", 
-            language === 'it' ? "Gestione investimenti" : "Investment management",
-            language === 'it' ? "Analisi spese" : "Expense analytics",
-            language === 'it' ? "Supporto 19 valute (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)" : "19 currencies supported (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)",
-            language === 'it' ? "Tassi di cambio in tempo reale" : "Live exchange rates",
-            language === 'it' ? "Importazione CSV e Excel" : "CSV and Excel import"
-          ]
-        })}
-      </script>
-
-      {/* Additional Organization Schema */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "PaciFinance",
-          "url": "https://pacifinance.com",
-          "logo": "https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp",
-          "sameAs": [
-            "https://twitter.com/pacifinance"
-          ],
-          "contactPoint": {
-            "@type": "ContactPoint",
-            "contactType": "customer service",
-            "availableLanguage": ["English", "Italian"]
-          }
-        })}
-      </script>
-      
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col">
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col relative">
         <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
         <NewLandingContent theme={theme} language={language} isMobileScreen={isMobileScreen}/>
         <LandingFooter theme={theme}/>

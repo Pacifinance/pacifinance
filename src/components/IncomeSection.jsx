@@ -75,6 +75,7 @@ const FormField = styled.div`
   flex-direction: column;
   gap: 0.3rem;
   min-width: 0;
+  overflow: hidden;
 `;
 
 const FieldLabel = styled.label`
@@ -95,7 +96,7 @@ const FieldInput = styled.input`
   border-radius: 10px;
   color: ${(p) => p.theme.textColor};
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 16px;
   font-weight: 500;
   background: ${(p) => p.theme.mode === 'dark'
     ? 'rgba(255,255,255,0.04)'
@@ -104,6 +105,7 @@ const FieldInput = styled.input`
   transition: all 0.2s ease;
   box-sizing: border-box;
   min-height: 42px;
+  min-width: 0;
 
   &:focus {
     border-color: ${(p) => p.theme.buttonBackgroundColor};
@@ -113,6 +115,20 @@ const FieldInput = styled.input`
   &::placeholder {
     color: ${(p) => p.theme.textColor};
     opacity: 0.3;
+  }
+
+  &[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0.6rem 0.4rem;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 16px;
+    &[type='date'] {
+      padding: 0.6rem 0.3rem;
+      font-size: 14px;
+    }
   }
 `;
 
@@ -137,6 +153,7 @@ const CurrencySymbol = styled.span`
 const CurrencyInput = styled(FieldInput)`
   padding-left: 1.6rem;
   text-align: right;
+  font-size: 16px;
 `;
 
 const NoteArea = styled.textarea`

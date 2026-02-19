@@ -87,18 +87,18 @@ function Header({
       style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
     >
       <div
-        className="flex-auto w-full flex p-4 md:p-2 items-center justify-between"
+        className="flex-auto w-full flex p-3 md:p-4 items-center justify-between"
         style={{
           backgroundColor: theme.backgroundColor,
           color: theme.textColor,
         }}
       >
         <LogoPaci />
-        <div className="flex flex-row md:mr-10">
+        <div className="flex flex-row items-center gap-1.5 md:gap-2 md:mr-10">
           {showDemoButton && (
             <button
               data-umami-event="tryDemo"
-              className={`animate-slide-down border border-white rounded items-center cursor-pointer bg-paciGreen text-white px-1.5 py-0.5 text-xs md:text-lg md:px-4 md:py-2 md:border-2 md:rounded-lg shadow-xl mr-2 md:mr-20`}
+              className={`animate-slide-down border border-white rounded items-center cursor-pointer bg-paciGreen text-white px-1.5 py-0.5 text-xs md:text-lg md:px-4 md:py-2 md:border-2 md:rounded-lg shadow-xl`}
               onClick={DemoLogin}
             >
               <span className="md:hidden">Demo</span>

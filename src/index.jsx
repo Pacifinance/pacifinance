@@ -13,6 +13,11 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+// Prevent pinch-to-zoom on iOS (which ignores user-scalable=no)
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+document.addEventListener('gestureend', (e) => e.preventDefault());
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider } from './contexts/UserContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';

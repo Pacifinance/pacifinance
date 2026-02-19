@@ -43,6 +43,7 @@ const FormField = styled.div`
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+  overflow: hidden;
 `;
 
 const FieldLabel = styled.label`
@@ -58,9 +59,10 @@ const FieldInput = styled.input`
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
   border-radius: 10px;
   padding: 8px 12px;
-  font-size: 0.9rem;
+  font-size: 16px;
   min-height: 42px;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white'};
   color: ${p => p.theme.textColor};
@@ -69,6 +71,18 @@ const FieldInput = styled.input`
     outline: none;
     border-color: ${p => p.theme.buttonBackgroundColor || '#3b82f6'};
     box-shadow: 0 0 0 3px ${p => (p.theme.buttonBackgroundColor || '#3b82f6') + '18'};
+  }
+  &[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 8px 6px;
+  }
+  @media (max-width: 600px) {
+    font-size: 16px;
+    &[type='date'] {
+      padding: 8px 4px;
+      font-size: 14px;
+    }
   }
 `;
 
@@ -91,6 +105,7 @@ const CurrencySymbol = styled.span`
 const CurrencyInput = styled(FieldInput)`
   padding-left: 2em;
   text-align: right;
+  font-size: 16px;
 `;
 
 const NoteArea = styled.textarea`

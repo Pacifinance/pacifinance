@@ -34,9 +34,21 @@ body {
   /* Prevent pinch-to-zoom and double-tap zoom on mobile */
   touch-action: pan-x pan-y;
   -ms-touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
   /* Nascondi scrollbar mantenendo lo scroll */
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* Prevent iOS auto-zoom on input focus (requires font-size >= 16px) */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  input[type="date"] {
+    font-size: 14px !important;
+    min-width: 0;
+  }
 }
 
 /* ═══ Dark/Light mode animated transition ═══ */

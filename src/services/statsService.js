@@ -22,7 +22,7 @@ export const createStatsService = (apiClient) => ({
     };
 
     try {
-      const res = await apiClient.post('/stats/averages', {});
+      const res = await apiClient.post('/api/stats/averages', {});
       const data = res.data;
 
       return {
@@ -42,7 +42,7 @@ export const createStatsService = (apiClient) => ({
         },
       };
     } catch {
-      console.warn('/stats/averages endpoint not available, using defaults');
+      console.warn('/api/stats/averages endpoint not available, using defaults');
       return defaults;
     }
   },

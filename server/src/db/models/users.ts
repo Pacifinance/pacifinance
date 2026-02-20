@@ -329,24 +329,24 @@ async function setPublicInfoOfUserId(user_id: string, age: number, livingSituati
     // Get the tags references by their index and type
     // If a reference is found, add it to the object that will be used to update the User document
     const valueToTagMapping = [
-        {tag: tags.TagType.age, newSelection: age},
-        {tag: tags.TagType.livingSituation, newSelection: livingSituation},
-        {tag: tags.TagType.housingType, newSelection: housingType},
-        {tag: tags.TagType.children, newSelection: children},
-        {tag: tags.TagType.country, newSelection: country},
-        {tag: tags.TagType.job, newSelection: job},
-        {tag: tags.TagType.jobType, newSelection: jobType},
-        {tag: tags.TagType.country, newSelection: jobCountry},
-        {tag: tags.TagType.workTime, newSelection: workTime},
-        {tag: tags.TagType.remoteType, newSelection: remoteType},
-        {tag: tags.TagType.yearsOfExperience, newSelection: yearsOfExperience},
-        {tag: tags.TagType.currency, newSelection: preferredCurrency},
+        {field: "age", tagType: tags.TagType.age.value, newSelection: age},
+        {field: "livingSituation", tagType: tags.TagType.livingSituation.value, newSelection: livingSituation},
+        {field: "housingType", tagType: tags.TagType.housingType.value, newSelection: housingType},
+        {field: "children", tagType: tags.TagType.children.value, newSelection: children},
+        {field: "country", tagType: tags.TagType.country.value, newSelection: country},
+        {field: "job", tagType: tags.TagType.job.value, newSelection: job},
+        {field: "jobType", tagType: tags.TagType.jobType.value, newSelection: jobType},
+        {field: "jobCountry", tagType: tags.TagType.country.value, newSelection: jobCountry},
+        {field: "workTime", tagType: tags.TagType.workTime.value, newSelection: workTime},
+        {field: "remoteType", tagType: tags.TagType.remoteType.value, newSelection: remoteType},
+        {field: "yearsOfExperience", tagType: tags.TagType.yearsOfExperience.value, newSelection: yearsOfExperience},
+        {field: "preferredCurrency", tagType: tags.TagType.currency.value, newSelection: preferredCurrency},
     ]
     let update_object: any = {};
     for (let curr of valueToTagMapping) {
-        const tag_ref = await tags.getReferenceByIndexAndType(curr.newSelection, curr.tag.value);
+        const tag_ref = await tags.getReferenceByIndexAndType(curr.newSelection, curr.tagType);
         if (tag_ref !== null) {
-            update_object[curr.tag.name] = tag_ref._id;
+            update_object[curr.field] = tag_ref._id;
         }
     }
     // Update the User document

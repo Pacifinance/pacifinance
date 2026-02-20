@@ -22,7 +22,10 @@ services:
 
   app:
     container_name: app
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${APP_IMAGE:-pacifinance:local}
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"

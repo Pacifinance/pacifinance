@@ -87,30 +87,10 @@ function checkPassword(plain_password: string, hashed_password: string) {
     return bcrypt.compareSync(plain_password, hashed_password)
 }
 
-/**
- * Express middleware for checking the validity of a user session, to be used
- * before all private routes
- * @param req HTTP request
- * @param res HTTP response
- * @param next Express function to go to the next middleware in the chain
- */
-async function checkSessionMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
-    // Check if the session is valid. Send status code 401
-    // (Unauthorized) if it's not valid
-    const session = req.session as SessionData
-    if (!session || !session.userId) {
-        res.status(401).send()
-        return
-    }
-
-    next()
-}
-
 export default {
     roundCurrency,
     sanitizeInput,
     generateUserId,
     hashPassword,
     checkPassword,
-    checkSessionMiddleware,
 }

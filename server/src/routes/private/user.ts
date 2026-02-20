@@ -10,8 +10,6 @@ import common from "../common"
 
 const userRouter = express.Router()
 
-userRouter.use(common.checkSessionMiddleware)
-
 userRouter.post("/logout", async (req, res) => {
     // Invalidate the session 
     req.session.destroy((err: any) => {})

@@ -3,14 +3,11 @@ import { SessionData } from "express-session"
 
 import cache from "../../cache/cache"
 import { AveragesCachedData } from "../../cache/items/averages"
-import common from "../common"
 import users from "../../db/models/users"
 
 /* === /stats/* === */
 
 const statsRouter = express.Router()
-
-statsRouter.use(common.checkSessionMiddleware)
 
 statsRouter.post("/averages", async (req, res) => {
     // Retrieve the cached value and send it to the client with status code 200 (OK)

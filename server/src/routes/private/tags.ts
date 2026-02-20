@@ -1,13 +1,10 @@
 import express from "express"
 
 import db from "../../db/mongo"
-import common from "../common"
 
 /* === /tags/* === */
 
 const tagsRouter = express.Router()
-
-tagsRouter.use(common.checkSessionMiddleware)
 
 tagsRouter.post("/get", async (req, res) => {
     // Get all the tags from the database

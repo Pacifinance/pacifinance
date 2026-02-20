@@ -1,13 +1,10 @@
 import express from "express"
 
 import cache from "../../cache/cache"
-import common from "../common"
 
 /* === /prices/* === */
 
 const pricesRouter = express.Router()
-
-pricesRouter.use(common.checkSessionMiddleware)
 
 pricesRouter.get("/:key", async (req, res) => {
     // Check if the price key is valid is valid. Send status 404

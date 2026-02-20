@@ -45,8 +45,6 @@ function isExpenseValid(data: any) {
 
 const expensesRouter = express.Router()
 
-expensesRouter.use(common.checkSessionMiddleware)
-
 expensesRouter.post("/add", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)

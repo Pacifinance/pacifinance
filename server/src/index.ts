@@ -5,7 +5,7 @@ import path from "path"
 import { createClient } from "redis"
 import { RedisStore } from "connect-redis"
 
-import routes from "./routes/routes"
+import rootRouter from "./routes/routes"
 import db from "./db/mongo"
 import cache from "./cache/cache"
 import jobs from "./jobs/jobs"
@@ -63,14 +63,7 @@ app.use(express.json())
 
 /* ============================ Express.js routes ============================ */
 
-app.use("/", routes.publicRouter)
-app.use("/user", routes.userRouter)
-app.use("/balances", routes.balancesRouter)
-app.use("/expenses", routes.expensesRouter)
-app.use("/tags", routes.tagsRouter)
-app.use("/rank", routes.rankRouter)
-app.use("/stats", routes.statsRouter)
-app.use("/prices", routes.pricesRouter)
+app.use("/api", rootRouter)
 
 // Refresh handler
 app.get("/*splat", (req, res) => {

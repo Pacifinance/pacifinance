@@ -4,7 +4,6 @@ import { SessionData } from "express-session"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/mongo"
-import common from "../common"
 
 /**
  * Computes the rank of a user among other users
@@ -24,8 +23,6 @@ function computeRankOfUser(array: any[], target_user: string) {
 /* === /rank/* === */
 
 const rankRouter = express.Router()
-
-rankRouter.use(common.checkSessionMiddleware)
 
 rankRouter.post("/balances", async (req, res) => {
     // If the user is of test/demo type, assign some random values

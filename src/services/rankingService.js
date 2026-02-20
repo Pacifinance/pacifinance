@@ -35,12 +35,12 @@ export const createRankingService = (apiClient) => ({
         rankIncomeSimilar,
         rankExpenseSimilar,
       ] = await Promise.all([
-        apiClient.post('/rank/balances', {}),
-        apiClient.post('/rank/expenses', { expenses: false }),
-        apiClient.post('/rank/expenses', { expenses: true }),
-        apiClient.post('/rank/balances', { similar: true }),
-        apiClient.post('/rank/expenses', { expenses: false, similar: true }),
-        apiClient.post('/rank/expenses', { expenses: true, similar: true }),
+        apiClient.post('/api/rank/balances', {}),
+        apiClient.post('/api/rank/expenses', { expenses: false }),
+        apiClient.post('/api/rank/expenses', { expenses: true }),
+        apiClient.post('/api/rank/balances', { similar: true }),
+        apiClient.post('/api/rank/expenses', { expenses: false, similar: true }),
+        apiClient.post('/api/rank/expenses', { expenses: true, similar: true }),
       ]);
 
       return {

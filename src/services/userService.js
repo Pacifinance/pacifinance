@@ -20,7 +20,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object|null>} User info or null
    */
   async checkSession() {
-    const res = await apiClient.post('/user/get', {});
+    const res = await apiClient.post('/api/user/get', {});
     return res.data?.userId ? res.data : null;
   },
 
@@ -29,7 +29,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async getTags() {
-    const res = await apiClient.post('/tags/get', {});
+    const res = await apiClient.post('/api/tags/get', {});
     return res.data || {};
   },
 
@@ -38,7 +38,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async getUserInfo() {
-    const res = await apiClient.post('/user/get', {});
+    const res = await apiClient.post('/api/user/get', {});
     return res.data || {};
   },
 
@@ -48,7 +48,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async updateProfile(data) {
-    const res = await apiClient.post('/user/set', data);
+    const res = await apiClient.post('/api/user/set', data);
     return res;
   },
 
@@ -60,7 +60,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async login(userId, password, turnstileToken) {
-    const res = await apiClient.post('/login', {
+    const res = await apiClient.post('/api/login', {
       user_id: userId,
       password,
       ...(turnstileToken && { turnstile_token: turnstileToken }),
@@ -76,7 +76,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async register(password, repeatedPassword, turnstileToken) {
-    const res = await apiClient.post('/registration', {
+    const res = await apiClient.post('/api/registration', {
       user_pwd: password,
       repeated_pwd: repeatedPassword,
       ...(turnstileToken && { turnstile_token: turnstileToken }),
@@ -89,7 +89,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<void>}
    */
   async logout() {
-    await apiClient.post('/user/logout', {});
+    await apiClient.post('/api/user/logout', {});
   },
 
   /**
@@ -97,7 +97,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async deleteAccount() {
-    const res = await apiClient.post('/user/delete', {});
+    const res = await apiClient.post('/api/user/delete', {});
     return res;
   },
 
@@ -107,7 +107,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>} Contains `new_id`
    */
   async changeUserId(password) {
-    const res = await apiClient.post('/user/set-id', { password });
+    const res = await apiClient.post('/api/user/set-id', { password });
     return res.data;
   },
 
@@ -119,7 +119,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async changePassword(oldPassword, newPassword, repeatedPassword) {
-    const res = await apiClient.post('/user/set-password', {
+    const res = await apiClient.post('/api/user/set-password', {
       old_pwd: oldPassword,
       new_pwd: newPassword,
       repeated_pwd: repeatedPassword,
@@ -132,7 +132,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async resetUsername() {
-    const res = await apiClient.post('/user/set-username', {});
+    const res = await apiClient.post('/api/user/set-username', {});
     return res.data;
   },
 
@@ -142,7 +142,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>}
    */
   async saveGoals(goals) {
-    const res = await apiClient.post('/user/goals', goals);
+    const res = await apiClient.post('/api/user/goals', goals);
     return res.data;
   },
 
@@ -151,7 +151,7 @@ export const createUserService = (apiClient) => ({
    * @returns {Promise<Object>} Complete user data
    */
   async getAllData() {
-    const res = await apiClient.post('/user/alldata', {});
+    const res = await apiClient.post('/api/user/alldata', {});
     return res.data;
   },
 });

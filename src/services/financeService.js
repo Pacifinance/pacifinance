@@ -18,7 +18,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<Array>}
    */
   async getBalances() {
-    const res = await apiClient.post('/balances/get', {});
+    const res = await apiClient.post('/api/balances/get', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 
@@ -28,7 +28,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async addBalance(balanceData) {
-    const res = await apiClient.post('/balances/add', balanceData);
+    const res = await apiClient.post('/api/balances/add', balanceData);
     return res;
   },
 
@@ -37,7 +37,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<Array>}
    */
   async getExpensesAndIncomes() {
-    const res = await apiClient.post('/expenses/get', {});
+    const res = await apiClient.post('/api/expenses/get', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 
@@ -47,7 +47,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async addExpenseOrIncome(data) {
-    const res = await apiClient.post('/expenses/add', data);
+    const res = await apiClient.post('/api/expenses/add', data);
     return res;
   },
 
@@ -57,7 +57,7 @@ export const createFinanceService = (apiClient) => ({
    * @returns {Promise<import('axios').AxiosResponse>} Full response (callers check status)
    */
   async deleteExpenseOrIncome(data) {
-    const res = await apiClient.post('/expenses/delete', data);
+    const res = await apiClient.post('/api/expenses/delete', data);
     return res;
   },
 });

@@ -1,5 +1,5 @@
 # Base image
-FROM node:25-alpine3.22 AS base
+FROM node:22-alpine AS base
 WORKDIR /usr/src/pacifinance
 COPY package*.json .
 RUN npm ci
@@ -16,7 +16,7 @@ WORKDIR /usr/src/pacifinance
 RUN npx tsc
 
 # Production image
-FROM node:25-alpine3.22 AS runner
+FROM node:22-alpine AS runner
 WORKDIR /usr/src/pacifinance
 COPY package*.json .
 RUN npm ci --omit=dev

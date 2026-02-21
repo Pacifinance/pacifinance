@@ -32,7 +32,7 @@ describe('userService', () => {
 
       const result = await service.checkSession();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/get', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/get', {});
       expect(result).toEqual({ userId: 'abc123', type: 0 });
     });
 
@@ -62,7 +62,7 @@ describe('userService', () => {
 
       const result = await service.getTags();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/tags/get', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/tags/get', {});
       expect(result).toEqual(mockTags);
     });
 
@@ -81,7 +81,7 @@ describe('userService', () => {
 
       const result = await service.getUserInfo();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/get', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/get', {});
       expect(result).toEqual(mockInfo);
     });
 
@@ -99,7 +99,7 @@ describe('userService', () => {
 
       const result = await service.updateProfile(profileData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/set', profileData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/set', profileData);
       expect(result.status).toBe(200);
     });
   });
@@ -110,7 +110,7 @@ describe('userService', () => {
 
       const result = await service.login('abc', 'pass123', 'turnstile-token');
 
-      expect(mockClient.post).toHaveBeenCalledWith('/login', {
+      expect(mockClient.post).toHaveBeenCalledWith('/api/login', {
         user_id: 'abc',
         password: 'pass123',
         turnstile_token: 'turnstile-token',
@@ -123,7 +123,7 @@ describe('userService', () => {
 
       await service.login('abc', 'pass123');
 
-      expect(mockClient.post).toHaveBeenCalledWith('/login', {
+      expect(mockClient.post).toHaveBeenCalledWith('/api/login', {
         user_id: 'abc',
         password: 'pass123',
       });
@@ -136,7 +136,7 @@ describe('userService', () => {
 
       const result = await service.register('newpass', 'newpass', 'turnstile-token');
 
-      expect(mockClient.post).toHaveBeenCalledWith('/registration', {
+      expect(mockClient.post).toHaveBeenCalledWith('/api/registration', {
         user_pwd: 'newpass',
         repeated_pwd: 'newpass',
         turnstile_token: 'turnstile-token',
@@ -151,7 +151,7 @@ describe('userService', () => {
 
       await service.logout();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/logout', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/logout', {});
     });
   });
 
@@ -161,7 +161,7 @@ describe('userService', () => {
 
       const result = await service.deleteAccount();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/delete', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/delete', {});
       expect(result.status).toBe(200);
     });
   });
@@ -172,7 +172,7 @@ describe('userService', () => {
 
       const result = await service.changeUserId('pass');
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/set-id', {
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/set-id', {
         password: 'pass',
       });
       expect(result).toEqual({ new_id: 'generated-id' });
@@ -185,7 +185,7 @@ describe('userService', () => {
 
       const result = await service.changePassword('old', 'new', 'new');
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/set-password', {
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/set-password', {
         old_pwd: 'old',
         new_pwd: 'new',
         repeated_pwd: 'new',
@@ -200,7 +200,7 @@ describe('userService', () => {
 
       const result = await service.resetUsername();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/set-username', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/set-username', {});
       expect(result).toEqual({ username: 'NewRandom' });
     });
   });
@@ -212,7 +212,7 @@ describe('userService', () => {
 
       await service.saveGoals(goals);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/goals', goals);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/goals', goals);
     });
   });
 
@@ -224,7 +224,7 @@ describe('userService', () => {
 
       const result = await service.getAllData();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/user/alldata', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/alldata', {});
       expect(result).toEqual(mockData);
     });
 

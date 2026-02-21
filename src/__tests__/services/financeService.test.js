@@ -32,7 +32,7 @@ describe('financeService', () => {
 
       const result = await service.getBalances();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/balances/get', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/balances/get', {});
       expect(result).toEqual(mockData);
     });
 
@@ -56,7 +56,7 @@ describe('financeService', () => {
 
       const result = await service.addBalance(balanceData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/balances/add', balanceData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/balances/add', balanceData);
       expect(result.status).toBe(200);
     });
   });
@@ -71,7 +71,7 @@ describe('financeService', () => {
 
       const result = await service.getExpensesAndIncomes();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/expenses/get', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/get', {});
       expect(result).toEqual(mockData);
     });
 
@@ -89,7 +89,7 @@ describe('financeService', () => {
 
       const result = await service.addExpenseOrIncome(txData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/expenses/add', txData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/add', txData);
       expect(result.status).toBe(200);
     });
   });
@@ -101,7 +101,7 @@ describe('financeService', () => {
 
       const result = await service.deleteExpenseOrIncome(deleteData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/expenses/delete', deleteData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/delete', deleteData);
       expect(result.status).toBe(200);
     });
   });

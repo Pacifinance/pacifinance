@@ -49,12 +49,12 @@ describe('rankingService', () => {
 
       await service.getAllRankings();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/balances', {});
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/expenses', { expenses: false });
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/expenses', { expenses: true });
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/balances', { similar: true });
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/expenses', { expenses: false, similar: true });
-      expect(mockClient.post).toHaveBeenCalledWith('/rank/expenses', { expenses: true, similar: true });
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/balances', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: false });
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: true });
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/balances', { similar: true });
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: false, similar: true });
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: true, similar: true });
     });
 
     it('should default to 0 when position is null', async () => {

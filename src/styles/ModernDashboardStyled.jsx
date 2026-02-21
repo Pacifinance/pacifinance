@@ -496,6 +496,7 @@ export const ModernAssetCard = styled.div`
     bottom: 0;
     background: rgba(255, 255, 255, 0);
     transition: all 0.3s ease;
+    pointer-events: none;
   }
 
   &:hover {
@@ -504,6 +505,20 @@ export const ModernAssetCard = styled.div`
 
     &::before {
       background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  @media (max-width: 768px) {
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    &:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
     }
   }
 
@@ -604,9 +619,11 @@ export const ModernAssetCard = styled.div`
       }
 
       .action-button {
-        width: 26px;
-        height: 26px;
-        font-size: 0.85rem;
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 2;
       }
     }
 
@@ -671,6 +688,25 @@ export const ModernInvestmentCard = styled.div`
     &::before {
       width: 100%;
       opacity: 0.1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+
+      &::before {
+        width: 3px;
+        opacity: 1;
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
     }
   }
 
@@ -863,6 +899,13 @@ export const ModernChartContainer = styled.div`
       ? '0 15px 35px rgba(0, 0, 0, 0.3)'
       : '0 15px 35px rgba(0, 0, 0, 0.1)'
     };
+  }
+
+  @media (max-width: 768px) {
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
   }
 
   h4 {

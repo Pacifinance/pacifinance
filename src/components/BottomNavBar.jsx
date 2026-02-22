@@ -68,7 +68,7 @@ const BottomNavBar = ({ handleLogout }) => {
 
     const accountPages = [
         { path: '/profile', icon: <FaUser size={16} />, label: translations?.sidebar?.account?.title || 'Profile' },
-        { path: '/goals-limits', icon: <FaBullseye size={16} />, label: translations?.sidebar?.goalsLimits || 'Goals & Limits' },
+        { path: '/goals-limits', icon: <FaBullseye size={16} />, label: translations?.sidebar?.goalsLimits || 'Goals & Limits', disabled: true, badge: translations?.general?.comingSoon || 'Coming soon' },
         { path: '/settings', icon: <FontAwesomeIcon icon={faUserCog} />, label: translations?.sidebar?.settings?.title || 'Settings' },
     ];
 
@@ -211,25 +211,42 @@ const BottomNavBar = ({ handleLogout }) => {
                     {accountPages.map((page) => (
                         <button
                             key={page.path}
-                            style={popupItemStyle(isActive(page.path))}
+                            disabled={page.disabled}
+                            style={{
+                                ...popupItemStyle(isActive(page.path)),
+                                ...(page.disabled ? { opacity: 0.5, cursor: 'default' } : {}),
+                            }}
                             onMouseEnter={(e) => {
-                                if (!isActive(page.path)) {
+                                if (!isActive(page.path) && !page.disabled) {
                                     e.currentTarget.style.backgroundColor = theme.mode === 'dark'
                                         ? `${theme.buttonBackgroundColor}15`
                                         : '#f1f5f9';
                                 }
                             }}
                             onMouseLeave={(e) => {
-                                if (!isActive(page.path)) {
+                                if (!isActive(page.path) && !page.disabled) {
                                     e.currentTarget.style.backgroundColor = 'transparent';
                                 }
                             }}
-                            onClick={() => navigateTo(page.path)}
+                            onClick={() => !page.disabled && navigateTo(page.path)}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
                                 {page.icon}
                             </span>
-                            {page.label}
+                            <span style={{ flex: 1 }}>{page.label}</span>
+                            {page.badge && (
+                                <span style={{
+                                    fontSize: '0.55rem',
+                                    fontWeight: '600',
+                                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                                    color: 'white',
+                                    padding: '1px 5px',
+                                    borderRadius: '6px',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.03em',
+                                    whiteSpace: 'nowrap',
+                                }}>{page.badge}</span>
+                            )}
                         </button>
                     ))}
                     {/* Separator */}

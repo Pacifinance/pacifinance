@@ -66,7 +66,7 @@ import GamificationSection from '../components/GamificationSection';
 import AvatarIcon from '../components/AvatarIcon';
 import { canRegenerateAvatar, regenerateAvatar } from '../utils/avatarGenerator';
 import { useToast } from '../contexts/ToastContext';
-import { useServices } from '../contexts/ServiceContext';
+import { useDemoServices } from '../hooks/useDemoServices';
 
 // ─── Styled Components ───────────────────────────────────────────────
 
@@ -425,7 +425,7 @@ const ProfilePage = () => {
     const { isMobileScreen } = useContext(MediaQueryContext);
     useLocalizedNavigate();
     const { showSuccess, showError } = useToast();
-    const { userService } = useServices();
+    const { userService } = useDemoServices();
 
     const [activeTab, setActiveTab] = useState('details');
     const [isEditMode, setIsEditMode] = useState(false);

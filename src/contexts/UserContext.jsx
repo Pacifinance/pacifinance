@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useServices } from './ServiceContext';
 import { createLegacyBalanceData } from '../utils/userDataSelectors';
+import { generateDemoData } from '../data/demoData';
 import {
   transformTags,
   transformUserProfile,
@@ -15,6 +16,9 @@ import {
 
 const UserContext = React.createContext();
 
+/** Check if demo mode is active via sessionStorage */
+const isDemoSession = () => sessionStorage.getItem('pacifinance-demo') === 'true';
+
 export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -22,6 +26,7 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [retryCounter, setRetryCounter] = useState(0);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const isAuthenticatedRef = useRef(isAuthenticated);
 
   // Inject services from DI container
@@ -33,12 +38,12 @@ export const UserProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   // Interceptor: detect 401 responses (expired session / logged in elsewhere)
-  // and automatically deauthenticate the user
+  // Skip logout in demo mode (no real session exists)
   useEffect(() => {
     const interceptor = apiClient.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response && error.response.status === 401 && isAuthenticatedRef.current) {
+        if (error.response && error.response.status === 401 && isAuthenticatedRef.current && !isDemoSession()) {
           // Session expired or invalidated (e.g. logged in from another device)
           setIsAuthenticated(false);
           setUserData(null);
@@ -50,8 +55,19 @@ export const UserProvider = ({ children }) => {
   }, [apiClient]);
 
   // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
+  // In demo mode, skip API session check entirely
   useEffect(() => {
     const checkSession = async () => {
+      // Demo mode: activate immediately without API calls
+      if (isDemoSession()) {
+        setIsDemoMode(true);
+        setIsAuthenticated(true);
+        setUserData(generateDemoData());
+        setIsUpdated(true);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const sessionData = await userService.checkSession();
         setIsAuthenticated(!!sessionData);
@@ -65,6 +81,9 @@ export const UserProvider = ({ children }) => {
   }, [userService]);
 
   useEffect(() => {
+    // In demo mode, data is already loaded — skip API fetches
+    if (isDemoMode) return;
+
     // Quando cambia autenticazione o update, carica i dati utente se autenticato
     const fetchUserData = async () => {
       if (!isAuthenticated) {
@@ -146,10 +165,15 @@ export const UserProvider = ({ children }) => {
       }
     };
     fetchUserData();
-  }, [isAuthenticated, isUpdated, retryCounter, userService, financeService, rankingService, statsService]);
+  }, [isAuthenticated, isUpdated, retryCounter, isDemoMode, userService, financeService, rankingService, statsService]);
 
   // Retry function: reset error and trigger re-fetch
   const retryFetch = () => {
+    if (isDemoMode) {
+      // In demo mode, regenerate fresh data
+      setUserData(generateDemoData());
+      return;
+    }
     setError(null);
     setIsUpdated(false);
     setRetryCounter(c => c + 1); // Force re-trigger even if isUpdated was already false
@@ -161,10 +185,20 @@ export const UserProvider = ({ children }) => {
       // Reset on deauthentication so next login triggers data fetch
       setIsUpdated(false);
       setError(null);
+      // Clear demo mode on logout
+      if (isDemoMode) {
+        sessionStorage.removeItem('pacifinance-demo');
+        setIsDemoMode(false);
+      }
     }
   };
 
   const handleSetIsUpdated = (value) => {
+    if (isDemoMode && !value) {
+      // In demo mode, "refresh" means regenerate demo data
+      setUserData(generateDemoData());
+      return;
+    }
     setIsUpdated(value);
   };
 
@@ -186,6 +220,7 @@ export const UserProvider = ({ children }) => {
       handleSetIsAuthenticated, 
       handleSetIsUpdated, 
       isLoading,
+      isDemoMode,
       error,
       retryFetch
     }}>

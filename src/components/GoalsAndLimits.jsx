@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import { useServices } from '../contexts/ServiceContext';
+import { useDemoServices } from '../hooks/useDemoServices';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
@@ -322,7 +322,7 @@ const ProfileSettings = ({ theme }) => {
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
-  const { userService } = useServices();
+  const { userService } = useDemoServices();
   
   // Stati per i limiti e controlli
   const [settings, setSettings] = useState({

@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useServices } from '../contexts/ServiceContext';
+import { useDemoServices } from './useDemoServices';
 
 /**
  * @param {Object}   options
@@ -19,7 +19,7 @@ import { useServices } from '../contexts/ServiceContext';
  * @returns {Object}
  */
 export const useAccountActions = ({ onSuccess, onError, onLogout } = {}) => {
-  const { userService } = useServices();
+  const { userService } = useDemoServices();
   const [isLoading, setIsLoading] = useState(false);
 
   /**

@@ -93,6 +93,7 @@
 - [ ] Export PDF: migliorare layout con grafici inclusi <!-- roadmap:pdf-reports -->
 - [~] Obiettivi e limiti (Goals & Limits con monitoraggio dedicato) (solo frontend fatto manca backend) <!-- roadmap:goals-limits -->
 - [~] Onboarding guidato per nuovi utenti: wizard 4 step con progress bar <!-- roadmap:onboarding -->
+- [ ] Rendere l'account demo che non faccia richieste al db e usi dei mockData in modo da mostrare rapidamente tutte le funzionalità dell'applicazione e convincere l'utente a registrarsi (ora è un account che fa richieste al db ma non è scalabile con tanti utenti)
 
 ### Community e Feedback
 - [~] Sistema feedback utenti (Fase 1): form in-app -> GitHub Issue via backend <!-- roadmap:feedback-system -->

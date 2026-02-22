@@ -9,6 +9,12 @@
 ### Urgente
 - [ ] Aggiungere fattore 100 per convertire i valori inseriti dall'utente in centesimi così non ne perdiamo per Error floating point (ovunque) ★
 
+- [ ] Permettere agli utenti di crearsi e salvare a db delle categorie personalizzate, figlie di quelle principali. Statistiche lato client su categorie utente, statiche globali che mi mandi te su categorie madre. (farlo prima di passaggio a PostgreSQL) ★
+
+- [ ] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
+
+- [ ] un utente potrebbe voler e dovrebbe poter dire come gli utenti simili a lui devono essere calcolati, nel client dei checkbox e tramite quei 0 e 1 te profili l'utente ★
+ 
 ### Valute & Moneta
 - [ ] Aggiungere richiesta API e sistema di cache per le valute (mettine più possibili) ★
 - [ ] Aggiungere alla route del profilo un campo currency, per permettere all'utente di scegliere la sua moneta di riferimento e salvarla a db (ora salvata in locale ) ★
@@ -17,7 +23,6 @@
 
 ### Profilo Utente
 - [ ] Valutare se aggiungere email al profilo per prevenzione bot, recupero password e supporto ★
-- [ ] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
 - [ ] Profile - Back End
   - [x] Nationality
   - [x] Job
@@ -58,6 +63,9 @@
 ### Performance
 - [ ] Enable text compression Server Side
   - [ ] https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression/?utm_source=lighthouse&utm_medium=lr
+
+## Idea
+- [ ] 
 
 ---
 

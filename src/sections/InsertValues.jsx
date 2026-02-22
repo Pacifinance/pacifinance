@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import { useServices } from "../contexts/ServiceContext";
+import { useDemoServices } from "../hooks/useDemoServices";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
 import { useToast } from "../contexts/ToastContext";
@@ -357,7 +357,7 @@ export default function InsertValue({
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
   const { showSuccess, showError } = useToast();
-  const { financeService } = useServices();
+  const { financeService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 

@@ -1,7 +1,7 @@
 import React, { useContext, useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate as useRawNavigate } from "react-router-dom";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-import { useServices } from "../contexts/ServiceContext";
+import { useDemoServices } from "../hooks/useDemoServices";
 import { useAccountActions } from "../hooks/useAccountActions";
 import { useToast } from "../contexts/ToastContext";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -67,7 +67,7 @@ const SettingsPage = () => {
     const navigate = useLocalizedNavigate();
     const rawNavigate = useRawNavigate();
     const location = useLocation();
-    const { userService } = useServices();
+    const { userService } = useDemoServices();
     const { showSuccess, showError } = useToast();
 
     // Shared account actions via DI hook

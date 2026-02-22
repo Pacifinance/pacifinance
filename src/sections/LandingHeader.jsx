@@ -1,13 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ToggleModeButton from "../components/ToggleModeButton";
-import { useServices } from "../contexts/ServiceContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
 import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
-// import MyStyled from '../contexts/MyStyled';
 import { MyButton, ButtonContainer } from "../styles/MyStyled";
 
 function Header({
@@ -18,7 +16,6 @@ function Header({
 }) {
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
-  const { userService } = useServices();
   const [showDemoButton, setShowDemoButton] = useState(false);
   const { language, translations, setLanguage } = useContext(LanguageContext);
   const localizedNavigate = useLocalizedNavigate();
@@ -35,9 +32,6 @@ function Header({
     const newPath = addLanguageToPath(currentPath, newLanguage);
     rawNavigate(newPath, { replace: true });
   };
-  
-  const [username, setUsername] = useState("913418");
-  const [password, setPassword] = useState("vbwifc9u");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -50,31 +44,11 @@ function Header({
   const DemoLogin = async (event) => {
     event.preventDefault();
 
-    // Check if we're on Replit or localhost for automatic bypass
-    const isReplit = window.location.hostname.includes('replit.dev');
-    const isLocalhost = window.location.hostname === 'localhost';
-
-    if (isReplit || isLocalhost) {
-      // Development/testing environment: bypass authentication
-      handleSetIsAuthenticated(true);
-      localizedNavigate("/dashboard");
-      return;
-    }
-
-    // Production environment: use original demo login logic
-    try {
-      handleSetIsAuthenticated(false);
-      const response = await userService.login(username, password);
-      if (response.status === 200) {
-        handleSetIsAuthenticated(true);
-        localizedNavigate("/dashboard");
-      } else {
-        console.warn("Error in the demo login");
-      }
-    } catch (_error) {
-      setUsername("");
-      setPassword("");
-    }
+    // Demo mode: entirely client-side, no API calls
+    // Set demo flag in sessionStorage and navigate to dashboard
+    sessionStorage.setItem('pacifinance-demo', 'true');
+    handleSetIsAuthenticated(true);
+    localizedNavigate("/dashboard");
   };
 
   const handleAuthNavigation = () => {

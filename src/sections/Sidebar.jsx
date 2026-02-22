@@ -13,7 +13,7 @@ import { HiOutlinePencilAlt } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
 import { LocalizedLink } from "../components/LocalizedLink";
 import AvatarIcon from '../components/AvatarIcon';
-import { useServices } from "../contexts/ServiceContext";
+import { useDemoServices } from "../hooks/useDemoServices";
 import { useAccountActions } from "../hooks/useAccountActions";
 import { useToast } from "../contexts/ToastContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
@@ -61,7 +61,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations, toggleLanguage } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const { userService } = useServices();
+    const { userService } = useDemoServices();
     const { setActiveIcon } = useContext(IconContext);
     const location = useLocation();
 
@@ -553,32 +553,30 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             {translations.sidebar.account.title}
                                         </button>
                                         <button
-                                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
+                                            className="text-left p-2 rounded-md mb-1 w-full flex items-center gap-2 text-sm"
                                             style={{
-                                                color: isActivePage("/goals-limits") ? "white" : theme.textColor,
-                                                backgroundColor: isActivePage("/goals-limits") ? theme.buttonBackgroundColor : "transparent",
+                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)',
+                                                backgroundColor: "transparent",
                                                 border: "none",
-                                                fontWeight: isActivePage("/goals-limits") ? "600" : "normal",
+                                                fontWeight: "normal",
+                                                cursor: "default",
+                                                opacity: 0.7,
                                             }}
-                                            onMouseEnter={(e) => {
-                                                if (!isActivePage("/goals-limits")) {
-                                                    e.target.style.backgroundColor = theme.buttonBackgroundColor;
-                                                    e.target.style.color = "white";
-                                                }
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                if (!isActivePage("/goals-limits")) {
-                                                    e.target.style.backgroundColor = "transparent";
-                                                    e.target.style.color = theme.textColor;
-                                                }
-                                            }}
-                                            onClick={() => {
-                                                navigate("/goals-limits");
-                                                setShowDropdown(false);
-                                            }}
+                                            disabled
                                         >
                                             <FaBullseye size={14} />
-                                            Goals and limits
+                                            <span style={{ flex: 1 }}>{translations?.sidebar?.goalsLimits || 'Goals & Limits'}</span>
+                                            <span style={{
+                                                fontSize: '0.6rem',
+                                                fontWeight: '600',
+                                                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                                                color: 'white',
+                                                padding: '1px 6px',
+                                                borderRadius: '8px',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.03em',
+                                                whiteSpace: 'nowrap',
+                                            }}>{translations?.general?.comingSoon || 'Coming soon'}</span>
                                         </button>
                                         <button
                                             className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"

@@ -19,7 +19,10 @@ export const useAuth = () => {
         if (isDevelopmentMode && mockAuth) {
             return mockAuth;
         } else if (userContext) {
-            return userContext;
+            return {
+                ...userContext,
+                isDemoMode: userContext.isDemoMode || false,
+            };
         } else {
             // Fallback completo
             return {
@@ -29,7 +32,8 @@ export const useAuth = () => {
                 handleSetIsAuthenticated: () => {},
                 handleSetIsUpdated: () => {},
                 setUserData: () => {},
-                isDevelopment: isDevelopmentMode
+                isDevelopment: isDevelopmentMode,
+                isDemoMode: false
             };
         }
     }, [isDevelopmentMode, mockAuth, userContext]);

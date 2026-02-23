@@ -16,6 +16,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useAuth } from '../hooks/useAuth';
 import { useServices } from '../contexts/ServiceContext';
+import { translateTag } from '../data/tagTranslations';
 
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MapIcon from '@mui/icons-material/AccountTree';
@@ -485,7 +486,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
           modified = { ...modified, categoryIndex: idx, categoryLabel: cat?.translationKey || 'Other' };
         } else {
           const tag = incomesTags.find(t => t.index === idx);
-          modified = { ...modified, categoryIndex: idx, categoryLabel: tag?.translations?.[language] || tag?.label || 'Other' };
+          modified = { ...modified, categoryIndex: idx, categoryLabel: translateTag(tag?.label, language, 'income') || 'Other' };
         }
       }
       if (rowNotes[tx.rowIndex] !== undefined) {
@@ -636,7 +637,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       if (!tx.isOutflow && tx.categoryIndex === defaultOutflowCategory) {
         // Row used the outflow default — replace with income default
         const tag = incomesTags.find(it => it.index === defaultIncomeCategory);
-        return { ...tx, categoryIndex: defaultIncomeCategory, categoryLabel: tag?.translations?.[language] || tag?.label || 'Other' };
+        return { ...tx, categoryIndex: defaultIncomeCategory, categoryLabel: translateTag(tag?.label, language, 'income') || 'Other' };
       }
       return tx;
     });
@@ -705,12 +706,12 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         return { index: idx, label: cat?.translationKey || 'Other' };
       } else {
         const tag = incomesTags.find(t => t.index === idx);
-        return { index: idx, label: tag?.translations?.[language] || tag?.label || 'Other' };
+        return { index: idx, label: translateTag(tag?.label, language, 'income') || 'Other' };
       }
     }
     if (!tx.isOutflow && incomesTags.length > 0) {
       const tag = incomesTags.find(t => t.index === tx.categoryIndex);
-      if (tag) return { index: tx.categoryIndex, label: tag.translations?.[language] || tag.label };
+      if (tag) return { index: tx.categoryIndex, label: translateTag(tag.label, language, 'income') };
     }
     return { index: tx.categoryIndex, label: tx.categoryLabel };
   };
@@ -732,7 +733,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
           modified = { ...modified, categoryIndex: idx, categoryLabel: cat?.translationKey || 'Other' };
         } else {
           const tag = incomesTags.find(t => t.index === idx);
-          modified = { ...modified, categoryIndex: idx, categoryLabel: tag?.translations?.[language] || tag?.label || 'Other' };
+          modified = { ...modified, categoryIndex: idx, categoryLabel: translateTag(tag?.label, language, 'income') || 'Other' };
         }
       }
       if (rowNotes[tx.rowIndex] !== undefined) {
@@ -1165,7 +1166,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   <SelectField theme={theme} value={defaultIncomeCategory} onChange={e => setDefaultIncomeCategory(parseInt(e.target.value))}>
                     {incomesTags.length > 0 ? (
                       incomesTags.map(c => (
-                        <option key={c.index} value={c.index}>{c.translations?.[language] || c.label}</option>
+                        <option key={c.index} value={c.index}>{translateTag(c.label, language, 'income') || c.label}</option>
                       ))
                     ) : (
                       <option value={9999}>Other</option>
@@ -1183,7 +1184,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   <SelectField theme={theme} value={defaultPaymentType} onChange={e => setDefaultPaymentType(parseInt(e.target.value))}>
                     {paymentTags.map(pt => (
                       <option key={pt.index} value={pt.index}>
-                        {pt.translations?.[language] || pt.label}
+                        {translateTag(pt.label, language, 'payment') || pt.label}
                       </option>
                     ))}
                   </SelectField>
@@ -1429,7 +1430,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             ) : (
                               incomesTags.length > 0 ? (
                                 incomesTags.map(c => (
-                                  <option key={c.index} value={c.index}>{c.translations?.[language] || c.label}</option>
+                                  <option key={c.index} value={c.index}>{translateTag(c.label, language, 'income') || c.label}</option>
                                 ))
                               ) : (
                                 EXPENSE_CATEGORY_CODES.map(c => (

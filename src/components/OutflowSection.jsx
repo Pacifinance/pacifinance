@@ -6,6 +6,7 @@ import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortD
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import { translateTag } from '../data/tagTranslations';
 import {
   ModernActionButton,
   StyledTable,
@@ -500,8 +501,8 @@ export default function OutflowSection({
             >
               <option value="">{translations.general.all}</option>
               {OutflowsTags.map((item) => (
-                <option key={item.index} value={item.translations[language]}>
-                  {item.translations[language]}
+                <option key={item.index} value={translateTag(item.label, language, 'expense')}>
+                  {translateTag(item.label, language, 'expense')}
                 </option>
               ))}
             </select>
@@ -524,8 +525,8 @@ export default function OutflowSection({
               <option value="">{translations.general.all}</option>
               {paymentTags.map((item) =>
                 item.label !== 'none' && (
-                  <option key={item.index} value={item.translations[language]}>
-                    {item.translations[language]}
+                  <option key={item.index} value={translateTag(item.label, language, 'payment')}>
+                    {translateTag(item.label, language, 'payment')}
                   </option>
                 ),
               )}
@@ -619,9 +620,9 @@ export default function OutflowSection({
       }
       return (
         (!outflowCategoryFilter ||
-          add.categoryTag.translations[language] === outflowCategoryFilter) &&
+          translateTag(add.categoryTag?.label, language, 'expense') === outflowCategoryFilter) &&
         (!outflowTypologyFilter ||
-          add.paymentType.translations[language] === outflowTypologyFilter) &&
+          translateTag(add.paymentType?.label, language, 'payment') === outflowTypologyFilter) &&
         (!outflowNoteFilter ||
           (add.notes &&
             add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
@@ -634,12 +635,12 @@ export default function OutflowSection({
         let aVal, bVal;
         switch (sortColumn) {
           case 'category':
-            aVal = a.categoryTag?.translations?.[language] || '';
-            bVal = b.categoryTag?.translations?.[language] || '';
+            aVal = translateTag(a.categoryTag?.label, language, 'expense');
+            bVal = translateTag(b.categoryTag?.label, language, 'expense');
             break;
           case 'typology':
-            aVal = a.paymentType?.translations?.[language] || '';
-            bVal = b.paymentType?.translations?.[language] || '';
+            aVal = translateTag(a.paymentType?.label, language, 'payment');
+            bVal = translateTag(b.paymentType?.label, language, 'payment');
             break;
           case 'amount':
             aVal = a.amount || 0;
@@ -675,6 +676,8 @@ export default function OutflowSection({
           colorKey = add.categoryTag.key;
         } else if (add.categoryTag && add.categoryTag.label) {
           colorKey = add.categoryTag.label;
+        } else if (add.categoryTag && add.categoryTag.label) {
+          colorKey = add.categoryTag.label;
         } else if (add.categoryTag && add.categoryTag.translations) {
           const keys = Object.keys(add.categoryTag.translations);
           if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
@@ -695,9 +698,9 @@ export default function OutflowSection({
                   value={editValues.categoryKey}
                   onChange={(e) => setEditValues(prev => ({ ...prev, categoryKey: Number(e.target.value) }))}
                 >
-                  {sortTagsByLanguage(OutflowsTags, language).map((item) => (
+                  {sortTagsByLanguage(OutflowsTags, language, 'expense').map((item) => (
                     <option key={item.index} value={item.index}>
-                      {item.translations[language]}
+                      {translateTag(item.label, language, 'expense')}
                     </option>
                   ))}
                 </InlineSelect>
@@ -708,9 +711,9 @@ export default function OutflowSection({
                   value={editValues.typologyKey}
                   onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
                 >
-                  {sortTagsByLanguage(paymentTags, language).filter(item => item.label !== 'none').map((item) => (
+                  {sortTagsByLanguage(paymentTags, language, 'payment').filter(item => item.label !== 'none').map((item) => (
                     <option key={item.index} value={item.index}>
-                      {item.translations[language]}
+                      {translateTag(item.label, language, 'payment')}
                     </option>
                   ))}
                 </InlineSelect>
@@ -771,8 +774,8 @@ export default function OutflowSection({
 
         return (
           <tr key={index} style={{ background: rowGradient }}>
-            <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
-            <td>{isHidden ? '****' : add.paymentType.translations[language]}</td>
+            <td>{isHidden ? '****' : translateTag(add.categoryTag?.label, language, 'expense')}</td>
+            <td>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</td>
             <td>
               {isHidden
                 ? '****'
@@ -875,7 +878,7 @@ export default function OutflowSection({
               if (selectedItem) {
                 setCategoryOutflow({
                   key: selectedKey,
-                  value: selectedItem.translations[language],
+                  value: translateTag(selectedItem.label, language, 'expense'),
                 });
               }
             }}
@@ -888,9 +891,9 @@ export default function OutflowSection({
             <MenuItem value="">
               <em>{translations.insert.outflowSection.placeholderCategory}</em>
             </MenuItem>
-            {sortTagsByLanguage(OutflowsTags, language).map((item) => (
+            {sortTagsByLanguage(OutflowsTags, language, 'expense').map((item) => (
               <MenuItem key={item.index} value={item.index}>
-                {item.translations[language]}
+                {translateTag(item.label, language, 'expense')}
               </MenuItem>
             ))}
           </Select>
@@ -905,7 +908,7 @@ export default function OutflowSection({
               const selectedKey = event.target.value;
               const selectedItem = paymentTags.find((item) => item.index === selectedKey);
               if (selectedItem) {
-                setTypoOutflow({ key: selectedKey, value: selectedItem.translations[language] });
+                setTypoOutflow({ key: selectedKey, value: translateTag(selectedItem.label, language, 'payment') });
               }
             }}
             sx={selectSx}
@@ -917,10 +920,10 @@ export default function OutflowSection({
             <MenuItem value="">
               <em>{translations.insert.outflowSection.placeholderTypology}</em>
             </MenuItem>
-            {sortTagsByLanguage(paymentTags, language).map((item) =>
+            {sortTagsByLanguage(paymentTags, language, 'payment').map((item) =>
               item.label !== 'none' && (
                 <MenuItem key={item.index} value={item.index}>
-                  {item.translations[language]}
+                  {translateTag(item.label, language, 'payment')}
                 </MenuItem>
               ),
             )}

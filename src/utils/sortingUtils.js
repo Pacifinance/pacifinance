@@ -1,24 +1,27 @@
 /**
  * Utility functions for sorting tags and options based on language
  */
+import { translateTag } from '../data/tagTranslations';
 
 /**
- * Sorts an array of tags by their translation in the specified language
- * @param {Array} tags - Array of tag objects with translations property
+ * Sorts an array of tags by their translation in the specified language.
+ * Uses local translations (tagTranslations.js) as primary source.
+ * @param {Array} tags - Array of tag objects with label property
  * @param {string} language - Language code ('it' or 'en')
+ * @param {string} [type] - Optional tag type for scoped translation lookup
  * @returns {Array} Sorted array of tags
  */
-export const sortTagsByLanguage = (tags, language) => {
+export const sortTagsByLanguage = (tags, language, type) => {
   if (!tags || !Array.isArray(tags)) return [];
   
   // Find "Other" option (usually has index 9999)
   const otherOption = tags.find(tag => tag.index === 9999);
   const otherTags = tags.filter(tag => tag.index !== 9999);
   
-  // Sort by translation for the specified language
+  // Sort by translation for the specified language (local translations first)
   const sortedTags = otherTags.sort((a, b) => {
-    const aTranslation = a.translations?.[language] || '';
-    const bTranslation = b.translations?.[language] || '';
+    const aTranslation = translateTag(a.label, language, type) || a.translations?.[language] || '';
+    const bTranslation = translateTag(b.label, language, type) || b.translations?.[language] || '';
     return aTranslation.localeCompare(bTranslation, language, {
       sensitivity: 'base',
       numeric: true

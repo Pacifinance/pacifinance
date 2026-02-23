@@ -68,7 +68,7 @@ const BottomNavBar = ({ handleLogout }) => {
 
     const accountPages = [
         { path: '/profile', icon: <FaUser size={16} />, label: translations?.sidebar?.account?.title || 'Profile' },
-        { path: '/goals-limits', icon: <FaBullseye size={16} />, label: translations?.sidebar?.goalsLimits || 'Goals & Limits', disabled: true, badge: translations?.general?.comingSoon || 'Coming soon' },
+        { path: '/goals-limits', icon: <FaBullseye size={16} />, label: translations?.sidebar?.goalsLimits || 'Goals & Limits' },
         { path: '/settings', icon: <FontAwesomeIcon icon={faUserCog} />, label: translations?.sidebar?.settings?.title || 'Settings' },
     ];
 

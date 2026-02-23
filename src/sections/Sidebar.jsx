@@ -553,30 +553,32 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                             {translations.sidebar.account.title}
                                         </button>
                                         <button
-                                            className="text-left p-2 rounded-md mb-1 w-full flex items-center gap-2 text-sm"
+                                            className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"
                                             style={{
-                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)',
-                                                backgroundColor: "transparent",
+                                                color: isActivePage("/goals-limits") ? "white" : theme.textColor,
+                                                backgroundColor: isActivePage("/goals-limits") ? theme.buttonBackgroundColor : "transparent",
                                                 border: "none",
-                                                fontWeight: "normal",
-                                                cursor: "default",
-                                                opacity: 0.7,
+                                                fontWeight: isActivePage("/goals-limits") ? "600" : "normal",
                                             }}
-                                            disabled
+                                            onMouseEnter={(e) => {
+                                                if (!isActivePage("/goals-limits")) {
+                                                    e.target.style.backgroundColor = theme.buttonBackgroundColor;
+                                                    e.target.style.color = "white";
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isActivePage("/goals-limits")) {
+                                                    e.target.style.backgroundColor = "transparent";
+                                                    e.target.style.color = theme.textColor;
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                navigate("/goals-limits");
+                                                setShowDropdown(false);
+                                            }}
                                         >
                                             <FaBullseye size={14} />
-                                            <span style={{ flex: 1 }}>{translations?.sidebar?.goalsLimits || 'Goals & Limits'}</span>
-                                            <span style={{
-                                                fontSize: '0.6rem',
-                                                fontWeight: '600',
-                                                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                                                color: 'white',
-                                                padding: '1px 6px',
-                                                borderRadius: '8px',
-                                                textTransform: 'uppercase',
-                                                letterSpacing: '0.03em',
-                                                whiteSpace: 'nowrap',
-                                            }}>{translations?.general?.comingSoon || 'Coming soon'}</span>
+                                            {translations?.sidebar?.goalsLimits || 'Goals & Limits'}
                                         </button>
                                         <button
                                             className="text-left p-2 rounded-md mb-1 transition-all duration-200 hover:scale-105 w-full flex items-center gap-2 text-sm"

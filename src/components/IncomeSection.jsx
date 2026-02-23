@@ -5,6 +5,7 @@ import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortD
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import { translateTag } from '../data/tagTranslations';
 import styled from 'styled-components';
 import {
   ModernActionButton,
@@ -544,8 +545,8 @@ export default function IncomeSection({
             >
               <option value="">{translations.general.all}</option>
               {incomesTags.map((item) => (
-                <option key={item.index} value={item.translations[language]}>
-                  {item.translations[language]}
+                <option key={item.index} value={translateTag(item.label, language, 'income')}>
+                  {translateTag(item.label, language, 'income')}
                 </option>
               ))}
             </select>
@@ -638,7 +639,7 @@ export default function IncomeSection({
       }
       return (
         (!incomeCategoryFilter ||
-          add.categoryTag.translations[language] === incomeCategoryFilter) &&
+          translateTag(add.categoryTag?.label, language, 'income') === incomeCategoryFilter) &&
         (!incomeNoteFilter ||
           (add.notes &&
             add.notes.toLowerCase().includes(incomeNoteFilter.toLowerCase()))) &&
@@ -651,8 +652,8 @@ export default function IncomeSection({
         let aVal, bVal;
         switch (sortColumn) {
           case 'category':
-            aVal = a.categoryTag?.translations?.[language] || '';
-            bVal = b.categoryTag?.translations?.[language] || '';
+            aVal = translateTag(a.categoryTag?.label, language, 'income');
+            bVal = translateTag(b.categoryTag?.label, language, 'income');
             break;
           case 'amount':
             aVal = a.amount || 0;
@@ -707,9 +708,9 @@ export default function IncomeSection({
                   value={editValues.categoryKey}
                   onChange={(e) => setEditValues(prev => ({ ...prev, categoryKey: Number(e.target.value) }))}
                 >
-                  {sortTagsByLanguage(incomesTags, language).map((item) => (
+                  {sortTagsByLanguage(incomesTags, language, 'income').map((item) => (
                     <option key={item.index} value={item.index}>
-                      {item.translations[language]}
+                      {translateTag(item.label, language, 'income')}
                     </option>
                   ))}
                 </InlineSelect>
@@ -770,7 +771,7 @@ export default function IncomeSection({
 
         return (
           <tr key={index} style={{ background: rowGradient }}>
-            <td>{isHidden ? '****' : add.categoryTag.translations[language]}</td>
+            <td>{isHidden ? '****' : translateTag(add.categoryTag?.label, language, 'income')}</td>
             <td>
               {isHidden
                 ? '****'
@@ -873,7 +874,7 @@ export default function IncomeSection({
               if (selectedItem) {
                 setCategoryIncome({
                   key: selectedKey,
-                  value: selectedItem.translations[language],
+                  value: translateTag(selectedItem.label, language, 'income'),
                 });
               }
             }}
@@ -886,9 +887,9 @@ export default function IncomeSection({
             <MenuItem value="">
               <em>{translations.insert.incomeSection.placeholderCategory}</em>
             </MenuItem>
-            {sortTagsByLanguage(incomesTags, language).map((item) => (
+            {sortTagsByLanguage(incomesTags, language, 'income').map((item) => (
               <MenuItem key={item.index} value={item.index}>
-                {item.translations[language]}
+                {translateTag(item.label, language, 'income')}
               </MenuItem>
             ))}
           </Select>

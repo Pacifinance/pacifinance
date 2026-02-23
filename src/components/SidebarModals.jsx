@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FaBullseye } from 'react-icons/fa';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import { translateTag } from '../data/tagTranslations';
 import {
     MuiCustomDialog,
     MuiFixedDimDialog,
@@ -162,12 +163,10 @@ const SidebarModals = ({
                                         key={tag.index}
                                         value={{
                                             key: tag.index,
-                                            label: tag.translations[
-                                                language
-                                            ],
+                                            label: translateTag(tag.label, language, 'country'),
                                         }}
                                     >
-                                        {tag.translations[language]}
+                                        {translateTag(tag.label, language, 'country')}
                                     </MenuItem>
                                 ))}
                             </Select>{" "}
@@ -214,12 +213,10 @@ const SidebarModals = ({
                                         key={tag.index}
                                         value={{
                                             key: tag.index,
-                                            label: tag.translations[
-                                                language
-                                            ],
+                                            label: translateTag(tag.label, language, 'country'),
                                         }}
                                     >
-                                        {tag.translations[language]}
+                                        {translateTag(tag.label, language, 'country')}
                                     </MenuItem>
                                 ))}
                             </Select>{" "}
@@ -263,12 +260,10 @@ const SidebarModals = ({
                                         key={tag.index}
                                         value={{
                                             key: tag.index,
-                                            label: tag.translations[
-                                                language
-                                            ],
+                                            label: translateTag(tag.label, language, 'job'),
                                         }}
                                     >
-                                        {tag.translations[language]}
+                                        {translateTag(tag.label, language, 'job')}
                                     </MenuItem>
                                 ))}
                             </Select>{" "}
@@ -310,17 +305,15 @@ const SidebarModals = ({
                                         }
                                     </em>
                                 </MenuItem>
-                                {sortTagsByLanguage(jobTypeTags, language).map((tag) => (
+                                {sortTagsByLanguage(jobTypeTags, language, 'jobType').map((tag) => (
                                     <MenuItem
                                         key={tag.index}
                                         value={{
                                             key: tag.index,
-                                            label: tag.translations[
-                                                language
-                                            ],
+                                            label: translateTag(tag.label, language, 'jobType'),
                                         }}
                                     >
-                                        {tag.translations[language]}
+                                        {translateTag(tag.label, language, 'jobType')}
                                     </MenuItem>
                                 ))}
                             </Select>{" "}
@@ -362,17 +355,15 @@ const SidebarModals = ({
                                         }
                                     </em>
                                 </MenuItem>
-                                {sortTagsByLanguage(workTimeTags, language).map((tag) => (
+                                {sortTagsByLanguage(workTimeTags, language, 'workTime').map((tag) => (
                                     <MenuItem
                                         key={tag.index}
                                         value={{
                                             key: tag.index,
-                                            label: tag.translations[
-                                                language
-                                            ],
+                                            label: translateTag(tag.label, language, 'workTime'),
                                         }}
                                     >
-                                        {tag.translations[language]}
+                                        {translateTag(tag.label, language, 'workTime')}
                                     </MenuItem>
                                 ))}
                             </Select>{" "}
@@ -414,17 +405,15 @@ const SidebarModals = ({
                                         }
                                     </em>
                                 </MenuItem>
-                                {sortTagsByLanguage(remoteTypeTags, language).map((tag) => (
+                                {sortTagsByLanguage(remoteTypeTags, language, 'remoteType').map((tag) => (
                                     <MenuItem
                                         key={tag.index}
                                         value={{
                                             key: tag.index,
-                                            label: tag.translations[
-                                                language
-                                            ],
+                                            label: translateTag(tag.label, language, 'remoteType'),
                                         }}
                                     >
-                                        {tag.translations[language]}
+                                        {translateTag(tag.label, language, 'remoteType')}
                                     </MenuItem>
                                 ))}
                             </Select>{" "}

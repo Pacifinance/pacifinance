@@ -30,6 +30,7 @@ import { getAllOutflows, getTotalOutflowsPerCategoryPerMonth } from '../utils/us
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { useContext } from 'react';
+import { translateTag } from '../data/tagTranslations';
 
 const AnalysisContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -614,7 +615,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       
       // Conta transazioni per categoria nel mese corrente
       const transactions = currentMonth.filter(outflow => {
-        const categoryName = outflow.categoryTag?.translations?.en || 
+        const categoryName = translateTag(outflow.categoryTag?.label, language, 'expense') || 
                            outflow.categoryTag?.label || 
                            'Other';
         return categoryName === category;
@@ -644,10 +645,10 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
     
     currentMonth.forEach(outflow => {
       // Normalizza e ottieni i dati principali
-      const paymentTypeName = outflow.paymentType?.translations?.[language] || outflow.paymentType?.label || 'Unknown';
+      const paymentTypeName = translateTag(outflow.paymentType?.label, language, 'payment') || outflow.paymentType?.label || 'Unknown';
       const paymentTypeKey = (outflow.paymentType?.label || 'unknown').toLowerCase();
 
-      const category = outflow.categoryTag?.translations?.[language] || outflow.categoryTag?.label || 'Other';
+      const category = translateTag(outflow.categoryTag?.label, language, 'expense') || outflow.categoryTag?.label || 'Other';
       const categoryKey = (outflow.categoryTag?.label || 'other').toLowerCase();
       const notes = (outflow.notes || '').toLowerCase().trim();
       const amount = Number(outflow.amount) || 0;
@@ -786,9 +787,9 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       
       if (!recurringMap.has(key)) {
         recurringMap.set(key, {
-          category: outflow.categoryTag?.translations?.[language] || outflow.categoryTag?.label || 'Other',
+          category: translateTag(outflow.categoryTag?.label, language, 'expense') || outflow.categoryTag?.label || 'Other',
           categoryKey,
-          paymentType: outflow.paymentType?.translations?.[language] || outflow.paymentType?.label || 'Unknown',
+          paymentType: translateTag(outflow.paymentType?.label, language, 'payment') || outflow.paymentType?.label || 'Unknown',
           paymentTypeKey,
           notes,
           amounts: [],

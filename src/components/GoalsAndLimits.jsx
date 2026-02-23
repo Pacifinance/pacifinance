@@ -19,7 +19,8 @@ import {
     FaEdit,
     FaTrash,
     FaPlus,
-    FaBell
+    FaBell,
+    FaHardHat
 } from 'react-icons/fa';
 import { BsPercent, BsCalendar3 } from 'react-icons/bs';
 
@@ -316,8 +317,68 @@ const CancelButton = styled.button`
   }
 `;
 
-const ProfileSettings = ({ theme }) => {
-  const { language } = useContext(LanguageContext);
+const DevelopmentOverlayWrapper = styled.div`
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)'};
+    border-radius: 16px;
+    z-index: 1;
+    pointer-events: all;
+  }
+`;
+
+const DevelopmentBadge = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  pointer-events: none;
+
+  .dev-icon {
+    font-size: 2rem;
+    color: #f59e0b;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .dev-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dev-text {
+    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-6px); }
+  }
+`;
+
+const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
+  const { language, translations } = useContext(LanguageContext);
   const { currencySymbol } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
@@ -552,7 +613,14 @@ const ProfileSettings = ({ theme }) => {
         </Section>
 
         {/* Sezione Obiettivi Personalizzati */}
-        <Section theme={theme}>
+        {goalsInDevelopment ? (
+        <DevelopmentOverlayWrapper theme={theme}>
+        <DevelopmentBadge theme={theme}>
+          <FaHardHat className="dev-icon" />
+          <span className="dev-badge">{translations?.general?.inDevelopment || 'In development'}</span>
+          <span className="dev-text">{translations?.general?.featureComingSoon || 'Coming soon!'}</span>
+        </DevelopmentBadge>
+        <Section theme={theme} style={{ pointerEvents: 'none', userSelect: 'none' }}>
           <SectionHeader theme={theme}>
             <FaBullseye className="section-icon" />
             <h3>{language === 'it' ? 'Obiettivi Personalizzati' : 'Custom Goals'}</h3>
@@ -591,6 +659,48 @@ const ProfileSettings = ({ theme }) => {
             {language === 'it' ? 'Aggiungi Nuovo Obiettivo' : 'Add New Goal'}
           </AddGoalButton>
         </Section>
+        </DevelopmentOverlayWrapper>
+        ) : (
+        <Section theme={theme}>
+          <SectionHeader theme={theme}>
+            <FaBullseye className="section-icon" />
+            <h3>{language === 'it' ? 'Obiettivi Personalizzati' : 'Custom Goals'}</h3>
+          </SectionHeader>
+          {goals.length === 0 && (
+            <EmptyState theme={theme}>
+              <FaBullseye className="empty-icon" />
+              <p>{language === 'it' ? 'Non hai ancora obiettivi personalizzati.' : 'You don\'t have any custom goals yet.'}</p>
+            </EmptyState>
+          )}
+          {goals.map(goal => {
+            const progress = (goal.current / goal.target) * 100;
+            return (
+              <GoalItem key={goal.id} theme={theme}>
+                <div className="goal-header">
+                  <h4>{goal.name}</h4>
+                  <div className="goal-actions">
+                    <ActionButton theme={theme} onClick={() => handleEditGoal(goal)}>
+                      <FaEdit />
+                    </ActionButton>
+                    <ActionButton theme={theme} variant="danger" onClick={() => handleDeleteGoal(goal.id)}>
+                      <FaTrash />
+                    </ActionButton>
+                  </div>
+                </div>
+                <div className="goal-progress">
+                  {currencySymbol}{goal.current.toLocaleString()} / {currencySymbol}{goal.target.toLocaleString()} ({progress.toFixed(1)}%)
+                  <br />
+                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {new Date(goal.deadline).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}
+                </div>
+              </GoalItem>
+            );
+          })}
+          <AddGoalButton theme={theme} onClick={handleAddGoal}>
+            <FaPlus />
+            {language === 'it' ? 'Aggiungi Nuovo Obiettivo' : 'Add New Goal'}
+          </AddGoalButton>
+        </Section>
+        )}
       </SectionsGrid>
 
       {/* Modal per modifica obiettivo */}

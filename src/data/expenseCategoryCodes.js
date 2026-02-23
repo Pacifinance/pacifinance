@@ -55,25 +55,37 @@ export const getCategoryIndexByLabel = (label) => {
   return category ? category.index : null;
 };
 
+import { translateTag } from './tagTranslations';
+
 /**
- * Get translated category name by index
+ * Get translated category name by index.
+ * Uses local translations (tagTranslations.js) as primary source.
  * @param {number|string} index - The category index from API
  * @param {string} language - Language code ('it', 'en')
- * @param {Array} outflowsTags - Tags array from API with translations
+ * @param {Array} outflowsTags - Tags array from API (used for label lookup)
  * @returns {string} Translated category name
  */
 export const getTranslatedCategoryByIndex = (index, language, outflowsTags) => {
   const numIndex = parseInt(index, 10);
   
-  // Try to find in outflowsTags (from API) for accurate translations
+  // Find the label from our static mapping or API tags
+  const staticCategory = EXPENSE_CATEGORY_CODES.find(c => c.index === numIndex);
+  const label = staticCategory?.label;
+  
+  if (label) {
+    const translated = translateTag(label, language, 'expense');
+    if (translated && translated !== label) return translated;
+  }
+  
+  // Fallback: check API tags
   if (outflowsTags && Array.isArray(outflowsTags)) {
     const tag = outflowsTags.find(t => t.index === numIndex);
-    if (tag?.translations?.[language]) {
-      return tag.translations[language];
+    if (tag?.label) {
+      return translateTag(tag.label, language, 'expense');
     }
   }
   
-  // Fallback to static label
+  // Ultimate fallback to static English label
   return getCategoryLabelByIndex(numIndex);
 };
 

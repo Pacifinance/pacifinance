@@ -55,6 +55,7 @@ import { useAuth } from '../hooks/useAuth';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useGamification } from '../hooks/useGamification';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import { translateTag } from '../data/tagTranslations';
 import { CURRENCIES } from '../data/currencyConfig';
 import Sidebar from '../sections/Sidebar';
 import SEOHead from '../components/SEOHead';
@@ -648,16 +649,16 @@ const ProfilePage = () => {
     };
 
     // Sort all tags
-    const sortedNationalityTags = sortTagsByLanguage(nationalityTags, language);
-    const sortedJobTags = sortTagsByLanguage(jobTags, language);
-    const sortedJobTypeTags = sortTagsByLanguage(jobTypeTags, language);
-    const sortedWorkTimeTags = sortTagsByLanguage(workTimeTags, language);
-    const sortedRemoteTypeTags = sortTagsByLanguage(remoteTypeTags, language);
-    const sortedYearsExperienceTags = sortTagsByLanguage(yearsExperienceTags, language);
-    const sortedAgeTags = sortTagsByLanguage(ageTags, language);
-    const sortedLivingStatusTags = sortTagsByLanguage(livingStatusTags, language);
-    const sortedHousingTypeTags = sortTagsByLanguage(housingTypeTags, language);
-    const sortedHasChildrenTags = sortTagsByLanguage(hasChildrenTags, language);
+    const sortedNationalityTags = sortTagsByLanguage(nationalityTags, language, 'country');
+    const sortedJobTags = sortTagsByLanguage(jobTags, language, 'job');
+    const sortedJobTypeTags = sortTagsByLanguage(jobTypeTags, language, 'jobType');
+    const sortedWorkTimeTags = sortTagsByLanguage(workTimeTags, language, 'workTime');
+    const sortedRemoteTypeTags = sortTagsByLanguage(remoteTypeTags, language, 'remoteType');
+    const sortedYearsExperienceTags = sortTagsByLanguage(yearsExperienceTags, language, 'yearsOfExperience');
+    const sortedAgeTags = sortTagsByLanguage(ageTags, language, 'age');
+    const sortedLivingStatusTags = sortTagsByLanguage(livingStatusTags, language, 'livingSituation');
+    const sortedHousingTypeTags = sortTagsByLanguage(housingTypeTags, language, 'housingType');
+    const sortedHasChildrenTags = sortTagsByLanguage(hasChildrenTags, language, 'children');
     // Build enriched currency options: map DB tags (label: "eur", index: 0) to CURRENCIES config for display
     const sortedCurrencyTags = currencyTagsList.map(tag => {
         const code = tag.label?.toUpperCase();
@@ -680,12 +681,13 @@ const ProfilePage = () => {
     });
 
     // Helper to translate values
-    const translateValue = (currentValue, tagsArray) => {
+    const translateValue = (currentValue, tagsArray, tagType) => {
         if (!currentValue || !tagsArray || tagsArray.length === 0) return currentValue;
-        const match = tagsArray.find(tag => 
-            tag.translations && Object.values(tag.translations).includes(currentValue)
-        );
-        return match?.translations?.[language] || currentValue;
+        const match = tagsArray.find(tag => {
+            const translated = translateTag(tag.label, language, tagType);
+            return translated === currentValue || (tag.translations && Object.values(tag.translations).includes(currentValue));
+        });
+        return match ? translateTag(match.label, language, tagType) : currentValue;
     };
 
     const t = translations?.sidebar?.account || {};
@@ -706,7 +708,7 @@ const ProfilePage = () => {
         </ProfileField>
     );
 
-    const renderEditField = (icon, label, value, onChange, options, placeholder) => (
+    const renderEditField = (icon, label, value, onChange, options, placeholder, tagType) => (
         <EditFieldCard theme={theme}>
             <EditFieldLabel theme={theme}>
                 <EditFieldIconWrap theme={theme}>
@@ -738,10 +740,10 @@ const ProfilePage = () => {
                 {options.map((item, index) => (
                     <MenuItem 
                         key={item.index ?? index} 
-                        value={{ key: item.index ?? index, label: item.translations[language] }}
+                        value={{ key: item.index ?? index, label: translateTag(item.label, language, tagType) }}
                         style={{ fontSize: '0.875rem', padding: '0.625rem 1rem' }}
                     >
-                        {item.translations ? item.translations[language] : item}
+                        {translateTag(item.label, language, tagType)}
                     </MenuItem>
                 ))}
             </Select>
@@ -862,12 +864,12 @@ const ProfilePage = () => {
                             <h3>{t.sections?.profileProfessional || (language === 'it' ? 'Profilo Professionale' : 'Professional Profile')}</h3>
                         </SectionHeader>
                         <ProfileGrid>
-                            {renderField(<MapPin />, t.nationality || 'Nationality', translateValue(userNationality.value, nationalityTags))}
-                            {renderField(<MapPin />, t.whereWork || 'Where you work', translateValue(userWhereWorks.value, nationalityTags))}
-                            {renderField(<Briefcase />, t.work || 'Job', translateValue(userJob.value, jobTags))}
-                            {renderField(<Briefcase />, t.workType || 'Job Type', translateValue(userJobType.value, jobTypeTags))}
-                            {renderField(<Clock />, t.hoursContract || 'Hours', translateValue(userWorkTime.value, workTimeTags))}
-                            {renderField(<Home />, t.remoteWork || 'Remote', translateValue(userRemoteType.value, remoteTypeTags))}
+                            {renderField(<MapPin />, t.nationality || 'Nationality', translateValue(userNationality.value, nationalityTags, 'country'))}
+                            {renderField(<MapPin />, t.whereWork || 'Where you work', translateValue(userWhereWorks.value, nationalityTags, 'country'))}
+                            {renderField(<Briefcase />, t.work || 'Job', translateValue(userJob.value, jobTags, 'job'))}
+                            {renderField(<Briefcase />, t.workType || 'Job Type', translateValue(userJobType.value, jobTypeTags, 'jobType'))}
+                            {renderField(<Clock />, t.hoursContract || 'Hours', translateValue(userWorkTime.value, workTimeTags, 'workTime'))}
+                            {renderField(<Home />, t.remoteWork || 'Remote', translateValue(userRemoteType.value, remoteTypeTags, 'remoteType'))}
                             {renderField(<Star />, t.yearsExperience || 'Experience', userYearsExperience.value)}
                         </ProfileGrid>
                     </SectionCard>
@@ -880,9 +882,9 @@ const ProfilePage = () => {
                         </SectionHeader>
                         <ProfileGrid>
                             {renderField(<Calendar />, t.age || 'Age', userAge.value)}
-                            {renderField(<Users />, t.livingStatus || 'Living Status', translateValue(userLivingStatus.value, livingStatusTags))}
-                            {renderField(<Home />, t.housingType || 'Housing', translateValue(userHousingType.value, housingTypeTags))}
-                            {renderField(<Baby />, t.hasChildren || 'Children', translateValue(userHasChildren.value, hasChildrenTags))}
+                            {renderField(<Users />, t.livingStatus || 'Living Status', translateValue(userLivingStatus.value, livingStatusTags, 'livingSituation'))}
+                            {renderField(<Home />, t.housingType || 'Housing', translateValue(userHousingType.value, housingTypeTags, 'housingType'))}
+                            {renderField(<Baby />, t.hasChildren || 'Children', translateValue(userHasChildren.value, hasChildrenTags, 'children'))}
                         </ProfileGrid>
                     </SectionCard>
                 </>
@@ -932,7 +934,7 @@ const ProfilePage = () => {
                                             return <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>{t.selectPreferredCurrency}</span>;
                                         }
                                         const matchedTag = sortedCurrencyTags.find(tag => Number(tag.index) === Number(selectedKey));
-                                        return matchedTag?.translations?.[language] || String(selectedKey);
+                                        return matchedTag?.translations?.[language] || matchedTag?.label || String(selectedKey);
                                     }}
                                 >
                                     <MenuItem value="">
@@ -960,19 +962,19 @@ const ProfilePage = () => {
                         </SectionHeader>
                         <EditFormGrid>
                             {renderEditField(<MapPin />, t.nationality || 'Nationality', userNationality.value, 
-                                (e) => setUserNationality({ key: e.target.value.key, value: e.target.value.label }), sortedNationalityTags, t.selectNationality)}
+                                (e) => setUserNationality({ key: e.target.value.key, value: e.target.value.label }), sortedNationalityTags, t.selectNationality, 'country')}
                             {renderEditField(<MapPin />, t.whereWork || 'Where you work', userWhereWorks.value,
-                                (e) => setUserWhereWorks({ key: e.target.value.key, value: e.target.value.label }), sortedNationalityTags, t.selectWhereWork)}
+                                (e) => setUserWhereWorks({ key: e.target.value.key, value: e.target.value.label }), sortedNationalityTags, t.selectWhereWork, 'country')}
                             {renderEditField(<Briefcase />, t.work || 'Job', userJob.value,
-                                (e) => setUserJob({ key: e.target.value.key, value: e.target.value.label }), sortedJobTags, t.selectWork)}
+                                (e) => setUserJob({ key: e.target.value.key, value: e.target.value.label }), sortedJobTags, t.selectWork, 'job')}
                             {renderEditField(<Briefcase />, t.workType || 'Job Type', userJobType.value,
-                                (e) => setUserJobType({ key: e.target.value.key, value: e.target.value.label }), sortedJobTypeTags, t.selectWorkType)}
+                                (e) => setUserJobType({ key: e.target.value.key, value: e.target.value.label }), sortedJobTypeTags, t.selectWorkType, 'jobType')}
                             {renderEditField(<Clock />, t.hoursContract || 'Hours', userWorkTime.value,
-                                (e) => setUserWorkTime({ key: e.target.value.key, value: e.target.value.label }), sortedWorkTimeTags, t.selectHoursContract)}
+                                (e) => setUserWorkTime({ key: e.target.value.key, value: e.target.value.label }), sortedWorkTimeTags, t.selectHoursContract, 'workTime')}
                             {renderEditField(<Home />, t.remoteWork || 'Remote', userRemoteType.value,
-                                (e) => setUserRemoteType({ key: e.target.value.key, value: e.target.value.label }), sortedRemoteTypeTags, t.selectRemoteWork)}
+                                (e) => setUserRemoteType({ key: e.target.value.key, value: e.target.value.label }), sortedRemoteTypeTags, t.selectRemoteWork, 'remoteType')}
                             {renderEditField(<Star />, t.yearsExperience || 'Experience', userYearsExperience.value,
-                                (e) => setUserYearsExperience({ key: e.target.value.key, value: e.target.value.label }), sortedYearsExperienceTags, t.selectYearsExperience)}
+                                (e) => setUserYearsExperience({ key: e.target.value.key, value: e.target.value.label }), sortedYearsExperienceTags, t.selectYearsExperience, 'yearsOfExperience')}
                         </EditFormGrid>
                     </SectionCard>
 
@@ -984,13 +986,13 @@ const ProfilePage = () => {
                         </SectionHeader>
                         <EditFormGrid>
                             {renderEditField(<Calendar />, t.age || 'Age', userAge.value,
-                                (e) => setUserAge({ key: e.target.value.key, value: e.target.value.label }), sortedAgeTags, t.selectAge)}
+                                (e) => setUserAge({ key: e.target.value.key, value: e.target.value.label }), sortedAgeTags, t.selectAge, 'age')}
                             {renderEditField(<Users />, t.livingStatus || 'Living Status', userLivingStatus.value,
-                                (e) => setUserLivingStatus({ key: e.target.value.key, value: e.target.value.label }), sortedLivingStatusTags, t.selectLivingStatus)}
+                                (e) => setUserLivingStatus({ key: e.target.value.key, value: e.target.value.label }), sortedLivingStatusTags, t.selectLivingStatus, 'livingSituation')}
                             {renderEditField(<Home />, t.housingType || 'Housing', userHousingType.value,
-                                (e) => setUserHousingType({ key: e.target.value.key, value: e.target.value.label }), sortedHousingTypeTags, t.selectHousingType)}
+                                (e) => setUserHousingType({ key: e.target.value.key, value: e.target.value.label }), sortedHousingTypeTags, t.selectHousingType, 'housingType')}
                             {renderEditField(<Baby />, t.hasChildren || 'Children', userHasChildren.value,
-                                (e) => setUserHasChildren({ key: e.target.value.key, value: e.target.value.label }), sortedHasChildrenTags, t.selectHasChildren)}
+                                (e) => setUserHasChildren({ key: e.target.value.key, value: e.target.value.label }), sortedHasChildrenTags, t.selectHasChildren, 'children')}
                         </EditFormGrid>
                     </SectionCard>
 

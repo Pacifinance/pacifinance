@@ -16,19 +16,19 @@ import {
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
+import { translateTagObject, translateTag as translateTagDirect } from '../data/tagTranslations';
+
 /**
  * Get a translated label from a tag object with fallback chain.
- * @param {Object|null} obj  Tag object with `.translations`
+ * Prefers local translations (tagTranslations.js), then DB `.translations` field.
+ * @param {Object|null} obj  Tag object with `.label` and optionally `.translations`
  * @param {string} language  Current language code
  * @param {string} fallback  Default string when no translation is found
+ * @param {string} [type]    Optional tag type for scoped local lookup
  * @returns {string}
  */
-export const getTranslation = (obj, language, fallback) => {
-  if (!obj?.translations) return fallback;
-  if (obj.translations[language]) return obj.translations[language];
-  if (obj.translations.en) return obj.translations.en;
-  if (obj.translations.it) return obj.translations.it;
-  return fallback;
+export const getTranslation = (obj, language, fallback, type) => {
+  return translateTagObject(obj, language, fallback, type);
 };
 
 // ─── Tags ────────────────────────────────────────────────────────────
@@ -208,6 +208,7 @@ export const aggregateOutflowsByCategory = (allOutflowsIncomesArray) => {
     month.forEach(entry => {
       if (entry?.isExpense) {
         const categoryKey =
+          translateTagDirect(entry.categoryTag?.label, 'en', 'expense') ||
           entry.categoryTag?.translations?.en ||
           entry.categoryTag?.label ||
           'Unknown';

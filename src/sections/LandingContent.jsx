@@ -15,7 +15,7 @@ import {
   CurrencyExchange as CurrencyExchangeIcon
 } from "@mui/icons-material";
 // Hero image served from public/ for preload discoverability in index.html
-const LandingPageImage = "/PacifinanceArt2NoBg.webp";
+const LandingPageImage = "/hero.webp";
 import Logo from "../assets/Brand/PacifinanceLogoPNG3NoBg.webp";
 
 // Lazy loading dei componenti non critici per il First Contentful Paint
@@ -160,7 +160,25 @@ export default function NewLandingContent({ theme }) {
           {/* Right Column - Hero Image (smaller on mobile) */}
           <div className="flex justify-center lg:justify-end mt-2 md:mt-0">
             <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-none">
-              <img
+              <picture>
+                <source srcset="/hero.avif" type="image/avif">
+                <source srcset="/hero.webp" type="image/webp">
+                <img 
+                  src="/hero.webp"
+                  alt="PaciFinance Dashboard Preview"
+                  className="w-full h-auto rounded-2xl shadow-2xl"
+                  width={600}
+                  height={400}
+                  style={{ maxHeight: "500px", objectFit: "contain" }}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  sizes="(max-width: 480px) 280px, (max-width: 768px) 380px, 600px"
+                  draggable="false"
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+              </picture>
+              {/* <img
                 src={LandingPageImage}
                 alt="PaciFinance Dashboard Preview"
                 className="w-full h-auto rounded-2xl shadow-2xl"
@@ -173,7 +191,7 @@ export default function NewLandingContent({ theme }) {
                 sizes="(max-width: 480px) 280px, (max-width: 768px) 380px, 600px"
                 draggable="false"
                 onContextMenu={(e) => e.preventDefault()}
-              />
+              /> */}
               {/* Floating Elements - hidden on very small screens */}
               <div
                 className="hidden sm:block absolute -top-3 -right-3 md:-top-4 md:-right-4 w-6 h-6 md:w-8 md:h-8 rounded-full animate-bounce"

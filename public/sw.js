@@ -2,7 +2,7 @@
 const CACHE_NAME = 'pacifinance-v1';
 const CRITICAL_RESOURCES = [
   '/',
-  '/src/assets/LandingPage/PacifinanceArt2NoBg.webp',
+  '/src/assets/LandingPage/hero.webp',
   '/src/assets/Brand/PacifinanceLogoPNG3NoBg.webp'
 ];
 

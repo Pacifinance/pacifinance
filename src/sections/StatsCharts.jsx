@@ -171,16 +171,14 @@ const TabButton = styled.button`
   }
   
   @media (max-width: 480px) {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-    
-    span {
-      display: none;
-    }
+    padding: 0.5rem 0.7rem;
+    font-size: 0.72rem;
+    gap: 0.3rem;
     
     svg {
-      width: 18px;
-      height: 18px;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
     }
   }
 `;
@@ -501,10 +499,7 @@ export default function StatsCharts() {
                     
                     <StatsGrid>
                         <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <BalancesStats theme={theme} userData={userData} isHidden={isHidden} period="month"/>
-                        </div>
-                        <div className="fade-in-up" style={{ animationDelay: '0.4s' }}>
-                            <BalancesStats theme={theme} userData={userData} isHidden={isHidden} period="year"/>
+                            <BalancesStats theme={theme} userData={userData} isHidden={isHidden} />
                         </div>
                     </StatsGrid>
                 </SectionContainer>
@@ -581,18 +576,13 @@ export default function StatsCharts() {
                             {translations.graphs.statsOutflows.detailedVision}
                         </SectionTitle>
                         <SectionDescription theme={theme}>
-                            {translations.graphs.descriptions.incomeOutflowDetails}
+                            {translations.graphs?.financialOverview?.description || translations.graphs.descriptions.incomeOutflowDetails}
                         </SectionDescription>
                     </SectionHeader>
                     
-                    <StatsGrid>
-                        <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <InOutStats period="month" theme={theme} userData={userData} isHidden={isHidden}/>
-                        </div>
-                        <div className="fade-in-up" style={{ animationDelay: '0.4s' }}>
-                            <InOutStats period="year" theme={theme} userData={userData} isHidden={isHidden}/>
-                        </div>
-                    </StatsGrid>
+                    <div className="fade-in-up" style={{ animationDelay: '0.2s', maxWidth: '700px', margin: '0 auto' }}>
+                        <InOutStats theme={theme} userData={userData} isHidden={isHidden}/>
+                    </div>
                 </SectionContainer>
 
                 <SectionContainer>
@@ -642,6 +632,7 @@ export default function StatsCharts() {
                         <TrendingUp />
                         <span>{translations.graphs.statsOutflows.title}</span>
                     </TabButton>
+                    {/* AI Insights tab — hidden for now, to be re-evaluated later
                     <TabButton
                         theme={theme}
                         active={activePage === "insights"}
@@ -650,13 +641,14 @@ export default function StatsCharts() {
                         <Brain />
                         <span>{language === 'it' ? 'Insights AI' : 'AI Insights'}</span>
                     </TabButton>
+                    */}
                 </NavigationTabs>
             </HeaderSection>
 
             <MainContent>
                 {activePage === "statsBilancio" && renderBalanceContent()}
                 {activePage === "statsIncomesOutflows" && renderIncomeOutflowContent()}
-                {activePage === "insights" && renderInsightsContent()}
+                {/* activePage === "insights" && renderInsightsContent() */}
             </MainContent>
         </StatsContainer>
         </>

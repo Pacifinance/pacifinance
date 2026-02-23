@@ -30,7 +30,7 @@ body *{
 }
 body {
   margin: 0;
-  background-color: #F7F5FF;
+  background-color: #222831;
   /* Prevent pinch-to-zoom and double-tap zoom on mobile */
   touch-action: pan-x pan-y;
   -ms-touch-action: pan-x pan-y;

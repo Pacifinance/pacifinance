@@ -19,6 +19,7 @@ const SCROLL_THRESHOLD_UP_TRIGGER = 0.05;
 // Soglie specifiche per pagina per evitare interferenze con i form
 const PAGE_SPECIFIC_THRESHOLDS = {
   '/insert-values': { down: 0.99, up: 0.02 }, // Molto più restrittiva per i form con spazio extra
+  '/charts-statistics': { down: 0.995, up: 0.03 }, // Più restrittiva per evitare sovrapposizione con statistiche
   '/comparison': { down: 0.98, up: 0.05 },
   default: { down: 0.98, up: 0.05 }
 };

@@ -308,12 +308,21 @@ describe('aggregateOutflowsByCategory', () => {
     expect(result[0].Transport).toBe(50);
   });
 
-  it('uses label as fallback when translations.en is missing', () => {
+  it('translates label via i18n when translations.en is missing', () => {
+    // 'health' exists in en.json tags.expense → 'Health & Wellness'
     const data = [[
-      { isExpense: true, amount: 10, categoryTag: { label: 'Health' } },
+      { isExpense: true, amount: 10, categoryTag: { label: 'health' } },
     ]];
     const result = aggregateOutflowsByCategory(data);
-    expect(result[0].Health).toBe(10);
+    expect(result[0]['Health & Wellness']).toBe(10);
+  });
+
+  it('uses capitalised label as fallback when no i18n translation exists', () => {
+    const data = [[
+      { isExpense: true, amount: 25, categoryTag: { label: 'CustomCategory' } },
+    ]];
+    const result = aggregateOutflowsByCategory(data);
+    expect(result[0].CustomCategory).toBe(25);
   });
 
   it('uses Unknown when no category info available', () => {

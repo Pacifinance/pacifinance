@@ -102,53 +102,66 @@ export const mockUserData = {
     
     // Expense and income data (come UserContext)
     expenses: {
-        allOutflows: [
-            // Mese corrente [0] - array di transazioni
-            (() => {
-                const currentDate = new Date();
-                const currentMonth = currentDate.getMonth() + 1;
-                const currentYear = currentDate.getFullYear();
-                
-                const transactions = [];
-                const numTransactions = Math.floor(Math.random() * 11) + 15; // 15-25 transazioni
-                
-                for (let i = 0; i < numTransactions; i++) {
-                    const day = Math.floor(Math.random() * 28) + 1;
-                    const transactionDate = new Date(currentYear, currentMonth - 1, day);
-                    
-                    const categories = [
-                        { index: 5, label: 'house', translations: { it: 'Casa', en: 'House' }},
-                        { index: 4, label: 'food', translations: { it: 'Alimentari', en: 'Food' }},
-                        { index: 12, label: 'transports', translations: { it: 'Trasporto', en: 'Transports' }},
-                        { index: 6, label: 'free time', translations: { it: 'Divertimento', en: 'Free time' }},
-                        { index: 3, label: 'shopping', translations: { it: 'Shopping', en: 'Shopping' }},
-                        { index: 8, label: 'investment', translations: { it: 'Investimento', en: 'Investment' }},
-                        { index: 9, label: 'health', translations: { it: 'Salute e benessere', en: 'Health' }}
-                    ];
-                    
-                    const paymentTypes = [
-                        { index: 0, label: 'single payment', translations: { it: 'Pagamento singolo', en: 'Single Payment' }},
-                        { index: 1, label: 'subscription', translations: { it: 'Abbonamento', en: 'Subscription' }},
-                        { index: 2, label: 'installment', translations: { it: 'Rata', en: 'Installment' }},
-                        { index: 3, label: 'periodic payment', translations: { it: 'Pagamento periodico', en: 'Periodic payment' }}
-                    ];
-                    
-                    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-                    const randomPaymentType = paymentTypes[Math.floor(Math.random() * paymentTypes.length)];
-                    let amount = Math.floor(Math.random() * 200) + 50;
-                    
-                    transactions.push({
-                        date: transactionDate.toISOString().split('T')[0],
-                        amount,
-                        categoryTag: randomCategory,
-                        paymentType: randomPaymentType,
+        allOutflows: (() => {
+            // Generate 12 months of outflow transactions with recurring patterns
+            const categories = [
+                { index: 5, label: 'house', translations: { it: 'Casa', en: 'House' }},
+                { index: 4, label: 'food', translations: { it: 'Alimentari', en: 'Food' }},
+                { index: 12, label: 'transports', translations: { it: 'Trasporto', en: 'Transports' }},
+                { index: 6, label: 'free time', translations: { it: 'Divertimento', en: 'Free time' }},
+                { index: 3, label: 'shopping', translations: { it: 'Shopping', en: 'Shopping' }},
+                { index: 8, label: 'investment', translations: { it: 'Investimento', en: 'Investment' }},
+                { index: 9, label: 'health', translations: { it: 'Salute e benessere', en: 'Health' }}
+            ];
+            const paymentTypes = [
+                { index: 0, label: 'single payment', translations: { it: 'Pagamento singolo', en: 'Single Payment' }},
+                { index: 1, label: 'subscription', translations: { it: 'Abbonamento', en: 'Subscription' }},
+                { index: 2, label: 'installment', translations: { it: 'Rata', en: 'Installment' }},
+                { index: 3, label: 'periodic payment', translations: { it: 'Pagamento periodico', en: 'Periodic payment' }}
+            ];
+            // Recurring outflows that appear every month (detectable by the algorithm)
+            const recurringTemplates = [
+                { category: categories[0], payment: paymentTypes[1], amount: 650, notes: 'Affitto' },       // house + subscription
+                { category: categories[0], payment: paymentTypes[1], amount: 15, notes: 'Netflix' },         // house + subscription
+                { category: categories[0], payment: paymentTypes[1], amount: 10, notes: 'Spotify' },         // house + subscription
+                { category: categories[2], payment: paymentTypes[3], amount: 35, notes: 'Abbonamento treno' }, // transports + periodic
+                { category: categories[5], payment: paymentTypes[3], amount: 200, notes: 'PAC ETF' },        // investment + periodic
+                { category: categories[6], payment: paymentTypes[1], amount: 45, notes: 'Palestra' },        // health + subscription
+            ];
+            const months = [];
+            const now = new Date();
+            for (let m = 0; m < 12; m++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+                const year = d.getFullYear();
+                const month = d.getMonth();
+                const txs = [];
+                // Add recurring outflows (small amount jitter ±5)
+                recurringTemplates.forEach(tpl => {
+                    const jitter = Math.floor(Math.random() * 11) - 5;
+                    txs.push({
+                        date: new Date(year, month, Math.floor(Math.random() * 27) + 1).toISOString().split('T')[0],
+                        amount: Math.max(tpl.amount + jitter, 8),
+                        categoryTag: tpl.category,
+                        paymentType: tpl.payment,
+                        notes: tpl.notes,
+                        isExpense: true
+                    });
+                });
+                // Add 10-18 random one-off transactions
+                const n = Math.floor(Math.random() * 9) + 10;
+                for (let i = 0; i < n; i++) {
+                    txs.push({
+                        date: new Date(year, month, Math.floor(Math.random() * 27) + 1).toISOString().split('T')[0],
+                        amount: Math.floor(Math.random() * 200) + 15,
+                        categoryTag: categories[Math.floor(Math.random() * categories.length)],
+                        paymentType: paymentTypes[Math.floor(Math.random() * paymentTypes.length)],
                         isExpense: true
                     });
                 }
-                
-                return transactions;
-            })()
-        ],
+                months.push(txs);
+            }
+            return months;
+        })(),
         outflowsArray: [2100, 1950, 2200, 1800, 2300, 1750, 2150, 1900, 2050, 1850, 2250, 1700, 2000],
         totalOutflowsPerCategoryPerMonth: {
             0: { "House": 800, "Food": 600, "Transports": 400, "Free time": 300, "Shopping": 350, "Investment": 200, "Health": 150 },

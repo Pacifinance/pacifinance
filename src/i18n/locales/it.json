@@ -43,6 +43,7 @@
         "selectAnOption": "Nessuno (opzionale)",
         "objective": "Obiettivo",
         "clearFilter": "Cancella",
+        "currentMonth": "Mese corrente",
         "all": "Tutti"
     },
     "months": {
@@ -562,16 +563,22 @@
             "title": "Statistiche bilancio",
             "titleGraph": "Andamento del tuo bilancio negli ultimi 12 mesi",
             "titleGraph2": "Distribuzione del tuo bilancio negli ultimi 12 mesi",
-            "detailedVision": "Visione dettagliata",
+            "detailedVision": "Statistiche bilancio",
+            "asset": "Asset",
             "titleDetailsMonth": "Il tuo patrimonio rispetto al mese scorso è variato di: ",
             "variation": "Variazione ",
             "titleDetailsYear": "Il tuo patrimonio rispetto ad un anno fa è variato di: "
+        },
+        "financialOverview": {
+            "title": "Panoramica Finanziaria",
+            "currentMonth": "Mese corrente",
+            "description": "Valori attuali e confronto con i periodi precedenti"
         },
         "statsOutflows": {
             "title": "Statistiche Entrate e Uscite",
             "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
             "titleGraph2": "Distribuzione delle tue uscite per categoria",
-            "detailedVision": "Comparazione finanziaria con i periodi precedenti",
+            "detailedVision": "Panoramica Finanziaria",
             "titleDetailsMonth": "Variazione entrate, uscite e risparmi rispetto al mese scorso: ",
             "variation": "Variazione ",
             "titleDetailsYear": "Variazione entrate, uscite e risparmi rispetto all'anno scorso: ",

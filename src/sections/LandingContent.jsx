@@ -165,12 +165,21 @@ export default function NewLandingContent({ theme }) {
                   className="w-full h-auto rounded-2xl shadow-2xl"
                   width={600}
                   height={400}
-                  style={{ maxHeight: "500px", objectFit: "contain" }}
+                  style={{
+                    maxHeight: "500px",
+                    objectFit: "contain",
+                    backgroundColor: `${theme.secondaryColor}10`,
+                    minHeight: "200px",
+                  }}
                   loading="eager"
                   fetchPriority="high"
                   decoding="sync"
                   draggable="false"
                   onContextMenu={(e) => e.preventDefault()}
+                  onError={(e) => {
+                    console.warn('[Hero] Image failed to load:', e.target.src);
+                    e.target.style.display = 'none';
+                  }}
                 />
               </picture>
               {/* Floating Elements - hidden on very small screens */}

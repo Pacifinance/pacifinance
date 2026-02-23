@@ -141,6 +141,9 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
   const data = getFilteredData();
 
+  const isMobile = containerWidth < 500;
+  const chartHeight = isMobile ? 340 : 500;
+
   // Componente Tooltip condiviso
   const renderTooltip = () => (
     <Tooltip
@@ -229,13 +232,13 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const renderBarChart = () => (
     <BarChart
       width={containerWidth}
-      height={550}
+      height={chartHeight}
       data={data}
       margin={{
-        top: containerWidth < 768 ? 40 : 60,
-        left: containerWidth < 768 ? 5 : 40,
-        right: containerWidth < 768 ? 5 : 30,
-        bottom: containerWidth < 768 ? 5 : 10
+        top: isMobile ? 5 : 20,
+        left: isMobile ? 0 : 30,
+        right: isMobile ? 0 : 20,
+        bottom: 5
       }}
     >
       <CartesianGrid 
@@ -248,19 +251,19 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
       <XAxis 
         dataKey="name" 
-        interval={containerWidth < 500 ? 1 : 0}
+        interval={isMobile ? 1 : 0}
         tick={(props) => <CustomTick 
           {...props} 
           theme={theme} 
-          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
-          maxWidth={containerWidth < 768 ? 50 : 80}
+          fontSize={isMobile ? 9 : containerWidth < 768 ? 11 : 13}
+          maxWidth={isMobile ? 40 : 70}
           fill="#ffffff"
-          dy={15}
-          dx={-5}
-          angle={-15}
+          dy={8}
+          dx={-3}
+          angle={isMobile ? -30 : -15}
           textAnchor="end"
         />}
-        height={containerWidth < 500 ? 80 : containerWidth < 768 ? 90 : 80}
+        height={isMobile ? 40 : 55}
         axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
         tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
       />
@@ -316,13 +319,13 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const renderAreaChart = () => (
     <AreaChart
       width={containerWidth}
-      height={550}
+      height={chartHeight}
       data={data}
       margin={{
-        top: containerWidth < 768 ? 30 : 50,
-        left: containerWidth < 768 ? 5 : 40,
-        right: containerWidth < 768 ? 5 : 30,
-        bottom: containerWidth < 768 ? 15 : 20
+        top: isMobile ? 5 : 20,
+        left: isMobile ? 0 : 30,
+        right: isMobile ? 0 : 20,
+        bottom: isMobile ? 5 : 10
       }}
     >
       <CartesianGrid 
@@ -333,19 +336,19 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       
       <XAxis 
         dataKey="name" 
-        interval={containerWidth < 500 ? 1 : 0}
+        interval={isMobile ? 1 : 0}
         tick={(props) => <CustomTick 
           {...props} 
           theme={theme} 
-          fontSize={containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16}
-          maxWidth={containerWidth < 768 ? 50 : 80}
+          fontSize={isMobile ? 9 : containerWidth < 768 ? 11 : 13}
+          maxWidth={isMobile ? 40 : 70}
           fill="#ffffff"
-          dy={15}
-          dx={-5}
-          angle={-15}
+          dy={8}
+          dx={-3}
+          angle={isMobile ? -30 : -15}
           textAnchor="end"
         />}
-        height={containerWidth < 500 ? 80 : containerWidth < 768 ? 90 : 80}
+        height={isMobile ? 40 : 55}
         axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
         tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
       />

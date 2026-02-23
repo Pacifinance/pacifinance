@@ -16,7 +16,7 @@ import {
 } from "@mui/icons-material";
 // Hero image served from public/ for preload discoverability in index.html
 const LandingPageImage = "/hero.webp";
-import Logo from "../assets/Brand/PacifinanceLogoPNG3NoBg.webp";
+import Logo from "../assets/Brand/logo.webp";
 
 // Lazy loading dei componenti non critici per il First Contentful Paint
 const ConsentBanner = lazy(() => import("../components/ConsentBanner"));
@@ -176,7 +176,7 @@ export default function NewLandingContent({ theme }) {
                   sizes="(max-width: 480px) 280px, (max-width: 768px) 380px, 600px"
                   draggable="false"
                   onContextMenu={(e) => e.preventDefault()}
-                >
+                />
               </picture>
               {/* <img
                 src={LandingPageImage}

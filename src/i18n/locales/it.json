@@ -255,7 +255,8 @@
             "titleButton": "Prova la versione Demo",
             "info": "Per accedere velocemente, clicca sul pulsante sottostante",
             "button": "Accesso rapido",
-            "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio."
+            "demoWarning": "Attenzione! Valori casuali e non rilevanti, usati come esempio.",
+            "disabledTooltip": "Questa funzione è disattivata nell'account demo. Registrati gratuitamente per sbloccarla!"
         }
     },
     "footer": {

@@ -18,6 +18,7 @@ import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
+import Tooltip from "@mui/material/Tooltip";
 
 const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 import {
@@ -118,6 +119,9 @@ const SettingsPage = () => {
     const [selectedYear, setSelectedYear] = useState("");
 
     const userType = userData?.userType || "";
+
+    const isDemo = ["test", "demo"].includes(userType);
+    const demoTooltip = translations?.header?.demo?.disabledTooltip || 'This feature is disabled in the demo account. Sign up for free to unlock it!';
 
     // Guardia per verificare che theme e translations siano disponibili
     if (!theme || !translations || !translations.sidebar?.settings) {
@@ -594,14 +598,14 @@ const SettingsPage = () => {
 
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                 <div>
+                                    <Tooltip title={isDemo ? demoTooltip : ''} arrow placement="top">
+                                    <span style={{ display: 'block', width: '100%' }}>
                                     <MyButton
                                         theme={theme}
                                         onClick={() =>
                                             setShowChangeID(!showChangeID)
                                         }
-                                        disabled={["test", "demo"].includes(
-                                            userType,
-                                        )}
+                                        disabled={isDemo}
                                         style={{
                                             width: "100%",
                                             padding: "0.7rem",
@@ -611,21 +615,21 @@ const SettingsPage = () => {
                                             justifyContent: "center",
                                             fontSize: "0.85rem",
                                             fontWeight: "500",
-                                            backgroundColor: [
-                                                "test",
-                                                "demo",
-                                            ].includes(userType)
+                                            backgroundColor: isDemo
                                                 ? "#d3d3d3"
                                                 : theme.buttonBackgroundColor,
-                                            boxShadow: ["test", "demo"].includes(userType) 
+                                            boxShadow: isDemo
                                                 ? "none" 
                                                 : "0 2px 8px rgba(7, 145, 100, 0.25)",
-                                            transition: "all 0.3s ease"
+                                            transition: "all 0.3s ease",
+                                            pointerEvents: isDemo ? 'none' : 'auto'
                                         }}
                                     >
                                         <FontAwesomeIcon icon={faKey} style={{ marginRight: "0.5rem" }} />
                                         {translations.sidebar.changeID.title}
                                     </MyButton>
+                                    </span>
+                                    </Tooltip>
 
                                 {showChangeID && (
                                     <form
@@ -689,6 +693,8 @@ const SettingsPage = () => {
                                 </div>
 
                                 <div>
+                                    <Tooltip title={isDemo ? demoTooltip : ''} arrow placement="top">
+                                    <span style={{ display: 'block', width: '100%' }}>
                                     <MyButton
                                         theme={theme}
                                         onClick={() =>
@@ -696,9 +702,7 @@ const SettingsPage = () => {
                                                 !showChangePassword,
                                             )
                                         }
-                                        disabled={["test", "demo"].includes(
-                                            userType,
-                                        )}
+                                        disabled={isDemo}
                                         style={{
                                             width: "100%",
                                             padding: "0.7rem",
@@ -708,21 +712,21 @@ const SettingsPage = () => {
                                             justifyContent: "center",
                                             fontSize: "0.85rem",
                                             fontWeight: "500",
-                                            backgroundColor: [
-                                                "test",
-                                                "demo",
-                                            ].includes(userType)
+                                            backgroundColor: isDemo
                                                 ? "#d3d3d3"
                                                 : theme.buttonBackgroundColor,
-                                            boxShadow: ["test", "demo"].includes(userType) 
+                                            boxShadow: isDemo
                                                 ? "none" 
                                                 : "0 2px 8px rgba(7, 145, 100, 0.25)",
-                                            transition: "all 0.3s ease"
+                                            transition: "all 0.3s ease",
+                                            pointerEvents: isDemo ? 'none' : 'auto'
                                         }}
                                     >
                                         <FontAwesomeIcon icon={faShieldAlt} style={{ marginRight: "0.5rem" }} />
                                         {translations.sidebar.changePassword.title}
                                     </MyButton>
+                                    </span>
+                                    </Tooltip>
 
                                 {showChangePassword && (
                                     <form
@@ -1325,11 +1329,13 @@ const SettingsPage = () => {
                                 </p>
                             </div>
 
+                            <Tooltip title={isDemo ? demoTooltip : ''} arrow placement="top">
+                            <span style={{ display: 'block', width: '100%' }}>
                             <MyButton
                                 onClick={() =>
                                     setShowDeleteAccount(!showDeleteAccount)
                                 }
-                                disabled={["test", "demo"].includes(userType)}
+                                disabled={isDemo}
                                 style={{
                                     width: "100%",
                                     padding: "0.7rem",
@@ -1339,15 +1345,16 @@ const SettingsPage = () => {
                                     justifyContent: "center",
                                     fontSize: "0.85rem",
                                     fontWeight: "600",
-                                    backgroundColor: ["test", "demo"].includes(userType)
+                                    backgroundColor: isDemo
                                         ? "#d3d3d3"
                                         : "#dc3545",
                                     color: "white",
                                     border: "none",
-                                    boxShadow: ["test", "demo"].includes(userType) 
+                                    boxShadow: isDemo
                                         ? "none" 
                                         : "0 2px 8px rgba(220, 53, 69, 0.3)",
-                                    transition: "all 0.3s ease"
+                                    transition: "all 0.3s ease",
+                                    pointerEvents: isDemo ? 'none' : 'auto'
                                 }}
                             >
                                 <FontAwesomeIcon
@@ -1356,6 +1363,8 @@ const SettingsPage = () => {
                                 />
                                 {translations.sidebar.settings.deleteAccount}
                             </MyButton>
+                            </span>
+                            </Tooltip>
 
                             {showDeleteAccount && (
                                 <div

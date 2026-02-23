@@ -255,7 +255,8 @@
             "titleButton": "Try Demo version",
             "info": "To access quickly, click on the button below",
             "button": "Quick access",
-            "demoWarning": "Warning! Random and not relevant values, used as an example."
+            "demoWarning": "Warning! Random and not relevant values, used as an example.",
+            "disabledTooltip": "This feature is disabled in the demo account. Sign up for free to unlock it!"
         }
     },
     "footer": {

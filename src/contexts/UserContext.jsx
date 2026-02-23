@@ -82,7 +82,8 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     // In demo mode, data is already loaded — skip API fetches
-    if (isDemoMode) return;
+    // Check both state and sessionStorage as safety net against race conditions
+    if (isDemoMode || isDemoSession()) return;
 
     // Quando cambia autenticazione o update, carica i dati utente se autenticato
     const fetchUserData = async () => {
@@ -180,13 +181,20 @@ export const UserProvider = ({ children }) => {
   };
 
   const handleSetIsAuthenticated = (value) => {
+    if (value && isDemoSession()) {
+      // Demo login: set demo state + data synchronously BEFORE isAuthenticated triggers effects
+      setIsDemoMode(true);
+      setUserData(generateDemoData());
+      setIsUpdated(true);
+      setError(null);
+    }
     setIsAuthenticated(value);
     if (!value) {
       // Reset on deauthentication so next login triggers data fetch
       setIsUpdated(false);
       setError(null);
       // Clear demo mode on logout
-      if (isDemoMode) {
+      if (isDemoMode || isDemoSession()) {
         sessionStorage.removeItem('pacifinance-demo');
         setIsDemoMode(false);
       }

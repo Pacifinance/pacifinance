@@ -147,18 +147,18 @@ async function getAllByUserId(user_id: string) {
  * @param is_expense_filter True to retrieve only expenses, false to retrieve only incomes, undefined for both
  * @returns List of Expense documents
  */
-async function getMonthlyExpensesByUserId(user_id: string, reference_date: Date,
+async function getMonthlyExpensesByUserId(user_id: string, reference_date: ExtDate,
     is_expense_filter: boolean | undefined = undefined) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return [];
     // Get start and end of the current month
-    const month_start = ExtDate.fromThisMonthStart()
-    const month_end = ExtDate.fromThisMonthEnd()
+    const month_start = ExtDate.fromReferenceMonthStart(reference_date)
+    const month_end = ExtDate.fromReferenceMonthEnd(reference_date)
     // Filter out expenses or incomes depending on input parameters
     let expenses_filter = {
         userRef: user._id,
-        date: {$gte: month_start, $lt: month_end},
+        date: {$gte: month_start, $lte: month_end},
         isExpense: {$in: [false, true]}
     };
     if (is_expense_filter !== undefined)
@@ -174,7 +174,7 @@ async function getMonthlyExpensesByUserId(user_id: string, reference_date: Date,
  * @param is_expense_filter True to retrieve only expenses, false to retrieve only incomes, undefined for both
  * @returns Total expenses/incomes of the user for the month
  */
-async function getTotalMonthlyExpensesByUserId(user_id: string, reference_date: Date,
+async function getTotalMonthlyExpensesByUserId(user_id: string, reference_date: ExtDate,
     is_expense_filter: boolean | undefined = undefined) {
     // Get the expenses for the month
     const expenses = await getMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter);

@@ -45,6 +45,28 @@ export class ExtDate extends Date {
     }
 
     /**
+     * Creates a date from the start of the month given as reference
+     * @param value Reference date
+     * @returns Reference month's start UTC time
+     */
+    static fromReferenceMonthStart(value: ExtDate) {
+        const ref = new ExtDate(value)
+        return new ExtDate(ExtDate.UTC(ref.getUTCFullYear(), ref.getUTCMonth()))
+    }
+
+    /**
+     * Creates a date from the end of the month given as reference
+     * @param value Reference date
+     * @returns Reference month's end UTC time
+     */
+    static fromReferenceMonthEnd(value: ExtDate) {
+        const ref = new ExtDate(value)
+        ref.setUTCMonth(ref.getUTCMonth() + 1, 0)
+        ref.setUTCHours(23, 59, 59, 999)
+        return ref
+    }
+
+    /**
      * Moves this date forward or back in time by the given number of seconds
      * @param seconds Number of seconds to move
      */

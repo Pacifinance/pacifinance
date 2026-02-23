@@ -3,7 +3,6 @@ import mongoose from "mongoose"
 import { ExtDate } from "../../libs/datelib"
 
 import users from "./users"
-import common from "../../routes/common"
 
 const balanceSchema = new mongoose.Schema({
     userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
@@ -142,15 +141,15 @@ async function getAllByUserId(user_id: string) {
  * @param limit_date Date after which balances are ignored
  * @returns Balance document
  */
-async function getLatestByUserId(user_id: string, limit_date: Date | undefined = undefined) {
+async function getLatestByUserId(user_id: string, limit_date: ExtDate | undefined = undefined) {
     const user = await users.getReferenceByUserId(user_id);
     if (user === null)
         return null;
     // Get the balances with the most recent user-inserted date. Among these balances, the latest one
     // is that with the most recent insertion date (the one that overwrites all the others)
-    let filter = {userRef: user._id, userDate: {$lt: ExtDate.fromNow()}};
+    let filter = {userRef: user._id, userDate: {$lte: ExtDate.fromNow()}};
     if (limit_date !== undefined)
-        filter.userDate = {$lt: new ExtDate(limit_date)};
+        filter.userDate = {$lte: limit_date};
     return await getOneSorted(filter, "-_id -__v -userRef", {userDate: -1, date: -1});
 }
 
@@ -160,7 +159,7 @@ async function getLatestByUserId(user_id: string, limit_date: Date | undefined =
  * @param limit_date Date after which balances are ignored
  * @return Total balance of the user
  */
-async function getTotalLatestByUserId(user_id: string, limit_date: Date | undefined = undefined) {
+async function getTotalLatestByUserId(user_id: string, limit_date: ExtDate | undefined = undefined) {
     const balance = await getLatestByUserId(user_id, limit_date);
     if (balance === null)
         return null;
@@ -178,7 +177,6 @@ async function getTotalLatestByUserId(user_id: string, limit_date: Date | undefi
  */
 async function getYearlyBalanceByUserId(user_id: string) {
     // Get start and end of the current month
-    const now = ExtDate.fromNow()
     let month_start = ExtDate.fromThisMonthStart()
     let month_end = ExtDate.fromThisMonthEnd()
     // Find the most recent balance for each one of the last 24 months

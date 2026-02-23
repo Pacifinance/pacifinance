@@ -120,9 +120,8 @@ type Expense = Awaited<ReturnType<typeof expenses.getMonthlyExpensesByUserId>>[0
  * @returns Averages among the provided users
  */
 async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Averages> {
-    const thisMonthStart = new ExtDate(ExtDate.UTC(now.getUTCFullYear(), now.getUTCMonth()))
-    const lastMonthStart = thisMonthStart.copy()
-    lastMonthStart.moveByMonths(-1)
+    const thisMonthStart = ExtDate.fromReferenceMonthStart(now)
+    const lastMonthStart = ExtDate.fromReferenceMonthEnd(now)
 
     let averagesData = new AveragesData()
 

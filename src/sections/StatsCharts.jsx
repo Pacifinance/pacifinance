@@ -26,7 +26,11 @@ const StatsContainer = styled.div`
   width: 100%;
   position: relative;
   overflow-x: hidden;
-  padding-bottom: 6rem;
+  padding-bottom: 14rem;
+  
+  @media (max-width: 768px) {
+    padding-bottom: 18rem;
+  }
   
   &::before {
     content: '';
@@ -56,27 +60,31 @@ const StatsContainer = styled.div`
 const HeaderSection = styled.div`
   position: relative;
   z-index: 1;
-  padding: 2rem 1rem 1.5rem 1rem;
+  padding: 2rem 1rem 1rem 1rem;
   text-align: center;
   
   @media (max-width: 768px) {
-    padding: 1.5rem 1rem 1rem 1rem;
+    padding: 0.75rem 1rem 0.5rem 1rem;
   }
 `;
 
 const StatsTitle = styled.h1`
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
   color: ${props => props.theme.textColor};
   letter-spacing: -0.025em;
   line-height: 1.3;
+  
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const StatsSubtitle = styled.p`
   font-size: 1rem;
   color: ${props => props.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.55)'};
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
@@ -84,8 +92,8 @@ const StatsSubtitle = styled.p`
   font-weight: 400;
   
   @media (max-width: 768px) {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
     padding: 0 0.5rem;
   }
 `;
@@ -95,13 +103,13 @@ const NavigationTabs = styled.div`
   justify-content: center;
   gap: 0.4rem;
   padding: 0 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
   
   @media (max-width: 768px) {
     gap: 0.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     padding: 0 0.5rem;
   }
 `;
@@ -191,24 +199,24 @@ const MainContent = styled.div`
   padding: 0 1rem 3rem 1rem;
   
   @media (max-width: 768px) {
-    padding: 0 0.5rem 2rem 0.5rem;
+    padding: 0 0.35rem 2rem 0.35rem;
   }
 `;
 
 const SectionContainer = styled.div`
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   
   @media (max-width: 768px) {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
   }
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   
   @media (max-width: 768px) {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
 `;
 
@@ -228,21 +236,26 @@ const SectionDescription = styled.p`
   margin-left: auto;
   margin-right: auto;
   line-height: 1.5;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+    display: none;
+  }
 `;
 
 const ChartGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   
   @media (min-width: 1200px) {
     grid-template-columns: ${props => props.columns === 2 ? '1fr 1fr' : '1fr'};
   }
   
   @media (max-width: 768px) {
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -257,8 +270,8 @@ const ChartCard = styled.div`
   };
   border-radius: 16px;
   padding: 1.5rem;
-  padding-top: 2rem;
-  min-height: 450px;
+  padding-top: 1.5rem;
+  min-height: 420px;
   box-shadow: ${props => props.theme.mode === 'dark' 
     ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
     : '0 4px 20px rgba(0, 0, 0, 0.06)'
@@ -277,10 +290,14 @@ const ChartCard = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 1rem;
-    padding-top: 1.5rem;
+    padding: 0.6rem;
+    padding-top: 0.6rem;
     border-radius: 12px;
-    min-height: 350px;
+    min-height: auto;
+    
+    &:hover {
+      transform: none;
+    }
   }
 `;
 

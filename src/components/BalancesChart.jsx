@@ -8,6 +8,7 @@ import { Bar } from "recharts/lib/cartesian/Bar";
 import { AreaChart } from "recharts/lib/chart/AreaChart";
 import { Area } from "recharts/lib/cartesian/Area";
 import { Legend } from "recharts/lib/component/Legend";
+import { ResponsiveContainer } from "recharts/lib/component/ResponsiveContainer";
 import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -142,7 +143,6 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const data = getFilteredData();
 
   const isMobile = containerWidth < 500;
-  const chartHeight = isMobile ? 340 : 500;
 
   // Componente Tooltip condiviso
   const renderTooltip = () => (
@@ -231,13 +231,11 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   // Rendering del grafico a barre
   const renderBarChart = () => (
     <BarChart
-      width={containerWidth}
-      height={chartHeight}
       data={data}
       margin={{
-        top: isMobile ? 5 : 20,
-        left: isMobile ? 0 : 30,
-        right: isMobile ? 0 : 20,
+        top: isMobile ? 5 : 15,
+        left: isMobile ? -15 : 10,
+        right: isMobile ? 5 : 15,
         bottom: 5
       }}
     >
@@ -318,13 +316,11 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   // Rendering del grafico ad area
   const renderAreaChart = () => (
     <AreaChart
-      width={containerWidth}
-      height={chartHeight}
       data={data}
       margin={{
-        top: isMobile ? 5 : 20,
-        left: isMobile ? 0 : 30,
-        right: isMobile ? 0 : 20,
+        top: isMobile ? 5 : 15,
+        left: isMobile ? -15 : 10,
+        right: isMobile ? 5 : 15,
         bottom: isMobile ? 5 : 10
       }}
     >
@@ -400,9 +396,17 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
   return (
     <SectionBalancesCharts theme={theme} style={{position: 'relative', height: '100%'}}>
+      {/* Toolbar: period selector + export buttons */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        padding: isMobile ? '0 0.25rem' : '0 0.5rem',
+        marginBottom: isMobile ? '0.25rem' : '0'
+      }}>
       {/* Time Period Selector */}
-      <div className="absolute top-0 left-0 flex gap-1 z-10 p-2 md:top-0 md:left-0 
-                      max-md:top-12 max-md:left-0 max-md:right-0 max-md:justify-center">
+      <div className="flex gap-1 z-10">
         {['3m', '6m', '1y', '2y', 'all'].map((period) => {
           const isDisabled = period === '2y' || period === 'all';
           const isActive = selectedPeriod === period;
@@ -439,14 +443,12 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       </div>
 
       {/* Export buttons */}
-      <div className="absolute flex gap-2 z-10 p-2 md:top-0 md:right-0 
-                      max-md:-top-1 max-md:left-0 max-md:right-0 max-md:justify-end max-md:pr-1 max-md:gap-1"
-           style={{ top: 0, right: 0 }}>
+      <div className="flex gap-1 z-10">
         <CSVLink
           data={data}
           headers={headers}
           filename={`distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
-          className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
+          className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg border transition-all duration-200 hover:scale-105"
           style={{
             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
             borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -458,7 +460,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
         <button
           onClick={async () => await downloadExcel(data, headers, `distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-          className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
+          className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg border transition-all duration-200 hover:scale-105"
           style={{
             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
             borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -468,18 +470,16 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
           <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
         </button>
       </div>
+      </div>
 
-      <div className="pt-10 md:pt-4" style={{ 
+      <div style={{ 
         width: '100%', 
-        height: '550px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: '0.5rem',
-        padding: containerWidth < 768 ? '0 0.25rem' : '0 1rem',
-        overflow: 'hidden'
+        height: isMobile ? '280px' : '420px',
+        padding: isMobile ? '0' : '0 0.5rem',
       }}>
-        {type === 'bar' ? renderBarChart() : renderAreaChart()}
+        <ResponsiveContainer width="100%" height="100%">
+          {type === 'bar' ? renderBarChart() : renderAreaChart()}
+        </ResponsiveContainer>
       </div>
     </SectionBalancesCharts>
   );

@@ -10,7 +10,8 @@ import {
   PieChart, 
   Pie, 
   Cell,
-  ReferenceLine
+  ReferenceLine,
+  ResponsiveContainer
 } from 'recharts';
 import { SectionInOut, PercentageOutflowsChartContainer } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
@@ -25,7 +26,6 @@ import { RiFileExcel2Line } from "react-icons/ri";
 import { getCategoryColor } from '../data/categoryColors';
 import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
-
 function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
@@ -41,6 +41,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   // Common state
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
+  const isMobile = containerWidth < 500;
 
   // Line visibility state for legend toggle
   const [lineVisibility, setLineVisibility] = useState({
@@ -210,61 +211,118 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         }));
     }
 
+    // Label interna: solo % dentro la fetta (come nella Dashboard)
+    const RADIAN = Math.PI / 180;
+    const renderInternalLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+      if (percent === 0) return null;
+      if (isHidden) {
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+        return <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={isMobile ? 10 : 12}>****</text>;
+      }
+      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+      const pct = (percent * 100).toFixed(0);
+      // Nascondi label se fetta troppo piccola
+      if (percent < 0.04) return null;
+      return (
+        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={isMobile ? 10 : 12} fontWeight={600}>
+          {pct}%
+        </text>
+      );
+    };
+
+    const pieSize = isMobile ? Math.min(containerWidth - 20, 280) : Math.min(containerWidth, 350);
+    const outerR = isMobile ? Math.min(pieSize * 0.42, 100) : Math.min(pieSize * 0.4, 140);
+
     return (
       <div style={{ 
         width: '100%', 
-        height: '100%',
-        minHeight: '500px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1rem 0'
+        padding: isMobile ? '0.5rem 0' : '1rem 0'
       }}>
-        <PieChart width={containerWidth} height={Math.min(550, containerWidth + 50)}>
-          <Pie
-            data={pieData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={(entry) => {
-              if (isHidden) return '***';
-              // Calcola il totale di tutti i valori nel dataset
-              const total = pieData.reduce((sum, item) => sum + item.value, 0);
-              const percentage = ((entry.value / total) * 100).toFixed(1);
-              return `${entry.name}: ${percentage}%`;
-            }}
-            outerRadius={containerWidth < 500 ? 120 : 160}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {pieData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
-            ))}
-          </Pie>
-          <Tooltip 
-            contentStyle={{
-              backgroundColor:'rgba(255,255,255,0.95)',
-              border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-              borderRadius: '8px',
-              padding: '12px',
-              fontSize: '14px',
-              fontWeight: '500',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-              color: theme.mode === 'dark' ? '#fff' : '#333'
-            }}
-            formatter={(value, name) => {
-              if (isHidden) return ['****', name];
-              const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
-              return [formattedValue, name];
-            }}
-            labelStyle={{
-              color: '#333',
-              fontWeight: 'bold',
-              marginBottom: '4px'
-            }}
-          />
-        </PieChart>
+        <div style={{ width: '100%', height: isMobile ? 240 : 320 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderInternalLabel}
+                outerRadius={outerR}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor:'rgba(255,255,255,0.95)',
+                  border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+                  borderRadius: '8px',
+                  padding: '10px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                  color: '#333'
+                }}
+                formatter={(value, name) => {
+                  if (isHidden) return ['****', name];
+                  const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
+                  const total = pieData.reduce((sum, item) => sum + item.value, 0);
+                  const pct = ((value / total) * 100).toFixed(1);
+                  return [`${formattedValue} (${pct}%)`, name];
+                }}
+                labelStyle={{
+                  color: '#333',
+                  fontWeight: 'bold',
+                  marginBottom: '4px'
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        {/* Legenda sotto il grafico a torta */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: isMobile ? '6px 12px' : '8px 16px',
+          padding: isMobile ? '0.5rem 0.5rem 0' : '0.75rem 1rem 0',
+          maxWidth: '100%'
+        }}>
+          {pieData.map((entry, index) => {
+            const total = pieData.reduce((sum, item) => sum + item.value, 0);
+            const pct = ((entry.value / total) * 100).toFixed(1);
+            return (
+              <div key={index} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: isMobile ? '0.7rem' : '0.8rem',
+                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)',
+                whiteSpace: 'nowrap'
+              }}>
+                <div style={{
+                  width: isMobile ? 8 : 10,
+                  height: isMobile ? 8 : 10,
+                  borderRadius: '50%',
+                  backgroundColor: entry.fill,
+                  flexShrink: 0
+                }} />
+                <span>{isHidden ? '****' : `${entry.name} ${pct}%`}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -341,7 +399,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
     return (
       <PercentageOutflowsChartContainer style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ 
-          padding: '1rem', 
+          padding: isMobile ? '0.5rem' : '0.75rem', 
           textAlign: 'center', 
           borderBottom: theme.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
         }}>
@@ -358,9 +416,17 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   return (
     <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Toolbar: period selector + export buttons */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          padding: isMobile ? '0 0.25rem' : '0 0.5rem',
+          marginBottom: isMobile ? '0.25rem' : '0'
+        }}>
         {/* Time Period Selector */}
-        <div className="absolute top-0 left-0 flex gap-1 z-10 p-2 md:top-0 md:left-0 
-                        max-md:top-12 max-md:left-0 max-md:right-0 max-md:justify-center">
+        <div className="flex gap-1 z-10">
           {['3m', '6m', '1y', '2y', 'all'].map((period) => {
             const isDisabled = period === '2y' || period === 'all';
             const isActive = selectedPeriod === period;
@@ -397,14 +463,12 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         </div>
 
         {/* Export buttons */}
-        <div className="absolute flex gap-2 z-10 p-2 md:top-0 md:right-0 
-                        max-md:-top-1 max-md:left-0 max-md:right-0 max-md:justify-end max-md:pr-1 max-md:gap-1"
-             style={{ top: 0, right: 0 }}>
+        <div className="flex gap-1 z-10">
           <CSVLink 
             data={data}
             headers={headers}
             filename={`incomeOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
-            className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
+            className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg border transition-all duration-200 hover:scale-105"
             style={{
               backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
               borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -416,7 +480,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
 
           <button
             onClick={async () => await downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-            className="flex items-center justify-center w-10 h-10 md:w-10 md:h-10 max-md:w-8 max-md:h-8 rounded-lg border transition-all duration-200 hover:scale-105"
+            className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg border transition-all duration-200 hover:scale-105"
             style={{
               backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
               borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -426,26 +490,22 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
           </button>
         </div>
+        </div>
 
         {/* Responsive chart container */}
-        <div className="pt-10 md:pt-4" style={{ 
+        <div style={{ 
           width: '100%', 
-          height: '500px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: '3.5rem',
-          padding: containerWidth < 768 ? '0 0.25rem' : '0 1rem'
+          height: isMobile ? '280px' : '400px',
+          padding: isMobile ? '0' : '0 0.5rem'
         }}>
+          <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            width={containerWidth}
-            height={550}
             data={data}
             margin={{
-              top: containerWidth < 768 ? 20 : 30,
-              right: containerWidth < 768 ? 5 : 40,
-              left: containerWidth < 768 ? 5 : 30,
-              bottom: containerWidth < 768 ? 50 : 70
+              top: isMobile ? 10 : 20,
+              right: isMobile ? 5 : 30,
+              left: isMobile ? -15 : 10,
+              bottom: isMobile ? 5 : 20
             }}
             syncId="incomeOutflowChart"
           >
@@ -482,9 +542,9 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 if (dataLength === 12) return containerWidth < 800 ? 1 : 0;
                 return 0;
               })()} 
-              angle={containerWidth < 500 ? -45 : 0}
+              angle={containerWidth < 500 ? -35 : 0}
               textAnchor={containerWidth < 500 ? 'end' : 'middle'}
-              height={containerWidth < 500 ? 80 : 60}
+              height={containerWidth < 500 ? 50 : 50}
               axisLine={{ 
                 stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
                 strokeWidth: 1
@@ -568,19 +628,19 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 type="monotone" 
                 dataKey={translations.general.incomes} 
                 stroke={isHidden ? greyColor1 : "#079164"} 
-                strokeWidth={3}
+                strokeWidth={isMobile ? 2 : 3}
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
                   fill: isHidden ? greyColor1 : "#079164", 
-                  strokeWidth: 2, 
-                  r: 5 
+                  strokeWidth: isMobile ? 1 : 2, 
+                  r: isMobile ? 3 : 5 
                 }}
                 activeDot={{ 
-                  r: 10, 
+                  r: isMobile ? 6 : 10, 
                   fill: isHidden ? greyColor1 : "#079164",
                   stroke: '#fff',
-                  strokeWidth: 4,
+                  strokeWidth: isMobile ? 2 : 4,
                   style: { 
                     cursor: 'pointer',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
@@ -594,19 +654,19 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 type="monotone" 
                 dataKey={translations.general.outflows} 
                 stroke={isHidden ? greyColor2 : "#ff3838"} 
-                strokeWidth={3}
+                strokeWidth={isMobile ? 2 : 3}
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
                   fill: isHidden ? greyColor2 : "#ff3838", 
-                  strokeWidth: 2, 
-                  r: 5 
+                  strokeWidth: isMobile ? 1 : 2, 
+                  r: isMobile ? 3 : 5 
                 }}
                 activeDot={{ 
-                  r: 10, 
+                  r: isMobile ? 6 : 10, 
                   fill: isHidden ? greyColor2 : "#ff3838",
                   stroke: '#fff',
-                  strokeWidth: 4,
+                  strokeWidth: isMobile ? 2 : 4,
                   style: { 
                     cursor: 'pointer',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
@@ -620,19 +680,19 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 type="monotone" 
                 dataKey={translations.general.saved} 
                 stroke={isHidden ? greyColor1 : "#06b6d4"} 
-                strokeWidth={3}
+                strokeWidth={isMobile ? 2 : 3}
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
                   fill: isHidden ? greyColor1 : "#06b6d4", 
-                  strokeWidth: 2, 
-                  r: 5 
+                  strokeWidth: isMobile ? 1 : 2, 
+                  r: isMobile ? 3 : 5 
                 }}
                 activeDot={{ 
-                  r: 10, 
+                  r: isMobile ? 6 : 10, 
                   fill: isHidden ? greyColor1 : "#06b6d4",
                   stroke: '#fff',
-                  strokeWidth: 4,
+                  strokeWidth: isMobile ? 2 : 4,
                   style: { 
                     cursor: 'pointer',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
@@ -651,9 +711,9 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 label={{ 
                   value: `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`,
                   position: "top",
-                  offset: 25,
+                  offset: isMobile ? 10 : 25,
                   fill: "#ff6b35",
-                  fontSize: containerWidth < 500 ? 10 : 12,
+                  fontSize: isMobile ? 8 : 12,
                   fontWeight: 600,
                   textAnchor: 'middle'
                 }}
@@ -677,9 +737,9 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                     label={{ 
                       value: `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
                       position: "bottom",
-                      offset: 25,
+                      offset: isMobile ? 10 : 25,
                       fill: "#10b981",
-                      fontSize: containerWidth < 500 ? 10 : 12,
+                      fontSize: isMobile ? 8 : 12,
                       fontWeight: 600,
                       textAnchor: 'middle'
                     }}
@@ -688,15 +748,15 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
               })()
             )}
           </LineChart>
-          
+          </ResponsiveContainer>
         </div>
         
         {/* Legenda personalizzata - posizionata sotto il grafico */}
         <div style={{ 
           display: 'flex', 
           justifyContent: 'center', 
-          gap: '20px', 
-          paddingTop: '15px',
+          gap: isMobile ? '12px' : '20px', 
+          paddingTop: isMobile ? '2px' : '8px',
           flexWrap: 'wrap',
           width: '100%'
         }}>
@@ -711,18 +771,18 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: isMobile ? '5px' : '8px',
                 cursor: 'pointer',
-                fontSize: containerWidth < 500 ? '16px' : '18px',
+                fontSize: isMobile ? '12px' : '15px',
                 fontWeight: 500,
                 opacity: lineVisibility[key] ? 1 : 0.5,
                 textDecoration: lineVisibility[key] ? 'none' : 'line-through',
-                color: '#ffffff'
+                color: theme.mode === 'dark' ? '#ffffff' : '#333333'
               }}
             >
               <div
                 style={{
-                  width: '16px',
+                  width: isMobile ? '12px' : '16px',
                   height: '3px',
                   backgroundColor: (isHidden ? (key === 'incomes' ? greyColor1 : key === 'outflows' ? greyColor2 : greyColor1) : color),
                   opacity: lineVisibility[key] ? 1 : 0.3

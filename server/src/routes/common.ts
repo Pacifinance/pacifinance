@@ -1,7 +1,5 @@
-import express from "express"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
-import { SessionData } from "express-session"
 
 import db from "../db/mongo"
 

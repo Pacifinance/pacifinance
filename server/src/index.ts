@@ -66,7 +66,7 @@ app.use(express.json())
 app.use("/api", rootRouter)
 
 // Refresh handler
-app.get("/*splat", (req, res) => {
+app.get("/*splat", (_, res) => {
     res.sendFile(path.join(__dirname, "../../build/index.html"))
 })
 

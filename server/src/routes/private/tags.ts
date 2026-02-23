@@ -6,7 +6,7 @@ import db from "../../db/mongo"
 
 const tagsRouter = express.Router()
 
-tagsRouter.post("/get", async (req, res) => {
+tagsRouter.post("/get", async (_, res) => {
     // Get all the tags from the database
     let tags: any = {}
     for (let tag_type of Object.keys(db.tags.TagType))

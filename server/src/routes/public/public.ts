@@ -46,7 +46,7 @@ async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
     return [true, 200]
 }
 
-publicRouter.get("/health", (req, res) => {
+publicRouter.get("/health", (_, res) => {
     res.status(200).send("OK")
 })
 

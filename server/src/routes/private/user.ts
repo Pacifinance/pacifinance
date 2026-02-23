@@ -12,7 +12,7 @@ const userRouter = express.Router()
 
 userRouter.post("/logout", async (req, res) => {
     // Invalidate the session 
-    req.session.destroy((err: any) => {})
+    req.session.destroy(() => {})
     // Send status code 200 (OK)
     res.status(200)
     res.send()
@@ -85,7 +85,7 @@ userRouter.post("/set-id", async (req, res) => {
     }
     // Invalidate the session
     const curr_user_id = session.userId
-    req.session.destroy((err: any) => {})
+    req.session.destroy(() => {})
     // Generate a new random user ID and update the corresponding User document.
     // Send status code 500 (Internal Server Error) in case of failure
     const new_user_id = await common.generateUserId(db.users.userIdLength)

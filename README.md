@@ -608,6 +608,29 @@ describe('userDataSelectors', () => {
 });
 ```
 
+### Integration testing
+
+To test the whole system locally:
+
+```bash
+docker compose build
+docker compose up
+```
+
+To open a shell inside a container for testing:
+
+```bash
+docker exec -it <container_name> sh
+```
+
+To shutdown:
+
+```bash
+docker compose down
+```
+
+> To be able to use the system locally, a `redis.conf` and a `docker-compose.override.yml` files are required. These files are only for testing and they **must not** be pushed to GitHub or the VPS.
+
 ---
 
 ## 👨‍💻 Development Workflow
@@ -689,13 +712,16 @@ const response = await axios.post(
 
 ## 🚀 Deployment
 
-### Production Build
+### Production Vite Build
 
 ```bash
 # Create optimized build
 npm run build
 
-# Output will be in /build folder
+# Output will be in /build folder. Copy it to the repository inside the server
+
+# Login to the VPS and copy the build/ folder to the app container
+sudo docker cp ~/Pacifinance/build app:/usr/src/pacifinance
 ```
 
 ### Build Configuration
@@ -706,16 +732,42 @@ Vite is configured with:
 - Console log removal in production
 - Chunk optimization
 
-### Docker Support
+### Production Full Build
 
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY build/ ./build/
-EXPOSE 3000
-CMD ["npm", "run", "preview"]
+```bash
+# Trigger GitHub Actions workflow
+git checkout main
+git merge dev
+git push
+
+# Wait for the build to complete
+
+# Login to the VPS and pull the changes
+cd ~/Pacifinance
+git checkout main
+git pull
+
+# Copy the last commit hash to the end of the APP_IMAGE environment variable in the .env file
+
+# Pull the image from GHCR
+sudo ~/dockerpull.sh
+
+# Restart the Pacifinance service
+sudo systemctl restart pacifinance.service
+```
+
+### Container Logs
+
+Logs from the last restart:
+
+```bash
+sudo docker logs <container_name>
+```
+
+All logs:
+
+```bash
+sudo journalctl CONTAINER_NAME=<container_name>
 ```
 
 ---

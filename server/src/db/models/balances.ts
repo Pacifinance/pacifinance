@@ -195,7 +195,7 @@ async function getYearlyBalanceByUserId(user_id: string) {
         );
         // If a balance was found for this month, then add it to the array; otherwise, add an empty object
         const balance = (res !== null) ? res : {};
-        balances.push({date: month_start, balance: balance});
+        balances.push({date: new ExtDate(month_start), balance: balance});
         // Decrease the month start and end by one month for the next iteration
         month_start.moveByMonths(-1)
         month_end.moveByMonths(-1)

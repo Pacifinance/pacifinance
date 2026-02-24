@@ -1,12 +1,16 @@
 /**
- * Mock cryptocurrency market data for development mode.
- * Shape matches the `/api/prices/crypto` endpoint response (CoinGecko-sourced).
+ * Mock cryptocurrency market data for development / demo mode.
+ * Shape mirrors the CoinGecko `/coins/markets` response that the backend
+ * will forward from `/api/prices/crypto`.
  *
- * Each coin: {
- *   name, image, current, sparkline: number[],
- *   marketCap, totalVolume, change24h, circulatingSupply,
- *   marketCapRank, ath, athDate, atl, atlDate
- * }
+ * Base fields per coin (manually set):
+ *   name, image, current, sparkline, marketCap, totalVolume, change24h,
+ *   circulatingSupply, marketCapRank, ath, athDate, atl, atlDate
+ *
+ * Extended fields (added via COIN_META + post-processing):
+ *   symbol, totalSupply, maxSupply, high24h, low24h, priceChange24h,
+ *   fullyDilutedValuation, marketCapChange24h, marketCapChangePercentage24h,
+ *   athChangePercentage, atlChangePercentage, roi, lastUpdated
  *
  * Sparklines contain 168 hourly data points (7 days) with realistic variation.
  * Uses a seeded PRNG so values are stable across renders.
@@ -414,5 +418,74 @@ const mockCryptoData = {
         atlDate: '2023-04-18T02:14:41.591Z',
     },
 };
+
+/* ─── Additional base fields per coin (symbol, totalSupply, maxSupply) ─── */
+const COIN_META = {
+    bitcoin:          { symbol: 'btc',   totalSupply: 19752000,          maxSupply: 21000000 },
+    ethereum:         { symbol: 'eth',   totalSupply: 120420000,         maxSupply: null },
+    tether:           { symbol: 'usdt',  totalSupply: 143780000000,      maxSupply: null },
+    binancecoin:      { symbol: 'bnb',   totalSupply: 144990000,         maxSupply: 200000000 },
+    solana:           { symbol: 'sol',   totalSupply: 562000000,         maxSupply: null },
+    ripple:           { symbol: 'xrp',   totalSupply: 99988000000,       maxSupply: 100000000000 },
+    'usd-coin':       { symbol: 'usdc',  totalSupply: 33580000000,       maxSupply: null },
+    cardano:          { symbol: 'ada',   totalSupply: 37100000000,       maxSupply: 45000000000 },
+    avalanche:        { symbol: 'avax',  totalSupply: 432000000,         maxSupply: 720000000 },
+    dogecoin:         { symbol: 'doge',  totalSupply: 148700000000,      maxSupply: null },
+    polkadot:         { symbol: 'dot',   totalSupply: 1425000000,        maxSupply: null },
+    chainlink:        { symbol: 'link',  totalSupply: 1000000000,        maxSupply: 1000000000 },
+    'matic-network':  { symbol: 'pol',   totalSupply: 10000000000,       maxSupply: 10000000000 },
+    litecoin:         { symbol: 'ltc',   totalSupply: 84000000,          maxSupply: 84000000 },
+    uniswap:          { symbol: 'uni',   totalSupply: 1000000000,        maxSupply: 1000000000 },
+    cosmos:           { symbol: 'atom',  totalSupply: 390500000,         maxSupply: null },
+    stellar:          { symbol: 'xlm',   totalSupply: 50001806812,       maxSupply: 50001806812 },
+    near:             { symbol: 'near',  totalSupply: 1190000000,        maxSupply: null },
+    aptos:            { symbol: 'apt',   totalSupply: 1087000000,        maxSupply: null },
+    arbitrum:         { symbol: 'arb',   totalSupply: 10000000000,       maxSupply: 10000000000 },
+    optimism:         { symbol: 'op',    totalSupply: 4294967296,        maxSupply: 4294967296 },
+    sui:              { symbol: 'sui',   totalSupply: 10000000000,       maxSupply: 10000000000 },
+    'render-token':   { symbol: 'rndr',  totalSupply: 531000000,         maxSupply: 531099469 },
+    injective:        { symbol: 'inj',   totalSupply: 100000000,         maxSupply: null },
+    pepe:             { symbol: 'pepe',  totalSupply: 420690000000000,   maxSupply: 420690000000000 },
+};
+
+/* ─── Derive CoinGecko-equivalent fields from base data ─── */
+Object.entries(mockCryptoData).forEach(([id, coin]) => {
+    const meta = COIN_META[id] || {};
+    const price = coin.current;
+    const pctChange = coin.change24h;
+    const absChange = price * (pctChange / 100);
+    const dec = price > 1 ? 2 : (price > 0.0001 ? 6 : 10);
+
+    // Merge base meta fields
+    coin.symbol          = meta.symbol   || id.slice(0, 4);
+    coin.totalSupply     = meta.totalSupply ?? null;
+    coin.maxSupply       = meta.maxSupply   ?? null;
+
+    // 24h price range (realistic: high/low offset from current)
+    coin.high24h         = parseFloat((price + Math.abs(absChange) * (0.4 + rng() * 0.8)).toFixed(dec));
+    coin.low24h          = parseFloat((price - Math.abs(absChange) * (0.4 + rng() * 0.8) - price * 0.002).toFixed(dec));
+    if (coin.low24h <= 0) coin.low24h = parseFloat((price * 0.97).toFixed(dec));
+
+    // Absolute 24h price change
+    coin.priceChange24h  = parseFloat(absChange.toFixed(dec));
+
+    // Market cap changes (approximate — tracks price % change)
+    coin.marketCapChange24h            = Math.round(coin.marketCap * (pctChange / 100));
+    coin.marketCapChangePercentage24h  = parseFloat(pctChange.toFixed(5));
+
+    // Fully diluted valuation
+    const fdvSupply           = coin.maxSupply ?? coin.totalSupply ?? coin.circulatingSupply;
+    coin.fullyDilutedValuation = fdvSupply ? Math.round(price * fdvSupply) : null;
+
+    // ATH / ATL distance percentages
+    coin.athChangePercentage = coin.ath  ? parseFloat((((price - coin.ath) / coin.ath) * 100).toFixed(5))  : null;
+    coin.atlChangePercentage = coin.atl != null && coin.atl > 0
+        ? parseFloat((((price - coin.atl) / coin.atl) * 100).toFixed(2))
+        : null;
+
+    // Misc
+    coin.roi         = null;
+    coin.lastUpdated = '2026-02-24T12:00:00.000Z';
+});
 
 export default mockCryptoData;

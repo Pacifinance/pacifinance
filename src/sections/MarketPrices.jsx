@@ -1199,43 +1199,60 @@ export default function MarketPrices() {
     if (!cryptoData) return [];
 
     const list = Object.entries(cryptoData).map(([id, coin]) => {
-      const sparkline = coin.sparkline || [];
-      const priceStart = sparkline.length > 0 ? sparkline[0] : coin.current;
+      const sparkline = coin.sparkline_in_7d?.price ?? coin.sparkline ?? [];
+      const price = coin.current_price ?? coin.current;
+      const priceStart = sparkline.length > 0 ? sparkline[0] : price;
       const change7d = priceStart > 0
-        ? ((coin.current - priceStart) / priceStart) * 100
+        ? ((price - priceStart) / priceStart) * 100
         : 0;
 
       return {
         id,
+        symbol: coin.symbol ?? null,
         name: coin.name,
         image: coin.image,
-        price: coin.current,
+        price,
         change7d,
         // Prefer backend-provided change24h; fall back to sparkline-derived 24h change
-        change24h: coin.change24h != null
-          ? coin.change24h
-          : (sparkline.length >= 24
-            ? ((coin.current - sparkline[sparkline.length - 24]) / sparkline[sparkline.length - 24]) * 100
+        change24h: coin.price_change_percentage_24h ?? coin.change24h ?? (sparkline.length >= 24
+            ? ((price - sparkline[sparkline.length - 24]) / sparkline[sparkline.length - 24]) * 100
             : null),
         sparkline,
-        // Extended CoinGecko market data (may be undefined when backend hasn't been upgraded yet)
-        marketCap: coin.marketCap ?? null,
-        totalVolume: coin.totalVolume ?? null,
-        circulatingSupply: coin.circulatingSupply ?? null,
-        marketCapRank: coin.marketCapRank ?? null,
-        ath: coin.ath ?? null,
-        athDate: coin.athDate ?? null,
-        atl: coin.atl ?? null,
-        atlDate: coin.atlDate ?? null,
+        // Market data
+        marketCap:                      coin.market_cap                         ?? coin.marketCap                      ?? null,
+        marketCapRank:                  coin.market_cap_rank                    ?? coin.marketCapRank                  ?? null,
+        fullyDilutedValuation:          coin.fully_diluted_valuation            ?? coin.fullyDilutedValuation          ?? null,
+        totalVolume:                    coin.total_volume                       ?? coin.totalVolume                    ?? null,
+        high24h:                        coin.high_24h                           ?? coin.high24h                        ?? null,
+        low24h:                         coin.low_24h                            ?? coin.low24h                         ?? null,
+        priceChange24h:                 coin.price_change_24h                   ?? coin.priceChange24h                 ?? null,
+        marketCapChange24h:             coin.market_cap_change_24h              ?? coin.marketCapChange24h              ?? null,
+        marketCapChangePercentage24h:   coin.market_cap_change_percentage_24h   ?? coin.marketCapChangePercentage24h    ?? null,
+        // Supply
+        circulatingSupply:              coin.circulating_supply                 ?? coin.circulatingSupply               ?? null,
+        totalSupply:                    coin.total_supply                       ?? coin.totalSupply                     ?? null,
+        maxSupply:                      coin.max_supply                         ?? coin.maxSupply                       ?? null,
+        // Historical
+        ath:                            coin.ath                                ?? null,
+        athChangePercentage:            coin.ath_change_percentage              ?? coin.athChangePercentage             ?? null,
+        athDate:                        coin.ath_date                           ?? coin.athDate                         ?? null,
+        atl:                            coin.atl                                ?? null,
+        atlChangePercentage:            coin.atl_change_percentage              ?? coin.atlChangePercentage             ?? null,
+        atlDate:                        coin.atl_date                           ?? coin.atlDate                         ?? null,
+        // Misc
+        roi:                            coin.roi                                ?? null,
+        lastUpdated:                    coin.last_updated                       ?? coin.lastUpdated                     ?? null,
       };
     });
 
-    // Filter by search
+    // Filter by search (name, id, or symbol)
     const filtered = searchQuery
-      ? list.filter(c =>
-          c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.id.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+      ? list.filter(c => {
+          const q = searchQuery.toLowerCase();
+          return c.name.toLowerCase().includes(q) ||
+            c.id.toLowerCase().includes(q) ||
+            (c.symbol && c.symbol.toLowerCase().includes(q));
+        })
       : list;
 
     // Sort
@@ -1439,7 +1456,7 @@ export default function MarketPrices() {
                         <RankBadge theme={theme}>#{coin.marketCapRank}</RankBadge>
                       )}
                     </CoinName>
-                    <CoinId theme={theme}>{coin.id}</CoinId>
+                    <CoinId theme={theme}>{coin.symbol ? coin.symbol.toUpperCase() : coin.id}</CoinId>
                   </CoinInfo>
                   <PriceBlock>
                     <CurrentPrice theme={theme}>
@@ -1534,7 +1551,7 @@ export default function MarketPrices() {
     const periodLabel = availableRanges.find(r => r.key === effectiveRange)?.label || effectiveRange;
 
     // Flags for optional data sections
-    const hasMarketInfo = asset.marketCap != null || asset.totalVolume != null || asset.circulatingSupply != null || asset.marketCapRank != null;
+    const hasMarketInfo = asset.marketCap != null || asset.totalVolume != null || asset.circulatingSupply != null || asset.marketCapRank != null || asset.fullyDilutedValuation != null;
     const hasHistorical = asset.ath != null || asset.atl != null;
 
     return (
@@ -1564,7 +1581,9 @@ export default function MarketPrices() {
                   </RankBadge>
                 )}
               </DetailName>
-              <DetailId theme={theme}>{asset.id}</DetailId>
+              <DetailId theme={theme}>
+                {asset.symbol ? `${asset.symbol.toUpperCase()} · ${asset.id}` : asset.id}
+              </DetailId>
             </DetailNameBlock>
             <DetailPriceBlock>
               <DetailPrice theme={theme}>{fmtPrice(asset.price)}</DetailPrice>
@@ -1635,16 +1654,46 @@ export default function MarketPrices() {
                   <StatValue theme={theme}>{fmtCompact(asset.marketCap)}</StatValue>
                 </StatItem>
               )}
+              {asset.fullyDilutedValuation != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.fdv || 'FDV'}</StatLabel>
+                  <StatValue theme={theme}>{fmtCompact(asset.fullyDilutedValuation)}</StatValue>
+                </StatItem>
+              )}
               {asset.totalVolume != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.vol24h || '24H Volume'}</StatLabel>
                   <StatValue theme={theme}>{fmtCompact(asset.totalVolume)}</StatValue>
                 </StatItem>
               )}
+              {asset.high24h != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.high24h || '24H High'}</StatLabel>
+                  <StatValue theme={theme} $color="#10b981">{fmtPrice(asset.high24h)}</StatValue>
+                </StatItem>
+              )}
+              {asset.low24h != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.low24h || '24H Low'}</StatLabel>
+                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(asset.low24h)}</StatValue>
+                </StatItem>
+              )}
               {asset.circulatingSupply != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.circulatingSupply || 'Circ. Supply'}</StatLabel>
                   <StatValue theme={theme}>{fmtSupply(asset.circulatingSupply)}</StatValue>
+                </StatItem>
+              )}
+              {asset.totalSupply != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.totalSupply || 'Total Supply'}</StatLabel>
+                  <StatValue theme={theme}>{fmtSupply(asset.totalSupply)}</StatValue>
+                </StatItem>
+              )}
+              {asset.maxSupply != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.maxSupply || 'Max Supply'}</StatLabel>
+                  <StatValue theme={theme}>{fmtSupply(asset.maxSupply)}</StatValue>
                 </StatItem>
               )}
             </StatsGrid>
@@ -1695,12 +1744,26 @@ export default function MarketPrices() {
                 </StatItem>
               </>
             )}
+            {asset.priceChange24h != null && (
+              <StatItem theme={theme}>
+                <StatLabel theme={theme}>{td.priceChange24h || '24H Δ Price'}</StatLabel>
+                <StatValue theme={theme} $color={asset.priceChange24h >= 0 ? '#10b981' : '#ef4444'}>
+                  {asset.priceChange24h >= 0 ? '+' : ''}{fmtPrice(asset.priceChange24h)}
+                </StatValue>
+              </StatItem>
+            )}
             <StatItem theme={theme}>
               <StatLabel theme={theme}>{td.identifier || 'Identifier'}</StatLabel>
               <StatValue theme={theme} style={{ fontSize: '0.85rem', textTransform: 'uppercase' }}>
                 {asset.id}
               </StatValue>
             </StatItem>
+            {asset.lastUpdated && (
+              <StatItem theme={theme}>
+                <StatLabel theme={theme}>{td.lastUpdated || 'Last Updated'}</StatLabel>
+                <StatValue theme={theme} style={{ fontSize: '0.85rem' }}>{fmtDate(asset.lastUpdated)}</StatValue>
+              </StatItem>
+            )}
           </StatsGrid>
         </DetailCard>
 
@@ -1714,7 +1777,14 @@ export default function MarketPrices() {
               {asset.ath != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.ath || 'All-Time High'}</StatLabel>
-                  <StatValue theme={theme} $color="#10b981">{fmtPrice(asset.ath)}</StatValue>
+                  <StatValue theme={theme} $color="#10b981">
+                    {fmtPrice(asset.ath)}
+                    {asset.athChangePercentage != null && (
+                      <span style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '0.35rem' }}>
+                        ({fmtPct(asset.athChangePercentage)})
+                      </span>
+                    )}
+                  </StatValue>
                 </StatItem>
               )}
               {asset.athDate && (
@@ -1726,7 +1796,14 @@ export default function MarketPrices() {
               {asset.atl != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.atl || 'All-Time Low'}</StatLabel>
-                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(asset.atl)}</StatValue>
+                  <StatValue theme={theme} $color="#ef4444">
+                    {fmtPrice(asset.atl)}
+                    {asset.atlChangePercentage != null && (
+                      <span style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '0.35rem' }}>
+                        ({fmtPct(asset.atlChangePercentage)})
+                      </span>
+                    )}
+                  </StatValue>
                 </StatItem>
               )}
               {asset.atlDate && (

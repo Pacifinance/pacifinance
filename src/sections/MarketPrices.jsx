@@ -3,8 +3,13 @@ import styled from 'styled-components';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { UserContext } from '../contexts/UserContext';
 import apiClient from '../services/apiClient';
 import mockCryptoData from '../data/mockCryptoData';
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip as ReTooltip,
+  ResponsiveContainer, CartesianGrid
+} from 'recharts';
 import {
   TrendingUp, TrendingDown, Minus, Search, RefreshCw,
   BarChart3, Bitcoin, Landmark, Gem, Briefcase, Lock,
@@ -401,6 +406,31 @@ const PriceChange = styled.div`
   svg { width: 12px; height: 12px; }
 `;
 
+const RankBadge = styled.span`
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+  padding: 0.08rem 0.35rem;
+  border-radius: 4px;
+  margin-left: 0.25rem;
+`;
+
+const CardFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.68rem;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'};
+  font-weight: 500;
+
+  @media (max-width: 768px) {
+    font-size: 0.62rem;
+    margin-top: 0.35rem;
+  }
+`;
+
 /* ─── Sparkline ─── */
 
 const SparklineContainer = styled.div`
@@ -624,7 +654,7 @@ const DetailSectionTitle = styled.h3`
 `;
 
 const DetailSparklineContainer = styled.div`
-  height: 160px;
+  height: 220px;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -632,8 +662,93 @@ const DetailSparklineContainer = styled.div`
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)'};
 
   @media (max-width: 768px) {
-    height: 120px;
+    height: 180px;
     border-radius: 10px;
+  }
+
+  /* Recharts tooltip styling overrides */
+  .recharts-tooltip-wrapper {
+    outline: none;
+  }
+`;
+
+const TimeRangeRow = styled.div`
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const TimeRangeButton = styled.button`
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: ${p => p.disabled ? 'not-allowed' : 'pointer'};
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  opacity: ${p => p.disabled ? 0.45 : 1};
+
+  background: ${p => p.$active
+    ? p.theme.buttonBackgroundColor
+    : p.theme.mode === 'dark'
+      ? 'rgba(255, 255, 255, 0.06)'
+      : 'rgba(0, 0, 0, 0.04)'
+  };
+  color: ${p => p.$active
+    ? 'white'
+    : p.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.6)'
+      : 'rgba(0,0,0,0.5)'
+  };
+  border-color: ${p => p.$active
+    ? 'transparent'
+    : p.theme.mode === 'dark'
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(0, 0, 0, 0.06)'
+  };
+
+  &:hover:not(:disabled) {
+    background: ${p => p.$active
+      ? p.theme.buttonBackgroundColor
+      : p.theme.mode === 'dark'
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'rgba(0, 0, 0, 0.07)'
+    };
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.7rem;
+  }
+`;
+
+const ChartTooltipBox = styled.div`
+  background: ${p => p.$dark
+    ? 'rgba(30, 30, 30, 0.95)'
+    : 'rgba(255, 255, 255, 0.97)'
+  };
+  border: 1px solid ${p => p.$dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  font-size: 0.78rem;
+  line-height: 1.5;
+
+  .tooltip-date {
+    color: ${p => p.$dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)'};
+    font-size: 0.68rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .tooltip-price {
+    font-weight: 700;
+    color: ${p => p.$dark ? '#fff' : '#1f2937'};
   }
 `;
 
@@ -880,50 +995,121 @@ const Sparkline = React.memo(({ data, color, height = 48 }) => {
 
 Sparkline.displayName = 'Sparkline';
 
-/* ─── Detail Sparkline (Larger version for detail view) ─── */
+/* ─── Detail Sparkline (Interactive Recharts version for detail view) ─── */
 
-const DetailSparkline = React.memo(({ data, color, height = 160 }) => {
+const DetailSparkline = React.memo(({ data, color, timeRange = '7d', theme, fmtPrice: externalFmtPrice }) => {
   if (!data || data.length < 2) return null;
 
-  const step = Math.max(1, Math.floor(data.length / 120));
-  const sampled = data.filter((_, i) => i % step === 0);
+  const isDark = theme?.mode === 'dark';
 
-  const min = Math.min(...sampled);
-  const max = Math.max(...sampled);
-  const range = max - min || 1;
-  const width = 600;
-  const padding = 4;
+  // Map time range to number of hourly data points to display
+  const RANGE_POINTS = {
+    '24h':  24,
+    '7d':   168,
+    '30d':  720,
+    '90d':  2160,
+    '6m':   4380,
+    '1y':   8760,
+    'all':  Infinity,
+  };
 
-  const points = sampled.map((v, i) => {
-    const x = (i / (sampled.length - 1)) * width;
-    const y = height - padding - ((v - min) / range) * (height - padding * 2);
-    return `${x},${y}`;
-  }).join(' ');
+  const desiredPoints = RANGE_POINTS[timeRange] || 168;
+  const slicedData = desiredPoints >= data.length ? data : data.slice(-desiredPoints);
 
-  const areaPoints = `0,${height} ${points} ${width},${height}`;
+  // Build chart data with time labels
+  // Points are hourly going back from "now"
+  const now = Date.now();
+  const hoursBack = slicedData.length;
+  const startTime = now - hoursBack * 3600_000;
+
+  const chartData = slicedData.map((price, i) => ({
+    time: startTime + i * 3600_000,
+    price,
+  }));
+
+  // Format X-axis ticks depending on range
+  const formatXTick = (timestamp) => {
+    const d = new Date(timestamp);
+    if (timeRange === '24h') {
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    if (['7d', '30d'].includes(timeRange)) {
+      return d.toLocaleDateString([], { day: '2-digit', month: 'short' });
+    }
+    // Longer ranges: show month + year
+    return d.toLocaleDateString([], { month: 'short', year: '2-digit' });
+  };
+
+  // Format Y-axis ticks
+  const formatYTick = (value) => {
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+    if (value >= 1) return value.toFixed(1);
+    if (value >= 0.01) return value.toFixed(3);
+    return value.toFixed(5);
+  };
+
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.[0]) return null;
+    const { time, price } = payload[0].payload;
+    const d = new Date(time);
+    const dateStr = timeRange === '24h'
+      ? d.toLocaleString([], { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })
+      : d.toLocaleString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    return (
+      <ChartTooltipBox $dark={isDark}>
+        <div className="tooltip-date">{dateStr}</div>
+        <div className="tooltip-price">{externalFmtPrice ? externalFmtPrice(price) : price.toFixed(2)}</div>
+      </ChartTooltipBox>
+    );
+  };
+
+  const gradientId = `detail-area-${color.replace('#', '')}`;
 
   return (
-    <DetailSparklineContainer>
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" width="100%" height="100%">
-        <defs>
-          <linearGradient id={`detail-grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity="0.35" />
-            <stop offset="100%" stopColor={color} stopOpacity="0.03" />
-          </linearGradient>
-        </defs>
-        <polygon
-          points={areaPoints}
-          fill={`url(#detail-grad-${color.replace('#', '')})`}
-        />
-        <polyline
-          points={points}
-          fill="none"
-          stroke={color}
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-      </svg>
+    <DetailSparklineContainer theme={theme}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={color} stopOpacity={0.35} />
+              <stop offset="95%" stopColor={color} stopOpacity={0.03} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}
+            vertical={false}
+          />
+          <XAxis
+            dataKey="time"
+            tickFormatter={formatXTick}
+            tick={{ fontSize: 10, fill: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}
+            axisLine={{ stroke: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}
+            tickLine={false}
+            minTickGap={40}
+          />
+          <YAxis
+            tickFormatter={formatYTick}
+            tick={{ fontSize: 10, fill: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}
+            axisLine={false}
+            tickLine={false}
+            width={48}
+            domain={['auto', 'auto']}
+          />
+          <ReTooltip content={<CustomTooltip />} cursor={{ stroke: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)', strokeDasharray: '4 4' }} />
+          <Area
+            type="monotone"
+            dataKey="price"
+            stroke={color}
+            strokeWidth={2}
+            fill={`url(#${gradientId})`}
+            dot={false}
+            activeDot={{ r: 4, stroke: color, strokeWidth: 2, fill: isDark ? '#1a1a1a' : '#fff' }}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </DetailSparklineContainer>
   );
 });
@@ -948,8 +1134,9 @@ const ASSET_CATEGORIES = [
 
 export default function MarketPrices() {
   const { theme } = useContext(ThemeContext);
-  const { language, translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
+  const { isDemoMode } = useContext(UserContext);
   const t = translations?.marketPrices || {};
 
   const [activeCategory, setActiveCategory] = useState('crypto');
@@ -959,14 +1146,36 @@ export default function MarketPrices() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('marketCap'); // marketCap | priceAsc | priceDesc | name
   const [selectedAsset, setSelectedAsset] = useState(null); // asset object or null
+  const [detailTimeRange, setDetailTimeRange] = useState('7d'); // 24h | 7d | 30d | 90d | 6m | 1y | all
 
   /* ─── Fetch crypto data ─── */
   const fetchCrypto = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    // In demo mode, always use mock data (no API call needed)
+    if (isDemoMode) {
+      setCryptoData(mockCryptoData);
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await apiClient.get('/api/prices/crypto');
-      setCryptoData(res.data);
+      const data = res.data;
+
+      // Validate: data must be a non-null plain object (not an array or string)
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        // Quick sanity check: first entry should have at least { name, current }
+        const firstKey = Object.keys(data)[0];
+        if (firstKey && data[firstKey]?.name && data[firstKey]?.current != null) {
+          setCryptoData(data);
+        } else {
+          throw new Error('Unexpected response shape from /api/prices/crypto');
+        }
+      } else {
+        throw new Error('Unexpected response type from /api/prices/crypto');
+      }
     } catch (err) {
       console.error('Failed to fetch crypto prices:', err);
       // In dev mode, use mock data so the page is usable for UI work
@@ -979,7 +1188,7 @@ export default function MarketPrices() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isDemoMode]);
 
   useEffect(() => {
     fetchCrypto();
@@ -1002,7 +1211,22 @@ export default function MarketPrices() {
         image: coin.image,
         price: coin.current,
         change7d,
+        // Prefer backend-provided change24h; fall back to sparkline-derived 24h change
+        change24h: coin.change24h != null
+          ? coin.change24h
+          : (sparkline.length >= 24
+            ? ((coin.current - sparkline[sparkline.length - 24]) / sparkline[sparkline.length - 24]) * 100
+            : null),
         sparkline,
+        // Extended CoinGecko market data (may be undefined when backend hasn't been upgraded yet)
+        marketCap: coin.marketCap ?? null,
+        totalVolume: coin.totalVolume ?? null,
+        circulatingSupply: coin.circulatingSupply ?? null,
+        marketCapRank: coin.marketCapRank ?? null,
+        ath: coin.ath ?? null,
+        athDate: coin.athDate ?? null,
+        atl: coin.atl ?? null,
+        atlDate: coin.atlDate ?? null,
       };
     });
 
@@ -1030,7 +1254,13 @@ export default function MarketPrices() {
         break;
       case 'marketCap':
       default:
-        // Keep original order from CoinGecko (by market cap)
+        // Sort by market cap rank when available, otherwise keep original order
+        filtered.sort((a, b) => {
+          if (a.marketCapRank != null && b.marketCapRank != null) return a.marketCapRank - b.marketCapRank;
+          if (a.marketCapRank != null) return -1;
+          if (b.marketCapRank != null) return 1;
+          return 0;
+        });
         break;
     }
 
@@ -1058,6 +1288,34 @@ export default function MarketPrices() {
   };
 
   const fmtPct = (val) => `${val >= 0 ? '+' : ''}${val.toFixed(2)}%`;
+
+  /** Format large numbers in compact notation (1.07T, 28.5B, etc.) */
+  const fmtCompact = (val) => {
+    if (val == null) return '–';
+    if (val >= 1e12) return `$${(val / 1e12).toFixed(2)}T`;
+    if (val >= 1e9) return `$${(val / 1e9).toFixed(2)}B`;
+    if (val >= 1e6) return `$${(val / 1e6).toFixed(1)}M`;
+    if (val >= 1e3) return `$${(val / 1e3).toFixed(1)}K`;
+    return `$${val.toFixed(0)}`;
+  };
+
+  /** Format large supply numbers without $ */
+  const fmtSupply = (val) => {
+    if (val == null) return '–';
+    if (val >= 1e12) return `${(val / 1e12).toFixed(2)}T`;
+    if (val >= 1e9) return `${(val / 1e9).toFixed(2)}B`;
+    if (val >= 1e6) return `${(val / 1e6).toFixed(1)}M`;
+    if (val >= 1e3) return `${(val / 1e3).toFixed(0)}K`;
+    return val.toLocaleString();
+  };
+
+  /** Format ISO date string to short local date */
+  const fmtDate = (iso) => {
+    if (!iso) return '–';
+    try {
+      return new Date(iso).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch { return '–'; }
+  };
 
   /* ─── Category label from translations ─── */
   const getCategoryLabel = (catId) => t?.categories?.[catId] || catId;
@@ -1159,8 +1417,10 @@ export default function MarketPrices() {
         {/* Asset Grid */}
         <AssetsGrid>
           {processedCryptoList.map(coin => {
-            const isPositive = coin.change7d >= 0;
-            const sparkColor = isPositive ? '#10b981' : '#ef4444';
+            // Prefer change24h for color/display; fall back to change7d
+            const displayChange = coin.change24h != null ? coin.change24h : coin.change7d;
+            const isPositive = displayChange >= 0;
+            const sparkColor = coin.change7d >= 0 ? '#10b981' : '#ef4444';
 
             return (
               <AssetCard key={coin.id} theme={theme} onClick={() => setSelectedAsset(coin)}>
@@ -1173,25 +1433,45 @@ export default function MarketPrices() {
                     onError={e => { e.target.style.display = 'none'; }}
                   />
                   <CoinInfo>
-                    <CoinName theme={theme}>{coin.name}</CoinName>
+                    <CoinName theme={theme}>
+                      {coin.name}
+                      {coin.marketCapRank != null && (
+                        <RankBadge theme={theme}>#{coin.marketCapRank}</RankBadge>
+                      )}
+                    </CoinName>
                     <CoinId theme={theme}>{coin.id}</CoinId>
                   </CoinInfo>
                   <PriceBlock>
                     <CurrentPrice theme={theme}>
                       {fmtPrice(coin.price)}
                     </CurrentPrice>
-                    <PriceChange theme={theme} $positive={isPositive} $neutral={coin.change7d === 0}>
+                    <PriceChange theme={theme} $positive={isPositive} $neutral={displayChange === 0}>
                       {isPositive
                         ? <ArrowUpRight />
-                        : coin.change7d < 0
+                        : displayChange < 0
                           ? <ArrowDownRight />
                           : <Minus size={12} />}
-                      {fmtPct(coin.change7d)}
+                      {fmtPct(displayChange)}
+                      <span style={{ opacity: 0.6, marginLeft: '0.15rem' }}>
+                        {coin.change24h != null ? '24h' : '7d'}
+                      </span>
                     </PriceChange>
                   </PriceBlock>
                 </CardHeader>
 
                 <Sparkline data={coin.sparkline} color={sparkColor} />
+
+                {/* Market cap & volume footer (only if data available) */}
+                {(coin.marketCap != null || coin.totalVolume != null) && (
+                  <CardFooter theme={theme}>
+                    {coin.marketCap != null && (
+                      <span>{t.detail?.marketCap || 'MCap'}: {fmtCompact(coin.marketCap)}</span>
+                    )}
+                    {coin.totalVolume != null && (
+                      <span>{t.detail?.vol24h || 'Vol'}: {fmtCompact(coin.totalVolume)}</span>
+                    )}
+                  </CardFooter>
+                )}
               </AssetCard>
             );
           })}
@@ -1202,17 +1482,64 @@ export default function MarketPrices() {
 
   /* ─── Render : Asset Detail View (generic for all asset types) ─── */
   const renderDetailView = (asset) => {
-    const isPositive = asset.change7d >= 0;
-    const sparkColor = isPositive ? '#10b981' : '#ef4444';
+    const displayChange = asset.change24h != null ? asset.change24h : asset.change7d;
+    const isPositive = displayChange >= 0;
+    const sparkColor = asset.change7d >= 0 ? '#10b981' : '#ef4444';
     const sparkline = asset.sparkline || [];
-    const high7d = sparkline.length > 0 ? Math.max(...sparkline) : asset.price;
-    const low7d = sparkline.length > 0 ? Math.min(...sparkline) : asset.price;
-    const range7d = high7d - low7d;
     const td = t?.detail || {};
+
+    // Map time ranges to required hourly data points
+    const TIME_RANGES = [
+      { key: '24h',  label: td.period24h || '24H',  points: 24 },
+      { key: '7d',   label: td.period7d  || '7D',   points: 168 },
+      { key: '30d',  label: td.period30d || '30D',  points: 720 },
+      { key: '90d',  label: td.period90d || '90D',  points: 2160 },
+      { key: '6m',   label: td.period6m  || '6M',   points: 4380 },
+      { key: '1y',   label: td.period1y  || '1Y',   points: 8760 },
+      { key: 'all',  label: td.periodAll || 'ALL',  points: 0 }, // always available if sparkline > 168
+    ];
+
+    // Build available time range buttons dynamically based on sparkline length
+    const availableRanges = TIME_RANGES.filter(r => {
+      if (r.key === 'all') return sparkline.length > 168; // only show ALL if more data than 7d
+      return sparkline.length >= r.points;
+    });
+
+    // Ensure selected time range is valid—fall back to the largest available
+    const effectiveRange = availableRanges.find(r => r.key === detailTimeRange)
+      ? detailTimeRange
+      : (availableRanges.length > 0 ? availableRanges[availableRanges.length - 1].key : '7d');
+
+    // Compute stats from sparkline slice matching the selected time range
+    const RANGE_POINTS = { '24h': 24, '7d': 168, '30d': 720, '90d': 2160, '6m': 4380, '1y': 8760, 'all': Infinity };
+    const desiredPts = RANGE_POINTS[effectiveRange] || 168;
+    const slicedSparkline = desiredPts >= sparkline.length ? sparkline : sparkline.slice(-desiredPts);
+
+    const high = slicedSparkline.length > 0 ? Math.max(...slicedSparkline) : asset.price;
+    const low = slicedSparkline.length > 0 ? Math.min(...slicedSparkline) : asset.price;
+    const range = high - low;
+    const open = slicedSparkline.length > 0 ? slicedSparkline[0] : asset.price;
+    const close = asset.price;
+    const avg = slicedSparkline.length > 0
+      ? slicedSparkline.reduce((s, v) => s + v, 0) / slicedSparkline.length
+      : asset.price;
+    const pctChange = open > 0 ? ((close - open) / open) * 100 : 0;
+
+    // Volatility: standard deviation as % of mean
+    const variance = slicedSparkline.length > 1
+      ? slicedSparkline.reduce((s, v) => s + (v - avg) ** 2, 0) / slicedSparkline.length
+      : 0;
+    const volatility = avg > 0 ? (Math.sqrt(variance) / avg) * 100 : 0;
+
+    const periodLabel = availableRanges.find(r => r.key === effectiveRange)?.label || effectiveRange;
+
+    // Flags for optional data sections
+    const hasMarketInfo = asset.marketCap != null || asset.totalVolume != null || asset.circulatingSupply != null || asset.marketCapRank != null;
+    const hasHistorical = asset.ath != null || asset.atl != null;
 
     return (
       <DetailOverlay>
-        <BackButton theme={theme} onClick={() => setSelectedAsset(null)}>
+        <BackButton theme={theme} onClick={() => { setSelectedAsset(null); setDetailTimeRange('7d'); }}>
           <ArrowLeft />
           {td.back || 'Back to list'}
         </BackButton>
@@ -1229,37 +1556,105 @@ export default function MarketPrices() {
               />
             )}
             <DetailNameBlock>
-              <DetailName theme={theme}>{asset.name}</DetailName>
+              <DetailName theme={theme}>
+                {asset.name}
+                {asset.marketCapRank != null && (
+                  <RankBadge theme={theme} style={{ fontSize: '0.72rem', marginLeft: '0.5rem' }}>
+                    #{asset.marketCapRank}
+                  </RankBadge>
+                )}
+              </DetailName>
               <DetailId theme={theme}>{asset.id}</DetailId>
             </DetailNameBlock>
             <DetailPriceBlock>
               <DetailPrice theme={theme}>{fmtPrice(asset.price)}</DetailPrice>
-              <DetailChange theme={theme} $positive={isPositive} $neutral={asset.change7d === 0}>
+              <DetailChange theme={theme} $positive={isPositive} $neutral={displayChange === 0}>
                 {isPositive
                   ? <ArrowUpRight />
-                  : asset.change7d < 0
+                  : displayChange < 0
                     ? <ArrowDownRight />
                     : <Minus size={16} />}
-                {fmtPct(asset.change7d)}
+                {fmtPct(displayChange)}
+                <span style={{ opacity: 0.5, fontSize: '0.75rem', marginLeft: '0.2rem' }}>
+                  {asset.change24h != null ? '24h' : '7d'}
+                </span>
               </DetailChange>
             </DetailPriceBlock>
           </DetailHeader>
         </DetailCard>
 
-        {/* Sparkline Chart */}
+        {/* Sparkline Chart with Dynamic Time Range Filters */}
         {sparkline.length > 1 && (
           <DetailCard theme={theme}>
             <DetailSectionTitle theme={theme}>
-              {td.sparklineTitle || '7-Day Trend'}
+              {td.chartTitle || 'Price Chart'}
             </DetailSectionTitle>
-            <DetailSparkline data={sparkline} color={sparkColor} />
+
+            {/* Time range filter buttons — only show available ranges */}
+            {availableRanges.length > 1 && (
+              <TimeRangeRow>
+                {availableRanges.map(btn => (
+                  <TimeRangeButton
+                    key={btn.key}
+                    theme={theme}
+                    $active={effectiveRange === btn.key}
+                    onClick={() => setDetailTimeRange(btn.key)}
+                  >
+                    {btn.label}
+                  </TimeRangeButton>
+                ))}
+              </TimeRangeRow>
+            )}
+
+            <DetailSparkline
+              data={sparkline}
+              color={sparkColor}
+              timeRange={effectiveRange}
+              theme={theme}
+              fmtPrice={fmtPrice}
+            />
+          </DetailCard>
+        )}
+
+        {/* Market Info (market cap, volume, supply, rank) — only if data available */}
+        {hasMarketInfo && (
+          <DetailCard theme={theme}>
+            <DetailSectionTitle theme={theme}>
+              {td.marketInfo || 'Market Info'}
+            </DetailSectionTitle>
+            <StatsGrid>
+              {asset.marketCapRank != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.rank || 'Rank'}</StatLabel>
+                  <StatValue theme={theme}>#{asset.marketCapRank}</StatValue>
+                </StatItem>
+              )}
+              {asset.marketCap != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.marketCap || 'Market Cap'}</StatLabel>
+                  <StatValue theme={theme}>{fmtCompact(asset.marketCap)}</StatValue>
+                </StatItem>
+              )}
+              {asset.totalVolume != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.vol24h || '24H Volume'}</StatLabel>
+                  <StatValue theme={theme}>{fmtCompact(asset.totalVolume)}</StatValue>
+                </StatItem>
+              )}
+              {asset.circulatingSupply != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.circulatingSupply || 'Circ. Supply'}</StatLabel>
+                  <StatValue theme={theme}>{fmtSupply(asset.circulatingSupply)}</StatValue>
+                </StatItem>
+              )}
+            </StatsGrid>
           </DetailCard>
         )}
 
         {/* Price Stats */}
         <DetailCard theme={theme}>
           <DetailSectionTitle theme={theme}>
-            {td.priceStats || 'Price Stats'}
+            {td.priceStats || 'Price Stats'} ({periodLabel})
           </DetailSectionTitle>
           <StatsGrid>
             <StatItem theme={theme}>
@@ -1267,24 +1662,36 @@ export default function MarketPrices() {
               <StatValue theme={theme}>{fmtPrice(asset.price)}</StatValue>
             </StatItem>
             <StatItem theme={theme}>
-              <StatLabel theme={theme}>{td.change7d || '7-Day Change'}</StatLabel>
-              <StatValue theme={theme} $color={isPositive ? '#10b981' : '#ef4444'}>
-                {fmtPct(asset.change7d)}
+              <StatLabel theme={theme}>{td.change || 'Change'}</StatLabel>
+              <StatValue theme={theme} $color={pctChange >= 0 ? '#10b981' : '#ef4444'}>
+                {fmtPct(pctChange)}
               </StatValue>
             </StatItem>
-            {sparkline.length > 0 && (
+            {slicedSparkline.length > 0 && (
               <>
                 <StatItem theme={theme}>
-                  <StatLabel theme={theme}>{td.high7d || '7D High'}</StatLabel>
-                  <StatValue theme={theme} $color="#10b981">{fmtPrice(high7d)}</StatValue>
+                  <StatLabel theme={theme}>{td.open || 'Open'}</StatLabel>
+                  <StatValue theme={theme}>{fmtPrice(open)}</StatValue>
                 </StatItem>
                 <StatItem theme={theme}>
-                  <StatLabel theme={theme}>{td.low7d || '7D Low'}</StatLabel>
-                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(low7d)}</StatValue>
+                  <StatLabel theme={theme}>{td.high || 'High'}</StatLabel>
+                  <StatValue theme={theme} $color="#10b981">{fmtPrice(high)}</StatValue>
                 </StatItem>
                 <StatItem theme={theme}>
-                  <StatLabel theme={theme}>{td.range7d || '7D Range'}</StatLabel>
-                  <StatValue theme={theme}>{fmtPrice(range7d)}</StatValue>
+                  <StatLabel theme={theme}>{td.low || 'Low'}</StatLabel>
+                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(low)}</StatValue>
+                </StatItem>
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.range || 'Range'}</StatLabel>
+                  <StatValue theme={theme}>{fmtPrice(range)}</StatValue>
+                </StatItem>
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.avg || 'Average'}</StatLabel>
+                  <StatValue theme={theme}>{fmtPrice(avg)}</StatValue>
+                </StatItem>
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.volatility || 'Volatility'}</StatLabel>
+                  <StatValue theme={theme}>{volatility.toFixed(2)}%</StatValue>
                 </StatItem>
               </>
             )}
@@ -1296,6 +1703,41 @@ export default function MarketPrices() {
             </StatItem>
           </StatsGrid>
         </DetailCard>
+
+        {/* Historical: ATH / ATL — only if data available */}
+        {hasHistorical && (
+          <DetailCard theme={theme}>
+            <DetailSectionTitle theme={theme}>
+              {td.historical || 'Historical'}
+            </DetailSectionTitle>
+            <StatsGrid>
+              {asset.ath != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.ath || 'All-Time High'}</StatLabel>
+                  <StatValue theme={theme} $color="#10b981">{fmtPrice(asset.ath)}</StatValue>
+                </StatItem>
+              )}
+              {asset.athDate && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.athDate || 'ATH Date'}</StatLabel>
+                  <StatValue theme={theme} style={{ fontSize: '0.85rem' }}>{fmtDate(asset.athDate)}</StatValue>
+                </StatItem>
+              )}
+              {asset.atl != null && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.atl || 'All-Time Low'}</StatLabel>
+                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(asset.atl)}</StatValue>
+                </StatItem>
+              )}
+              {asset.atlDate && (
+                <StatItem theme={theme}>
+                  <StatLabel theme={theme}>{td.atlDate || 'ATL Date'}</StatLabel>
+                  <StatValue theme={theme} style={{ fontSize: '0.85rem' }}>{fmtDate(asset.atlDate)}</StatValue>
+                </StatItem>
+              )}
+            </StatsGrid>
+          </DetailCard>
+        )}
       </DetailOverlay>
     );
   };

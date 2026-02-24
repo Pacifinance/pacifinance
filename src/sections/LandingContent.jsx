@@ -12,7 +12,8 @@ import {
   Paid as PaidIcon,
   Star as StarIcon,
   UploadFile as UploadFileIcon,
-  CurrencyExchange as CurrencyExchangeIcon
+  CurrencyExchange as CurrencyExchangeIcon,
+  ShowChart as ShowChartIcon
 } from "@mui/icons-material";
 // Lazy loading dei componenti non critici per il First Contentful Paint
 const ConsentBanner = lazy(() => import("../components/ConsentBanner"));
@@ -400,7 +401,35 @@ export default function NewLandingContent({ theme }) {
               </ul>
             </div>
 
-            {/* Feature 7 - Multi-Currency Support */}
+            {/* Feature 7 - Market Prices */}
+            <div
+              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              style={{
+                borderColor: theme.secondaryColor,
+                backgroundColor:
+                  theme.mode === "dark"
+                    ? `${theme.secondaryColor}10`
+                    : "rgba(255,255,255,0.5)",
+              }}
+            >
+              <div
+                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                style={{ backgroundColor: theme.secondaryColor }}
+              >
+                <ShowChartIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+              </div>
+              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.marketPrices.title}</h3>
+              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+                {translations.landing.new.features.marketPrices.description}
+              </p>
+              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+                {translations.landing.new.features.marketPrices.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Feature 8 - Multi-Currency Support */}
             <div
               className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 sm:col-span-2 lg:col-span-3"
               style={{
@@ -449,7 +478,7 @@ export default function NewLandingContent({ theme }) {
               </div>
             </div>
 
-            {/* Feature 8 - CSV/Excel Import */}
+            {/* Feature 9 - CSV/Excel Import */}
             <div
               className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 sm:col-span-2 lg:col-span-3"
               style={{

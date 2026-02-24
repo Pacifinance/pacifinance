@@ -156,6 +156,15 @@
                         "• Nessun tracciamento pubblicitario"
                     ]
                 },
+                "marketPrices": {
+                    "title": "Prezzi di Mercato in Tempo Reale",
+                    "description": "Monitora i prezzi delle criptovalute con grafici interattivi e dati di mercato dettagliati. Trend sparkline, massimi e minimi storici e diversi intervalli temporali.",
+                    "features": [
+                        "• Prezzi crypto in tempo reale",
+                        "• Grafici interattivi con intervalli temporali",
+                        "• Capitalizzazione, volume e offerta"
+                    ]
+                },
                 "currencies": {
                     "title": "19 Valute Supportate",
                     "description": "Visualizza le tue finanze nella valuta che preferisci. Tassi di cambio in tempo reale con conversione automatica — tutti i dati mostrati nella valuta scelta.",
@@ -312,6 +321,7 @@
         "chartsStatistics": "Grafici e Statistiche",
         "insert": "Inserisci",
         "check": "Controlla Prezzi",
+        "marketPrices": "Prezzi di Mercato",
         "leaderboard": "Classifica",
         "comparison": "Confronto",
         "knowledge": "Conoscenza",
@@ -2271,15 +2281,36 @@
         },
         "detail": {
             "back": "Torna all'elenco",
+            "chartTitle": "Grafico Prezzo",
             "currentPrice": "Prezzo attuale",
-            "change7d": "Variazione 7 giorni",
-            "sparklineTitle": "Andamento 7 giorni",
-            "high7d": "Massimo 7G",
-            "low7d": "Minimo 7G",
-            "range7d": "Range 7G",
+            "change": "Variazione",
+            "open": "Apertura",
+            "high": "Massimo",
+            "low": "Minimo",
+            "range": "Range",
+            "avg": "Media",
+            "volatility": "Volatilità",
             "performance": "Performance",
             "priceStats": "Statistiche prezzo",
-            "identifier": "Identificatore"
+            "identifier": "Identificatore",
+            "period24h": "24H",
+            "period7d": "7G",
+            "period30d": "30G",
+            "period90d": "90G",
+            "period6m": "6M",
+            "period1y": "1A",
+            "periodAll": "TUTTO",
+            "comingSoon": "In arrivo",
+            "marketInfo": "Info Mercato",
+            "rank": "Posizione",
+            "marketCap": "Cap. Mercato",
+            "vol24h": "Volume 24H",
+            "circulatingSupply": "Offerta Circ.",
+            "historical": "Storico",
+            "ath": "Massimo Storico",
+            "athDate": "Data ATH",
+            "atl": "Minimo Storico",
+            "atlDate": "Data ATL"
         }
     }
 }

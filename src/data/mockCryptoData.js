@@ -1,19 +1,38 @@
 /**
  * Mock cryptocurrency market data for development mode.
  * Shape matches the `/api/prices/crypto` endpoint response (CoinGecko-sourced).
- * Each coin: { name, image, current, sparkline: number[] }
+ *
+ * Each coin: {
+ *   name, image, current, sparkline: number[],
+ *   marketCap, totalVolume, change24h, circulatingSupply,
+ *   marketCapRank, ath, athDate, atl, atlDate
+ * }
  *
  * Sparklines contain 168 hourly data points (7 days) with realistic variation.
+ * Uses a seeded PRNG so values are stable across renders.
  */
+
+// Seeded pseudo-random number generator (Mulberry32)
+const seededRng = (seed) => {
+    let s = seed | 0;
+    return () => {
+        s = (s + 0x6D2B79F5) | 0;
+        let t = Math.imul(s ^ (s >>> 15), 1 | s);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+};
+
+const rng = seededRng(20260224);
 
 // Helper: generate a 168-point sparkline around a base price with a given volatility %
 const sparkline = (base, volatilityPct = 5) => {
     const pts = [];
-    let price = base * (1 - volatilityPct / 100); // start slightly below
+    let price = base * (1 - volatilityPct / 100);
     for (let i = 0; i < 168; i++) {
-        const drift = (Math.random() - 0.48) * base * (volatilityPct / 500);
+        const drift = (rng() - 0.48) * base * (volatilityPct / 500);
         price = Math.max(price + drift, base * 0.8);
-        pts.push(parseFloat(price.toFixed(price > 1 ? 2 : 6)));
+        pts.push(parseFloat(price.toFixed(price > 1 ? 2 : 8)));
     }
     return pts;
 };
@@ -21,154 +40,379 @@ const sparkline = (base, volatilityPct = 5) => {
 const mockCryptoData = {
     bitcoin: {
         name: 'Bitcoin',
-        image: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-        current: 67432.00,
-        sparkline: sparkline(67432, 4)
+        image: 'https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400',
+        current: 54332.00,
+        sparkline: sparkline(54332, 4),
+        marketCap: 1073000000000,
+        totalVolume: 28500000000,
+        change24h: -1.23,
+        circulatingSupply: 19752000,
+        marketCapRank: 1,
+        ath: 73750.07,
+        athDate: '2024-03-14T07:10:36.635Z',
+        atl: 51.3,
+        atlDate: '2013-07-05T00:00:00.000Z',
     },
     ethereum: {
         name: 'Ethereum',
-        image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
-        current: 3521.45,
-        sparkline: sparkline(3521, 5)
+        image: 'https://coin-images.coingecko.com/coins/images/279/large/ethereum.png?1696501628',
+        current: 1571.15,
+        sparkline: sparkline(1571, 5),
+        marketCap: 189200000000,
+        totalVolume: 12800000000,
+        change24h: -2.45,
+        circulatingSupply: 120420000,
+        marketCapRank: 2,
+        ath: 4878.26,
+        athDate: '2021-11-10T14:24:19.604Z',
+        atl: 0.381455,
+        atlDate: '2015-10-20T00:00:00.000Z',
     },
     tether: {
         name: 'Tether',
-        image: 'https://assets.coingecko.com/coins/images/325/small/Tether.png',
+        image: 'https://coin-images.coingecko.com/coins/images/325/large/Tether.png?1696501661',
         current: 1.00,
-        sparkline: sparkline(1.0, 0.1)
+        sparkline: sparkline(1.0, 0.1),
+        marketCap: 143800000000,
+        totalVolume: 54200000000,
+        change24h: 0.01,
+        circulatingSupply: 143780000000,
+        marketCapRank: 3,
+        ath: 1.32,
+        athDate: '2018-07-24T00:00:00.000Z',
+        atl: 0.572521,
+        atlDate: '2015-03-02T00:00:00.000Z',
     },
     binancecoin: {
         name: 'BNB',
-        image: 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
+        image: 'https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501400',
         current: 598.30,
-        sparkline: sparkline(598, 4)
+        sparkline: sparkline(598, 4),
+        marketCap: 86700000000,
+        totalVolume: 1250000000,
+        change24h: 0.87,
+        circulatingSupply: 144990000,
+        marketCapRank: 4,
+        ath: 793.35,
+        athDate: '2024-12-04T10:35:25.220Z',
+        atl: 0.0398177,
+        atlDate: '2017-10-19T00:00:00.000Z',
     },
     solana: {
         name: 'Solana',
-        image: 'https://assets.coingecko.com/coins/images/4128/small/solana.png',
+        image: 'https://coin-images.coingecko.com/coins/images/4128/large/solana.png?1696504756',
         current: 172.85,
-        sparkline: sparkline(172, 7)
+        sparkline: sparkline(172, 7),
+        marketCap: 84300000000,
+        totalVolume: 3200000000,
+        change24h: -3.12,
+        circulatingSupply: 488000000,
+        marketCapRank: 5,
+        ath: 293.31,
+        athDate: '2025-01-19T11:15:00.000Z',
+        atl: 0.500801,
+        atlDate: '2020-05-11T00:00:00.000Z',
     },
     ripple: {
         name: 'XRP',
-        image: 'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
+        image: 'https://coin-images.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501400',
         current: 0.5234,
-        sparkline: sparkline(0.52, 6)
+        sparkline: sparkline(0.52, 6),
+        marketCap: 29400000000,
+        totalVolume: 1100000000,
+        change24h: -0.56,
+        circulatingSupply: 56200000000,
+        marketCapRank: 6,
+        ath: 3.40,
+        athDate: '2018-01-07T00:00:00.000Z',
+        atl: 0.00268621,
+        atlDate: '2014-05-22T00:00:00.000Z',
     },
     'usd-coin': {
         name: 'USDC',
-        image: 'https://assets.coingecko.com/coins/images/6319/small/usdc.png',
+        image: 'https://coin-images.coingecko.com/coins/images/6319/large/usdc.png?1696506694',
         current: 1.00,
-        sparkline: sparkline(1.0, 0.05)
+        sparkline: sparkline(1.0, 0.05),
+        marketCap: 33600000000,
+        totalVolume: 5800000000,
+        change24h: 0.00,
+        circulatingSupply: 33580000000,
+        marketCapRank: 7,
+        ath: 1.17,
+        athDate: '2019-05-08T00:00:00.000Z',
+        atl: 0.877647,
+        atlDate: '2023-03-11T00:00:00.000Z',
     },
     cardano: {
         name: 'Cardano',
-        image: 'https://assets.coingecko.com/coins/images/975/small/cardano.png',
+        image: 'https://coin-images.coingecko.com/coins/images/975/large/cardano.png?1696502090',
         current: 0.4512,
-        sparkline: sparkline(0.45, 6)
+        sparkline: sparkline(0.45, 6),
+        marketCap: 16100000000,
+        totalVolume: 420000000,
+        change24h: -1.78,
+        circulatingSupply: 35700000000,
+        marketCapRank: 8,
+        ath: 3.09,
+        athDate: '2021-09-02T06:00:10.474Z',
+        atl: 0.01735821,
+        atlDate: '2020-03-13T02:22:55.044Z',
     },
     avalanche: {
         name: 'Avalanche',
-        image: 'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
+        image: 'https://coin-images.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1696512369',
         current: 35.67,
-        sparkline: sparkline(35, 7)
+        sparkline: sparkline(35, 7),
+        marketCap: 14600000000,
+        totalVolume: 620000000,
+        change24h: -2.34,
+        circulatingSupply: 409500000,
+        marketCapRank: 9,
+        ath: 144.96,
+        athDate: '2021-11-21T14:18:56.538Z',
+        atl: 2.8,
+        atlDate: '2020-12-31T13:15:21.540Z',
     },
     dogecoin: {
         name: 'Dogecoin',
-        image: 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
+        image: 'https://coin-images.coingecko.com/coins/images/5/large/dogecoin.png?1696501409',
         current: 0.1245,
-        sparkline: sparkline(0.12, 8)
+        sparkline: sparkline(0.12, 8),
+        marketCap: 18500000000,
+        totalVolume: 950000000,
+        change24h: -0.89,
+        circulatingSupply: 148700000000,
+        marketCapRank: 10,
+        ath: 0.731578,
+        athDate: '2021-05-08T05:08:23.458Z',
+        atl: 0.0000869,
+        atlDate: '2015-05-06T00:00:00.000Z',
     },
     polkadot: {
         name: 'Polkadot',
-        image: 'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',
+        image: 'https://coin-images.coingecko.com/coins/images/12171/large/polkadot.png?1696512008',
         current: 7.23,
-        sparkline: sparkline(7.2, 6)
+        sparkline: sparkline(7.2, 6),
+        marketCap: 10300000000,
+        totalVolume: 310000000,
+        change24h: -1.45,
+        circulatingSupply: 1425000000,
+        marketCapRank: 11,
+        ath: 54.98,
+        athDate: '2021-11-04T14:10:09.301Z',
+        atl: 2.69,
+        atlDate: '2020-08-20T05:48:11.359Z',
     },
     chainlink: {
         name: 'Chainlink',
-        image: 'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
+        image: 'https://coin-images.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1696502009',
         current: 14.56,
-        sparkline: sparkline(14.5, 5)
+        sparkline: sparkline(14.5, 5),
+        marketCap: 9200000000,
+        totalVolume: 480000000,
+        change24h: 0.67,
+        circulatingSupply: 631000000,
+        marketCapRank: 12,
+        ath: 52.70,
+        athDate: '2021-05-10T00:13:57.214Z',
+        atl: 0.148183,
+        atlDate: '2017-11-29T00:00:00.000Z',
     },
     'matic-network': {
         name: 'Polygon',
-        image: 'https://assets.coingecko.com/coins/images/4713/small/polygon.png',
+        image: 'https://coin-images.coingecko.com/coins/images/4713/large/polygon.png?1698233684',
         current: 0.7123,
-        sparkline: sparkline(0.71, 7)
+        sparkline: sparkline(0.71, 7),
+        marketCap: 7100000000,
+        totalVolume: 350000000,
+        change24h: -0.32,
+        circulatingSupply: 10000000000,
+        marketCapRank: 13,
+        ath: 2.92,
+        athDate: '2021-12-27T02:08:34.307Z',
+        atl: 0.00314376,
+        atlDate: '2019-05-10T00:00:00.000Z',
     },
     litecoin: {
         name: 'Litecoin',
-        image: 'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
+        image: 'https://coin-images.coingecko.com/coins/images/2/large/litecoin.png?1696501400',
         current: 84.32,
-        sparkline: sparkline(84, 5)
+        sparkline: sparkline(84, 5),
+        marketCap: 6300000000,
+        totalVolume: 380000000,
+        change24h: 1.23,
+        circulatingSupply: 74800000,
+        marketCapRank: 14,
+        ath: 410.26,
+        athDate: '2021-05-10T03:13:07.904Z',
+        atl: 1.15,
+        atlDate: '2015-01-14T00:00:00.000Z',
     },
     uniswap: {
         name: 'Uniswap',
-        image: 'https://assets.coingecko.com/coins/images/12504/small/uni.jpg',
+        image: 'https://coin-images.coingecko.com/coins/images/12504/large/uni.jpg?1696512319',
         current: 7.89,
-        sparkline: sparkline(7.9, 6)
+        sparkline: sparkline(7.9, 6),
+        marketCap: 5900000000,
+        totalVolume: 210000000,
+        change24h: -1.67,
+        circulatingSupply: 753000000,
+        marketCapRank: 15,
+        ath: 44.92,
+        athDate: '2021-05-03T05:25:04.822Z',
+        atl: 0.419456,
+        atlDate: '2020-09-17T01:20:38.214Z',
     },
     cosmos: {
         name: 'Cosmos',
-        image: 'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png',
+        image: 'https://coin-images.coingecko.com/coins/images/1481/large/cosmos_hub.png?1696502525',
         current: 8.45,
-        sparkline: sparkline(8.4, 5)
+        sparkline: sparkline(8.4, 5),
+        marketCap: 3300000000,
+        totalVolume: 180000000,
+        change24h: 0.45,
+        circulatingSupply: 390500000,
+        marketCapRank: 16,
+        ath: 44.70,
+        athDate: '2022-01-17T00:34:01.085Z',
+        atl: 1.16,
+        atlDate: '2020-03-13T02:27:44.591Z',
     },
     stellar: {
         name: 'Stellar',
-        image: 'https://assets.coingecko.com/coins/images/100/small/Stellar_symbol_black_RGB.png',
+        image: 'https://coin-images.coingecko.com/coins/images/100/large/Stellar_symbol_black_RGB.png?1696501482',
         current: 0.1123,
-        sparkline: sparkline(0.11, 6)
+        sparkline: sparkline(0.11, 6),
+        marketCap: 3400000000,
+        totalVolume: 120000000,
+        change24h: -0.78,
+        circulatingSupply: 30270000000,
+        marketCapRank: 17,
+        ath: 0.875563,
+        athDate: '2018-01-04T00:00:00.000Z',
+        atl: 0.00047612,
+        atlDate: '2015-03-05T00:00:00.000Z',
     },
     near: {
         name: 'NEAR Protocol',
-        image: 'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
+        image: 'https://coin-images.coingecko.com/coins/images/10365/large/near.jpg?1696510367',
         current: 5.67,
-        sparkline: sparkline(5.7, 7)
+        sparkline: sparkline(5.7, 7),
+        marketCap: 6100000000,
+        totalVolume: 290000000,
+        change24h: -2.10,
+        circulatingSupply: 1077000000,
+        marketCapRank: 18,
+        ath: 20.44,
+        athDate: '2022-01-16T22:09:45.873Z',
+        atl: 0.526762,
+        atlDate: '2020-11-04T16:09:15.137Z',
     },
     aptos: {
         name: 'Aptos',
-        image: 'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
+        image: 'https://coin-images.coingecko.com/coins/images/26455/large/aptos_round.png?1696525528',
         current: 8.92,
-        sparkline: sparkline(8.9, 8)
+        sparkline: sparkline(8.9, 8),
+        marketCap: 4400000000,
+        totalVolume: 195000000,
+        change24h: -3.45,
+        circulatingSupply: 496000000,
+        marketCapRank: 19,
+        ath: 19.92,
+        athDate: '2024-01-27T22:35:39.459Z',
+        atl: 3.08,
+        atlDate: '2022-12-29T06:35:14.551Z',
     },
     arbitrum: {
         name: 'Arbitrum',
-        image: 'https://assets.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg',
+        image: 'https://coin-images.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg?1696516109',
         current: 1.12,
-        sparkline: sparkline(1.1, 7)
+        sparkline: sparkline(1.1, 7),
+        marketCap: 3600000000,
+        totalVolume: 320000000,
+        change24h: -1.89,
+        circulatingSupply: 3260000000,
+        marketCapRank: 20,
+        ath: 2.39,
+        athDate: '2024-01-12T14:53:02.620Z',
+        atl: 0.743614,
+        atlDate: '2023-09-11T19:40:11.768Z',
     },
     optimism: {
         name: 'Optimism',
-        image: 'https://assets.coingecko.com/coins/images/25244/small/Optimism.png',
+        image: 'https://coin-images.coingecko.com/coins/images/25244/large/Optimism.png?1696524385',
         current: 2.34,
-        sparkline: sparkline(2.3, 7)
+        sparkline: sparkline(2.3, 7),
+        marketCap: 2800000000,
+        totalVolume: 180000000,
+        change24h: -2.56,
+        circulatingSupply: 1200000000,
+        marketCapRank: 21,
+        ath: 4.85,
+        athDate: '2024-03-06T06:35:06.591Z',
+        atl: 0.402159,
+        atlDate: '2022-06-18T20:54:52.178Z',
     },
     sui: {
         name: 'Sui',
-        image: 'https://assets.coingecko.com/coins/images/26375/small/sui_asset.jpeg',
+        image: 'https://coin-images.coingecko.com/coins/images/26375/large/sui_asset.jpeg?1696525453',
         current: 1.23,
-        sparkline: sparkline(1.2, 9)
+        sparkline: sparkline(1.2, 9),
+        marketCap: 3800000000,
+        totalVolume: 250000000,
+        change24h: -4.12,
+        circulatingSupply: 3100000000,
+        marketCapRank: 22,
+        ath: 5.35,
+        athDate: '2025-01-06T03:15:17.491Z',
+        atl: 0.364846,
+        atlDate: '2023-10-19T10:30:11.147Z',
     },
     'render-token': {
         name: 'Render',
-        image: 'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
+        image: 'https://coin-images.coingecko.com/coins/images/11636/large/rndr.png?1696511529',
         current: 8.45,
-        sparkline: sparkline(8.4, 10)
+        sparkline: sparkline(8.4, 10),
+        marketCap: 4400000000,
+        totalVolume: 310000000,
+        change24h: -1.34,
+        circulatingSupply: 520000000,
+        marketCapRank: 23,
+        ath: 13.53,
+        athDate: '2024-03-17T15:55:07.804Z',
+        atl: 0.03665,
+        atlDate: '2020-06-16T00:00:00.000Z',
     },
     injective: {
         name: 'Injective',
-        image: 'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png',
+        image: 'https://coin-images.coingecko.com/coins/images/12882/large/Secondary_Symbol.png?1696512670',
         current: 24.56,
-        sparkline: sparkline(24.5, 8)
+        sparkline: sparkline(24.5, 8),
+        marketCap: 2400000000,
+        totalVolume: 95000000,
+        change24h: -0.98,
+        circulatingSupply: 97200000,
+        marketCapRank: 24,
+        ath: 52.62,
+        athDate: '2024-03-14T15:00:11.071Z',
+        atl: 0.657401,
+        atlDate: '2020-11-03T16:19:28.622Z',
     },
     pepe: {
         name: 'Pepe',
-        image: 'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg',
+        image: 'https://coin-images.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1696528776',
         current: 0.00000789,
-        sparkline: sparkline(0.0000078, 12)
-    }
+        sparkline: sparkline(0.0000078, 12),
+        marketCap: 3300000000,
+        totalVolume: 680000000,
+        change24h: -5.67,
+        circulatingSupply: 420690000000000,
+        marketCapRank: 25,
+        ath: 0.00002825,
+        athDate: '2024-12-09T19:30:37.240Z',
+        atl: 0.0000000005516,
+        atlDate: '2023-04-18T02:14:41.591Z',
+    },
 };
 
 export default mockCryptoData;

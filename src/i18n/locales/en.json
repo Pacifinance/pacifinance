@@ -156,6 +156,15 @@
                         "• Complete user privacy"
                     ]
                 },
+                "marketPrices": {
+                    "title": "Real-Time Market Prices",
+                    "description": "Track cryptocurrency prices with interactive charts and detailed market data. Sparkline trends, historical highs and lows, and multiple time ranges.",
+                    "features": [
+                        "• Live crypto price tracking",
+                        "• Interactive charts with time ranges",
+                        "• Market cap, volume & supply data"
+                    ]
+                },
                 "currencies": {
                     "title": "19 Currencies Supported",
                     "description": "View your finances in your preferred currency. Live exchange rates with automatic conversion — all data displayed in the currency you choose.",
@@ -312,6 +321,7 @@
         "chartsStatistics": "Charts and Statistics",
         "insert": "Insert",
         "check": "Check Prices",
+        "marketPrices": "Market Prices",
         "leaderboard": "Leaderboard",
         "comparison": "Comparison",
         "knowledge": "Knowledge",
@@ -2271,15 +2281,36 @@
         },
         "detail": {
             "back": "Back to list",
+            "chartTitle": "Price Chart",
             "currentPrice": "Current Price",
-            "change7d": "7-Day Change",
-            "sparklineTitle": "7-Day Trend",
-            "high7d": "7D High",
-            "low7d": "7D Low",
-            "range7d": "7D Range",
+            "change": "Change",
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "range": "Range",
+            "avg": "Average",
+            "volatility": "Volatility",
             "performance": "Performance",
             "priceStats": "Price Stats",
-            "identifier": "Identifier"
+            "identifier": "Identifier",
+            "period24h": "24H",
+            "period7d": "7D",
+            "period30d": "30D",
+            "period90d": "90D",
+            "period6m": "6M",
+            "period1y": "1Y",
+            "periodAll": "ALL",
+            "comingSoon": "Coming soon",
+            "marketInfo": "Market Info",
+            "rank": "Rank",
+            "marketCap": "Market Cap",
+            "vol24h": "24H Volume",
+            "circulatingSupply": "Circ. Supply",
+            "historical": "Historical",
+            "ath": "All-Time High",
+            "athDate": "ATH Date",
+            "atl": "All-Time Low",
+            "atlDate": "ATL Date"
         }
     }
 }

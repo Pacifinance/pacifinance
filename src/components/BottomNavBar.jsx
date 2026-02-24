@@ -62,7 +62,7 @@ const BottomNavBar = ({ handleLogout }) => {
     const morePages = [
         { path: '/charts-statistics', icon: <AiOutlineDotChart size={20} />, label: translations?.sidebar?.chartsStatistics || 'Charts' },
         { path: '/comparison', icon: <CompareArrowsIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.comparison || 'Comparison' },
-        { path: '/check-prices', icon: <AiOutlineFundProjectionScreen size={20} />, label: translations?.sidebar?.check || 'Market Prices' },
+        { path: '/market-prices', icon: <AiOutlineFundProjectionScreen size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
         { path: '/knowledge', icon: <BsBook size={20} />, label: translations?.sidebar?.knowledge || 'Knowledge' },
         { path: '/info', icon: <BsInfoCircle size={20} />, label: translations?.sidebar?.info || 'Info' },
     ];

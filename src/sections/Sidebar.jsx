@@ -409,8 +409,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 },
                                 {
                                     icon: AiOutlineFundProjectionScreen,
-                                    route: "/check-prices",
-                                    tooltip: translations.sidebar.check,
+                                    route: "/market-prices",
+                                    tooltip: translations.sidebar.marketPrices,
                                     index: 5,
                                 },
                                 {

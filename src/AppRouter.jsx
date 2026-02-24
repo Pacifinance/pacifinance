@@ -41,7 +41,7 @@ const InsertValues = React.lazy(() => import("./pages/InsertPage"));
 const ComparisonPage = React.lazy(() => import("./pages/ComparisonPage"));
 
 // Lazy loading per pagine utility (raramente usate)
-const CheckPrices = React.lazy(() => import("./pages/CheckPricesPage"));
+const MarketPricesPage = React.lazy(() => import("./pages/MarketPricesPage"));
 const Knowledge = React.lazy(() => import("./pages/KnowledgePage"));
 const Info = React.lazy(() => import("./pages/InfoPage"));
 const AccountPage = React.lazy(() => import("./pages/ProfilePage"));
@@ -247,10 +247,10 @@ const LanguageRoutes = () => {
         }
       />
       <Route
-        path="/check-prices"
+        path="/market-prices"
         element={
           <ProtectedRoute>
-            <CheckPrices />
+            <MarketPricesPage />
           </ProtectedRoute>
         }
       />

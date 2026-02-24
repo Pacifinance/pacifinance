@@ -142,6 +142,30 @@ const roadmapData = [
     icon: '✏️',
     completedDate: '2026-02',
   },
+  {
+    id: 'pwa-install-guide',
+    title: { it: 'Guida Installazione App', en: 'App Install Guide' },
+    description: {
+      it: 'Istruzioni passo-passo per installare PaciFinance come app, con rilevamento automatico del dispositivo (iOS, Android, Desktop).',
+      en: 'Step-by-step instructions to install PaciFinance as an app, with automatic device detection (iOS, Android, Desktop).'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '📲',
+    completedDate: '2026-02',
+  },
+  {
+    id: 'market-prices',
+    title: { it: 'Prezzi Crypto in Tempo Reale', en: 'Real-Time Crypto Prices' },
+    description: {
+      it: 'Monitora i prezzi delle principali criptovalute con grafici sparkline a 7 giorni, direttamente nell\'app.',
+      en: 'Monitor major cryptocurrency prices with 7-day sparkline charts, directly in the app.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📈',
+    completedDate: '2026-02',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'goals-limits',
@@ -308,6 +332,17 @@ const roadmapData = [
     status: 'planned',
     category: 'security',
     icon: '🔐',
+  },
+  {
+    id: 'user-email-crypted',
+    title: { it: 'Email Criptata per Recupero', en: 'Encrypted Email for Recovery' },
+    description: {
+      it: 'Email opzionale e criptata per il recupero della password, senza compromettere la privacy.',
+      en: 'Optional encrypted email for password recovery, without compromising privacy.'
+    },
+    status: 'planned',
+    category: 'security',
+    icon: '🔑',
   },
 ];
 

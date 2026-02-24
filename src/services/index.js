@@ -11,3 +11,4 @@ export { createUserService } from './userService';
 export { createFinanceService } from './financeService';
 export { createRankingService } from './rankingService';
 export { createStatsService } from './statsService';
+export { createPricesService } from './pricesService';

@@ -2201,5 +2201,52 @@
             "zimbabwe": "Zimbabwe",
             "åland islands": "Isole Åland"
         }
+    },
+    "marketPrices": {
+        "title": "Prezzi di Mercato",
+        "subtitle": "Monitora i prezzi in tempo reale di criptovalute, ETF, azioni e molto altro",
+        "loading": "Caricamento dati di mercato...",
+        "errorTitle": "Errore di caricamento",
+        "errorDescription": "Impossibile caricare i dati di mercato. Riprova più tardi.",
+        "retry": "Riprova",
+        "noResults": "Nessun risultato",
+        "noResultsDescription": "Nessun asset corrisponde alla tua ricerca.",
+        "searchPlaceholder": "Cerca per nome o simbolo...",
+        "assetsFound": "asset trovati",
+        "updatedAutomatically": "Aggiornato automaticamente ogni ora",
+        "comingSoon": "In arrivo",
+        "lockedDescription": "Questa sezione sarà disponibile a breve con dati aggiornati in tempo reale.",
+        "categories": {
+            "crypto": "Crypto",
+            "etf": "ETF",
+            "stocks": "Azioni",
+            "commodities": "Materie Prime",
+            "bonds": "Obbligazioni"
+        },
+        "summary": {
+            "totalAssets": "Asset Totali",
+            "avgChange7d": "Media 7G",
+            "gainers": "In Rialzo",
+            "losers": "In Ribasso"
+        },
+        "sort": {
+            "marketCap": "Cap. di Mercato",
+            "priceDesc": "Prezzo ↓",
+            "priceAsc": "Prezzo ↑",
+            "change": "Variazione 7G",
+            "name": "Nome"
+        },
+        "detail": {
+            "back": "Torna all'elenco",
+            "currentPrice": "Prezzo attuale",
+            "change7d": "Variazione 7 giorni",
+            "sparklineTitle": "Andamento 7 giorni",
+            "high7d": "Massimo 7G",
+            "low7d": "Minimo 7G",
+            "range7d": "Range 7G",
+            "performance": "Performance",
+            "priceStats": "Statistiche prezzo",
+            "identifier": "Identificatore"
+        }
     }
 }

@@ -408,10 +408,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     index: 4,
                                 },
                                 {
+                                    icon: AiOutlineFundProjectionScreen,
+                                    route: "/check-prices",
+                                    tooltip: translations.sidebar.check,
+                                    index: 5,
+                                },
+                                {
                                     icon: BsInfoCircle,
                                     route: "/info",
                                     tooltip: translations.sidebar.info,
-                                    index: 5,
+                                    index: 6,
                                 },
                             ].map(({ icon, route, tooltip, index }) => {
                                 const MenuIcon = icon;

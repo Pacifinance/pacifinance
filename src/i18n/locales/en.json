@@ -2201,5 +2201,52 @@
             "zimbabwe": "Zimbabwe",
             "åland islands": "Åland Islands"
         }
+    },
+    "marketPrices": {
+        "title": "Market Prices",
+        "subtitle": "Track real-time prices of crypto, ETFs, stocks and more",
+        "loading": "Loading market data...",
+        "errorTitle": "Loading Error",
+        "errorDescription": "Failed to load market data. Please try again later.",
+        "retry": "Retry",
+        "noResults": "No Results",
+        "noResultsDescription": "No assets match your search.",
+        "searchPlaceholder": "Search by name or symbol...",
+        "assetsFound": "assets found",
+        "updatedAutomatically": "Updated automatically every hour",
+        "comingSoon": "Coming Soon",
+        "lockedDescription": "This section will be available soon with real-time data.",
+        "categories": {
+            "crypto": "Crypto",
+            "etf": "ETFs",
+            "stocks": "Stocks",
+            "commodities": "Commodities",
+            "bonds": "Bonds"
+        },
+        "summary": {
+            "totalAssets": "Total Assets",
+            "avgChange7d": "Avg 7D",
+            "gainers": "Gainers",
+            "losers": "Losers"
+        },
+        "sort": {
+            "marketCap": "Market Cap",
+            "priceDesc": "Price ↓",
+            "priceAsc": "Price ↑",
+            "change": "Change 7D",
+            "name": "Name"
+        },
+        "detail": {
+            "back": "Back to list",
+            "currentPrice": "Current Price",
+            "change7d": "7-Day Change",
+            "sparklineTitle": "7-Day Trend",
+            "high7d": "7D High",
+            "low7d": "7D Low",
+            "range7d": "7D Range",
+            "performance": "Performance",
+            "priceStats": "Price Stats",
+            "identifier": "Identifier"
+        }
     }
 }

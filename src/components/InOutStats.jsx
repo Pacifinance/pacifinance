@@ -48,7 +48,7 @@ const Header = styled.div`
 `;
 
 const HeaderTitle = styled.h3`
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: ${p => p.theme.textColor};
   margin: 0;
@@ -57,23 +57,23 @@ const HeaderTitle = styled.h3`
   gap: 0.4rem;
 
   svg {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     opacity: 0.6;
   }
 
   @media (max-width: 768px) {
-    font-size: 0.8rem;
+    font-size: 0.88rem;
   }
 `;
 
 const PeriodLabel = styled.span`
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'};
   
   @media (max-width: 768px) {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 `;
 
@@ -113,7 +113,7 @@ const SummaryCell = styled.div`
 `;
 
 const SummaryCellLabel = styled.div`
-  font-size: 0.65rem;
+  font-size: 0.73rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -125,18 +125,18 @@ const SummaryCellLabel = styled.div`
   gap: 0.25rem;
 
   @media (max-width: 768px) {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
   }
 `;
 
 const SummaryCellValue = styled.div`
-  font-size: 0.95rem;
+  font-size: 1.08rem;
   font-weight: 700;
   color: ${p => p.theme.textColor};
   line-height: 1.2;
 
   @media (max-width: 768px) {
-    font-size: 0.82rem;
+    font-size: 0.92rem;
   }
 `;
 
@@ -165,7 +165,7 @@ const TableHeader = styled.div`
 `;
 
 const TableHeaderCell = styled.div`
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -173,7 +173,7 @@ const TableHeaderCell = styled.div`
   text-align: ${p => p.$align || 'left'};
 
   @media (max-width: 768px) {
-    font-size: 0.55rem;
+    font-size: 0.6rem;
   }
 `;
 
@@ -207,12 +207,12 @@ const MetricName = styled.div`
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: ${p => p.theme.textColor};
 
   @media (max-width: 768px) {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     gap: 0.25rem;
   }
 `;
@@ -234,7 +234,7 @@ const ChangeCell = styled.div`
 `;
 
 const ChangeAmount = styled.span`
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: ${p => p.$isPositive ? '#27ae60' : p.$isNeutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)') : '#e74c3c'};
   display: flex;
@@ -242,23 +242,23 @@ const ChangeAmount = styled.span`
   gap: 0.15rem;
 
   svg {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     flex-shrink: 0;
   }
 
   @media (max-width: 768px) {
-    font-size: 0.65rem;
+    font-size: 0.72rem;
   }
 `;
 
 const ChangePercent = styled.span`
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   font-weight: 500;
   color: ${p => p.$isPositive ? 'rgba(39, 174, 96, 0.7)' : p.$isNeutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)') : 'rgba(231, 76, 60, 0.7)'};
 
   @media (max-width: 768px) {
-    font-size: 0.55rem;
+    font-size: 0.6rem;
   }
 `;
 

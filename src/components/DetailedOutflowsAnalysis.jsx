@@ -50,7 +50,7 @@ const Header = styled.div`
 `;
 
 const Title = styled.h2`
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: ${p => p.theme.textColor};
   margin: 0 0 0.25rem 0;
@@ -58,16 +58,16 @@ const Title = styled.h2`
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  svg { width: 16px; height: 16px; opacity: 0.6; }
-  @media (max-width: 768px) { font-size: 0.9rem; }
+  svg { width: 18px; height: 18px; opacity: 0.6; }
+  @media (max-width: 768px) { font-size: 1rem; }
 `;
 
 const Subtitle = styled.p`
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)'};
   margin: 0;
   line-height: 1.4;
-  @media (max-width: 768px) { font-size: 0.7rem; }
+  @media (max-width: 768px) { font-size: 0.76rem; }
 `;
 
 const MonthSelect = styled.div`
@@ -123,19 +123,19 @@ const OverviewCell = styled.div`
 `;
 
 const CellLabel = styled.div`
-  font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em;
+  font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em;
   color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.4)'};
   margin-bottom: 0.15rem;
-  @media (max-width: 768px) { font-size: 0.55rem; }
+  @media (max-width: 768px) { font-size: 0.62rem; }
 `;
 
 const CellValue = styled.div`
-  font-size: 0.9rem; font-weight: 700; color: ${p => p.theme.textColor};
-  @media (max-width: 768px) { font-size: 0.8rem; }
+  font-size: 1rem; font-weight: 700; color: ${p => p.theme.textColor};
+  @media (max-width: 768px) { font-size: 0.88rem; }
 `;
 
 const CellTrend = styled.span`
-  font-size: 0.6rem; font-weight: 600;
+  font-size: 0.68rem; font-weight: 600;
   color: ${p => p.$positive ? '#10b981' : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : '#ef4444'};
   display: flex; align-items: center; justify-content: center; gap: 0.1rem; margin-top: 0.1rem;
   svg { width: 10px; height: 10px; }
@@ -158,13 +158,13 @@ const SectionToggle = styled.button`
 `;
 
 const SectionLabelStyled = styled.span`
-  font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;
-  svg { width: 14px; height: 14px; opacity: 0.5; }
-  @media (max-width: 768px) { font-size: 0.7rem; }
+  font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;
+  svg { width: 15px; height: 15px; opacity: 0.5; }
+  @media (max-width: 768px) { font-size: 0.78rem; }
 `;
 
 const SectionBadge = styled.span`
-  font-size: 0.6rem; font-weight: 600;
+  font-size: 0.68rem; font-weight: 600;
   background: ${p => p.theme.buttonBackgroundColor}20;
   color: ${p => p.theme.buttonBackgroundColor};
   padding: 0.15rem 0.4rem; border-radius: 6px;
@@ -191,10 +191,10 @@ const CatHeaderRow = styled(CatRow)`
 `;
 
 const CatHeaderText = styled.span`
-  font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
   color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'};
   text-align: ${p => p.$align || 'left'};
-  @media (max-width: 768px) { font-size: 0.52rem; }
+  @media (max-width: 768px) { font-size: 0.6rem; }
 `;
 
 const CatName = styled.div`
@@ -210,9 +210,9 @@ const CatIcon = styled.div`
 `;
 
 const CatLabel = styled.div`
-  font-size: 0.78rem; font-weight: 600; color: ${p => p.theme.textColor};
+  font-size: 0.88rem; font-weight: 600; color: ${p => p.theme.textColor};
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  @media (max-width: 768px) { font-size: 0.72rem; }
+  @media (max-width: 768px) { font-size: 0.8rem; }
 `;
 
 const CatPercent = styled.span`
@@ -222,13 +222,13 @@ const CatPercent = styled.span`
 `;
 
 const CatAmount = styled.div`
-  font-size: 0.78rem; font-weight: 600; color: ${p => p.theme.textColor}; text-align: right;
-  @media (max-width: 768px) { font-size: 0.72rem; }
+  font-size: 0.88rem; font-weight: 600; color: ${p => p.theme.textColor}; text-align: right;
+  @media (max-width: 768px) { font-size: 0.8rem; }
 `;
 
 const TrendBadge = styled.span`
   display: inline-flex; align-items: center; gap: 0.1rem;
-  font-size: 0.65rem; font-weight: 600; padding: 0.1rem 0.3rem; border-radius: 4px;
+  font-size: 0.73rem; font-weight: 600; padding: 0.1rem 0.3rem; border-radius: 4px;
   text-align: right; justify-content: flex-end;
   ${p => {
     if (p.$trend === 'down') return `color: #10b981; background: #10b98115;`;
@@ -274,9 +274,9 @@ const RecurringItem = styled.div`
 `;
 
 const RecurringName = styled.div`
-  font-size: 0.75rem; font-weight: 600; color: ${p => p.theme.textColor};
+  font-size: 0.85rem; font-weight: 600; color: ${p => p.theme.textColor};
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  @media (max-width: 768px) { font-size: 0.7rem; }
+  @media (max-width: 768px) { font-size: 0.78rem; }
 `;
 
 const RecurringNote = styled.span`
@@ -286,8 +286,8 @@ const RecurringNote = styled.span`
 `;
 
 const RecurringAmount = styled.div`
-  font-size: 0.75rem; font-weight: 600; color: ${p => p.theme.textColor}; text-align: right;
-  @media (max-width: 768px) { font-size: 0.7rem; }
+  font-size: 0.85rem; font-weight: 600; color: ${p => p.theme.textColor}; text-align: right;
+  @media (max-width: 768px) { font-size: 0.78rem; }
 `;
 
 const FreqBadge = styled.span`

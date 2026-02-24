@@ -63,10 +63,10 @@
 - [x] Drag and drop file upload (già implementato nel wizard)
 - [x] Modifica inline entrate e uscite: edit direttamente nella tabella con delete+reinsert <!-- roadmap:inline-edit -->
 - [x] Guida installazione PWA: istruzioni auto-detect dispositivo (iOS/Android/Desktop) in Impostazioni e Info <!-- roadmap:pwa-install-guide -->
-- [x] i18n colori categorie: fallback robusto con reverse-lookup per tag tradotti <!-- roadmap:i18n-category-colors -->
-- [x] Mock data allineati con file i18n per consistenza demo/dev/prod <!-- roadmap:mock-i18n-alignment -->
+- [x] Fix: i18n colori categorie: fallback robusto con reverse-lookup per tag tradotti <!-- roadmap:i18n-category-colors -->
+- [x] Mock data allineati con file i18n per consistenza demo/dev/prod 
 - [x] Mock data CoinGecko per pagina Market Prices in dev mode
-- [x] Pagina prezzi di mercato crypto con dati CoinGecko e sparkline 7 giorni <!-- roadmap:market-prices -->
+- [x] Pagina prezzi di mercato crypto con dati e sparkline 7 giorni <!-- roadmap:market-prices -->
 
 ---
 

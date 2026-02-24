@@ -1,5 +1,7 @@
 // src/data/categoryColors.js
 
+import { resolveTagKeyFromLocalized } from './tagTranslations';
+
 export const incomeCategoryColors = {
   // Necessari/positivi
   'Salary': 'rgba(39, 174, 96, 0.35)', // verde: sicurezza, stabilità
@@ -32,18 +34,25 @@ export const outflowCategoryColors = {
 };
 
 // Funzione helper per ottenere il colore dalla chiave di categoria
-export const getCategoryColor = (categoryKey) => {
+export const getCategoryColor = (categoryKey, language) => {
   if (!categoryKey) return '#8884d8';
+
+  const normalizedInput = String(categoryKey).trim();
+  const resolvedLanguage = typeof language === 'string' ? language : undefined;
   
   // Prova prima con outflowCategoryColors
-  if (outflowCategoryColors[categoryKey]) {
-    return outflowCategoryColors[categoryKey];
+  if (outflowCategoryColors[normalizedInput]) {
+    return outflowCategoryColors[normalizedInput];
   }
   
   // Prova con incomeCategoryColors
-  if (incomeCategoryColors[categoryKey]) {
-    return incomeCategoryColors[categoryKey];
+  if (incomeCategoryColors[normalizedInput]) {
+    return incomeCategoryColors[normalizedInput];
   }
+
+  const canonicalOutflowKey = resolveTagKeyFromLocalized(normalizedInput, resolvedLanguage, 'expense');
+  const canonicalIncomeKey = resolveTagKeyFromLocalized(normalizedInput, resolvedLanguage, 'income');
+  const canonicalKey = canonicalOutflowKey || canonicalIncomeKey;
   
   // Fallback con altri possibili mapping
   const keyMappings = {
@@ -66,10 +75,23 @@ export const getCategoryColor = (categoryKey) => {
     'salary': 'Salary',
     'freelanceincome': 'Freelance income',
     'extraincome': 'Extra income',
-    'retirement': 'Retirement'
+    'retirement': 'Retirement',
+    'freelance income': 'Freelance income',
+    'extra income': 'Extra income',
+    'free time': 'Free time',
+    'digital service': 'Digital service',
+    'personal project': 'Personal project'
   };
+
+  const normalizedNoSpaces = normalizedInput.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const canonicalNormalizedNoSpaces = canonicalKey ? canonicalKey.toLowerCase().replace(/[^a-z0-9]/g, '') : null;
   
-  const mappedKey = keyMappings[categoryKey.toLowerCase()] || keyMappings[categoryKey];
+  const mappedKey =
+    (canonicalKey && (keyMappings[canonicalKey.toLowerCase()] || keyMappings[canonicalNormalizedNoSpaces])) ||
+    keyMappings[normalizedInput.toLowerCase()] ||
+    keyMappings[normalizedNoSpaces] ||
+    keyMappings[normalizedInput];
+
   if (mappedKey && outflowCategoryColors[mappedKey]) {
     return outflowCategoryColors[mappedKey];
   }

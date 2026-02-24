@@ -206,8 +206,8 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           name: translations?.categories?.[key] || key,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,
           fill: isHidden 
-            ? getGrayscaleColor(getCategoryColor(key), index)
-            : getLighterSolidColor(getCategoryColor(key))
+            ? getGrayscaleColor(getCategoryColor(key, language), index)
+            : getLighterSolidColor(getCategoryColor(key, language))
         }));
     }
 

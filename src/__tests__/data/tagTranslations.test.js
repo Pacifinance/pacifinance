@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import {
   translateTag,
   translateTagObject,
+  resolveTagKeyFromLocalized,
   TAG_TRANSLATIONS,
   EXPENSE_TRANSLATIONS,
   INCOME_TRANSLATIONS,
@@ -258,5 +259,17 @@ describe('built translation maps', () => {
     expect(CHILDREN_TRANSLATIONS).toHaveProperty('yes');
     expect(CHILDREN_TRANSLATIONS).toHaveProperty('no');
     expect(CHILDREN_TRANSLATIONS).toHaveProperty('expecting');
+  });
+});
+
+describe('resolveTagKeyFromLocalized', () => {
+  it('resolves canonical key from localized expense value', () => {
+    expect(resolveTagKeyFromLocalized('Groceries', 'en', 'expense')).toBe('food');
+    expect(resolveTagKeyFromLocalized('Alimentari', 'it', 'expense')).toBe('food');
+  });
+
+  it('resolves canonical key from original key-like labels', () => {
+    expect(resolveTagKeyFromLocalized('food', 'en', 'expense')).toBe('food');
+    expect(resolveTagKeyFromLocalized('FOOD', 'it', 'expense')).toBe('food');
   });
 });

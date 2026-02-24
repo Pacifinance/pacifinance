@@ -945,7 +945,7 @@ function Comparison({ theme, userData, isHidden}) {
                 name,
                 value,
                 percentage: (value / totalSpending) * 100,
-                color: getCategoryColor(name)
+                color: getCategoryColor(name, language)
             }))
             .sort((a, b) => b.value - a.value);
         

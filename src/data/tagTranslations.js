@@ -23,6 +23,13 @@ import { getAvailableLanguages } from '../i18n';
 
 const langCodes = getAvailableLanguages();  // ['it', 'en', ...]
 
+const normalizeLookupValue = (value) => String(value ?? '')
+  .trim()
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9]/g, '');
+
 /**
  * For a given tag type, build a map:  label → { lang: translatedString, ... }
  * by scanning every locale's  tags[type]  section.
@@ -37,6 +44,25 @@ const buildTypeMap = (type) => {
     }
   }
   return map;
+};
+
+const buildReverseTypeMap = (type) => {
+  const reverseMap = {};
+
+  for (const lang of langCodes) {
+    const tags = (languages[lang]?.tags ?? {})[type] ?? {};
+    if (!reverseMap[lang]) reverseMap[lang] = {};
+
+    for (const [label, value] of Object.entries(tags)) {
+      const normalizedLabel = normalizeLookupValue(label);
+      const normalizedValue = normalizeLookupValue(value);
+
+      if (normalizedLabel) reverseMap[lang][normalizedLabel] = label;
+      if (normalizedValue) reverseMap[lang][normalizedValue] = label;
+    }
+  }
+
+  return reverseMap;
 };
 
 // Pre-built per-type maps (evaluated once at import time)
@@ -54,6 +80,9 @@ const HOUSING_TYPE_TRANSLATIONS       = buildTypeMap('housingType');
 const CHILDREN_TRANSLATIONS           = buildTypeMap('children');
 const COUNTRY_TRANSLATIONS            = buildTypeMap('country');
 
+const EXPENSE_REVERSE_TRANSLATIONS = buildReverseTypeMap('expense');
+const INCOME_REVERSE_TRANSLATIONS = buildReverseTypeMap('income');
+
 // ─── Master Map ──────────────────────────────────────────────────────
 
 export const TAG_TRANSLATIONS = {
@@ -70,6 +99,11 @@ export const TAG_TRANSLATIONS = {
   livingSituation:   LIVING_SITUATION_TRANSLATIONS,
   housingType:       HOUSING_TYPE_TRANSLATIONS,
   children:          CHILDREN_TRANSLATIONS,
+};
+
+const TAG_REVERSE_TRANSLATIONS = {
+  expense: EXPENSE_REVERSE_TRANSLATIONS,
+  income: INCOME_REVERSE_TRANSLATIONS,
 };
 
 // ─── Public API ──────────────────────────────────────────────────────
@@ -146,6 +180,34 @@ export const translateTagObject = (tagObj, language, fallback, type) => {
   // 3) Label capitalised or fallback
   if (tagObj.label) return tagObj.label.charAt(0).toUpperCase() + tagObj.label.slice(1);
   return fallback;
+};
+
+export const resolveTagKeyFromLocalized = (value, language, type) => {
+  const normalizedValue = normalizeLookupValue(value);
+  if (!normalizedValue) return null;
+
+  const typeMap = type ? { [type]: TAG_REVERSE_TRANSLATIONS[type] } : TAG_REVERSE_TRANSLATIONS;
+  const languagePriority = [];
+
+  if (language) languagePriority.push(language);
+  languagePriority.push('en', 'it');
+
+  for (const lang of langCodes) {
+    if (!languagePriority.includes(lang)) {
+      languagePriority.push(lang);
+    }
+  }
+
+  for (const reverseMapByLanguage of Object.values(typeMap)) {
+    if (!reverseMapByLanguage) continue;
+
+    for (const lang of languagePriority) {
+      const key = reverseMapByLanguage[lang]?.[normalizedValue];
+      if (key) return key;
+    }
+  }
+
+  return null;
 };
 
 // ─── Convenience Exports ─────────────────────────────────────────────

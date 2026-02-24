@@ -100,6 +100,16 @@ describe('Category Colors Integration', () => {
       const color = getCategoryColor(null);
       expect(color).toBe('#8884d8');
     });
+
+    it('should map localized English category values to canonical key color', () => {
+      const color = getCategoryColor('Groceries', 'en');
+      expect(color).toBe(outflowCategoryColors['Food']);
+    });
+
+    it('should map localized Italian category values to canonical key color', () => {
+      const color = getCategoryColor('Alimentari', 'it');
+      expect(color).toBe(outflowCategoryColors['Food']);
+    });
   });
 });
 

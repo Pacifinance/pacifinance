@@ -496,7 +496,9 @@
             "dangerZone": "Danger Zone",
             "backToDashboard": "Back to Dashboard",
             "bugReport": "Report a bug",
-            "bugReportSubtitle": "Open a report on GitHub"
+            "bugReportSubtitle": "Open a report on GitHub",
+            "installApp": "Install as App",
+            "installAppSubtitle": "Add PaciFinance to your home screen"
         }
     },
 
@@ -1406,7 +1408,9 @@
             "answer6": "The project is non-profit and is supported by voluntary donations. If you think the service offered is useful and want to contribute, you can leave feedback and/or support us through a donation.",
             "answer6CallToAction": "On every page at the bottom right you will find a pop-up to support the project. Thanks from the whole team!.",
             "question7": "How can I delete my account?",
-            "answer7": "To delete your account, go to the 'Your Profile' section and select the 'Delete account' section. Confirm the deletion and you're done. "
+            "answer7": "To delete your account, go to the 'Your Profile' section and select the 'Delete account' section. Confirm the deletion and you're done. ",
+            "question8": "Can I install PaciFinance as an app?",
+            "answer8": "Yes! PaciFinance is a Progressive Web App (PWA) and can be installed on any device — iPhone, Android or desktop — directly from your browser. Go to Settings for step-by-step instructions for your device."
         },
         "developers": {
             "title": "Team",
@@ -1415,6 +1419,35 @@
             "description3": "The platform was created with the aim of offering a useful and free service for users.",
             "calltoaction": "The cost of maintaining the servers and the service is supported by the team, if you think the service offered is useful and want to contribute, you can support us through a donation. ",
             "contact": "Contact us"
+        }
+    },
+    "pwaInstall": {
+        "title": "Install as App",
+        "subtitle": "Use PaciFinance like a native app",
+        "detected": "Your device",
+        "intro": "PaciFinance can be installed as an app on your device for quick access, offline support, and a native-like experience — no app store needed.",
+        "tip": "Once installed, PaciFinance will appear on your home screen like any other app, with a faster loading time and full-screen experience.",
+        "steps": {
+            "ios": [
+                "Open PaciFinance in Safari (required — it doesn't work from Chrome or other browsers on iOS)",
+                "Tap the Share button (the square with the upward arrow) at the bottom of the screen",
+                "Scroll down and tap \"Add to Home Screen\"",
+                "Give it a name (or leave PaciFinance) and tap \"Add\"",
+                "Done! You'll find PaciFinance on your home screen"
+            ],
+            "android": [
+                "Open PaciFinance in Chrome (or another supported browser)",
+                "Tap the three-dot menu (⋮) in the top-right corner",
+                "Tap \"Add to Home screen\" or \"Install app\"",
+                "Confirm by tapping \"Install\" in the popup",
+                "Done! PaciFinance is now installed and available from your home screen"
+            ],
+            "desktop": [
+                "Open PaciFinance in Chrome, Edge, or another Chromium-based browser",
+                "Click the install icon (⊕) in the address bar, or open the browser menu (⋮) and select \"Install PaciFinance\"",
+                "Confirm by clicking \"Install\" in the dialog",
+                "Done! PaciFinance will open in its own window and appear in your app launcher"
+            ]
         }
     },
     "pricing": {

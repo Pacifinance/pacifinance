@@ -31,6 +31,7 @@ import {
     ModernFeatureText,
 } from "../styles/ModernInfoStyled";
 import { BsShield, BsBarChart, BsPhone, BsGear, BsHeart, BsLightbulb } from 'react-icons/bs';
+import PWAInstallGuide from '../components/PWAInstallGuide';
 
 // I styled components sono ora nel file ModernInfoStyled.jsx
 
@@ -61,7 +62,7 @@ function Info({ theme }) {
     };
 
     // Dati FAQ con gestione sicura delle traduzioni
-    const faqData = Array.from({ length: 7 }, (_, index) => {
+    const faqData = Array.from({ length: 8 }, (_, index) => {
         const questionKey = `info.faq.question${index + 1}`;
         const answerKey = `info.faq.answer${index + 1}`;
         const question = getTranslation(questionKey);
@@ -304,6 +305,22 @@ function Info({ theme }) {
                                 </ModernFAQItem>
                             ))}
                         </ModernFAQContainer>
+                    </ModernSectionCard>
+                </ModernInfoSection>
+
+                {/* Sezione Installa come App (PWA) */}
+                <ModernInfoSection delay="1.0s">
+                    <ModernSectionCard theme={theme}>
+                        <ModernSectionTitle theme={theme}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <BsPhone style={{ color: '#079164' }} />
+                                {getTranslation('pwaInstall.title')}
+                            </span>
+                        </ModernSectionTitle>
+                        <ModernSectionText theme={theme} style={{ marginBottom: '0.5rem' }}>
+                            {getTranslation('pwaInstall.subtitle')}
+                        </ModernSectionText>
+                        <PWAInstallGuide variant="full" />
                     </ModernSectionCard>
                 </ModernInfoSection>
             </ModernInfoContent>

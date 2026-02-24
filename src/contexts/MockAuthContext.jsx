@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { LanguageContext } from './LanguageContext';
+import it from '../i18n/locales/it.json';
+import en from '../i18n/locales/en.json';
 
 
 const MockAuthContext = createContext();
@@ -12,6 +14,58 @@ export const useMockAuth = () => {
     return context;
 };
 
+// ── Helper: build a tag object from i18n keys ──
+// Generates { index, label, type?, translations: { it, en } } from the tags sections
+const buildTag = (label, type, index, section) => ({
+    index,
+    label,
+    ...(type !== undefined ? { type } : {}),
+    translations: {
+        it: it.tags[section]?.[label] || label,
+        en: en.tags[section]?.[label] || label
+    }
+});
+
+// ── Expense tags from i18n ──
+const expenseKeys = Object.keys(en.tags.expense);
+const outflowsTags = expenseKeys.map((key, i) => 
+    buildTag(key, 0, key === 'other' ? 9999 : i + 1, 'expense')
+);
+
+// ── Income tags from i18n ──
+const incomeKeys = Object.keys(en.tags.income);
+const incomesTags = incomeKeys.map((key, i) => 
+    buildTag(key, 1, key === 'other' ? 9999 : i, 'income')
+);
+
+// ── Payment tags from i18n ──
+const paymentKeys = Object.keys(en.tags.payment);
+const paymentTags = paymentKeys.map((key, i) => ({
+    index: i,
+    label: key,
+    translations: {
+        it: it.tags.payment[key] || key,
+        en: en.tags.payment[key] || key
+    }
+}));
+
+// ── Profile tag helpers ──
+const buildProfileTag = (label, section, index) => ({
+    index,
+    label,
+    translations: {
+        it: it.tags[section]?.[label] || label,
+        en: en.tags[section]?.[label] || label
+    }
+});
+
+const buildProfileTags = (section) => 
+    Object.keys(en.tags[section] || {}).map((key, i) => buildProfileTag(key, section, i));
+
+// ── Helper: get outflow tag object by label ──
+const getOutflowTag = (label) => outflowsTags.find(t => t.label === label) || outflowsTags[0];
+const getPaymentTag = (label) => paymentTags.find(t => t.label === label) || paymentTags[0];
+
 // Mock data compatibili con UserContext structure
 export const mockUserData = {
     // Core user info (come UserContext)
@@ -22,19 +76,19 @@ export const mockUserData = {
     // Currency preference resolved from DB (preferredCurrency index → code via currency tags)
     currency: 'EUR',
     
-    // User profile data (come UserContext)
+    // User profile data (come UserContext) — values from i18n
     profile: {
-        nationality: { key: 107, value: 'Italia' },
-        whereWorks: { key: 107, value: 'Italia' },
-        job: { key: 1, value: 'Informatica' },
-        jobType: { key: 0, value: 'Lavoro dipendente' },
-        workTime: { key: 1, value: 'Full time' },
-        remoteType: { key: 1, value: 'Ibrido' },
+        nationality: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },
+        whereWorks: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },
+        job: { key: 1, value: it.tags.job['information technology'] },
+        jobType: { key: 0, value: it.tags.jobType['employee'] },
+        workTime: { key: 1, value: it.tags.workTime['full time'] },
+        remoteType: { key: 1, value: it.tags.remoteType['hybrid'] },
         age: { key: 1, value: '26-35' },
-        livingSituation: { key: 1, value: 'In Coppia' },
-        housingType: { key: 0, value: 'Appartamento in Affitto' },
-        children: { key: 1, value: 'No' },
-        yearsOfExperience: { key: 2, value: '4-5 anni' },
+        livingSituation: { key: 1, value: it.tags.livingSituation['in-a-relationship'] },
+        housingType: { key: 0, value: it.tags.housingType['rental-appartment'] },
+        children: { key: 1, value: it.tags.children['no'] },
+        yearsOfExperience: { key: 2, value: it.tags.yearsOfExperience['4-5-years'] },
         preferredCurrency: { key: 0, value: 'EUR' }
     },
     
@@ -104,29 +158,30 @@ export const mockUserData = {
     expenses: {
         allOutflows: (() => {
             // Generate 12 months of outflow transactions with recurring patterns
+            // Tags are derived from i18n files (see top of file)
             const categories = [
-                { index: 5, label: 'house', translations: { it: 'Casa', en: 'House' }},
-                { index: 4, label: 'food', translations: { it: 'Alimentari', en: 'Food' }},
-                { index: 12, label: 'transports', translations: { it: 'Trasporto', en: 'Transports' }},
-                { index: 6, label: 'free time', translations: { it: 'Divertimento', en: 'Free time' }},
-                { index: 3, label: 'shopping', translations: { it: 'Shopping', en: 'Shopping' }},
-                { index: 8, label: 'investment', translations: { it: 'Investimento', en: 'Investment' }},
-                { index: 9, label: 'health', translations: { it: 'Salute e benessere', en: 'Health' }}
+                getOutflowTag('house'),
+                getOutflowTag('food'),
+                getOutflowTag('transports'),
+                getOutflowTag('free time'),
+                getOutflowTag('shopping'),
+                getOutflowTag('investment'),
+                getOutflowTag('health')
             ];
-            const paymentTypes = [
-                { index: 0, label: 'single payment', translations: { it: 'Pagamento singolo', en: 'Single Payment' }},
-                { index: 1, label: 'subscription', translations: { it: 'Abbonamento', en: 'Subscription' }},
-                { index: 2, label: 'installment', translations: { it: 'Rata', en: 'Installment' }},
-                { index: 3, label: 'periodic payment', translations: { it: 'Pagamento periodico', en: 'Periodic payment' }}
+            const pmtTypes = [
+                getPaymentTag('single payment'),
+                getPaymentTag('subscription'),
+                getPaymentTag('installment'),
+                getPaymentTag('periodic payment')
             ];
             // Recurring outflows that appear every month (detectable by the algorithm)
             const recurringTemplates = [
-                { category: categories[0], payment: paymentTypes[1], amount: 650, notes: 'Affitto' },       // house + subscription
-                { category: categories[0], payment: paymentTypes[1], amount: 15, notes: 'Netflix' },         // house + subscription
-                { category: categories[0], payment: paymentTypes[1], amount: 10, notes: 'Spotify' },         // house + subscription
-                { category: categories[2], payment: paymentTypes[3], amount: 35, notes: 'Abbonamento treno' }, // transports + periodic
-                { category: categories[5], payment: paymentTypes[3], amount: 200, notes: 'PAC ETF' },        // investment + periodic
-                { category: categories[6], payment: paymentTypes[1], amount: 45, notes: 'Palestra' },        // health + subscription
+                { category: categories[0], payment: pmtTypes[1], amount: 650, notes: 'Affitto' },       // house + subscription
+                { category: categories[0], payment: pmtTypes[1], amount: 15, notes: 'Netflix' },         // house + subscription
+                { category: categories[0], payment: pmtTypes[1], amount: 10, notes: 'Spotify' },         // house + subscription
+                { category: categories[2], payment: pmtTypes[3], amount: 35, notes: 'Abbonamento treno' }, // transports + periodic
+                { category: categories[5], payment: pmtTypes[3], amount: 200, notes: 'PAC ETF' },        // investment + periodic
+                { category: categories[6], payment: pmtTypes[1], amount: 45, notes: 'Palestra' },        // health + subscription
             ];
             const months = [];
             const now = new Date();
@@ -154,7 +209,7 @@ export const mockUserData = {
                         date: new Date(year, month, Math.floor(Math.random() * 27) + 1).toISOString().split('T')[0],
                         amount: Math.floor(Math.random() * 200) + 15,
                         categoryTag: categories[Math.floor(Math.random() * categories.length)],
-                        paymentType: paymentTypes[Math.floor(Math.random() * paymentTypes.length)],
+                        paymentType: pmtTypes[Math.floor(Math.random() * pmtTypes.length)],
                         isExpense: true
                     });
                 }
@@ -163,20 +218,30 @@ export const mockUserData = {
             return months;
         })(),
         outflowsArray: [2100, 1950, 2200, 1800, 2300, 1750, 2150, 1900, 2050, 1850, 2250, 1700, 2000],
-        totalOutflowsPerCategoryPerMonth: {
-            0: { "House": 800, "Food": 600, "Transports": 400, "Free time": 300, "Shopping": 350, "Investment": 200, "Health": 150 },
-            1: { "House": 780, "Food": 550, "Transports": 380, "Free time": 280, "Shopping": 320, "Investment": 180, "Health": 130 },
-            2: { "House": 810, "Food": 620, "Transports": 420, "Free time": 310, "Shopping": 370, "Investment": 220, "Health": 160 },
-            3: { "House": 750, "Food": 580, "Transports": 360, "Free time": 260, "Shopping": 300, "Investment": 160, "Health": 120 },
-            4: { "House": 820, "Food": 640, "Transports": 440, "Free time": 320, "Shopping": 380, "Investment": 240, "Health": 170 },
-            5: { "House": 770, "Food": 560, "Transports": 370, "Free time": 270, "Shopping": 310, "Investment": 170, "Health": 125 },
-            6: { "House": 790, "Food": 610, "Transports": 410, "Free time": 290, "Shopping": 340, "Investment": 210, "Health": 145 },
-            7: { "House": 760, "Food": 570, "Transports": 390, "Free time": 275, "Shopping": 325, "Investment": 190, "Health": 135 },
-            8: { "House": 800, "Food": 590, "Transports": 400, "Free time": 295, "Shopping": 345, "Investment": 205, "Health": 140 },
-            9: { "House": 740, "Food": 540, "Transports": 350, "Free time": 250, "Shopping": 290, "Investment": 155, "Health": 115 },
-            10: { "House": 830, "Food": 650, "Transports": 450, "Free time": 330, "Shopping": 390, "Investment": 250, "Health": 175 },
-            11: { "House": 730, "Food": 530, "Transports": 340, "Free time": 240, "Shopping": 280, "Investment": 145, "Health": 110 }
-        }
+        // Keys MUST match the EN translations from i18n (same as aggregateOutflowsByCategory output)
+        totalOutflowsPerCategoryPerMonth: (() => {
+            const H = en.tags.expense['house'];           // "Home"
+            const F = en.tags.expense['food'];            // "Groceries"
+            const T = en.tags.expense['transports'];      // "Transport"
+            const L = en.tags.expense['free time'];       // "Leisure"
+            const S = en.tags.expense['shopping'];        // "Shopping"
+            const I = en.tags.expense['investment'];      // "Investment"
+            const W = en.tags.expense['health'];          // "Health & Wellness"
+            return {
+                0:  { [H]: 800, [F]: 600, [T]: 400, [L]: 300, [S]: 350, [I]: 200, [W]: 150 },
+                1:  { [H]: 780, [F]: 550, [T]: 380, [L]: 280, [S]: 320, [I]: 180, [W]: 130 },
+                2:  { [H]: 810, [F]: 620, [T]: 420, [L]: 310, [S]: 370, [I]: 220, [W]: 160 },
+                3:  { [H]: 750, [F]: 580, [T]: 360, [L]: 260, [S]: 300, [I]: 160, [W]: 120 },
+                4:  { [H]: 820, [F]: 640, [T]: 440, [L]: 320, [S]: 380, [I]: 240, [W]: 170 },
+                5:  { [H]: 770, [F]: 560, [T]: 370, [L]: 270, [S]: 310, [I]: 170, [W]: 125 },
+                6:  { [H]: 790, [F]: 610, [T]: 410, [L]: 290, [S]: 340, [I]: 210, [W]: 145 },
+                7:  { [H]: 760, [F]: 570, [T]: 390, [L]: 275, [S]: 325, [I]: 190, [W]: 135 },
+                8:  { [H]: 800, [F]: 590, [T]: 400, [L]: 295, [S]: 345, [I]: 205, [W]: 140 },
+                9:  { [H]: 740, [F]: 540, [T]: 350, [L]: 250, [S]: 290, [I]: 155, [W]: 115 },
+                10: { [H]: 830, [F]: 650, [T]: 450, [L]: 330, [S]: 390, [I]: 250, [W]: 175 },
+                11: { [H]: 730, [F]: 530, [T]: 340, [L]: 240, [S]: 280, [I]: 145, [W]: 110 }
+            };
+        })()
     },
     
     incomes: {
@@ -186,7 +251,7 @@ export const mockUserData = {
                 {
                     date: new Date().toISOString().split('T')[0],
                     amount: 2800,
-                    categoryTag: { index: 0, label: 'salary', translations: { it: 'Stipendio', en: 'Salary' }},
+                    categoryTag: incomesTags.find(t => t.label === 'salary') || incomesTags[0],
                     isExpense: false
                 }
             ]
@@ -203,51 +268,21 @@ export const mockUserData = {
     outflowsArray: [2100, 1950, 2200, 1800, 2300, 1750, 2150, 1900, 2050, 1850, 2250, 1700, 2000],
     incomesArray: [2800, 2750, 2900, 2650, 2850, 2700, 2800, 2750, 2900, 2650, 2850, 2700, 2600],
     
-    // Tags per categorie (come UserContext)
+    // Tags per categorie (come UserContext) — derived from i18n files
     tags: {
-        outflowsTags: [
-            { index: 1, label: 'digital service', type: 0, translations: { it: 'Servizio digitale', en: 'Digital service' }},
-            { index: 2, label: 'gift', type: 0, translations: { it: 'Regalo', en: 'Gift' }},
-            { index: 3, label: 'shopping', type: 0, translations: { it: 'Shopping', en: 'Shopping' }},
-            { index: 4, label: 'food', type: 0, translations: { it: 'Alimentari', en: 'Food' }},
-            { index: 5, label: 'house', type: 0, translations: { it: 'Casa', en: 'House' }},
-            { index: 6, label: 'free time', type: 0, translations: { it: 'Divertimento', en: 'Free time' }},
-            { index: 7, label: 'travelling', type: 0, translations: { it: 'Viaggio', en: 'Travelling' }},
-            { index: 8, label: 'investment', type: 0, translations: { it: 'Investimento', en: 'Investment' }},
-            { index: 9, label: 'health', type: 0, translations: { it: 'Salute e benessere', en: 'Health' }},
-            { index: 10, label: 'tax', type: 0, translations: { it: 'Tassa', en: 'Tax' }},
-            { index: 11, label: 'vehicle', type: 0, translations: { it: 'Veicolo', en: 'Vehicle' }},
-            { index: 12, label: 'transports', type: 0, translations: { it: 'Trasporto', en: 'Transports' }},
-            { index: 13, label: 'pets', type: 0, translations: { it: 'Animali', en: 'Pets' }},
-            { index: 14, label: 'personal project', type: 0, translations: { it: 'Progetto personale', en: 'Personal project' }},
-            { index: 15, label: 'education', type: 0, translations: { it: 'Istruzione', en: 'Education' }},
-            { index: 9999, label: 'other', type: 0, translations: { it: 'Altro', en: 'Other' }}
-        ],
-        incomesTags: [
-            { index: 0, label: 'salary', type: 1, translations: { it: 'Stipendio', en: 'Salary' }},
-            { index: 1, label: 'freelance income', type: 1, translations: { it: 'Reddito freelance', en: 'Freelance income' }},
-            { index: 2, label: 'extra income', type: 1, translations: { it: 'Entrata extra', en: 'Extra income' }},
-            { index: 3, label: 'gift', type: 1, translations: { it: 'Regalo', en: 'Gift' }},
-            { index: 4, label: 'retirement', type: 1, translations: { it: 'Pensione', en: 'Retirement' }},
-            { index: 9999, label: 'other', type: 1, translations: { it: 'Altro', en: 'Other' }}
-        ],
-        paymentTags: [
-            { index: 0, label: 'none', translations: { it: 'Nessuno', en: 'None' }},
-            { index: 1, label: 'single payment', translations: { it: 'Pagamento singolo', en: 'Single Payment' }},
-            { index: 2, label: 'subscription', translations: { it: 'Abbonamento', en: 'Subscription' }},
-            { index: 3, label: 'installment', translations: { it: 'Rata', en: 'Installment' }},
-            { index: 4, label: 'periodic payment', translations: { it: 'Pagamento periodico', en: 'Periodic payment' }}
-        ],
-        nationalityTags: [],
-        jobTags: [],
-        jobTypeTags: [],
-        workTimeTags: [],
-        remoteTypeTags: [],
-        ageTags: [],
-        livingSituationTags: [],
-        housingTypeTags: [],
-        childrenTags: [],
-        yearsOfExperienceTags: [],
+        outflowsTags,
+        incomesTags,
+        paymentTags,
+        nationalityTags: buildProfileTags('country'),
+        jobTags: buildProfileTags('job'),
+        jobTypeTags: buildProfileTags('jobType'),
+        workTimeTags: buildProfileTags('workTime'),
+        remoteTypeTags: buildProfileTags('remoteType'),
+        ageTags: buildProfileTags('age'),
+        livingSituationTags: buildProfileTags('livingSituation'),
+        housingTypeTags: buildProfileTags('housingType'),
+        childrenTags: buildProfileTags('children'),
+        yearsOfExperienceTags: buildProfileTags('yearsOfExperience'),
         currencyTags: [
             { label: "eur", index: 0, type: 13, translations: { it: "EUR (€)", en: "EUR (€)" } },
             { label: "usd", index: 1, type: 13, translations: { it: "USD ($)", en: "USD ($)" } },

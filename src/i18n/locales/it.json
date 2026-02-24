@@ -496,7 +496,9 @@
             "dangerZone": "Zona Pericolosa",
             "backToDashboard": "Torna alla Dashboard",
             "bugReport": "Segnala un bug",
-            "bugReportSubtitle": "Apri una segnalazione su GitHub"
+            "bugReportSubtitle": "Apri una segnalazione su GitHub",
+            "installApp": "Installa come App",
+            "installAppSubtitle": "Aggiungi PaciFinance alla schermata home"
         }
     },
 
@@ -1348,7 +1350,9 @@
             "answer6": "Il progetto è no-profit e viene sostenuto da donazioni volontarie. Se pensi che il servizio offerto sia utile e vuoi contribuire, puoi lasciare feedback e/o supportarci tramite donazione.",
             "answer6CallToAction": "In ogni pagina in basso a destra troverai un pop-up per supportare il progetto. Grazie da parte di tutto il team!.",
             "question7": "Come posso eliminare il mio account?",
-            "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. "
+            "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. ",
+            "question8": "Posso installare PaciFinance come app?",
+            "answer8": "Sì! PaciFinance è una Progressive Web App (PWA) e può essere installata su qualsiasi dispositivo — iPhone, Android o desktop — direttamente dal browser. Vai nelle Impostazioni per le istruzioni passo-passo per il tuo dispositivo."
         },
         "developers": {
             "title": "Team",
@@ -1357,6 +1361,35 @@
             "description3": "La piattaforma è stata creata con l'obiettivo di offrire un servizio utile e gratuito per gli utenti.",
             "calltoaction": "Il costo del mantenimento dei server e del servizio è sostenuto dal team, se pensi che il servizio offerto sia utile e vuoi contribuire, puoi supportarci tramite donazione. ",
             "contact": "Contattaci"
+        }
+    },
+    "pwaInstall": {
+        "title": "Installa come App",
+        "subtitle": "Usa PaciFinance come un'app nativa",
+        "detected": "Il tuo dispositivo",
+        "intro": "PaciFinance può essere installata come app sul tuo dispositivo per un accesso rapido, supporto offline e un'esperienza nativa — senza bisogno dell'app store.",
+        "tip": "Una volta installata, PaciFinance apparirà nella schermata home come qualsiasi altra app, con caricamento più veloce e a schermo intero.",
+        "steps": {
+            "ios": [
+                "Apri PaciFinance in Safari (obbligatorio — non funziona da Chrome o altri browser su iOS)",
+                "Tocca il pulsante Condividi (il quadrato con la freccia verso l'alto) in basso allo schermo",
+                "Scorri e tocca \"Aggiungi alla schermata Home\"",
+                "Dai un nome (o lascia PaciFinance) e tocca \"Aggiungi\"",
+                "Fatto! Troverai PaciFinance nella schermata home"
+            ],
+            "android": [
+                "Apri PaciFinance in Chrome (o un altro browser supportato)",
+                "Tocca il menu a tre puntini (⋮) in alto a destra",
+                "Tocca \"Aggiungi a schermata Home\" o \"Installa app\"",
+                "Conferma toccando \"Installa\" nel popup",
+                "Fatto! PaciFinance è ora installata e disponibile dalla schermata home"
+            ],
+            "desktop": [
+                "Apri PaciFinance in Chrome, Edge o un altro browser basato su Chromium",
+                "Clicca l'icona di installazione (⊕) nella barra degli indirizzi, oppure apri il menu del browser (⋮) e seleziona \"Installa PaciFinance\"",
+                "Conferma cliccando \"Installa\" nella finestra di dialogo",
+                "Fatto! PaciFinance si aprirà in una finestra dedicata e apparirà nel tuo launcher"
+            ]
         }
     },
     "legal": {

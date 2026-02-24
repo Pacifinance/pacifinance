@@ -17,6 +17,7 @@ import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting"
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
+import PWAInstallGuide from "../components/PWAInstallGuide";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -53,7 +54,8 @@ import {
     faExclamationTriangle,
     faUpload,
     faCoins,
-    faBug
+    faBug,
+    faMobileScreen
 } from "@fortawesome/free-solid-svg-icons";
 
 const SettingsPage = () => {
@@ -923,6 +925,44 @@ const SettingsPage = () => {
                                     </div>
                                 </a>
                             </div>
+                        </div>
+
+                        {/* Install as App (PWA) Section */}
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "14px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                            }}
+                        >
+                            <h3 style={{ 
+                                marginBottom: "0.75rem", 
+                                color: theme.textColor,
+                                fontSize: "1.1rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faMobileScreen} style={{ 
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
+                                }} />
+                                {translations.sidebar.settings.installApp || (language === "it" ? "Installa come App" : "Install as App")}
+                            </h3>
+                            <p style={{ 
+                                color: theme.textColor, 
+                                marginBottom: "0.75rem",
+                                fontSize: "0.8rem",
+                                lineHeight: "1.4",
+                                opacity: 0.7
+                            }}>
+                                {translations.sidebar.settings.installAppSubtitle || (language === "it" ? "Aggiungi PaciFinance alla schermata home" : "Add PaciFinance to your home screen")}
+                            </p>
+                            <PWAInstallGuide variant="compact" />
                         </div>
 
                         {/* Data Export Section */}

@@ -1,6 +1,6 @@
 ﻿# PaciFinance - TODO
 
-> Ultimo aggiornamento: 17/02/2026
+> Ultimo aggiornamento: 24/02/2026
 > Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
 > Roadmap status rapido: [x] completato · [~] in sviluppo · [ ] pianificato (con marker <!-- roadmap:id -->)
 
@@ -62,6 +62,11 @@
 - [x] Undo/rollback ultima importazione (saveLastImport + UI undo)
 - [x] Drag and drop file upload (già implementato nel wizard)
 - [x] Modifica inline entrate e uscite: edit direttamente nella tabella con delete+reinsert <!-- roadmap:inline-edit -->
+- [x] Guida installazione PWA: istruzioni auto-detect dispositivo (iOS/Android/Desktop) in Impostazioni e Info <!-- roadmap:pwa-install-guide -->
+- [x] i18n colori categorie: fallback robusto con reverse-lookup per tag tradotti <!-- roadmap:i18n-category-colors -->
+- [x] Mock data allineati con file i18n per consistenza demo/dev/prod <!-- roadmap:mock-i18n-alignment -->
+- [x] Mock data CoinGecko per pagina Market Prices in dev mode
+- [x] Pagina prezzi di mercato crypto con dati CoinGecko e sparkline 7 giorni <!-- roadmap:market-prices -->
 
 ---
 
@@ -73,7 +78,7 @@
 - [ ] Floating point e centesimi: il DB mandera valori interi (* 100), gestire la conversione
 
 ### Sicurezza
-- [ ] gestione email per utenze criptate, solo per recupero password e verifiche di sicurezza, no email marketing <!-- roadmap:user-email-crypted> 
+- [ ] gestione email per utenze criptate, solo per recupero password e verifiche di sicurezza, no email marketing <!-- roadmap:user-email-crypted -->
 
 
 ### Mobile

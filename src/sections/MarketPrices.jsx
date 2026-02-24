@@ -4,6 +4,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import apiClient from '../services/apiClient';
+import mockCryptoData from '../data/mockCryptoData';
 import {
   TrendingUp, TrendingDown, Minus, Search, RefreshCw,
   BarChart3, Bitcoin, Landmark, Gem, Briefcase, Lock,
@@ -968,7 +969,13 @@ export default function MarketPrices() {
       setCryptoData(res.data);
     } catch (err) {
       console.error('Failed to fetch crypto prices:', err);
-      setError(err);
+      // In dev mode, use mock data so the page is usable for UI work
+      if (import.meta.env.DEV) {
+        console.info('[MarketPrices] Using mock crypto data (dev fallback)');
+        setCryptoData(mockCryptoData);
+      } else {
+        setError(err);
+      }
     } finally {
       setLoading(false);
     }

@@ -158,12 +158,108 @@ const TradingViewWidget = memo(({
     script.innerHTML = configStr;
     container.appendChild(script);
 
-    // Watch for iframe creation → marks the widget as "loaded"
+    /* ─── Error-detection state ─── */
+    let errorFired = false;
+    let secondaryTimer;
+    let messageHandler;
+    let contentObserver;
+
+    const fireError = () => {
+      if (errorFired) return;
+      errorFired = true;
+      if (messageHandler) window.removeEventListener('message', messageHandler);
+      if (contentObserver) contentObserver.disconnect();
+      clearTimeout(secondaryTimer);
+      onError?.();
+    };
+
+    /* ─── Helpers: detect error text in a DOM subtree (outside iframe) ─── */
+    const ERROR_PATTERNS = [
+      'invalid symbol',
+      'only available on tradingview',
+      'symbol is not available',
+      'non è disponibile',               // Italian variant
+    ];
+    const hasErrorText = (root) => {
+      // Check text in all elements that live in OUR document (not inside the
+      // cross-origin iframe).  querySelectorAll never returns iframe internals.
+      const nodes = root.querySelectorAll
+        ? [root, ...root.querySelectorAll('*')]
+        : [root];
+      for (const el of nodes) {
+        if (el.tagName === 'IFRAME' || el.tagName === 'SCRIPT') continue;
+        const txt = (el.textContent || '').toLowerCase();
+        if (ERROR_PATTERNS.some(p => txt.includes(p))) return true;
+      }
+      return false;
+    };
+
+    /* ─── MutationObserver: wait for iframe creation ─── */
     const observer = new MutationObserver(() => {
       const iframe = container.querySelector('iframe');
       if (iframe) {
         markReady();
         observer.disconnect();
+
+        /* === SECONDARY ERROR DETECTION AFTER IFRAME LOADS === */
+
+        const iframeId = iframe.name || iframe.id || '';
+
+        // A) Listen for postMessage error signals from TradingView
+        messageHandler = (event) => {
+          if (errorFired) return;
+          const origin = event.origin || '';
+          if (!origin.includes('tradingview.com')) return;
+          let d;
+          try {
+            d = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+          } catch { return; }
+          // Correlate to our widget (skip if message has an id that doesn't match)
+          if (iframeId && d?.id && d.id !== iframeId) return;
+          const n = String(d?.name || '').toLowerCase();
+          const t = String(d?.type || '').toLowerCase();
+          if (n.includes('error') || n.includes('no-data') || n.includes('invalid') ||
+              t === 'error' || d?.error === true) {
+            fireError();
+          }
+        };
+        window.addEventListener('message', messageHandler);
+
+        // B) Keep observing the container for error elements that TradingView's
+        //    embed script may inject OUTSIDE the iframe (e.g. error overlays,
+        //    "symbol not available" placeholders).
+        contentObserver = new MutationObserver(() => {
+          if (errorFired) return;
+          if (hasErrorText(container)) fireError();
+        });
+        contentObserver.observe(container, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+
+        // C) Scheduled check: after 5 s inspect accessible attributes + DOM text
+        secondaryTimer = setTimeout(() => {
+          if (errorFired) return;
+
+          // Check iframe title / aria-label (set by TradingView's embed script)
+          const title = (iframe.getAttribute('title') || '').toLowerCase();
+          const ariaLabel = (iframe.getAttribute('aria-label') || '').toLowerCase();
+          if ([title, ariaLabel].some(a => ERROR_PATTERNS.some(p => a.includes(p)))) {
+            fireError();
+            return;
+          }
+
+          // Final DOM text scan
+          if (hasErrorText(container)) {
+            fireError();
+            return;
+          }
+
+          // Cleanup listeners – no error detected; widget is assumed OK
+          if (messageHandler) window.removeEventListener('message', messageHandler);
+          if (contentObserver) contentObserver.disconnect();
+        }, 5000);
       }
     });
     observer.observe(container, { childList: true, subtree: true });
@@ -172,13 +268,16 @@ const TradingViewWidget = memo(({
     const timer = setTimeout(() => {
       if (!readyFiredRef.current) {
         observer.disconnect();
-        onError?.();
+        fireError();
       }
     }, 12000);
 
     return () => {
       observer.disconnect();
       clearTimeout(timer);
+      clearTimeout(secondaryTimer);
+      if (messageHandler) window.removeEventListener('message', messageHandler);
+      if (contentObserver) contentObserver.disconnect();
       if (container) container.innerHTML = '';
     };
   }, [type, configStr, height, markReady, onError]);

@@ -2323,8 +2323,9 @@
         },
         "tradingView": {
             "currencyNote": "Prices are displayed in the native exchange currency (primarily USD). 15 min delayed data by TradingView.",
-            "searchPlaceholder": "Search symbol (e.g. AAPL, SPY, GOLD)...",
-            "searchHint": "Type a symbol and press Enter to view details, or click a card below",
+            "searchPlaceholder": "Search by name or symbol (e.g. AAPL, NASDAQ:TSLA)...",
+            "searchHint": "Search by name in the list below, or type a symbol and press Enter to load it directly from TradingView",
+            "exchangeSearchHint": "Searching on {exchange}. Type a ticker symbol and press Enter.",
             "viewDetails": "View Details",
             "chart": "Chart",
             "profile": "Profile",
@@ -2332,8 +2333,32 @@
             "advancedChart": "Advanced Chart",
             "showTraderChart": "Advanced Chart",
             "hideTraderChart": "Hide Advanced Chart",
-            "noMatchHint": "Press Enter to search for this symbol on TradingView",
-            "symbolDisclaimer": "This symbol was not verified. Some data or charts may not be available in the embedded preview."
+            "noMatchHint": "No match in the curated list. Press Enter to search this symbol directly on TradingView",
+            "symbolDisclaimer": "This symbol is not in our curated list. If the charts don't load, make sure you used the correct TradingView symbol (e.g. NASDAQ:AAPL, not \"Apple\").",
+            "clearSearch": "✕ Clear search",
+            "showMore": "Show more",
+            "exchanges": {
+                "allExchanges": "All",
+                "nasdaq": "NASDAQ",
+                "nyse": "New York",
+                "amex": "US (AMEX)",
+                "lse": "London",
+                "xetra": "Germany",
+                "euronextParis": "Paris",
+                "borsaItaliana": "Milan",
+                "bolsaMadrid": "Madrid",
+                "six": "Switzerland",
+                "tse": "Tokyo",
+                "hkex": "Hong Kong",
+                "sse": "Shanghai",
+                "krx": "South Korea",
+                "nse": "India",
+                "asx": "Australia",
+                "tsx": "Canada",
+                "tvc": "TradingView",
+                "comex": "COMEX (Metals)",
+                "nymex": "NYMEX (Energy)"
+            }
         }
     }
 }

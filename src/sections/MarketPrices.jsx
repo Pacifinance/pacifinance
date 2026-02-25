@@ -299,6 +299,42 @@ const AssetsGrid = styled.div`
   }
 `;
 
+const ShowMoreButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 1.25rem auto 0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid ${p => p.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.15)'
+    : 'rgba(0, 0, 0, 0.1)'};
+  background: ${p => p.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.06)'
+    : 'rgba(0, 0, 0, 0.03)'};
+  color: ${p => p.theme.mode === 'dark' ? '#e2e8f0' : '#334155'};
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${p => p.theme.mode === 'dark'
+      ? 'rgba(255, 255, 255, 0.12)'
+      : 'rgba(0, 0, 0, 0.06)'};
+    transform: translateY(-1px);
+  }
+
+  span.count {
+    opacity: 0.6;
+    font-weight: 400;
+    font-size: 0.8rem;
+  }
+`;
+
 const AssetCard = styled.div`
   background: ${p => p.theme.mode === 'dark'
     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)'
@@ -1061,6 +1097,61 @@ const TvSearchHint = styled.div`
   }
 `;
 
+/* Exchange selector chips */
+const ExchangeRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+`;
+
+const ExchangeChip = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid ${p =>
+    p.$active
+      ? p.theme.buttonBackgroundColor
+      : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'
+  };
+  background: ${p =>
+    p.$active
+      ? p.theme.buttonBackgroundColor + '22'
+      : 'transparent'
+  };
+  color: ${p =>
+    p.$active
+      ? p.theme.buttonBackgroundColor
+      : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)'
+  };
+
+  &:hover {
+    border-color: ${p => p.theme.buttonBackgroundColor}80;
+    background: ${p => p.theme.buttonBackgroundColor}11;
+  }
+
+  .flag { font-size: 0.82rem; line-height: 1; }
+
+  @media (max-width: 768px) {
+    font-size: 0.66rem;
+    padding: 0.25rem 0.55rem;
+    gap: 0.2rem;
+  }
+`;
+
+const ExchangePrefix = styled.span`
+  opacity: 0.5;
+  font-size: 0.64rem;
+  font-family: monospace;
+`;
+
 const TraderToggle = styled.button`
   display: flex;
   align-items: center;
@@ -1307,36 +1398,105 @@ const ASSET_CATEGORIES = [
 
 const POPULAR_SYMBOLS = {
   stocks: [
+    // 🇺🇸 US – NASDAQ
     { symbol: 'NASDAQ:AAPL',  name: 'Apple',              shortName: 'AAPL' },
-    { symbol: 'NASDAQ:MSFT',  name: 'Microsoft',           shortName: 'MSFT' },
-    { symbol: 'NASDAQ:GOOGL', name: 'Alphabet (Google)',    shortName: 'GOOGL' },
-    { symbol: 'NASDAQ:AMZN',  name: 'Amazon',              shortName: 'AMZN' },
-    { symbol: 'NASDAQ:NVDA',  name: 'NVIDIA',              shortName: 'NVDA' },
-    { symbol: 'NASDAQ:TSLA',  name: 'Tesla',               shortName: 'TSLA' },
-    { symbol: 'NASDAQ:META',  name: 'Meta Platforms',       shortName: 'META' },
-    { symbol: 'NYSE:BRK.B',   name: 'Berkshire Hathaway',   shortName: 'BRK.B' },
-    { symbol: 'NYSE:JPM',     name: 'JPMorgan Chase',       shortName: 'JPM' },
-    { symbol: 'NYSE:V',       name: 'Visa',                shortName: 'V' },
-    { symbol: 'NYSE:JNJ',     name: 'Johnson & Johnson',    shortName: 'JNJ' },
-    { symbol: 'NYSE:KO',      name: 'Coca-Cola',            shortName: 'KO' },
+    { symbol: 'NASDAQ:MSFT',  name: 'Microsoft',          shortName: 'MSFT' },
+    { symbol: 'NASDAQ:GOOGL', name: 'Alphabet (Google)',   shortName: 'GOOGL' },
+    { symbol: 'NASDAQ:AMZN',  name: 'Amazon',             shortName: 'AMZN' },
+    { symbol: 'NASDAQ:NVDA',  name: 'NVIDIA',             shortName: 'NVDA' },
+    { symbol: 'NASDAQ:TSLA',  name: 'Tesla',              shortName: 'TSLA' },
+    { symbol: 'NASDAQ:META',  name: 'Meta Platforms',      shortName: 'META' },
+    // 🇺🇸 US – NYSE
+    { symbol: 'NYSE:BRK.B',   name: 'Berkshire Hathaway',  shortName: 'BRK.B' },
+    { symbol: 'NYSE:JPM',     name: 'JPMorgan Chase',      shortName: 'JPM' },
+    { symbol: 'NYSE:V',       name: 'Visa',               shortName: 'V' },
+    { symbol: 'NYSE:JNJ',     name: 'Johnson & Johnson',   shortName: 'JNJ' },
+    { symbol: 'NYSE:KO',      name: 'Coca-Cola',           shortName: 'KO' },
+    // �🇪 Germany (Xetra) — verified working
+    { symbol: 'XETR:SAP',     name: 'SAP',                 shortName: 'SAP' },
+    { symbol: 'XETR:SIE',     name: 'Siemens',             shortName: 'SIE' },
+    { symbol: 'XETR:ALV',     name: 'Allianz',             shortName: 'ALV' },
+    { symbol: 'XETR:DTE',     name: 'Deutsche Telekom',    shortName: 'DTE' },
+    { symbol: 'XETR:BAS',     name: 'BASF',                shortName: 'BAS' },
+    // 🇫🇷 Paris (Euronext) — prefix EURONEXT, not EPA
+    { symbol: 'EURONEXT:MC',  name: 'LVMH',                shortName: 'MC' },
+    { symbol: 'EURONEXT:OR',  name: "L'Oréal",             shortName: 'OR' },
+    { symbol: 'EURONEXT:TTE', name: 'TotalEnergies',       shortName: 'TTE' },
+    { symbol: 'EURONEXT:AIR', name: 'Airbus',              shortName: 'AIR' },
+    { symbol: 'EURONEXT:SAN', name: 'Sanofi',              shortName: 'SAN' },
+    // 🇮🇹 Milan (Borsa Italiana) — prefix MIL, not BIT
+    { symbol: 'MIL:UCG',      name: 'UniCredit',           shortName: 'UCG' },
+    { symbol: 'MIL:ISP',      name: 'Intesa Sanpaolo',     shortName: 'ISP' },
+    { symbol: 'MIL:ENI',      name: 'Eni',                 shortName: 'ENI' },
+    { symbol: 'MIL:ENEL',     name: 'Enel',                shortName: 'ENEL' },
+    { symbol: 'MIL:RACE',     name: 'Ferrari',             shortName: 'RACE' },
+    // 🇪🇸 Madrid
+    { symbol: 'BME:ITX',      name: 'Inditex (Zara)',      shortName: 'ITX' },
+    { symbol: 'BME:SAN',      name: 'Banco Santander',     shortName: 'SAN' },
+    { symbol: 'BME:BBVA',     name: 'BBVA',                shortName: 'BBVA' },
+    // 🇨🇭 Switzerland
+    { symbol: 'SIX:NESN',     name: 'Nestlé',              shortName: 'NESN' },
+    { symbol: 'SIX:ROG',      name: 'Roche',               shortName: 'ROG' },
+    { symbol: 'SIX:NOVN',     name: 'Novartis',            shortName: 'NOVN' },
+    // 🇯🇵 Tokyo
+    { symbol: 'TSE:7203',     name: 'Toyota',              shortName: '7203' },
+    { symbol: 'TSE:6758',     name: 'Sony',                shortName: '6758' },
+    { symbol: 'TSE:7974',     name: 'Nintendo',            shortName: '7974' },
+    { symbol: 'TSE:9984',     name: 'SoftBank',            shortName: '9984' },
+    { symbol: 'TSE:6861',     name: 'Keyence',             shortName: '6861' },
+    // 🇭🇰 Hong Kong
+    { symbol: 'HKEX:700',     name: 'Tencent',             shortName: '700' },
+    { symbol: 'HKEX:9988',    name: 'Alibaba (HK)',        shortName: '9988' },
+    { symbol: 'HKEX:1299',    name: 'AIA Group',           shortName: '1299' },
+    // 🇨🇳 Shanghai
+    { symbol: 'SSE:600519',   name: 'Kweichow Moutai',    shortName: '600519' },
+    { symbol: 'SSE:601318',   name: 'Ping An Insurance',   shortName: '601318' },
+    // 🇰🇷 South Korea
+    { symbol: 'KRX:005930',   name: 'Samsung Electronics', shortName: '005930' },
+    { symbol: 'KRX:000660',   name: 'SK Hynix',           shortName: '000660' },
+    // 🇮🇳 India
+    { symbol: 'NSE:RELIANCE', name: 'Reliance Industries', shortName: 'RELIANCE' },
+    { symbol: 'NSE:TCS',      name: 'Tata Consultancy',   shortName: 'TCS' },
+    { symbol: 'NSE:INFY',     name: 'Infosys',            shortName: 'INFY' },
+    // 🇦🇺 Australia
+    { symbol: 'ASX:BHP',      name: 'BHP Group',          shortName: 'BHP' },
+    { symbol: 'ASX:CBA',      name: 'Commonwealth Bank',  shortName: 'CBA' },
+    // 🇨🇦 Canada
+    { symbol: 'TSX:RY',       name: 'Royal Bank of Canada', shortName: 'RY' },
+    { symbol: 'TSX:SHOP',     name: 'Shopify',             shortName: 'SHOP' },
   ],
   etf: [
-    { symbol: 'AMEX:SPY',   name: 'SPDR S&P 500',                 shortName: 'SPY' },
-    { symbol: 'AMEX:VOO',   name: 'Vanguard S&P 500',              shortName: 'VOO' },
-    { symbol: 'NASDAQ:QQQ', name: 'Invesco QQQ (Nasdaq 100)',       shortName: 'QQQ' },
-    { symbol: 'AMEX:VTI',   name: 'Vanguard Total Stock Market',   shortName: 'VTI' },
-    { symbol: 'AMEX:VT',    name: 'Vanguard Total World Stock',    shortName: 'VT' },
-    { symbol: 'AMEX:DIA',   name: 'SPDR Dow Jones Industrial',     shortName: 'DIA' },
-    { symbol: 'AMEX:VWO',   name: 'Vanguard Emerging Markets',     shortName: 'VWO' },
-    { symbol: 'AMEX:EFA',   name: 'iShares MSCI EAFE',             shortName: 'EFA' },
-    { symbol: 'AMEX:IWM',   name: 'iShares Russell 2000',          shortName: 'IWM' },
-    { symbol: 'AMEX:GLD',   name: 'SPDR Gold Trust',               shortName: 'GLD' },
-    { symbol: 'AMEX:TLT',   name: 'iShares 20+ Year Treasury',     shortName: 'TLT' },
-    { symbol: 'AMEX:VNQ',   name: 'Vanguard Real Estate',          shortName: 'VNQ' },
-    { symbol: 'AMEX:SCHD',  name: 'Schwab US Dividend Equity',     shortName: 'SCHD' },
-    { symbol: 'AMEX:HYG',   name: 'iShares High Yield Corp Bond',  shortName: 'HYG' },
-    { symbol: 'AMEX:ARKK',  name: 'ARK Innovation',                shortName: 'ARKK' },
-    { symbol: 'AMEX:XLF',   name: 'Financial Select SPDR',         shortName: 'XLF' },
+    // 🇺🇸 US – AMEX / NASDAQ
+    { symbol: 'AMEX:SPY',     name: 'SPDR S&P 500',                 shortName: 'SPY' },
+    { symbol: 'AMEX:VOO',     name: 'Vanguard S&P 500',             shortName: 'VOO' },
+    { symbol: 'NASDAQ:QQQ',   name: 'Invesco QQQ (Nasdaq 100)',     shortName: 'QQQ' },
+    { symbol: 'AMEX:VTI',     name: 'Vanguard Total Stock Market',  shortName: 'VTI' },
+    { symbol: 'AMEX:VT',      name: 'Vanguard Total World Stock',   shortName: 'VT' },
+    { symbol: 'AMEX:DIA',     name: 'SPDR Dow Jones Industrial',    shortName: 'DIA' },
+    { symbol: 'AMEX:VWO',     name: 'Vanguard Emerging Markets',    shortName: 'VWO' },
+    { symbol: 'AMEX:EFA',     name: 'iShares MSCI EAFE',            shortName: 'EFA' },
+    { symbol: 'AMEX:IWM',     name: 'iShares Russell 2000',         shortName: 'IWM' },
+    { symbol: 'AMEX:GLD',     name: 'SPDR Gold Trust',              shortName: 'GLD' },
+    { symbol: 'AMEX:TLT',     name: 'iShares 20+ Year Treasury',    shortName: 'TLT' },
+    { symbol: 'AMEX:VNQ',     name: 'Vanguard Real Estate',         shortName: 'VNQ' },
+    { symbol: 'AMEX:SCHD',    name: 'Schwab US Dividend Equity',    shortName: 'SCHD' },
+    { symbol: 'AMEX:HYG',     name: 'iShares High Yield Corp Bond', shortName: 'HYG' },
+    { symbol: 'AMEX:ARKK',    name: 'ARK Innovation',               shortName: 'ARKK' },
+    { symbol: 'AMEX:XLF',     name: 'Financial Select SPDR',        shortName: 'XLF' },
+    // 🇩🇪 Germany (Xetra)
+    { symbol: 'XETR:EUNL',    name: 'iShares Core MSCI World',     shortName: 'EUNL' },
+    { symbol: 'XETR:VWCE',    name: 'Vanguard FTSE All-World (Acc)', shortName: 'VWCE' },
+    { symbol: 'XETR:IUSQ',    name: 'iShares MSCI ACWI',           shortName: 'IUSQ' },
+    // 🇮🇹 Milan — prefix MIL
+    { symbol: 'MIL:SWDA',     name: 'iShares Core MSCI World',      shortName: 'SWDA' },
+    { symbol: 'MIL:VWCE',     name: 'Vanguard FTSE All-World (Acc)', shortName: 'VWCE' },
+    { symbol: 'MIL:CSSPX',    name: 'iShares Core S&P 500 (Acc)',   shortName: 'CSSPX' },
+    // 🇫🇷 Paris — prefix EURONEXT
+    { symbol: 'EURONEXT:CW8', name: 'Amundi MSCI World',            shortName: 'CW8' },
+    { symbol: 'EURONEXT:PANX', name: 'Amundi Nasdaq-100',           shortName: 'PANX' },
+    // 🇯🇵 Tokyo
+    { symbol: 'TSE:1306',     name: 'TOPIX ETF (Nomura)',           shortName: '1306' },
+    { symbol: 'TSE:1321',     name: 'Nikkei 225 ETF',              shortName: '1321' },
   ],
   commodities: [
     { symbol: 'TVC:GOLD',      name: 'Gold',          shortName: 'XAU' },
@@ -1344,6 +1504,47 @@ const POPULAR_SYMBOLS = {
     { symbol: 'TVC:PLATINUM',  name: 'Platinum',      shortName: 'XPT' },
   ],
 
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   Exchanges per Category – user-friendly selector
+   ═══════════════════════════════════════════════════════════════ */
+
+const EXCHANGES = {
+  stocks: [
+    { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
+    { prefix: 'NASDAQ',   flag: '🇺🇸', labelKey: 'nasdaq'         },
+    { prefix: 'NYSE',     flag: '🇺🇸', labelKey: 'nyse'           },
+    { prefix: 'AMEX',     flag: '🇺🇸', labelKey: 'amex'           },
+    { prefix: 'LSE',      flag: '🇬🇧', labelKey: 'lse'            },
+    { prefix: 'XETR',     flag: '🇩🇪', labelKey: 'xetra'          },
+    { prefix: 'EURONEXT', flag: '🇫🇷', labelKey: 'euronextParis'  },
+    { prefix: 'MIL',      flag: '🇮🇹', labelKey: 'borsaItaliana'  },
+    { prefix: 'BME',      flag: '🇪🇸', labelKey: 'bolsaMadrid'    },
+    { prefix: 'SIX',      flag: '🇨🇭', labelKey: 'six'            },
+    { prefix: 'TSE',      flag: '🇯🇵', labelKey: 'tse'            },
+    { prefix: 'HKEX',     flag: '🇭🇰', labelKey: 'hkex'           },
+    { prefix: 'SSE',      flag: '🇨🇳', labelKey: 'sse'            },
+    { prefix: 'KRX',      flag: '🇰🇷', labelKey: 'krx'            },
+    { prefix: 'NSE',      flag: '🇮🇳', labelKey: 'nse'            },
+    { prefix: 'ASX',      flag: '🇦🇺', labelKey: 'asx'            },
+    { prefix: 'TSX',      flag: '🇨🇦', labelKey: 'tsx'            },
+  ],
+  etf: [
+    { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
+    { prefix: 'AMEX',     flag: '🇺🇸', labelKey: 'amex'           },
+    { prefix: 'NASDAQ',   flag: '🇺🇸', labelKey: 'nasdaq'         },
+    { prefix: 'XETR',     flag: '🇩🇪', labelKey: 'xetra'          },
+    { prefix: 'MIL',      flag: '🇮🇹', labelKey: 'borsaItaliana'  },
+    { prefix: 'EURONEXT', flag: '🇫🇷', labelKey: 'euronextParis'  },
+    { prefix: 'TSE',      flag: '🇯🇵', labelKey: 'tse'            },
+  ],
+  commodities: [
+    { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
+    { prefix: 'TVC',      flag: '📊', labelKey: 'tvc'            },
+    { prefix: 'COMEX',    flag: '🇺🇸', labelKey: 'comex'          },
+    { prefix: 'NYMEX',    flag: '🇺🇸', labelKey: 'nymex'          },
+  ],
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1371,6 +1572,8 @@ export default function MarketPrices() {
   const [tvSelectedSymbol, setTvSelectedSymbol] = useState(null); // { symbol, name, shortName, category }
   const [showAdvancedChart, setShowAdvancedChart] = useState(false);
   const [failedSymbols, setFailedSymbols] = useState(new Set());
+  const [selectedExchange, setSelectedExchange] = useState(''); // exchange prefix or ''
+  const [visibleCount, setVisibleCount] = useState(9);          // pagination: show 9 at a time
 
   // TradingView locale & theme (derived)
   const tvLocale = language === 'it' ? 'it' : 'en';
@@ -1572,18 +1775,30 @@ export default function MarketPrices() {
   /* ─── Category label from translations ─── */
   const getCategoryLabel = (catId) => t?.categories?.[catId] || catId;
 
-  /* ─── TradingView: Filtered popular symbols ─── */
+  /* ─── TradingView: Filtered popular symbols (by exchange + text search) ─── */
   const filteredTvSymbols = useMemo(() => {
-    const symbols = POPULAR_SYMBOLS[activeCategory] || [];
-    if (!tvSearchQuery) return symbols;
+    let symbols = POPULAR_SYMBOLS[activeCategory] || [];
 
-    const q = tvSearchQuery.toLowerCase();
-    return symbols.filter(s =>
-      s.name.toLowerCase().includes(q) ||
-      s.shortName.toLowerCase().includes(q) ||
-      s.symbol.toLowerCase().includes(q)
-    );
-  }, [activeCategory, tvSearchQuery]);
+    // 1. Filter by selected exchange
+    if (selectedExchange) {
+      symbols = symbols.filter(s => s.symbol.startsWith(selectedExchange + ':'));
+    }
+
+    // 2. Filter by text search
+    if (tvSearchQuery) {
+      const q = tvSearchQuery.toLowerCase();
+      symbols = symbols.filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        s.shortName.toLowerCase().includes(q) ||
+        s.symbol.toLowerCase().includes(q)
+      );
+    }
+
+    return symbols;
+  }, [activeCategory, tvSearchQuery, selectedExchange]);
+
+  /* ─── TradingView: Multi-exchange search results (dynamic symbols created from search) ─── */
+  const [dynamicSymbols, setDynamicSymbols] = useState([]);
 
   /* ─── TradingView: Handle symbol search submit ─── */
   const handleTvSymbolSearch = useCallback((query) => {
@@ -1592,16 +1807,19 @@ export default function MarketPrices() {
     const trimmed = query.trim();
 
     // Check if it matches a popular symbol (by name, shortName, or full symbol)
-    const match = (POPULAR_SYMBOLS[activeCategory] || []).find(s =>
+    const allSymbols = POPULAR_SYMBOLS[activeCategory] || [];
+    const match = allSymbols.find(s =>
       s.shortName.toLowerCase() === trimmed.toLowerCase() ||
       s.symbol.toLowerCase() === trimmed.toLowerCase() ||
       s.name.toLowerCase() === trimmed.toLowerCase()
     );
 
     if (match) {
+      // Exact match in curated list → go to detail directly
       setTvSelectedSymbol({ ...match, category: activeCategory });
-    } else {
-      // Use as-is – TradingView will resolve it automatically
+      setDynamicSymbols([]);
+    } else if (trimmed.includes(':')) {
+      // User specified exchange explicitly (e.g. "TSE:7974") → go directly
       const symbol = trimmed.toUpperCase();
       setTvSelectedSymbol({
         symbol,
@@ -1609,8 +1827,33 @@ export default function MarketPrices() {
         shortName: symbol.split(':').pop() || symbol,
         category: activeCategory,
       });
+      setDynamicSymbols([]);
+    } else if (selectedExchange) {
+      // Exchange filter active → prepend exchange prefix
+      const symbol = `${selectedExchange}:${trimmed.toUpperCase()}`;
+      setTvSelectedSymbol({
+        symbol,
+        name: trimmed.toUpperCase(),
+        shortName: trimmed.toUpperCase(),
+        category: activeCategory,
+      });
+      setDynamicSymbols([]);
+    } else {
+      // "All" selected, no colon → multi-exchange search: generate cards for multiple exchanges
+      const exchanges = (EXCHANGES[activeCategory] || [])
+        .filter(e => e.prefix) // skip the "All" entry
+        .map(e => e.prefix);
+      const ticker = trimmed.toUpperCase();
+      const generated = exchanges.map(prefix => ({
+        symbol: `${prefix}:${ticker}`,
+        name: `${ticker} (${prefix})`,
+        shortName: ticker,
+        _dynamic: true,
+      }));
+      setDynamicSymbols(generated);
+      setTvSelectedSymbol(null);
     }
-  }, [activeCategory]);
+  }, [activeCategory, selectedExchange]);
 
   /* ─── Render : Crypto Content ─── */
   const renderCryptoContent = () => {
@@ -2113,6 +2356,8 @@ export default function MarketPrices() {
   const renderTradingViewContent = (categoryId) => {
     const symbols = filteredTvSymbols;
     const tv = t?.tradingView || {};
+    const ex = tv?.exchanges || {};
+    const exchanges = EXCHANGES[categoryId] || [];
 
     return (
       <>
@@ -2122,12 +2367,38 @@ export default function MarketPrices() {
           {tv.currencyNote || 'Prices are displayed in the native exchange currency (primarily USD). Data provided by TradingView.'}
         </CurrencyNote>
 
+        {/* Exchange Selector */}
+        {exchanges.length > 1 && (
+          <ExchangeRow>
+            {exchanges.map(exc => {
+              const label = ex[exc.labelKey] || exc.labelKey;
+              return (
+                <ExchangeChip
+                  key={exc.prefix}
+                  theme={theme}
+                  $active={selectedExchange === exc.prefix}
+                  onClick={() => { setSelectedExchange(exc.prefix); setDynamicSymbols([]); setVisibleCount(9); }}
+                  title={exc.prefix ? `${exc.prefix}:` : ''}
+                >
+                  <span className="flag">{exc.flag}</span>
+                  {label}
+                  {exc.prefix ? <ExchangePrefix>{exc.prefix}:</ExchangePrefix> : null}
+                </ExchangeChip>
+              );
+            })}
+          </ExchangeRow>
+        )}
+
         {/* Search */}
         <SearchContainer>
           <SearchIcon2 theme={theme}><Search /></SearchIcon2>
           <SearchInput
             theme={theme}
-            placeholder={tv.searchPlaceholder || 'Search symbol (e.g. AAPL, SPY, GOLD)...'}
+            placeholder={
+              selectedExchange
+                ? `${selectedExchange}: ${tv.searchPlaceholder || 'Search by name or symbol...'}`
+                : (tv.searchPlaceholder || 'Search by name or symbol (e.g. AAPL, NASDAQ:TSLA)...')
+            }
             value={tvSearchQuery}
             onChange={e => setTvSearchQuery(e.target.value)}
             onKeyDown={e => {
@@ -2139,61 +2410,144 @@ export default function MarketPrices() {
         </SearchContainer>
 
         <TvSearchHint theme={theme}>
-          {tv.searchHint || 'Type a symbol and press Enter to view details, or click a card below'}
+          {selectedExchange
+            ? (tv.exchangeSearchHint
+              || `Searching on ${selectedExchange}. Type a symbol and press Enter.`
+            ).replace('{exchange}', selectedExchange)
+            : (tv.searchHint || 'Search by name in the list below, or type a symbol and press Enter to load it directly from TradingView')
+          }
         </TvSearchHint>
 
         {/* Results count */}
         <SortRow>
           <ResultsCount theme={theme}>
-            {symbols.filter(s => !failedSymbols.has(s.symbol)).length} {t.assetsFound || 'assets'}
+            {/* Show count of curated + dynamic results, minus failed */}
+            {(dynamicSymbols.length > 0
+              ? dynamicSymbols.filter(s => !failedSymbols.has(s.symbol)).length
+              : symbols.filter(s => !failedSymbols.has(s.symbol)).length
+            )} {t.assetsFound || 'assets'}
+            {dynamicSymbols.length > 0 && (
+              <span
+                style={{ marginLeft: '0.75rem', cursor: 'pointer', opacity: 0.6, textDecoration: 'underline' }}
+                onClick={() => { setDynamicSymbols([]); setTvSearchQuery(''); setVisibleCount(9); }}
+              >
+                {tv.clearSearch || '✕ Clear search'}
+              </span>
+            )}
           </ResultsCount>
         </SortRow>
 
-        {/* Symbol Grid – Mini Symbol Overview widgets */}
-        {symbols.filter(s => !failedSymbols.has(s.symbol)).length > 0 ? (
-          <AssetsGrid>
-            {symbols.filter(s => !failedSymbols.has(s.symbol)).map(sym => (
-              <TvCardWrapper
-                key={sym.symbol}
-                theme={theme}
-                onClick={() => setTvSelectedSymbol({ ...sym, category: categoryId })}
-              >
-                <TradingViewWidget
-                  type="mini-symbol-overview"
-                  nonInteractive
-                  showSkeleton
-                  onError={() => setFailedSymbols(prev => new Set([...prev, sym.symbol]))}
-                  config={{
-                    symbol: sym.symbol,
-                    width: '100%',
-                    height: 170,
-                    locale: tvLocale,
-                    dateRange: '12M',
-                    colorTheme: tvColorTheme,
-                    isTransparent: true,
-                    autosize: false,
-                    largeChartUrl: '',
-                  }}
-                  height={170}
-                  borderRadius="14px"
-                />
-                <TvCardOverlay theme={theme}>
-                  <span>{tv.viewDetails || 'View Details'} →</span>
-                </TvCardOverlay>
-              </TvCardWrapper>
-            ))}
-          </AssetsGrid>
-        ) : (
-          <ErrorContainer theme={theme}>
-            <h3>{t.noResults || 'No results'}</h3>
-            <p>
-              {tvSearchQuery
-                ? (tv.noMatchHint || 'Press Enter to search for this symbol on TradingView')
-                : (t.noResultsDescription || 'No assets match your search.')
-              }
-            </p>
-          </ErrorContainer>
-        )}
+        {/* Dynamic multi-exchange search results (generated when user searches on "All") */}
+        {dynamicSymbols.length > 0 ? (() => {
+          const available = dynamicSymbols.filter(s => !failedSymbols.has(s.symbol));
+          const visible = available.slice(0, visibleCount);
+          const hasMore = available.length > visibleCount;
+          return (
+            <>
+              <AssetsGrid>
+                {visible.map(sym => (
+                  <TvCardWrapper
+                    key={sym.symbol}
+                    theme={theme}
+                    onClick={() => setTvSelectedSymbol({ ...sym, category: categoryId })}
+                  >
+                    <TradingViewWidget
+                      type="mini-symbol-overview"
+                      nonInteractive
+                      showSkeleton
+                      onError={() => setFailedSymbols(prev => new Set([...prev, sym.symbol]))}
+                      config={{
+                        symbol: sym.symbol,
+                        width: '100%',
+                        height: 170,
+                        locale: tvLocale,
+                        dateRange: '12M',
+                        colorTheme: tvColorTheme,
+                        isTransparent: true,
+                        autosize: false,
+                        largeChartUrl: '',
+                      }}
+                      height={170}
+                      borderRadius="14px"
+                    />
+                    <TvCardOverlay theme={theme}>
+                      <span>{tv.viewDetails || 'View Details'} →</span>
+                    </TvCardOverlay>
+                  </TvCardWrapper>
+                ))}
+              </AssetsGrid>
+              {hasMore && (
+                <ShowMoreButton
+                  theme={theme}
+                  onClick={() => setVisibleCount(prev => prev + 9)}
+                >
+                  {tv.showMore || 'Show more'}
+                  <span className="count">({available.length - visibleCount})</span>
+                </ShowMoreButton>
+              )}
+            </>
+          );
+        })() : (() => {
+          const available = symbols.filter(s => !failedSymbols.has(s.symbol));
+          const visible = available.slice(0, visibleCount);
+          const hasMore = available.length > visibleCount;
+          return available.length > 0 ? (
+            <>
+              {/* Curated symbols grid */}
+              <AssetsGrid>
+                {visible.map(sym => (
+                  <TvCardWrapper
+                    key={sym.symbol}
+                    theme={theme}
+                    onClick={() => setTvSelectedSymbol({ ...sym, category: categoryId })}
+                  >
+                    <TradingViewWidget
+                      type="mini-symbol-overview"
+                      nonInteractive
+                      showSkeleton
+                      onError={() => setFailedSymbols(prev => new Set([...prev, sym.symbol]))}
+                      config={{
+                        symbol: sym.symbol,
+                        width: '100%',
+                        height: 170,
+                        locale: tvLocale,
+                        dateRange: '12M',
+                        colorTheme: tvColorTheme,
+                        isTransparent: true,
+                        autosize: false,
+                        largeChartUrl: '',
+                      }}
+                      height={170}
+                      borderRadius="14px"
+                    />
+                    <TvCardOverlay theme={theme}>
+                      <span>{tv.viewDetails || 'View Details'} →</span>
+                    </TvCardOverlay>
+                  </TvCardWrapper>
+                ))}
+              </AssetsGrid>
+              {hasMore && (
+                <ShowMoreButton
+                  theme={theme}
+                  onClick={() => setVisibleCount(prev => prev + 9)}
+                >
+                  {tv.showMore || 'Show more'}
+                  <span className="count">({available.length - visibleCount})</span>
+                </ShowMoreButton>
+              )}
+            </>
+          ) : (
+            <ErrorContainer theme={theme}>
+              <h3>{t.noResults || 'No results'}</h3>
+              <p>
+                {tvSearchQuery
+                  ? (tv.noMatchHint || 'No match in the curated list. Press Enter to search this symbol directly on TradingView')
+                  : (t.noResultsDescription || 'No assets match your search.')
+                }
+              </p>
+            </ErrorContainer>
+          );
+        })()}
       </>
     );
   };
@@ -2397,6 +2751,9 @@ export default function MarketPrices() {
                     setTvSelectedSymbol(null);
                     setTvSearchQuery('');
                     setShowAdvancedChart(false);
+                    setSelectedExchange('');
+                    setDynamicSymbols([]);
+                    setVisibleCount(9);
                   }
                 }}
               >

@@ -6,7 +6,17 @@ type CoinCachedData = {
         name: string,
         image: string,
         current: number,
-        sparkline: number[]
+        marketCap: number,
+        totalVolume: number,
+        change24h: number,
+        circulatingSupply: number,
+        marketCapRank: number,
+        ath: number,
+        athDate: string,
+        atl: number,
+        atlDate: string,
+        sparkline: number[],
+        lastUpdated: string
     }
 }
 
@@ -32,8 +42,24 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
 
     let res_data = await res.json()
     let data: CoinCachedData = {}
-    for (let coin of res_data)
-        data[coin.id] = {name: coin.name, image: coin.image, current: coin.current_price, sparkline: coin.sparkline_in_7d.price}
+    for (let coin of res_data) {
+        data[coin.id] = {
+            name: coin.name,
+            image: coin.image,
+            current: coin.current_price,
+            totalVolume: coin.total_volume,
+            marketCap: coin.market_cap,
+            change24h: coin.price_change_24h,
+            circulatingSupply: coin.circulating_supply,
+            marketCapRank: coin.market_cap_rank,
+            ath: coin.ath,
+            athDate: coin.ath_date,
+            atl: coin.atl,
+            atlDate: coin.atl_date,
+            sparkline: coin.sparkline_in_7d.price,
+            lastUpdated: coin.last_updated
+        }
+    }
 
     console.log("Crypto prices fetched")
 

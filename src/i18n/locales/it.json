@@ -873,7 +873,9 @@
                 "noExpenses": "Nessuna spesa registrata",
                 "avgSimilar": "Media Utenti Simili",
                 "avgAll": "Media Tutti gli Utenti"
-            }
+            },
+            "showMore": "Mostra tutto",
+            "showLess": "Riduci"
         },
         "insights": {
             "betterThan": "Stai andando meglio del",

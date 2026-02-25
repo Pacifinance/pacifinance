@@ -873,7 +873,9 @@
                 "noExpenses": "No expenses recorded",
                 "avgSimilar": "Similar Users Avg",
                 "avgAll": "All Users Avg"
-            }
+            },
+            "showMore": "Show all",
+            "showLess": "Show less"
         },
         "insights": {
             "betterThan": "You're doing better than",

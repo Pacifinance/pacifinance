@@ -213,12 +213,12 @@ export default function NewLandingContent({ theme }) {
       {/* Features Section */}
       <section
         id="features"
-        className="py-12 md:py-20 px-4"
+        className="py-10 md:py-16 px-4"
         style={{ backgroundColor: theme.primaryColor }}
       >
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-10 md:mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 md:mb-6">
               {translations.landing.new.features.title.split('PaciFinance')[0]}
               <span style={{ color: theme.secondaryColor }}>PaciFinance</span>
@@ -230,10 +230,10 @@ export default function NewLandingContent({ theme }) {
           </div>
 
           {/* Features Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-5">
             {/* Feature 1 - Privacy */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -243,16 +243,16 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <ShieldIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <ShieldIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.privacy.title}</h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.privacy.title}</h3>
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.privacy.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.privacy.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -261,7 +261,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 2 - Analytics */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -271,16 +271,16 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <AnalyticsIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <AnalyticsIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.analytics.title}</h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.analytics.title}</h3>
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.analytics.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.analytics.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -289,7 +289,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 3 - Comparisons */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -299,18 +299,18 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <CompareArrowsIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <CompareArrowsIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">
                 {translations.landing.new.features.comparisons.title}
               </h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.comparisons.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.comparisons.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -319,7 +319,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 4 - Investment Tracking */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -329,16 +329,16 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <TrendingUpIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <TrendingUpIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.investment.title}</h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.investment.title}</h3>
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.investment.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.investment.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -347,7 +347,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 5 - Free Forever */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -357,16 +357,16 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <PaidIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <PaidIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.free.title}</h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.free.title}</h3>
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.free.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.free.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -375,7 +375,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 6 - Security */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -385,16 +385,16 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <VisibilityOffIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <VisibilityOffIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.security.title}</h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.security.title}</h3>
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.security.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.security.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -403,7 +403,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 7 - Market Prices */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -413,16 +413,16 @@ export default function NewLandingContent({ theme }) {
               }}
             >
               <div
-                className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300"
+                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300"
                 style={{ backgroundColor: theme.secondaryColor }}
               >
-                <ShowChartIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
+                <ShowChartIcon className="text-white" sx={{ fontSize: { xs: 20, md: 24 } }} />
               </div>
-              <h3 className="text-lg md:text-2xl font-bold mb-2 md:mb-4">{translations.landing.new.features.marketPrices.title}</h3>
-              <p className="opacity-80 mb-3 md:mb-4 text-sm md:text-base">
+              <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.marketPrices.title}</h3>
+              <p className="opacity-80 mb-2 md:mb-3 text-sm">
                 {translations.landing.new.features.marketPrices.description}
               </p>
-              <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm opacity-70">
+              <ul className="space-y-1 md:space-y-1.5 text-xs md:text-sm opacity-70">
                 {translations.landing.new.features.marketPrices.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -431,7 +431,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 8 - Multi-Currency Support */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 sm:col-span-2 lg:col-span-3"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -448,8 +448,8 @@ export default function NewLandingContent({ theme }) {
                   <CurrencyExchangeIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
                 </div>
                 <div className="text-center md:text-left flex-1">
-                  <h3 className="text-lg md:text-2xl font-bold mb-1.5 md:mb-2">{translations.landing.new.features.currencies.title}</h3>
-                  <p className="opacity-80 mb-2 md:mb-3 text-sm md:text-base">
+                  <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.currencies.title}</h3>
+                  <p className="opacity-80 mb-2 md:mb-3 text-sm">
                     {translations.landing.new.features.currencies.description}
                   </p>
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
@@ -480,7 +480,7 @@ export default function NewLandingContent({ theme }) {
 
             {/* Feature 9 - CSV/Excel Import */}
             <div
-              className="group p-5 md:p-8 rounded-2xl border border-opacity-20 hover:shadow-xl transition-all duration-300 sm:col-span-2 lg:col-span-3"
+              className="group p-4 md:p-6 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 w-full"
               style={{
                 borderColor: theme.secondaryColor,
                 backgroundColor:
@@ -497,8 +497,8 @@ export default function NewLandingContent({ theme }) {
                   <UploadFileIcon className="text-white" sx={{ fontSize: { xs: 24, md: 30 } }} />
                 </div>
                 <div className="text-center md:text-left flex-1">
-                  <h3 className="text-lg md:text-2xl font-bold mb-1.5 md:mb-2">{translations.landing.new.features.import.title}</h3>
-                  <p className="opacity-80 mb-2 md:mb-3 text-sm md:text-base">
+                  <h3 className="text-base md:text-lg font-bold mb-1.5 md:mb-2">{translations.landing.new.features.import.title}</h3>
+                  <p className="opacity-80 mb-2 md:mb-3 text-sm">
                     {translations.landing.new.features.import.description}
                   </p>
                   <div className="flex flex-wrap gap-3 justify-center md:justify-start">

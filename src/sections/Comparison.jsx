@@ -48,6 +48,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import StarIcon from '@mui/icons-material/Star';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -58,45 +60,43 @@ import Leaderboard from './Leaderboard';
 const ComparisonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: 1rem;
   max-width: 1400px;
   margin: 0 auto;
-  min-height: 150vh;
-  padding-bottom: 60vh;
+  padding-bottom: 6rem;
   
   @media (max-width: 768px) {
     padding: 0.5rem;
-    gap: 1.5rem;
-    min-height: 130vh;
-    padding-bottom: 50vh;
+    gap: 1.25rem;
+    padding-bottom: 4rem;
   }
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   
   h1 {
     background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-size: 2.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     
     @media (max-width: 768px) {
-      font-size: 2rem;
+      font-size: 1.5rem;
     }
   }
   
   p {
     color: ${props => props.theme.textColor};
-    font-size: 1.1rem;
+    font-size: 1rem;
     
     @media (max-width: 768px) {
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
   }
 `;
@@ -147,30 +147,100 @@ const TabButton = styled.button`
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
+  }
+`;
+
+const TopGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+`;
+
+const BottomGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+`;
+
+const ExpandableCardContent = styled.div`
+  max-height: ${props => props.expanded ? 'none' : '280px'};
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.35s ease;
+  
+  ${props => !props.expanded && `
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(transparent, ${props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'});
+      pointer-events: none;
+    }
+  `}
+`;
+
+const ExpandToggle = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.4rem 0;
+  margin-top: 0.25rem;
+  background: none;
+  border: none;
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
+  color: ${props => props.theme.buttonBackgroundColor};
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  
+  &:hover {
+    opacity: 0.8;
   }
 `;
 
 const ComparisonCard = styled.div`
   background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'};
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   border: 1px solid ${props => props.theme.borderColor || 'transparent'};
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   font-weight: 500;
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   }
   
   &::before {
@@ -179,8 +249,10 @@ const ComparisonCard = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: ${props => props.accent || props.theme.buttonBackgroundColor};
+    opacity: 0.7;
+    border-radius: 0 0 2px 2px;
   }
   
   @media (max-width: 768px) {
@@ -192,11 +264,11 @@ const CardHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   
   h3 {
     color: ${props => props.theme.textColor};
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 600;
     margin: 0;
     display: flex;
@@ -284,11 +356,11 @@ const ComingSoonCard = styled(ComparisonCard)`
 `;
 
 const InsightCard = styled.div`
-  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}15 0%, ${props => props.theme.buttonBackgroundColor}05 100%);
+  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}10 0%, ${props => props.theme.buttonBackgroundColor}05 100%);
   border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1rem 0;
-  border-left: 4px solid ${props => props.theme.buttonBackgroundColor};
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  border-left: 3px solid ${props => props.theme.buttonBackgroundColor}aa;
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   
   h4 {
@@ -354,10 +426,10 @@ const SavingsRateDisplay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
   
   .rate-value {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: ${props => props.positive ? '#27ae60' : props.negative ? '#e74c3c' : props.theme.textColor};
     display: flex;
@@ -365,12 +437,12 @@ const SavingsRateDisplay = styled.div`
     gap: 0.25rem;
     
     span {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
   }
   
   .rate-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'};
     margin-top: 0.25rem;
   }
@@ -415,24 +487,24 @@ const CategoryBar = styled.div`
 `;
 
 const ProfileBanner = styled.div`
-  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}20 0%, ${props => props.theme.buttonBackgroundColor}10 100%);
-  border: 2px solid ${props => props.theme.buttonBackgroundColor}40;
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}15 0%, ${props => props.theme.buttonBackgroundColor}08 100%);
+  border: 1px solid ${props => props.theme.buttonBackgroundColor}30;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
   position: relative;
   overflow: hidden;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px ${props => props.theme.buttonBackgroundColor}30;
-    border-color: ${props => props.theme.buttonBackgroundColor}60;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px ${props => props.theme.buttonBackgroundColor}20;
+    border-color: ${props => props.theme.buttonBackgroundColor}50;
   }
   
   &::before {
@@ -441,28 +513,29 @@ const ProfileBanner = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}aa);
+    height: 3px;
+    background: linear-gradient(90deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}88);
+    opacity: 0.6;
   }
   
   @media (max-width: 768px) {
     flex-direction: column;
     text-align: center;
-    padding: 1.5rem;
-    gap: 1rem;
+    padding: 1rem;
+    gap: 0.75rem;
   }
 `;
 
 const BannerIcon = styled.div`
   background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
   border-radius: 50%;
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px ${props => props.theme.buttonBackgroundColor}40;
-  min-width: 80px;
-  height: 80px;
+  box-shadow: 0 4px 12px ${props => props.theme.buttonBackgroundColor}30;
+  min-width: 56px;
+  height: 56px;
 `;
 
 const BannerContent = styled.div`
@@ -470,23 +543,23 @@ const BannerContent = styled.div`
   
   h3 {
     color: ${props => props.theme.textColor};
-    font-size: 1.4rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.35rem 0;
     
     @media (max-width: 768px) {
-      font-size: 1.2rem;
+      font-size: 1.05rem;
     }
   }
   
   p {
     color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.5;
     margin: 0;
     
     @media (max-width: 768px) {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
   }
 `;
@@ -509,37 +582,37 @@ const BannerAction = styled.div`
 const RankingsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
   max-width: none;
   
   @media (max-width: 768px) {
-    gap: 1.5rem;
+    gap: 1rem;
   }
 `;
 
 const RankingsHeader = styled.div`
   text-align: center;
-  background: linear-gradient(135deg, ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.9)'} 0%, ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.9)' : '#f8fafc'} 100%);
-  border-radius: 24px;
-  padding: 2rem;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
-  box-shadow: ${props => props.theme.mode === 'dark' ? '0 10px 15px -3px rgba(0, 0, 0, 0.4)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)'};
+  background: linear-gradient(135deg, ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.6)' : 'rgba(255, 255, 255, 0.85)'} 0%, ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.7)' : '#f8fafc'} 100%);
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.25)' : 'rgba(156, 163, 175, 0.15)'};
+  box-shadow: ${props => props.theme.mode === 'dark' ? '0 4px 10px -2px rgba(0, 0, 0, 0.3)' : '0 2px 8px -2px rgba(0, 0, 0, 0.08)'};
   
   h2 {
     color: ${props => props.theme.textColor};
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.6rem;
     
     @media (max-width: 768px) {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
   }
   
@@ -562,49 +635,49 @@ const RankingsHeader = styled.div`
 const RankingsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1.25rem;
   width: 100%;
   
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 `;
 
 const RankingGroup = styled.div`
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.6)' : 'rgba(255, 255, 255, 0.8)'};
-  border-radius: 20px;
-  padding: 2rem;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'};
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.25)' : 'rgba(156, 163, 175, 0.15)'};
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: ${props => props.theme.mode === 'dark' ? '0 20px 25px -5px rgba(0, 0, 0, 0.6)' : '0 10px 25px -3px rgba(0, 0, 0, 0.1)'};
+    transform: translateY(-2px);
+    box-shadow: ${props => props.theme.mode === 'dark' ? '0 10px 20px -4px rgba(0, 0, 0, 0.4)' : '0 6px 16px -3px rgba(0, 0, 0, 0.08)'};
   }
   
   .group-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.25)' : 'rgba(156, 163, 175, 0.15)'};
     
     .icon-container {
       background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
       border-radius: 50%;
-      padding: 1rem;
+      padding: 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 16px ${props => props.theme.buttonBackgroundColor}30;
+      box-shadow: 0 4px 10px ${props => props.theme.buttonBackgroundColor}25;
     }
     
     h3 {
       color: ${props => props.theme.textColor};
-      font-size: 1.4rem;
+      font-size: 1.15rem;
       font-weight: 700;
       margin: 0;
     }
@@ -613,26 +686,26 @@ const RankingGroup = styled.div`
 
 const RankingCard = styled.div`
   background: ${props => {
-    if (props.isTop) return `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}20, ${props.theme.buttonBackgroundColor}10)`;
-    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.05)';
-    return props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.2)' : 'rgba(243, 244, 246, 0.8)';
+    if (props.isTop) return `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}15, ${props.theme.buttonBackgroundColor}08)`;
+    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.06)' : 'rgba(99, 102, 241, 0.04)';
+    return props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.15)' : 'rgba(243, 244, 246, 0.7)';
   }};
-  border: 2px solid ${props => {
-    if (props.isTop) return props.theme.buttonBackgroundColor + '40';
-    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)';
+  border: 1px solid ${props => {
+    if (props.isTop) return props.theme.buttonBackgroundColor + '30';
+    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.15)';
     return 'transparent';
   }};
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.65rem;
+  transition: all 0.25s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   
   &:hover {
-    transform: translateX(4px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateX(3px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
   }
   
   &::before {
@@ -641,11 +714,12 @@ const RankingCard = styled.div`
     left: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 3px;
+    opacity: 0.7;
     background: ${props => {
-      if (props.isTop) return `linear-gradient(180deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}cc)`;
+      if (props.isTop) return `linear-gradient(180deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}aa)`;
       if (props.isLow) return 'linear-gradient(180deg, #6366f1, #4f46e5)';
-      return 'linear-gradient(180deg, #6b7280, #4b5563)';
+      return 'linear-gradient(180deg, #9ca3af, #6b7280)';
     }};
   }
   
@@ -653,16 +727,16 @@ const RankingCard = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     
     h4 {
       color: ${props => props.theme.textColor};
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       margin: 0;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
     
     .rank-badge {
@@ -683,8 +757,8 @@ const RankingCard = styled.div`
   }
   
   .rank-description {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    font-size: 0.95rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'};
+    font-size: 0.85rem;
     line-height: 1.4;
     margin: 0;
   }
@@ -697,9 +771,9 @@ const MotivationalPopup = styled.div`
   transform: translate(-50%, -50%);
   background: ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
   backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 2.5rem;
-  max-width: 500px;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 440px;
   width: 90%;
   border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
   box-shadow: ${props => props.theme.mode === 'dark' ? '0 25px 50px -12px rgba(0, 0, 0, 0.8)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'};
@@ -719,22 +793,22 @@ const MotivationalPopup = styled.div`
   }
   
   .popup-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
   }
   
   h3 {
     color: ${props => props.theme.textColor};
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.75rem 0;
   }
   
   p {
     color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.5;
-    margin: 0 0 2rem 0;
+    margin: 0 0 1.5rem 0;
   }
   
   button {
@@ -768,6 +842,7 @@ function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
     const [activeTab, setActiveTab] = useState('insights');
+    const [expandedCards, setExpandedCards] = useState({});
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
     const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
     const navigate = useLocalizedNavigate();
@@ -1027,10 +1102,14 @@ function Comparison({ theme, userData, isHidden}) {
         </ProfileBanner>
     );
 
+    const toggleCardExpand = (cardId) => {
+        setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
+    };
+
     const renderInsightsTab = () => (
         <>
             {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
-            <GridContainer>
+            <TopGrid>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
                         <h3><AccountBalanceIcon /> {translations.comparison.cards.avgBalance.title}</h3>
@@ -1188,7 +1267,9 @@ function Comparison({ theme, userData, isHidden}) {
                         </div>
                     )}
                 </ComparisonCard>
+            </TopGrid>
 
+            <BottomGrid>
                 {/* Asset Allocation Card */}
                 <ComparisonCard theme={theme} accent="#16a085">
                     <CardHeader theme={theme}>
@@ -1198,36 +1279,49 @@ function Comparison({ theme, userData, isHidden}) {
                         </Tooltip>
                     </CardHeader>
                     {assetAllocation.length > 0 ? (
-                        <ProgressBarContainer>
-                            {assetAllocation.map((asset, index) => (
-                                <ProgressBarRow key={index} theme={theme}>
-                                    <span className="label">{asset.name}</span>
-                                    <div className="bar-wrapper">
-                                        <div 
-                                            className="bar-fill" 
-                                            style={{ 
-                                                width: `${asset.percentage}%`, 
-                                                background: asset.color 
-                                            }} 
-                                        />
+                        <>
+                            <ExpandableCardContent expanded={expandedCards['assets']} theme={theme}>
+                                <ProgressBarContainer>
+                                    {assetAllocation.map((asset, index) => (
+                                        <ProgressBarRow key={index} theme={theme}>
+                                            <span className="label">{asset.name}</span>
+                                            <div className="bar-wrapper">
+                                                <div 
+                                                    className="bar-fill" 
+                                                    style={{ 
+                                                        width: `${asset.percentage}%`, 
+                                                        background: asset.color 
+                                                    }} 
+                                                />
+                                            </div>
+                                            <span className="percentage">
+                                                {isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}
+                                            </span>
+                                        </ProgressBarRow>
+                                    ))}
+                                    <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'}` }}>
+                                        {assetAllocation.map((asset, index) => (
+                                            <CategoryBar key={index} theme={theme}>
+                                                <div className="color-dot" style={{ background: asset.color }} />
+                                                <span className="category-name">{asset.name}</span>
+                                                <span className="category-value">
+                                                    {isHidden ? '****' : formatCurrency(asset.value)}
+                                                </span>
+                                            </CategoryBar>
+                                        ))}
                                     </div>
-                                    <span className="percentage">
-                                        {isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}
-                                    </span>
-                                </ProgressBarRow>
-                            ))}
-                            <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'}` }}>
-                                {assetAllocation.map((asset, index) => (
-                                    <CategoryBar key={index} theme={theme}>
-                                        <div className="color-dot" style={{ background: asset.color }} />
-                                        <span className="category-name">{asset.name}</span>
-                                        <span className="category-value">
-                                            {isHidden ? '****' : formatCurrency(asset.value)}
-                                        </span>
-                                    </CategoryBar>
-                                ))}
-                            </div>
-                        </ProgressBarContainer>
+                                </ProgressBarContainer>
+                            </ExpandableCardContent>
+                            {assetAllocation.length > 3 && (
+                                <ExpandToggle theme={theme} onClick={() => toggleCardExpand('assets')}>
+                                    {expandedCards['assets'] ? (
+                                        <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Riduci'}</>
+                                    ) : (
+                                        <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Mostra tutto'}</>
+                                    )}
+                                </ExpandToggle>
+                            )}
+                        </>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
                             {translations.comparison.cards.assetAllocation.noAssets}
@@ -1245,10 +1339,11 @@ function Comparison({ theme, userData, isHidden}) {
                     </CardHeader>
                     {spendingByCategory.length > 0 ? (
                         <>
-                            <div style={{ fontSize: '0.85rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', marginBottom: '0.5rem' }}>
-                                {translations.comparison.cards.spendingCategories.topCategories}
-                            </div>
-                            {spendingByCategory.slice(0, 5).map((category, index) => {
+                            <ExpandableCardContent expanded={expandedCards['spending']} theme={theme}>
+                                <div style={{ fontSize: '0.85rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', marginBottom: '0.5rem' }}>
+                                    {translations.comparison.cards.spendingCategories.topCategories}
+                                </div>
+                                {spendingByCategory.slice(0, 5).map((category, index) => {
                                 // Find the category index to look up averages
                                 const categoryIndex = userData?.tags?.outflowsTags?.find(
                                     t => t.translations?.en === category.name || t.translations?.it === category.name || t.label === category.name.toLowerCase()
@@ -1306,23 +1401,31 @@ function Comparison({ theme, userData, isHidden}) {
                                     </div>
                                 );
                             })}
-                            {spendingByCategory.length > 5 && (
-                                <>
-                                    <div style={{ fontSize: '0.8rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', marginTop: '0.75rem', marginBottom: '0.25rem' }}>
-                                        {translations.comparison.cards.spendingCategories.otherCategories} ({spendingByCategory.length - 5})
-                                    </div>
-                                    <CategoryBar theme={theme}>
-                                        <div className="color-dot" style={{ background: '#7f8c8d' }} />
-                                        <span className="category-name">{translations.comparison.cards.assetAllocation.other || 'Other'}</span>
-                                        <span className="category-value">
-                                            {isHidden ? '****' : formatCurrency(spendingByCategory.slice(5).reduce((sum, c) => sum + c.value, 0))}
-                                        </span>
-                                        <span className="category-percent">
-                                            {isHidden ? '**%' : `${spendingByCategory.slice(5).reduce((sum, c) => sum + c.percentage, 0).toFixed(0)}%`}
-                                        </span>
-                                    </CategoryBar>
-                                </>
-                            )}
+                                {spendingByCategory.length > 5 && (
+                                    <>
+                                        <div style={{ fontSize: '0.8rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', marginTop: '0.75rem', marginBottom: '0.25rem' }}>
+                                            {translations.comparison.cards.spendingCategories.otherCategories} ({spendingByCategory.length - 5})
+                                        </div>
+                                        <CategoryBar theme={theme}>
+                                            <div className="color-dot" style={{ background: '#7f8c8d' }} />
+                                            <span className="category-name">{translations.comparison.cards.assetAllocation.other || 'Other'}</span>
+                                            <span className="category-value">
+                                                {isHidden ? '****' : formatCurrency(spendingByCategory.slice(5).reduce((sum, c) => sum + c.value, 0))}
+                                            </span>
+                                            <span className="category-percent">
+                                                {isHidden ? '**%' : `${spendingByCategory.slice(5).reduce((sum, c) => sum + c.percentage, 0).toFixed(0)}%`}
+                                            </span>
+                                        </CategoryBar>
+                                    </>
+                                )}
+                            </ExpandableCardContent>
+                            <ExpandToggle theme={theme} onClick={() => toggleCardExpand('spending')}>
+                                {expandedCards['spending'] ? (
+                                    <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Riduci'}</>
+                                ) : (
+                                    <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Mostra tutto'}</>
+                                )}
+                            </ExpandToggle>
                         </>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
@@ -1330,7 +1433,7 @@ function Comparison({ theme, userData, isHidden}) {
                         </div>
                     )}
                 </ComparisonCard>
-            </GridContainer>
+            </BottomGrid>
 
             {generateInsights().map((insight, index) => (
                 <InsightCard key={index} theme={theme}>
@@ -1380,7 +1483,7 @@ function Comparison({ theme, userData, isHidden}) {
                 
                 <RankingsHeader theme={theme}>
                     <h2>
-                        <EmojiEventsIcon style={{ fontSize: '2.5rem', color: theme.buttonBackgroundColor }} />
+                        <EmojiEventsIcon style={{ fontSize: '1.8rem', color: theme.buttonBackgroundColor }} />
                         {translations.leaderboard.rankings.title}
                     </h2>
                     <div className="month-indicator">

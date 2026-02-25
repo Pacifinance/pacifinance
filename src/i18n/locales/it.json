@@ -2320,6 +2320,19 @@
             "athDate": "Data ATH",
             "atl": "Minimo Storico",
             "atlDate": "Data ATL"
+        },
+        "tradingView": {
+            "currencyNote": "I prezzi sono mostrati nella valuta nativa del mercato di riferimento (principalmente USD). Dati in ritardo di 15 minuti da TradingView.",
+            "searchPlaceholder": "Cerca simbolo (es. AAPL, SPY, GOLD)...",
+            "searchHint": "Digita un simbolo e premi Invio per i dettagli, oppure clicca una card qui sotto",
+            "viewDetails": "Vedi Dettagli",
+            "chart": "Grafico",
+            "profile": "Profilo",
+            "technicalAnalysis": "Analisi Tecnica",
+            "advancedChart": "Grafico Avanzato",
+            "showTraderChart": "Grafico Avanzato",
+            "hideTraderChart": "Nascondi Grafico Avanzato",
+            "noMatchHint": "Premi Invio per cercare questo simbolo su TradingView"
         }
     }
 }

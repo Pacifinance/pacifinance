@@ -6,6 +6,8 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import apiClient from '../services/apiClient';
 import mockCryptoData from '../data/mockCryptoData';
+import TradingViewWidget from '../components/TradingViewWidget';
+import { LazyTradingViewWidget } from '../components/TradingViewWidget';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip as ReTooltip,
   ResponsiveContainer, CartesianGrid
@@ -14,7 +16,7 @@ import {
   TrendingUp, TrendingDown, Minus, Search, RefreshCw,
   BarChart3, Bitcoin, Landmark, Gem, Briefcase, Lock,
   ArrowUpRight, ArrowDownRight, ChevronDown, ChevronUp,
-  Info, ArrowLeft, ChevronRight
+  Info, ArrowLeft, ChevronRight, Activity
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -941,6 +943,177 @@ const SortSelect = styled.select`
   }
 `;
 
+/* ─── TradingView Section Styled Components ─── */
+
+const TvCardWrapper = styled.div`
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid ${p => p.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.08)'
+    : 'rgba(0, 0, 0, 0.06)'
+  };
+  background: ${p => p.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.03)'
+    : 'rgba(255, 255, 255, 0.7)'
+  };
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${p => p.theme.mode === 'dark'
+      ? '0 8px 24px rgba(0, 0, 0, 0.35)'
+      : '0 8px 24px rgba(0, 0, 0, 0.08)'
+    };
+    border-color: ${p => p.theme.buttonBackgroundColor}40;
+  }
+
+  &:active {
+    transform: translateY(0px);
+  }
+
+  @media (max-width: 768px) {
+    border-radius: 12px;
+    &:hover { transform: none; }
+  }
+`;
+
+const TvCardOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.6rem;
+  background: linear-gradient(
+    transparent,
+    ${p => p.theme.mode === 'dark' ? 'rgba(0,0,0,0.75)' : 'rgba(0,0,0,0.45)'}
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+
+  span {
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.3rem 0.85rem;
+    background: ${p => p.theme.buttonBackgroundColor};
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+  }
+
+  ${TvCardWrapper}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+    background: linear-gradient(
+      transparent 20%,
+      ${p => p.theme.mode === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.3)'}
+    );
+    padding: 0.4rem;
+
+    span {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.65rem;
+    }
+  }
+`;
+
+const CurrencyNote = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)'};
+  margin-bottom: 1.25rem;
+  padding: 0.6rem 1rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)'};
+  border-radius: 10px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+  text-align: center;
+  line-height: 1.4;
+
+  svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.75rem;
+  }
+`;
+
+const TvSearchHint = styled.div`
+  text-align: center;
+  font-size: 0.72rem;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
+  margin-top: -0.75rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.66rem;
+    margin-bottom: 1rem;
+  }
+`;
+
+const TraderToggle = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.25rem;
+
+  border: 1px solid ${p => p.$active
+    ? p.theme.buttonBackgroundColor
+    : p.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.12)'
+      : 'rgba(0,0,0,0.08)'
+  };
+
+  background: ${p => p.$active
+    ? `${p.theme.buttonBackgroundColor}15`
+    : p.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.04)'
+      : 'rgba(0,0,0,0.02)'
+  };
+
+  color: ${p => p.$active
+    ? p.theme.buttonBackgroundColor
+    : p.theme.mode === 'dark'
+      ? 'rgba(255,255,255,0.6)'
+      : 'rgba(0,0,0,0.5)'
+  };
+
+  svg { width: 18px; height: 18px; }
+
+  &:hover {
+    border-color: ${p => p.theme.buttonBackgroundColor};
+    color: ${p => p.theme.buttonBackgroundColor};
+    background: ${p => p.theme.buttonBackgroundColor}10;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.82rem;
+    padding: 0.65rem 1.25rem;
+  }
+`;
+
 /* ═══════════════════════════════════════════════════════════════
    Mini Sparkline SVG
    ═══════════════════════════════════════════════════════════════ */
@@ -1121,12 +1294,62 @@ DetailSparkline.displayName = 'DetailSparkline';
    ═══════════════════════════════════════════════════════════════ */
 
 const ASSET_CATEGORIES = [
-  { id: 'crypto',      icon: Bitcoin,    available: true  },
-  { id: 'etf',         icon: BarChart3,  available: false },
-  { id: 'stocks',      icon: Briefcase,  available: false },
-  { id: 'commodities', icon: Gem,        available: false },
-  { id: 'bonds',       icon: Landmark,   available: false },
+  { id: 'crypto',      icon: Bitcoin,    available: true,  type: 'custom'      },
+  { id: 'etf',         icon: BarChart3,  available: true,  type: 'tradingview' },
+  { id: 'stocks',      icon: Briefcase,  available: true,  type: 'tradingview' },
+  { id: 'commodities', icon: Gem,        available: true,  type: 'tradingview' },
+  { id: 'bonds',       icon: Landmark,   available: false, type: 'locked'      },
 ];
+
+/* ═══════════════════════════════════════════════════════════════
+   Popular Symbols per Category (TradingView)
+   ═══════════════════════════════════════════════════════════════ */
+
+const POPULAR_SYMBOLS = {
+  stocks: [
+    { symbol: 'NASDAQ:AAPL',  name: 'Apple',              shortName: 'AAPL' },
+    { symbol: 'NASDAQ:MSFT',  name: 'Microsoft',           shortName: 'MSFT' },
+    { symbol: 'NASDAQ:GOOGL', name: 'Alphabet (Google)',    shortName: 'GOOGL' },
+    { symbol: 'NASDAQ:AMZN',  name: 'Amazon',              shortName: 'AMZN' },
+    { symbol: 'NASDAQ:NVDA',  name: 'NVIDIA',              shortName: 'NVDA' },
+    { symbol: 'NASDAQ:TSLA',  name: 'Tesla',               shortName: 'TSLA' },
+    { symbol: 'NASDAQ:META',  name: 'Meta Platforms',       shortName: 'META' },
+    { symbol: 'NYSE:BRK.B',   name: 'Berkshire Hathaway',   shortName: 'BRK.B' },
+    { symbol: 'NYSE:JPM',     name: 'JPMorgan Chase',       shortName: 'JPM' },
+    { symbol: 'NYSE:V',       name: 'Visa',                shortName: 'V' },
+    { symbol: 'NYSE:JNJ',     name: 'Johnson & Johnson',    shortName: 'JNJ' },
+    { symbol: 'NYSE:WMT',     name: 'Walmart',             shortName: 'WMT' },
+  ],
+  etf: [
+    { symbol: 'AMEX:SPY',   name: 'SPDR S&P 500',                 shortName: 'SPY' },
+    { symbol: 'AMEX:VOO',   name: 'Vanguard S&P 500',              shortName: 'VOO' },
+    { symbol: 'NASDAQ:QQQ', name: 'Invesco QQQ (Nasdaq 100)',       shortName: 'QQQ' },
+    { symbol: 'AMEX:VTI',   name: 'Vanguard Total Stock Market',   shortName: 'VTI' },
+    { symbol: 'AMEX:VT',    name: 'Vanguard Total World Stock',    shortName: 'VT' },
+    { symbol: 'AMEX:ACWI',  name: 'iShares MSCI ACWI',             shortName: 'ACWI' },
+    { symbol: 'AMEX:VWO',   name: 'Vanguard Emerging Markets',     shortName: 'VWO' },
+    { symbol: 'AMEX:EFA',   name: 'iShares MSCI EAFE',             shortName: 'EFA' },
+    { symbol: 'AMEX:IWM',   name: 'iShares Russell 2000',          shortName: 'IWM' },
+    { symbol: 'AMEX:GLD',   name: 'SPDR Gold Trust',               shortName: 'GLD' },
+    { symbol: 'AMEX:BND',   name: 'Vanguard Total Bond Market',    shortName: 'BND' },
+    { symbol: 'AMEX:VNQ',   name: 'Vanguard Real Estate',          shortName: 'VNQ' },
+    { symbol: 'AMEX:SCHD',  name: 'Schwab US Dividend Equity',     shortName: 'SCHD' },
+    { symbol: 'AMEX:AGG',   name: 'iShares Core U.S. Aggregate',   shortName: 'AGG' },
+    { symbol: 'AMEX:ARKK',  name: 'ARK Innovation',                shortName: 'ARKK' },
+    { symbol: 'AMEX:XLF',   name: 'Financial Select SPDR',         shortName: 'XLF' },
+  ],
+  commodities: [
+    { symbol: 'TVC:GOLD',      name: 'Gold',          shortName: 'XAU' },
+    { symbol: 'TVC:SILVER',    name: 'Silver',        shortName: 'XAG' },
+    { symbol: 'NYMEX:CL1!',    name: 'Crude Oil WTI', shortName: 'CL' },
+    { symbol: 'NYMEX:NG1!',    name: 'Natural Gas',   shortName: 'NG' },
+    { symbol: 'TVC:PLATINUM',   name: 'Platinum',      shortName: 'XPT' },
+    { symbol: 'COMEX:HG1!',    name: 'Copper',        shortName: 'HG' },
+    { symbol: 'CBOT:ZW1!',     name: 'Wheat',         shortName: 'ZW' },
+    { symbol: 'CBOT:ZC1!',     name: 'Corn',          shortName: 'ZC' },
+  ],
+
+};
 
 /* ═══════════════════════════════════════════════════════════════
    Component
@@ -1134,7 +1357,7 @@ const ASSET_CATEGORIES = [
 
 export default function MarketPrices() {
   const { theme } = useContext(ThemeContext);
-  const { translations } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   const { isDemoMode } = useContext(UserContext);
   const t = translations?.marketPrices || {};
@@ -1147,6 +1370,15 @@ export default function MarketPrices() {
   const [sortBy, setSortBy] = useState('marketCap'); // marketCap | priceAsc | priceDesc | name
   const [selectedAsset, setSelectedAsset] = useState(null); // asset object or null
   const [detailTimeRange, setDetailTimeRange] = useState('7d'); // 24h | 7d | 30d | 90d | 6m | 1y | all
+
+  // TradingView states
+  const [tvSearchQuery, setTvSearchQuery] = useState('');
+  const [tvSelectedSymbol, setTvSelectedSymbol] = useState(null); // { symbol, name, shortName, category }
+  const [showAdvancedChart, setShowAdvancedChart] = useState(false);
+
+  // TradingView locale & theme (derived)
+  const tvLocale = language === 'it' ? 'it' : 'en';
+  const tvColorTheme = theme.mode === 'dark' ? 'dark' : 'light';
 
   /* ─── Fetch crypto data ─── */
   const fetchCrypto = useCallback(async () => {
@@ -1336,6 +1568,46 @@ export default function MarketPrices() {
 
   /* ─── Category label from translations ─── */
   const getCategoryLabel = (catId) => t?.categories?.[catId] || catId;
+
+  /* ─── TradingView: Filtered popular symbols ─── */
+  const filteredTvSymbols = useMemo(() => {
+    const symbols = POPULAR_SYMBOLS[activeCategory] || [];
+    if (!tvSearchQuery) return symbols;
+
+    const q = tvSearchQuery.toLowerCase();
+    return symbols.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.shortName.toLowerCase().includes(q) ||
+      s.symbol.toLowerCase().includes(q)
+    );
+  }, [activeCategory, tvSearchQuery]);
+
+  /* ─── TradingView: Handle symbol search submit ─── */
+  const handleTvSymbolSearch = useCallback((query) => {
+    if (!query.trim()) return;
+
+    const trimmed = query.trim();
+
+    // Check if it matches a popular symbol (by name, shortName, or full symbol)
+    const match = (POPULAR_SYMBOLS[activeCategory] || []).find(s =>
+      s.shortName.toLowerCase() === trimmed.toLowerCase() ||
+      s.symbol.toLowerCase() === trimmed.toLowerCase() ||
+      s.name.toLowerCase() === trimmed.toLowerCase()
+    );
+
+    if (match) {
+      setTvSelectedSymbol({ ...match, category: activeCategory });
+    } else {
+      // Use as-is – TradingView will resolve it automatically
+      const symbol = trimmed.toUpperCase();
+      setTvSelectedSymbol({
+        symbol,
+        name: symbol.split(':').pop() || symbol,
+        shortName: symbol.split(':').pop() || symbol,
+        category: activeCategory,
+      });
+    }
+  }, [activeCategory]);
 
   /* ─── Render : Crypto Content ─── */
   const renderCryptoContent = () => {
@@ -1834,6 +2106,245 @@ export default function MarketPrices() {
     </LockedSection>
   );
 
+  /* ─── Render : TradingView Grid Content (for non-crypto categories) ─── */
+  const renderTradingViewContent = (categoryId) => {
+    const symbols = filteredTvSymbols;
+    const tv = t?.tradingView || {};
+
+    return (
+      <>
+        {/* Currency Disclaimer */}
+        <CurrencyNote theme={theme}>
+          <Info size={14} />
+          {tv.currencyNote || 'Prices are displayed in the native exchange currency (primarily USD). Data provided by TradingView.'}
+        </CurrencyNote>
+
+        {/* Search */}
+        <SearchContainer>
+          <SearchIcon2 theme={theme}><Search /></SearchIcon2>
+          <SearchInput
+            theme={theme}
+            placeholder={tv.searchPlaceholder || 'Search symbol (e.g. AAPL, SPY, GOLD)...'}
+            value={tvSearchQuery}
+            onChange={e => setTvSearchQuery(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                handleTvSymbolSearch(tvSearchQuery);
+              }
+            }}
+          />
+        </SearchContainer>
+
+        <TvSearchHint theme={theme}>
+          {tv.searchHint || 'Type a symbol and press Enter to view details, or click a card below'}
+        </TvSearchHint>
+
+        {/* Results count */}
+        <SortRow>
+          <ResultsCount theme={theme}>
+            {symbols.length} {t.assetsFound || 'assets'}
+          </ResultsCount>
+        </SortRow>
+
+        {/* Symbol Grid – Mini Symbol Overview widgets (lazy loaded) */}
+        {symbols.length > 0 ? (
+          <AssetsGrid>
+            {symbols.map(sym => (
+              <TvCardWrapper
+                key={sym.symbol}
+                theme={theme}
+                onClick={() => setTvSelectedSymbol({ ...sym, category: categoryId })}
+              >
+                <TradingViewWidget
+                  type="mini-symbol-overview"
+                  nonInteractive
+                  config={{
+                    symbol: sym.symbol,
+                    width: '100%',
+                    height: 170,
+                    locale: tvLocale,
+                    dateRange: '12M',
+                    colorTheme: tvColorTheme,
+                    isTransparent: true,
+                    autosize: false,
+                    largeChartUrl: '',
+                  }}
+                  height={170}
+                  borderRadius="14px"
+                />
+                <TvCardOverlay theme={theme}>
+                  <span>{tv.viewDetails || 'View Details'} →</span>
+                </TvCardOverlay>
+              </TvCardWrapper>
+            ))}
+          </AssetsGrid>
+        ) : (
+          <ErrorContainer theme={theme}>
+            <h3>{t.noResults || 'No results'}</h3>
+            <p>
+              {tvSearchQuery
+                ? (tv.noMatchHint || 'Press Enter to search for this symbol on TradingView')
+                : (t.noResultsDescription || 'No assets match your search.')
+              }
+            </p>
+          </ErrorContainer>
+        )}
+      </>
+    );
+  };
+
+  /* ─── Render : TradingView Detail View ─── */
+  const renderTradingViewDetail = (symbolData) => {
+    const { symbol, name, shortName, category } = symbolData;
+    const td = t?.detail || {};
+    const tv = t?.tradingView || {};
+    const showProfile = category === 'stocks' || category === 'etf';
+
+    return (
+      <DetailOverlay>
+        <BackButton theme={theme} onClick={() => {
+          setTvSelectedSymbol(null);
+          setShowAdvancedChart(false);
+        }}>
+          <ArrowLeft />
+          {td.back || 'Back to list'}
+        </BackButton>
+
+        {/* Header – Symbol info */}
+        <DetailCard theme={theme}>
+          <DetailHeader>
+            <DetailNameBlock>
+              <DetailName theme={theme}>{name}</DetailName>
+              <DetailId theme={theme}>{symbol}</DetailId>
+            </DetailNameBlock>
+          </DetailHeader>
+        </DetailCard>
+
+        {/* Interactive Chart with Time Ranges */}
+        <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
+          <TradingViewWidget
+            type="symbol-overview"
+            config={{
+              symbols: [[symbol, name || shortName]],
+              chartOnly: false,
+              width: '100%',
+              height: 420,
+              locale: tvLocale,
+              colorTheme: tvColorTheme,
+              autosize: false,
+              showVolume: true,
+              hideDateRanges: false,
+              hideMarketStatus: false,
+              hideSymbolLogo: false,
+              scalePosition: 'right',
+              scaleMode: 'Normal',
+              fontFamily: '-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif',
+              noTimeScale: false,
+              valuesTracking: '1',
+              changeMode: 'price-and-percent',
+              chartType: 'area',
+              lineWidth: 2,
+              lineType: 0,
+              dateRanges: ['1d|1', '1m|30', '3m|60', '12m|1D', '60m|1W', 'all|1M'],
+              isTransparent: true,
+            }}
+            height={420}
+          />
+        </DetailCard>
+
+        {/* Company / ETF Profile (stocks & ETFs only) */}
+        {showProfile && (
+          <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
+            <DetailSectionTitle theme={theme} style={{ padding: '1rem 1.5rem 0' }}>
+              {tv.profile || 'Profile'}
+            </DetailSectionTitle>
+            <TradingViewWidget
+              type="symbol-profile"
+              config={{
+                width: '100%',
+                height: 480,
+                isTransparent: true,
+                colorTheme: tvColorTheme,
+                symbol,
+                locale: tvLocale,
+              }}
+              height={480}
+            />
+          </DetailCard>
+        )}
+
+        {/* Technical Analysis Gauge */}
+        <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
+          <DetailSectionTitle theme={theme} style={{ padding: '1rem 1.5rem 0' }}>
+            {tv.technicalAnalysis || 'Technical Analysis'}
+          </DetailSectionTitle>
+          <TradingViewWidget
+            type="technical-analysis"
+            config={{
+              interval: '1M',
+              width: '100%',
+              isTransparent: true,
+              height: 450,
+              symbol,
+              showIntervalTabs: true,
+              displayMode: 'single',
+              locale: tvLocale,
+              colorTheme: tvColorTheme,
+            }}
+            height={450}
+          />
+        </DetailCard>
+
+        {/* Trader Mode Toggle */}
+        <TraderToggle
+          theme={theme}
+          $active={showAdvancedChart}
+          onClick={() => setShowAdvancedChart(prev => !prev)}
+        >
+          <Activity />
+          {showAdvancedChart
+            ? (tv.hideTraderChart || 'Hide Advanced Chart')
+            : (tv.showTraderChart || 'Advanced Chart')
+          }
+        </TraderToggle>
+
+        {/* Advanced Chart (Trader Mode) */}
+        {showAdvancedChart && (
+          <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
+            <DetailSectionTitle theme={theme} style={{ padding: '1rem 1.5rem 0' }}>
+              {tv.advancedChart || 'Advanced Chart'}
+            </DetailSectionTitle>
+            <TradingViewWidget
+              type="advanced-chart"
+              config={{
+                symbol,
+                width: '100%',
+                height: 610,
+                interval: 'D',
+                timezone: 'Etc/UTC',
+                theme: tvColorTheme,
+                style: '1',
+                locale: tvLocale,
+                allow_symbol_change: true,
+                calendar: false,
+                hide_side_toolbar: false,
+                studies: ['STD;RSI'],
+                support_host: 'https://www.tradingview.com',
+              }}
+              height={610}
+            />
+          </DetailCard>
+        )}
+
+        {/* Currency Note (bottom) */}
+        <CurrencyNote theme={theme} style={{ marginTop: '0.75rem' }}>
+          <Info size={14} />
+          {tv.currencyNote || 'Prices shown in native exchange currency (mainly USD).'}
+        </CurrencyNote>
+      </DetailOverlay>
+    );
+  };
+
   /* ─── Main Render ─── */
   return (
     <PageContainer theme={theme}>
@@ -1845,7 +2356,7 @@ export default function MarketPrices() {
           {t.subtitle || 'Track real-time prices of crypto, ETFs, stocks and more'}
         </PageSubtitle>
 
-        {!loading && !error && cryptoData && (
+        {!loading && !error && cryptoData && activeCategory === 'crypto' && (
           <LastUpdated theme={theme}>
             <RefreshCw />
             {t.updatedAutomatically || 'Updated automatically every hour'}
@@ -1866,6 +2377,9 @@ export default function MarketPrices() {
                   if (cat.available) {
                     setActiveCategory(cat.id);
                     setSelectedAsset(null);
+                    setTvSelectedSymbol(null);
+                    setTvSearchQuery('');
+                    setShowAdvancedChart(false);
                   }
                 }}
               >
@@ -1879,23 +2393,25 @@ export default function MarketPrices() {
       </HeaderSection>
 
       <MainContent>
-        {selectedAsset
-          ? renderDetailView(selectedAsset)
-          : (
-            <>
-              {activeCategory === 'crypto' && renderCryptoContent()}
+        {(() => {
+          const cat = ASSET_CATEGORIES.find(c => c.id === activeCategory);
+          if (!cat) return null;
 
-              {ASSET_CATEGORIES
-                .filter(c => !c.available && activeCategory === c.id)
-                .map(c => (
-                  <React.Fragment key={c.id}>
-                    {renderLockedSection(c.id)}
-                  </React.Fragment>
-                ))
-              }
-            </>
-          )
-        }
+          // Locked / coming soon
+          if (!cat.available) return renderLockedSection(cat.id);
+
+          // Crypto (custom API)
+          if (cat.type === 'custom') {
+            return selectedAsset
+              ? renderDetailView(selectedAsset)
+              : renderCryptoContent();
+          }
+
+          // TradingView categories
+          return tvSelectedSymbol
+            ? renderTradingViewDetail(tvSelectedSymbol)
+            : renderTradingViewContent(activeCategory);
+        })()}
       </MainContent>
     </PageContainer>
   );

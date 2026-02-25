@@ -2320,6 +2320,19 @@
             "athDate": "ATH Date",
             "atl": "All-Time Low",
             "atlDate": "ATL Date"
+        },
+        "tradingView": {
+            "currencyNote": "Prices are displayed in the native exchange currency (primarily USD). 15 min delayed data by TradingView.",
+            "searchPlaceholder": "Search symbol (e.g. AAPL, SPY, GOLD)...",
+            "searchHint": "Type a symbol and press Enter to view details, or click a card below",
+            "viewDetails": "View Details",
+            "chart": "Chart",
+            "profile": "Profile",
+            "technicalAnalysis": "Technical Analysis",
+            "advancedChart": "Advanced Chart",
+            "showTraderChart": "Advanced Chart",
+            "hideTraderChart": "Hide Advanced Chart",
+            "noMatchHint": "Press Enter to search for this symbol on TradingView"
         }
     }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo, useState } from 'react';
+import React, { useEffect, useRef, memo, useState, useCallback } from 'react';
 import styled from 'styled-components';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -28,6 +28,36 @@ const WIDGET_SCRIPTS = {
   'market-overview':      'embed-widget-market-overview.js',
 };
 
+/** Preload TradingView CDN connections + a specific widget script */
+export function preloadTradingViewScripts(widgetType = 'mini-symbol-overview') {
+  if (typeof document === 'undefined') return;
+
+  // Preconnect to TradingView CDN origins (saves DNS + TLS handshake)
+  ['https://s3.tradingview.com', 'https://s.tradingview.com'].forEach(origin => {
+    if (!document.querySelector(`link[rel="preconnect"][href="${origin}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = origin;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    }
+  });
+
+  // Preload the widget JS bundle so it's cached before first widget renders
+  const scriptFile = WIDGET_SCRIPTS[widgetType];
+  if (scriptFile) {
+    const scriptUrl = `https://s3.tradingview.com/external-embedding/${scriptFile}`;
+    if (!document.querySelector(`link[rel="preload"][href="${scriptUrl}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = scriptUrl;
+      link.as = 'script';
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    }
+  }
+}
+
 /* ─── Styled Container ─── */
 
 const WidgetContainer = styled.div`
@@ -35,6 +65,8 @@ const WidgetContainer = styled.div`
   overflow: hidden;
   width: 100%;
   border-radius: ${p => p.$borderRadius || '0'};
+  opacity: ${p => (p.$hidden ? 0 : 1)};
+  transition: opacity 0.35s ease;
 
   /* Ensure TradingView copyright link blends subtly */
   .tradingview-widget-copyright {
@@ -50,6 +82,27 @@ const WidgetContainer = styled.div`
   }
 `;
 
+const LoadingSkeleton = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background: ${p => p.$dark
+    ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%)'
+    : 'linear-gradient(135deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%)'
+  };
+  animation: tvPulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+
+  @keyframes tvPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+`;
+
 /* ═══════════════════════════════════════════════════════════════
    Core Widget Component
    ═══════════════════════════════════════════════════════════════ */
@@ -62,13 +115,28 @@ const TradingViewWidget = memo(({
   className,
   nonInteractive = false,
   borderRadius,
+  onReady,
+  onError,
+  showSkeleton = false,
 }) => {
   const containerRef = useRef(null);
   const configStr = JSON.stringify(config);
+  const [loaded, setLoaded] = useState(false);
+  const readyFiredRef = useRef(false);
+
+  const markReady = useCallback(() => {
+    if (readyFiredRef.current) return;
+    readyFiredRef.current = true;
+    setLoaded(true);
+    onReady?.();
+  }, [onReady]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !WIDGET_SCRIPTS[type]) return;
+
+    readyFiredRef.current = false;
+    setLoaded(false);
 
     // Clear any previous widget
     container.innerHTML = '';
@@ -88,23 +156,48 @@ const TradingViewWidget = memo(({
     script.type = 'text/javascript';
     script.async = true;
     script.innerHTML = configStr;
-
     container.appendChild(script);
 
+    // Watch for iframe creation → marks the widget as "loaded"
+    const observer = new MutationObserver(() => {
+      const iframe = container.querySelector('iframe');
+      if (iframe) {
+        markReady();
+        observer.disconnect();
+      }
+    });
+    observer.observe(container, { childList: true, subtree: true });
+
+    // Fallback timeout: if no iframe after 12s, fire onError
+    const timer = setTimeout(() => {
+      if (!readyFiredRef.current) {
+        observer.disconnect();
+        onError?.();
+      }
+    }, 12000);
+
     return () => {
+      observer.disconnect();
+      clearTimeout(timer);
       if (container) container.innerHTML = '';
     };
-  }, [type, configStr, height]);
+  }, [type, configStr, height, markReady, onError]);
+
+  const isDark = config?.colorTheme === 'dark';
 
   return (
     <WidgetContainer
       $borderRadius={borderRadius}
+      $hidden={showSkeleton && !loaded}
       className={className || ''}
       style={{
         ...style,
         ...(nonInteractive ? { pointerEvents: 'none' } : {}),
       }}
     >
+      {showSkeleton && !loaded && (
+        <LoadingSkeleton $dark={isDark} style={{ minHeight: height || 150 }} />
+      )}
       <div
         ref={containerRef}
         className="tradingview-widget-container"

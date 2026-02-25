@@ -6,8 +6,8 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import apiClient from '../services/apiClient';
 import mockCryptoData from '../data/mockCryptoData';
-import TradingViewWidget from '../components/TradingViewWidget';
-import { LazyTradingViewWidget } from '../components/TradingViewWidget';
+import TradingViewWidget, { LazyTradingViewWidget } from '../components/TradingViewWidget';
+import { preloadTradingViewScripts } from '../components/TradingViewWidget';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip as ReTooltip,
   ResponsiveContainer, CartesianGrid
@@ -1318,7 +1318,7 @@ const POPULAR_SYMBOLS = {
     { symbol: 'NYSE:JPM',     name: 'JPMorgan Chase',       shortName: 'JPM' },
     { symbol: 'NYSE:V',       name: 'Visa',                shortName: 'V' },
     { symbol: 'NYSE:JNJ',     name: 'Johnson & Johnson',    shortName: 'JNJ' },
-    { symbol: 'NYSE:WMT',     name: 'Walmart',             shortName: 'WMT' },
+    { symbol: 'NYSE:KO',      name: 'Coca-Cola',            shortName: 'KO' },
   ],
   etf: [
     { symbol: 'AMEX:SPY',   name: 'SPDR S&P 500',                 shortName: 'SPY' },
@@ -1326,27 +1326,22 @@ const POPULAR_SYMBOLS = {
     { symbol: 'NASDAQ:QQQ', name: 'Invesco QQQ (Nasdaq 100)',       shortName: 'QQQ' },
     { symbol: 'AMEX:VTI',   name: 'Vanguard Total Stock Market',   shortName: 'VTI' },
     { symbol: 'AMEX:VT',    name: 'Vanguard Total World Stock',    shortName: 'VT' },
-    { symbol: 'AMEX:ACWI',  name: 'iShares MSCI ACWI',             shortName: 'ACWI' },
+    { symbol: 'AMEX:DIA',   name: 'SPDR Dow Jones Industrial',     shortName: 'DIA' },
     { symbol: 'AMEX:VWO',   name: 'Vanguard Emerging Markets',     shortName: 'VWO' },
     { symbol: 'AMEX:EFA',   name: 'iShares MSCI EAFE',             shortName: 'EFA' },
     { symbol: 'AMEX:IWM',   name: 'iShares Russell 2000',          shortName: 'IWM' },
     { symbol: 'AMEX:GLD',   name: 'SPDR Gold Trust',               shortName: 'GLD' },
-    { symbol: 'AMEX:BND',   name: 'Vanguard Total Bond Market',    shortName: 'BND' },
+    { symbol: 'AMEX:TLT',   name: 'iShares 20+ Year Treasury',     shortName: 'TLT' },
     { symbol: 'AMEX:VNQ',   name: 'Vanguard Real Estate',          shortName: 'VNQ' },
     { symbol: 'AMEX:SCHD',  name: 'Schwab US Dividend Equity',     shortName: 'SCHD' },
-    { symbol: 'AMEX:AGG',   name: 'iShares Core U.S. Aggregate',   shortName: 'AGG' },
+    { symbol: 'AMEX:HYG',   name: 'iShares High Yield Corp Bond',  shortName: 'HYG' },
     { symbol: 'AMEX:ARKK',  name: 'ARK Innovation',                shortName: 'ARKK' },
     { symbol: 'AMEX:XLF',   name: 'Financial Select SPDR',         shortName: 'XLF' },
   ],
   commodities: [
     { symbol: 'TVC:GOLD',      name: 'Gold',          shortName: 'XAU' },
     { symbol: 'TVC:SILVER',    name: 'Silver',        shortName: 'XAG' },
-    { symbol: 'NYMEX:CL1!',    name: 'Crude Oil WTI', shortName: 'CL' },
-    { symbol: 'NYMEX:NG1!',    name: 'Natural Gas',   shortName: 'NG' },
-    { symbol: 'TVC:PLATINUM',   name: 'Platinum',      shortName: 'XPT' },
-    { symbol: 'COMEX:HG1!',    name: 'Copper',        shortName: 'HG' },
-    { symbol: 'CBOT:ZW1!',     name: 'Wheat',         shortName: 'ZW' },
-    { symbol: 'CBOT:ZC1!',     name: 'Corn',          shortName: 'ZC' },
+    { symbol: 'TVC:PLATINUM',  name: 'Platinum',      shortName: 'XPT' },
   ],
 
 };
@@ -1375,10 +1370,18 @@ export default function MarketPrices() {
   const [tvSearchQuery, setTvSearchQuery] = useState('');
   const [tvSelectedSymbol, setTvSelectedSymbol] = useState(null); // { symbol, name, shortName, category }
   const [showAdvancedChart, setShowAdvancedChart] = useState(false);
+  const [failedSymbols, setFailedSymbols] = useState(new Set());
 
   // TradingView locale & theme (derived)
   const tvLocale = language === 'it' ? 'it' : 'en';
   const tvColorTheme = theme.mode === 'dark' ? 'dark' : 'light';
+
+  /* ─── Preload TradingView scripts when visiting TV categories ─── */
+  useEffect(() => {
+    if (['etf', 'stocks', 'commodities'].includes(activeCategory)) {
+      preloadTradingViewScripts('mini-symbol-overview');
+    }
+  }, [activeCategory]);
 
   /* ─── Fetch crypto data ─── */
   const fetchCrypto = useCallback(async () => {
@@ -2142,14 +2145,14 @@ export default function MarketPrices() {
         {/* Results count */}
         <SortRow>
           <ResultsCount theme={theme}>
-            {symbols.length} {t.assetsFound || 'assets'}
+            {symbols.filter(s => !failedSymbols.has(s.symbol)).length} {t.assetsFound || 'assets'}
           </ResultsCount>
         </SortRow>
 
-        {/* Symbol Grid – Mini Symbol Overview widgets (lazy loaded) */}
-        {symbols.length > 0 ? (
+        {/* Symbol Grid – Mini Symbol Overview widgets */}
+        {symbols.filter(s => !failedSymbols.has(s.symbol)).length > 0 ? (
           <AssetsGrid>
-            {symbols.map(sym => (
+            {symbols.filter(s => !failedSymbols.has(s.symbol)).map(sym => (
               <TvCardWrapper
                 key={sym.symbol}
                 theme={theme}
@@ -2158,6 +2161,8 @@ export default function MarketPrices() {
                 <TradingViewWidget
                   type="mini-symbol-overview"
                   nonInteractive
+                  showSkeleton
+                  onError={() => setFailedSymbols(prev => new Set([...prev, sym.symbol]))}
                   config={{
                     symbol: sym.symbol,
                     width: '100%',
@@ -2200,6 +2205,10 @@ export default function MarketPrices() {
     const tv = t?.tradingView || {};
     const showProfile = category === 'stocks' || category === 'etf';
 
+    // Check if symbol is from curated list vs. user search
+    const isCurated = Object.values(POPULAR_SYMBOLS).flat()
+      .some(s => s.symbol === symbol);
+
     return (
       <DetailOverlay>
         <BackButton theme={theme} onClick={() => {
@@ -2209,6 +2218,14 @@ export default function MarketPrices() {
           <ArrowLeft />
           {td.back || 'Back to list'}
         </BackButton>
+
+        {/* Disclaimer for non-curated symbols */}
+        {!isCurated && (
+          <CurrencyNote theme={theme} style={{ marginBottom: '0.75rem' }}>
+            <Info size={14} />
+            {tv.symbolDisclaimer || 'This symbol was not verified. Some data or charts may not be available in the embedded preview.'}
+          </CurrencyNote>
+        )}
 
         {/* Header – Symbol info */}
         <DetailCard theme={theme}>

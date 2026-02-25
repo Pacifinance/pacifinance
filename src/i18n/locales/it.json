@@ -2332,7 +2332,8 @@
             "advancedChart": "Grafico Avanzato",
             "showTraderChart": "Grafico Avanzato",
             "hideTraderChart": "Nascondi Grafico Avanzato",
-            "noMatchHint": "Premi Invio per cercare questo simbolo su TradingView"
+            "noMatchHint": "Premi Invio per cercare questo simbolo su TradingView",
+            "symbolDisclaimer": "Questo simbolo non è stato verificato. Alcuni dati o grafici potrebbero non essere disponibili nell'anteprima incorporata."
         }
     }
 }

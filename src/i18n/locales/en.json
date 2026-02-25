@@ -2265,6 +2265,7 @@
             "crypto": "Crypto",
             "etf": "ETFs",
             "stocks": "Stocks",
+            "forex": "Forex",
             "commodities": "Commodities",
             "bonds": "Bonds"
         },
@@ -2333,6 +2334,8 @@
             "advancedChart": "Advanced Chart",
             "showTraderChart": "Advanced Chart",
             "hideTraderChart": "Hide Advanced Chart",
+            "fundamentals": "Fundamentals",
+            "analysisDisclaimer": "The following market analysis is provided by TradingView for informational purposes only. It does not constitute financial advice. PaciFinance is not responsible for any decisions based on this data. Always consult a qualified financial professional.",
             "noMatchHint": "No match in the curated list. Press Enter to search this symbol directly on TradingView",
             "symbolDisclaimer": "This symbol is not in our curated list. If the charts don't load, make sure you used the correct TradingView symbol (e.g. NASDAQ:AAPL, not \"Apple\").",
             "clearSearch": "✕ Clear search",
@@ -2344,6 +2347,7 @@
                 "amex": "US (AMEX)",
                 "lse": "London",
                 "xetra": "Germany",
+                "euronext": "Euronext",
                 "euronextParis": "Paris",
                 "borsaItaliana": "Milan",
                 "bolsaMadrid": "Madrid",
@@ -2356,6 +2360,7 @@
                 "asx": "Australia",
                 "tsx": "Canada",
                 "tvc": "TradingView",
+                "fx": "FX (Forex)",
                 "comex": "COMEX (Metals)",
                 "nymex": "NYMEX (Energy)"
             }

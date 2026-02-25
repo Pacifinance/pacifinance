@@ -13,18 +13,22 @@ import styled from 'styled-components';
    Widget types:
    - mini-symbol-overview : compact card with price + mini chart
    - symbol-overview      : larger widget with chart tabs
+   - symbol-info          : horizontal strip with symbol name, exchange, price, change
    - advanced-chart       : full interactive trading chart
    - technical-analysis   : buy/sell/neutral gauge
    - symbol-profile       : company/ETF profile & description
+   - financials           : fundamental data (P/E, EPS, revenue, etc.)
    - market-overview      : multi-symbol list with chart
    ═══════════════════════════════════════════════════════════════ */
 
 const WIDGET_SCRIPTS = {
   'mini-symbol-overview': 'embed-widget-mini-symbol-overview.js',
   'symbol-overview':      'embed-widget-symbol-overview.js',
+  'symbol-info':          'embed-widget-symbol-info.js',
   'advanced-chart':       'embed-widget-advanced-chart.js',
   'technical-analysis':   'embed-widget-technical-analysis.js',
   'symbol-profile':       'embed-widget-symbol-profile.js',
+  'financials':           'embed-widget-financials.js',
   'market-overview':      'embed-widget-market-overview.js',
 };
 

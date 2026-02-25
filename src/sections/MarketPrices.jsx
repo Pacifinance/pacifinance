@@ -16,7 +16,8 @@ import {
   TrendingUp, TrendingDown, Minus, Search, RefreshCw,
   BarChart3, Bitcoin, Landmark, Gem, Briefcase, Lock,
   ArrowUpRight, ArrowDownRight, ChevronDown, ChevronUp,
-  Info, ArrowLeft, ChevronRight, Activity
+  Info, ArrowLeft, ChevronRight, Activity, AlertTriangle,
+  DollarSign
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1205,6 +1206,63 @@ const TraderToggle = styled.button`
   }
 `;
 
+/* Two-column grid for profile + fundamentals on desktop */
+const ProfileGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+`;
+
+const ProfileGridItem = styled.div`
+  background: ${p => p.theme.mode === 'dark'
+    ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)'
+    : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'};
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 0;
+
+  @media (max-width: 768px) {
+    border-radius: 12px;
+  }
+`;
+
+/* Disclaimer banner for technical analysis section */
+const DisclaimerBanner = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'};
+  padding: 0.65rem 1rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,165,0,0.06)' : 'rgba(255,165,0,0.05)'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,165,0,0.15)' : 'rgba(255,165,0,0.12)'};
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: ${p => p.theme.mode === 'dark' ? 'rgba(255,180,50,0.7)' : 'rgba(200,120,0,0.7)'};
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.66rem;
+    padding: 0.5rem 0.75rem;
+    gap: 0.4rem;
+  }
+`;
+
 /* ═══════════════════════════════════════════════════════════════
    Mini Sparkline SVG
    ═══════════════════════════════════════════════════════════════ */
@@ -1388,6 +1446,7 @@ const ASSET_CATEGORIES = [
   { id: 'crypto',      icon: Bitcoin,    available: true,  type: 'custom'      },
   { id: 'etf',         icon: BarChart3,  available: true,  type: 'tradingview' },
   { id: 'stocks',      icon: Briefcase,  available: true,  type: 'tradingview' },
+  { id: 'forex',       icon: DollarSign, available: true,  type: 'tradingview' },
   { id: 'commodities', icon: Gem,        available: true,  type: 'tradingview' },
   { id: 'bonds',       icon: Landmark,   available: false, type: 'locked'      },
 ];
@@ -1442,25 +1501,63 @@ const POPULAR_SYMBOLS = {
     { symbol: 'AMEX:EFA',     name: 'iShares MSCI EAFE',            shortName: 'EFA' },
     { symbol: 'AMEX:IWM',     name: 'iShares Russell 2000',         shortName: 'IWM' },
     { symbol: 'AMEX:GLD',     name: 'SPDR Gold Trust',              shortName: 'GLD' },
-    { symbol: 'AMEX:TLT',     name: 'iShares 20+ Year Treasury',    shortName: 'TLT' },
+    { symbol: 'NASDAQ:TLT',   name: 'iShares 20+ Year Treasury',    shortName: 'TLT' },
     { symbol: 'AMEX:VNQ',     name: 'Vanguard Real Estate',         shortName: 'VNQ' },
     { symbol: 'AMEX:SCHD',    name: 'Schwab US Dividend Equity',    shortName: 'SCHD' },
     { symbol: 'AMEX:HYG',     name: 'iShares High Yield Corp Bond', shortName: 'HYG' },
     { symbol: 'AMEX:ARKK',    name: 'ARK Innovation',               shortName: 'ARKK' },
     { symbol: 'AMEX:XLF',     name: 'Financial Select SPDR',        shortName: 'XLF' },
+    { symbol: 'AMEX:URTH',    name: 'iShares MSCI World',           shortName: 'URTH' },
+    { symbol: 'AMEX:IEMG',    name: 'iShares Core MSCI Emerging Mkts', shortName: 'IEMG' },
+    { symbol: 'AMEX:EEM',     name: 'iShares MSCI Emerging Markets', shortName: 'EEM' },
     // 🇩🇪 Germany (Xetra)
-    { symbol: 'XETR:EUNL',    name: 'iShares Core MSCI World',     shortName: 'EUNL' },
+    { symbol: 'XETR:EUNL',    name: 'iShares Core MSCI World (EUR)', shortName: 'EUNL' },
     { symbol: 'XETR:VWCE',    name: 'Vanguard FTSE All-World (Acc)', shortName: 'VWCE' },
     { symbol: 'XETR:IUSQ',    name: 'iShares MSCI ACWI',           shortName: 'IUSQ' },
-    // 🇮🇹 Milan — prefix MIL
-    { symbol: 'MIL:SWDA',     name: 'iShares Core MSCI World',      shortName: 'SWDA' },
-    { symbol: 'MIL:VWCE',     name: 'Vanguard FTSE All-World (Acc)', shortName: 'VWCE' },
-    { symbol: 'MIL:CSSPX',    name: 'iShares Core S&P 500 (Acc)',   shortName: 'CSSPX' },
+    { symbol: 'XETR:IUSN',    name: 'iShares MSCI World Small Cap', shortName: 'IUSN' },
+    // 🇬🇧 London Stock Exchange (European cross-listed)
+    { symbol: 'LSE:SWDA',      name: 'iShares Core MSCI World',        shortName: 'SWDA' },
+    { symbol: 'LSE:CSSPX',     name: 'iShares Core S&P 500 (Acc)',     shortName: 'CSSPX' },
+    { symbol: 'LSE:EIMI',      name: 'iShares Core MSCI EM IMI',       shortName: 'EIMI' },
+    { symbol: 'LSE:EMIM',      name: 'iShares Core MSCI EM IMI (GBP)', shortName: 'EMIM' },
   ],
   commodities: [
     { symbol: 'TVC:GOLD',      name: 'Gold',          shortName: 'XAU' },
     { symbol: 'TVC:SILVER',    name: 'Silver',        shortName: 'XAG' },
     { symbol: 'TVC:PLATINUM',  name: 'Platinum',      shortName: 'XPT' },
+  ],
+  forex: [
+    // Major pairs
+    { symbol: 'FX:EURUSD',    name: 'Euro / US Dollar',          shortName: 'EUR/USD' },
+    { symbol: 'FX:GBPUSD',    name: 'British Pound / US Dollar', shortName: 'GBP/USD' },
+    { symbol: 'FX:USDJPY',    name: 'US Dollar / Japanese Yen',  shortName: 'USD/JPY' },
+    { symbol: 'FX:USDCHF',    name: 'US Dollar / Swiss Franc',   shortName: 'USD/CHF' },
+    { symbol: 'FX:AUDUSD',    name: 'Australian Dollar / US Dollar', shortName: 'AUD/USD' },
+    { symbol: 'FX:USDCAD',    name: 'US Dollar / Canadian Dollar',   shortName: 'USD/CAD' },
+    { symbol: 'FX:NZDUSD',    name: 'New Zealand Dollar / US Dollar', shortName: 'NZD/USD' },
+    // Euro crosses
+    { symbol: 'FX:EURGBP',    name: 'Euro / British Pound',      shortName: 'EUR/GBP' },
+    { symbol: 'FX:EURJPY',    name: 'Euro / Japanese Yen',       shortName: 'EUR/JPY' },
+    { symbol: 'FX:EURCHF',    name: 'Euro / Swiss Franc',        shortName: 'EUR/CHF' },
+    { symbol: 'FX:EURAUD',    name: 'Euro / Australian Dollar',  shortName: 'EUR/AUD' },
+    { symbol: 'FX:EURCAD',    name: 'Euro / Canadian Dollar',    shortName: 'EUR/CAD' },
+    // Yen crosses
+    { symbol: 'FX:GBPJPY',    name: 'British Pound / Japanese Yen', shortName: 'GBP/JPY' },
+    { symbol: 'FX:CHFJPY',    name: 'Swiss Franc / Japanese Yen',   shortName: 'CHF/JPY' },
+    { symbol: 'FX:AUDJPY',    name: 'Australian Dollar / Yen',      shortName: 'AUD/JPY' },
+    // Emerging & other
+    { symbol: 'FX:USDTRY',    name: 'US Dollar / Turkish Lira',     shortName: 'USD/TRY' },
+    { symbol: 'FX:USDPLN',    name: 'US Dollar / Polish Zloty',     shortName: 'USD/PLN' },
+    { symbol: 'FX:USDSEK',    name: 'US Dollar / Swedish Krona',    shortName: 'USD/SEK' },
+    { symbol: 'FX:USDNOK',    name: 'US Dollar / Norwegian Krone',  shortName: 'USD/NOK' },
+    { symbol: 'FX:USDINR',    name: 'US Dollar / Indian Rupee',     shortName: 'USD/INR' },
+    { symbol: 'FX:USDCNY',    name: 'US Dollar / Chinese Yuan',     shortName: 'USD/CNY' },
+    { symbol: 'FX:USDBRL',    name: 'US Dollar / Brazilian Real',   shortName: 'USD/BRL' },
+    { symbol: 'FX:USDMXN',    name: 'US Dollar / Mexican Peso',     shortName: 'USD/MXN' },
+    { symbol: 'FX:USDHUF',    name: 'US Dollar / Hungarian Forint', shortName: 'USD/HUF' },
+    { symbol: 'FX:USDCZK',    name: 'US Dollar / Czech Koruna',     shortName: 'USD/CZK' },
+    { symbol: 'FX:USDRON',    name: 'US Dollar / Romanian Leu',     shortName: 'USD/RON' },
+    { symbol: 'FX:USDDKK',    name: 'US Dollar / Danish Krone',     shortName: 'USD/DKK' },
   ],
 
 };
@@ -1482,13 +1579,17 @@ const EXCHANGES = {
     { prefix: 'AMEX',     flag: '🇺🇸', labelKey: 'amex'           },
     { prefix: 'NASDAQ',   flag: '🇺🇸', labelKey: 'nasdaq'         },
     { prefix: 'XETR',     flag: '🇩🇪', labelKey: 'xetra'          },
-    { prefix: 'MIL',      flag: '🇮🇹', labelKey: 'borsaItaliana'  },
+    { prefix: 'LSE',      flag: '🇬🇧', labelKey: 'lse'            },
   ],
   commodities: [
     { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
     { prefix: 'TVC',      flag: '📊', labelKey: 'tvc'            },
     { prefix: 'COMEX',    flag: '🇺🇸', labelKey: 'comex'          },
     { prefix: 'NYMEX',    flag: '🇺🇸', labelKey: 'nymex'          },
+  ],
+  forex: [
+    { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
+    { prefix: 'FX',       flag: '💱', labelKey: 'fx'             },
   ],
 };
 
@@ -1526,8 +1627,9 @@ export default function MarketPrices() {
 
   /* ─── Preload TradingView scripts when visiting TV categories ─── */
   useEffect(() => {
-    if (['etf', 'stocks', 'commodities'].includes(activeCategory)) {
+    if (['etf', 'stocks', 'commodities', 'forex'].includes(activeCategory)) {
       preloadTradingViewScripts('mini-symbol-overview');
+      preloadTradingViewScripts('symbol-info');
     }
   }, [activeCategory]);
 
@@ -2526,14 +2628,19 @@ export default function MarketPrices() {
           </CurrencyNote>
         )}
 
-        {/* Header – Symbol info */}
-        <DetailCard theme={theme}>
-          <DetailHeader>
-            <DetailNameBlock>
-              <DetailName theme={theme}>{name}</DetailName>
-              <DetailId theme={theme}>{symbol}</DetailId>
-            </DetailNameBlock>
-          </DetailHeader>
+        {/* Header – Symbol Info Widget (TradingView) */}
+        <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
+          <TradingViewWidget
+            type="symbol-info"
+            config={{
+              symbol,
+              width: '100%',
+              locale: tvLocale,
+              colorTheme: tvColorTheme,
+              isTransparent: true,
+            }}
+            height={100}
+          />
         </DetailCard>
 
         {/* Interactive Chart with Time Ranges */}
@@ -2568,28 +2675,54 @@ export default function MarketPrices() {
           />
         </DetailCard>
 
-        {/* Company / ETF Profile (stocks & ETFs only) */}
+        {/* Company / ETF Profile + Fundamental Data (stocks & ETFs) */}
         {showProfile && (
-          <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
-            <DetailSectionTitle theme={theme} style={{ padding: '1rem 1.5rem 0' }}>
-              {tv.profile || 'Profile'}
-            </DetailSectionTitle>
-            <TradingViewWidget
-              type="symbol-profile"
-              config={{
-                width: '100%',
-                height: 480,
-                isTransparent: true,
-                colorTheme: tvColorTheme,
-                symbol,
-                locale: tvLocale,
-              }}
-              height={480}
-            />
-          </DetailCard>
+          <ProfileGrid>
+            <ProfileGridItem theme={theme}>
+              <DetailSectionTitle theme={theme} style={{ padding: '0.75rem 1rem 0' }}>
+                {tv.profile || 'Profile'}
+              </DetailSectionTitle>
+              <TradingViewWidget
+                type="symbol-profile"
+                config={{
+                  width: '100%',
+                  height: 340,
+                  isTransparent: true,
+                  colorTheme: tvColorTheme,
+                  symbol,
+                  locale: tvLocale,
+                }}
+                height={340}
+              />
+            </ProfileGridItem>
+            {category === 'stocks' && (
+              <ProfileGridItem theme={theme}>
+                <DetailSectionTitle theme={theme} style={{ padding: '0.75rem 1rem 0' }}>
+                  {tv.fundamentals || 'Fundamentals'}
+                </DetailSectionTitle>
+                <TradingViewWidget
+                  type="financials"
+                  config={{
+                    symbol,
+                    width: '100%',
+                    height: 340,
+                    isTransparent: true,
+                    colorTheme: tvColorTheme,
+                    displayMode: 'regular',
+                    locale: tvLocale,
+                  }}
+                  height={340}
+                />
+              </ProfileGridItem>
+            )}
+          </ProfileGrid>
         )}
 
-        {/* Technical Analysis Gauge */}
+        {/* Disclaimer + Technical Analysis Gauge */}
+        <DisclaimerBanner theme={theme}>
+          <AlertTriangle size={14} />
+          <span>{tv.analysisDisclaimer || 'The following market analysis is provided by TradingView for informational purposes only. It does not constitute financial advice. PaciFinance is not responsible for any decisions based on this data. Always consult a qualified professional.'}</span>
+        </DisclaimerBanner>
         <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
           <DetailSectionTitle theme={theme} style={{ padding: '1rem 1.5rem 0' }}>
             {tv.technicalAnalysis || 'Technical Analysis'}

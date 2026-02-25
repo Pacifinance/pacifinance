@@ -1406,64 +1406,29 @@ const POPULAR_SYMBOLS = {
     { symbol: 'NASDAQ:NVDA',  name: 'NVIDIA',             shortName: 'NVDA' },
     { symbol: 'NASDAQ:TSLA',  name: 'Tesla',              shortName: 'TSLA' },
     { symbol: 'NASDAQ:META',  name: 'Meta Platforms',      shortName: 'META' },
+    { symbol: 'NASDAQ:NFLX',  name: 'Netflix',             shortName: 'NFLX' },
+    { symbol: 'NASDAQ:AMD',   name: 'AMD',                 shortName: 'AMD' },
     // 🇺🇸 US – NYSE
     { symbol: 'NYSE:BRK.B',   name: 'Berkshire Hathaway',  shortName: 'BRK.B' },
     { symbol: 'NYSE:JPM',     name: 'JPMorgan Chase',      shortName: 'JPM' },
     { symbol: 'NYSE:V',       name: 'Visa',               shortName: 'V' },
     { symbol: 'NYSE:JNJ',     name: 'Johnson & Johnson',   shortName: 'JNJ' },
     { symbol: 'NYSE:KO',      name: 'Coca-Cola',           shortName: 'KO' },
+    { symbol: 'NYSE:WMT',     name: 'Walmart',             shortName: 'WMT' },
+    { symbol: 'NYSE:DIS',     name: 'Walt Disney',         shortName: 'DIS' },
+    { symbol: 'NYSE:BA',      name: 'Boeing',              shortName: 'BA' },
     // �🇪 Germany (Xetra) — verified working
     { symbol: 'XETR:SAP',     name: 'SAP',                 shortName: 'SAP' },
     { symbol: 'XETR:SIE',     name: 'Siemens',             shortName: 'SIE' },
     { symbol: 'XETR:ALV',     name: 'Allianz',             shortName: 'ALV' },
     { symbol: 'XETR:DTE',     name: 'Deutsche Telekom',    shortName: 'DTE' },
     { symbol: 'XETR:BAS',     name: 'BASF',                shortName: 'BAS' },
-    // 🇫🇷 Paris (Euronext) — prefix EURONEXT, not EPA
-    { symbol: 'EURONEXT:MC',  name: 'LVMH',                shortName: 'MC' },
-    { symbol: 'EURONEXT:OR',  name: "L'Oréal",             shortName: 'OR' },
-    { symbol: 'EURONEXT:TTE', name: 'TotalEnergies',       shortName: 'TTE' },
-    { symbol: 'EURONEXT:AIR', name: 'Airbus',              shortName: 'AIR' },
-    { symbol: 'EURONEXT:SAN', name: 'Sanofi',              shortName: 'SAN' },
-    // 🇮🇹 Milan (Borsa Italiana) — prefix MIL, not BIT
+    // �🇹 Italy – Milan (embedding OK)
     { symbol: 'MIL:UCG',      name: 'UniCredit',           shortName: 'UCG' },
     { symbol: 'MIL:ISP',      name: 'Intesa Sanpaolo',     shortName: 'ISP' },
     { symbol: 'MIL:ENI',      name: 'Eni',                 shortName: 'ENI' },
     { symbol: 'MIL:ENEL',     name: 'Enel',                shortName: 'ENEL' },
     { symbol: 'MIL:RACE',     name: 'Ferrari',             shortName: 'RACE' },
-    // 🇪🇸 Madrid
-    { symbol: 'BME:ITX',      name: 'Inditex (Zara)',      shortName: 'ITX' },
-    { symbol: 'BME:SAN',      name: 'Banco Santander',     shortName: 'SAN' },
-    { symbol: 'BME:BBVA',     name: 'BBVA',                shortName: 'BBVA' },
-    // 🇨🇭 Switzerland
-    { symbol: 'SIX:NESN',     name: 'Nestlé',              shortName: 'NESN' },
-    { symbol: 'SIX:ROG',      name: 'Roche',               shortName: 'ROG' },
-    { symbol: 'SIX:NOVN',     name: 'Novartis',            shortName: 'NOVN' },
-    // 🇯🇵 Tokyo
-    { symbol: 'TSE:7203',     name: 'Toyota',              shortName: '7203' },
-    { symbol: 'TSE:6758',     name: 'Sony',                shortName: '6758' },
-    { symbol: 'TSE:7974',     name: 'Nintendo',            shortName: '7974' },
-    { symbol: 'TSE:9984',     name: 'SoftBank',            shortName: '9984' },
-    { symbol: 'TSE:6861',     name: 'Keyence',             shortName: '6861' },
-    // 🇭🇰 Hong Kong
-    { symbol: 'HKEX:700',     name: 'Tencent',             shortName: '700' },
-    { symbol: 'HKEX:9988',    name: 'Alibaba (HK)',        shortName: '9988' },
-    { symbol: 'HKEX:1299',    name: 'AIA Group',           shortName: '1299' },
-    // 🇨🇳 Shanghai
-    { symbol: 'SSE:600519',   name: 'Kweichow Moutai',    shortName: '600519' },
-    { symbol: 'SSE:601318',   name: 'Ping An Insurance',   shortName: '601318' },
-    // 🇰🇷 South Korea
-    { symbol: 'KRX:005930',   name: 'Samsung Electronics', shortName: '005930' },
-    { symbol: 'KRX:000660',   name: 'SK Hynix',           shortName: '000660' },
-    // 🇮🇳 India
-    { symbol: 'NSE:RELIANCE', name: 'Reliance Industries', shortName: 'RELIANCE' },
-    { symbol: 'NSE:TCS',      name: 'Tata Consultancy',   shortName: 'TCS' },
-    { symbol: 'NSE:INFY',     name: 'Infosys',            shortName: 'INFY' },
-    // 🇦🇺 Australia
-    { symbol: 'ASX:BHP',      name: 'BHP Group',          shortName: 'BHP' },
-    { symbol: 'ASX:CBA',      name: 'Commonwealth Bank',  shortName: 'CBA' },
-    // 🇨🇦 Canada
-    { symbol: 'TSX:RY',       name: 'Royal Bank of Canada', shortName: 'RY' },
-    { symbol: 'TSX:SHOP',     name: 'Shopify',             shortName: 'SHOP' },
   ],
   etf: [
     // 🇺🇸 US – AMEX / NASDAQ
@@ -1491,12 +1456,6 @@ const POPULAR_SYMBOLS = {
     { symbol: 'MIL:SWDA',     name: 'iShares Core MSCI World',      shortName: 'SWDA' },
     { symbol: 'MIL:VWCE',     name: 'Vanguard FTSE All-World (Acc)', shortName: 'VWCE' },
     { symbol: 'MIL:CSSPX',    name: 'iShares Core S&P 500 (Acc)',   shortName: 'CSSPX' },
-    // 🇫🇷 Paris — prefix EURONEXT
-    { symbol: 'EURONEXT:CW8', name: 'Amundi MSCI World',            shortName: 'CW8' },
-    { symbol: 'EURONEXT:PANX', name: 'Amundi Nasdaq-100',           shortName: 'PANX' },
-    // 🇯🇵 Tokyo
-    { symbol: 'TSE:1306',     name: 'TOPIX ETF (Nomura)',           shortName: '1306' },
-    { symbol: 'TSE:1321',     name: 'Nikkei 225 ETF',              shortName: '1321' },
   ],
   commodities: [
     { symbol: 'TVC:GOLD',      name: 'Gold',          shortName: 'XAU' },
@@ -1515,20 +1474,8 @@ const EXCHANGES = {
     { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
     { prefix: 'NASDAQ',   flag: '🇺🇸', labelKey: 'nasdaq'         },
     { prefix: 'NYSE',     flag: '🇺🇸', labelKey: 'nyse'           },
-    { prefix: 'AMEX',     flag: '🇺🇸', labelKey: 'amex'           },
-    { prefix: 'LSE',      flag: '🇬🇧', labelKey: 'lse'            },
     { prefix: 'XETR',     flag: '🇩🇪', labelKey: 'xetra'          },
-    { prefix: 'EURONEXT', flag: '🇫🇷', labelKey: 'euronextParis'  },
     { prefix: 'MIL',      flag: '🇮🇹', labelKey: 'borsaItaliana'  },
-    { prefix: 'BME',      flag: '🇪🇸', labelKey: 'bolsaMadrid'    },
-    { prefix: 'SIX',      flag: '🇨🇭', labelKey: 'six'            },
-    { prefix: 'TSE',      flag: '🇯🇵', labelKey: 'tse'            },
-    { prefix: 'HKEX',     flag: '🇭🇰', labelKey: 'hkex'           },
-    { prefix: 'SSE',      flag: '🇨🇳', labelKey: 'sse'            },
-    { prefix: 'KRX',      flag: '🇰🇷', labelKey: 'krx'            },
-    { prefix: 'NSE',      flag: '🇮🇳', labelKey: 'nse'            },
-    { prefix: 'ASX',      flag: '🇦🇺', labelKey: 'asx'            },
-    { prefix: 'TSX',      flag: '🇨🇦', labelKey: 'tsx'            },
   ],
   etf: [
     { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },
@@ -1536,8 +1483,6 @@ const EXCHANGES = {
     { prefix: 'NASDAQ',   flag: '🇺🇸', labelKey: 'nasdaq'         },
     { prefix: 'XETR',     flag: '🇩🇪', labelKey: 'xetra'          },
     { prefix: 'MIL',      flag: '🇮🇹', labelKey: 'borsaItaliana'  },
-    { prefix: 'EURONEXT', flag: '🇫🇷', labelKey: 'euronextParis'  },
-    { prefix: 'TSE',      flag: '🇯🇵', labelKey: 'tse'            },
   ],
   commodities: [
     { prefix: '',         flag: '🌍', labelKey: 'allExchanges'   },

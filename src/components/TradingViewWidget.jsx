@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo, useState, useCallback } from 'react';
+import React, { useEffect, useRef, memo, useState } from 'react';
 import styled from 'styled-components';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -124,12 +124,12 @@ const TradingViewWidget = memo(({
   const [loaded, setLoaded] = useState(false);
   const readyFiredRef = useRef(false);
 
-  const markReady = useCallback(() => {
-    if (readyFiredRef.current) return;
-    readyFiredRef.current = true;
-    setLoaded(true);
-    onReady?.();
-  }, [onReady]);
+  /* ─── Keep callbacks in refs so the main effect never re-runs
+         when the parent re-renders with new inline arrow functions ─── */
+  const onReadyRef = useRef(onReady);
+  const onErrorRef = useRef(onError);
+  useEffect(() => { onReadyRef.current = onReady; }, [onReady]);
+  useEffect(() => { onErrorRef.current = onError; }, [onError]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -170,7 +170,14 @@ const TradingViewWidget = memo(({
       if (messageHandler) window.removeEventListener('message', messageHandler);
       if (contentObserver) contentObserver.disconnect();
       clearTimeout(secondaryTimer);
-      onError?.();
+      onErrorRef.current?.();
+    };
+
+    const markReady = () => {
+      if (readyFiredRef.current) return;
+      readyFiredRef.current = true;
+      setLoaded(true);
+      onReadyRef.current?.();
     };
 
     /* ─── Helpers: detect error text in a DOM subtree (outside iframe) ─── */
@@ -178,11 +185,9 @@ const TradingViewWidget = memo(({
       'invalid symbol',
       'only available on tradingview',
       'symbol is not available',
-      'non è disponibile',               // Italian variant
+      'non è disponibile',
     ];
     const hasErrorText = (root) => {
-      // Check text in all elements that live in OUR document (not inside the
-      // cross-origin iframe).  querySelectorAll never returns iframe internals.
       const nodes = root.querySelectorAll
         ? [root, ...root.querySelectorAll('*')]
         : [root];
@@ -202,7 +207,6 @@ const TradingViewWidget = memo(({
         observer.disconnect();
 
         /* === SECONDARY ERROR DETECTION AFTER IFRAME LOADS === */
-
         const iframeId = iframe.name || iframe.id || '';
 
         // A) Listen for postMessage error signals from TradingView
@@ -214,7 +218,6 @@ const TradingViewWidget = memo(({
           try {
             d = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
           } catch { return; }
-          // Correlate to our widget (skip if message has an id that doesn't match)
           if (iframeId && d?.id && d.id !== iframeId) return;
           const n = String(d?.name || '').toLowerCase();
           const t = String(d?.type || '').toLowerCase();
@@ -225,9 +228,7 @@ const TradingViewWidget = memo(({
         };
         window.addEventListener('message', messageHandler);
 
-        // B) Keep observing the container for error elements that TradingView's
-        //    embed script may inject OUTSIDE the iframe (e.g. error overlays,
-        //    "symbol not available" placeholders).
+        // B) Keep observing the container for error elements outside the iframe
         contentObserver = new MutationObserver(() => {
           if (errorFired) return;
           if (hasErrorText(container)) fireError();
@@ -238,25 +239,20 @@ const TradingViewWidget = memo(({
           characterData: true,
         });
 
-        // C) Scheduled check: after 5 s inspect accessible attributes + DOM text
+        // C) Scheduled check after 5s: inspect accessible attributes + DOM text
         secondaryTimer = setTimeout(() => {
           if (errorFired) return;
-
-          // Check iframe title / aria-label (set by TradingView's embed script)
           const title = (iframe.getAttribute('title') || '').toLowerCase();
           const ariaLabel = (iframe.getAttribute('aria-label') || '').toLowerCase();
           if ([title, ariaLabel].some(a => ERROR_PATTERNS.some(p => a.includes(p)))) {
             fireError();
             return;
           }
-
-          // Final DOM text scan
           if (hasErrorText(container)) {
             fireError();
             return;
           }
-
-          // Cleanup listeners – no error detected; widget is assumed OK
+          // Cleanup — no error detected
           if (messageHandler) window.removeEventListener('message', messageHandler);
           if (contentObserver) contentObserver.disconnect();
         }, 5000);
@@ -280,7 +276,10 @@ const TradingViewWidget = memo(({
       if (contentObserver) contentObserver.disconnect();
       if (container) container.innerHTML = '';
     };
-  }, [type, configStr, height, markReady, onError]);
+    // ⚠️ Only re-run when widget identity changes (type/config/height).
+    // Callbacks are accessed via refs — never trigger re-mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, configStr, height]);
 
   const isDark = config?.colorTheme === 'dark';
 

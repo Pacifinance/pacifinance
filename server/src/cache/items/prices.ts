@@ -1,3 +1,7 @@
+import { ExtDate } from "../../libs/datelib"
+
+import cache from "../cache"
+
 /**
  * Contains all crypto metadata and prices
  */
@@ -20,6 +24,36 @@ type CoinCachedData = {
     }
 }
 
+// Sparkline parameters
+
+const sparklineDays = 90
+const nPointsPerDay = 24
+const nPointsPerHour = nPointsPerDay / 24
+const nPoints = sparklineDays * nPointsPerDay
+
+function buildSparkline(cachedData: CoinCachedData[string] | undefined, newSparkline: number[], newLastUpdate: string) {
+    if (!cachedData)
+        return newSparkline
+
+    if (newSparkline.length === 0)
+        return cachedData.sparkline
+
+    // Find out how many new points there are in the new sparkline
+    const lastUpdateDate = new ExtDate(cachedData.lastUpdated)
+    const newLastUpdateDate = new ExtDate(newLastUpdate)
+    const nPointsBehind = Math.floor(((+newLastUpdateDate) - (+lastUpdateDate)) / (1000 * 60 * 60 / nPointsPerHour))
+
+    // Add that many new points from the new sparkline at the end of the cached sparkline
+    const newPoints = newSparkline.slice(newSparkline.length - nPointsBehind)
+    cachedData.sparkline.push(...newPoints)
+
+    // If there are more points than expected, delete them from the tail of the queue
+    if (cachedData.sparkline.length > nPoints)
+        cachedData.sparkline.splice(0, cachedData.sparkline.length - nPoints)
+
+    return cachedData.sparkline
+}
+
 /**
  * Retrieves the crypto prices from CoinGecko
  * @returns Object to store in the database and cache
@@ -34,6 +68,8 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
         headers: {accept: 'application/json', 'x-cg-demo-api-key': process.env.CG_KEY}
     }
 
+    const expiredCachedPrices = await cache.get("crypto") as CoinCachedData | null
+
     const res = await fetch(url, options)
     if (res.status !== 200) {
         console.log("Error while fetching crypto prices")
@@ -43,6 +79,8 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
     let res_data = await res.json()
     let data: CoinCachedData = {}
     for (let coin of res_data) {
+        const oldCoinData = expiredCachedPrices ? expiredCachedPrices[coin.id] : undefined
+
         data[coin.id] = {
             name: coin.name,
             image: coin.image,
@@ -56,7 +94,7 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
             athDate: coin.ath_date,
             atl: coin.atl,
             atlDate: coin.atl_date,
-            sparkline: coin.sparkline_in_7d.price,
+            sparkline: buildSparkline(oldCoinData, coin.sparkline_in_7d.price, coin.last_updated),
             lastUpdated: coin.last_updated
         }
     }

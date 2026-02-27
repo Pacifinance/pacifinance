@@ -24,6 +24,20 @@ type CoinCachedData = {
     }
 }
 
+// Coins
+
+/**
+ * URL-encoded list of coin IDs
+ */
+const coins = [
+    "bitcoin", "solana", "ethereum", "polkadot", "crypto-com-chain", "binancecoin",
+    "usd-coin", "tether", "cardano", "okb", "uniswap", "ripple", "paypal-usd", 
+    "polygon-ecosystem-token", "dogecoin", "shiba-inu", "tron", "stellar",
+    "avalanche-2", "internet-computer", "pancakeswap-token", "bonk", "pepe",
+    "render-token", "algorand", "cosmos", "sui", "dai", "hedera-hashgraph",
+    "chainlink", "monero", "hyperliquid"]
+    .join("%2C")
+
 // Sparkline parameters
 
 const sparklineDays = 90
@@ -59,10 +73,7 @@ function buildSparkline(cachedData: CoinCachedData[string] | undefined, newSpark
  * @returns Object to store in the database and cache
  */
 async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
-    const currency = "eur"
-    const coins = "bitcoin,solana,ethereum,polkadot,crypto-com-chain,binancecoin,usd-coin,tether,matic-network,cardano,okb,uniswap".replace(",", "%2C")
-    const sparkline = "true"
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${coins}&sparkline=${sparkline}`
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=${coins}&sparkline=true`
     const options: any = {
         method: 'GET',
         headers: {accept: 'application/json', 'x-cg-demo-api-key': process.env.CG_KEY}

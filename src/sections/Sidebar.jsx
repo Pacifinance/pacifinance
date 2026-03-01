@@ -2,11 +2,10 @@ import React, { useState, useContext, useEffect } from "react";
 import { Select, MenuItem } from "@mui/material";
 import { BiTrendingUp } from "react-icons/bi";
 import {
-    AiOutlineFundProjectionScreen,
     AiOutlineTrophy,
     AiOutlineDotChart,
 } from "react-icons/ai";
-import { BsBook, BsInfoCircle } from "react-icons/bs";
+import { BsBook, BsInfoCircle, BsGraphUp } from "react-icons/bs";
 import { FaUser, FaBullseye } from "react-icons/fa";
 import Tooltip from "@mui/material/Tooltip";
 import { HiOutlinePencilAlt } from "react-icons/hi";
@@ -408,10 +407,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     index: 4,
                                 },
                                 {
-                                    icon: AiOutlineFundProjectionScreen,
+                                    icon: BsGraphUp,
                                     route: "/market-prices",
                                     tooltip: translations.sidebar.marketPrices,
                                     index: 5,
+                                    iconSize: "18px",
                                 },
                                 {
                                     icon: BsInfoCircle,
@@ -419,7 +419,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     tooltip: translations.sidebar.info,
                                     index: 6,
                                 },
-                            ].map(({ icon, route, tooltip, index }) => {
+                            ].map(({ icon, route, tooltip, index, iconSize }) => {
                                 const MenuIcon = icon;
                                 return (
                                 <Tooltip key={index} title={tooltip} placement="right">
@@ -488,7 +488,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         />
                                         <MenuIcon
                                             style={{
-                                                fontSize: "22px",
+                                                fontSize: iconSize || "22px",
                                                 filter:
                                                     activePageIndex === index
                                                         ? `drop-shadow(0 0 4px ${theme.buttonBackgroundColor}40)`

@@ -7,8 +7,8 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { removeLanguageFromPath } from '../utils/i18nRouting';
 import { BiTrendingUp } from 'react-icons/bi';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
-import { AiOutlineDotChart, AiOutlineFundProjectionScreen } from 'react-icons/ai';
-import { BsBook, BsInfoCircle } from 'react-icons/bs';
+import { AiOutlineDotChart } from 'react-icons/ai';
+import { BsBook, BsInfoCircle, BsGraphUp } from 'react-icons/bs';
 import { FaUser, FaBullseye } from 'react-icons/fa';
 import { IoGridOutline } from 'react-icons/io5';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
@@ -62,7 +62,7 @@ const BottomNavBar = ({ handleLogout }) => {
     const morePages = [
         { path: '/charts-statistics', icon: <AiOutlineDotChart size={20} />, label: translations?.sidebar?.chartsStatistics || 'Charts' },
         { path: '/comparison', icon: <CompareArrowsIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.comparison || 'Comparison' },
-        { path: '/market-prices', icon: <AiOutlineFundProjectionScreen size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
+        { path: '/market-prices', icon: <BsGraphUp size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
         { path: '/knowledge', icon: <BsBook size={20} />, label: translations?.sidebar?.knowledge || 'Knowledge' },
         { path: '/info', icon: <BsInfoCircle size={20} />, label: translations?.sidebar?.info || 'Info' },
     ];

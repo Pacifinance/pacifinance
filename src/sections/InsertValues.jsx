@@ -363,8 +363,6 @@ export default function InsertValue({
 
   // Modal states
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
-  const [isConfirmIncomeOpen, setIsConfirmIncomeOpen] = useState(false);
-  const [isConfirmOutflowOpen, setIsConfirmOutflowOpen] = useState(false);
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
@@ -1276,10 +1274,6 @@ export default function InsertValue({
         <InsertModals
           isConfirmBalanceOpen={isConfirmBalanceOpen}
           setIsConfirmBalanceOpen={setIsConfirmBalanceOpen}
-          isConfirmIncomeOpen={isConfirmIncomeOpen}
-          setIsConfirmIncomeOpen={setIsConfirmIncomeOpen}
-          isConfirmOutflowOpen={isConfirmOutflowOpen}
-          setIsConfirmOutflowOpen={setIsConfirmOutflowOpen}
           showConfirmationDeleteIncome={showConfirmationDeleteIncome}
           setShowConfirmationDeleteIncome={setShowConfirmationDeleteIncome}
           showConfirmationDeleteOutflow={showConfirmationDeleteOutflow}
@@ -1296,21 +1290,10 @@ export default function InsertValue({
           bondsValue={bondsValue}
           fundsValue={fundsValue}
           goldValue={goldValue}
-          categoryIncome={categoryIncome}
-          income={income}
-          noteIncomeAreaValue={noteIncomeAreaValue}
-          incomeDate={incomeDate}
-          categoryOutflow={categoryOutflow}
-          typoOutflow={typoOutflow}
-          outflow={outflow}
-          noteOutflowAreaValue={noteOutflowAreaValue}
-          outflowDate={outflowDate}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           options={options}
           onConfirmBalance={handleConfirmBalance}
-          onConfirmIncome={() => handleConfirmInEx(false)}
-          onConfirmOutflow={() => handleConfirmInEx(true)}
           onConfirmDeleteIncome={handleIncomesDelete}
           onConfirmDeleteOutflow={handleOutflowsDelete}
         />

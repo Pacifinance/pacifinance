@@ -1319,7 +1319,7 @@ Sparkline.displayName = 'Sparkline';
 
 /* ─── Detail Sparkline (Interactive Recharts version for detail view) ─── */
 
-const DetailSparkline = React.memo(({ data, color, timeRange = '7d', theme, fmtPrice: externalFmtPrice }) => {
+const DetailSparkline = React.memo(({ data, color, timeRange = '7d', theme, fmtPrice: externalFmtPrice, fromEUR: convertFromEUR }) => {
   if (!data || data.length < 2) return null;
 
   const isDark = theme?.mode === 'dark';
@@ -1362,12 +1362,13 @@ const DetailSparkline = React.memo(({ data, color, timeRange = '7d', theme, fmtP
     return d.toLocaleDateString([], { month: 'short', year: '2-digit' });
   };
 
-  // Format Y-axis ticks
+  // Format Y-axis ticks — convert EUR → display currency for consistent labels
   const formatYTick = (value) => {
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
-    if (value >= 1) return value.toFixed(1);
-    if (value >= 0.01) return value.toFixed(3);
-    return value.toFixed(5);
+    const v = convertFromEUR ? convertFromEUR(value) : value;
+    if (v >= 1000) return `${(v / 1000).toFixed(1)}k`;
+    if (v >= 1) return v.toFixed(1);
+    if (v >= 0.01) return v.toFixed(3);
+    return v.toFixed(5);
   };
 
   // Custom tooltip
@@ -1600,7 +1601,7 @@ const EXCHANGES = {
 export default function MarketPrices() {
   const { theme } = useContext(ThemeContext);
   const { language, translations } = useContext(LanguageContext);
-  const { formatAmount } = useContext(CurrencyContext);
+  const { formatAmount, exchangeRates, currencySymbol, fromEUR } = useContext(CurrencyContext);
   const { isDemoMode } = useContext(UserContext);
   const t = translations?.marketPrices || {};
 
@@ -1680,16 +1681,64 @@ export default function MarketPrices() {
   }, [fetchCrypto]);
 
   /* ─── Process crypto data into sorted, filterable list ─── */
+  // CoinGecko returns all values in USD — convert to EUR (system base currency)
+  // so that formatAmount/fromEUR pipeline works correctly.
+  const usdToEur = exchangeRates?.USD ? (1 / exchangeRates.USD) : (1 / 1.08);
+
   const processedCryptoList = useMemo(() => {
     if (!cryptoData) return [];
 
+    const toEurVal = (v) => (v != null ? v * usdToEur : null);
+
     const list = Object.entries(cryptoData).map(([id, coin]) => {
-      const sparkline = coin.sparkline_in_7d?.price ?? coin.sparkline ?? [];
-      const price = coin.current_price ?? coin.current;
+      const rawSparkline = coin.sparkline_in_7d?.price ?? coin.sparkline ?? [];
+      // Convert sparkline from USD to EUR (CoinGecko sparkline is always in USD)
+      const sparkline = rawSparkline.map(p => p * usdToEur);
+
+      // Backend "current" is already in EUR (converted server-side).
+      // CoinGecko direct API "current_price" is in USD → needs conversion.
+      // TODO: when DB is fixed to store USD, uncomment toEurVal and remove branching.
+      const rawPrice = coin.current_price ?? coin.current;
+      const price = coin.current != null
+        ? rawPrice                  // backend: already EUR
+        : toEurVal(rawPrice);       // CoinGecko direct: USD → EUR
+      // const price = toEurVal(rawPrice); // ← uncomment when DB stores USD
+
+      // Append current price so chart + stats include the latest real-time value
+      if (price != null && sparkline.length > 0) sparkline.push(price);
       const priceStart = sparkline.length > 0 ? sparkline[0] : price;
       const change7d = priceStart > 0
         ? ((price - priceStart) / priceStart) * 100
         : 0;
+
+      // Compute 24h percentage change
+      // Backend's change24h is ABSOLUTE and already in EUR.
+      // CoinGecko direct API has price_change_percentage_24h (already a %).
+      const pctDirect = coin.price_change_percentage_24h ?? coin.priceChangePercentage24h ?? null;
+      let change24h;
+      if (pctDirect != null) {
+        change24h = pctDirect;
+      } else {
+        // Backend's change24h is absolute EUR → compute percentage
+        const absChg = coin.price_change_24h ?? coin.priceChange24h ?? coin.change24h ?? null;
+        if (absChg != null && rawPrice != null && (rawPrice - absChg) > 0) {
+          change24h = (absChg / (rawPrice - absChg)) * 100;
+        } else if (sparkline.length >= 25) {
+          // sparkline[length-25] = 24h ago (length-1 is the appended current price)
+          const ref = sparkline[sparkline.length - 25];
+          change24h = ref > 0 ? ((price - ref) / ref) * 100 : null;
+        } else {
+          change24h = null;
+        }
+      }
+
+      // Absolute 24h price change for stats display
+      // Backend's change24h is already EUR; CoinGecko's price_change_24h is USD
+      const absChange24hRaw = coin.price_change_24h ?? coin.priceChange24h ?? coin.change24h ?? null;
+      const absChange24hEur = (coin.change24h != null)
+        ? absChange24hRaw                          // backend: already EUR
+        : toEurVal(absChange24hRaw);               // CoinGecko: USD → EUR
+      // const absChange24hEur = toEurVal(absChange24hRaw); // ← uncomment when DB stores USD
 
       return {
         id,
@@ -1698,30 +1747,27 @@ export default function MarketPrices() {
         image: coin.image,
         price,
         change7d,
-        // Prefer backend-provided change24h; fall back to sparkline-derived 24h change
-        change24h: coin.price_change_percentage_24h ?? coin.change24h ?? (sparkline.length >= 24
-            ? ((price - sparkline[sparkline.length - 24]) / sparkline[sparkline.length - 24]) * 100
-            : null),
+        change24h,
         sparkline,
-        // Market data
-        marketCap:                      coin.market_cap                         ?? coin.marketCap                      ?? null,
+        // Market data (convert monetary values USD → EUR)
+        marketCap:                      toEurVal(coin.market_cap                         ?? coin.marketCap)                      ?? null,
         marketCapRank:                  coin.market_cap_rank                    ?? coin.marketCapRank                  ?? null,
-        fullyDilutedValuation:          coin.fully_diluted_valuation            ?? coin.fullyDilutedValuation          ?? null,
-        totalVolume:                    coin.total_volume                       ?? coin.totalVolume                    ?? null,
-        high24h:                        coin.high_24h                           ?? coin.high24h                        ?? null,
-        low24h:                         coin.low_24h                            ?? coin.low24h                         ?? null,
-        priceChange24h:                 coin.price_change_24h                   ?? coin.priceChange24h                 ?? null,
-        marketCapChange24h:             coin.market_cap_change_24h              ?? coin.marketCapChange24h              ?? null,
+        fullyDilutedValuation:          toEurVal(coin.fully_diluted_valuation            ?? coin.fullyDilutedValuation)          ?? null,
+        totalVolume:                    toEurVal(coin.total_volume                       ?? coin.totalVolume)                    ?? null,
+        high24h:                        toEurVal(coin.high_24h                           ?? coin.high24h)                        ?? null,
+        low24h:                         toEurVal(coin.low_24h                            ?? coin.low24h)                         ?? null,
+        priceChange24h:                 absChange24hEur                                                                          ?? null,
+        marketCapChange24h:             toEurVal(coin.market_cap_change_24h              ?? coin.marketCapChange24h)              ?? null,
         marketCapChangePercentage24h:   coin.market_cap_change_percentage_24h   ?? coin.marketCapChangePercentage24h    ?? null,
-        // Supply
+        // Supply (NOT monetary — these are coin counts, no conversion needed)
         circulatingSupply:              coin.circulating_supply                 ?? coin.circulatingSupply               ?? null,
         totalSupply:                    coin.total_supply                       ?? coin.totalSupply                     ?? null,
         maxSupply:                      coin.max_supply                         ?? coin.maxSupply                       ?? null,
-        // Historical
-        ath:                            coin.ath                                ?? null,
+        // Historical (convert monetary values USD → EUR)
+        ath:                            toEurVal(coin.ath)                                ?? null,
         athChangePercentage:            coin.ath_change_percentage              ?? coin.athChangePercentage             ?? null,
         athDate:                        coin.ath_date                           ?? coin.athDate                         ?? null,
-        atl:                            coin.atl                                ?? null,
+        atl:                            toEurVal(coin.atl)                                ?? null,
         atlChangePercentage:            coin.atl_change_percentage              ?? coin.atlChangePercentage             ?? null,
         atlDate:                        coin.atl_date                           ?? coin.atlDate                         ?? null,
         // Misc
@@ -1767,7 +1813,7 @@ export default function MarketPrices() {
     }
 
     return filtered;
-  }, [cryptoData, searchQuery, sortBy]);
+  }, [cryptoData, searchQuery, sortBy, usdToEur]);
 
   /* ─── Summary stats for crypto ─── */
   const cryptoSummary = useMemo(() => {
@@ -1791,14 +1837,17 @@ export default function MarketPrices() {
 
   const fmtPct = (val) => `${val >= 0 ? '+' : ''}${val.toFixed(2)}%`;
 
-  /** Format large numbers in compact notation (1.07T, 28.5B, etc.) */
-  const fmtCompact = (val) => {
-    if (val == null) return '–';
-    if (val >= 1e12) return `$${(val / 1e12).toFixed(2)}T`;
-    if (val >= 1e9) return `$${(val / 1e9).toFixed(2)}B`;
-    if (val >= 1e6) return `$${(val / 1e6).toFixed(1)}M`;
-    if (val >= 1e3) return `$${(val / 1e3).toFixed(1)}K`;
-    return `$${val.toFixed(0)}`;
+  /** Format large numbers in compact notation (1.07T, 28.5B, etc.)
+   *  Values are in EUR (system base) — convert to display currency first. */
+  const fmtCompact = (eurVal) => {
+    if (eurVal == null) return '–';
+    const val = fromEUR(eurVal);
+    const sym = currencySymbol;
+    if (val >= 1e12) return `${sym}${(val / 1e12).toFixed(2)}T`;
+    if (val >= 1e9) return `${sym}${(val / 1e9).toFixed(2)}B`;
+    if (val >= 1e6) return `${sym}${(val / 1e6).toFixed(1)}M`;
+    if (val >= 1e3) return `${sym}${(val / 1e3).toFixed(1)}K`;
+    return `${sym}${val.toFixed(0)}`;
   };
 
   /** Format large supply numbers without $ */
@@ -2196,6 +2245,7 @@ export default function MarketPrices() {
               timeRange={effectiveRange}
               theme={theme}
               fmtPrice={fmtPrice}
+              fromEUR={fromEUR}
             />
           </DetailCard>
         )}

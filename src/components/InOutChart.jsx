@@ -246,7 +246,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         justifyContent: 'center',
         padding: isMobile ? '0.5rem 0' : '1rem 0'
       }}>
-        <div style={{ width: '100%', height: isMobile ? 240 : 320 }}>
+        <div style={{ width: '100%', height: isMobile ? 300 : 400 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -255,7 +255,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 cy="50%"
                 labelLine={false}
                 label={renderInternalLabel}
-                outerRadius={outerR}
+                outerRadius="75%"
                 fill="#8884d8"
                 dataKey="value"
               >

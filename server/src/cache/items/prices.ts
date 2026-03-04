@@ -3,7 +3,39 @@ import { ExtDate } from "../../libs/datelib"
 import cache from "../cache"
 
 /**
- * Contains all crypto metadata and prices
+ * Contains all crypto metadata and prices fetched from CoinGecko
+ */
+type CoinsFetchedSimpleData = {
+    id: string,
+    name: string,
+    image: string,
+    current_price: number,
+    total_volume: number,
+    market_cap: number,
+    price_change_24h: number,
+    circulating_supply: number,
+    market_cap_rank: number,
+    ath: number,
+    ath_date: string,
+    atl: number,
+    atl_date: string,
+    sparkline_in_7d: {
+        price: number[]
+    },
+    last_updated: string
+}
+
+/**
+ * Contains the historic prices for a single coin fetched from CoinGecko
+ */
+type CoinFetchedMarketData = {
+    prices: number[][],
+    market_caps: number[][],
+    total_volumes: number[][]
+}
+
+/**
+ * Contains all crypto cached metadata and prices
  */
 type CoinCachedData = {
     [coinId: string]: {
@@ -19,12 +51,19 @@ type CoinCachedData = {
         athDate: string,
         atl: number,
         atlDate: string,
-        sparkline: number[],
+        sparkline7D: number[],
+        sparklineHistoric: number[],
         lastUpdated: string
     }
 }
 
-// Coins
+// Coins parameters
+
+const cgApiUrl = "https://api.coingecko.com/api/v3"
+const options: any = {
+    method: 'GET',
+    headers: {accept: 'application/json', 'x-cg-demo-api-key': process.env.CG_KEY}
+}
 
 /**
  * URL-encoded list of coin IDs
@@ -35,37 +74,42 @@ const coins = [
     "polygon-ecosystem-token", "dogecoin", "shiba-inu", "tron", "stellar",
     "avalanche-2", "internet-computer", "pancakeswap-token", "bonk", "pepe",
     "render-token", "algorand", "cosmos", "sui", "dai", "hedera-hashgraph",
-    "chainlink", "monero", "hyperliquid"]
-    .join("%2C")
+    "chainlink", "monero", "hyperliquid"
+].join("%2C")
 
 // Sparkline parameters
 
-const sparklineDays = 90
-const nPointsPerDay = 24
-const nPointsPerHour = nPointsPerDay / 24
-const nPoints = sparklineDays * nPointsPerDay
+const historicSparklineDays = 365 * 5
 
-function buildSparkline(cachedData: CoinCachedData[string] | undefined, newSparkline: number[], newLastUpdate: string) {
-    if (!cachedData)
-        return newSparkline
+async function buildHistoricSparkline(oldCoinData: CoinCachedData[string] | undefined,
+    newCoinData: CoinsFetchedSimpleData, fetchHistoric: boolean) {
 
-    if (newSparkline.length === 0)
-        return cachedData.sparkline
+    let historicData = oldCoinData?.sparklineHistoric ?? []
 
-    // Find out how many new points there are in the new sparkline
-    const lastUpdateDate = new ExtDate(cachedData.lastUpdated)
-    const newLastUpdateDate = new ExtDate(newLastUpdate)
-    const nPointsBehind = Math.floor(((+newLastUpdateDate) - (+lastUpdateDate)) / (1000 * 60 * 60 / nPointsPerHour))
+    if (fetchHistoric) {
+        const historicDataUrl = cgApiUrl + `/coins/${newCoinData.id}/market_chart?vs_currency=eur&days=365`
+        const res = await fetch(historicDataUrl, options)
+        if (res.status !== 200) {
+            console.log(`Error while fetching historic data for ${newCoinData.id}`)
+            return []
+        }
+        const marketData = await res.json() as CoinFetchedMarketData
+        historicData = marketData.prices
+            .slice(0, -1) // ignore the last value (today's price)
+            .map((value) => { return value[1] }) // keep the price (value[1]), ignore the timestamp (value[0])
+        console.log(`Fetched historic data for ${newCoinData.id}`)
+    }
 
-    // Add that many new points from the new sparkline at the end of the cached sparkline
-    const newPoints = newSparkline.slice(newSparkline.length - nPointsBehind)
-    cachedData.sparkline.push(...newPoints)
+    // When the day changes, push the last price of that day to the historic data queue
+    const lastUpdateDate = new ExtDate(newCoinData.last_updated)
+    if (lastUpdateDate.getUTCHours() === 0 && newCoinData.sparkline_in_7d.price.length > 1) // at midnight
+        historicData.push(...newCoinData.sparkline_in_7d.price.slice(-2, -1)) // get the second-last value (price of yesterday at 23)
 
-    // If there are more points than expected, delete them from the tail of the queue
-    if (cachedData.sparkline.length > nPoints)
-        cachedData.sparkline.splice(0, cachedData.sparkline.length - nPoints)
+    // Remove the oldest values if the queue is too big
+    if (historicData.length > historicSparklineDays)
+        historicData.splice(0, historicData.length - historicSparklineDays)
 
-    return cachedData.sparkline
+    return historicData
 }
 
 /**
@@ -73,24 +117,43 @@ function buildSparkline(cachedData: CoinCachedData[string] | undefined, newSpark
  * @returns Object to store in the database and cache
  */
 async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=${coins}&sparkline=true`
-    const options: any = {
-        method: 'GET',
-        headers: {accept: 'application/json', 'x-cg-demo-api-key': process.env.CG_KEY}
-    }
+    /**
+     * To retrieve the last year worth of data, an additional API request per
+     * coin is necessary. This can cause the system to incur in the demo API
+     * usage limits. So, the idea is to fetch the historic data of a single coin
+     * for each call of this function. This means that if the historic data of a
+     * coin is fetched, the historic data of the next coin will be fetched after
+     * one hour (1 call per hour is the call frequency of this function).
+     * Of course, if the historic data of a coin is already present in the cache,
+     * no historic data is fetched for that coin.
+     */
+    let historicDataFetched = false
 
+    // Retrieve from the cache the expired prices
     const expiredCachedPrices = await cache.get("crypto") as CoinCachedData | null
 
-    const res = await fetch(url, options)
+    // Fetch the data of all coins
+    const currentDataUrl = cgApiUrl + `/coins/markets?vs_currency=eur&ids=${coins}&sparkline=true`
+    const res = await fetch(currentDataUrl, options)
     if (res.status !== 200) {
-        console.log("Error while fetching crypto prices")
-        return null
+        console.log("Error while fetching crypto current data")
+        return expiredCachedPrices
     }
+    let coinsData = await res.json() as CoinsFetchedSimpleData[]
 
-    let res_data = await res.json()
+    // Build the object with the updated data of all coins
     let data: CoinCachedData = {}
-    for (let coin of res_data) {
+    for (let coin of coinsData) {
         const oldCoinData = expiredCachedPrices ? expiredCachedPrices[coin.id] : undefined
+
+        // Check whether the historic data must be fetched for this coin
+        let fetchHistoricReq = false
+        if (!historicDataFetched &&
+            (!oldCoinData || !oldCoinData.sparklineHistoric || oldCoinData.sparklineHistoric.length < 364)
+        ) {
+            fetchHistoricReq = true
+            historicDataFetched = true
+        }
 
         data[coin.id] = {
             name: coin.name,
@@ -105,7 +168,8 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
             athDate: coin.ath_date,
             atl: coin.atl,
             atlDate: coin.atl_date,
-            sparkline: buildSparkline(oldCoinData, coin.sparkline_in_7d.price, coin.last_updated),
+            sparkline7D: coin.sparkline_in_7d.price,
+            sparklineHistoric: await buildHistoricSparkline(oldCoinData, coin, fetchHistoricReq),
             lastUpdated: coin.last_updated
         }
     }

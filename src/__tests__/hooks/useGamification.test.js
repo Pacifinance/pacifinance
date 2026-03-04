@@ -39,7 +39,7 @@ const emptyUser = () => ({
 
 /** Active user with N months of real data */
 const activeUser = (months = 6) => {
-  const now = new Date(2026, 1, 1); // Feb 2026
+  const now = new Date(); // Use current date for streak alignment
   const balances = Array.from({ length: 13 }, (_, i) => ({
     date: new Date(now.getFullYear(), now.getMonth() - i, 1).toISOString(),
     balance: i < months

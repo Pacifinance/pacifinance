@@ -114,9 +114,34 @@ export const getLocalizedPath = (to, language) => {
  */
 export const detectBrowserLanguage = () => {
   const browserLang = navigator.language || navigator.userLanguage;
+  
+  // First try exact match (e.g., pt-BR)
+  if (availableLanguages.includes(browserLang)) {
+    return browserLang;
+  }
+  
+  // Then try lowercase exact match (e.g., pt-br → pt-BR)
+  const lowerBrowser = browserLang.toLowerCase();
+  const exactMatch = availableLanguages.find(lang => lang.toLowerCase() === lowerBrowser);
+  if (exactMatch) {
+    return exactMatch;
+  }
+  
+  // Then try base language code (e.g., pt-BR → pt, or fr-CA → fr)
   const langCode = browserLang.split('-')[0].toLowerCase();
   
-  return availableLanguages.includes(langCode) ? langCode : defaultLanguage;
+  // Check if base code matches any available language
+  if (availableLanguages.includes(langCode)) {
+    return langCode;
+  }
+  
+  // Check if any available language starts with the base code (e.g., pt → pt-BR)
+  const partialMatch = availableLanguages.find(lang => lang.toLowerCase().startsWith(langCode));
+  if (partialMatch) {
+    return partialMatch;
+  }
+  
+  return defaultLanguage;
 };
 
 /**

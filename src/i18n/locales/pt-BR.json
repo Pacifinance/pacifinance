@@ -1,0 +1,2184 @@
+{
+    "assets": {
+        "bank": "Banco",
+        "cash": "Dinheiro",
+        "stocks": "Ações",
+        "crypto": "Cripto",
+        "etf": "ETF",
+        "commodities": "Commodities",
+        "bonds": "Títulos",
+        "realEstate": "Imóveis",
+        "vehicles": "Veículos",
+        "valuables": "Objetos de valor",
+        "pension": "Previdência",
+        "tot": "Total"
+    },
+    "general": {
+        "noDataTitle": "Nenhum dado disponível",
+        "noDataMessage": "Você ainda não inseriu nenhum dado. Comece a registrar suas finanças para ver as estatísticas!",
+        "total": "Total",
+        "average": "Média",
+        "median": "Mediana",
+        "yes": "Sim",
+        "no": "Não",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "delete": "Excluir",
+        "close": "Fechar",
+        "loading": "Carregando...",
+        "error": "Erro",
+        "success": "Sucesso",
+        "warning": "Aviso",
+        "currency": "Moeda",
+        "viewAll": "Ver tudo",
+        "less": "Menos",
+        "compact": "Compacto",
+        "extended": "Expandido",
+        "others": "Outros",
+        "otherAssets": "Outros ativos"
+    },
+    "cookie": {
+        "title": "Nós usamos cookies 🍪",
+        "message": "Este site usa cookies técnicos necessários para o funcionamento do serviço. Não usamos nenhum cookie de rastreamento ou perfilamento. Você pode saber mais em nossa",
+        "privacyPolicy": "Política de Privacidade",
+        "and": "e",
+        "cookiePolicy": "Política de Cookies",
+        "accept": "Aceitar",
+        "decline": "Recusar"
+    },
+    "months": {
+        "jan": "janeiro",
+        "feb": "fevereiro",
+        "mar": "março",
+        "apr": "abril",
+        "may": "maio",
+        "jun": "junho",
+        "jul": "julho",
+        "aug": "agosto",
+        "sep": "setembro",
+        "oct": "outubro",
+        "nov": "novembro",
+        "dec": "dezembro",
+        "january": "Janeiro",
+        "february": "Fevereiro",
+        "march": "Março",
+        "april": "Abril",
+        "mayFull": "Maio",
+        "june": "Junho",
+        "july": "Julho",
+        "august": "Agosto",
+        "september": "Setembro",
+        "october": "Outubro",
+        "november": "Novembro",
+        "december": "Dezembro"
+    },
+    "landing": {
+        "heroTitle": "Assuma o controle das suas finanças",
+        "heroSubtitle": "Monitore, analise e faça seu patrimônio crescer com o PaciFinance — o aplicativo web gratuito de gestão financeira pessoal, impulsionado por uma comunidade real.",
+        "getStarted": "Começar",
+        "login": "Entrar",
+        "trustedBy": "Confiado por mais de {users} usuários há {years} anos",
+        "featuresTitle": "Tudo o que você precisa para gerenciar suas finanças",
+        "featuresSubtitle": "Ferramentas poderosas para rastrear, analisar e otimizar sua vida financeira — tudo em um só lugar.",
+        "feature1Title": "Rastreamento financeiro completo",
+        "feature1Desc": "Monitore saldos bancários, dinheiro, ações, ETFs, cripto, commodities, títulos, imóveis, veículos, objetos de valor e previdência, tudo em uma única plataforma.",
+        "feature2Title": "Comparação anônima com a comunidade",
+        "feature2Desc": "Descubra como você se compara com usuários semelhantes, sem jamais compartilhar dados pessoais.",
+        "feature3Title": "Insights e tendências inteligentes",
+        "feature3Desc": "Obtenha análises detalhadas das suas despesas, receitas e tendências patrimoniais com gráficos e estatísticas poderosos.",
+        "feature4Title": "Metas e limites financeiros",
+        "feature4Desc": "Defina metas de economia e limites de gastos, e acompanhe seu progresso com ferramentas visuais.",
+        "feature5Title": "Multi-moeda",
+        "feature5Desc": "Suporta 19+ moedas com taxas de câmbio em tempo real. Visualize seus dados na moeda de sua preferência.",
+        "feature6Title": "Importação de dados",
+        "feature6Desc": "Importe seus dados financeiros de CSV ou Excel. Migre facilmente de outros aplicativos ou extratos bancários.",
+        "feature7Title": "Personalização do painel",
+        "feature7Desc": "Organize seu painel arrastando e soltando com visualizações compactas para ver o que mais importa para você.",
+        "feature8Title": "Preços de mercado",
+        "feature8Desc": "Veja preços em tempo real de criptomoedas, ETFs, ações e commodities diretamente no aplicativo.",
+        "feature9Title": "Badges e conquistas",
+        "feature9Desc": "Desbloqueie badges conforme você atinge marcos financeiros. Colecione todos e transforme finanças em um jogo!",
+        "howItWorksTitle": "Comece em 3 passos simples",
+        "howItWorksSubtitle": "Sem email, sem identidade, sem verificação bancária. Apenas você e seus dados financeiros.",
+        "step1Title": "Cadastre-se com privacidade",
+        "step1Desc": "Crie uma conta sem email ou informações pessoais. Seu identificador é gerado automaticamente.",
+        "step2Title": "Adicione seus dados",
+        "step2Desc": "Insira seus saldos, despesas e receitas manualmente ou importe dados de uma planilha.",
+        "step3Title": "Obtenha insights",
+        "step3Desc": "Explore gráficos, rankings e comparações anônimas com usuários semelhantes.",
+        "communityTitle": "Junte-se a uma comunidade em crescimento",
+        "communitySubtitle": "Usuários reais, dados reais, privacidade real. Descubra como você se posiciona em comparações anônimas.",
+        "stat1Label": "Usuários cadastrados",
+        "stat2Label": "Saldos registrados",
+        "stat3Label": "Despesas rastreadas",
+        "stat4Label": "Receitas registradas",
+        "privacyTitle": "Projetado para a privacidade",
+        "privacySubtitle": "Seus dados financeiros merecem a máxima proteção. Projetamos o PaciFinance com a privacidade como prioridade.",
+        "privacy1Title": "Sem email necessário",
+        "privacy1Desc": "Cadastre-se com apenas uma senha. Nunca pedimos seu email, nome ou informações pessoais.",
+        "privacy2Title": "Comparações anônimas",
+        "privacy2Desc": "Compare sua situação financeira com usuários semelhantes sem jamais revelar seus dados reais.",
+        "privacy3Title": "Dados criptografados",
+        "privacy3Desc": "Todos os dados são transmitidos e armazenados de forma segura com padrões de criptografia do setor.",
+        "privacy4Title": "Sem cookies de rastreamento",
+        "privacy4Desc": "Usamos apenas cookies técnicos essenciais. Sem rastreamento, sem perfilamento, sem publicidade.",
+        "testDriveTitle": "Experimente o PaciFinance — Sem cadastro",
+        "testDriveSubtitle": "Curioso? Explore o painel com dados de exemplo e descubra todos os recursos sem criar uma conta.",
+        "testDriveButton": "Iniciar modo demonstração",
+        "testDriveNote": "Sem cadastro necessário. Nenhum dado coletado.",
+        "finalCtaTitle": "Pronto para assumir o controle das suas finanças?",
+        "finalCtaSubtitle": "Junte-se a milhares de usuários que já estão gerenciando seu futuro financeiro com o PaciFinance.",
+        "finalCtaButton": "Criar conta gratuita",
+        "finalCtaLogin": "Já tem uma conta?",
+        "finalCtaLoginLink": "Faça login"
+    },
+    "header": {
+        "signIn": "Entrar",
+        "signUp": "Cadastrar",
+        "login": {
+            "title": "Login",
+            "titleButton": "Entrar",
+            "info": "Digite seu ID e senha para continuar",
+            "username": "ID ou Nome de usuário",
+            "password": "Senha",
+            "errorPopup": {
+                "title": "Erro durante o login",
+                "message": "Ocorreu um erro ao fazer login com sua conta. <br><br> Verifique se você digitou o ID e a senha corretamente. <br><br>",
+                "okButton": "ok, entendi"
+            }
+        },
+        "register": {
+            "title": "Cadastro",
+            "titleButton": "Cadastrar",
+            "info": "Nenhum e-mail necessário - o sistema gerará automaticamente seu ID de usuário",
+            "username": "ID ou Nome de usuário",
+            "password": "Senha",
+            "confirmPassword": "Confirmar senha",
+            "errorPopup": {
+                "title": "Erro durante o cadastro",
+                "message": "Ocorreu um erro ao cadastrar sua conta.",
+                "message2": "Por favor, tente novamente em instantes.",
+                "okButton": "ok, entendi"
+            },
+            "successPopup": {
+                "title": "🎉 Conta criada com sucesso!",
+                "message": "Aqui estão suas credenciais de acesso:",
+                "securityMessage": "<strong>💾 Salve essas credenciais agora!</strong><br/>Use um gerenciador de senhas como Bitwarden, 1Password ou LastPass para armazenar com segurança seu ID e senha.",
+                "copied": "Copiado para a área de transferência!",
+                "toCopy": "Copiar seu ID",
+                "okButton": "ok, entendi"
+            }
+        },
+        "logout": "Sair",
+        "demo": {
+            "titleButton": "Experimentar versão Demo",
+            "info": "Para acessar rapidamente, clique no botão abaixo",
+            "button": "Acesso rápido",
+            "demoWarning": "Atenção! Valores aleatórios e não relevantes, usados como exemplo.",
+            "disabledTooltip": "Este recurso está desativado na conta demo. Cadastre-se gratuitamente para desbloqueá-lo!"
+        }
+    },
+    "footer": {
+        "rights": "Todos os direitos reservados.",
+        "description": "A plataforma segura e orientada à privacidade para finanças pessoais. Compare anonimamente com outros usuários mantendo sua privacidade.",
+        "legal": {
+            "title": "Legal",
+            "privacy": "Política de Privacidade",
+            "terms": "Termos de Serviço",
+            "cookies": "Política de Cookies",
+            "disclaimer": "Aviso legal"
+        },
+        "support": {
+            "title": "Suporte",
+            "faq": "FAQ",
+            "pricing": "Preços",
+            "contact": "Contato",
+            "sitemap": "Mapa do site",
+            "roadmap": "Roadmap",
+            "feedback": "Feedback e Bugs"
+        },
+        "community": {
+            "title": "Comunidade",
+            "donationText": "PaciFinance é completamente gratuito e vive apenas de doações.",
+            "supportTitle": "Apoie o Projeto",
+            "supportDescription": "Sua contribuição nos ajuda a manter a plataforma online e desenvolver novos recursos. Toda doação é muito apreciada!"
+        },
+        "languages": {
+            "title": "Idiomas Disponíveis",
+            "description": "PaciFinance está disponível em vários idiomas"
+        },
+        "madeWith": "Feito com",
+        "forPrivacy": "pela sua privacidade"
+    },
+    "roadmap": {
+        "title": "Roadmap",
+        "subtitle": "Descubra para onde o PaciFinance está indo. Cada recurso é projetado pensando na comunidade, também graças ao feedback dos usuários.",
+        "completed": "Concluído",
+        "inProgress": "Em andamento",
+        "planned": "Planejado",
+        "all": "Todos",
+        "features": "Recursos",
+        "experience": "Experiência",
+        "community": "Comunidade",
+        "security": "Segurança",
+        "noItems": "Nenhum item",
+        "feedbackTitle": "Tem uma ideia ou encontrou um bug?",
+        "feedbackDescription": "PaciFinance é um projeto focado na comunidade. Seu feedback é essencial!",
+        "feedbackButton": "Enviar Feedback"
+    },
+    "sidebar": {
+        "dashboard": "Painel",
+        "chartsStatistics": "Gráficos e Estatísticas",
+        "insert": "Inserir",
+        "check": "Verificar Preços",
+        "marketPrices": "Preços de Mercado",
+        "leaderboard": "Classificação",
+        "comparison": "Comparação",
+        "knowledge": "Base de Conhecimento",
+        "info": "Informações",
+        "more": "Mais",
+        "goalsLimits": "Metas e Limites",
+        "logout": "Sair",
+        "privacy": "Privacidade",
+        "account": {
+            "title": "Profile",
+            "subtitle": "Manage and customize your personal information",
+            "id": "User ID: ",
+            "userType": "User Type: ",
+            "nationality": "Nationality: ",
+            "selectNationality": "Select a nationality",
+            "whereWork": "Where do you work: ",
+            "work": "Work: ",
+            "workType": "Work type: ",
+            "selectWork": "Select your work",
+            "selectWhereWork": "Select where you work",
+            "selectWorkType": "Select the type of work",
+            "hoursContract": "Part-time | Full-time",
+            "selectHoursContract": "Select your working hours",
+            "remoteWork": "Remote work",
+            "selectRemoteWork": "Select if you work remotely",
+            "yearsExperience": "Years of experience in the field",
+            "selectYearsExperience": "Select years of experience",
+            "age": "Age",
+            "selectAge": "Select your age",
+            "livingStatus": "Living situation",
+            "selectLivingStatus": "Select your living situation",
+            "livingAlone": "Living alone",
+            "livingWithOthers": "Living with others",
+            "livingWithPartner": "Living with partner",
+            "livingWithFamily": "Living with family",
+            "housingType": "Housing type",
+            "selectHousingType": "Select housing type",
+            "rent": "Rent",
+            "mortgage": "Mortgage",
+            "owned": "Owned",
+            "familyHome": "Family home",
+            "hasChildren": "Do you have children?",
+            "selectHasChildren": "Select if you have children",
+            "preferredCurrency": "Preferred Currency",
+            "selectPreferredCurrency": "Select your currency",
+            "yes": "Yes",
+            "no": "No",
+            "saveButton": "Save profile",
+            "errorPopup": {
+                "title": "Error during profile saving",
+                "message": "An error occurred while saving your profile.",
+                "message2": "Please try again in a moment.",
+                "okButton": "ok fine"
+            },
+            "successPopup": {
+                "title": "Profile updated successfully",
+                "message": "Your profile information has been updated and saved correctly.",
+                "okButton": "ok fine"
+            },
+            "profileCompletion": {
+                "title": "Profile Completion:",
+                "completedFields": "fields completed",
+                "of": "of"
+            },
+            "benefits": {
+                "title": "Why complete your profile?",
+                "subtitle": "Entering your personal data will allow the platform to provide you with much more accurate analysis and comparisons:",
+                "personalizedComparisons": "Your data allows us to compare your finances with users who have similar profiles to yours (same job, age, housing situation, etc.).",
+                "personalizedComparisonsLabel": "Personalized comparisons:",
+                "anonymousNote": "All comparisons are completely anonymous and your personal data always remains private and secure.",
+                "clickToHide": "Click to hide",
+                "clickToLearnMore": "Click to learn more"
+            },
+            "sections": {
+                "basicInfo": "Basic Information",
+                "profileDetails": "Profile Details",
+                "editMode": "Edit Mode Active",
+                "profileProfessional": "Professional Profile",
+                "personalSituation": "Personal Situation",
+                "financialPreferences": "Financial Preferences"
+            },
+            "accountType": "Account Type",
+            "buttons": {
+                "editProfile": "Edit Profile",
+                "cancelEdit": "Cancel Edit",
+                "cancel": "Cancel",
+                "save": "Save Changes",
+                "saveChanges": "Save Changes"
+            }
+        },
+        "deleteAccount": {
+            "title": "Delete account",
+            "info": "Are you sure you want to delete your account? all data will be lost.",
+            "deleteButton": "Delete Account",
+            "confirmButton": "I want delete my account",
+            "cancelButton": "Cancel",
+            "errorPopup": {
+                "title": "Error during account deletion",
+                "message": "An error occurred while deleting your account.",
+                "message2": "Please try again in a moment.",
+                "okButton": "ok fine"
+            },
+            "successPopup": {
+                "title": "Account deleted successfully",
+                "message": "You will be redirected to the registration page. The actual deletion of the account will take place in 30 days, starting from today. To cancel the deletion, you just need to log in even once within these 30 days.",
+                "okButton": "ok fine"
+            }
+        },
+        "changeUsername": {
+            "title": "Change username",
+            "info": "The system will generate a unique and random username for you",
+            "username": "Username",
+            "confirmButton": "I want to change my username",
+            "errorPopup": {
+                "title": "Error during username generation",
+                "message": "An error occurred while generating your username.",
+                "message2": "Please try again in a moment.",
+                "okButton": "ok fine"
+            },
+            "successPopup": {
+                "title": "Generation successful",
+                "message": "Your username is: ",
+                "securityMessage": "We recommend that you save it in a safe place for future access.",
+                "redirectMessage": "You will be redirected to the login page.",
+                "copied": "Copied to clipboard!",
+                "toCopy": "Copy your username",
+                "okButton": "ok fine"
+            }
+        },
+        "changeID": {
+            "title": "Change ID",
+            "info": "The system will generate a unique and random id for you",
+            "username": "ID",
+            "confirmButton": "I want to change my ID",
+            "errorPopup": {
+                "title": "Error during ID generation",
+                "message": "An error occurred while generating your ID.",
+                "message2": "Please try again in a moment.",
+                "okButton": "ok fine"
+            },
+            "successPopup": {
+                "title": "Generation successful",
+                "message": "Your new ID is: ",
+                "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>",
+                "copied": "Copied to clipboard!",
+                "toCopy": "Copy your ID",
+                "okButton": "ok fine"
+            },
+            "errorCopy": "Error during copy to clipboard: "
+        },
+        "changePassword": {
+            "title": "Change password",
+            "info": "Enter your old password and new password",
+            "oldPassword": "Old password",
+            "newPassword": "New password",
+            "confirmPassword": "Confirm password",
+            "confirmButton": "Change password",
+            "errorPopup": {
+                "title": "Error during password change",
+                "message": "An error occurred while changing your password.",
+                "message2": "Please try again in a moment.",
+                "okButton": "ok fine"
+            },
+            "successPopup": {
+                "title": "Your password has been changed successfully.",
+                "message": "You will be redirected to the login page.",
+                "okButton": "ok fine"
+            }
+        },
+        "settings": {
+            "title": "Settings",
+            "light": "Light/Dark mode",
+            "privacy": "Privacy mode",
+            "language": "Change Language",
+            "currency": "Currency",
+            "currencySubtitle": "Select display currency",
+            "deleteAccount": "Delete account (!)",
+            "saveSettings": "Save settings",
+            "themeSection": "Theme and Appearance",
+            "securitySection": "Security",
+            "preferencesSection": "Account Preferences",
+            "dangerZone": "Danger Zone",
+            "backToDashboard": "Back to Dashboard",
+            "bugReport": "Report a bug",
+            "bugReportSubtitle": "Open a report on GitHub",
+            "installApp": "Install as App",
+            "installAppSubtitle": "Add PaciFinance to your home screen"
+        }
+    },
+
+    "whatsNew": {
+        "title": "O que há de novo?",
+        "close": "Fechar",
+        "newBadge": "NOVO"
+    },
+
+    "dashboard": {
+        "title": "Painel",
+        "welcome": "Bem-vindo",
+        "balanceTrend": "Tendência de saldos",
+        "netWorth": "Patrimônio líquido",
+        "monthlyBalance": "Saldo mensal",
+        "monthlyOutflows": "Saídas mensais",
+        "monthlyIncomes": "Receitas mensais",
+        "noData": "Sem dados ainda",
+        "noDataDesc": "Comece a inserir seus dados financeiros para ver o painel",
+        "topCategories": "Categorias principais",
+        "monthSummary": "Resumo do mês",
+        "incomes": "Receitas",
+        "outflows": "Saídas",
+        "balance": "Saldo",
+        "savings": "Economia",
+        "savingsRate": "Taxa de economia",
+        "invested": "Investido",
+        "totalBalance": "Saldo total",
+        "lastUpdate": "Última atualização",
+        "lastDays": "Últimos 30 dias",
+        "vsPrevMonth": "vs mês anterior",
+        "vsPrevYear": "vs ano anterior",
+        "financialInsights": "Insights financeiros",
+        "rankLabel": "Ranking comunitário",
+        "rankSuffix": "º",
+        "topPercent": "Top {0}%",
+        "betterThan": "Melhor que {0}% dos usuários",
+        "goalProgress": "Progresso das metas",
+        "goalReached": "Meta atingida!",
+        "goalRemaining": "{0} restantes",
+        "limitStatus": "Status dos limites",
+        "limitOk": "Dentro do limite",
+        "limitExceeded": "Limite excedido",
+        "limitRemaining": "{0} restantes",
+        "limitOver": "{0} acima",
+        "badges": "Badges",
+        "badgesEarned": "Badges conquistados",
+        "viewAll": "Ver tudo",
+        "noBadgesYet": "Nenhum badge ainda",
+        "earnBadgeHint": "Continue usando o PaciFinance para desbloquear badges!",
+        "quickActions": "Ações rápidas",
+        "updateBalance": "Atualizar saldo",
+        "addOutflow": "Adicionar saída",
+        "addIncome": "Adicionar receita",
+        "financialOverview": "Visão geral financeira",
+        "totalAssets": "Total de ativos",
+        "lastBalanceDate": "Data do último saldo",
+        "monthlyAvgOutflows": "Saída mensal média",
+        "monthlyAvgIncome": "Receita mensal média",
+        "investmentShare": "Parcela de investimento",
+        "cashVsInvested": "Liquidez vs Investido",
+        "cashLabel": "Liquidez",
+        "investedLabel": "Investido",
+        "assetsBreakdown": "Composição dos ativos",
+        "outflowsByCategory": "Saídas por categoria",
+        "incomesByCategory": "Receitas por categoria"
+    },
+    "graphs": {
+        "title": "Gráficos",
+        "balanceHistory": "Histórico de saldos",
+        "balanceComposition": "Composição dos saldos",
+        "outflowsTrend": "Tendência de saídas",
+        "incomesTrend": "Tendência de receitas",
+        "outflowsVsIncomes": "Saídas vs Receitas",
+        "categoryBreakdown": "Divisão por categoria",
+        "monthlyComparison": "Comparação mensal",
+        "noData": "Sem dados ainda",
+        "total": "Total",
+        "average": "Média",
+        "median": "Mediana",
+        "min": "Mín",
+        "max": "Máx",
+        "period": "Período",
+        "last6Months": "Últimos 6 meses",
+        "last12Months": "Últimos 12 meses",
+        "allTime": "Todo o período",
+        "chartType": "Tipo de gráfico",
+        "barChart": "Gráfico de barras",
+        "lineChart": "Gráfico de linhas",
+        "areaChart": "Gráfico de áreas",
+        "pieChart": "Gráfico de pizza",
+        "stackedBar": "Barras empilhadas",
+        "showValues": "Mostrar valores",
+        "hideValues": "Ocultar valores",
+        "cumulative": "Acumulado",
+        "monthly": "Mensal",
+        "totPerCategory": "Total por categoria"
+    },
+    "insert": {
+        "title": "Inserir dados",
+        "subtitle": "Gerencie seu saldo, receitas e saídas",
+        "buttonBalance": "Atualizar saldo",
+        "buttonIncome": "Adicionar receita",
+        "buttonOutflow": "Adicionar saída",
+        "buttonInvestment": "Adicionar investimento",
+        "importFromFile": "Importar de CSV / Excel",
+        "balanceSection": {
+            "titleLiquidity": "Liquidez",
+            "titleInvestments": "Investimentos",
+            "updateButton": "Atualizar seu saldo",
+            "confirmUpdate": "Confirmar atualização do saldo",
+            "successUpdate": "Saldo atualizado com sucesso",
+            "successFullUpdate": "Saldo e atualização de receitas/saídas realizados com sucesso"
+        },
+        "incomeSection": {
+            "placeholderCategory": "Selecione uma categoria",
+            "placeholderNote": "Insira uma nota (opcional)",
+            "updateButton": "Adicionar receita",
+            "editButton": "Salvar alterações",
+            "cancelEdit": "Cancelar edição",
+            "editingLabel": "Editando",
+            "successEdit": "Receita editada com sucesso",
+            "editFailed": "Erro ao editar receita. Tente novamente mais tarde.",
+            "titleListing": "As receitas do mês selecionado",
+            "tableColumns": {
+                "category": "Categoria",
+                "value": "Valor",
+                "note": "Nota",
+                "date": "Data da receita"
+            },
+            "confirmUpdate": "Confirmar inserção de receita",
+            "successUpdate": "Receita inserida com sucesso",
+            "confirmDelete": "Tem certeza que deseja excluir esta receita?",
+            "successDelete": "Receita excluída com sucesso",
+            "deleteBalanceRestore": "Você pode escolher restaurar um dos saldos, ou apenas excluir o registro sem modificar os saldos.",
+            "increaseWhichBalance": "Adicionar a"
+        },
+        "outflowSection": {
+            "placeholderCategory": "Selecione uma categoria",
+            "placeholderTypology": "Selecione uma tipologia",
+            "paymentType": "Tipologia de pagamento",
+            "placeholderNote": "Insira uma nota (opcional)",
+            "updateButton": "Adicionar saída",
+            "editButton": "Salvar alterações",
+            "cancelEdit": "Cancelar edição",
+            "editingLabel": "Editando",
+            "successEdit": "Saída editada com sucesso",
+            "editFailed": "Erro ao editar saída. Tente novamente mais tarde.",
+            "titleListing": "As saídas do mês selecionado",
+            "tableColumns": {
+                "category": "Categoria",
+                "typology": "Tipologia",
+                "value": "Valor",
+                "note": "Nota",
+                "date": "Data da saída"
+            },
+            "confirmUpdate": "Confirmar inserção de saída",
+            "successUpdate": "Saída inserida com sucesso",
+            "confirmDelete": "Tem certeza que deseja excluir esta saída?",
+            "successDelete": "Saída excluída com sucesso",
+            "deleteBalanceRestore": "Você pode escolher restaurar um dos saldos, ou apenas excluir o registro sem modificar os saldos.",
+            "decreaseWhichBalance": "Subtrair de"
+        },
+        "investmentSection": {
+            "placeholderCategory": "Selecione uma categoria",
+            "placeholderTypology": "Selecione uma tipologia",
+            "placeholderNote": "Insira uma nota (opcional)",
+            "updateButton": "Adicionar investimento",
+            "titleListing": "Os investimentos do mês selecionado",
+            "tableColumns": {
+                "category": "Categoria",
+                "typology": "Tipologia",
+                "value": "Valor",
+                "note": "Nota",
+                "date": "Data do investimento"
+            },
+            "confirmUpdate": "Confirmar inserção de investimento",
+            "successUpdate": "Investimento inserido com sucesso",
+            "confirmDelete": "Tem certeza que deseja excluir este investimento?",
+            "successDelete": "Investimento excluído com sucesso",
+            "decreaseWhichBalance": "Subtrair de",
+            "increaseWhichBalance": "Adicionar a"
+        },
+        "errors": {
+            "balanceUpdateFailed": "Erro ao atualizar saldo. Tente novamente mais tarde.",
+            "incomeAddFailed": "Erro ao inserir receita. Tente novamente mais tarde.",
+            "outflowAddFailed": "Erro ao inserir saída. Tente novamente mais tarde.",
+            "incomeDeleteFailed": "Erro ao excluir receita. Tente novamente mais tarde.",
+            "outflowDeleteFailed": "Erro ao excluir saída. Tente novamente mais tarde.",
+            "serverConnectionFailed": "Erro de conexão com o servidor. Verifique sua conexão e tente novamente.",
+            "requestFailed": "Falha na solicitação. Verifique os dados inseridos e tente novamente.",
+            "selectCategory": "Selecione uma categoria",
+            "selectPaymentType": "Selecione um tipo de pagamento",
+            "insertValidValue": "Insira um valor válido maior que 0"
+        }
+    },
+    "comparison": {
+        "title": "Comparação anônima",
+        "subtitle": "Compare seu desempenho financeiro com usuários semelhantes de forma anônima",
+        "sections": {
+            "rankings": {
+                "title": "Rankings",
+                "description": "Veja como você se classifica em relação a outros usuários"
+            },
+            "insights": {
+                "title": "Comparação financeira",
+                "description": "Descubra padrões e oportunidades"
+            },
+            "spending": {
+                "title": "Análise de gastos",
+                "description": "Compare seus hábitos de gastos"
+            },
+            "benchmarks": {
+                "title": "Benchmarks",
+                "description": "Comparações por setor e demografia"
+            }
+        },
+        "cards": {
+            "avgBalance": {
+                "title": "Saldo médio",
+                "description": "Compare seu saldo atual e crescimento de 12 meses com outros usuários",
+                "yourBalance": "Seu saldo",
+                "avgSimilar": "Média de usuários semelhantes",
+                "avgAll": "Média de todos os usuários",
+                "growth12Months": "últimos 12 meses",
+                "noGrowthData": "Dados de crescimento não disponíveis"
+            },
+            "avgIncome": {
+                "title": "Receita mensal",
+                "description": "Compare sua receita mensal média nos últimos 12 meses",
+                "yourIncome": "Sua receita média",
+                "avgSimilar": "Média de usuários semelhantes",
+                "avgAll": "Média de todos os usuários"
+            },
+            "avgOutflows": {
+                "title": "Saídas mensais",
+                "description": "Compare suas saídas mensais médias nos últimos 12 meses",
+                "yourOutflows": "Suas saídas médias",
+                "avgSimilar": "Média de usuários semelhantes",
+                "avgAll": "Média de todos os usuários"
+            },
+            "savingsRate": {
+                "title": "Taxa de economia",
+                "description": "Sua economia como porcentagem da receita",
+                "yourRate": "Sua taxa",
+                "avgAll": "Média de todos os usuários",
+                "avgSimilar": "Média de usuários semelhantes",
+                "last12Months": "Últimos 12 meses",
+                "noData": "Dados insuficientes"
+            },
+            "assetAllocation": {
+                "title": "Alocação de ativos",
+                "description": "Como você distribui seu patrimônio",
+                "currentDistribution": "Distribuição atual",
+                "liquid": "Liquidez",
+                "investments": "Investimentos",
+                "crypto": "Cripto",
+                "other": "Outros",
+                "noAssets": "Nenhum ativo registrado"
+            },
+            "spendingCategories": {
+                "title": "Gastos por categoria",
+                "description": "Onde você gasta seu dinheiro (últimos 12 meses)",
+                "topCategories": "Principais categorias",
+                "otherCategories": "Outras categorias",
+                "noExpenses": "Nenhuma despesa registrada",
+                "avgSimilar": "Média de usuários semelhantes",
+                "avgAll": "Média de todos os usuários"
+            },
+            "showMore": "Mostrar tudo",
+            "showLess": "Mostrar menos"
+        },
+        "insights": {
+            "betterThan": "Você está indo melhor que",
+            "worseThan": "Há espaço para melhoria em comparação com",
+            "average": "Você está na média",
+            "ofUsers": "dos usuários",
+            "inCategory": "na sua categoria"
+        },
+        "profileBanner": {
+            "title": "🚀 Desbloqueie comparações personalizadas!",
+            "description": "Complete seu perfil na página Conta para obter comparações anônimas e automatizadas com usuários semelhantes. Descubra como você se posiciona em relação a outros profissionais!",
+            "action": "Completar perfil"
+        },
+        "tips": {
+            "title": "Dicas personalizadas",
+            "highOutflows": "Considere revisar suas saídas - elas estão acima da média para seu nível de renda",
+            "lowSavings": "Tente aumentar sua taxa de economia para uma saúde financeira melhor",
+            "goodBalance": "Ótimo trabalho! Seu saldo financeiro está acima da média",
+            "diversify": "Considere diversificar seus ativos para uma melhor gestão de risco"
+        }
+    },
+    "leaderboard": {
+        "title": "Ranking ao longo do tempo",
+        "monthRanking": "Ranking referente ao mês: ",
+        "yearRanking": "Ranking referente ao ano: ",
+        "generalRanking": "Rankings gerais: ",
+        "similarRanking": "Rankings de usuários semelhantes: ",
+        "balanceRanking": "Ranking de saldo ",
+        "incomeRanking": "Ranking de receita ",
+        "outflowRanking": "Ranking de saídas ",
+        "infoOutflowRank": "Este ranking mostra nas posições mais altas quem gasta mais.",
+        "noRank": "Rankings não disponíveis",
+        "compliments": "Parabéns! Você está no top ",
+        "superCompliments": "Incrível!! Você está no top ",
+        "top": "Você está no top ",
+        "users": " dos usuários!",
+        "lowerOutflow": " Você está entre os usuários que menos gastam!",
+        "higherOutflow": " Atenção! Você está entre os usuários que mais gastam!",
+        "higherIncome": " Você está entre os usuários que mais ganham!",
+        "mediumRank": "Você está na média dos usuários!",
+        "demoWarning": "Atenção! Valores aleatórios e não relevantes, usados como exemplo.",
+        "rankings": {
+            "title": "Seus rankings",
+            "monthData": "Dados de",
+            "generalRanking": "Ranking geral",
+            "generalSubtitle": "Comparação com todos os usuários",
+            "similarRanking": "Usuários semelhantes",
+            "similarSubtitle": "Comparação com perfis semelhantes ao seu",
+            "balance": "Saldo",
+            "income": "Receita",
+            "outflows": "Saídas",
+            "topPerformance": "Ótima posição!",
+            "goodPerformance": "Boa posição",
+            "canImprove": "Espaço para crescer",
+            "noData": "Dados não disponíveis",
+            "descriptions": {
+                "balance": {
+                    "top": "Excelente gestão patrimonial! Continue assim",
+                    "medium": "Você está construindo bem seu patrimônio",
+                    "low": "Cada pequeno passo conta, continue economizando!"
+                },
+                "income": {
+                    "top": "Ótima receita! Você está no caminho certo",
+                    "medium": "Boa receita, você tem uma base sólida",
+                    "low": "Existem oportunidades de crescimento para sua receita"
+                },
+                "outflows": {
+                    "top": "Excelente controle de saídas!",
+                    "medium": "Você gerencia bem suas saídas",
+                    "low": "Você poderia otimizar algumas saídas, mas está no caminho certo"
+                }
+            },
+            "motivational": {
+                "top": {
+                    "title": "🎉 Fantástico!",
+                    "balance": "Sua gestão patrimonial é excelente! Continue com essa estratégia vencedora.",
+                    "income": "Sua receita é ótima! Você construiu uma base financeira sólida.",
+                    "outflows": "Você controla muito bem as saídas! Sua disciplina financeira é admirável."
+                },
+                "medium": {
+                    "title": "👍 No caminho certo!",
+                    "balance": "Você está construindo bem seu patrimônio. Com consistência, vai alcançar seus objetivos!",
+                    "income": "Você tem uma boa base de receita. Continue trabalhando nos seus objetivos financeiros!",
+                    "outflows": "Você gerencia bem as saídas. Pequenos ajustes podem trazer grandes resultados!"
+                },
+                "low": {
+                    "title": "💪 Oportunidades de crescimento!",
+                    "balance": "Todo grande patrimônio começa com pequenos passos. Continue economizando, mesmo que pouco a pouco!",
+                    "income": "Existem oportunidades para aumentar sua receita. Considere novos caminhos e habilidades!",
+                    "outflows": "Revisar algumas saídas pode liberar recursos valiosos. Um orçamento detalhado pode ajudar!"
+                }
+            },
+            "popup": {
+                "close": "Perfeito!"
+            }
+        }
+    },
+    "legal": {
+        "privacy": {
+            "title": "Política de Privacidade",
+            "introduction": {
+                "title": "Introdução",
+                "content": "Sua privacidade é nossa prioridade absoluta. O PaciFinance foi projetado desde o início com a privacidade em seu núcleo. Esta política explica como tratamos seus dados com o máximo respeito pela sua privacidade."
+            },
+            "dataCollection": {
+                "title": "Coleta de Dados",
+                "content": "Coletamos apenas os dados essenciais para o funcionamento do serviço:",
+                "items": [
+                    "Dados financeiros inseridos voluntariamente (sempre anônimos)",
+                    "Cookies técnicos necessários para o funcionamento",
+                    "Dados de uso agregados e anônimos"
+                ]
+            },
+            "dataUsage": {
+                "title": "Uso dos Dados",
+                "content": "Seus dados são usados exclusivamente para fornecer as funcionalidades da plataforma e para comparações anônimas. Não vendemos, compartilhamos nem usamos seus dados para fins comerciais."
+            },
+            "anonymity": {
+                "title": "Anonimato",
+                "content": "Todas as comparações e estatísticas são completamente anônimas. Seus dados pessoais nunca são associados aos dados financeiros usados para comparações."
+            },
+            "contact": {
+                "title": "Contato",
+                "content": "Para qualquer dúvida sobre esta política de privacidade, entre em contato conosco pelos canais oficiais da plataforma."
+            },
+            "lastUpdated": "Última atualização"
+        }
+    },
+    "faq": {
+        "title": "Perguntas Frequentes",
+        "questions": [
+            {
+                "question": "O PaciFinance é realmente gratuito?",
+                "answer": "Sim, o PaciFinance é completamente gratuito. Não há custos ocultos, assinaturas ou limitações. A plataforma é mantida por doações voluntárias."
+            },
+            {
+                "question": "Como funciona a privacidade no PaciFinance?",
+                "answer": "A privacidade está no centro de tudo o que fazemos. Seus dados são sempre anônimos e nunca são compartilhados. Usamos apenas cookies técnicos necessários para o funcionamento."
+            },
+            {
+                "question": "Como posso me comparar com outros usuários?",
+                "answer": "As comparações são completamente anônimas e baseadas em dados agregados. Você pode ver estatísticas gerais por categoria, setor ou área geográfica sem nunca revelar sua identidade."
+            },
+            {
+                "question": "Que tipo de dados posso inserir?",
+                "answer": "Você pode inserir rendas, saídas, investimentos, economias e outros dados financeiros. Todos os dados permanecem anônimos e são usados apenas para sua análise pessoal."
+            },
+            {
+                "question": "Como posso apoiar o projeto?",
+                "answer": "A melhor forma de apoiar o PaciFinance é através de doações voluntárias pelo Buy Me a Coffee. Cada contribuição nos ajuda a manter a plataforma online e desenvolver novas funcionalidades."
+            }
+        ],
+        "stillHaveQuestions": "Ainda tem dúvidas?",
+        "contactInfo": "Entre em contato conosco pelos nossos canais oficiais para obter ajuda."
+    },
+    "knowledge": {
+        "title": "Base de Conhecimento",
+        "subtitle": "Aprenda a gerenciar melhor suas finanças pessoais com guias práticos e dicas de especialistas",
+        "disclaimer": "⚠️ As informações fornecidas são para fins educacionais e não constituem aconselhamento financeiro personalizado. Sempre consulte um consultor financeiro qualificado para decisões importantes.",
+        "advantages": "Vantagens",
+        "disadvantages": "Desvantagens",
+        "frequency": "Frequência",
+        "trigger": "Gatilho",
+        "method": "Método",
+        "example": "Exemplo",
+        "protection": "Proteção",
+        "riskLevels": {
+            "low": "BAIXO",
+            "medium": "MÉDIO",
+            "high": "ALTO"
+        },
+        "sections": {
+            "investments": {
+                "title": "Investimentos",
+                "subtitle": "Guia completo sobre instrumentos de investimento",
+                "content": {
+                    "intro": "Investir significa colocar seu dinheiro em instrumentos financeiros com o objetivo de obter retorno ao longo do tempo. É essencial diversificar sua carteira, entender os riscos associados a cada instrumento e ter um horizonte de tempo claro. Lembre-se: o tempo é seu melhor aliado nos investimentos.",
+                    "etf": {
+                        "title": "ETF (Exchange Traded Fund)",
+                        "description": "ETFs são fundos que replicam um índice (ex.: S&P 500, MSCI World, FTSE 100) e podem ser comprados/vendidos na bolsa de valores como ações. Permitem diversificação com valores pequenos e são ideais para iniciantes. Existem ETFs de ações, títulos, setoriais e temáticos. Os custos de gestão (TER) ficam tipicamente entre 0,05% e 0,50% ao ano.",
+                        "pros": "• Diversificação automática em centenas de títulos\n• Custos de gestão muito baixos (TER 0,05%-0,50%)\n• Alta liquidez - vendável a qualquer momento\n• Total transparência na composição\n• Ideal para DCA (Dollar Cost Averaging)\n• Não requer gestão ativa",
+                        "cons": "• Seguem o mercado mesmo em quedas\n• Nunca superam o índice de referência\n• Risco cambial para ETFs estrangeiros\n• Spread bid-ask em ETFs menos líquidos"
+                    },
+                    "stocks": {
+                        "title": "Ações",
+                        "description": "Ações representam participações de propriedade em uma empresa. Seu valor depende do desempenho da empresa, do sentimento do mercado e das condições macroeconômicas. Investir em ações individuais requer tempo para análise fundamentalista e técnica. Recomendado apenas após adquirir experiência com instrumentos mais simples.",
+                        "pros": "• Potencial de altos retornos (historicamente 7-10% ao ano)\n• Dividendos periódicos de empresas maduras\n• Direito de voto em assembleias de acionistas\n• Possibilidade de superar o mercado com boas escolhas\n• Liquidez imediata nos principais mercados",
+                        "cons": "• Alto risco de perda de capital\n• Requer tempo para análise e monitoramento\n• Alta volatilidade no curto prazo\n• Risco de concentração com poucas ações\n• Viéses emocionais podem levar a más decisões"
+                    },
+                    "bonds": {
+                        "title": "Títulos de Renda Fixa",
+                        "description": "Títulos de renda fixa são empréstimos que você faz a entidades (estados, empresas). Em troca, você recebe juros periódicos (cupons) e o capital no vencimento. O risco varia: títulos governamentais de países estáveis são seguros, títulos corporativos ou de alto rendimento são mais arriscados, mas com retornos maiores. Os preços dos títulos se movem inversamente às taxas de juros.",
+                        "pros": "• Retornos mais previsíveis que ações\n• Cupons periódicos como fluxo de caixa\n• Geralmente menor risco\n• Excelente diversificação em relação ao mercado de ações\n• Proteção do capital no vencimento",
+                        "cons": "• Retornos historicamente menores que ações\n• Risco de inflação corroi o valor real\n• Risco de taxa de juros: se as taxas sobem, os preços caem\n• Risco de inadimplência para emissores menos sólidos\n• Menor liquidez para títulos corporativos"
+                    },
+                    "crypto": {
+                        "title": "Criptomoedas",
+                        "description": "Moedas digitais descentralizadas baseadas em tecnologia blockchain. Bitcoin é a mais conhecida e 'estável', Ethereum é a segunda por capitalização de mercado. Existem milhares de altcoins com diferentes características. É um mercado altamente especulativo, aberto 24/7, com pouca regulamentação. Recomendado apenas para uma pequena porcentagem da carteira (máx. 5-10%).",
+                        "pros": "• Potencial de retornos muito altos\n• Descentralização e independência de bancos\n• Inovação tecnológica contínua\n• Mercado aberto 24/7\n• Possibilidades de staking para renda passiva\n• Acessibilidade global sem intermediários",
+                        "cons": "• Volatilidade extrema (oscilações de 20-50% são comuns)\n• Regulamentação incerta e variável\n• Risco tecnológico e de hacking\n• Nenhuma proteção em caso de perda\n• Difícil avaliação fundamentalista\n• Risco de projetos fraudulentos (golpes)"
+                    },
+                    "government_bonds": {
+                        "title": "Títulos Públicos",
+                        "description": "Títulos emitidos pelo estado para financiar a dívida pública. Nos EUA: Treasury Bonds/Bills. No Reino Unido: Gilts. Na Alemanha: Bunds. Estão entre os investimentos mais seguros se emitidos por países estáveis, garantidos pela capacidade de tributação do estado.",
+                        "pros": "• Alta segurança (risco mínimo de inadimplência)\n• Garantia governamental\n• Retorno fixo e previsível\n• Vantagens fiscais em alguns países\n• Alta liquidez nos mercados secundários\n• Proteção do capital no vencimento",
+                        "cons": "• Retornos geralmente baixos\n• Risco de inflação durante períodos de alta inflação\n• Risco-país para estados menos estáveis\n• Risco de taxa de juros\n• Às vezes retornos reais negativos"
+                    },
+                    "real_estate": {
+                        "title": "Imóveis e REITs",
+                        "description": "O investimento imobiliário pode ser direto (comprar um imóvel) ou indireto através de REITs (Real Estate Investment Trusts) e fundos imobiliários. REITs permitem investir em imóveis com valores pequenos e alta liquidez, diversificando em muitas propriedades.",
+                        "pros": "• Ativo tangível e compreensível\n• Proteção contra inflação no longo prazo\n• Renda de aluguel ou dividendos de REITs\n• Diversificação em relação ao mercado de ações\n• REITs oferecem liquidez e acessibilidade",
+                        "cons": "• Imóvel direto requer alto capital\n• Custos de manutenção e administração\n• Baixa liquidez para imóvel direto\n• Risco de concentração geográfica\n• Sensibilidade às taxas de juros"
+                    },
+                    "beginner_tips": {
+                        "title": "Dicas para Iniciantes",
+                        "tips": [
+                            "Comece com ETFs diversificados em índices globais (ex.: MSCI World, S&P 500)",
+                            "Nunca invista dinheiro que você precisará nos próximos 3-5 anos",
+                            "Use DCA (Dollar Cost Averaging): invista o mesmo valor todo mês",
+                            "Não tente 'bater o mercado' - até profissionais têm dificuldade",
+                            "Estude pelo menos 6 meses antes de comprar ações individuais",
+                            "Mantenha no máximo 5-10% da carteira em criptomoedas",
+                            "Sempre diversifique: nunca mais de 5% em uma única ação",
+                            "Ignore notícias diárias - pense no longo prazo (10+ anos)",
+                            "Reinvista os dividendos para aproveitar os juros compostos",
+                            "Tenha uma reserva de emergência ANTES de começar a investir"
+                        ]
+                    }
+                }
+            },
+            "saving": {
+                "title": "Poupança",
+                "subtitle": "Como construir sua base financeira",
+                "content": {
+                    "intro": "Poupar é a base da saúde financeira. Antes de investir, é essencial ter uma reserva de emergência e objetivos claros. Pessoas que poupam ativamente geralmente alcançam seus objetivos financeiros 3x mais rápido do que aquelas que não poupam.",
+                    "emergency_fund": {
+                        "title": "Reserva de Emergência",
+                        "description": "Uma reserva de emergência deve cobrir de 3 a 6 meses de despesas. Mantenha-a em contas de poupança de alto rendimento ou contas de fácil acesso. Isso protege você de eventos inesperados como perda de emprego, emergências médicas ou grandes reparos.",
+                        "tips": [
+                            "Calcule suas despesas mensais essenciais (não a renda)",
+                            "Multiplique por 3 meses (mínimo) a 6 meses (ideal)",
+                            "Mantenha esse dinheiro em contas seguras e líquidas",
+                            "Não mexa exceto em emergências reais (não 'desejos')",
+                            "Revise a reserva anualmente com base em mudanças de vida"
+                        ]
+                    },
+                    "savings_goals": {
+                        "title": "Metas de Poupança",
+                        "description": "Ter metas claras e quantificáveis ajuda a manter a motivação. Use o método SMART: Específico, Mensurável, Atingível, Relevante, Temporal. Distinga entre metas de curto, médio e longo prazo.",
+                        "short_term": "Curto prazo (1-2 anos): Férias ($1.000-3.000), eletrodomésticos, curso de formação, reserva de emergência",
+                        "medium_term": "Médio prazo (2-5 anos): Carro ($10.000-30.000), casamento, reforma da casa, entrada do financiamento",
+                        "long_term": "Longo prazo (5+ anos): Casa, aposentadoria, educação dos filhos, independência financeira"
+                    },
+                    "saving_strategies": {
+                        "title": "Estratégias de Poupança",
+                        "strategies": [
+                            "Regra 50/30/20: 50% necessidades, 30% desejos, 20% poupança",
+                            "Pague-se primeiro: configure transferência automática no dia do pagamento",
+                            "Automatize a poupança em contas separadas para diferentes metas",
+                            "Registre TODAS as despesas por pelo menos 1 mês - você vai se surpreender",
+                            "Elimine assinaturas não utilizadas (auditoria a cada 6 meses)",
+                            "Compare preços e use cashback para compras importantes",
+                            "Aplique a regra das 24-48 horas para compras por impulso",
+                            "Desafio de 30 dias sem compras não essenciais"
+                        ]
+                    },
+                    "high_yield_savings": {
+                        "title": "Contas de Poupança e Depósito",
+                        "description": "Contas de poupança de alto rendimento oferecem retornos acima das contas correntes padrão. Compare ofertas de bancos digitais que frequentemente oferecem melhores taxas. Distinga entre depósitos a prazo fixo (taxas mais altas, mas fundos bloqueados) e contas de acesso imediato (retorno menor, mas acesso instantâneo).",
+                        "tips": [
+                            "Compare taxas em sites de comparação",
+                            "Considere bancos digitais para melhores taxas (até 3-5% para prazo fixo)",
+                            "Verifique a cobertura do seguro de depósito (FGC no Brasil: R$250.000 por instituição)",
+                            "Use acesso imediato para reserva de emergência, prazo fixo para poupança com data definida",
+                            "Cuidado com taxas promocionais - leia as letras miúdas"
+                        ]
+                    }
+                }
+            },
+            "budgeting": {
+                "title": "Gestão de Orçamento",
+                "subtitle": "Como planejar e controlar suas despesas",
+                "content": {
+                    "intro": "Um orçamento ajuda você a controlar para onde seu dinheiro vai e a alcançar seus objetivos financeiros. Não deve ser rígido, mas um guia flexível que se adapta à sua vida. Pessoas que mantêm um orçamento economizam em média 20% a mais do que aquelas que não mantêm.",
+                    "budget_creation": {
+                        "title": "Como Criar um Orçamento Eficaz",
+                        "steps": [
+                            "Calcule sua renda líquida mensal (salário + outras rendas)",
+                            "Liste todas as despesas fixas: aluguel/financiamento, contas, seguros, assinaturas",
+                            "Analise 3 meses de extratos bancários para despesas variáveis reais",
+                            "Categorize: alimentação, transporte, entretenimento, compras, saúde, outros",
+                            "Atribua uma porcentagem realista para poupança (comece com 10%)",
+                            "Use o PaciFinance para monitorar automaticamente",
+                            "Revise o orçamento todo mês e ajuste as categorias",
+                            "Comemore pequenas vitórias para manter a motivação"
+                        ]
+                    },
+                    "budget_methods": {
+                        "title": "Métodos Populares de Orçamento",
+                        "methods": {
+                            "50_30_20": "50/30/20: 50% necessidades essenciais (aluguel, alimentação, contas), 30% desejos (entretenimento, hobbies), 20% poupança e investimentos. Simples e flexível.",
+                            "envelope": "Método do envelope: Retire dinheiro e divida em envelopes por categoria. Quando o envelope esvaziar, pare de gastar. Ótimo para controlar gastos por impulso.",
+                            "zero_based": "Orçamento base zero: Cada real deve ter um destino atribuído. Renda - Despesas = 0. Requer mais tempo, mas controle máximo.",
+                            "pay_yourself_first": "Pague-se primeiro: Automatize a poupança no dia do pagamento, depois viva com o restante. Simples e eficaz.",
+                            "kakeibo": "Kakeibo (japonês): Registre cada despesa à mão, reflita sobre cada compra perguntando 'Eu realmente preciso disso?'. Aumenta a consciência."
+                        }
+                    },
+                    "outflow_tracking": {
+                        "title": "Rastreamento Inteligente de Saídas",
+                        "tips": [
+                            "Use o PaciFinance para uma visão unificada de todas as contas",
+                            "Categorize as despesas imediatamente - não procrastine",
+                            "Verifique sua conta pelo menos 2 vezes por semana",
+                            "Identifique 'despesas fantasma': pequenas compras que se acumulam",
+                            "Analise padrões: quando você gasta mais? (fins de semana, noites, estresse)",
+                            "Compare mês a mês para ver o progresso",
+                            "Defina alertas para categorias com risco de exceder o orçamento"
+                        ]
+                    },
+                    "reduce_expenses": {
+                        "title": "Como Reduzir Despesas Sem Sofrer",
+                        "tips": [
+                            "Renegocie contratos: telefone, internet, seguro (economia de 10-30%)",
+                            "Cozinhe em casa 2-3 vezes a mais por semana (economize $100-200/mês)",
+                            "Use a biblioteca em vez de comprar livros",
+                            "Compartilhe assinaturas de streaming com família/amigos",
+                            "Compre usado para eletrônicos, roupas, móveis",
+                            "Use transporte público ou bicicleta quando possível",
+                            "Planeje refeições semanalmente para evitar desperdício",
+                            "Leve marmita para o trabalho 3+ vezes por semana"
+                        ]
+                    }
+                }
+            },
+            "salary_management": {
+                "title": "Gestão do Salário",
+                "subtitle": "Como otimizar sua renda e fazê-la crescer",
+                "content": {
+                    "intro": "A gestão do salário não é apenas sobre como gastá-lo, mas também como otimizar, proteger e fazê-lo crescer ao longo do tempo. Uma abordagem estratégica pode fazer a diferença entre viver de salário em salário e construir patrimônio.",
+                    "salary_allocation": {
+                        "title": "Alocação Estratégica do Salário",
+                        "breakdown": {
+                            "needs": "Necessidades Essenciais (50-60%): Aluguel/financiamento, contas, mantimentos, transporte necessário, seguros obrigatórios. Se ultrapassar 60%, procure reduzir ou aumentar a renda.",
+                            "wants": "Desejos (20-30%): Restaurantes, streaming, hobbies, compras não essenciais, academia, viagens. Esta é a categoria mais flexível.",
+                            "savings": "Poupança e Investimentos (20%+): Reserva de emergência (prioridade 1), investimentos de longo prazo, previdência. O objetivo é alcançar 30% ao longo do tempo."
+                        }
+                    },
+                    "tax_optimization": {
+                        "title": "Otimização Fiscal Legal",
+                        "tips": [
+                            "Maximize as contribuições para previdência privada para crescimento com benefício fiscal",
+                            "Use planos de saúde empresariais e benefícios médicos disponíveis",
+                            "Considere previdência privada PGBL/VGBL conforme seu perfil fiscal",
+                            "Acompanhe despesas dedutíveis: educação, saúde, previdência",
+                            "Compense prejuízos fiscais para reduzir ganhos de capital",
+                            "Aproveite benefícios da empresa: matching de previdência é dinheiro grátis",
+                            "Vale-refeição e vale-alimentação frequentemente são isentos de impostos",
+                            "Consulte um profissional tributário para situações complexas"
+                        ]
+                    },
+                    "income_growth": {
+                        "title": "Crescendo Sua Renda",
+                        "strategies": [
+                            "Atualize suas habilidades: cursos online, certificações do setor",
+                            "Negocie o salário: prepare dados de mercado, documente conquistas",
+                            "Mude de empresa a cada 2-4 anos: frequentemente a única forma de saltos salariais significativos",
+                            "Freelancing noturno/fim de semana: aproveite suas habilidades",
+                            "Renda extra: criação de conteúdo, consultoria, vendas online",
+                            "Invista em você: idiomas, soft skills, networking",
+                            "Renda passiva: dividendos, aluguéis, royalties (requer capital inicial)"
+                        ]
+                    },
+                    "first_salary": {
+                        "title": "Primeiro Salário: Como Começar Certo",
+                        "tips": [
+                            "Não infle seu estilo de vida imediatamente - viva como estudante por 1-2 anos",
+                            "Configure transferência automática de poupança imediatamente (pelo menos 10%)",
+                            "Construa a reserva de emergência primeiro (3 meses de despesas)",
+                            "Não compre um carro novo - é a pior decisão financeira",
+                            "Comece a investir mesmo $50-100/mês - o tempo está ao seu lado",
+                            "Evite dívidas de consumo (financiamentos, cartões de crédito rotativos)",
+                            "Aproveite o matching de previdência da empresa, se disponível"
+                        ]
+                    }
+                }
+            },
+            "portfolio_management": {
+                "title": "Gestão de Carteira",
+                "subtitle": "Como equilibrar e otimizar seus investimentos",
+                "content": {
+                    "intro": "Uma carteira diversificada reduz riscos e otimiza retornos no longo prazo. A chave é a alocação estratégica entre diferentes classes de investimento, com base no seu horizonte de tempo e tolerância ao risco. Não existe carteira perfeita para todos.",
+                    "asset_allocation": {
+                        "title": "Alocação de Ativos por Perfil",
+                        "description": "Distribua seus investimentos entre diferentes categorias com base na sua idade, objetivos e tolerância ao risco. Uma regra simples: 100 menos sua idade = % em ações.",
+                        "conservative": "Conservador (próximo à aposentadoria, baixa tolerância ao risco): 70-80% renda fixa/caixa, 20-30% ações. Prioridade: preservação do capital.",
+                        "moderate": "Moderado (30-50 anos, tolerância média): 50-60% ações, 30-40% renda fixa, 10% alternativos. Equilíbrio crescimento/segurança.",
+                        "aggressive": "Agressivo (jovem, alta tolerância, horizonte longo): 80-90% ações, 10-15% renda fixa, 5% alternativos. Maximizar crescimento, aceitar volatilidade."
+                    },
+                    "diversification": {
+                        "title": "Princípios de Diversificação",
+                        "principles": [
+                            "Nunca mais de 5-10% em uma única ação - mesmo as melhores empresas podem falir",
+                            "Diversifique por área geográfica: 40-50% EUA, 20-30% Europa, 10-20% Emergentes, 10% país de origem",
+                            "Diversifique por setor: tecnologia, saúde, finanças, energia, consumo - evite concentração",
+                            "Diversifique por tamanho: large cap (estabilidade), mid cap, small cap (crescimento)",
+                            "Multi-ativos: ações, renda fixa, imóveis (REITs), commodities, ouro",
+                            "Diversifique no tempo: DCA mensal em vez de aporte único (dollar cost averaging)",
+                            "Descorrelação: ativos que se movem de forma diferente (ações vs ouro)"
+                        ]
+                    },
+                    "rebalancing": {
+                        "title": "Rebalanceamento da Carteira",
+                        "description": "Com o tempo, alguns ativos crescem mais que outros, desequilibrando a carteira. O rebalanceamento traz as proporções de volta ao alvo, vendendo o que cresceu e comprando o que caiu.",
+                        "frequency": "Verifique a cada 6 meses, rebalanceie no máximo 1-2 vezes por ano",
+                        "trigger": "Rebalanceie quando uma categoria desviar >5-10% do alvo",
+                        "method": "Método 1: Vender ativos que cresceram, comprar os que caíram. Método 2: Direcionar novos aportes para categorias sub-representadas."
+                    },
+                    "common_mistakes": {
+                        "title": "Erros Comuns a Evitar",
+                        "tips": [
+                            "Vender em pânico durante quedas - historicamente sempre se recuperou",
+                            "Comprar após grandes altas por FOMO (Medo de Ficar de Fora)",
+                            "Verificar a carteira todo dia - cria ansiedade desnecessária",
+                            "Tentar cronometrar o mercado - quase impossível",
+                            "Concentrar tudo em ações do país de origem (viés doméstico)",
+                            "Ignorar custos: TER, comissões, spreads corroem retornos",
+                            "Seguir conselhos de 'gurus' nas redes sociais",
+                            "Não ter um plano escrito - leva a decisões emocionais"
+                        ]
+                    }
+                }
+            },
+            "general_knowledge": {
+                "title": "Conceitos Fundamentais",
+                "subtitle": "O básico sobre finanças pessoais que todos deveriam saber",
+                "content": {
+                    "compound_interest": {
+                        "title": "Juros Compostos - A Oitava Maravilha",
+                        "description": "Juros compostos são o conceito mais poderoso das finanças. Significa ganhar juros não apenas sobre o capital inicial, mas também sobre os juros já acumulados. Einstein os chamou de 'a oitava maravilha do mundo'. Quanto mais cedo você começar, mais tempo eles terão para trabalhar.",
+                        "example": "$10.000 investidos a 7% ao ano:\n• Ano 10: $19.672 (+97%)\n• Ano 20: $38.697 (+287%)\n• Ano 30: $76.123 (+661%)\n• Ano 40: $149.745 (+1.397%)"
+                    },
+                    "risk_return": {
+                        "title": "Relação Risco-Retorno",
+                        "description": "Regra fundamental: quanto maior o retorno potencial, maior o risco. Não existem retornos altos sem risco - se alguém promete isso a você, é golpe. É crucial entender seu perfil de risco e dormir tranquilo à noite.",
+                        "risk_levels": [
+                            "Baixo risco: Contas de poupança, títulos do Tesouro, renda fixa de curto prazo (1-3% ao ano). Capital praticamente garantido.",
+                            "Médio risco: ETFs de ações diversificados, fundos balanceados (5-8% histórico anual). Possíveis quedas de 20-30%.",
+                            "Alto risco: Ações individuais, criptomoedas, derivativos. Possíveis ganhos de 100%+, mas também perdas de 50%+."
+                        ]
+                    },
+                    "inflation": {
+                        "title": "Inflação - O Inimigo Silencioso",
+                        "description": "A inflação corrói o poder de compra do dinheiro ao longo do tempo. $1.000 hoje comprarão menos em 10 anos. Com inflação média de 2%, em 20 anos seu dinheiro perde cerca de 33% do valor real. Por isso você não deve manter muito dinheiro parado.",
+                        "protection": "Proteja suas economias investindo em ativos que historicamente superam a inflação: ações (7-10% histórico), imóveis, títulos atrelados à inflação (IPCA+). Mantenha em caixa apenas a reserva de emergência e despesas planejadas para 1-2 anos."
+                    },
+                    "financial_independence": {
+                        "title": "Independência Financeira (FIRE)",
+                        "description": "O objetivo final para muitos: ter investimentos suficientes para viver dos rendimentos sem precisar trabalhar. O movimento FIRE (Financial Independence, Retire Early) popularizou esse conceito. Requer uma alta taxa de poupança (40-70%) por muitos anos.",
+                        "rule_25": "Regra dos 25: Acumule 25 vezes suas despesas anuais em investimentos. Se você gasta $30.000/ano, precisa de $750.000.",
+                        "withdrawal_rate": "Regra dos 4%: Retire no máximo 4% ao ano da carteira para mantê-la ao longo do tempo (baseado no Trinity Study). Alguns sugerem 3,5% para maior segurança."
+                    },
+                    "debt_management": {
+                        "title": "Gestão de Dívidas",
+                        "description": "Nem toda dívida é igual. Dívida 'boa' (financiamento imobiliário, empréstimo estudantil) pode ser estratégica. Dívida 'ruim' (cartão de crédito, empréstimos de consumo com juros altos) deve ser eliminada como prioridade.",
+                        "tips": [
+                            "Prioridade 1: Elimine dívidas com juros altos (>10%) antes de investir",
+                            "Método avalanche: quite primeiro a dívida com maior taxa de juros",
+                            "Método bola de neve: quite primeiro a menor dívida (vitórias psicológicas)",
+                            "Nunca financie ativos que desvalorizam (carros, eletrônicos, roupas)",
+                            "Financiamento imobiliário: considere como aluguel + investimento forçado, não 'dívida ruim'"
+                        ]
+                    },
+                    "financial_scams": {
+                        "title": "Como Reconhecer Golpes Financeiros",
+                        "tips": [
+                            "Retornos altos garantidos = GOLPE (ninguém pode garantir retornos)",
+                            "Pressão para decidir agora = sinal de alerta",
+                            "'Oportunidade exclusiva' = quase sempre esquema Ponzi",
+                            "Não entendo como funciona = não invista",
+                            "Promessas de dobrar o dinheiro rapidamente = golpe",
+                            "Sempre verifique: CVM no Brasil, SEC nos EUA, FCA no Reino Unido, autoridade relevante do seu país",
+                            "Se parece bom demais para ser verdade, é porque é"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "info": {
+        "title": "Informações e Perguntas Frequentes",
+        "title2": "Projeto PaciFinance",
+        "description": "PaciFinance é uma plataforma de finanças pessoais e comparação que tem como principal objetivo a privacidade e permite que você entenda sua situação financeira.",
+        "description2": "A comparação com outros usuários é possível de forma anônima e não sensível.",
+        "description3": "Os dados inseridos pelo usuário são anônimos, protegidos e não acessíveis por terceiros.",
+        "description4": "O projeto é livre de anúncios e sem fins lucrativos, sendo mantido exclusivamente por doações voluntárias.",
+        "description5": "A plataforma está em desenvolvimento contínuo e novas funcionalidades serão adicionadas no futuro.",
+        "calltoaction": "Apoie o projeto",
+        "roadmapLink": "Conheça nosso Roadmap",
+        "features": {
+            "title": "Principais Funcionalidades",
+            "security": {
+                "title": "Privacidade e Segurança",
+                "description": "Seus dados são completamente anônimos e protegidos. Nenhuma informação pessoal é compartilhada."
+            },
+            "analytics": {
+                "title": "Análises Avançadas",
+                "description": "Gráficos e estatísticas detalhados para entender melhor suas finanças pessoais."
+            },
+            "responsive": {
+                "title": "Design Responsivo",
+                "description": "Plataforma otimizada para todos os dispositivos: desktop, tablet e smartphone."
+            },
+            "customization": {
+                "title": "Personalização",
+                "description": "Tema claro/escuro, modo de privacidade e personalização da interface."
+            },
+            "insights": {
+                "title": "Insights Financeiros",
+                "description": "Comparações anônimas com outros usuários para melhorar sua gestão financeira."
+            },
+            "support": {
+                "title": "Suporte Contínuo",
+                "description": "Desenvolvimento constante de novas funcionalidades com base no feedback dos usuários."
+            }
+        },
+        "about": {
+            "title": "Nosso Compromisso"
+        },
+        "faq": {
+            "title": "Perguntas frequentes",
+            "question1": "Como posso adicionar uma receita ou uma saída?",
+            "answer1": "Para adicionar uma receita ou uma saída, vá até a seção 'Inserir dados' e selecione o tipo de lançamento que deseja fazer. Preencha os campos obrigatórios e confirme o lançamento. ",
+            "question2": "Como posso atualizar meu saldo?",
+            "answer2": "Para atualizar seu saldo, vá até a seção 'Inserir dados' e selecione a seção 'Atualizar Saldo'. Preencha os campos obrigatórios e confirme a atualização. ",
+            "question3": "Como posso excluir uma receita ou uma saída?",
+            "answer3": "Para excluir uma receita ou uma saída, vá até a seção 'Inserir dados' e selecione a seção 'Adicionar Receitas' ou 'Adicionar Saídas'. Na tabela de receitas ou saídas, selecione o item que deseja excluir e clique em 'Excluir'. ",
+            "question4": "Como posso alterar meu ID?",
+            "answer4": "Para alterar seu ID, vá até a seção 'Seu Perfil' e selecione a seção 'Alterar ID'. Preencha os campos obrigatórios e confirme a alteração do ID. ",
+            "question5": "Como posso alterar minha senha?",
+            "answer5": "Para alterar sua senha, vá até a seção 'Seu Perfil' e selecione a seção 'Alterar senha'. Preencha os campos obrigatórios e confirme a alteração da senha. ",
+            "question6": "Como posso apoiar o projeto?",
+            "answer6": "O projeto é sem fins lucrativos e é mantido por doações voluntárias. Se você acha que o serviço oferecido é útil e deseja contribuir, pode deixar um feedback e/ou nos apoiar por meio de uma doação.",
+            "answer6CallToAction": "Em todas as páginas, no canto inferior direito, você encontrará um pop-up para apoiar o projeto. Obrigado de toda a equipe!",
+            "question7": "Como posso excluir minha conta?",
+            "answer7": "Para excluir sua conta, vá até a seção 'Seu Perfil' e selecione a seção 'Excluir conta'. Confirme a exclusão e pronto. ",
+            "question8": "Posso instalar o PaciFinance como um aplicativo?",
+            "answer8": "Sim! O PaciFinance é um Progressive Web App (PWA) e pode ser instalado em qualquer dispositivo — iPhone, Android ou desktop — diretamente do seu navegador. Acesse as Configurações para instruções passo a passo para o seu dispositivo."
+        },
+        "developers": {
+            "title": "Equipe",
+            "description": "O PaciFinance é desenvolvido, atualizado e mantido por uma equipe de desenvolvedores apaixonados por finanças e desenvolvimento.",
+            "description2": "A equipe de desenvolvimento está sempre disponível para receber feedback e sugestões para melhorar a plataforma. ",
+            "description3": "A plataforma foi criada com o objetivo de oferecer um serviço útil e gratuito para os usuários.",
+            "calltoaction": "O custo de manutenção dos servidores e do serviço é bancado pela equipe. Se você acha que o serviço oferecido é útil e deseja contribuir, pode nos apoiar por meio de uma doação. ",
+            "contact": "Fale conosco"
+        }
+    },
+    "pwaInstall": {
+        "title": "Instalar como aplicativo",
+        "subtitle": "Use o PaciFinance como um aplicativo nativo",
+        "detected": "Seu dispositivo",
+        "intro": "O PaciFinance pode ser instalado como um aplicativo no seu dispositivo para acesso rápido, suporte offline e uma experiência nativa — sem precisar de loja de aplicativos.",
+        "tip": "Depois de instalado, o PaciFinance aparecerá na sua tela inicial como qualquer outro aplicativo, com carregamento mais rápido e experiência em tela cheia.",
+        "steps": {
+            "ios": [
+                "Abra o PaciFinance no Safari (obrigatório — não funciona no Chrome ou outros navegadores no iOS)",
+                "Toque no botão Compartilhar (o quadrado com a seta para cima) na parte inferior da tela",
+                "Role para baixo e toque em \"Adicionar à Tela de Início\"",
+                "Dê um nome (ou deixe PaciFinance) e toque em \"Adicionar\"",
+                "Pronto! Você encontrará o PaciFinance na sua tela inicial"
+            ],
+            "android": [
+                "Abra o PaciFinance no Chrome (ou outro navegador compatível)",
+                "Toque no menu de três pontos (⋮) no canto superior direito",
+                "Toque em \"Adicionar à tela inicial\" ou \"Instalar aplicativo\"",
+                "Confirme tocando em \"Instalar\" no pop-up",
+                "Pronto! O PaciFinance está instalado e disponível na sua tela inicial"
+            ],
+            "desktop": [
+                "Abra o PaciFinance no Chrome, Edge ou outro navegador baseado em Chromium",
+                "Clique no ícone de instalação (⊕) na barra de endereço, ou abra o menu do navegador (⋮) e selecione \"Instalar PaciFinance\"",
+                "Confirme clicando em \"Instalar\" na caixa de diálogo",
+                "Pronto! O PaciFinance abrirá em sua própria janela e aparecerá no seu lançador de aplicativos"
+            ]
+        }
+    },
+    "pricing": {
+        "title": "Preços",
+        "subtitle": "Simples, transparente e completamente gratuito. Para sempre.",
+        "popular": "Mais Popular",
+        "freePlan": {
+            "title": "Gratuito",
+            "price": "$0",
+            "period": "/para sempre",
+            "features": [
+                "Todas as funcionalidades",
+                "Privacidade garantida",
+                "Comparações anônimas",
+                "Gráficos e estatísticas",
+                "Sem limites",
+                "Suporte da comunidade"
+            ],
+            "button": "Comece Grátis"
+        },
+        "premiumPlan": {
+            "title": "Premium",
+            "price": "$∞",
+            "period": "/mês",
+            "features": [
+                "Não existe",
+                "Sério, é tudo gratuito",
+                "Não acredita?",
+                "Confira o código-fonte"
+            ],
+            "button": "Indisponível"
+        },
+        "enterprisePlan": {
+            "title": "Empresarial",
+            "price": "$∞∞",
+            "period": "/ano",
+            "features": [
+                "Ainda não existe",
+                "Mas se quiser doar...",
+                "Ficaremos felizes",
+                "De verdade, obrigado! ❤️"
+            ],
+            "button": "Doe em vez disso"
+        },
+        "donation": {
+            "title": "Apoie o PaciFinance",
+            "description": "Se o PaciFinance é útil para você, considere fazer uma doação para nos ajudar a manter a plataforma online e desenvolver novas funcionalidades. Cada contribuição é muito apreciada!",
+            "disclaimer": "As doações são completamente voluntárias e não desbloqueiam funcionalidades adicionais."
+        }
+    },
+    "gamification": {
+        "title": "Suas conquistas",
+        "level": "Nível",
+        "points": "pontos",
+        "badgesUnlocked": "Badges desbloqueados",
+        "savingsStreak": "Meses economizando",
+        "dataStreak": "Meses consecutivos",
+        "assetTypes": "Tipos de ativos",
+        "all": "Todos",
+        "unlocked": "Desbloqueado",
+        "locked": "Bloqueado",
+        "allCategories": "Todos",
+        "allBadgesUnlocked": "Parabéns! Você desbloqueou todos os badges!",
+        "badgeUnlocked": "Conquista desbloqueada!",
+        "achievementsSummary": "conquistas já desbloqueadas!",
+        "categories": {
+            "dataConsistency": "Dados",
+            "savings": "Economia",
+            "netWorth": "Patrimônio",
+            "diversification": "Diversificação",
+            "emergencyGrowth": "Emergência e Crescimento",
+            "outflowManagement": "Gestão de Saídas",
+            "income": "Receita",
+            "goals": "Metas",
+            "community": "Comunidade",
+            "profile": "Perfil"
+        },
+        "badges": {
+            "firstMonth": {
+                "name": "Primeiro Passo",
+                "description": "Insira seu primeiro mês de dados"
+            },
+            "threeMonths": {
+                "name": "Consistente",
+                "description": "3 meses de dados inseridos"
+            },
+            "sixMonths": {
+                "name": "Confiável",
+                "description": "6 meses de dados inseridos"
+            },
+            "oneYear": {
+                "name": "Veterano",
+                "description": "Um ano inteiro de dados"
+            },
+            "twoYears": {
+                "name": "Veterano Pro",
+                "description": "Dois anos inteiros de dados"
+            },
+            "dataStreak6": {
+                "name": "Regular",
+                "description": "6 meses consecutivos de inserção de dados"
+            },
+            "dataStreak12": {
+                "name": "Incansável",
+                "description": "12 meses consecutivos de inserção de dados"
+            },
+            "firstSave": {
+                "name": "Poupador",
+                "description": "Primeiro mês com economia positiva"
+            },
+            "savingsStreak3": {
+                "name": "Em Alta",
+                "description": "3 meses consecutivos economizando"
+            },
+            "savingsStreak6": {
+                "name": "Imparável",
+                "description": "6 meses consecutivos economizando"
+            },
+            "savingsStreak12": {
+                "name": "Maratonista",
+                "description": "12 meses consecutivos economizando"
+            },
+            "bigSaver": {
+                "name": "Grande Poupador",
+                "description": "Economizou 30%+ da receita em um mês"
+            },
+            "superSaver": {
+                "name": "Super Poupador",
+                "description": "Economizou 50%+ da receita em um mês"
+            },
+            "netWorth1k": {
+                "name": "Primeiro Marco",
+                "description": "Patrimônio de €1.000"
+            },
+            "netWorth10k": {
+                "name": "Cinco Dígitos",
+                "description": "Patrimônio de €10.000"
+            },
+            "netWorth50k": {
+                "name": "Decolagem",
+                "description": "Patrimônio de €50.000"
+            },
+            "netWorth100k": {
+                "name": "Clube dos 100K",
+                "description": "Patrimônio de €100.000"
+            },
+            "netWorth250k": {
+                "name": "Quarto de Milhão",
+                "description": "Patrimônio de €250.000"
+            },
+            "netWorth500k": {
+                "name": "Meio Milhão",
+                "description": "Patrimônio de €500.000"
+            },
+            "netWorth1M": {
+                "name": "Milionário",
+                "description": "Patrimônio de €1.000.000"
+            },
+            "firstInvestment": {
+                "name": "Investidor",
+                "description": "Primeiro investimento realizado"
+            },
+            "diversified3": {
+                "name": "Diversificado",
+                "description": "3+ tipos de ativos"
+            },
+            "diversified5": {
+                "name": "Portfólio Pro",
+                "description": "5+ tipos de ativos"
+            },
+            "diversified7": {
+                "name": "Super Diversificado",
+                "description": "7+ tipos de ativos diferentes"
+            },
+            "cryptoExplorer": {
+                "name": "Explorador Cripto",
+                "description": "Primeiro investimento em cripto"
+            },
+            "goldHolder": {
+                "name": "Detentor de Ouro",
+                "description": "Ouro no seu portfólio"
+            },
+            "bondInvestor": {
+                "name": "Investidor em Títulos",
+                "description": "Títulos no seu portfólio"
+            },
+            "emergencyFundStarted": {
+                "name": "Rede de Segurança",
+                "description": "Fundo de emergência iniciado"
+            },
+            "emergencyFundGoal": {
+                "name": "Blindado",
+                "description": "Meta do fundo de emergência alcançada"
+            },
+            "monthlyGrowth": {
+                "name": "Crescendo",
+                "description": "Patrimônio aumentando em relação ao mês anterior"
+            },
+            "yearlyGrowth": {
+                "name": "Ano Dourado",
+                "description": "Patrimônio aumentando em relação ao ano anterior"
+            },
+            "budgetMaster": {
+                "name": "Mestre do Orçamento",
+                "description": "Saídas dentro do limite mensal"
+            },
+            "frugalMonth": {
+                "name": "Mês Frugal",
+                "description": "Saídas menores que o mês anterior"
+            },
+            "spendingDown": {
+                "name": "Tendência de Queda",
+                "description": "Saídas diminuindo por 3 meses consecutivos"
+            },
+            "categoryTracker": {
+                "name": "Rastreador Expert",
+                "description": "5+ categorias de saídas rastreadas"
+            },
+            "firstIncome": {
+                "name": "Primeira Receita",
+                "description": "Primeira receita registrada"
+            },
+            "incomeGrowth": {
+                "name": "Receita em Alta",
+                "description": "Receita aumentou em relação ao mês anterior"
+            },
+            "steadyIncome": {
+                "name": "Receita Estável",
+                "description": "3+ meses consecutivos com receita"
+            },
+            "goalSetter": {
+                "name": "Definidor de Metas",
+                "description": "Primeira meta definida"
+            },
+            "goalAchiever": {
+                "name": "Meta Alcançada",
+                "description": "Uma meta concluída"
+            },
+            "multiGoal": {
+                "name": "Multi-Metas",
+                "description": "3+ metas ativas"
+            },
+            "topQuartile": {
+                "name": "Top 25%",
+                "description": "Entre os 25% melhores em pelo menos um ranking"
+            },
+            "top10Percent": {
+                "name": "Top 10%",
+                "description": "Entre os 10% melhores em pelo menos um ranking"
+            },
+            "profileComplete": {
+                "name": "Perfil Completo",
+                "description": "Todos os campos do perfil preenchidos"
+            }
+        }
+    },
+    "dashboardLayout": {
+        "balanceOverview": "Visão geral do saldo",
+        "liquidityInvestments": "Liquidez e Investimentos",
+        "incomeExpense": "Receitas e Despesas",
+        "charts": "Gráficos",
+        "financialInsights": "Insights financeiros",
+        "goalTracker": "Metas",
+        "gamification": "Conquistas",
+        "switchToCompact": "Visualização compacta",
+        "switchToCards": "Visualização em cartões",
+        "compact": "Compacto",
+        "cards": "Cartões",
+        "customize": "Personalizar",
+        "customizeTitle": "Personalizar o painel",
+        "dragHint": "Arraste as seções para reorganizá-las. Clique no ícone do olho para ocultá-las.",
+        "resetLayout": "Restaurar padrão",
+        "assetOverview": "Visão geral dos ativos",
+        "asset": "Ativo",
+        "category": "Categoria",
+        "value": "Valor",
+        "ofTotal": "% do Total",
+        "categoryBreakdown": "Detalhamento por categoria",
+        "type": "Tipo",
+        "amount": "Valor"
+    },
+    "categories": {
+        "Casa": "Moradia",
+        "Alimentari": "Alimentação", 
+        "Trasporti": "Transporte",
+        "Intrattenimento": "Entretenimento",
+        "Salute": "Saúde",
+        "Abbigliamento": "Vestuário",
+        "Altri": "Outros",
+        "Viaggi": "Viagens",
+        "Digital": "Serviço digital",
+        "Auto": "Veículo",
+        "Stipendio": "Salário",
+        "Freelance": "Freelance",
+        "Entrate extra": "Renda extra",
+        "Regalo": "Presente",
+        "Pensione": "Aposentadoria"
+    },
+    "profile": {
+        "detailsTab": "Detalhes da conta",
+        "achievementsTab": "Conquistas",
+        "notSpecified": "Não especificado",
+        "updateSuccess": "Perfil atualizado com sucesso!"
+    },
+    "avatar": {
+        "regenerate": "Gerar novo avatar",
+        "regenerated": "Novo avatar gerado!",
+        "limitReached": "Você pode gerar um novo avatar uma vez por dia",
+        "tooltip": "Clique para gerar um novo avatar (1x por dia)"
+    },
+    "dataImport": {
+        "title": "Importar dados",
+        "subtitle": "Importe suas transações de CSV ou Excel",
+        "openWizard": "Importar de arquivo",
+        "stepUpload": "Enviar",
+        "stepMapping": "Mapeamento",
+        "stepReview": "Revisão",
+        "stepImport": "Importar",
+        "privacyTitle": "🔒 Sua privacidade importa",
+        "privacyDescription": "Para sua segurança, recomendamos remover qualquer informação pessoal (nome, IBAN, endereço, número da conta, etc.) do seu arquivo antes de enviá-lo.",
+        "privacyReassurance": "De qualquer forma, apenas as colunas que você selecionar explicitamente (data, valor, categoria, notas) serão importadas — nenhum outro dado do seu arquivo é enviado aos nossos servidores.",
+        "privacyFooter": "Se o seu arquivo contém dados pessoais nas primeiras linhas (nome, IBAN, etc.), não se preocupe — no próximo passo você pode selecionar a partir de qual linha a tabela de dados começa.",
+        "uploadTitle": "📂 Selecione seu arquivo",
+        "uploadDescription": "Envie um arquivo CSV ou Excel com seus dados financeiros. Aceitamos qualquer formato — você mapeará as colunas no próximo passo.",
+        "dropzoneTitle": "Arraste e solte seu arquivo aqui",
+        "dropzoneSubtitle": "ou clique para procurar — CSV, Excel (.xlsx)",
+        "errorFileTooShort": "O arquivo deve ter pelo menos uma linha de cabeçalho e uma linha de dados",
+        "errorUnsupportedFormat": "Formato de arquivo não suportado. Use CSV ou Excel (.xlsx)",
+        "errorParseFailed": "Falha ao ler o arquivo. Verifique o formato e tente novamente.",
+        "mappingTitle": "🗺️ Mapear colunas",
+        "mappingPreview": "Pré-visualização dos seus dados (primeiras 5 linhas):",
+        "scrollHint": "Role horizontalmente para ver todas as colunas →",
+        "mappingInstructions": "Diga-nos qual coluna contém o quê:",
+        "headerRowLabel": "Linha de cabeçalho (nomes das colunas):",
+        "headerRowHint": "(linhas acima serão ignoradas)",
+        "rows": "linhas",
+        "dateColumn": "Data",
+        "dateFormat": "Formato de data",
+        "amountColumn": "Valor",
+        "dualAmountToggle": "Meu arquivo tem colunas separadas para receitas e saídas",
+        "outflowColumn": "Coluna de saídas",
+        "incomeColumn": "Coluna de receitas",
+        "categoryColumn": "Categoria",
+        "categoryColumnFile": "Coluna de categoria no seu arquivo",
+        "notesColumn": "Notas",
+        "transactionType": "Tipo de transação",
+        "defaultCategory": "Categoria padrão",
+        "defaultOutflowCategory": "Categoria padrão de saídas",
+        "defaultIncomeCategory": "Categoria padrão de receitas",
+        "defaultCategoryInfo": "Esta categoria será atribuída a todas as saídas importadas. Você pode alterar cada uma individualmente no próximo passo.",
+        "defaultIncomeCategoryInfo": "Esta categoria será atribuída a todas as receitas importadas. Você pode alterar cada uma individualmente no próximo passo.",
+        "addNote": "Adicionar nota...",
+        "defaultPaymentType": "Tipo de pagamento",
+        "selectColumn": "Selecionar coluna",
+        "selectFormat": "Selecionar formato",
+        "noColumn": "Nenhuma",
+        "optional": "opcional",
+        "typeAuto": "Automático (- = saída, + = receita)",
+        "typeAllOutflows": "Todas saídas",
+        "typeAllIncomes": "Todas receitas",
+        "savedMappings": "💾 Mapeamentos salvos",
+        "mappingNamePlaceholder": "Nome do mapeamento (ex: \"Meu Banco\")",
+        "saveMapping": "Salvar",
+        "back": "Voltar",
+        "next": "Próximo",
+        "reviewTitle": "📋 Revisar antes de importar",
+        "totalTransactions": "Total de transações",
+        "outflows": "Saídas",
+        "incomes": "Receitas",
+        "outflow": "Saída",
+        "income": "Receita",
+        "dateRange": "Período",
+        "filterByDate": "Filtrar por data",
+        "from": "De",
+        "to": "Até",
+        "clearFilter": "Limpar",
+        "selectAll": "Selecionar tudo",
+        "deselectAll": "Desmarcar tudo",
+        "selected": "selecionados",
+        "showAll": "Mostrar tudo",
+        "showLess": "Mostrar menos",
+        "rowsWithErrors": "linhas com erros (serão ignoradas)",
+        "showErrors": "Mostrar detalhes",
+        "hideErrors": "Ocultar",
+        "row": "Linha",
+        "error": "Erro",
+        "andMore": "e",
+        "more": "mais",
+        "categoryBreakdown": "📊 Detalhamento por categoria",
+        "parsedPreview": "👁️ Pré-visualização dos dados",
+        "date": "Data",
+        "amount": "Valor",
+        "type": "Tipo",
+        "category": "Categoria",
+        "notes": "Notas",
+        "importButton": "Importar",
+        "transactions": "transações",
+        "importingTitle": "⏳ Importando dados...",
+        "importSuccess": "✅ Importação concluída com sucesso!",
+        "importPartial": "⚠️ Importação concluída com alguns erros",
+        "successful": "Bem-sucedidas",
+        "failed": "Falharam",
+        "done": "Concluído",
+        "undoHint": "Cometeu um erro? Você pode desfazer esta importação e remover todas as transações importadas.",
+        "undoButton": "Desfazer importação",
+        "undoing": "Desfazendo...",
+        "undoSuccess": "✅ Desfeito — {count} transações removidas",
+        "undoPartial": "⚠️ Desfeito parcialmente — {success} removidas, {failed} falharam"
+    },
+    "onboarding": {
+        "welcomeTitle": "Bem-vindo ao PaciFinance!",
+        "welcomeSubtitle": "Complete estas 4 etapas para desbloquear seu painel financeiro completo com gráficos, comparações e insights.",
+        "stepsCompleted": "concluídas",
+        "step1Title": "Completar perfil",
+        "step1Desc": "Defina nacionalidade, profissão e idade para comparações anônimas personalizadas.",
+        "step1Action": "Ir para o perfil",
+        "step2Title": "Adicionar seu saldo",
+        "step2Desc": "Insira seus ativos atuais: contas bancárias, dinheiro, investimentos.",
+        "step2Action": "Inserir saldo",
+        "step3Title": "Registrar saídas",
+        "step3Desc": "Adicione suas saídas mensais para ver para onde vai seu dinheiro.",
+        "step3Action": "Adicionar saídas",
+        "step4Title": "Registrar receitas",
+        "step4Desc": "Registre suas fontes de renda para acompanhar economias e crescimento.",
+        "step4Action": "Adicionar receitas",
+        "done": "✓ Concluído",
+        "quickTip": "Dica: comece pelo seu saldo — assim que você adicionar pelo menos um mês de dados, seu painel ganhará vida com gráficos e análises!",
+        "dismiss": "Dispensar guia"
+    },
+    "tags": {
+        "expense": {
+        "digital service": "Serviço digital",
+        "gift": "Presente",
+        "shopping": "Compras",
+        "food": "Alimentação",
+        "house": "Moradia",
+        "free time": "Lazer",
+        "travelling": "Viagem",
+        "investment": "Investimento",
+        "health": "Saúde e Bem-estar",
+        "tax": "Imposto",
+        "vehicle": "Veículo",
+        "transports": "Transporte",
+        "pets": "Animais de estimação",
+        "personal project": "Projeto pessoal",
+        "education": "Educação",
+        "other": "Outro"
+        },
+        "income": {
+            "salary": "Salário",
+            "freelance income": "Renda freelance",
+            "extra income": "Renda extra",
+            "gift": "Presente",
+            "retirement": "Aposentadoria",
+            "other": "Outro"
+        },
+        "payment": {
+            "none": "Nenhum",
+            "single payment": "Pagamento único",
+            "subscription": "Assinatura",
+            "installment": "Parcelamento",
+            "cap": "CAP",
+            "periodic payment": "Pagamento periódico"
+        },
+        "job": {
+            "arts and entertainment": "Artes e Entretenimento",
+            "information technology": "Tecnologia da Informação",
+            "healthcare": "Saúde",
+            "finance": "Finanças",
+            "legal": "Jurídico",
+            "education": "Educação",
+            "hospitality and services": "Hotelaria e Serviços",
+            "commerce": "Comércio",
+            "sports": "Esportes",
+            "art and design": "Arte e Design",
+            "public sector": "Setor Público",
+            "communication and media": "Comunicação e Mídia",
+            "transportation": "Transporte",
+            "administrative services": "Serviços Administrativos",
+            "engineering": "Engenharia",
+            "craftsman": "Artesão",
+            "workman": "Operário",
+            "student": "Estudante",
+            "logistics": "Logística",
+            "other": "Outro"
+        },
+        "jobType": {
+            "employee": "Funcionário",
+            "freelance": "Autônomo"
+        },
+        "workTime": {
+            "part time": "Meio período",
+            "full time": "Período integral",
+            "on-call": "Plantão"
+        },
+        "remoteType": {
+            "in-office": "Presencial",
+            "hybrid": "Híbrido",
+            "remote": "Remoto"
+        },
+        "yearsOfExperience": {
+            "0-1-years": "0-1 anos",
+            "2-3-years": "2-3 anos",
+            "4-5-years": "4-5 anos",
+            "6-10-years": "6-10 anos",
+            "10+-years": "10+ anos"
+        },
+        "age": {
+            "18-25": "18-25",
+            "26-35": "26-35",
+            "36-45": "36-45",
+            "46-55": "46-55",
+            "55+": "55+"
+        },
+        "livingSituation": {
+            "cohabiting": "União estável",
+            "in-a-relationship": "Em um relacionamento",
+            "single": "Solteiro(a)",
+            "married": "Casado(a)",
+            "other": "Outro"
+        },
+        "housingType": {
+            "rental-appartment": "Apartamento alugado",
+            "shared-housing": "Moradia compartilhada",
+            "parents-house": "Casa dos pais",
+            "own-house": "Casa própria",
+            "other": "Outro"
+        },
+        "children": {
+            "yes": "Sim",
+            "no": "Não",
+            "expecting": "Esperando"
+        },
+        "country": {
+            "afghanistan": "Afeganistão",
+            "albania": "Albânia",
+            "algeria": "Argélia",
+            "american samoa": "Samoa Americana",
+            "andorra": "Andorra",
+            "angola": "Angola",
+            "anguilla": "Anguilla",
+            "antarctica": "Antártida",
+            "antigua and barbuda": "Antígua e Barbuda",
+            "argentina": "Argentina",
+            "armenia": "Armênia",
+            "aruba": "Aruba",
+            "australia": "Austrália",
+            "austria": "Áustria",
+            "azerbaijan": "Azerbaijão",
+            "bahamas": "Bahamas",
+            "bahrain": "Bahrein",
+            "bangladesh": "Bangladesh",
+            "barbados": "Barbados",
+            "belarus": "Bielorrússia",
+            "belgium": "Bélgica",
+            "belize": "Belize",
+            "benin": "Benin",
+            "bermuda": "Bermudas",
+            "bhutan": "Butão",
+            "bolivia": "Bolívia",
+            "bonaire, sint eustatius and saba": "Bonaire, Santo Eustáquio e Saba",
+            "bosnia and herzegovina": "Bósnia e Herzegovina",
+            "botswana": "Botsuana",
+            "bouvet island": "Ilha Bouvet",
+            "brazil": "Brasil",
+            "british indian ocean territory": "Território Britânico do Oceano Índico",
+            "brunei": "Brunei",
+            "bulgaria": "Bulgária",
+            "burkina faso": "Burkina Faso",
+            "burundi": "Burundi",
+            "cambodia": "Camboja",
+            "cameroon": "Camarões",
+            "canada": "Canadá",
+            "cape verde": "Cabo Verde",
+            "cayman islands": "Ilhas Cayman",
+            "central african republic": "República Centro-Africana",
+            "chad": "Chade",
+            "chile": "Chile",
+            "china": "China",
+            "christmas island": "Ilha Christmas",
+            "cocos (keeling) islands": "Ilhas Cocos (Keeling)",
+            "colombia": "Colômbia",
+            "comoros": "Comores",
+            "congo": "Congo",
+            "congo, the democratic republic of the": "República Democrática do Congo",
+            "cook islands": "Ilhas Cook",
+            "costa rica": "Costa Rica",
+            "croatia": "Croácia",
+            "cuba": "Cuba",
+            "curaçao": "Curaçao",
+            "cyprus": "Chipre",
+            "czech republic": "República Tcheca",
+            "denmark": "Dinamarca",
+            "djibouti": "Djibuti",
+            "dominica": "Dominica",
+            "dominican republic": "República Dominicana",
+            "ecuador": "Equador",
+            "egypt": "Egito",
+            "el salvador": "El Salvador",
+            "equatorial guinea": "Guiné Equatorial",
+            "eritrea": "Eritreia",
+            "estonia": "Estônia",
+            "ethiopia": "Etiópia",
+            "falkland islands (malvinas)": "Ilhas Malvinas (Falkland)",
+            "faroe islands": "Ilhas Faroé",
+            "fiji": "Fiji",
+            "finland": "Finlândia",
+            "france": "França",
+            "french guiana": "Guiana Francesa",
+            "french polynesia": "Polinésia Francesa",
+            "french southern territories": "Territórios Franceses do Sul",
+            "gabon": "Gabão",
+            "gambia": "Gâmbia",
+            "georgia": "Geórgia",
+            "germany": "Alemanha",
+            "ghana": "Gana",
+            "gibraltar": "Gibraltar",
+            "greece": "Grécia",
+            "greenland": "Groenlândia",
+            "grenada": "Granada",
+            "guadeloupe": "Guadalupe",
+            "guam": "Guam",
+            "guatemala": "Guatemala",
+            "guernsey": "Guernsey",
+            "guinea": "Guiné",
+            "guinea-bissau": "Guiné-Bissau",
+            "guyana": "Guiana",
+            "haiti": "Haiti",
+            "heard island and mcdonald islands": "Ilhas Heard e McDonald",
+            "holy see (vatican city state)": "Santa Sé (Cidade do Vaticano)",
+            "honduras": "Honduras",
+            "hong kong": "Hong Kong",
+            "hungary": "Hungria",
+            "iceland": "Islândia",
+            "india": "Índia",
+            "indonesia": "Indonésia",
+            "iran, islamic republic of": "Irã, República Islâmica do",
+            "iraq": "Iraque",
+            "ireland": "Irlanda",
+            "isle of man": "Ilha de Man",
+            "israel": "Israel",
+            "italy": "Itália",
+            "ivory coast": "Costa do Marfim",
+            "jamaica": "Jamaica",
+            "japan": "Japão",
+            "jersey": "Jersey",
+            "jordan": "Jordânia",
+            "kazakhstan": "Cazaquistão",
+            "kenya": "Quênia",
+            "kiribati": "Kiribati",
+            "korea, democratic people's republic of": "Coreia do Norte",
+            "kosovo": "Kosovo",
+            "kuwait": "Kuwait",
+            "kyrgyzstan": "Quirguistão",
+            "lao people's democratic republic": "República Democrática Popular do Laos",
+            "latvia": "Letônia",
+            "lebanon": "Líbano",
+            "lesotho": "Lesoto",
+            "liberia": "Libéria",
+            "libya": "Líbia",
+            "liechtenstein": "Liechtenstein",
+            "lithuania": "Lituânia",
+            "luxembourg": "Luxemburgo",
+            "macao": "Macau",
+            "macedonia, the former yugoslav republic of": "Macedônia do Norte",
+            "madagascar": "Madagascar",
+            "malawi": "Malawi",
+            "malaysia": "Malásia",
+            "maldives": "Maldivas",
+            "mali": "Mali",
+            "malta": "Malta",
+            "marshall islands": "Ilhas Marshall",
+            "martinique": "Martinica",
+            "mauritania": "Mauritânia",
+            "mauritius": "Maurício",
+            "mayotte": "Mayotte",
+            "mexico": "México",
+            "micronesia, federated states of": "Micronésia, Estados Federados da",
+            "moldova, republic of": "Moldova, República da",
+            "monaco": "Mônaco",
+            "mongolia": "Mongólia",
+            "montenegro": "Montenegro",
+            "montserrat": "Montserrat",
+            "morocco": "Marrocos",
+            "mozambique": "Moçambique",
+            "myanmar": "Mianmar",
+            "namibia": "Namíbia",
+            "nauru": "Nauru",
+            "nepal": "Nepal",
+            "netherlands": "Países Baixos",
+            "netherlands antilles": "Antilhas Holandesas",
+            "new caledonia": "Nova Caledônia",
+            "new zealand": "Nova Zelândia",
+            "nicaragua": "Nicarágua",
+            "niger": "Níger",
+            "nigeria": "Nigéria",
+            "niue": "Niue",
+            "norfolk island": "Ilha Norfolk",
+            "northern mariana islands": "Ilhas Marianas do Norte",
+            "norway": "Noruega",
+            "oman": "Omã",
+            "pakistan": "Paquistão",
+            "palau": "Palau",
+            "palestinian territory, occupied": "Território Palestino Ocupado",
+            "panama": "Panamá",
+            "papua new guinea": "Papua-Nova Guiné",
+            "paraguay": "Paraguai",
+            "peru": "Peru",
+            "philippines": "Filipinas",
+            "pitcairn": "Ilhas Pitcairn",
+            "poland": "Polônia",
+            "portugal": "Portugal",
+            "puerto rico": "Porto Rico",
+            "qatar": "Catar",
+            "romania": "Romênia",
+            "russia": "Rússia",
+            "rwanda": "Ruanda",
+            "réunion": "Reunião",
+            "saint barthélemy": "São Bartolomeu",
+            "saint helena, ascension and tristan da cunha": "Santa Helena, Ascensão e Tristão da Cunha",
+            "saint kitts and nevis": "São Cristóvão e Névis",
+            "saint lucia": "Santa Lúcia",
+            "saint martin (french part)": "São Martinho (parte francesa)",
+            "saint pierre and miquelon": "São Pedro e Miquelão",
+            "saint vincent and the grenadines": "São Vicente e Granadinas",
+            "samoa": "Samoa",
+            "san marino": "San Marino",
+            "sao tome and principe": "São Tomé e Príncipe",
+            "saudi arabia": "Arábia Saudita",
+            "senegal": "Senegal",
+            "serbia": "Sérvia",
+            "seychelles": "Seicheles",
+            "sierra leone": "Serra Leoa",
+            "singapore": "Singapura",
+            "sint maarten (dutch part)": "Sint Maarten (parte holandesa)",
+            "slovakia": "Eslováquia",
+            "slovenia": "Eslovênia",
+            "solomon islands": "Ilhas Salomão",
+            "somalia": "Somália",
+            "south africa": "África do Sul",
+            "south georgia and the south sandwich islands": "Geórgia do Sul e Ilhas Sandwich do Sul",
+            "south korea": "Coreia do Sul",
+            "south sudan": "Sudão do Sul",
+            "spain": "Espanha",
+            "sri lanka": "Sri Lanka",
+            "sudan": "Sudão",
+            "suriname": "Suriname",
+            "svalbard and jan mayen": "Svalbard e Jan Mayen",
+            "swaziland": "Essuatíni",
+            "sweden": "Suécia",
+            "switzerland": "Suíça",
+            "syrian arab republic": "República Árabe Síria",
+            "taiwan": "Taiwan",
+            "tajikistan": "Tajiquistão",
+            "tanzania, united republic of": "Tanzânia, República Unida da",
+            "thailand": "Tailândia",
+            "timor-leste": "Timor-Leste",
+            "togo": "Togo",
+            "tokelau": "Tokelau",
+            "tonga": "Tonga",
+            "trinidad and tobago": "Trinidad e Tobago",
+            "tunisia": "Tunísia",
+            "turkey": "Turquia",
+            "turkmenistan": "Turcomenistão",
+            "turks and caicos islands": "Ilhas Turcas e Caicos",
+            "tuvalu": "Tuvalu",
+            "uganda": "Uganda",
+            "ukraine": "Ucrânia",
+            "united arab emirates": "Emirados Árabes Unidos",
+            "united kingdom": "Reino Unido",
+            "united states": "Estados Unidos",
+            "united states minor outlying islands": "Ilhas Menores Distantes dos Estados Unidos",
+            "uruguay": "Uruguai",
+            "uzbekistan": "Uzbequistão",
+            "vanuatu": "Vanuatu",
+            "venezuela": "Venezuela",
+            "vietnam": "Vietnã",
+            "virgin islands, british": "Ilhas Virgens Britânicas",
+            "virgin islands, u.s.": "Ilhas Virgens Americanas",
+            "wallis and futuna": "Wallis e Futuna",
+            "western sahara": "Saara Ocidental",
+            "yemen": "Iêmen",
+            "zambia": "Zâmbia",
+            "zimbabwe": "Zimbábue",
+            "åland islands": "Ilhas Åland"
+        }
+    },
+    "marketPrices": {
+        "title": "Preços de mercado",
+        "subtitle": "Acompanhe preços em tempo real de criptomoedas, ETFs, ações e mais",
+        "loading": "Carregando dados de mercado...",
+        "errorTitle": "Erro ao carregar",
+        "errorDescription": "Não foi possível carregar os dados de mercado. Tente novamente mais tarde.",
+        "retry": "Tentar novamente",
+        "noResults": "Sem resultados",
+        "noResultsDescription": "Nenhum ativo corresponde à sua busca.",
+        "searchPlaceholder": "Buscar por nome ou símbolo...",
+        "assetsFound": "ativos encontrados",
+        "updatedAutomatically": "Atualizado automaticamente a cada hora",
+        "comingSoon": "Em breve",
+        "lockedDescription": "Esta seção estará disponível em breve com dados em tempo real.",
+        "categories": {
+            "crypto": "Cripto",
+            "etf": "ETFs",
+            "stocks": "Ações",
+            "forex": "Forex",
+            "commodities": "Commodities",
+            "bonds": "Títulos"
+        },
+        "summary": {
+            "totalAssets": "Total de ativos",
+            "avgChange7d": "Média 7D",
+            "gainers": "Em alta",
+            "losers": "Em baixa"
+        },
+        "sort": {
+            "marketCap": "Cap. de mercado",
+            "priceDesc": "Preço ↓",
+            "priceAsc": "Preço ↑",
+            "change": "Variação 7D",
+            "name": "Nome"
+        },
+        "detail": {
+            "back": "Voltar à lista",
+            "chartTitle": "Gráfico de preços",
+            "currentPrice": "Preço atual",
+            "change": "Variação",
+            "open": "Abertura",
+            "high": "Máxima",
+            "low": "Mínima",
+            "range": "Faixa",
+            "avg": "Média",
+            "volatility": "Volatilidade",
+            "performance": "Desempenho",
+            "priceStats": "Estatísticas de preço",
+            "identifier": "Identificador",
+            "period24h": "24H",
+            "period7d": "7D",
+            "period30d": "30D",
+            "period90d": "90D",
+            "period6m": "6M",
+            "period1y": "1A",
+            "periodAll": "TUDO",
+            "comingSoon": "Em breve",
+            "marketInfo": "Informações de mercado",
+            "rank": "Posição",
+            "marketCap": "Cap. de mercado",
+            "vol24h": "Volume 24H",
+            "circulatingSupply": "Oferta circulante",
+            "totalSupply": "Oferta total",
+            "maxSupply": "Oferta máxima",
+            "fdv": "Valor totalmente diluído",
+            "high24h": "Máxima 24H",
+            "low24h": "Mínima 24H",
+            "priceChange24h": "Δ Preço 24H",
+            "lastUpdated": "Última atualização",
+            "historical": "Histórico",
+            "ath": "Máxima histórica",
+            "athDate": "Data ATH",
+            "atl": "Mínima histórica",
+            "atlDate": "Data ATL"
+        },
+        "tradingView": {
+            "currencyNote": "Os preços são exibidos na moeda nativa da bolsa (principalmente USD). Dados com atraso de 15 min do TradingView.",
+            "searchPlaceholder": "Buscar por nome ou símbolo (ex. AAPL, NASDAQ:TSLA)...",
+            "searchHint": "Busque por nome na lista abaixo, ou digite um símbolo e pressione Enter para carregá-lo diretamente do TradingView",
+            "exchangeSearchHint": "Busca em {exchange}. Digite um símbolo e pressione Enter.",
+            "viewDetails": "Ver detalhes",
+            "chart": "Gráfico",
+            "profile": "Perfil",
+            "technicalAnalysis": "Análise Técnica",
+            "advancedChart": "Gráfico avançado",
+            "showTraderChart": "Gráfico avançado",
+            "hideTraderChart": "Ocultar gráfico avançado",
+            "fundamentals": "Fundamentos",
+            "analysisDisclaimer": "A análise de mercado a seguir é fornecida pelo TradingView apenas para fins informativos. Não constitui aconselhamento financeiro. O PaciFinance não é responsável por decisões baseadas nesses dados. Sempre consulte um profissional financeiro qualificado.",
+            "noMatchHint": "Nenhuma correspondência na lista selecionada. Pressione Enter para buscar este símbolo diretamente no TradingView",
+            "symbolDisclaimer": "Este símbolo não faz parte da nossa lista selecionada. Se os gráficos não carregarem, verifique se você usou o símbolo correto do TradingView (ex. NASDAQ:AAPL, não \"Apple\").",
+            "clearSearch": "✕ Limpar busca",
+            "showMore": "Ver mais",
+            "exchanges": {
+                "allExchanges": "Todas",
+                "nasdaq": "NASDAQ",
+                "nyse": "Nova York",
+                "amex": "EUA (AMEX)",
+                "lse": "Londres",
+                "xetra": "Alemanha",
+                "euronext": "Euronext",
+                "euronextParis": "Paris",
+                "borsaItaliana": "Milão",
+                "bolsaMadrid": "Madri",
+                "six": "Suíça",
+                "tse": "Tóquio",
+                "hkex": "Hong Kong",
+                "sse": "Xangai",
+                "krx": "Coreia do Sul",
+                "nse": "Índia",
+                "asx": "Austrália",
+                "tsx": "Canadá",
+                "tvc": "TradingView",
+                "fx": "FX (Forex)",
+                "comex": "COMEX (Metais)",
+                "nymex": "NYMEX (Energia)"
+            }
+        }
+    }
+}

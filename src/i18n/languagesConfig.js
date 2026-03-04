@@ -29,6 +29,34 @@ export const SUPPORTED_LANGUAGES = [
     englishName: 'English',
     flag: '🇬🇧',
     isRTL: false
+  },
+  {
+    code: 'es',
+    name: 'Español',
+    englishName: 'Spanish',
+    flag: '🇪🇸',
+    isRTL: false
+  },
+  {
+    code: 'de',
+    name: 'Deutsch',
+    englishName: 'German',
+    flag: '🇩🇪',
+    isRTL: false
+  },
+  {
+    code: 'fr',
+    name: 'Français',
+    englishName: 'French',
+    flag: '🇫🇷',
+    isRTL: false
+  },
+  {
+    code: 'pt-BR',
+    name: 'Português',
+    englishName: 'Portuguese (Brazil)',
+    flag: '🇧🇷',
+    isRTL: false
   }
 ];
 

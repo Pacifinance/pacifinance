@@ -47,8 +47,8 @@ describe('i18nRouting utilities', () => {
     });
 
     it('should return null for invalid language codes', () => {
-      expect(getLanguageFromPath('/fr/dashboard')).toBeNull();
-      expect(getLanguageFromPath('/de/profile')).toBeNull();
+      expect(getLanguageFromPath('/xx/dashboard')).toBeNull();
+      expect(getLanguageFromPath('/zh/profile')).toBeNull();
     });
   });
 
@@ -84,9 +84,9 @@ describe('i18nRouting utilities', () => {
     });
 
     it('should not strip segments that look like language codes but are not in supported list', () => {
-      expect(removeLanguageFromPath('/fr/dashboard')).toBe('/fr/dashboard');
-      expect(removeLanguageFromPath('/de/profile')).toBe('/de/profile');
-      expect(removeLanguageFromPath('/xx/test')).toBe('/xx/test');
+      expect(removeLanguageFromPath('/xx/dashboard')).toBe('/xx/dashboard');
+      expect(removeLanguageFromPath('/zh/profile')).toBe('/zh/profile');
+      expect(removeLanguageFromPath('/zz/test')).toBe('/zz/test');
     });
 
     it('should handle empty string', () => {
@@ -162,8 +162,8 @@ describe('i18nRouting utilities', () => {
     });
 
     it('should return false for invalid languages', () => {
-      expect(isValidLanguage('fr')).toBe(false);
-      expect(isValidLanguage('de')).toBe(false);
+      expect(isValidLanguage('xx')).toBe(false);
+      expect(isValidLanguage('zh')).toBe(false);
       expect(isValidLanguage('invalid')).toBe(false);
     });
   });
@@ -172,6 +172,10 @@ describe('i18nRouting utilities', () => {
     it('should contain expected languages', () => {
       expect(availableLanguages).toContain('it');
       expect(availableLanguages).toContain('en');
+      expect(availableLanguages).toContain('es');
+      expect(availableLanguages).toContain('de');
+      expect(availableLanguages).toContain('fr');
+      expect(availableLanguages).toContain('pt-BR');
       expect(Array.isArray(availableLanguages)).toBe(true);
     });
   });

@@ -140,7 +140,7 @@ describe('URL-based i18n - Route Integration', () => {
 
   describe('Invalid language codes', () => {
     it('should handle invalid language gracefully', () => {
-      const path = '/fr/dashboard'; // French not supported
+      const path = '/xx/dashboard'; // xx not supported
       const lang = getLanguageFromPath(path);
       expect(lang).toBeNull();
     });
@@ -148,8 +148,11 @@ describe('URL-based i18n - Route Integration', () => {
     it('should validate language codes', () => {
       expect(isValidLanguage('it')).toBe(true);
       expect(isValidLanguage('en')).toBe(true);
-      expect(isValidLanguage('fr')).toBe(false);
-      expect(isValidLanguage('de')).toBe(false);
+      expect(isValidLanguage('es')).toBe(true);
+      expect(isValidLanguage('de')).toBe(true);
+      expect(isValidLanguage('fr')).toBe(true);
+      expect(isValidLanguage('pt-BR')).toBe(true);
+      expect(isValidLanguage('xx')).toBe(false);
       expect(isValidLanguage('')).toBe(false);
       expect(isValidLanguage(null)).toBe(false);
     });

@@ -3,6 +3,10 @@
 
 import it from './locales/it.json';
 import en from './locales/en.json';
+import es from './locales/es.json';
+import de from './locales/de.json';
+import fr from './locales/fr.json';
+import ptBR from './locales/pt-BR.json';
 import { 
   SUPPORTED_LANGUAGES, 
   DEFAULT_LANGUAGE,
@@ -16,7 +20,11 @@ import {
 // Available languages - mapped from config
 const languages = {
   it,
-  en
+  en,
+  es,
+  de,
+  fr,
+  'pt-BR': ptBR
 };
 
 // Get translation by language

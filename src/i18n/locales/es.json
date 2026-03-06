@@ -496,6 +496,7 @@
             "light": "Modo claro/oscuro",
             "privacy": "Modo privacidad",
             "language": "Cambiar idioma",
+            "languageSubtitle": "Cambiar idioma de la interfaz",
             "currency": "Moneda",
             "currencySubtitle": "Seleccionar moneda de visualización",
             "deleteAccount": "Eliminar cuenta (!)",

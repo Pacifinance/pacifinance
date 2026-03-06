@@ -290,6 +290,7 @@
         "settingsSection": {
             "title": "Einstellungen",
             "language": "Sprache",
+            "languageSubtitle": "Sprache der Benutzeroberfläche ändern",
             "theme": "Erscheinungsbild",
             "light": "Hell",
             "dark": "Dunkel",

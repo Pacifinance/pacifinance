@@ -496,6 +496,7 @@
             "light": "Light/Dark mode",
             "privacy": "Privacy mode",
             "language": "Change Language",
+            "languageSubtitle": "Change interface language",
             "currency": "Currency",
             "currencySubtitle": "Select display currency",
             "deleteAccount": "Delete account (!)",

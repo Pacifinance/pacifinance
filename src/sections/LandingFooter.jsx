@@ -1,14 +1,26 @@
 
 import React, { useContext } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
 import LogoPaci from '../components/Logo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { SUPPORTED_LANGUAGES } from '../i18n/languagesConfig';
+import { addLanguageToPath, removeLanguageFromPath } from '../utils/i18nRouting';
 import { APP_VERSION } from '../data/appVersion';
 
 export default function LandingFooter({ theme }) {
-  const { language, translations } = useContext(LanguageContext);
+  const { language, translations, setLanguage } = useContext(LanguageContext);
+  const rawNavigate = useNavigate();
+  const location = useLocation();
+
+  const switchLanguage = (code) => {
+    if (code === language) return;
+    setLanguage(code);
+    const currentPath = removeLanguageFromPath(location.pathname);
+    const newPath = addLanguageToPath(currentPath, code);
+    rawNavigate(newPath, { replace: true });
+  };
 
   return (
     <footer 
@@ -177,14 +189,16 @@ export default function LandingFooter({ theme }) {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               {SUPPORTED_LANGUAGES.map((lang) => (
-                <div
+                <button
                   key={lang.code}
+                  onClick={() => switchLanguage(lang.code)}
+                  data-umami-event={`footer-lang-${lang.code}`}
                   className={`
                     inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
-                    transition-all duration-200
+                    transition-all duration-200 cursor-pointer
                     ${language === lang.code 
                       ? 'ring-2 ring-offset-2' 
-                      : 'opacity-80 hover:opacity-100'
+                      : 'opacity-80 hover:opacity-100 hover:scale-105'
                     }
                   `}
                   style={{ 
@@ -195,12 +209,13 @@ export default function LandingFooter({ theme }) {
                       ? '#fff' 
                       : theme.textColor,
                     borderColor: theme.borderColor,
-                    ringColor: theme.secondaryColor
+                    ringColor: theme.secondaryColor,
+                    border: 'none',
                   }}
                 >
                   <span className="text-lg">{lang.flag}</span>
                   <span className="font-medium">{lang.name}</span>
-                </div>
+                </button>
               ))}
             </div>
           </div>

@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+
 import ToggleModeButton from "../components/ToggleModeButton";
+import LanguageSelector from "../components/LanguageSelector";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
-import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
+
 import { MyButton, ButtonContainer } from "../styles/MyStyled";
 
 function Header({
@@ -17,21 +18,11 @@ function Header({
   const auth = useAuth();
   const { handleSetIsAuthenticated } = auth;
   const [showDemoButton, setShowDemoButton] = useState(false);
-  const { language, translations, setLanguage } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const localizedNavigate = useLocalizedNavigate();
-  const rawNavigate = useNavigate();
-  const location = useLocation();
+
   
-  // Handle language toggle with URL update
-  const handleLanguageToggle = () => {
-    const newLanguage = language === 'it' ? 'en' : 'it';
-    setLanguage(newLanguage);
-    
-    // Update URL with new language (use rawNavigate since path already has language prefix)
-    const currentPath = removeLanguageFromPath(location.pathname);
-    const newPath = addLanguageToPath(currentPath, newLanguage);
-    rawNavigate(newPath, { replace: true });
-  };
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -82,13 +73,8 @@ function Header({
           <ButtonContainer>
             <ToggleModeButton mode={mode} toggleMode={toggleMode} />
 
-            <MyButton
-              theme={theme}
-              data-umami-event="setLanguage"
-              onClick={handleLanguageToggle}
-            >
-              {language === "it" ? "IT" : "EN"}
-            </MyButton>
+            <LanguageSelector theme={theme} variant="compact" />
+
             <MyButton theme={theme} onClick={handleAuthNavigation}>
               {translations.header.signIn}
             </MyButton>

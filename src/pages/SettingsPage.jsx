@@ -1,5 +1,5 @@
 import React, { useContext, useState, lazy, Suspense } from "react";
-import { useLocation, useNavigate as useRawNavigate } from "react-router-dom";
+
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { useDemoServices } from "../hooks/useDemoServices";
 import { useAccountActions } from "../hooks/useAccountActions";
@@ -13,11 +13,12 @@ import { CURRENCIES } from "../data/currencyConfig";
 import { MESSAGE_AUTO_DISMISS_MS } from "../data/financeDefaults";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { useAuth } from "../hooks/useAuth";
-import { addLanguageToPath, removeLanguageFromPath } from "../utils/i18nRouting";
+
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import PWAInstallGuide from "../components/PWAInstallGuide";
+import LanguageSelector from "../components/LanguageSelector";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -62,14 +63,13 @@ const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, translations, setLanguage } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { currency, setCurrency } = useContext(CurrencyContext);
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
-    const rawNavigate = useRawNavigate();
-    const location = useLocation();
+
     const { userService } = useDemoServices();
     const { showSuccess, showError } = useToast();
 
@@ -149,18 +149,7 @@ const SettingsPage = () => {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, i) => currentYear - i); // Ultimi 5 anni
 
-    // Handle language toggle with URL update
-    const handleLanguageToggle = () => {
-        const newLanguage = language === 'it' ? 'en' : 'it';
-        setLanguage(newLanguage);
-        
-        // Update URL with new language prefix
-        // Use rawNavigate (not useLocalizedNavigate) because the path already
-        // includes the language prefix — useLocalizedNavigate would double-prefix it
-        const currentPath = removeLanguageFromPath(location.pathname);
-        const newPath = addLanguageToPath(currentPath, newLanguage);
-        rawNavigate(newPath, { replace: true });
-    };
+
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -394,23 +383,10 @@ const SettingsPage = () => {
                                             color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
                                             fontSize: "0.75rem"
                                         }}>
-                                            {language === "it" ? "Cambia lingua interfaccia" : "Change interface language"}
+                                            {translations.sidebar?.settings?.languageSubtitle || "Change interface language"}
                                         </span>
                                     </div>
-                                    <MyButton
-                                        theme={theme}
-                                        onClick={handleLanguageToggle}
-                                        style={{
-                                            padding: "0.5rem 1.1rem",
-                                            borderRadius: "8px",
-                                            fontWeight: "600",
-                                            fontSize: "0.8rem",
-                                            minWidth: "70px"
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faGlobe} style={{ marginRight: "0.4rem" }} />
-                                        {language === "it" ? "IT" : "EN"}
-                                    </MyButton>
+                                    <LanguageSelector theme={theme} variant="full" />
                                 </div>
 
                                 {/* Currency */}

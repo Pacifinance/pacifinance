@@ -1,97 +1,74 @@
 {
     "assets": {
+        "total": "Gesamt",
         "bank": "Bank",
         "cash": "Bargeld",
+        "digitalServices": "Digitale Dienste",
+        "emergencyFund": "Notfallfonds",
         "stocks": "Aktien",
         "etf": "ETFs",
+        "bitcoin": "Bitcoin",
         "crypto": "Krypto",
         "bonds": "Anleihen",
-        "realEstate": "Immobilien",
-        "commodities": "Rohstoffe",
-        "gold": "Gold",
-        "p2p": "P2P-Kredite",
-        "privateEquity": "Private Equity",
-        "other": "Sonstiges",
-        "governmentBonds": "Staatsanleihen",
-        "total": "Gesamt"
+        "funds": "Fonds",
+        "gold": "Gold"
     },
     "general": {
-        "login": "Anmelden",
-        "register": "Registrieren",
-        "logout": "Abmelden",
-        "loading": "Wird geladen...",
-        "error": "Fehler",
-        "info": "Informationen",
-        "settings": "Einstellungen",
-        "language": "Sprache",
-        "theme": "Erscheinungsbild",
-        "light": "Hell",
-        "dark": "Dunkel",
-        "save": "Speichern",
-        "cancel": "Abbrechen",
-        "delete": "Löschen",
-        "edit": "Bearbeiten",
-        "confirm": "Bestätigen",
-        "close": "Schließen",
-        "goToLogin": "Zur Anmeldung",
-        "goToRegister": "Zur Registrierung",
-        "orLoginInstead": "Oder stattdessen anmelden",
-        "orRegister": "Oder registrieren",
-        "writeYourUserId": "Gib deine Benutzer-ID ein",
-        "writeYourPassword": "Gib dein Passwort ein",
-        "writeYourNewPassword": "Gib dein neues Passwort ein",
-        "loginSuccess": "Erfolgreich angemeldet!",
-        "registerSuccess": "Registrierung erfolgreich!",
-        "cautionMessage": "⚠️ Achtung: Notiere dir deine automatisch generierte ID und dein Passwort. Bei Verlust gibt es derzeit KEINE Möglichkeit, sie wiederherzustellen.",
-        "copy": "Kopieren",
-        "copied": "Kopiert!",
-        "yourId": "Deine automatisch generierte ID",
-        "rememberToSaveId": "⚠️ Vergiss nicht, deine ID zu speichern",
-        "termsAndConditions": {
-            "accept": "Ich akzeptiere die",
-            "termsOfService": "Nutzungsbedingungen",
-            "privacyPolicy": "Datenschutzrichtlinie",
-            "and": "und die",
-            "link": "AGB und Datenschutzrichtlinie"
-        },
-        "turnstile": {
-            "verifying": "Verifiziere, dass du ein Mensch bist...",
-            "failed": "Verifizierung fehlgeschlagen. Bitte versuche es erneut.",
-            "expired": "Verifizierung abgelaufen. Bitte bestätige erneut.",
-            "required": "Bitte bestätige, dass du ein Mensch bist.",
-            "error": "Verifizierungsfehler. Bitte lade die Seite neu."
-        },
-        "privacyMode": "Datenschutzmodus",
+        "ok": "ok",
+        "month": "Monat",
+        "year": "Jahr",
+        "incomes": "Einnahmen",
+        "outflows": "Ausgaben",
+        "saved": "Gespart",
+        "balance": "Saldo",
         "total": "Gesamt",
-        "monthly": "Monatlich",
-        "annual": "Jährlich",
-        "percentage": "Prozentsatz",
-        "amount": "Betrag",
+        "totalFiltered": "Gefiltert Gesamt",
+        "value": "Wert",
+        "note": "Notiz",
+        "noData": "Keine Daten",
         "date": "Datum",
+        "selectedDate": "Ausgewähltes Datum",
+        "confirm": "Bestätigen",
+        "cancel": "Abbrechen",
         "category": "Kategorie",
-        "noData": "Keine Daten verfügbar",
-        "or": "oder",
-        "yes": "Ja",
-        "no": "Nein",
-        "userIdPlaceholder": "aB3dE...",
-        "passwordPlaceholder": "••••••••",
-        "loadingError": "Fehler beim Laden der Daten. Bitte versuche es erneut.",
-        "loadingApp": "PaciFinance wird geladen..."
+        "typology": "Typologie",
+        "invested": "Investiert",
+        "investments": "Investitionen",
+        "deposited": "Eingezahlt",
+        "comingSoon": "Bald verfügbar",
+        "weAreWorking": "Wir arbeiten an dieser Funktion",
+        "inDevelopment": "In Entwicklung",
+        "featureComingSoon": "Diese Funktion befindet sich in der Entwicklung und wird bald verfügbar sein!",
+        "goalsComingSoonDashboard": "Ziele & Limits bald verfügbar",
+        "selectAnOption": "Keine (optional)",
+        "objective": "Ziel",
+        "clearFilter": "Löschen",
+        "currentMonth": "Aktueller Monat",
+        "all": "Alle"
     },
     "cookie": {
-        "title": "Cookie-Einstellungen",
-        "description": "PaciFinance verwendet ausschließlich technische Cookies, die für das Funktionieren der Plattform unerlässlich sind. Wir verwenden keine Tracking- oder Profiling-Cookies.",
-        "manage": "Cookies verwalten",
-        "necessary": "Notwendige Cookies",
-        "necessaryDescription": "Unverzichtbar für die Grundfunktionen (Authentifizierung, Einstellungen). Können nicht deaktiviert werden.",
-        "analytics": "Analysedaten",
-        "analyticsDescription": "Aggregierte und anonyme Nutzungsstatistiken über Umami Analytics (datenschutzkonform, GDPR-kompatibel, cookielos).",
-        "accept": "Alle akzeptieren",
-        "reject": "Nur notwendige",
-        "acceptAll": "Alle akzeptieren",
-        "rejectAll": "Alle ablehnen",
+        "title": "Wir verwenden Cookies",
+        "description": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern, den Website-Verkehr zu analysieren und für Marketingzwecke. Sie können wählen, welche Cookies Sie akzeptieren möchten.",
+        "catchyPhrase": "Akzeptieren Sie unsere Cookies und genießen Sie eine bessere Erfahrung! 🍪",
+        "acceptButton": "Alle akzeptieren",
+        "acceptNecessary": "Nur notwendige akzeptieren",
+        "customize": "Anpassen",
         "savePreferences": "Einstellungen speichern",
-        "cookiePolicy": "Cookie-Richtlinie"
+        "hideDetails": "Details ausblenden",
+        "necessary": {
+            "title": "Notwendige Cookies",
+            "description": "Unerlässlich für die ordnungsgemäße Funktion der Website. Kann nicht deaktiviert werden.",
+            "required": "(Erforderlich)"
+        },
+        "analytics": {
+            "title": "Analytics-Cookies",
+            "description": "Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren (Umami Analytics)."
+        },
+        "marketing": {
+            "title": "Marketing-Cookies",
+            "description": "Werden verwendet, um Besucher für personalisierte Werbung zu verfolgen (derzeit nicht verwendet)."
+        },
+        "footer": "Sie können Ihre Einstellungen jederzeit in unserer Datenschutzrichtlinie ändern"
     },
     "months": {
         "january": "Januar",
@@ -105,366 +82,624 @@
         "september": "September",
         "october": "Oktober",
         "november": "November",
-        "december": "Dezember",
-        "jan": "Jan",
-        "feb": "Feb",
-        "mar": "Mär",
-        "apr": "Apr",
-        "may_short": "Mai",
-        "jun": "Jun",
-        "jul": "Jul",
-        "aug": "Aug",
-        "sep": "Sep",
-        "oct": "Okt",
-        "nov": "Nov",
-        "dec": "Dez"
+        "december": "Dezember"
     },
     "landing": {
-        "hero": {
-            "title": "Deine Finanzen, deine Privatsphäre",
-            "subtitle": "Die kostenlose und anonyme Plattform zur Verwaltung deiner persönlichen Finanzen und zum anonymen Vergleich mit ähnlichen Nutzern.",
-            "cta": "Jetzt kostenlos starten",
-            "secondaryCta": "Mehr erfahren"
-        },
-        "features": {
-            "title": "Alles was du brauchst",
-            "privacy": {
-                "title": "Absoluter Datenschutz",
-                "description": "Keine E-Mail erforderlich, keine persönlichen Daten. Deine Finanzen bleiben wirklich anonym."
+        "new": {
+            "hero": {
+                "title": "Vereinen Sie Ihre Finanzen",
+                "subtitle": "auf einer Plattform",
+                "description": "Konten bei verschiedenen Banken? Investitionen auf mehreren Plattformen? PaciFinance gibt Ihnen einen vollständigen Überblick über Ihre finanzielle Situation, alles an einem Ort.",
+                "getStarted": "Kostenlos starten",
+                "learnMore": "Mehr erfahren",
+                "socialProof": "Von datenschutzbewussten Nutzern weltweit vertraut"
             },
-            "tracking": {
-                "title": "Komplette Verfolgung",
-                "description": "Überwache Ausgaben, Einnahmen, Investitionen und Vermögen an einem Ort."
+            "benefits": {
+                "freeForever": "100% Für immer kostenlos",
+                "privacyFirst": "Datenschutz zuerst",
+                "smartAnalytics": "Intelligente Analysen"
             },
-            "comparison": {
-                "title": "Anonyme Vergleiche",
-                "description": "Finde heraus, wo du im Vergleich zu ähnlichen Nutzern stehst, ohne deine Identität preiszugeben."
+            "features": {
+                "title": "Wie PaciFinance Ihre Probleme löst",
+                "subtitle": "Müde davon, mehrere Apps zu jonglieren, um Ihr vollständiges Finanzbild zu sehen? PaciFinance transformiert die Art, wie Sie Ihr Geld verwalten.",
+                "privacy": {
+                    "title": "Intelligente anonyme Vergleiche",
+                    "description": "Entdecken Sie, ob Sie zu viel ausgeben oder zu wenig sparen im Vergleich zu Personen in ähnlichen Situationen. Alle Vergleiche sind vollständig anonym.",
+                    "features": [
+                        "• Anonymes Benutzer-Matching",
+                        "• Ausgabenmuster-Analyse",
+                        "• Personalisierte Einblicke"
+                    ]
+                },
+                "analytics": {
+                    "title": "Vollständige einheitliche Ansicht",
+                    "description": "Sehen Sie alle Ihre Konten, Investitionen und Ausgaben in einem Dashboard. Kein Wechsel mehr zwischen Apps, um Ihre finanzielle Situation zu verstehen.",
+                    "features": [
+                        "• Multi-Plattform-Integration",
+                        "• Einheitliches Dashboard",
+                        "• Trendanalyse"
+                    ]
+                },
+                "comparisons": {
+                    "title": "Das Geld-Tabu brechen",
+                    "description": "Entdecken Sie endlich, ob Sie auf dem richtigen Weg sind. Anonyme Vergleiche zeigen Ihnen, wie Ihre Ausgaben und Ersparnisse im Vergleich zu ähnlichen Profilen abschneiden.",
+                    "features": [
+                        "• Anonyme Peer-Vergleiche",
+                        "• Ausgaben-Benchmarks",
+                        "• Personalisierte Empfehlungen"
+                    ]
+                },
+                "investment": {
+                    "title": "Multi-Plattform-Investitionen",
+                    "description": "Verfolgen Sie Aktien, ETFs, Krypto über verschiedene Plattformen. Sehen Sie Ihr gesamtes Investmentportfolio an einem Ort, nicht verstreut über verschiedene Apps.",
+                    "features": [
+                        "• Plattformübergreifendes Tracking",
+                        "• Einheitliche Performance-Ansicht",
+                        "• Diversifikationsanalyse"
+                    ]
+                },
+                "free": {
+                    "title": "100% Kostenlos",
+                    "description": "Keine Abonnements, keine versteckten Gebühren, keine Premium-Stufen. Vollständig durch Community-Spenden unterstützt.",
+                    "features": [
+                        "• Keine Kreditkarte erforderlich",
+                        "• Alle Funktionen enthalten",
+                        "• Community-unterstützt"
+                    ]
+                },
+                "security": {
+                    "title": "Bankenniveau-Sicherheit",
+                    "description": "Ihre Finanzdaten sind mit fortschrittlicher Verschlüsselung und Sicherheitsmaßnahmen geschützt. Vollständige Privatsphäre und Anonymität garantiert.",
+                    "features": [
+                        "• Fortschrittliche Verschlüsselung",
+                        "• Anonyme Datenverarbeitung",
+                        "• Vollständiger Benutzerdatenschutz"
+                    ]
+                },
+                "marketPrices": {
+                    "title": "Echtzeit-Marktpreise",
+                    "description": "Verfolgen Sie Kryptowährungspreise mit interaktiven Charts und detaillierten Marktdaten. Sparkline-Trends, historische Höchst- und Tiefstwerte und mehrere Zeiträume.",
+                    "features": [
+                        "• Live-Krypto-Preisverfolgung",
+                        "• Interaktive Charts mit Zeiträumen",
+                        "• Marktkapitalisierung, Volumen & Angebotsdaten"
+                    ]
+                },
+                "currencies": {
+                    "title": "19 Währungen unterstützt",
+                    "description": "Sehen Sie Ihre Finanzen in Ihrer bevorzugten Währung. Live-Wechselkurse mit automatischer Umrechnung — alle Daten in der von Ihnen gewählten Währung angezeigt.",
+                    "features": [
+                        "🇪🇺 EUR",
+                        "🇺🇸 USD",
+                        "🇬🇧 GBP",
+                        "🇨🇭 CHF",
+                        "🇯🇵 JPY",
+                        "🇨🇦 CAD",
+                        "🇦🇺 AUD",
+                        "🇸🇪 SEK",
+                        "🇳🇴 NOK",
+                        "🇩🇰 DKK",
+                        "🇵🇱 PLN",
+                        "🇨🇿 CZK",
+                        "🇭🇺 HUF",
+                        "🇷🇴 RON",
+                        "🇧🇬 BGN",
+                        "🇧🇷 BRL",
+                        "🇮🇳 INR",
+                        "🇨🇳 CNY",
+                        "🇹🇷 TRY"
+                    ],
+                    "liveRates": "Live-Wechselkurse",
+                    "autoConversion": "Automatische Umrechnung"
+                },
+                "import": {
+                    "title": "Schneller CSV & Excel Import",
+                    "description": "Haben Sie Ihre Transaktionen bereits in einem Bankexport oder einer Tabelle? Importieren Sie sie mit wenigen Klicks. CSV- und Excel-Unterstützung mit automatischer Spaltenzuordnung, Datumsfiltern und intelligenter Kategoriezuordnung.",
+                    "features": [
+                        "CSV & Excel (.xlsx)",
+                        "Auto-Spaltenzuordnung",
+                        "Datumsbereichsfilter",
+                        "Intelligente Kategorien",
+                        "Getrennte Einnahmen-/Ausgabenspalten"
+                    ]
+                }
             },
-            "charts": {
-                "title": "Fortgeschrittene Diagramme",
-                "description": "Interaktive Balken-, Linien- und Tortendiagramme, um deine Finanzen zu visualisieren."
+            "cta": {
+                "title": "Bereit, Ihr",
+                "subtitle": "Finanzleben zu vereinen",
+                "description": "Schließen Sie sich Nutzern an, die bereits die volle Kontrolle über ihre verstreuten Finanzen mit PaciFinance gewonnen haben. Sehen Sie Ihr vollständiges Finanzbild heute.",
+                "button": "Kostenloses Konto erstellen",
+                "disclaimer": "Keine Kreditkarte erforderlich • Dauert weniger als 2 Minuten • Sofort starten"
             },
-            "import": {
-                "title": "Datenimport",
-                "description": "Importiere deine Transaktionen aus CSV- oder Excel-Dateien mit unserem intelligenten Import-Assistenten."
+            "trust": {
+                "encryption": "Fortschrittliche Sicherheit",
+                "dataCollection": "Datenerfassung",
+                "freeForever": "Für immer kostenlos"
             },
-            "multicurrency": {
-                "title": "Mehrere Währungen",
-                "description": "Unterstützung für 19 Währungen mit Live-Wechselkursen. Zeige deine Finanzen in deiner bevorzugten Währung an."
-            },
-            "pwa": {
-                "title": "Installierbar",
-                "description": "Installiere PaciFinance als App auf jedem Gerät für schnellen Zugriff und natives App-Erlebnis."
-            },
-            "goals": {
-                "title": "Ziele und Grenzen",
-                "description": "Setze Sparziele und Ausgabenlimits. Verfolge deinen Fortschritt mit visuellen Indikatoren."
-            },
-            "gamification": {
-                "title": "Gamification",
-                "description": "Schalte Abzeichen und Erfolge frei, während du deine finanziellen Meilensteine erreichst."
-            },
-            "knowledge": {
-                "title": "Finanzielles Wissen",
-                "description": "Lerne über persönliche Finanzen mit unseren ausführlichen Leitfäden und Expertenratschlägen."
+            "donation": {
+                "title": "Sie lieben PaciFinance? Helfen Sie, es kostenlos zu halten!",
+                "description": "Diese Plattform wird ausschließlich durch Community-Spenden unterhalten. Ihre Unterstützung hilft uns, uns weiter zu verbessern und neue Funktionen hinzuzufügen."
             }
-        },
-        "howItWorks": {
-            "title": "So funktioniert es",
-            "step1": {
-                "title": "Registriere dich anonym",
-                "description": "Erstelle ein Konto nur mit einem Passwort. Wir generieren eine einzigartige ID für dich — keine E-Mail erforderlich."
-            },
-            "step2": {
-                "title": "Gib deine Daten ein",
-                "description": "Füge dein Guthaben, deine Ausgaben und Einnahmen hinzu. Importiere aus CSV/Excel oder gib manuell ein."
-            },
-            "step3": {
-                "title": "Erhalte Einblicke",
-                "description": "Visualisiere deine Finanzen mit Diagrammen, vergleiche anonym mit ähnlichen Nutzern und erreiche deine Ziele."
-            }
-        },
-        "currencies": {
-            "title": "Unterstützung für mehrere Währungen",
-            "description": "Verfolge deine Finanzen in jeder dieser 19 unterstützten Währungen mit Live-Wechselkursen"
-        },
-        "liveRates": {
-            "title": "Live-Wechselkurse",
-            "intro": "Sämtliche Werte werden in Echtzeit in deine bevorzugte Währung umgerechnet.",
-            "baseCurrency": "Basiswährung",
-            "equivalent": "Entspricht",
-            "footer": "Kurse aktualisiert über die Frankfurter API • Aktualisierung alle 24h • Fallback auf integrierte Kurse bei Nichtverfügbarkeit"
-        },
-        "cta": {
-            "title": "Bereit, die Kontrolle zu übernehmen?",
-            "subtitle": "Tritt Tausenden von Nutzern bei, die ihre Finanzen mit PaciFinance verwalten.",
-            "button": "Kostenlos starten"
-        },
-        "trust": {
-            "title": "Warum PaciFinance?",
-            "items": [
-                "100% kostenlos, keine versteckten Kosten",
-                "Keine E-Mail oder persönliche Daten erforderlich",
-                "Vollständig anonymes System",
-                "Keine Werbung",
-                "Open für Feedback und Verbesserungen",
-                "Unterstützt nur durch freiwillige Spenden"
-            ]
-        },
-        "donation": {
-            "title": "PaciFinance unterstützen",
-            "description": "PaciFinance ist kostenlos und werbefrei. Wenn du es nützlich findest, erwäge eine Spende, um uns bei der Aufrechterhaltung und Weiterentwicklung zu helfen.",
-            "button": "Auf Buy Me a Coffee spenden",
-            "thanks": "Jede Spende hilft, die Server am Laufen zu halten und neue Funktionen zu entwickeln. Danke! ❤️",
-            "stats": {
-                "users": "Aktive Nutzer",
-                "transactions": "Transaktionen erfasst",
-                "countries": "Vertretene Länder"
-            }
-        },
-        "closing": {
-            "tagline": "Deine Finanzen. Deine Privatsphäre. Dein Weg.",
-            "subtitle": "Schließe dich einer wachsenden Gemeinschaft an, die ihre Finanzen mit vollständiger Privatsphäre verwaltet.",
-            "finalCta": "Erstelle dein kostenloses Konto"
         }
     },
     "header": {
-        "greeting": "Hallo",
-        "editProfile": "Profil bearbeiten",
-        "viewProfile": "Profil anzeigen",
-        "settings": "Einstellungen",
-        "welcomeBack": "Willkommen zurück",
-        "currency": "Anzeige-Währung",
-        "currencyDescription": "Alle Werte werden in die gewählte Währung zum aktuellen Kurs umgerechnet",
-        "changeCurrency": "Ändern",
-        "beta": "BETA"
+        "signIn": "Anmelden",
+        "signUp": "Registrieren",
+        "login": {
+            "title": "Anmeldung",
+            "titleButton": "Anmelden",
+            "info": "Geben Sie Ihre ID und Ihr Passwort ein, um fortzufahren",
+            "username": "ID oder Benutzername",
+            "password": "Passwort",
+            "errorPopup": {
+                "title": "Fehler bei der Anmeldung",
+                "message": "Bei der Anmeldung ist ein Fehler aufgetreten. <br><br> Überprüfen Sie, ob Sie ID und Passwort korrekt eingeben. <br><br>",
+                "okButton": "ok verstanden"
+            }
+        },
+        "register": {
+            "title": "Registrierung",
+            "titleButton": "Registrieren",
+            "info": "Keine E-Mail erforderlich - das System generiert automatisch Ihre Benutzer-ID",
+            "username": "ID oder Benutzername",
+            "password": "Passwort",
+            "confirmPassword": "Passwort bestätigen",
+            "errorPopup": {
+                "title": "Fehler bei der Registrierung",
+                "message": "Bei der Registrierung Ihres Kontos ist ein Fehler aufgetreten.",
+                "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "okButton": "ok verstanden"
+            },
+            "successPopup": {
+                "title": "🎉 Konto erfolgreich erstellt!",
+                "message": "Hier sind Ihre Anmeldedaten:",
+                "securityMessage": "<strong>💾 Speichern Sie diese Anmeldedaten jetzt!</strong><br/>Verwenden Sie einen Passwort-Manager wie Bitwarden, 1Password oder LastPass, um sowohl Ihre ID als auch Ihr Passwort sicher zu speichern.",
+                "copied": "In die Zwischenablage kopiert!",
+                "toCopy": "Ihre ID kopieren",
+                "okButton": "ok verstanden"
+            }
+        },
+        "logout": "Abmelden",
+        "demo": {
+            "titleButton": "Demoversion ausprobieren",
+            "info": "Für schnellen Zugriff klicken Sie auf den Button unten",
+            "button": "Schnellzugriff",
+            "demoWarning": "Warnung! Zufällige und nicht relevante Werte, als Beispiel verwendet.",
+            "disabledTooltip": "Diese Funktion ist im Demokonto deaktiviert. Registrieren Sie sich kostenlos, um sie freizuschalten!"
+        }
     },
     "footer": {
-        "title": "Ein Projekt erstellt mit ❤️ für die finanzielle Privatsphäre",
-        "product": "Produkt",
-        "resources": "Ressourcen",
-        "legal": "Rechtliches",
-        "followUs": "Folge uns",
-        "madeWith": "Erstellt mit",
-        "by": "von",
-        "community": "Gemeinschaft",
-        "availableIn": "Verfügbar in",
-        "allRightsReserved": "Alle Rechte vorbehalten"
+        "rights": "Alle Rechte vorbehalten.",
+        "description": "Die sichere und datenschutzorientierte Plattform für persönliche Finanzen. Vergleichen Sie anonym mit anderen Nutzern und wahren Sie Ihre Privatsphäre.",
+        "legal": {
+            "title": "Rechtliches",
+            "privacy": "Datenschutzrichtlinie",
+            "terms": "Nutzungsbedingungen",
+            "cookies": "Cookie-Richtlinie",
+            "disclaimer": "Haftungsausschluss"
+        },
+        "support": {
+            "title": "Support",
+            "faq": "FAQ",
+            "pricing": "Preise",
+            "contact": "Kontakt",
+            "sitemap": "Sitemap",
+            "roadmap": "Roadmap",
+            "feedback": "Feedback & Bugs"
+        },
+        "community": {
+            "title": "Community",
+            "donationText": "PaciFinance ist völlig kostenlos und lebt nur von Spenden.",
+            "supportTitle": "Unterstützen Sie das Projekt",
+            "supportDescription": "Ihr Beitrag hilft uns, die Plattform online zu halten und neue Funktionen zu entwickeln. Jede Spende wird sehr geschätzt!"
+        },
+        "languages": {
+            "title": "Verfügbare Sprachen",
+            "description": "PaciFinance ist in mehreren Sprachen verfügbar"
+        },
+        "madeWith": "Gemacht mit",
+        "forPrivacy": "für Ihre Privatsphäre"
     },
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Entdecke worauf wir hinarbeiten",
-        "noItems": "Noch keine Roadmap-Einträge.",
-        "planned": "Geplant",
+        "completed": "Abgeschlossen",
         "inProgress": "In Arbeit",
-        "done": "Erledigt",
-        "canceled": "Abgebrochen",
-        "descriptionPlaceholder": "Beschreibung folgt.",
-        "updated": "Aktualisiert",
-        "suggest": "Feature vorschlagen"
+        "planned": "Geplant",
+        "all": "Alle",
+        "features": "Funktionen",
+        "experience": "Erfahrung",
+        "community": "Community",
+        "security": "Sicherheit",
+        "noItems": "Noch keine Roadmap-Einträge.",
+        "feedbackTitle": "Haben Sie eine Idee oder einen Bug gefunden?",
+        "feedbackDescription": "PaciFinance ist ein community-zentriertes Projekt. Ihr Feedback ist unverzichtbar!",
+        "feedbackButton": "Feedback senden"
     },
     "sidebar": {
         "dashboard": "Dashboard",
-        "insertData": "Daten eingeben",
-        "comparison": "Vergleich",
-        "leaderboard": "Rangliste",
-        "graphs": "Diagramme",
-        "profile": "Profil",
-        "information": "Informationen",
-        "knowledge": "Wissen",
+        "chartsStatistics": "Diagramme und Statistiken",
+        "insert": "Einfügen",
+        "check": "Preise prüfen",
         "marketPrices": "Marktpreise",
-        "settings": "Einstellungen",
-        "goalsAndLimits": "Ziele und Grenzen",
+        "leaderboard": "Rangliste",
+        "comparison": "Vergleich",
+        "knowledge": "Wissen",
+        "info": "Info",
+        "more": "Mehr",
+        "goalsLimits": "Ziele & Limits",
         "logout": "Abmelden",
-        "login": "Anmelden",
-        "register": "Kostenlos registrieren",
-        "roadmap": "Roadmap",
-        "donate": "Spenden ❤️",
-        "home": "Startseite",
-        "faq": "FAQ",
-        "pricing": "Preise",
-        "whatsNew": "🎉 Neuigkeiten",
-        "contact": "Kontakt",
-        "pwaInstall": "Als App installieren",
-        "dataImport": "Daten importieren",
-        "settingsSection": {
-            "title": "Einstellungen",
-            "language": "Sprache",
-            "languageSubtitle": "Sprache der Benutzeroberfläche ändern",
-            "theme": "Erscheinungsbild",
-            "light": "Hell",
-            "dark": "Dunkel",
-            "system": "System",
-            "currency": "Währung",
-            "privacy": "Datenschutzmodus",
-            "privacyDescription": "Sensible Beträge ausblenden",
-            "displayCurrency": "Anzeige-Währung",
-            "displayCurrencyDescription": "Wähle die Währung für die Anzeige deiner Finanzdaten"
-        },
-        "collapse": "Seitenleiste einklappen",
-        "expand": "Seitenleiste ausklappen",
-        "toggleTheme": "Erscheinungsbild umschalten",
-        "togglePrivacy": "Datenschutz umschalten",
-        "whatsNewModal": {
-            "title": "🎉 Was gibt's Neues",
-            "version": "Version",
-            "sections": {
-                "new": "🆕 Neu",
-                "improved": "✨ Verbessert",
-                "fixed": "🐛 Behoben",
-                "comingSoon": "🔮 Demnächst"
+        "privacy": "Datenschutz",
+        "account": {
+            "title": "Profil",
+            "subtitle": "Verwalten und passen Sie Ihre persönlichen Informationen an",
+            "id": "Benutzer-ID: ",
+            "userType": "Benutzertyp: ",
+            "nationality": "Nationalität: ",
+            "selectNationality": "Wählen Sie eine Nationalität",
+            "whereWork": "Wo arbeiten Sie: ",
+            "work": "Arbeit: ",
+            "workType": "Arbeitstyp: ",
+            "selectWork": "Wählen Sie Ihre Arbeit",
+            "selectWhereWork": "Wählen Sie, wo Sie arbeiten",
+            "selectWorkType": "Wählen Sie den Arbeitstyp",
+            "hoursContract": "Teilzeit | Vollzeit",
+            "selectHoursContract": "Wählen Sie Ihre Arbeitszeiten",
+            "remoteWork": "Remote-Arbeit",
+            "selectRemoteWork": "Wählen Sie, ob Sie remote arbeiten",
+            "yearsExperience": "Berufserfahrung in Jahren",
+            "selectYearsExperience": "Wählen Sie die Berufserfahrung",
+            "age": "Alter",
+            "selectAge": "Wählen Sie Ihr Alter",
+            "livingStatus": "Wohnsituation",
+            "selectLivingStatus": "Wählen Sie Ihre Wohnsituation",
+            "livingAlone": "Allein lebend",
+            "livingWithOthers": "Mit anderen lebend",
+            "livingWithPartner": "Mit Partner lebend",
+            "livingWithFamily": "Mit Familie lebend",
+            "housingType": "Wohnungstyp",
+            "selectHousingType": "Wählen Sie den Wohnungstyp",
+            "rent": "Miete",
+            "mortgage": "Hypothek",
+            "owned": "Eigentum",
+            "familyHome": "Familienhaus",
+            "hasChildren": "Haben Sie Kinder?",
+            "selectHasChildren": "Wählen Sie, ob Sie Kinder haben",
+            "preferredCurrency": "Bevorzugte Währung",
+            "selectPreferredCurrency": "Wählen Sie Ihre Währung",
+            "yes": "Ja",
+            "no": "Nein",
+            "saveButton": "Profil speichern",
+            "errorPopup": {
+                "title": "Fehler beim Speichern des Profils",
+                "message": "Beim Speichern Ihres Profils ist ein Fehler aufgetreten.",
+                "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "okButton": "ok verstanden"
             },
-            "footer": "Danke, dass du PaciFinance nutzt! Dein Feedback hilft uns, die Plattform zu verbessern.",
-            "dontShowAgain": "Nicht mehr für diese Version anzeigen",
-            "close": "Schließen"
+            "successPopup": {
+                "title": "Profil erfolgreich aktualisiert",
+                "message": "Ihre Profilinformationen wurden aktualisiert und korrekt gespeichert.",
+                "okButton": "ok verstanden"
+            },
+            "profileCompletion": {
+                "title": "Profilvollständigkeit:",
+                "completedFields": "Felder ausgefüllt",
+                "of": "von"
+            },
+            "benefits": {
+                "title": "Warum Ihr Profil vervollständigen?",
+                "subtitle": "Die Eingabe Ihrer persönlichen Daten ermöglicht es der Plattform, Ihnen viel genauere Analysen und Vergleiche zu bieten:",
+                "personalizedComparisons": "Ihre Daten ermöglichen es uns, Ihre Finanzen mit Nutzern zu vergleichen, die ähnliche Profile wie Sie haben (gleicher Job, Alter, Wohnsituation usw.).",
+                "personalizedComparisonsLabel": "Personalisierte Vergleiche:",
+                "anonymousNote": "Alle Vergleiche sind vollständig anonym und Ihre persönlichen Daten bleiben immer privat und sicher.",
+                "clickToHide": "Klicken zum Ausblenden",
+                "clickToLearnMore": "Klicken für mehr Informationen"
+            },
+            "sections": {
+                "basicInfo": "Grundlegende Informationen",
+                "profileDetails": "Profildetails",
+                "editMode": "Bearbeitungsmodus aktiv",
+                "profileProfessional": "Berufliches Profil",
+                "personalSituation": "Persönliche Situation",
+                "financialPreferences": "Finanzielle Präferenzen"
+            },
+            "accountType": "Kontotyp",
+            "buttons": {
+                "editProfile": "Profil bearbeiten",
+                "cancelEdit": "Bearbeitung abbrechen",
+                "cancel": "Abbrechen",
+                "save": "Änderungen speichern",
+                "saveChanges": "Änderungen speichern"
+            }
+        },
+        "deleteAccount": {
+            "title": "Konto löschen",
+            "info": "Möchten Sie Ihr Konto wirklich löschen? Alle Daten gehen verloren.",
+            "deleteButton": "Konto löschen",
+            "confirmButton": "Ich möchte mein Konto löschen",
+            "cancelButton": "Abbrechen",
+            "errorPopup": {
+                "title": "Fehler beim Löschen des Kontos",
+                "message": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten.",
+                "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "okButton": "ok verstanden"
+            },
+            "successPopup": {
+                "title": "Konto erfolgreich gelöscht",
+                "message": "Sie werden zur Registrierungsseite weitergeleitet. Die tatsächliche Löschung des Kontos erfolgt in 30 Tagen ab heute. Um die Löschung abzubrechen, müssen Sie sich nur einmal innerhalb dieser 30 Tage anmelden.",
+                "okButton": "ok verstanden"
+            }
+        },
+        "changeUsername": {
+            "title": "Benutzername ändern",
+            "info": "Das System generiert einen einzigartigen und zufälligen Benutzernamen für Sie",
+            "username": "Benutzername",
+            "confirmButton": "Ich möchte meinen Benutzernamen ändern",
+            "errorPopup": {
+                "title": "Fehler bei der Benutzernamen-Generierung",
+                "message": "Beim Generieren Ihres Benutzernamens ist ein Fehler aufgetreten.",
+                "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "okButton": "ok verstanden"
+            },
+            "successPopup": {
+                "title": "Generierung erfolgreich",
+                "message": "Ihr Benutzername ist: ",
+                "securityMessage": "Wir empfehlen Ihnen, ihn an einem sicheren Ort für zukünftigen Zugang zu speichern.",
+                "redirectMessage": "Sie werden zur Anmeldeseite weitergeleitet.",
+                "copied": "In die Zwischenablage kopiert!",
+                "toCopy": "Benutzername kopieren",
+                "okButton": "ok verstanden"
+            }
+        },
+        "changeID": {
+            "title": "ID ändern",
+            "info": "Das System generiert eine einzigartige und zufällige ID für Sie",
+            "username": "ID",
+            "confirmButton": "Ich möchte meine ID ändern",
+            "errorPopup": {
+                "title": "Fehler bei der ID-Generierung",
+                "message": "Beim Generieren Ihrer ID ist ein Fehler aufgetreten.",
+                "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "okButton": "ok verstanden"
+            },
+            "successPopup": {
+                "title": "Generierung erfolgreich",
+                "message": "Ihre neue ID ist: ",
+                "securityMessage": "Speichern Sie sie an einem sicheren Ort für Ihre nächsten Zugriffe. <br></br> Durch Klicken auf 'ID kopieren' werden Sie zur Anmeldeseite weitergeleitet <br></br> und die ID wird in Ihrer Zwischenablage gespeichert. <br></br> Um sie auf der Anmeldeseite einfügen zu können. <br></br>",
+                "copied": "In die Zwischenablage kopiert!",
+                "toCopy": "Ihre ID kopieren",
+                "okButton": "ok verstanden"
+            },
+            "errorCopy": "Fehler beim Kopieren in die Zwischenablage: "
+        },
+        "changePassword": {
+            "title": "Passwort ändern",
+            "info": "Geben Sie Ihr altes Passwort und neues Passwort ein",
+            "oldPassword": "Altes Passwort",
+            "newPassword": "Neues Passwort",
+            "confirmPassword": "Passwort bestätigen",
+            "confirmButton": "Passwort ändern",
+            "errorPopup": {
+                "title": "Fehler beim Ändern des Passworts",
+                "message": "Beim Ändern Ihres Passworts ist ein Fehler aufgetreten.",
+                "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "okButton": "ok verstanden"
+            },
+            "successPopup": {
+                "title": "Ihr Passwort wurde erfolgreich geändert.",
+                "message": "Sie werden zur Anmeldeseite weitergeleitet.",
+                "okButton": "ok verstanden"
+            }
+        },
+        "settings": {
+            "title": "Einstellungen",
+            "light": "Hell/Dunkel-Modus",
+            "privacy": "Datenschutzmodus",
+            "language": "Sprache ändern",
+            "languageSubtitle": "Sprache der Benutzeroberfläche ändern",
+            "currency": "Währung",
+            "currencySubtitle": "Anzeigewährung wählen",
+            "deleteAccount": "Konto löschen (!)",
+            "saveSettings": "Einstellungen speichern",
+            "themeSection": "Design und Erscheinung",
+            "securitySection": "Sicherheit",
+            "preferencesSection": "Kontoeinstellungen",
+            "dangerZone": "Gefahrenzone",
+            "backToDashboard": "Zurück zum Dashboard",
+            "bugReport": "Fehler melden",
+            "bugReportSubtitle": "Einen Bericht auf GitHub öffnen",
+            "installApp": "Als App installieren",
+            "installAppSubtitle": "PaciFinance zu Ihrem Startbildschirm hinzufügen"
         }
     },
-
     "whatsNew": {
-        "v2_0": {
-            "new": [
-                "Vollständige Neugestaltung der Benutzeroberfläche mit modernem Design",
-                "Finanzielle Einblicke mit intelligenten Vorschlägen",
-                "Anonyme Vergleiche mit ähnlichen Nutzern",
-                "Interaktive Diagramme mit mehreren Zeiträumen"
-            ],
-            "improved": [
-                "Komplett überarbeitetes Dashboard",
-                "Schnellere und flüssigere Datenvisualisierungen",
-                "Bessere mobile Nutzererfahrung",
-                "Verbesserte Barrierefreiheit"
-            ],
-            "fixed": [
-                "Datumssortierung in allen Tabellen",
-                "Berechnung der monatlichen Ersparnisse",
-                "Verschiedene kleine UI-Korrekturen"
-            ],
-            "comingSoon": [
-                "Datenexport in CSV/Excel",
-                "Erweiterte Budgetplanung",
-                "Weitere Anpassungsoptionen"
-            ]
-        }
+        "title": "Was gibt's Neues",
+        "viewRoadmap": "Vollständige Roadmap ansehen →"
     },
-
     "dashboard": {
         "title": "Dashboard",
-        "totalBalance": "Gesamtguthaben",
-        "subtitle": "Zusammenfassung deiner persönlichen Finanzen und anonyme Vergleiche mit ähnlichen Nutzern",
-        "liquidAssets": "Liquidität",
-        "investments": "Investitionen",
-        "monthlyIncome": "Monatliches Einkommen",
-        "monthlyOutflows": "Monatliche Ausgaben",
-        "monthlySavings": "Monatliche Ersparnisse",
-        "savingsRate": "Sparquote",
-        "noData": "Keine Daten verfügbar",
-        "noDataSubtitle": "Beginne mit der Dateneingabe, um dein Dashboard zu sehen",
-        "currentMonth": "Aktueller Monat",
-        "previousMonth": "Vormonat",
-        "percentChange": "Veränderung",
-        "balance": "Guthaben",
-        "incomes": "Einnahmen",
-        "outflows": "Ausgaben",
-        "savings": "Ersparnisse",
-        "trend": "Trend",
-        "vsLastMonth": "gg. Vormonat",
-        "vsLastYear": "gg. Vorjahr",
-        "liquidityDetail": {
-            "bank": "Bank",
-            "cash": "Bargeld"
+        "totalBalance": "Ihr Gesamtsaldo beträgt: ",
+        "titleGraph": "Kapitalverteilung",
+        "titleGraph2": "Saldenverteilung",
+        "titleGraph3": "Einnahmen | Ausgaben",
+        "updateValue": "Wert aktualisieren",
+        "noData": "Keine Daten:",
+        "noData2": "Werte eingeben <br></br> hier klicken: ",
+        "liquidity": "Liquidität",
+        "liquidityAvailability": "Liquidität & Verfügbarkeit",
+        "emergencySecurity": "Notfall & Sicherheit",
+        "portfolioInvestments": "Investitionsportfolio",
+        "patrimonialAnalysis": "Vermögensanalyse",
+        "capitalAt": "Ihr Kapital am",
+        "ofTotal": "vom Gesamt",
+        "ofPortfolio": "Vom Portfolio",
+        "saved": "Gespart",
+        "thisMonth": "Diesen Monat",
+        "stockDescription": "Einzelaktien",
+        "etfDescription": "Diversifizierte Fonds",
+        "bitcoinDescription": "Bitcoin",
+        "cryptoDescription": "Krypto",
+        "bondsDescription": "Anleihen",
+        "fundsDescription": "Fonds",
+        "goldDescription": "Gold",
+        "loading": "Dashboard-Daten werden geladen...",
+        "loadingError": "Fehler beim Laden der Daten. Bitte versuchen Sie es erneut.",
+        "loadingTimeout": "Das Laden dauert länger als erwartet...",
+        "retry": "Erneut versuchen"
+    },
+    "graphs": {
+        "title": "Diagramme & Statistiken",
+        "subtitle": "Analysieren Sie Ihre Finanzdaten mit fortschrittlichen Diagrammen und detaillierten Statistiken",
+        "loading": {
+            "balance": "Saldo-Diagramme werden geladen...",
+            "incomeOutflow": "Einnahmen- und Ausgaben-Diagramme werden geladen..."
         },
-        "investmentDetail": {
-            "stocks": "Aktien",
-            "etf": "ETFs",
-            "crypto": "Krypto",
-            "bonds": "Anleihen",
-            "realEstate": "Immobilien",
-            "commodities": "Rohstoffe",
-            "gold": "Gold",
-            "p2p": "P2P-Kredite",
-            "privateEquity": "Private Equity",
-            "governmentBonds": "Staatsanleihen",
-            "other": "Sonstiges"
+        "comparison": {
+            "vsLastMonth": "vs. Vormonat",
+            "vsLastYear": "vs. Vorjahr",
+            "monthlyComparison": "Monatsvergleich",
+            "yearlyComparison": "Jahresvergleich"
+        },
+        "emptyState": {
+            "title": "Keine Daten verfügbar",
+            "balanceDescription": "Beginnen Sie mit der Eingabe Ihrer Finanzdaten, um detaillierte Diagramme und Statistiken Ihres Vermögens anzuzeigen.",
+            "incomeOutflowDescription": "Fügen Sie Ihre monatlichen Einnahmen und Ausgaben hinzu, um detaillierte Diagramme und vergleichende Analysen anzuzeigen."
+        },
+        "descriptions": {
+            "balanceOverview": "Visualisieren Sie die Entwicklung Ihres Vermögens über die Zeit mit interaktiven Diagrammen",
+            "balanceDetails": "Detaillierte Analyse der monatlichen und jährlichen Veränderungen",
+            "incomeOutflowOverview": "Überwachen Sie Einnahmen und Ausgaben für optimales Finanzmanagement",
+            "incomeOutflowDetails": "Vergleichen Sie aktuelle Daten mit früheren Zeiträumen"
+        },
+        "statsBalance": {
+            "title": "Saldo-Statistiken",
+            "titleGraph": "Trend Ihres Saldos in den letzten 12 Monaten",
+            "titleGraph2": "Verteilung Ihres Saldos in den letzten 12 Monaten",
+            "detailedVision": "Saldo-Statistiken",
+            "asset": "Vermögenswert",
+            "titleDetailsMonth": "Ihr Saldo hat sich im Vergleich zum letzten Monat geändert um: ",
+            "variation": "Veränderung ",
+            "titleDetailsYear": "Ihr Saldo hat sich im Vergleich zum Vorjahr geändert um: "
+        },
+        "financialOverview": {
+            "title": "Finanzübersicht",
+            "currentMonth": "Aktueller Monat",
+            "description": "Aktuelle Werte und Vergleich mit früheren Zeiträumen"
+        },
+        "statsOutflows": {
+            "title": "Einnahmen- und Ausgaben-Statistiken",
+            "titleGraph": "Trend Ihrer Einnahmen und Ausgaben in den letzten 12 Monaten",
+            "titleGraph2": "Verteilung Ihrer Ausgaben nach Kategorie",
+            "detailedVision": "Finanzübersicht",
+            "titleDetailsMonth": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum letzten Monat ",
+            "variation": "Veränderung ",
+            "titleDetailsYear": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum Vorjahr ",
+            "outflowAnalysis": {
+                "title": "Detaillierte Ausgabenanalyse",
+                "subtitle": "Eingehende Analyse Ihrer Ausgaben nach Kategorie, Zahlungsmethoden und wiederkehrenden Mustern",
+                "currentMonthTotal": "Monatliche Gesamtausgaben",
+                "currentMonthOutflows": "Ausgaben des aktuellen Monats",
+                "currentMonthExpenses": "Kosten des aktuellen Monats",
+                "totalTransactions": "Gesamttransaktionen",
+                "monthlyAverage12M": "12M Monatsdurchschnitt",
+                "recurringOutflows": "Wiederkehrende Ausgaben",
+                "recurringExpenses": "Wiederkehrende Zahlungen",
+                "recurringThisMonth": "Wiederkehrend diesen Monat",
+                "vsPrevMonth": "vs. Vormonat",
+                "vs12MAvg": "vs. 12M Durchschnitt",
+                "transactions": "Transaktionen",
+                "avgAmount": "Durchschnittsbetrag",
+                "paymentMethodsTitle": "Analyse der Zahlungsmethoden",
+                "paymentMethodsSubtitle": "Ausgabenverteilung nach Zahlungsmethode und Abo-Identifizierung",
+                "total": "Gesamt",
+                "ofTotal": "vom Gesamt",
+                "topCategories": "Top-Kategorien:",
+                "recurringIdentified": "Identifizierte wiederkehrende Ausgaben",
+                "recurringIdentifiedThisMonth": "Wiederkehrende Zahlungen diesen Monat erkannt",
+                "recurringIdentifiedLast12M": "Alle wiederkehrenden Zahlungen (letzte 12 Monate)",
+                "totalMonthlyRecurring": "Monatlich wiederkehrend gesamt:",
+                "times": "mal",
+                "activeSubscriptions": "Aktive Abonnements",
+                "monthlyRecurringSpending": "Monatlich wiederkehrende Ausgaben",
+                "budgetImpact": "Budget-Auswirkung",
+                "paymentTypologiesTitle": "Analyse der Zahlungstypologien",
+                "paymentTypologiesSubtitle": "Kaufkategorisierung nach Typologie",
+                "notSpecified": "Nicht angegeben",
+                "subscription": "Abonnement",
+                "selectMonth": "Monat auswählen",
+                "currentMonth": "Aktueller Monat",
+                "previousMonth": "Vorheriger Monat",
+                "showRecurringFor": "Wiederkehrende anzeigen für:"
+            }
+        },
+        "dashboard": {
+            "vsLastMonth": "vs. Vormonat",
+            "vsLastYear": "vs. Vorjahr",
+            "monthlyComparison": "Monatsvergleich",
+            "yearlyComparison": "Jahresvergleich",
+            "loadingStats": "Statistiken werden geladen...",
+            "loadingCharts": "Diagramme werden geladen...",
+            "noDataAvailable": "Keine Daten verfügbar",
+            "addDataFirst": "Fügen Sie Ihre Daten hinzu, um Statistiken anzuzeigen"
         },
         "insights": {
             "title": "Finanzielle Einblicke",
-            "savingsUp": "Deine Ersparnisse sind um {percentage}% gestiegen im Vergleich zum letzten Monat. Weiter so! 📈",
-            "savingsDown": "Deine Ersparnisse sind um {percentage}% gesunken im Vergleich zum letzten Monat. Überprüfe deine Ausgaben 📉",
-            "highOutflows": "Deine Ausgaben diesen Monat liegen über dem Durchschnitt. Analysiere die Kategorien, um Einsparungsmöglichkeiten zu finden.",
-            "goodSavings": "Du sparst über 20% deines Einkommens. Hervorragend! 🎯",
-            "noSavings": "Diesen Monat fehlen Einkünfte oder Ausgaben. Füge Daten hinzu, um Einblicke zu erhalten.",
-            "outflowsByCategory": "Ausgaben nach Kategorie",
-            "topCategory": "Hauptkategorie: {category} ({percentage}%)",
-            "monthlyTrend": "Monatlicher Trend",
-            "suggestion": "Vorschlag",
-            "lastMonthComparison": "Vergleich mit dem Vormonat"
+            "subtitle": "Intelligente Analyse Ihrer Finanzdaten",
+            "spendingRate": {
+                "title": "Ausgabenrate",
+                "low": "Sie geben {percentage}% Ihres Einkommens aus",
+                "moderate": "Sie geben {percentage}% Ihres Einkommens aus",
+                "high": "Sie geben {percentage}% Ihres Einkommens aus",
+                "recommendation": {
+                    "low": "Großartiges Management! Sparen Sie weiter",
+                    "moderate": "Gutes Management, erwägen Sie, mehr zu sparen",
+                    "high": "Achtung: Sie könnten einige Ausgaben reduzieren"
+                }
+            },
+            "diversification": {
+                "title": "Portfolio-Diversifikation",
+                "poor": "Schlecht diversifiziertes Portfolio",
+                "good": "Gute Diversifikation",
+                "excellent": "Ausgezeichnete Diversifikation",
+                "recommendation": {
+                    "poor": "Erwägen Sie, Ihre Investitionen stärker zu diversifizieren",
+                    "good": "Behalten Sie die gute Diversifikation bei",
+                    "excellent": "Perfekt! Ihr Portfolio ist gut ausbalanciert"
+                }
+            },
+            "liquidity": {
+                "title": "Liquiditätsreserve",
+                "low": "Unzureichende Liquidität",
+                "adequate": "Angemessene Liquidität",
+                "high": "Hohe Liquidität",
+                "recommendation": {
+                    "low": "Halten Sie mindestens 3-6 Monate an Ausgaben in Liquidität",
+                    "adequate": "Ihre Notfallreserve ist angemessen",
+                    "high": "Sie könnten einen Teil der überschüssigen Liquidität investieren"
+                }
+            }
         },
         "goals": {
-            "title": "Ziele und Grenzen",
-            "noGoals": "Noch keine Ziele gesetzt",
-            "setGoals": "Setze Sparziele und Ausgabenlimits, um deine finanzielle Reise zu verfolgen.",
-            "goToGoals": "Ziele und Grenzen verwalten",
+            "title": "Finanzielle Ziele",
+            "subtitle": "Verfolgen Sie Ihren Fortschritt zu Zielen",
+            "addGoal": "Ziel hinzufügen",
             "progress": "Fortschritt",
-            "reached": "Erreicht! 🎉",
-            "remaining": "Verbleibend",
-            "exceeded": "Überschritten"
-        }
-    },
-    "graphs": {
-        "title": "Diagramme",
-        "subtitle": "Visualisiere deine finanziellen Daten",
-        "monthlyBalance": "Monatliche Guthaben-Entwicklung",
-        "monthlyIncomeOutflows": "Monatliche Einnahmen vs. Ausgaben",
-        "outflowsByCategory": "Ausgaben nach Kategorie",
-        "incomesByCategory": "Einnahmen nach Kategorie",
-        "savingsOverTime": "Ersparnisse im Zeitverlauf",
-        "netWorthOverTime": "Vermögensentwicklung im Zeitverlauf",
-        "balanceTrend": "Guthaben-Trend",
-        "incomeTrend": "Einnahmen-Trend",
-        "outflowTrend": "Ausgaben-Trend",
-        "savingsTrend": "Ersparnisse-Trend",
-        "noData": "Keine Daten für diesen Zeitraum verfügbar",
-        "selectPeriod": "Wähle einen Zeitraum",
-        "last6Months": "Letzte 6 Monate",
-        "last12Months": "Letzte 12 Monate",
-        "allTime": "Gesamter Zeitraum",
-        "incomes": "Einnahmen",
-        "outflows": "Ausgaben",
-        "savings": "Ersparnisse",
-        "balance": "Guthaben",
-        "income": "Einnahme",
-        "outflow": "Ausgabe",
-        "investments": "Investitionen",
-        "liquidity": "Liquidität",
-        "total": "Gesamt",
-        "net": "Netto",
-        "showValues": "Werte anzeigen",
-        "hideValues": "Werte ausblenden",
-        "resetZoom": "Zoom zurücksetzen",
-        "percentage": "Prozentsatz",
-        "amount": "Betrag",
-        "cumulative": "Kumuliert",
-        "monthly": "Monatlich",
-        "insights": {
-            "title": "Diagramm-Einblicke",
-            "highestIncome": "Höchste Einnahme",
-            "lowestIncome": "Niedrigste Einnahme",
-            "highestOutflow": "Höchste Ausgabe",
-            "lowestOutflow": "Niedrigste Ausgabe",
-            "averageIncome": "Durchschnittliche Einnahme",
-            "averageOutflow": "Durchschnittliche Ausgabe",
-            "averageSavings": "Durchschnittliche Ersparnisse",
-            "bestMonth": "Bester Monat",
-            "worstMonth": "Schlechtester Monat",
-            "totalSaved": "Insgesamt gespart",
-            "inMonth": "im"
-        },
-        "goals": {
-            "monthlyGoal": "Monatliches Ziel",
-            "yearlyGoal": "Jährliches Ziel",
-            "onTrack": "Auf Kurs ✅",
-            "behind": "Im Rückstand ⚠️",
-            "goalLine": "Ziellinie"
+            "completed": "Abgeschlossen",
+            "targetAmount": "Zielbetrag",
+            "currentAmount": "Aktueller Betrag",
+            "timeline": "Frist",
+            "types": {
+                "savings": "Sparen",
+                "investment": "Investition",
+                "debt": "Schuldenabbau"
+            },
+            "examples": {
+                "emergency": "Notfallfonds",
+                "vacation": "Urlaub",
+                "house": "Haus",
+                "retirement": "Rente",
+                "debt_payoff": "Schuldenabbau"
+            }
         }
     },
     "insert": {
@@ -742,28 +977,28 @@
             "title": "Datenschutzrichtlinie",
             "introduction": {
                 "title": "Einführung",
-                "content": "Deine Privatsphäre hat für uns absolute Priorität. PaciFinance wurde von Grund auf mit Datenschutz als Grundpfeiler entwickelt. Diese Richtlinie erklärt, wie wir mit deinen Daten mit höchstem Respekt für deine Privatsphäre umgehen."
+                "content": "Ihre Privatsphäre ist unsere absolute Priorität. PaciFinance wurde von Grund auf mit Datenschutz im Kern entwickelt. Diese Richtlinie erklärt, wie wir mit Ihren Daten mit maximalem Respekt für Ihre Privatsphäre umgehen."
             },
             "dataCollection": {
-                "title": "Datenerhebung",
-                "content": "Wir erheben nur die für den Betrieb des Dienstes wesentlichen Daten:",
+                "title": "Datenerfassung",
+                "content": "Wir erfassen nur Daten, die für den Betrieb des Dienstes unerlässlich sind:",
                 "items": [
-                    "Freiwillig eingegebene Finanzdaten (stets anonym)",
-                    "Technische Cookies, die für den Betrieb notwendig sind",
+                    "Freiwillig eingegebene Finanzdaten (immer anonym)",
+                    "Technisch notwendige Cookies",
                     "Aggregierte und anonyme Nutzungsdaten"
                 ]
             },
             "dataUsage": {
-                "title": "Datenverwendung",
-                "content": "Deine Daten werden ausschließlich zur Bereitstellung der Plattformfunktionen und für anonyme Vergleiche verwendet. Wir verkaufen, teilen oder verwenden deine Daten nicht für kommerzielle Zwecke."
+                "title": "Datennutzung",
+                "content": "Ihre Daten werden ausschließlich zur Bereitstellung der Plattformfunktionalität und für anonyme Vergleiche verwendet. Wir verkaufen, teilen oder verwenden Ihre Daten nicht für kommerzielle Zwecke."
             },
             "anonymity": {
                 "title": "Anonymität",
-                "content": "Alle Vergleiche und Statistiken sind vollständig anonym. Deine persönlichen Daten werden niemals mit den für Vergleiche verwendeten Finanzdaten verknüpft."
+                "content": "Alle Vergleiche und Statistiken sind vollständig anonym. Ihre persönlichen Daten werden niemals mit Finanzdaten verknüpft, die für Vergleiche verwendet werden."
             },
             "contact": {
                 "title": "Kontakt",
-                "content": "Bei Fragen zu dieser Datenschutzrichtlinie kontaktiere uns über die offiziellen Kanäle der Plattform."
+                "content": "Bei Fragen zu dieser Datenschutzrichtlinie kontaktieren Sie uns über die offiziellen Kanäle der Plattform."
             },
             "lastUpdated": "Zuletzt aktualisiert"
         }
@@ -1655,22 +1890,22 @@
     },
     "tags": {
         "expense": {
-        "digital service": "Digitaler Dienst",
-        "gift": "Geschenk",
-        "shopping": "Einkaufen",
-        "food": "Lebensmittel",
-        "house": "Wohnen",
-        "free time": "Freizeit",
-        "travelling": "Reisen",
-        "investment": "Investition",
-        "health": "Gesundheit & Wellness",
-        "tax": "Steuern",
-        "vehicle": "Fahrzeug",
-        "transports": "Transport",
-        "pets": "Haustiere",
-        "personal project": "Persönliches Projekt",
-        "education": "Bildung",
-        "other": "Sonstiges"
+            "digital service": "Digitaler Dienst",
+            "gift": "Geschenk",
+            "shopping": "Einkaufen",
+            "food": "Lebensmittel",
+            "house": "Wohnen",
+            "free time": "Freizeit",
+            "travelling": "Reisen",
+            "investment": "Investition",
+            "health": "Gesundheit & Wellness",
+            "tax": "Steuern",
+            "vehicle": "Fahrzeug",
+            "transports": "Transport",
+            "pets": "Haustiere",
+            "personal project": "Persönliches Projekt",
+            "education": "Bildung",
+            "other": "Sonstiges"
         },
         "income": {
             "salary": "Gehalt",

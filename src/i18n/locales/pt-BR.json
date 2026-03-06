@@ -1,70 +1,81 @@
 {
     "assets": {
+        "total": "Total",
         "bank": "Banco",
         "cash": "Dinheiro",
+        "digitalServices": "Serviços digitais",
+        "emergencyFund": "Fundo de emergência",
         "stocks": "Ações",
-        "crypto": "Cripto",
         "etf": "ETF",
-        "commodities": "Commodities",
+        "bitcoin": "Bitcoin",
+        "crypto": "Cripto",
         "bonds": "Títulos",
-        "realEstate": "Imóveis",
-        "vehicles": "Veículos",
-        "valuables": "Objetos de valor",
-        "pension": "Previdência",
-        "tot": "Total"
+        "funds": "Fundos",
+        "gold": "Ouro"
     },
     "general": {
-        "noDataTitle": "Nenhum dado disponível",
-        "noDataMessage": "Você ainda não inseriu nenhum dado. Comece a registrar suas finanças para ver as estatísticas!",
+        "ok": "ok",
+        "month": "Mês",
+        "year": "Ano",
+        "incomes": "Receitas",
+        "outflows": "Despesas",
+        "saved": "Economizado",
+        "balance": "Saldo",
         "total": "Total",
-        "average": "Média",
-        "median": "Mediana",
-        "yes": "Sim",
-        "no": "Não",
-        "save": "Salvar",
-        "cancel": "Cancelar",
+        "totalFiltered": "Total filtrado",
+        "value": "Valor",
+        "note": "Nota",
+        "noData": "Sem dados",
+        "date": "Data",
+        "selectedDate": "Data selecionada",
         "confirm": "Confirmar",
-        "delete": "Excluir",
-        "close": "Fechar",
-        "loading": "Carregando...",
-        "error": "Erro",
-        "success": "Sucesso",
-        "warning": "Aviso",
-        "currency": "Moeda",
-        "viewAll": "Ver tudo",
-        "less": "Menos",
-        "compact": "Compacto",
-        "extended": "Expandido",
-        "others": "Outros",
-        "otherAssets": "Outros ativos"
+        "cancel": "Cancelar",
+        "category": "Categoria",
+        "typology": "Tipologia",
+        "invested": "Investido",
+        "investments": "Investimentos",
+        "deposited": "Depositado",
+        "comingSoon": "Em breve",
+        "weAreWorking": "Estamos trabalhando nesta funcionalidade",
+        "inDevelopment": "Em desenvolvimento",
+        "featureComingSoon": "Esta funcionalidade está em desenvolvimento e estará disponível em breve!",
+        "goalsComingSoonDashboard": "Metas & Limites em breve",
+        "selectAnOption": "Nenhum (opcional)",
+        "objective": "Objetivo",
+        "clearFilter": "Limpar",
+        "currentMonth": "Mês atual",
+        "all": "Todos"
     },
     "cookie": {
         "title": "Nós usamos cookies 🍪",
-        "message": "Este site usa cookies técnicos necessários para o funcionamento do serviço. Não usamos nenhum cookie de rastreamento ou perfilamento. Você pode saber mais em nossa",
-        "privacyPolicy": "Política de Privacidade",
-        "and": "e",
-        "cookiePolicy": "Política de Cookies",
-        "accept": "Aceitar",
-        "decline": "Recusar"
+        "description": "Usamos cookies para melhorar sua experiência, analisar o tráfego do site e para fins de marketing. Você pode escolher quais cookies aceitar.",
+        "catchyPhrase": "Aceite nossos cookies e desfrute de uma experiência melhor! 🍪",
+        "acceptButton": "Aceitar todos",
+        "acceptNecessary": "Aceitar apenas necessários",
+        "customize": "Personalizar",
+        "savePreferences": "Salvar preferências",
+        "hideDetails": "Ocultar detalhes",
+        "necessary": {
+            "title": "Cookies necessários",
+            "description": "Essenciais para o funcionamento adequado do site. Não podem ser desativados.",
+            "required": "(Obrigatório)"
+        },
+        "analytics": {
+            "title": "Cookies analíticos",
+            "description": "Nos ajudam a entender como os visitantes interagem com nosso site (Umami Analytics)."
+        },
+        "marketing": {
+            "title": "Cookies de marketing",
+            "description": "Usados para rastrear visitantes para publicidade personalizada (atualmente não utilizados)."
+        },
+        "footer": "Você pode alterar suas preferências a qualquer momento em nossa Política de Privacidade"
     },
     "months": {
-        "jan": "janeiro",
-        "feb": "fevereiro",
-        "mar": "março",
-        "apr": "abril",
-        "may": "maio",
-        "jun": "junho",
-        "jul": "julho",
-        "aug": "agosto",
-        "sep": "setembro",
-        "oct": "outubro",
-        "nov": "novembro",
-        "dec": "dezembro",
         "january": "Janeiro",
         "february": "Fevereiro",
         "march": "Março",
         "april": "Abril",
-        "mayFull": "Maio",
+        "may": "maio",
         "june": "Junho",
         "july": "Julho",
         "august": "Agosto",
@@ -74,64 +85,142 @@
         "december": "Dezembro"
     },
     "landing": {
-        "heroTitle": "Assuma o controle das suas finanças",
-        "heroSubtitle": "Monitore, analise e faça seu patrimônio crescer com o PaciFinance — o aplicativo web gratuito de gestão financeira pessoal, impulsionado por uma comunidade real.",
-        "getStarted": "Começar",
-        "login": "Entrar",
-        "trustedBy": "Confiado por mais de {users} usuários há {years} anos",
-        "featuresTitle": "Tudo o que você precisa para gerenciar suas finanças",
-        "featuresSubtitle": "Ferramentas poderosas para rastrear, analisar e otimizar sua vida financeira — tudo em um só lugar.",
-        "feature1Title": "Rastreamento financeiro completo",
-        "feature1Desc": "Monitore saldos bancários, dinheiro, ações, ETFs, cripto, commodities, títulos, imóveis, veículos, objetos de valor e previdência, tudo em uma única plataforma.",
-        "feature2Title": "Comparação anônima com a comunidade",
-        "feature2Desc": "Descubra como você se compara com usuários semelhantes, sem jamais compartilhar dados pessoais.",
-        "feature3Title": "Insights e tendências inteligentes",
-        "feature3Desc": "Obtenha análises detalhadas das suas despesas, receitas e tendências patrimoniais com gráficos e estatísticas poderosos.",
-        "feature4Title": "Metas e limites financeiros",
-        "feature4Desc": "Defina metas de economia e limites de gastos, e acompanhe seu progresso com ferramentas visuais.",
-        "feature5Title": "Multi-moeda",
-        "feature5Desc": "Suporta 19+ moedas com taxas de câmbio em tempo real. Visualize seus dados na moeda de sua preferência.",
-        "feature6Title": "Importação de dados",
-        "feature6Desc": "Importe seus dados financeiros de CSV ou Excel. Migre facilmente de outros aplicativos ou extratos bancários.",
-        "feature7Title": "Personalização do painel",
-        "feature7Desc": "Organize seu painel arrastando e soltando com visualizações compactas para ver o que mais importa para você.",
-        "feature8Title": "Preços de mercado",
-        "feature8Desc": "Veja preços em tempo real de criptomoedas, ETFs, ações e commodities diretamente no aplicativo.",
-        "feature9Title": "Badges e conquistas",
-        "feature9Desc": "Desbloqueie badges conforme você atinge marcos financeiros. Colecione todos e transforme finanças em um jogo!",
-        "howItWorksTitle": "Comece em 3 passos simples",
-        "howItWorksSubtitle": "Sem email, sem identidade, sem verificação bancária. Apenas você e seus dados financeiros.",
-        "step1Title": "Cadastre-se com privacidade",
-        "step1Desc": "Crie uma conta sem email ou informações pessoais. Seu identificador é gerado automaticamente.",
-        "step2Title": "Adicione seus dados",
-        "step2Desc": "Insira seus saldos, despesas e receitas manualmente ou importe dados de uma planilha.",
-        "step3Title": "Obtenha insights",
-        "step3Desc": "Explore gráficos, rankings e comparações anônimas com usuários semelhantes.",
-        "communityTitle": "Junte-se a uma comunidade em crescimento",
-        "communitySubtitle": "Usuários reais, dados reais, privacidade real. Descubra como você se posiciona em comparações anônimas.",
-        "stat1Label": "Usuários cadastrados",
-        "stat2Label": "Saldos registrados",
-        "stat3Label": "Despesas rastreadas",
-        "stat4Label": "Receitas registradas",
-        "privacyTitle": "Projetado para a privacidade",
-        "privacySubtitle": "Seus dados financeiros merecem a máxima proteção. Projetamos o PaciFinance com a privacidade como prioridade.",
-        "privacy1Title": "Sem email necessário",
-        "privacy1Desc": "Cadastre-se com apenas uma senha. Nunca pedimos seu email, nome ou informações pessoais.",
-        "privacy2Title": "Comparações anônimas",
-        "privacy2Desc": "Compare sua situação financeira com usuários semelhantes sem jamais revelar seus dados reais.",
-        "privacy3Title": "Dados criptografados",
-        "privacy3Desc": "Todos os dados são transmitidos e armazenados de forma segura com padrões de criptografia do setor.",
-        "privacy4Title": "Sem cookies de rastreamento",
-        "privacy4Desc": "Usamos apenas cookies técnicos essenciais. Sem rastreamento, sem perfilamento, sem publicidade.",
-        "testDriveTitle": "Experimente o PaciFinance — Sem cadastro",
-        "testDriveSubtitle": "Curioso? Explore o painel com dados de exemplo e descubra todos os recursos sem criar uma conta.",
-        "testDriveButton": "Iniciar modo demonstração",
-        "testDriveNote": "Sem cadastro necessário. Nenhum dado coletado.",
-        "finalCtaTitle": "Pronto para assumir o controle das suas finanças?",
-        "finalCtaSubtitle": "Junte-se a milhares de usuários que já estão gerenciando seu futuro financeiro com o PaciFinance.",
-        "finalCtaButton": "Criar conta gratuita",
-        "finalCtaLogin": "Já tem uma conta?",
-        "finalCtaLoginLink": "Faça login"
+        "new": {
+            "hero": {
+                "title": "Unifique suas finanças",
+                "subtitle": "em uma plataforma",
+                "description": "Contas espalhadas em diferentes bancos? Investimentos em múltiplas plataformas? O PaciFinance oferece uma visão completa da sua situação financeira, tudo em um só lugar.",
+                "getStarted": "Comece gratuitamente",
+                "learnMore": "Saiba mais",
+                "socialProof": "Confiável por usuários preocupados com privacidade em todo o mundo"
+            },
+            "benefits": {
+                "freeForever": "100% Grátis para sempre",
+                "privacyFirst": "Privacidade em primeiro lugar",
+                "smartAnalytics": "Análises inteligentes"
+            },
+            "features": {
+                "title": "Como o PaciFinance resolve seus problemas",
+                "subtitle": "Cansado de alternar entre vários apps para ver seu panorama financeiro completo? O PaciFinance transforma a maneira como você gerencia seu dinheiro.",
+                "privacy": {
+                    "title": "Comparações anônimas inteligentes",
+                    "description": "Descubra se você está gastando demais ou economizando pouco comparado a pessoas em situações semelhantes. Todas as comparações são completamente anônimas.",
+                    "features": [
+                        "• Correspondência anônima de usuários",
+                        "• Análise de padrões de gastos",
+                        "• Insights personalizados"
+                    ]
+                },
+                "analytics": {
+                    "title": "Visão unificada completa",
+                    "description": "Veja todas as suas contas, investimentos e despesas em um único painel. Sem mais alternar entre apps para entender sua situação financeira.",
+                    "features": [
+                        "• Integração multi-plataforma",
+                        "• Painel unificado",
+                        "• Análise de tendências"
+                    ]
+                },
+                "comparisons": {
+                    "title": "Quebre o tabu do dinheiro",
+                    "description": "Finalmente descubra se você está no caminho certo. Comparações anônimas mostram como seus gastos e economias se comparam a perfis semelhantes.",
+                    "features": [
+                        "• Comparações anônimas entre pares",
+                        "• Benchmarks de gastos",
+                        "• Recomendações personalizadas"
+                    ]
+                },
+                "investment": {
+                    "title": "Investimentos multi-plataforma",
+                    "description": "Acompanhe ações, ETFs, cripto em diferentes plataformas. Veja seu portfólio completo de investimentos em um só lugar, não espalhado em vários apps.",
+                    "features": [
+                        "• Rastreamento entre plataformas",
+                        "• Visão unificada de desempenho",
+                        "• Análise de diversificação"
+                    ]
+                },
+                "free": {
+                    "title": "100% Gratuito",
+                    "description": "Sem assinaturas, sem taxas ocultas, sem níveis premium. Suportado inteiramente por doações da comunidade.",
+                    "features": [
+                        "• Sem cartão de crédito necessário",
+                        "• Todos os recursos incluídos",
+                        "• Suportado pela comunidade"
+                    ]
+                },
+                "security": {
+                    "title": "Segurança a nível bancário",
+                    "description": "Seus dados financeiros são protegidos com criptografia avançada e medidas de segurança. Privacidade e anonimato completos garantidos.",
+                    "features": [
+                        "• Criptografia avançada",
+                        "• Tratamento anônimo de dados",
+                        "• Privacidade completa do usuário"
+                    ]
+                },
+                "marketPrices": {
+                    "title": "Preços de mercado em tempo real",
+                    "description": "Acompanhe preços de criptomoedas com gráficos interativos e dados de mercado detalhados. Tendências sparkline, máximas e mínimas históricas e múltiplos intervalos de tempo.",
+                    "features": [
+                        "• Rastreamento de preços cripto em tempo real",
+                        "• Gráficos interativos com intervalos de tempo",
+                        "• Dados de capitalização de mercado, volume e oferta"
+                    ]
+                },
+                "currencies": {
+                    "title": "19 moedas suportadas",
+                    "description": "Veja suas finanças na moeda de sua preferência. Taxas de câmbio ao vivo com conversão automática — todos os dados exibidos na moeda que você escolher.",
+                    "features": [
+                        "🇪🇺 EUR",
+                        "🇺🇸 USD",
+                        "🇬🇧 GBP",
+                        "🇨🇭 CHF",
+                        "🇯🇵 JPY",
+                        "🇨🇦 CAD",
+                        "🇦🇺 AUD",
+                        "🇸🇪 SEK",
+                        "🇳🇴 NOK",
+                        "🇩🇰 DKK",
+                        "🇵🇱 PLN",
+                        "🇨🇿 CZK",
+                        "🇭🇺 HUF",
+                        "🇷🇴 RON",
+                        "🇧🇬 BGN",
+                        "🇧🇷 BRL",
+                        "🇮🇳 INR",
+                        "🇨🇳 CNY",
+                        "🇹🇷 TRY"
+                    ],
+                    "liveRates": "Taxas de câmbio ao vivo",
+                    "autoConversion": "Conversão automática"
+                },
+                "import": {
+                    "title": "Importação rápida de CSV e Excel",
+                    "description": "Já tem suas transações em um extrato bancário ou planilha? Importe-as em poucos cliques. Suporte a CSV e Excel com mapeamento automático de colunas, filtros de data e correspondência inteligente de categorias.",
+                    "features": [
+                        "CSV & Excel (.xlsx)",
+                        "Mapeamento automático de colunas",
+                        "Filtro por intervalo de datas",
+                        "Categorias inteligentes",
+                        "Colunas separadas de receitas/despesas"
+                    ]
+                }
+            },
+            "cta": {
+                "title": "Pronto para unificar sua",
+                "subtitle": "vida financeira",
+                "description": "Junte-se a usuários que já ganharam controle completo sobre suas finanças espalhadas com o PaciFinance. Veja seu panorama financeiro completo hoje.",
+                "button": "Criar conta gratuita",
+                "disclaimer": "Sem cartão de crédito necessário • Leva menos de 2 minutos • Comece imediatamente"
+            },
+            "trust": {
+                "encryption": "Segurança avançada",
+                "dataCollection": "Coleta de dados",
+                "freeForever": "Grátis para sempre"
+            },
+            "donation": {
+                "title": "Ama o PaciFinance? Ajude a mantê-lo gratuito!",
+                "description": "Esta plataforma é mantida inteiramente por doações da comunidade. Seu apoio nos ajuda a continuar melhorando e adicionando novos recursos."
+            }
+        }
     },
     "header": {
         "signIn": "Entrar",
@@ -423,101 +512,195 @@
             "installAppSubtitle": "Add PaciFinance to your home screen"
         }
     },
-
     "whatsNew": {
         "title": "O que há de novo?",
-        "close": "Fechar",
-        "newBadge": "NOVO"
+        "viewRoadmap": "Ver roadmap completo →"
     },
-
     "dashboard": {
         "title": "Painel",
-        "welcome": "Bem-vindo",
-        "balanceTrend": "Tendência de saldos",
-        "netWorth": "Patrimônio líquido",
-        "monthlyBalance": "Saldo mensal",
-        "monthlyOutflows": "Saídas mensais",
-        "monthlyIncomes": "Receitas mensais",
-        "noData": "Sem dados ainda",
-        "noDataDesc": "Comece a inserir seus dados financeiros para ver o painel",
-        "topCategories": "Categorias principais",
-        "monthSummary": "Resumo do mês",
-        "incomes": "Receitas",
-        "outflows": "Saídas",
-        "balance": "Saldo",
-        "savings": "Economia",
-        "savingsRate": "Taxa de economia",
-        "invested": "Investido",
         "totalBalance": "Saldo total",
-        "lastUpdate": "Última atualização",
-        "lastDays": "Últimos 30 dias",
-        "vsPrevMonth": "vs mês anterior",
-        "vsPrevYear": "vs ano anterior",
-        "financialInsights": "Insights financeiros",
-        "rankLabel": "Ranking comunitário",
-        "rankSuffix": "º",
-        "topPercent": "Top {0}%",
-        "betterThan": "Melhor que {0}% dos usuários",
-        "goalProgress": "Progresso das metas",
-        "goalReached": "Meta atingida!",
-        "goalRemaining": "{0} restantes",
-        "limitStatus": "Status dos limites",
-        "limitOk": "Dentro do limite",
-        "limitExceeded": "Limite excedido",
-        "limitRemaining": "{0} restantes",
-        "limitOver": "{0} acima",
-        "badges": "Badges",
-        "badgesEarned": "Badges conquistados",
-        "viewAll": "Ver tudo",
-        "noBadgesYet": "Nenhum badge ainda",
-        "earnBadgeHint": "Continue usando o PaciFinance para desbloquear badges!",
-        "quickActions": "Ações rápidas",
-        "updateBalance": "Atualizar saldo",
-        "addOutflow": "Adicionar saída",
-        "addIncome": "Adicionar receita",
-        "financialOverview": "Visão geral financeira",
-        "totalAssets": "Total de ativos",
-        "lastBalanceDate": "Data do último saldo",
-        "monthlyAvgOutflows": "Saída mensal média",
-        "monthlyAvgIncome": "Receita mensal média",
-        "investmentShare": "Parcela de investimento",
-        "cashVsInvested": "Liquidez vs Investido",
-        "cashLabel": "Liquidez",
-        "investedLabel": "Investido",
-        "assetsBreakdown": "Composição dos ativos",
-        "outflowsByCategory": "Saídas por categoria",
-        "incomesByCategory": "Receitas por categoria"
+        "titleGraph": "Distribuição de capital",
+        "titleGraph2": "Distribuição de saldo",
+        "titleGraph3": "Receitas | Despesas",
+        "updateValue": "Atualizar valor",
+        "noData": "Sem dados ainda",
+        "noData2": "Insira os valores <br></br> clicando aqui: ",
+        "liquidity": "Liquidez",
+        "liquidityAvailability": "Liquidez & Disponibilidade",
+        "emergencySecurity": "Emergência & Segurança",
+        "portfolioInvestments": "Portfólio de investimentos",
+        "patrimonialAnalysis": "Análise patrimonial",
+        "capitalAt": "Seu capital em",
+        "ofTotal": "do total",
+        "ofPortfolio": "Do portfólio",
+        "saved": "Economizado",
+        "thisMonth": "Este mês",
+        "stockDescription": "Ações individuais",
+        "etfDescription": "Fundos diversificados",
+        "bitcoinDescription": "Bitcoin",
+        "cryptoDescription": "Cripto",
+        "bondsDescription": "Títulos",
+        "fundsDescription": "Fundos",
+        "goldDescription": "Ouro",
+        "loading": "Carregando dados do painel...",
+        "loadingError": "Erro ao carregar dados. Por favor, tente novamente.",
+        "loadingTimeout": "O carregamento está demorando mais do que o esperado...",
+        "retry": "Tentar novamente"
     },
     "graphs": {
         "title": "Gráficos",
-        "balanceHistory": "Histórico de saldos",
-        "balanceComposition": "Composição dos saldos",
-        "outflowsTrend": "Tendência de saídas",
-        "incomesTrend": "Tendência de receitas",
-        "outflowsVsIncomes": "Saídas vs Receitas",
-        "categoryBreakdown": "Divisão por categoria",
-        "monthlyComparison": "Comparação mensal",
-        "noData": "Sem dados ainda",
-        "total": "Total",
-        "average": "Média",
-        "median": "Mediana",
-        "min": "Mín",
-        "max": "Máx",
-        "period": "Período",
-        "last6Months": "Últimos 6 meses",
-        "last12Months": "Últimos 12 meses",
-        "allTime": "Todo o período",
-        "chartType": "Tipo de gráfico",
-        "barChart": "Gráfico de barras",
-        "lineChart": "Gráfico de linhas",
-        "areaChart": "Gráfico de áreas",
-        "pieChart": "Gráfico de pizza",
-        "stackedBar": "Barras empilhadas",
-        "showValues": "Mostrar valores",
-        "hideValues": "Ocultar valores",
-        "cumulative": "Acumulado",
-        "monthly": "Mensal",
-        "totPerCategory": "Total por categoria"
+        "subtitle": "Analise seus dados financeiros com gráficos avançados e estatísticas detalhadas",
+        "loading": {
+            "balance": "Carregando gráficos de saldo...",
+            "incomeOutflow": "Carregando gráficos de receitas e despesas..."
+        },
+        "comparison": {
+            "vsLastMonth": "vs mês anterior",
+            "vsLastYear": "vs ano anterior",
+            "monthlyComparison": "Comparação mensal",
+            "yearlyComparison": "Comparação anual"
+        },
+        "emptyState": {
+            "title": "Nenhum dado disponível",
+            "balanceDescription": "Comece a inserir seus dados financeiros para ver gráficos detalhados e estatísticas dos seus ativos.",
+            "incomeOutflowDescription": "Adicione suas receitas e despesas mensais para ver gráficos detalhados e análises comparativas."
+        },
+        "descriptions": {
+            "balanceOverview": "Visualize a evolução dos seus ativos ao longo do tempo com gráficos interativos",
+            "balanceDetails": "Análise detalhada das variações mensais e anuais",
+            "incomeOutflowOverview": "Monitore receitas e despesas para uma gestão financeira ótima",
+            "incomeOutflowDetails": "Compare dados atuais com períodos anteriores"
+        },
+        "statsBalance": {
+            "title": "Estatísticas de saldo",
+            "titleGraph": "Tendência do seu saldo nos últimos 12 meses",
+            "titleGraph2": "Distribuição do seu saldo nos últimos 12 meses",
+            "detailedVision": "Estatísticas de saldo",
+            "asset": "Ativo",
+            "titleDetailsMonth": "Seu saldo comparado ao mês passado mudou em: ",
+            "variation": "Variação ",
+            "titleDetailsYear": "Seu saldo comparado a um ano atrás mudou em: "
+        },
+        "financialOverview": {
+            "title": "Visão geral financeira",
+            "currentMonth": "Mês atual",
+            "description": "Valores atuais e comparação com períodos anteriores"
+        },
+        "statsOutflows": {
+            "title": "Estatísticas de receitas e despesas",
+            "titleGraph": "Tendência das suas receitas e despesas nos últimos 12 meses",
+            "titleGraph2": "Distribuição das suas despesas por categoria",
+            "detailedVision": "Visão geral financeira",
+            "titleDetailsMonth": "Suas receitas, despesas e economias comparadas ao mês passado ",
+            "variation": "Variação ",
+            "titleDetailsYear": "Suas receitas, despesas e economias comparadas ao ano passado ",
+            "outflowAnalysis": {
+                "title": "Análise detalhada de despesas",
+                "subtitle": "Análise aprofundada das suas despesas por categoria, métodos de pagamento e padrões recorrentes",
+                "currentMonthTotal": "Total de despesas mensais",
+                "currentMonthOutflows": "Despesas do mês atual",
+                "currentMonthExpenses": "Gastos do mês atual",
+                "totalTransactions": "Total de transações",
+                "monthlyAverage12M": "Média mensal 12M",
+                "recurringOutflows": "Despesas recorrentes",
+                "recurringExpenses": "Pagamentos recorrentes",
+                "recurringThisMonth": "Recorrentes este mês",
+                "vsPrevMonth": "vs mês anter.",
+                "vs12MAvg": "vs méd. 12M",
+                "transactions": "Transações",
+                "avgAmount": "Valor médio",
+                "paymentMethodsTitle": "Análise de métodos de pagamento",
+                "paymentMethodsSubtitle": "Distribuição de despesas por método de pagamento e identificação de assinaturas",
+                "total": "Total",
+                "ofTotal": "do Total",
+                "topCategories": "Top categorias:",
+                "recurringIdentified": "Despesas recorrentes identificadas",
+                "recurringIdentifiedThisMonth": "Pagamentos recorrentes detectados este mês",
+                "recurringIdentifiedLast12M": "Todos os pagamentos recorrentes (últimos 12 meses)",
+                "totalMonthlyRecurring": "Total mensal recorrente:",
+                "times": "vezes",
+                "activeSubscriptions": "Assinaturas ativas",
+                "monthlyRecurringSpending": "Gastos recorrentes mensais",
+                "budgetImpact": "Impacto no orçamento",
+                "paymentTypologiesTitle": "Análise de tipologias de pagamento",
+                "paymentTypologiesSubtitle": "Categorização de compras por tipologia",
+                "notSpecified": "Não especificado",
+                "subscription": "Assinatura",
+                "selectMonth": "Selecionar mês",
+                "currentMonth": "Mês atual",
+                "previousMonth": "Mês anterior",
+                "showRecurringFor": "Mostrar recorrentes para:"
+            }
+        },
+        "dashboard": {
+            "vsLastMonth": "vs mês anterior",
+            "vsLastYear": "vs ano anterior",
+            "monthlyComparison": "Comparação mensal",
+            "yearlyComparison": "Comparação anual",
+            "loadingStats": "Carregando estatísticas...",
+            "loadingCharts": "Carregando gráficos...",
+            "noDataAvailable": "Nenhum dado disponível",
+            "addDataFirst": "Adicione seus dados para ver estatísticas"
+        },
+        "insights": {
+            "title": "Análises financeiras",
+            "subtitle": "Análise inteligente dos seus dados financeiros",
+            "spendingRate": {
+                "title": "Taxa de gastos",
+                "low": "Você gasta {percentage}% da sua renda",
+                "moderate": "Você gasta {percentage}% da sua renda",
+                "high": "Você gasta {percentage}% da sua renda",
+                "recommendation": {
+                    "low": "Excelente gestão! Continue economizando",
+                    "moderate": "Boa gestão, considere aumentar as economias",
+                    "high": "Atenção: você pode reduzir algumas despesas"
+                }
+            },
+            "diversification": {
+                "title": "Diversificação do portfólio",
+                "poor": "Portfólio pouco diversificado",
+                "good": "Boa diversificação",
+                "excellent": "Excelente diversificação",
+                "recommendation": {
+                    "poor": "Considere diversificar mais seus investimentos",
+                    "good": "Continue mantendo uma boa diversificação",
+                    "excellent": "Perfeito! Seu portfólio está bem equilibrado"
+                }
+            },
+            "liquidity": {
+                "title": "Reserva de liquidez",
+                "low": "Liquidez insuficiente",
+                "adequate": "Liquidez adequada",
+                "high": "Liquidez alta",
+                "recommendation": {
+                    "low": "Mantenha pelo menos 3-6 meses de despesas em liquidez",
+                    "adequate": "Sua reserva de emergência é adequada",
+                    "high": "Você poderia investir parte da liquidez excedente"
+                }
+            }
+        },
+        "goals": {
+            "title": "Metas financeiras",
+            "subtitle": "Acompanhe seu progresso em direção às metas",
+            "addGoal": "Adicionar meta",
+            "progress": "Progresso",
+            "completed": "Concluído",
+            "targetAmount": "Valor alvo",
+            "currentAmount": "Valor atual",
+            "timeline": "Prazo",
+            "types": {
+                "savings": "Poupança",
+                "investment": "Investimento",
+                "debt": "Redução de dívida"
+            },
+            "examples": {
+                "emergency": "Fundo de emergência",
+                "vacation": "Férias",
+                "house": "Casa",
+                "retirement": "Aposentadoria",
+                "debt_payoff": "Quitar dívidas"
+            }
+        }
     },
     "insert": {
         "title": "Inserir dados",
@@ -797,25 +980,25 @@
                 "content": "Sua privacidade é nossa prioridade absoluta. O PaciFinance foi projetado desde o início com a privacidade em seu núcleo. Esta política explica como tratamos seus dados com o máximo respeito pela sua privacidade."
             },
             "dataCollection": {
-                "title": "Coleta de Dados",
-                "content": "Coletamos apenas os dados essenciais para o funcionamento do serviço:",
+                "title": "Coleta de dados",
+                "content": "Coletamos apenas dados essenciais para o funcionamento do serviço:",
                 "items": [
                     "Dados financeiros inseridos voluntariamente (sempre anônimos)",
-                    "Cookies técnicos necessários para o funcionamento",
+                    "Cookies técnicos necessários para operação",
                     "Dados de uso agregados e anônimos"
                 ]
             },
             "dataUsage": {
-                "title": "Uso dos Dados",
-                "content": "Seus dados são usados exclusivamente para fornecer as funcionalidades da plataforma e para comparações anônimas. Não vendemos, compartilhamos nem usamos seus dados para fins comerciais."
+                "title": "Uso de dados",
+                "content": "Seus dados são usados exclusivamente para fornecer as funcionalidades da plataforma e para comparações anônimas. Não vendemos, compartilhamos ou usamos seus dados para fins comerciais."
             },
             "anonymity": {
                 "title": "Anonimato",
-                "content": "Todas as comparações e estatísticas são completamente anônimas. Seus dados pessoais nunca são associados aos dados financeiros usados para comparações."
+                "content": "Todas as comparações e estatísticas são completamente anônimas. Seus dados pessoais nunca são associados a dados financeiros usados para comparações."
             },
             "contact": {
                 "title": "Contato",
-                "content": "Para qualquer dúvida sobre esta política de privacidade, entre em contato conosco pelos canais oficiais da plataforma."
+                "content": "Para qualquer dúvida sobre esta política de privacidade, entre em contato conosco através dos canais oficiais da plataforma."
             },
             "lastUpdated": "Última atualização"
         }
@@ -1559,7 +1742,7 @@
     },
     "categories": {
         "Casa": "Moradia",
-        "Alimentari": "Alimentação", 
+        "Alimentari": "Alimentação",
         "Trasporti": "Transporte",
         "Intrattenimento": "Entretenimento",
         "Salute": "Saúde",
@@ -1707,22 +1890,22 @@
     },
     "tags": {
         "expense": {
-        "digital service": "Serviço digital",
-        "gift": "Presente",
-        "shopping": "Compras",
-        "food": "Alimentação",
-        "house": "Moradia",
-        "free time": "Lazer",
-        "travelling": "Viagem",
-        "investment": "Investimento",
-        "health": "Saúde e Bem-estar",
-        "tax": "Imposto",
-        "vehicle": "Veículo",
-        "transports": "Transporte",
-        "pets": "Animais de estimação",
-        "personal project": "Projeto pessoal",
-        "education": "Educação",
-        "other": "Outro"
+            "digital service": "Serviço digital",
+            "gift": "Presente",
+            "shopping": "Compras",
+            "food": "Alimentação",
+            "house": "Moradia",
+            "free time": "Lazer",
+            "travelling": "Viagem",
+            "investment": "Investimento",
+            "health": "Saúde e Bem-estar",
+            "tax": "Imposto",
+            "vehicle": "Veículo",
+            "transports": "Transporte",
+            "pets": "Animais de estimação",
+            "personal project": "Projeto pessoal",
+            "education": "Educação",
+            "other": "Outro"
         },
         "income": {
             "salary": "Salário",

@@ -27,9 +27,39 @@ const languages = {
   'pt-BR': ptBR
 };
 
-// Get translation by language
+/**
+ * Deep merge two objects. Values from `source` override `target`.
+ * Ensures every key present in `target` (the fallback) also exists in the result.
+ */
+const deepMerge = (target, source) => {
+  if (!source) return target;
+  if (!target) return source;
+
+  const result = { ...target };
+  for (const key of Object.keys(source)) {
+    if (
+      source[key] !== null &&
+      typeof source[key] === 'object' &&
+      !Array.isArray(source[key]) &&
+      typeof target[key] === 'object' &&
+      !Array.isArray(target[key])
+    ) {
+      result[key] = deepMerge(target[key], source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result;
+};
+
+// Get translation by language, with English fallback for any missing keys
 export const getTranslations = (language = DEFAULT_LANGUAGE) => {
-  return languages[language] || languages[DEFAULT_LANGUAGE];
+  const fallback = languages[DEFAULT_LANGUAGE];
+  const selected = languages[language];
+  if (!selected) return fallback;
+  if (language === DEFAULT_LANGUAGE) return selected;
+  // Deep merge: start from English fallback, override with selected language
+  return deepMerge(fallback, selected);
 };
 
 // Get all available languages (codes only)

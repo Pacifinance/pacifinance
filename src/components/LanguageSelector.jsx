@@ -158,7 +158,7 @@ export default function LanguageSelector({ theme, variant = 'compact', buttonSty
           style={{
             position: 'absolute',
             right: 0,
-            bottom: 'calc(100% + 4px)',
+            top: 'calc(100% + 4px)',
             backgroundColor: theme.mode === 'dark' ? '#1e1e2e' : '#fff',
             border: `1px solid ${theme.borderColor || 'rgba(0,0,0,0.12)'}`,
             borderRadius: '10px',

@@ -8,6 +8,7 @@ import {
 } from '../styles/MyStyled';
 import { getAssetIcon } from '../data/assetIcons';
 import { getAssetColor } from '../data/assetColors';
+import { getMuiSelectMenuProps } from './ThemedSelect';
 
 /* ─── Helpers ─── */
 const handleInputChange = (e, setterFunction) => {
@@ -365,15 +366,7 @@ export default function BalanceSection({
             '& .MuiSelect-select': { padding: '10px 14px' },
             '& .MuiSvgIcon-root': { color: theme.textColor },
           }}
-          MenuProps={{
-            PaperProps: {
-              style: {
-                background: theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.95)' : 'white',
-                color: theme.textColor,
-                borderRadius: '10px',
-              }
-            }
-          }}
+          MenuProps={getMuiSelectMenuProps(theme)}
         >
           {monthsArray.map((option) => (
             <MenuItem 

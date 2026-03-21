@@ -662,7 +662,8 @@ export default function InsertValue({
         setSelectedOutflowsMonth(0);
       }
     }
-  }, [userData, currentMonthIdx, monthOptions.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMonthIdx]);
 
   const selectedIncomeMonthKey = monthOptions[selectedIncomesMonth]
     ? `${monthOptions[selectedIncomesMonth].month}-${monthOptions[selectedIncomesMonth].year}`
@@ -850,10 +851,9 @@ export default function InsertValue({
         typoOutflow.key,
         categoryOutflow.key,
       );
-      // Only reset note, value and date - keep category, typology and balance source for quick re-entry
+      // Only reset note and value - keep category, typology, date and balance source for quick re-entry
       setNoteOutflowAreaValue("");
       setOutflow("");
-      setOutflowDate(currentDate);
     } else {
       inExJson = createInExJson(
         false,
@@ -863,10 +863,9 @@ export default function InsertValue({
         0,
         categoryIncome.key,
       );
-      // Only reset note, value and date - keep category and balance destination for quick re-entry
+      // Only reset note and value - keep category, date and balance destination for quick re-entry
       setNoteIncomeAreaValue("");
       setIncome("");
-      setIncomeDate(currentDate);
     }
     try {
       const inExAdd = await financeService.addExpenseOrIncome(inExJson);

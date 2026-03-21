@@ -13,6 +13,7 @@ import {
 } from '../styles/MyStyled';
 import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
+import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
 
@@ -160,16 +161,7 @@ const TableTitle = styled.h3`
   color: ${p => p.theme.textColor};
 `;
 
-const MonthSelect = styled.select`
-  border-radius: 8px;
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : '#e2e8f0'};
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'white'};
-  color: ${p => p.theme.textColor};
-  font-weight: 500;
-  cursor: pointer;
-`;
+
 
 const TableScroll = styled.div`
   overflow-x: auto;
@@ -494,7 +486,8 @@ export default function OutflowSection({
               {translations.insert.outflowSection.tableColumns.category}
               {getSortIcon('category')}
             </span>
-            <select
+            <ThemedSelect
+              compact
               value={outflowCategoryFilter}
               onChange={(e) => setOutflowCategoryFilter(e.target.value)}
               style={{ minWidth: 100 }}
@@ -505,7 +498,7 @@ export default function OutflowSection({
                   {translateTag(item.label, language, 'expense')}
                 </option>
               ))}
-            </select>
+            </ThemedSelect>
           </div>
         </th>
         <th>
@@ -517,7 +510,8 @@ export default function OutflowSection({
               {translations.insert.outflowSection.tableColumns.typology}
               {getSortIcon('typology')}
             </span>
-            <select
+            <ThemedSelect
+              compact
               value={outflowTypologyFilter}
               onChange={(e) => setOutflowTypologyFilter(e.target.value)}
               style={{ minWidth: 100 }}
@@ -530,7 +524,7 @@ export default function OutflowSection({
                   </option>
                 ),
               )}
-            </select>
+            </ThemedSelect>
           </div>
         </th>
         <th style={{ minWidth: 100 }}>
@@ -884,6 +878,7 @@ export default function OutflowSection({
             }}
             sx={selectSx}
             displayEmpty
+            MenuProps={getMuiSelectMenuProps(theme)}
             renderValue={(value) =>
               value === '' ? translations.insert.outflowSection.placeholderCategory : value
             }
@@ -913,6 +908,7 @@ export default function OutflowSection({
             }}
             sx={selectSx}
             displayEmpty
+            MenuProps={getMuiSelectMenuProps(theme)}
             renderValue={(value) =>
               value === '' ? translations.insert.outflowSection.placeholderTypology : value
             }
@@ -968,6 +964,7 @@ export default function OutflowSection({
             onChange={(e) => setSelectedOption(e.target.value)}
             sx={selectSx}
             displayEmpty
+            MenuProps={getMuiSelectMenuProps(theme)}
             renderValue={(value) =>
               value === '' ? (translations.general.selectAnOption || 'Nessuno (opzionale)') : value
             }
@@ -1009,8 +1006,7 @@ export default function OutflowSection({
           <TableTitle theme={theme}>
             {translations.insert.outflowSection.titleListing}
           </TableTitle>
-          <MonthSelect
-            theme={theme}
+          <ThemedSelect
             value={selectedOutflowsMonth}
             onChange={handleOutflowsMonthChange}
           >
@@ -1021,7 +1017,7 @@ export default function OutflowSection({
                   {option.label}
                 </option>
               ))}
-          </MonthSelect>
+          </ThemedSelect>
         </TableHeader>
         <TableScroll>
           <StyledTable theme={theme} className="outflow-table">

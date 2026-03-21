@@ -13,6 +13,7 @@ import {
 } from '../styles/MyStyled';
 import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
+import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 
 const currentDate = new Date().toISOString().split('T')[0];
 
@@ -226,27 +227,7 @@ const TableTitle = styled.h3`
   margin: 0;
 `;
 
-const MonthSelect = styled.select`
-  padding: 0.4rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid ${(p) => p.theme.mode === 'dark'
-    ? 'rgba(255,255,255,0.12)'
-    : '#e2e8f0'};
-  background: ${(p) => p.theme.mode === 'dark'
-    ? 'rgba(255,255,255,0.06)'
-    : 'white'};
-  color: ${(p) => p.theme.textColor};
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  font-family: inherit;
-  transition: all 0.2s ease;
 
-  &:focus {
-    border-color: ${(p) => p.theme.buttonBackgroundColor};
-  }
-`;
 
 const TableScroll = styled.div`
   overflow-x: auto;
@@ -538,7 +519,8 @@ export default function IncomeSection({
               {translations.insert.incomeSection.tableColumns.category}
               {getSortIcon('category')}
             </span>
-            <select
+            <ThemedSelect
+              compact
               value={incomeCategoryFilter}
               onChange={(e) => setIncomeCategoryFilter(e.target.value)}
               style={{ minWidth: 100 }}
@@ -549,7 +531,7 @@ export default function IncomeSection({
                   {translateTag(item.label, language, 'income')}
                 </option>
               ))}
-            </select>
+            </ThemedSelect>
           </div>
         </th>
         <th style={{ minWidth: 100 }}>
@@ -880,6 +862,7 @@ export default function IncomeSection({
             }}
             sx={selectSx}
             displayEmpty
+            MenuProps={getMuiSelectMenuProps(theme)}
             renderValue={(value) =>
               value === '' ? translations.insert.incomeSection.placeholderCategory : value
             }
@@ -933,6 +916,7 @@ export default function IncomeSection({
             onChange={(e) => setSelectedOption(e.target.value)}
             sx={selectSx}
             displayEmpty
+            MenuProps={getMuiSelectMenuProps(theme)}
             renderValue={(value) =>
               value === '' ? (translations.general.selectAnOption || 'Nessuno (opzionale)') : value
             }
@@ -974,8 +958,7 @@ export default function IncomeSection({
           <TableTitle theme={theme}>
             {translations.insert.incomeSection.titleListing}
           </TableTitle>
-          <MonthSelect
-            theme={theme}
+          <ThemedSelect
             value={selectedIncomesMonth}
             onChange={handleIncomesMonthChange}
           >
@@ -986,7 +969,7 @@ export default function IncomeSection({
                   {option.label}
                 </option>
               ))}
-          </MonthSelect>
+          </ThemedSelect>
         </TableHeader>
         <TableScroll>
           <StyledTable theme={theme} className="income-table">

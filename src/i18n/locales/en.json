@@ -44,7 +44,8 @@
         "objective": "Objective",
         "clearFilter": "Clear",
         "currentMonth": "Current month",
-        "all": "All"
+        "all": "All",
+        "valid": "valid"
     },
     "cookie": {
         "title": "We use cookies",
@@ -767,7 +768,23 @@
             "confirmDelete": "Are you sure you want to delete this outflow?",
             "successDelete": "Outflow deleted successfully",
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
-            "decreaseWhichBalance": "Subtract from"
+            "decreaseWhichBalance": "Subtract from",
+            "multiInsert": {
+                "toggle": "Multi-insert",
+                "title": "Batch Insert Outflows",
+                "subtitle": "Add multiple outflows at once",
+                "addAnother": "Add another outflow",
+                "duplicateLast": "Duplicate last",
+                "submitAll": "Submit all",
+                "submitting": "Submitting...",
+                "removeRow": "Remove",
+                "outflowNumber": "Outflow",
+                "successAll": "All outflows inserted successfully!",
+                "partialSuccess": "{success} of {total} outflows inserted. {failed} failed.",
+                "allFailed": "Failed to insert outflows. Please try again.",
+                "emptyBatch": "Add at least one outflow with valid data",
+                "confirmSubmit": "Submit {count} outflows?"
+            }
         },
         "investmentSection": {
             "placeholderCategory": "Select a category",

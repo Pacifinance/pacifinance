@@ -26,6 +26,7 @@ import { RiFileExcel2Line } from "react-icons/ri";
 import { getCategoryColor } from '../data/categoryColors';
 import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
+import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslations';
 function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
@@ -202,13 +203,16 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
     if (totalOutflowsPerCategoryPerMonth[selectedMonth]) {
       pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
         .filter(([, value]) => value > 0)
-        .map(([key, value], index) => ({
-          name: translations?.categories?.[key] || key,
+        .map(([key, value], index) => {
+          const tagLabel = resolveTagKeyFromLocalized(key, 'en', 'expense');
+          const translatedName = tagLabel ? translateTag(tagLabel, language, 'expense') : key;
+          return {
+          name: translatedName,
           value: isHidden ? Math.floor(Math.random() * 1000) : value,
           fill: isHidden 
             ? getGrayscaleColor(getCategoryColor(key, language), index)
             : getLighterSolidColor(getCategoryColor(key, language))
-        }));
+        };});
     }
 
     // Label interna: solo % dentro la fetta (come nella Dashboard)

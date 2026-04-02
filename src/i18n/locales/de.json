@@ -44,7 +44,8 @@
         "objective": "Ziel",
         "clearFilter": "Löschen",
         "currentMonth": "Aktueller Monat",
-        "all": "Alle"
+        "all": "Alle",
+        "valid": "gültig"
     },
     "cookie": {
         "title": "Wir verwenden Cookies",
@@ -765,7 +766,23 @@
             "confirmDelete": "Möchtest du diese Ausgabe wirklich löschen?",
             "successDelete": "Ausgabe erfolgreich gelöscht",
             "deleteBalanceRestore": "Du kannst eines der Guthaben wiederherstellen oder den Eintrag einfach löschen, ohne die Guthaben zu ändern.",
-            "decreaseWhichBalance": "Abziehen von"
+            "decreaseWhichBalance": "Abziehen von",
+            "multiInsert": {
+                "toggle": "Mehrfacheingabe",
+                "title": "Mehrere Ausgaben eingeben",
+                "subtitle": "Füge mehrere Ausgaben gleichzeitig hinzu",
+                "addAnother": "Weitere Ausgabe hinzufügen",
+                "duplicateLast": "Letzte duplizieren",
+                "submitAll": "Alle absenden",
+                "submitting": "Wird gesendet...",
+                "removeRow": "Entfernen",
+                "outflowNumber": "Ausgabe",
+                "successAll": "Alle Ausgaben erfolgreich eingefügt!",
+                "partialSuccess": "{success} von {total} Ausgaben eingefügt. {failed} fehlgeschlagen.",
+                "allFailed": "Ausgaben konnten nicht eingefügt werden. Bitte erneut versuchen.",
+                "emptyBatch": "Füge mindestens eine Ausgabe mit gültigen Daten hinzu",
+                "confirmSubmit": "{count} Ausgaben absenden?"
+            }
         },
         "investmentSection": {
             "placeholderCategory": "Kategorie auswählen",

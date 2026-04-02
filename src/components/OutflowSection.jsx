@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -321,6 +321,7 @@ export default function OutflowSection({
   onAddOutflow,
   onDeleteOutflow,
   onSaveEdit,
+  onOpenMultiInsert,
   // New props for balance selection
   selectedOption,
   setSelectedOption,
@@ -998,6 +999,29 @@ export default function OutflowSection({
         <ModernActionButton theme={theme} onClick={onAddOutflow}>
           {translations.insert.outflowSection.updateButton}
         </ModernActionButton>
+        {onOpenMultiInsert && (
+          <button
+            onClick={onOpenMultiInsert}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '10px 18px',
+              borderRadius: '12px',
+              border: `1.5px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
+              background: 'transparent',
+              color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : '#64748b',
+              cursor: 'pointer',
+              fontSize: '0.88rem',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+            }}
+            data-umami-event="multi-insert-outflow-opened"
+          >
+            <FontAwesomeIcon icon={faLayerGroup} />
+            {translations.insert.outflowSection.multiInsert?.toggle || 'Multi-insert'}
+          </button>
+        )}
       </FormFooter>
 
       {/* ── Transaction Table ── */}

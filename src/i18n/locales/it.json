@@ -44,7 +44,8 @@
         "objective": "Obiettivo",
         "clearFilter": "Cancella",
         "currentMonth": "Mese corrente",
-        "all": "Tutti"
+        "all": "Tutti",
+        "valid": "valide"
     },
     "months": {
         "january": "Gennaio",
@@ -767,7 +768,23 @@
             "confirmDelete": "Sei sicuro di voler eliminare questa uscita?",
             "successDelete": "Uscita eliminata con successo",
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
-            "decreaseWhichBalance": "Sottrai da"
+            "decreaseWhichBalance": "Sottrai da",
+            "multiInsert": {
+                "toggle": "Multi-inserimento",
+                "title": "Inserimento multiplo uscite",
+                "subtitle": "Aggiungi più uscite contemporaneamente",
+                "addAnother": "Aggiungi un'altra uscita",
+                "duplicateLast": "Duplica ultima",
+                "submitAll": "Invia tutte",
+                "submitting": "Invio in corso...",
+                "removeRow": "Rimuovi",
+                "outflowNumber": "Uscita",
+                "successAll": "Tutte le uscite inserite con successo!",
+                "partialSuccess": "{success} di {total} uscite inserite. {failed} non riuscite.",
+                "allFailed": "Inserimento uscite non riuscito. Riprova.",
+                "emptyBatch": "Aggiungi almeno un'uscita con dati validi",
+                "confirmSubmit": "Inviare {count} uscite?"
+            }
         },
         "investmentSection": {
             "placeholderCategory": "Seleziona una categoria",

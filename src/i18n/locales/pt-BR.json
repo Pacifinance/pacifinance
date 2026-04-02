@@ -44,7 +44,8 @@
         "objective": "Objetivo",
         "clearFilter": "Limpar",
         "currentMonth": "Mês atual",
-        "all": "Todos"
+        "all": "Todos",
+        "valid": "válidas"
     },
     "cookie": {
         "title": "Nós usamos cookies 🍪",
@@ -765,7 +766,23 @@
             "confirmDelete": "Tem certeza que deseja excluir esta saída?",
             "successDelete": "Saída excluída com sucesso",
             "deleteBalanceRestore": "Você pode escolher restaurar um dos saldos, ou apenas excluir o registro sem modificar os saldos.",
-            "decreaseWhichBalance": "Subtrair de"
+            "decreaseWhichBalance": "Subtrair de",
+            "multiInsert": {
+                "toggle": "Multi-inserção",
+                "title": "Inserção múltipla de saídas",
+                "subtitle": "Adicione várias saídas de uma vez",
+                "addAnother": "Adicionar outra saída",
+                "duplicateLast": "Duplicar última",
+                "submitAll": "Enviar todas",
+                "submitting": "Enviando...",
+                "removeRow": "Remover",
+                "outflowNumber": "Saída",
+                "successAll": "Todas as saídas inseridas com sucesso!",
+                "partialSuccess": "{success} de {total} saídas inseridas. {failed} falharam.",
+                "allFailed": "Falha ao inserir saídas. Tente novamente.",
+                "emptyBatch": "Adicione pelo menos uma saída com dados válidos",
+                "confirmSubmit": "Enviar {count} saídas?"
+            }
         },
         "investmentSection": {
             "placeholderCategory": "Selecione uma categoria",

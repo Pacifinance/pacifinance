@@ -44,7 +44,8 @@
         "objective": "Objetivo",
         "clearFilter": "Limpiar",
         "currentMonth": "Mes actual",
-        "all": "Todos"
+        "all": "Todos",
+        "valid": "válidas"
     },
     "cookie": {
         "title": "Usamos cookies",
@@ -767,7 +768,23 @@
             "confirmDelete": "¿Estás seguro/a de que deseas eliminar este gasto?",
             "successDelete": "Gasto eliminado con éxito",
             "deleteBalanceRestore": "Puedes elegir restaurar uno de los balances, o simplemente eliminar la entrada sin modificar los balances.",
-            "decreaseWhichBalance": "Restar de"
+            "decreaseWhichBalance": "Restar de",
+            "multiInsert": {
+                "toggle": "Multi-inserción",
+                "title": "Inserción múltiple de gastos",
+                "subtitle": "Añade varios gastos a la vez",
+                "addAnother": "Añadir otro gasto",
+                "duplicateLast": "Duplicar último",
+                "submitAll": "Enviar todos",
+                "submitting": "Enviando...",
+                "removeRow": "Eliminar",
+                "outflowNumber": "Gasto",
+                "successAll": "¡Todos los gastos insertados con éxito!",
+                "partialSuccess": "{success} de {total} gastos insertados. {failed} fallidos.",
+                "allFailed": "Error al insertar gastos. Inténtalo de nuevo.",
+                "emptyBatch": "Añade al menos un gasto con datos válidos",
+                "confirmSubmit": "¿Enviar {count} gastos?"
+            }
         },
         "investmentSection": {
             "placeholderCategory": "Selecciona una categoría",

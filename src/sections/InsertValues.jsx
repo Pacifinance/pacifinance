@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 
 const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
+const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
@@ -366,6 +367,7 @@ export default function InsertValue({
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
+  const [showMultiInsert, setShowMultiInsert] = useState(false);
 
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
@@ -703,6 +705,47 @@ export default function InsertValue({
     
     // Directly submit without confirmation modal
     handleConfirmInEx(true);
+  };
+
+  const handleBatchOutflowSubmit = async (rows, onProgress) => {
+    const BATCH_SIZE = 5;
+    let success = 0;
+    let failed = 0;
+    const total = rows.length;
+
+    for (let i = 0; i < total; i += BATCH_SIZE) {
+      const batch = rows.slice(i, i + BATCH_SIZE);
+      const promises = batch.map(row => {
+        const inExJson = createInExJson(
+          true,
+          row.date,
+          row.amount,
+          row.note,
+          row.typoKey,
+          row.categoryKey,
+        );
+        return financeService.addExpenseOrIncome(inExJson)
+          .then((res) => { if (res.status === 200) success++; else failed++; })
+          .catch(() => { failed++; });
+      });
+      await Promise.all(promises);
+      onProgress(Math.min(((i + BATCH_SIZE) / total) * 100, 100));
+    }
+
+    const t = translations.insert.outflowSection.multiInsert;
+    if (failed === 0) {
+      showSuccess(t.successAll);
+    } else if (success > 0) {
+      showError(t.partialSuccess.replace('{success}', success).replace('{total}', total).replace('{failed}', failed));
+    } else {
+      showError(t.allFailed);
+    }
+
+    if (success > 0) {
+      handleSetIsUpdated(false);
+      fetchData();
+    }
+    setShowMultiInsert(false);
   };
 
   const handleDeleteIncome = (date, amount) => {
@@ -1167,6 +1210,7 @@ export default function InsertValue({
             onAddOutflow={handleAddOutflow}
             onDeleteOutflow={handleDeleteOutflow}
             onSaveEdit={handleSaveEditOutflow}
+            onOpenMultiInsert={() => setShowMultiInsert(true)}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
@@ -1242,6 +1286,19 @@ export default function InsertValue({
         )}
 
         {renderPage()}
+
+        {/* Multi-insert Modal */}
+        {showMultiInsert && (
+          <Suspense fallback={null}>
+            <MultiOutflowInsert
+              theme={theme}
+              OutflowsTags={OutflowsTags}
+              paymentTags={paymentTags}
+              onSubmitBatch={handleBatchOutflowSubmit}
+              onClose={() => setShowMultiInsert(false)}
+            />
+          </Suspense>
+        )}
 
         {/* Import Wizard Modal */}
         {showImportWizard && (

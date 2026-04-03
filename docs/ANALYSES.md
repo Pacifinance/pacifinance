@@ -15,7 +15,8 @@
 6. [Analisi: Supporto Multi-Valuta](#-analisi-supporto-multi-valuta) ✅ Completato
 7. [Analisi: Pagina Roadmap Pubblica](#-analisi-pagina-roadmap-pubblica) ✅ Completato
 8. [Analisi: Sistema Feedback & Bug Report](#-analisi-sistema-feedback--bug-report) ✅ Fase 0 Completata
-9. [Note Tecniche](#-note-tecniche)
+9. [Analisi: Flow Conversioni Valuta](CURRENCY_FLOW.md) ✅ Documento dedicato
+10. [Note Tecniche](#-note-tecniche)
 
 ---
 

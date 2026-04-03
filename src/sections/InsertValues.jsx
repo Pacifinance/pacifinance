@@ -21,8 +21,8 @@ const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
 const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));
-import { groupAmountsByBalanceSource } from "../components/MultiOutflowInsert";
-import { groupAmountsByBalanceSource as groupIncomeAmountsBySource } from "../components/MultiIncomeInsert";
+import { groupAmountsByBalanceSource } from "../components/multiInsert/helpers";
+const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "../components/MultiBalanceInsert";
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,

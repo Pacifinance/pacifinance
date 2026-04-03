@@ -59,6 +59,7 @@ export default ThemedSelect;
  * the dropdown popup has correct background/text colors in dark/light mode.
  */
 export const getMuiSelectMenuProps = (theme) => ({
+  style: { zIndex: 10003 },
   PaperProps: {
     style: {
       background: theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.95)' : '#ffffff',

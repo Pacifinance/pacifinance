@@ -707,7 +707,7 @@ export default function InsertValue({
     handleConfirmInEx(true);
   };
 
-  const handleBatchOutflowSubmit = async (rows, onProgress) => {
+  const handleBatchOutflowSubmit = async (rows, onProgress, balanceSource) => {
     const BATCH_SIZE = 5;
     let success = 0;
     let failed = 0;
@@ -730,6 +730,34 @@ export default function InsertValue({
       });
       await Promise.all(promises);
       onProgress(Math.min(((i + BATCH_SIZE) / total) * 100, 100));
+    }
+
+    // Update balance if a source was selected and at least one outflow succeeded
+    if (balanceSource && success > 0) {
+      try {
+        const totalAmount = rows.reduce((sum, row) => {
+          const val = parseFloat(String(row.amount).replace(',', '.'));
+          return sum + (isNaN(val) ? 0 : val);
+        }, 0);
+        const balanceOptionsMap = {
+          [translations.assets.bank]: bankValue,
+          [translations.assets.cash]: cashValue,
+          [translations.assets.digitalServices]: digitalServicesValue,
+          [translations.assets.stocks]: stocksValue,
+          [translations.assets.etf]: etfValue,
+          [translations.assets.bitcoin]: bitcoinValue,
+          [translations.assets.crypto]: cryptoValue,
+          [translations.assets.bonds]: bondsValue,
+          [translations.assets.funds]: fundsValue,
+          [translations.assets.gold]: goldValue,
+        };
+        const currentBalanceValue = parseFloat(balanceOptionsMap[balanceSource]);
+        const newValue = currentBalanceValue - totalAmount;
+        const balancesJson = createBalancesJson(currentDate, balanceSource, newValue);
+        await financeService.addBalance(balancesJson);
+      } catch {
+        // Balance update failed but outflows were inserted — don't block
+      }
     }
 
     const t = translations.insert.outflowSection.multiInsert;
@@ -1294,6 +1322,7 @@ export default function InsertValue({
               theme={theme}
               OutflowsTags={OutflowsTags}
               paymentTags={paymentTags}
+              balanceOptions={options}
               onSubmitBatch={handleBatchOutflowSubmit}
               onClose={() => setShowMultiInsert(false)}
             />

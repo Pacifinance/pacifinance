@@ -133,6 +133,8 @@ const NoteArea = styled.textarea`
 const FormFooter = styled.div`
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   width: 100%;
 `;
 

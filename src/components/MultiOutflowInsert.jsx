@@ -387,6 +387,7 @@ export default function MultiOutflowInsert({
   theme,
   OutflowsTags,
   paymentTags,
+  balanceOptions,
   onSubmitBatch,
   onClose,
 }) {
@@ -397,6 +398,7 @@ export default function MultiOutflowInsert({
   const [rows, setRows] = useState([createEmptyRow()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [balanceSource, setBalanceSource] = useState('');
 
   const selectSx = {
     borderRadius: '10px',
@@ -426,7 +428,7 @@ export default function MultiOutflowInsert({
       categoryValue: last.categoryValue,
       typoKey: last.typoKey,
       typoValue: last.typoValue,
-      amount: '',
+      amount: last.amount,
       date: last.date,
       note: '',
     })]);
@@ -450,7 +452,7 @@ export default function MultiOutflowInsert({
     setProgress(0);
     
     try {
-      await onSubmitBatch(validRows, (p) => setProgress(p));
+      await onSubmitBatch(validRows, (p) => setProgress(p), balanceSource);
     } finally {
       setIsSubmitting(false);
     }
@@ -627,6 +629,34 @@ export default function MultiOutflowInsert({
           <CountBadge theme={theme}>
             {validCount} / {rows.length} {translations.general.valid || 'valid'}
           </CountBadge>
+          {balanceOptions && Object.keys(balanceOptions).length > 0 && (
+            <Select
+              value={balanceSource}
+              onChange={(e) => setBalanceSource(e.target.value)}
+              sx={{
+                ...selectSx,
+                width: 'auto',
+                minWidth: '160px',
+                maxWidth: '220px',
+              }}
+              displayEmpty
+              size="small"
+              MenuProps={getMuiSelectMenuProps(theme)}
+              disabled={isSubmitting}
+              renderValue={(value) =>
+                value === ''
+                  ? (translations.insert.outflowSection.decreaseWhichBalance || 'Subtract from')
+                  : value
+              }
+            >
+              <MenuItem value="">
+                <em>{translations.general.selectAnOption}</em>
+              </MenuItem>
+              {Object.keys(balanceOptions).map((option) => (
+                <MenuItem key={option} value={option}>{option}</MenuItem>
+              ))}
+            </Select>
+          )}
           <SubmitButton
             theme={theme}
             onClick={handleSubmit}

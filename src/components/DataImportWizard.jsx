@@ -387,7 +387,7 @@ const InfoTooltip = styled.span`
 const DataImportWizard = ({ onClose, onImportComplete }) => {
   const { theme } = useContext(ThemeContext);
   const { language, translations } = useContext(LanguageContext);
-  const { currencySymbol } = useContext(CurrencyContext);
+  const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
   const { handleSetIsUpdated, userData } = useAuth();
@@ -750,7 +750,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = finalTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
-        financeService.addExpenseOrIncome(toAPIFormat(tx, defaultPaymentType))
+        financeService.addExpenseOrIncome(toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType))
           .then(() => { success++; })
           .catch(() => { failed++; })
       );
@@ -761,7 +761,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setImporting(false);
     const savedTxForUndo = finalTx.map(tx => ({
       date: tx.date,
-      amount: tx.amount,
+      amount: toEUR(tx.amount),
       is_expense: tx.isOutflow,
     }));
     setImportResult({ success, failed, total, _savedTx: savedTxForUndo });

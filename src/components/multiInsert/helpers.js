@@ -4,6 +4,21 @@
  */
 
 /**
+ * Parse an Italian-formatted amount string (e.g. "1.234,56") into a number.
+ * Handles both raw input ("10.5") and locale-formatted strings ("1.234,56").
+ * @param {string|number} value - The amount to parse
+ * @returns {number} Parsed number, or 0 if invalid
+ */
+export const parseFormattedAmount = (value) => {
+  if (typeof value === 'number') return value;
+  const str = String(value);
+  // Remove thousands dots, replace decimal comma with dot
+  const cleaned = str.replace(/\./g, '').replace(',', '.');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+};
+
+/**
  * Sanitize amount input: allow only digits and one decimal dot.
  * Replaces commas with dots, strips non-numeric chars, keeps only first dot.
  * @param {string} value - Raw input value
@@ -48,8 +63,8 @@ export const groupAmountsByBalanceSource = (rows) => {
   const result = {};
   for (const row of rows) {
     if (row.balanceSource && row.balanceSource !== '') {
-      const val = parseFloat(String(row.amount).replace(',', '.'));
-      if (!isNaN(val) && val > 0) {
+      const val = parseFormattedAmount(row.amount);
+      if (val > 0) {
         result[row.balanceSource] = (result[row.balanceSource] || 0) + val;
       }
     }

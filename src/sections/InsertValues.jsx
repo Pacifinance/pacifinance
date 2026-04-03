@@ -21,7 +21,7 @@ const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
 const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));
-import { groupAmountsByBalanceSource } from "../components/multiInsert/helpers";
+import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "../components/MultiBalanceInsert";
 import {
@@ -361,7 +361,7 @@ export default function InsertValue({
   initialSection: _initialSection,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
-  const { currencySymbol } = React.useContext(CurrencyContext);
+  const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { showSuccess, showError } = useToast();
   const { financeService } = useDemoServices();
   const location = useLocation();
@@ -443,9 +443,15 @@ export default function InsertValue({
   const createBalancesJson = (date, selectedOption = null, newValue = null) => {
     const getValue = (assetKey, currentValue) => {
       if (selectedOption?.includes(translations.assets[assetKey])) {
+        // newValue is already in EUR (pre-converted by caller)
         return Number(newValue) || 0;
       }
-      return Number(currentValue) || 0;
+      // If value is still a number, it hasn't been user-edited — it's EUR from DB
+      if (typeof currentValue === 'number') {
+        return currentValue;
+      }
+      // If value is a string, the user edited the field — it's in display currency
+      return toEUR(parseFormattedAmount(currentValue));
     };
     
     return {
@@ -726,7 +732,7 @@ export default function InsertValue({
         const inExJson = createInExJson(
           true,
           row.date,
-          row.amount,
+          parseFormattedAmount(row.amount),
           row.note,
           row.typoKey,
           row.categoryKey,
@@ -761,7 +767,7 @@ export default function InsertValue({
       for (const [source, totalAmount] of Object.entries(amountsBySource)) {
         try {
           const currentBalanceValue = parseFloat(balanceOptionsMap[source]);
-          const newValue = currentBalanceValue - totalAmount;
+          const newValue = currentBalanceValue - toEUR(totalAmount);
           const balancesJson = createBalancesJson(currentDate, source, newValue);
           await financeService.addBalance(balancesJson);
         } catch {
@@ -798,7 +804,7 @@ export default function InsertValue({
         const inExJson = createInExJson(
           false,
           row.date,
-          row.amount,
+          parseFormattedAmount(row.amount),
           row.note,
           0,
           row.categoryKey,
@@ -831,7 +837,7 @@ export default function InsertValue({
       for (const [source, totalAmount] of Object.entries(amountsBySource)) {
         try {
           const currentBalanceValue = parseFloat(balanceOptionsMap[source]);
-          const newValue = currentBalanceValue + totalAmount; // ADD for incomes
+          const newValue = currentBalanceValue + toEUR(totalAmount); // ADD for incomes
           const balancesJson = createBalancesJson(currentDate, source, newValue);
           await financeService.addBalance(balancesJson);
         } catch {
@@ -881,8 +887,8 @@ export default function InsertValue({
       const dbDate = getBalanceDateForDB({ month: row.month, year: row.year });
       const balance = { date: dbDate };
       for (const key of ASSET_KEYS) {
-        const val = parseFloat(String(row[key]).replace(',', '.'));
-        balance[assetDbKeys[key]] = !isNaN(val) ? val : 0;
+        const val = parseFormattedAmount(row[key]);
+        balance[assetDbKeys[key]] = toEUR(val);
       }
 
       try {
@@ -1032,10 +1038,11 @@ export default function InsertValue({
   };
 
   const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag) => {
+    const numericAmount = Number(amount) || 0;
     return {
       expense: {
         date: date,
-        amount: Number(amount) || 0,
+        amount: toEUR(numericAmount),
         is_expense: isOutflow,
         payment_type: payment_type,
         category_tag: category_tag,
@@ -1110,8 +1117,8 @@ export default function InsertValue({
         
         if (selectedOption !== "") {
           const valueBalanceSelected = parseFloat(balanceOptionsMap[selectedOption]);
-          const outflowNumber = parseFloat(originalOutflowAmount);
-          const incomeNumber = parseFloat(originalIncomeAmount);
+          const outflowNumber = toEUR(parseFloat(originalOutflowAmount) || 0);
+          const incomeNumber = toEUR(parseFloat(originalIncomeAmount) || 0);
           let newValue = 0;
           if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
           else newValue = valueBalanceSelected + incomeNumber;

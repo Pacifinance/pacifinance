@@ -249,7 +249,7 @@ export default function MultiOutflowInsert({
 
                 {/* Balance source per-row */}
                 {hasBalanceOptions && (
-                  <div style={{ gridColumn: window.innerWidth <= 600 ? '1 / -1' : undefined }}>
+                  <div>
                     <FieldLabel theme={theme}>
                       {translations.insert.outflowSection.decreaseWhichBalance || 'Subtract from'}
                     </FieldLabel>

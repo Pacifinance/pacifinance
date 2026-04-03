@@ -24,6 +24,11 @@ export const Overlay = styled.div`
   justify-content: center;
   padding: 1rem;
   animation: ${slideIn} 0.2s ease-out;
+  
+  @media (max-width: 600px) {
+    padding: 0;
+    align-items: flex-end;
+  }
 `;
 
 export const ModalContainer = styled.div`
@@ -45,8 +50,10 @@ export const ModalContainer = styled.div`
   overflow: hidden;
   
   @media (max-width: 600px) {
-    max-height: 95vh;
-    border-radius: 16px;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 16px 16px 0 0;
+    max-width: 100%;
   }
 `;
 
@@ -75,6 +82,10 @@ export const ModalTitle = styled.div`
     font-size: 0.82rem;
     color: ${p => p.theme.textColor};
     opacity: 0.5;
+  }
+  @media (max-width: 600px) {
+    h2 { font-size: 1.1rem; }
+    p { font-size: 0.75rem; }
   }
 `;
 
@@ -121,7 +132,7 @@ export const ModalFooter = styled.div`
   gap: 0.75rem;
   
   @media (max-width: 600px) {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
     flex-direction: column;
   }
 `;
@@ -186,7 +197,7 @@ export const RowGrid = styled.div`
   gap: 0.75rem;
   
   @media (max-width: 600px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 `;

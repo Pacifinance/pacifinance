@@ -207,7 +207,7 @@ export default function MultiIncomeInsert({
 
                 {/* Balance source per-row */}
                 {hasBalanceOptions && (
-                  <div style={{ gridColumn: window.innerWidth <= 600 ? '1 / -1' : undefined }}>
+                  <div>
                     <FieldLabel theme={theme}>
                       {translations.insert.incomeSection.increaseWhichBalance || 'Add to'}
                     </FieldLabel>

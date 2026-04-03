@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash, faCopy, faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, faCopy, faPaperPlane, faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -13,7 +13,7 @@ import {
   RowGrid, RowFieldFull, FieldLabel, FieldInput, CurrencyWrap,
   CurrencySymbolSpan, CurrencyFieldInput, NoteInput,
   ActionBar, AddButton, DuplicateButton,
-  CountBadge, SubmitButton, ProgressBar, getSelectSx,
+  CountBadge, SubmitButton, ProgressBar, getSelectSx, InfoHint,
 } from './multiInsert/SharedStyles';
 import { handleAmountInput, formatAmountBlur, groupAmountsByBalanceSource } from './multiInsert/helpers';
 
@@ -215,34 +215,46 @@ export default function MultiIncomeInsert({
                 </div>
 
                 {/* Balance source per-row */}
-                {hasBalanceOptions && (
-                  <div>
-                    <FieldLabel theme={theme}>
-                      {translations.insert.incomeSection.increaseWhichBalance || 'Add to'}
-                    </FieldLabel>
-                    <Select
-                      value={row.balanceSource}
-                      onChange={(e) => updateRow(row.id, 'balanceSource', e.target.value)}
-                      sx={selectSx}
-                      displayEmpty
-                      size="small"
-                      MenuProps={getMuiSelectMenuProps(theme)}
-                      disabled={isSubmitting}
-                      renderValue={(v) =>
-                        v === ''
-                          ? (translations.general.selectAnOption)
-                          : v
-                      }
-                    >
-                      <MenuItem value="">
-                        <em>{translations.general.selectAnOption}</em>
-                      </MenuItem>
-                      {Object.keys(balanceOptions).map((option) => (
-                        <MenuItem key={option} value={option}>{option}</MenuItem>
-                      ))}
-                    </Select>
-                  </div>
-                )}
+                {hasBalanceOptions && (() => {
+                  const rowDate = new Date(row.date);
+                  const now = new Date();
+                  const isPastMonth = rowDate.getMonth() !== now.getMonth() || rowDate.getFullYear() !== now.getFullYear();
+                  return (
+                    <div>
+                      <FieldLabel theme={theme}>
+                        {translations.insert.incomeSection.increaseWhichBalance || 'Add to'}
+                      </FieldLabel>
+                      {isPastMonth ? (
+                        <InfoHint theme={theme}>
+                          <FontAwesomeIcon icon={faInfoCircle} />
+                          {t.pastMonthNoBalance}
+                        </InfoHint>
+                      ) : (
+                        <Select
+                          value={row.balanceSource}
+                          onChange={(e) => updateRow(row.id, 'balanceSource', e.target.value)}
+                          sx={selectSx}
+                          displayEmpty
+                          size="small"
+                          MenuProps={getMuiSelectMenuProps(theme)}
+                          disabled={isSubmitting}
+                          renderValue={(v) =>
+                            v === ''
+                              ? (translations.general.selectAnOption)
+                              : v
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>{translations.general.selectAnOption}</em>
+                          </MenuItem>
+                          {Object.keys(balanceOptions).map((option) => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                        </Select>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Note - spans full width */}
                 <RowFieldFull>

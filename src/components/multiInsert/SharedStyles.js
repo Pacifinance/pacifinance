@@ -377,3 +377,20 @@ export const getSelectSx = (theme) => ({
   '& .MuiSelect-select': { padding: '7px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   '& .MuiSvgIcon-root': { color: theme.textColor },
 });
+
+/* ─── Info hint for disabled fields ─── */
+export const InfoHint = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : '#94a3b8'};
+  padding: 6px 0 0;
+  line-height: 1.3;
+
+  svg {
+    flex-shrink: 0;
+    font-size: 14px;
+    opacity: 0.7;
+  }
+`;

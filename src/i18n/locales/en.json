@@ -774,7 +774,8 @@
                 "allFailed": "Failed to insert incomes. Please try again.",
                 "emptyBatch": "Add at least one income with valid data",
                 "confirmSubmit": "Submit {count} incomes?",
-                "defaultAddTo": "Default: add to"
+                "defaultAddTo": "Default: add to",
+                "pastMonthNoBalance": "Past-dated entries do not update the current balance"
             }
         },
         "outflowSection": {
@@ -817,7 +818,8 @@
                 "allFailed": "Failed to insert outflows. Please try again.",
                 "emptyBatch": "Add at least one outflow with valid data",
                 "confirmSubmit": "Submit {count} outflows?",
-                "defaultSubtractFrom": "Default: subtract from"
+                "defaultSubtractFrom": "Default: subtract from",
+                "pastMonthNoBalance": "Past-dated entries do not update the current balance"
             }
         },
         "investmentSection": {

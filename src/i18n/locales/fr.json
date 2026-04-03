@@ -772,7 +772,8 @@
                 "allFailed": "Échec de l'insertion des revenus. Veuillez réessayer.",
                 "emptyBatch": "Ajoutez au moins un revenu avec des données valides",
                 "confirmSubmit": "Envoyer {count} revenus ?",
-                "defaultAddTo": "Par défaut : ajouter à"
+                "defaultAddTo": "Par défaut : ajouter à",
+                "pastMonthNoBalance": "Les entrées avec une date passée ne mettent pas à jour le solde actuel"
             }
         },
         "outflowSection": {
@@ -815,7 +816,8 @@
                 "allFailed": "Échec de l'insertion des sorties. Veuillez réessayer.",
                 "emptyBatch": "Ajoutez au moins une sortie avec des données valides",
                 "confirmSubmit": "Envoyer {count} sorties ?",
-                "defaultSubtractFrom": "Par défaut : soustraire de"
+                "defaultSubtractFrom": "Par défaut : soustraire de",
+                "pastMonthNoBalance": "Les entrées avec une date passée ne mettent pas à jour le solde actuel"
             }
         },
         "investmentSection": {

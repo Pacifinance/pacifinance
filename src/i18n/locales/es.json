@@ -774,7 +774,8 @@
                 "allFailed": "Error al insertar ingresos. Inténtalo de nuevo.",
                 "emptyBatch": "Añade al menos un ingreso con datos válidos",
                 "confirmSubmit": "¿Enviar {count} ingresos?",
-                "defaultAddTo": "Por defecto: añadir a"
+                "defaultAddTo": "Por defecto: añadir a",
+                "pastMonthNoBalance": "Las entradas con fecha pasada no actualizan el saldo actual"
             }
         },
         "outflowSection": {
@@ -817,7 +818,8 @@
                 "allFailed": "Error al insertar gastos. Inténtalo de nuevo.",
                 "emptyBatch": "Añade al menos un gasto con datos válidos",
                 "confirmSubmit": "¿Enviar {count} gastos?",
-                "defaultSubtractFrom": "Por defecto: restar de"
+                "defaultSubtractFrom": "Por defecto: restar de",
+                "pastMonthNoBalance": "Las entradas con fecha pasada no actualizan el saldo actual"
             }
         },
         "investmentSection": {

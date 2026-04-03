@@ -772,7 +772,8 @@
                 "allFailed": "Falha ao inserir receitas. Tente novamente.",
                 "emptyBatch": "Adicione pelo menos uma receita com dados válidos",
                 "confirmSubmit": "Enviar {count} receitas?",
-                "defaultAddTo": "Padrão: adicionar a"
+                "defaultAddTo": "Padrão: adicionar a",
+                "pastMonthNoBalance": "Entradas com data passada não atualizam o saldo atual"
             }
         },
         "outflowSection": {
@@ -815,7 +816,8 @@
                 "allFailed": "Falha ao inserir saídas. Tente novamente.",
                 "emptyBatch": "Adicione pelo menos uma saída com dados válidos",
                 "confirmSubmit": "Enviar {count} saídas?",
-                "defaultSubtractFrom": "Padrão: subtrair de"
+                "defaultSubtractFrom": "Padrão: subtrair de",
+                "pastMonthNoBalance": "Entradas com data passada não atualizam o saldo atual"
             }
         },
         "investmentSection": {

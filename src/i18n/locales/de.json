@@ -772,7 +772,8 @@
                 "allFailed": "Einnahmen konnten nicht eingefügt werden. Bitte erneut versuchen.",
                 "emptyBatch": "Füge mindestens eine Einnahme mit gültigen Daten hinzu",
                 "confirmSubmit": "{count} Einnahmen absenden?",
-                "defaultAddTo": "Standard: hinzufügen zu"
+                "defaultAddTo": "Standard: hinzufügen zu",
+                "pastMonthNoBalance": "Einträge mit vergangenem Datum aktualisieren nicht den aktuellen Saldo"
             }
         },
         "outflowSection": {
@@ -815,7 +816,8 @@
                 "allFailed": "Ausgaben konnten nicht eingefügt werden. Bitte erneut versuchen.",
                 "emptyBatch": "Füge mindestens eine Ausgabe mit gültigen Daten hinzu",
                 "confirmSubmit": "{count} Ausgaben absenden?",
-                "defaultSubtractFrom": "Standard: abziehen von"
+                "defaultSubtractFrom": "Standard: abziehen von",
+                "pastMonthNoBalance": "Einträge mit vergangenem Datum aktualisieren nicht den aktuellen Saldo"
             }
         },
         "investmentSection": {

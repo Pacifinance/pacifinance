@@ -774,7 +774,8 @@
                 "allFailed": "Inserimento entrate non riuscito. Riprova.",
                 "emptyBatch": "Aggiungi almeno un'entrata con dati validi",
                 "confirmSubmit": "Inviare {count} entrate?",
-                "defaultAddTo": "Default: aggiungi a"
+                "defaultAddTo": "Default: aggiungi a",
+                "pastMonthNoBalance": "Le voci con data passata non aggiornano il bilancio attuale"
             }
         },
         "outflowSection": {
@@ -817,7 +818,8 @@
                 "allFailed": "Inserimento uscite non riuscito. Riprova.",
                 "emptyBatch": "Aggiungi almeno un'uscita con dati validi",
                 "confirmSubmit": "Inviare {count} uscite?",
-                "defaultSubtractFrom": "Default: sottrai da"
+                "defaultSubtractFrom": "Default: sottrai da",
+                "pastMonthNoBalance": "Le voci con data passata non aggiornano il bilancio attuale"
             }
         },
         "investmentSection": {

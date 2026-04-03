@@ -717,7 +717,23 @@
             "updateButton": "Guthaben aktualisieren",
             "confirmUpdate": "Guthabenaktualisierung bestätigen",
             "successUpdate": "Guthaben erfolgreich aktualisiert",
-            "successFullUpdate": "Guthaben- und Einnahmen-/Ausgabenaktualisierung erfolgreich"
+            "successFullUpdate": "Guthaben- und Einnahmen-/Ausgabenaktualisierung erfolgreich",
+            "multiInsert": {
+                "toggle": "Mehrfacheingabe",
+                "title": "Mehrere Guthaben aktualisieren",
+                "subtitle": "Aktualisiere Guthaben für mehrere Monate gleichzeitig",
+                "addAnother": "Weiteren Monat hinzufügen",
+                "duplicateLast": "Letzten duplizieren",
+                "submitAll": "Alle absenden",
+                "submitting": "Wird gesendet...",
+                "removeRow": "Entfernen",
+                "balanceNumber": "Guthaben",
+                "successAll": "Alle Guthaben erfolgreich aktualisiert!",
+                "partialSuccess": "{success} von {total} Guthaben aktualisiert. {failed} fehlgeschlagen.",
+                "allFailed": "Guthaben konnten nicht aktualisiert werden. Bitte erneut versuchen.",
+                "emptyBatch": "Füge mindestens ein Guthaben mit gültigen Daten hinzu",
+                "duplicateMonthWarning": "Zwei oder mehr Guthaben haben denselben Monat. Jeder Monat kann nur einmal vorkommen, da der vorherige Wert sonst überschrieben würde. Entferne die Duplikate, um fortzufahren."
+            }
         },
         "incomeSection": {
             "placeholderCategory": "Kategorie auswählen",
@@ -740,7 +756,24 @@
             "confirmDelete": "Möchtest du diese Einnahme wirklich löschen?",
             "successDelete": "Einnahme erfolgreich gelöscht",
             "deleteBalanceRestore": "Du kannst eines der Guthaben wiederherstellen oder den Eintrag einfach löschen, ohne die Guthaben zu ändern.",
-            "increaseWhichBalance": "Hinzufügen zu"
+            "increaseWhichBalance": "Hinzufügen zu",
+            "multiInsert": {
+                "toggle": "Mehrfacheingabe",
+                "title": "Mehrere Einnahmen eingeben",
+                "subtitle": "Füge mehrere Einnahmen gleichzeitig hinzu",
+                "addAnother": "Weitere Einnahme hinzufügen",
+                "duplicateLast": "Letzte duplizieren",
+                "submitAll": "Alle absenden",
+                "submitting": "Wird gesendet...",
+                "removeRow": "Entfernen",
+                "incomeNumber": "Einnahme",
+                "successAll": "Alle Einnahmen erfolgreich eingefügt!",
+                "partialSuccess": "{success} von {total} Einnahmen eingefügt. {failed} fehlgeschlagen.",
+                "allFailed": "Einnahmen konnten nicht eingefügt werden. Bitte erneut versuchen.",
+                "emptyBatch": "Füge mindestens eine Einnahme mit gültigen Daten hinzu",
+                "confirmSubmit": "{count} Einnahmen absenden?",
+                "defaultAddTo": "Standard: hinzufügen zu"
+            }
         },
         "outflowSection": {
             "placeholderCategory": "Kategorie auswählen",
@@ -781,7 +814,8 @@
                 "partialSuccess": "{success} von {total} Ausgaben eingefügt. {failed} fehlgeschlagen.",
                 "allFailed": "Ausgaben konnten nicht eingefügt werden. Bitte erneut versuchen.",
                 "emptyBatch": "Füge mindestens eine Ausgabe mit gültigen Daten hinzu",
-                "confirmSubmit": "{count} Ausgaben absenden?"
+                "confirmSubmit": "{count} Ausgaben absenden?",
+                "defaultSubtractFrom": "Standard: abziehen von"
             }
         },
         "investmentSection": {

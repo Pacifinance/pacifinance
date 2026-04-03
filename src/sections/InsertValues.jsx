@@ -19,6 +19,11 @@ import {
 
 const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
+const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
+const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));
+import { groupAmountsByBalanceSource } from "../components/MultiOutflowInsert";
+import { groupAmountsByBalanceSource as groupIncomeAmountsBySource } from "../components/MultiIncomeInsert";
+import { ASSET_KEYS } from "../components/MultiBalanceInsert";
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
@@ -368,6 +373,8 @@ export default function InsertValue({
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
   const [showMultiInsert, setShowMultiInsert] = useState(false);
+  const [showMultiIncomeInsert, setShowMultiIncomeInsert] = useState(false);
+  const [showMultiBalanceInsert, setShowMultiBalanceInsert] = useState(false);
 
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
@@ -707,7 +714,7 @@ export default function InsertValue({
     handleConfirmInEx(true);
   };
 
-  const handleBatchOutflowSubmit = async (rows, onProgress, balanceSource) => {
+  const handleBatchOutflowSubmit = async (rows, onProgress) => {
     const BATCH_SIZE = 5;
     let success = 0;
     let failed = 0;
@@ -732,31 +739,34 @@ export default function InsertValue({
       onProgress(Math.min(((i + BATCH_SIZE) / total) * 100, 100));
     }
 
-    // Update balance if a source was selected and at least one outflow succeeded
-    if (balanceSource && success > 0) {
-      try {
-        const totalAmount = rows.reduce((sum, row) => {
-          const val = parseFloat(String(row.amount).replace(',', '.'));
-          return sum + (isNaN(val) ? 0 : val);
-        }, 0);
-        const balanceOptionsMap = {
-          [translations.assets.bank]: bankValue,
-          [translations.assets.cash]: cashValue,
-          [translations.assets.digitalServices]: digitalServicesValue,
-          [translations.assets.stocks]: stocksValue,
-          [translations.assets.etf]: etfValue,
-          [translations.assets.bitcoin]: bitcoinValue,
-          [translations.assets.crypto]: cryptoValue,
-          [translations.assets.bonds]: bondsValue,
-          [translations.assets.funds]: fundsValue,
-          [translations.assets.gold]: goldValue,
-        };
-        const currentBalanceValue = parseFloat(balanceOptionsMap[balanceSource]);
-        const newValue = currentBalanceValue - totalAmount;
-        const balancesJson = createBalancesJson(currentDate, balanceSource, newValue);
-        await financeService.addBalance(balancesJson);
-      } catch {
-        // Balance update failed but outflows were inserted — don't block
+    // Update balances — group amounts by per-row balance source
+    if (success > 0) {
+      const balanceOptionsMap = {
+        [translations.assets.bank]: bankValue,
+        [translations.assets.cash]: cashValue,
+        [translations.assets.digitalServices]: digitalServicesValue,
+        [translations.assets.stocks]: stocksValue,
+        [translations.assets.etf]: etfValue,
+        [translations.assets.bitcoin]: bitcoinValue,
+        [translations.assets.crypto]: cryptoValue,
+        [translations.assets.bonds]: bondsValue,
+        [translations.assets.funds]: fundsValue,
+        [translations.assets.gold]: goldValue,
+      };
+
+      // Group total amounts by balance source
+      const amountsBySource = groupAmountsByBalanceSource(rows);
+
+      // One balance update per source
+      for (const [source, totalAmount] of Object.entries(amountsBySource)) {
+        try {
+          const currentBalanceValue = parseFloat(balanceOptionsMap[source]);
+          const newValue = currentBalanceValue - totalAmount;
+          const balancesJson = createBalancesJson(currentDate, source, newValue);
+          await financeService.addBalance(balancesJson);
+        } catch {
+          // Balance update failed but outflows were inserted — don't block
+        }
       }
     }
 
@@ -774,6 +784,132 @@ export default function InsertValue({
       fetchData();
     }
     setShowMultiInsert(false);
+  };
+
+  const handleBatchIncomeSubmit = async (rows, onProgress) => {
+    const BATCH_SIZE = 5;
+    let success = 0;
+    let failed = 0;
+    const total = rows.length;
+
+    for (let i = 0; i < total; i += BATCH_SIZE) {
+      const batch = rows.slice(i, i + BATCH_SIZE);
+      const promises = batch.map(row => {
+        const inExJson = createInExJson(
+          false,
+          row.date,
+          row.amount,
+          row.note,
+          0,
+          row.categoryKey,
+        );
+        return financeService.addExpenseOrIncome(inExJson)
+          .then((res) => { if (res.status === 200) success++; else failed++; })
+          .catch(() => { failed++; });
+      });
+      await Promise.all(promises);
+      onProgress(Math.min(((i + BATCH_SIZE) / total) * 100, 100));
+    }
+
+    // Update balances — group amounts by per-row balance source (ADD to balance)
+    if (success > 0) {
+      const balanceOptionsMap = {
+        [translations.assets.bank]: bankValue,
+        [translations.assets.cash]: cashValue,
+        [translations.assets.digitalServices]: digitalServicesValue,
+        [translations.assets.stocks]: stocksValue,
+        [translations.assets.etf]: etfValue,
+        [translations.assets.bitcoin]: bitcoinValue,
+        [translations.assets.crypto]: cryptoValue,
+        [translations.assets.bonds]: bondsValue,
+        [translations.assets.funds]: fundsValue,
+        [translations.assets.gold]: goldValue,
+      };
+
+      const amountsBySource = groupIncomeAmountsBySource(rows);
+
+      for (const [source, totalAmount] of Object.entries(amountsBySource)) {
+        try {
+          const currentBalanceValue = parseFloat(balanceOptionsMap[source]);
+          const newValue = currentBalanceValue + totalAmount; // ADD for incomes
+          const balancesJson = createBalancesJson(currentDate, source, newValue);
+          await financeService.addBalance(balancesJson);
+        } catch {
+          // Balance update failed but incomes were inserted
+        }
+      }
+    }
+
+    const t = translations.insert.incomeSection.multiInsert;
+    if (failed === 0) {
+      showSuccess(t.successAll);
+    } else if (success > 0) {
+      showError(t.partialSuccess.replace('{success}', success).replace('{total}', total).replace('{failed}', failed));
+    } else {
+      showError(t.allFailed);
+    }
+
+    if (success > 0) {
+      handleSetIsUpdated(false);
+      fetchData();
+    }
+    setShowMultiIncomeInsert(false);
+  };
+
+  const handleBatchBalanceSubmit = async (rows, onProgress) => {
+    let success = 0;
+    let failed = 0;
+    const total = rows.length;
+
+    // DB key mapping
+    const assetDbKeys = {
+      bank: 'bank',
+      cash: 'cash',
+      digitalServices: 'digital_services',
+      emergencyFund: 'emergency_fund',
+      stocks: 'stocks',
+      etf: 'etf',
+      bitcoin: 'bitcoin',
+      crypto: 'crypto',
+      bonds: 'bonds',
+      funds: 'funds',
+      gold: 'gold',
+    };
+
+    for (let i = 0; i < total; i++) {
+      const row = rows[i];
+      const dbDate = getBalanceDateForDB({ month: row.month, year: row.year });
+      const balance = { date: dbDate };
+      for (const key of ASSET_KEYS) {
+        const val = parseFloat(String(row[key]).replace(',', '.'));
+        balance[assetDbKeys[key]] = !isNaN(val) ? val : 0;
+      }
+
+      try {
+        const res = await financeService.addBalance({ balance });
+        if (res.status === 200) success++;
+        else failed++;
+      } catch {
+        failed++;
+      }
+      onProgress(Math.min(((i + 1) / total) * 100, 100));
+    }
+
+    const t = translations.insert.balanceSection.multiInsert;
+    if (failed === 0) {
+      showSuccess(t.successAll);
+    } else if (success > 0) {
+      showError(t.partialSuccess.replace('{success}', success).replace('{total}', total).replace('{failed}', failed));
+    } else {
+      showError(t.allFailed);
+    }
+
+    if (success > 0) {
+      handleSetIsUpdated(false);
+      fetchData();
+      setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
+    }
+    setShowMultiBalanceInsert(false);
   };
 
   const handleDeleteIncome = (date, amount) => {
@@ -1152,6 +1288,7 @@ export default function InsertValue({
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
             onUpdateBalance={handleUpdateBalance}
+            onOpenMultiInsert={() => setShowMultiBalanceInsert(true)}
             language={language}
             translations={translations}
           />
@@ -1192,6 +1329,7 @@ export default function InsertValue({
             onAddIncome={handleAddIncome}
             onDeleteIncome={handleDeleteIncome}
             onSaveEdit={handleSaveEditIncome}
+            onOpenMultiInsert={() => setShowMultiIncomeInsert(true)}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
@@ -1315,7 +1453,7 @@ export default function InsertValue({
 
         {renderPage()}
 
-        {/* Multi-insert Modal */}
+        {/* Multi-insert Outflow Modal */}
         {showMultiInsert && (
           <Suspense fallback={null}>
             <MultiOutflowInsert
@@ -1325,6 +1463,30 @@ export default function InsertValue({
               balanceOptions={options}
               onSubmitBatch={handleBatchOutflowSubmit}
               onClose={() => setShowMultiInsert(false)}
+            />
+          </Suspense>
+        )}
+
+        {/* Multi-insert Income Modal */}
+        {showMultiIncomeInsert && (
+          <Suspense fallback={null}>
+            <MultiIncomeInsert
+              theme={theme}
+              incomesTags={incomesTags}
+              balanceOptions={options}
+              onSubmitBatch={handleBatchIncomeSubmit}
+              onClose={() => setShowMultiIncomeInsert(false)}
+            />
+          </Suspense>
+        )}
+
+        {/* Multi-insert Balance Modal */}
+        {showMultiBalanceInsert && (
+          <Suspense fallback={null}>
+            <MultiBalanceInsert
+              theme={theme}
+              onSubmitBatch={handleBatchBalanceSubmit}
+              onClose={() => setShowMultiBalanceInsert(false)}
             />
           </Suspense>
         )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -192,6 +192,8 @@ const NoteArea = styled.textarea`
 const FormFooter = styled.div`
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   width: 100%;
   padding-top: 0.25rem;
 `;
@@ -364,6 +366,7 @@ export default function IncomeSection({
   setIncomeDateFilterStart,
   incomeDateFilterEnd,
   setIncomeDateFilterEnd,
+  onOpenMultiInsert,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
@@ -950,6 +953,29 @@ export default function IncomeSection({
         <ModernActionButton theme={theme} onClick={onAddIncome}>
           {translations.insert.incomeSection.updateButton}
         </ModernActionButton>
+        {onOpenMultiInsert && (
+          <button
+            onClick={onOpenMultiInsert}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '10px 18px',
+              borderRadius: '12px',
+              border: `1.5px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
+              background: 'transparent',
+              color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : '#64748b',
+              cursor: 'pointer',
+              fontSize: '0.88rem',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+            }}
+            data-umami-event="multi-insert-income-opened"
+          >
+            <FontAwesomeIcon icon={faLayerGroup} />
+            {translations.insert.incomeSection.multiInsert?.toggle || 'Multi-insert'}
+          </button>
+        )}
       </FormFooter>
 
       {/* ── Transaction Table ── */}

@@ -719,7 +719,23 @@
             "updateButton": "Aggiorna il tuo bilancio",
             "confirmUpdate": "Conferma aggiornamento bilancio",
             "successUpdate": "Bilancio aggiornato con successo",
-            "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo"
+            "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo",
+            "multiInsert": {
+                "toggle": "Multi-inserimento",
+                "title": "Aggiornamento multiplo bilanci",
+                "subtitle": "Aggiorna i bilanci di più mesi contemporaneamente",
+                "addAnother": "Aggiungi un altro mese",
+                "duplicateLast": "Duplica ultimo",
+                "submitAll": "Invia tutti",
+                "submitting": "Invio in corso...",
+                "removeRow": "Rimuovi",
+                "balanceNumber": "Bilancio",
+                "successAll": "Tutti i bilanci aggiornati con successo!",
+                "partialSuccess": "{success} di {total} bilanci aggiornati. {failed} non riusciti.",
+                "allFailed": "Aggiornamento bilanci non riuscito. Riprova.",
+                "emptyBatch": "Aggiungi almeno un bilancio con dati validi",
+                "duplicateMonthWarning": "Due o più bilanci hanno lo stesso mese. Ogni mese può apparire una sola volta, altrimenti il valore precedente verrebbe sovrascritto. Rimuovi i duplicati per continuare."
+            }
         },
         "incomeSection": {
             "placeholderCategory": "Seleziona una categoria",
@@ -742,7 +758,24 @@
             "confirmDelete": "Sei sicuro di voler eliminare questa entrata?",
             "successDelete": "Entrata eliminata con successo",
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
-            "increaseWhichBalance": "Aggiungi a"
+            "increaseWhichBalance": "Aggiungi a",
+            "multiInsert": {
+                "toggle": "Multi-inserimento",
+                "title": "Inserimento multiplo entrate",
+                "subtitle": "Aggiungi più entrate contemporaneamente",
+                "addAnother": "Aggiungi un'altra entrata",
+                "duplicateLast": "Duplica ultima",
+                "submitAll": "Invia tutte",
+                "submitting": "Invio in corso...",
+                "removeRow": "Rimuovi",
+                "incomeNumber": "Entrata",
+                "successAll": "Tutte le entrate inserite con successo!",
+                "partialSuccess": "{success} di {total} entrate inserite. {failed} non riuscite.",
+                "allFailed": "Inserimento entrate non riuscito. Riprova.",
+                "emptyBatch": "Aggiungi almeno un'entrata con dati validi",
+                "confirmSubmit": "Inviare {count} entrate?",
+                "defaultAddTo": "Default: aggiungi a"
+            }
         },
         "outflowSection": {
             "placeholderCategory": "Seleziona una categoria",
@@ -783,7 +816,8 @@
                 "partialSuccess": "{success} di {total} uscite inserite. {failed} non riuscite.",
                 "allFailed": "Inserimento uscite non riuscito. Riprova.",
                 "emptyBatch": "Aggiungi almeno un'uscita con dati validi",
-                "confirmSubmit": "Inviare {count} uscite?"
+                "confirmSubmit": "Inviare {count} uscite?",
+                "defaultSubtractFrom": "Default: sottrai da"
             }
         },
         "investmentSection": {

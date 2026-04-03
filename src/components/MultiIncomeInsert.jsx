@@ -299,10 +299,7 @@ const SubmitButton = styled.button`
   padding: 12px 28px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, ${p => p.theme.buttonBackgroundColor || '#3b82f6'}, ${p => {
-    const c = p.theme.buttonBackgroundColor || '#3b82f6';
-    return c;
-  }});
+  background: linear-gradient(135deg, ${p => p.theme.buttonBackgroundColor || '#3b82f6'}, ${p => p.theme.buttonBackgroundColor || '#3b82f6'});
   color: white;
   font-weight: 600;
   font-size: 0.95rem;
@@ -347,12 +344,10 @@ const ProgressBar = styled.div`
 /* ─── Helpers (exported for testing) ─── */
 const currentDate = new Date().toISOString().split('T')[0];
 
-export const createEmptyRow = (defaults = {}) => ({
+export const createEmptyIncomeRow = (defaults = {}) => ({
   id: Date.now() + Math.random(),
   categoryKey: defaults.categoryKey ?? '',
   categoryValue: defaults.categoryValue ?? '',
-  typoKey: defaults.typoKey ?? '',
-  typoValue: defaults.typoValue ?? '',
   amount: defaults.amount ?? '',
   date: defaults.date ?? currentDate,
   note: defaults.note ?? '',
@@ -384,7 +379,7 @@ export const formatAmountBlur = (value) => {
 };
 
 /**
- * Group outflow rows by their balance source, summing amounts per source.
+ * Group income rows by their balance source, summing amounts per source.
  * @param {Array} rows - Array of row objects with balanceSource and amount fields
  * @returns {Object} Map of { balanceSourceName: totalAmount }
  */
@@ -402,19 +397,18 @@ export const groupAmountsByBalanceSource = (rows) => {
 };
 
 /* ─── Component ─── */
-export default function MultiOutflowInsert({
+export default function MultiIncomeInsert({
   theme,
-  OutflowsTags,
-  paymentTags,
+  incomesTags,
   balanceOptions,
   onSubmitBatch,
   onClose,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
-  const t = translations.insert.outflowSection.multiInsert;
+  const t = translations.insert.incomeSection.multiInsert;
 
-  const [rows, setRows] = useState([createEmptyRow()]);
+  const [rows, setRows] = useState([createEmptyIncomeRow()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [defaultBalanceSource, setDefaultBalanceSource] = useState('');
@@ -439,16 +433,14 @@ export default function MultiOutflowInsert({
   }, []);
 
   const addEmptyRow = () => {
-    setRows(prev => [...prev, createEmptyRow({ balanceSource: defaultBalanceSource })]);
+    setRows(prev => [...prev, createEmptyIncomeRow({ balanceSource: defaultBalanceSource })]);
   };
 
   const duplicateLastRow = () => {
     const last = rows[rows.length - 1];
-    setRows(prev => [...prev, createEmptyRow({
+    setRows(prev => [...prev, createEmptyIncomeRow({
       categoryKey: last.categoryKey,
       categoryValue: last.categoryValue,
-      typoKey: last.typoKey,
-      typoValue: last.typoValue,
       amount: last.amount,
       date: last.date,
       note: '',
@@ -462,13 +454,12 @@ export default function MultiOutflowInsert({
   };
 
   const getValidRows = () => rows.filter(r =>
-    r.categoryKey !== '' && r.typoKey !== '' && r.amount !== '' && Number(r.amount.replace(',', '.')) > 0
+    r.categoryKey !== '' && r.amount !== '' && Number(r.amount.replace(',', '.')) > 0
   );
 
   const handleDefaultBalanceChange = (newDefault) => {
     const oldDefault = defaultBalanceSource;
     setDefaultBalanceSource(newDefault);
-    // Update all rows that still have the old default (or empty)
     setRows(prev => prev.map(r =>
       (r.balanceSource === oldDefault || r.balanceSource === '')
         ? { ...r, balanceSource: newDefault }
@@ -478,9 +469,7 @@ export default function MultiOutflowInsert({
 
   const handleSubmit = async () => {
     const validRows = getValidRows();
-    if (validRows.length === 0) {
-      return;
-    }
+    if (validRows.length === 0) return;
     setIsSubmitting(true);
     setProgress(0);
     
@@ -518,7 +507,7 @@ export default function MultiOutflowInsert({
           {rows.map((row, idx) => (
             <RowCard key={row.id} theme={theme}>
               <RowHeader>
-                <RowBadge theme={theme}>{t.outflowNumber} #{idx + 1}</RowBadge>
+                <RowBadge theme={theme}>{t.incomeNumber} #{idx + 1}</RowBadge>
                 {rows.length > 1 && !isSubmitting && (
                   <RemoveBtn theme={theme} onClick={() => removeRow(row.id)}>
                     <FontAwesomeIcon icon={faTrash} size="xs" />
@@ -535,10 +524,10 @@ export default function MultiOutflowInsert({
                     value={row.categoryKey}
                     onChange={(e) => {
                       const key = e.target.value;
-                      const item = OutflowsTags.find(t => t.index === key);
+                      const item = incomesTags.find(t => t.index === key);
                       if (item) {
                         updateRow(row.id, 'categoryKey', key);
-                        updateRow(row.id, 'categoryValue', translateTag(item.label, language, 'expense'));
+                        updateRow(row.id, 'categoryValue', translateTag(item.label, language, 'income'));
                       }
                     }}
                     sx={selectSx}
@@ -546,51 +535,17 @@ export default function MultiOutflowInsert({
                     size="small"
                     MenuProps={getMuiSelectMenuProps(theme)}
                     disabled={isSubmitting}
-                    renderValue={(v) => v === '' ? translations.insert.outflowSection.placeholderCategory : (
-                      OutflowsTags.find(t => t.index === v)
-                        ? translateTag(OutflowsTags.find(t => t.index === v).label, language, 'expense')
+                    renderValue={(v) => v === '' ? translations.insert.incomeSection.placeholderCategory : (
+                      incomesTags.find(t => t.index === v)
+                        ? translateTag(incomesTags.find(t => t.index === v).label, language, 'income')
                         : v
                     )}
                   >
-                    {sortTagsByLanguage(OutflowsTags, language, 'expense').map((item) => (
+                    {sortTagsByLanguage(incomesTags, language, 'income').map((item) => (
                       <MenuItem key={item.index} value={item.index}>
-                        {translateTag(item.label, language, 'expense')}
+                        {translateTag(item.label, language, 'income')}
                       </MenuItem>
                     ))}
-                  </Select>
-                </div>
-
-                {/* Payment Type */}
-                <div>
-                  <FieldLabel theme={theme}>{translations.general.typology}</FieldLabel>
-                  <Select
-                    value={row.typoKey}
-                    onChange={(e) => {
-                      const key = e.target.value;
-                      const item = paymentTags.find(t => t.index === key);
-                      if (item) {
-                        updateRow(row.id, 'typoKey', key);
-                        updateRow(row.id, 'typoValue', translateTag(item.label, language, 'payment'));
-                      }
-                    }}
-                    sx={selectSx}
-                    displayEmpty
-                    size="small"
-                    MenuProps={getMuiSelectMenuProps(theme)}
-                    disabled={isSubmitting}
-                    renderValue={(v) => v === '' ? translations.insert.outflowSection.placeholderTypology : (
-                      paymentTags.find(t => t.index === v)
-                        ? translateTag(paymentTags.find(t => t.index === v).label, language, 'payment')
-                        : v
-                    )}
-                  >
-                    {sortTagsByLanguage(paymentTags, language, 'payment').map((item) =>
-                      item.label !== 'none' && (
-                        <MenuItem key={item.index} value={item.index}>
-                          {translateTag(item.label, language, 'payment')}
-                        </MenuItem>
-                      )
-                    )}
                   </Select>
                 </div>
 
@@ -628,7 +583,7 @@ export default function MultiOutflowInsert({
                 {hasBalanceOptions && (
                   <div style={{ gridColumn: window.innerWidth <= 600 ? '1 / -1' : undefined }}>
                     <FieldLabel theme={theme}>
-                      {translations.insert.outflowSection.decreaseWhichBalance || 'Subtract from'}
+                      {translations.insert.incomeSection.increaseWhichBalance || 'Add to'}
                     </FieldLabel>
                     <Select
                       value={row.balanceSource}
@@ -654,16 +609,16 @@ export default function MultiOutflowInsert({
                   </div>
                 )}
 
-                {/* Note - spans two columns */}
+                {/* Note - spans full width */}
                 <RowFieldFull>
-                  <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.note || 'Note'}</FieldLabel>
+                  <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.note || 'Note'}</FieldLabel>
                   <NoteInput
                     type="text"
                     theme={theme}
                     value={row.note}
                     onChange={(e) => updateRow(row.id, 'note', e.target.value)}
                     maxLength={64}
-                    placeholder={translations.insert.outflowSection.placeholderNote}
+                    placeholder={translations.insert.incomeSection.placeholderNote}
                     disabled={isSubmitting}
                   />
                 </RowFieldFull>
@@ -708,8 +663,8 @@ export default function MultiOutflowInsert({
               disabled={isSubmitting}
               renderValue={(value) =>
                 value === ''
-                  ? (t.defaultSubtractFrom || translations.insert.outflowSection.decreaseWhichBalance || 'Subtract from')
-                  : `${t.defaultSubtractFrom || translations.insert.outflowSection.decreaseWhichBalance}: ${value}`
+                  ? (t.defaultAddTo || translations.insert.incomeSection.increaseWhichBalance || 'Add to')
+                  : `${t.defaultAddTo || translations.insert.incomeSection.increaseWhichBalance}: ${value}`
               }
             >
               <MenuItem value="">

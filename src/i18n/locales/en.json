@@ -719,7 +719,23 @@
             "updateButton": "Update your balance",
             "confirmUpdate": "Confirm balance update",
             "successUpdate": "Balance updated successfully",
-            "successFullUpdate": "Balance and income/outflow update successful"
+            "successFullUpdate": "Balance and income/outflow update successful",
+            "multiInsert": {
+                "toggle": "Multi-insert",
+                "title": "Batch Update Balances",
+                "subtitle": "Update balances for multiple months at once",
+                "addAnother": "Add another month",
+                "duplicateLast": "Duplicate last",
+                "submitAll": "Submit all",
+                "submitting": "Submitting...",
+                "removeRow": "Remove",
+                "balanceNumber": "Balance",
+                "successAll": "All balances updated successfully!",
+                "partialSuccess": "{success} of {total} balances updated. {failed} failed.",
+                "allFailed": "Failed to update balances. Please try again.",
+                "emptyBatch": "Add at least one balance with valid data",
+                "duplicateMonthWarning": "Two or more balances have the same month. Each month can only appear once, otherwise the previous value would be overwritten. Remove duplicates to continue."
+            }
         },
         "incomeSection": {
             "placeholderCategory": "Select a category",
@@ -742,7 +758,24 @@
             "confirmDelete": "Are you sure you want to delete this income?",
             "successDelete": "Income deleted successfully",
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
-            "increaseWhichBalance": "Add to"
+            "increaseWhichBalance": "Add to",
+            "multiInsert": {
+                "toggle": "Multi-insert",
+                "title": "Batch Insert Incomes",
+                "subtitle": "Add multiple incomes at once",
+                "addAnother": "Add another income",
+                "duplicateLast": "Duplicate last",
+                "submitAll": "Submit all",
+                "submitting": "Submitting...",
+                "removeRow": "Remove",
+                "incomeNumber": "Income",
+                "successAll": "All incomes inserted successfully!",
+                "partialSuccess": "{success} of {total} incomes inserted. {failed} failed.",
+                "allFailed": "Failed to insert incomes. Please try again.",
+                "emptyBatch": "Add at least one income with valid data",
+                "confirmSubmit": "Submit {count} incomes?",
+                "defaultAddTo": "Default: add to"
+            }
         },
         "outflowSection": {
             "placeholderCategory": "Select a category",
@@ -783,7 +816,8 @@
                 "partialSuccess": "{success} of {total} outflows inserted. {failed} failed.",
                 "allFailed": "Failed to insert outflows. Please try again.",
                 "emptyBatch": "Add at least one outflow with valid data",
-                "confirmSubmit": "Submit {count} outflows?"
+                "confirmSubmit": "Submit {count} outflows?",
+                "defaultSubtractFrom": "Default: subtract from"
             }
         },
         "investmentSection": {

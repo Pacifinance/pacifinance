@@ -717,7 +717,23 @@
             "updateButton": "Mettre à jour ton solde",
             "confirmUpdate": "Confirmer la mise à jour du solde",
             "successUpdate": "Solde mis à jour avec succès",
-            "successFullUpdate": "Mise à jour du solde et des revenus/sorties réussie"
+            "successFullUpdate": "Mise à jour du solde et des revenus/sorties réussie",
+            "multiInsert": {
+                "toggle": "Multi-insertion",
+                "title": "Mise à jour multiple des soldes",
+                "subtitle": "Mettez à jour les soldes de plusieurs mois en même temps",
+                "addAnother": "Ajouter un autre mois",
+                "duplicateLast": "Dupliquer le dernier",
+                "submitAll": "Envoyer tout",
+                "submitting": "Envoi en cours...",
+                "removeRow": "Supprimer",
+                "balanceNumber": "Solde",
+                "successAll": "Tous les soldes mis à jour avec succès !",
+                "partialSuccess": "{success} sur {total} soldes mis à jour. {failed} échoués.",
+                "allFailed": "Échec de la mise à jour des soldes. Veuillez réessayer.",
+                "emptyBatch": "Ajoutez au moins un solde avec des données valides",
+                "duplicateMonthWarning": "Deux ou plusieurs soldes ont le même mois. Chaque mois ne peut apparaître qu'une seule fois, sinon la valeur précédente serait écrasée. Supprimez les doublons pour continuer."
+            }
         },
         "incomeSection": {
             "placeholderCategory": "Sélectionner une catégorie",
@@ -740,7 +756,24 @@
             "confirmDelete": "Es-tu sûr de vouloir supprimer ce revenu ?",
             "successDelete": "Revenu supprimé avec succès",
             "deleteBalanceRestore": "Tu peux choisir de restaurer l'un des soldes, ou simplement supprimer l'entrée sans modifier les soldes.",
-            "increaseWhichBalance": "Ajouter à"
+            "increaseWhichBalance": "Ajouter à",
+            "multiInsert": {
+                "toggle": "Multi-insertion",
+                "title": "Insertion multiple de revenus",
+                "subtitle": "Ajoutez plusieurs revenus en même temps",
+                "addAnother": "Ajouter un autre revenu",
+                "duplicateLast": "Dupliquer le dernier",
+                "submitAll": "Envoyer tout",
+                "submitting": "Envoi en cours...",
+                "removeRow": "Supprimer",
+                "incomeNumber": "Revenu",
+                "successAll": "Tous les revenus insérés avec succès !",
+                "partialSuccess": "{success} sur {total} revenus insérés. {failed} échoués.",
+                "allFailed": "Échec de l'insertion des revenus. Veuillez réessayer.",
+                "emptyBatch": "Ajoutez au moins un revenu avec des données valides",
+                "confirmSubmit": "Envoyer {count} revenus ?",
+                "defaultAddTo": "Par défaut : ajouter à"
+            }
         },
         "outflowSection": {
             "placeholderCategory": "Sélectionner une catégorie",
@@ -781,7 +814,8 @@
                 "partialSuccess": "{success} sur {total} sorties insérées. {failed} échouées.",
                 "allFailed": "Échec de l'insertion des sorties. Veuillez réessayer.",
                 "emptyBatch": "Ajoutez au moins une sortie avec des données valides",
-                "confirmSubmit": "Envoyer {count} sorties ?"
+                "confirmSubmit": "Envoyer {count} sorties ?",
+                "defaultSubtractFrom": "Par défaut : soustraire de"
             }
         },
         "investmentSection": {

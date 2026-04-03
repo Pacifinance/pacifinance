@@ -719,7 +719,23 @@
             "updateButton": "Actualizar tu balance",
             "confirmUpdate": "Confirmar actualización del balance",
             "successUpdate": "Balance actualizado con éxito",
-            "successFullUpdate": "Actualización de balance e ingresos/gastos exitosa"
+            "successFullUpdate": "Actualización de balance e ingresos/gastos exitosa",
+            "multiInsert": {
+                "toggle": "Multi-inserción",
+                "title": "Actualización múltiple de balances",
+                "subtitle": "Actualiza balances de varios meses a la vez",
+                "addAnother": "Añadir otro mes",
+                "duplicateLast": "Duplicar último",
+                "submitAll": "Enviar todos",
+                "submitting": "Enviando...",
+                "removeRow": "Eliminar",
+                "balanceNumber": "Balance",
+                "successAll": "¡Todos los balances actualizados con éxito!",
+                "partialSuccess": "{success} de {total} balances actualizados. {failed} fallidos.",
+                "allFailed": "Error al actualizar balances. Inténtalo de nuevo.",
+                "emptyBatch": "Añade al menos un balance con datos válidos",
+                "duplicateMonthWarning": "Dos o más balances tienen el mismo mes. Cada mes solo puede aparecer una vez, de lo contrario el valor anterior se sobrescribiría. Elimina los duplicados para continuar."
+            }
         },
         "incomeSection": {
             "placeholderCategory": "Selecciona una categoría",
@@ -742,7 +758,24 @@
             "confirmDelete": "¿Estás seguro/a de que deseas eliminar este ingreso?",
             "successDelete": "Ingreso eliminado con éxito",
             "deleteBalanceRestore": "Puedes elegir restaurar uno de los balances, o simplemente eliminar la entrada sin modificar los balances.",
-            "increaseWhichBalance": "Añadir a"
+            "increaseWhichBalance": "Añadir a",
+            "multiInsert": {
+                "toggle": "Multi-inserción",
+                "title": "Inserción múltiple de ingresos",
+                "subtitle": "Añade varios ingresos a la vez",
+                "addAnother": "Añadir otro ingreso",
+                "duplicateLast": "Duplicar último",
+                "submitAll": "Enviar todos",
+                "submitting": "Enviando...",
+                "removeRow": "Eliminar",
+                "incomeNumber": "Ingreso",
+                "successAll": "¡Todos los ingresos insertados con éxito!",
+                "partialSuccess": "{success} de {total} ingresos insertados. {failed} fallidos.",
+                "allFailed": "Error al insertar ingresos. Inténtalo de nuevo.",
+                "emptyBatch": "Añade al menos un ingreso con datos válidos",
+                "confirmSubmit": "¿Enviar {count} ingresos?",
+                "defaultAddTo": "Por defecto: añadir a"
+            }
         },
         "outflowSection": {
             "placeholderCategory": "Selecciona una categoría",
@@ -783,7 +816,8 @@
                 "partialSuccess": "{success} de {total} gastos insertados. {failed} fallidos.",
                 "allFailed": "Error al insertar gastos. Inténtalo de nuevo.",
                 "emptyBatch": "Añade al menos un gasto con datos válidos",
-                "confirmSubmit": "¿Enviar {count} gastos?"
+                "confirmSubmit": "¿Enviar {count} gastos?",
+                "defaultSubtractFrom": "Por defecto: restar de"
             }
         },
         "investmentSection": {

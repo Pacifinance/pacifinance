@@ -717,7 +717,23 @@
             "updateButton": "Atualizar seu saldo",
             "confirmUpdate": "Confirmar atualização do saldo",
             "successUpdate": "Saldo atualizado com sucesso",
-            "successFullUpdate": "Saldo e atualização de receitas/saídas realizados com sucesso"
+            "successFullUpdate": "Saldo e atualização de receitas/saídas realizados com sucesso",
+            "multiInsert": {
+                "toggle": "Multi-inserção",
+                "title": "Atualização múltipla de saldos",
+                "subtitle": "Atualize saldos de vários meses de uma vez",
+                "addAnother": "Adicionar outro mês",
+                "duplicateLast": "Duplicar último",
+                "submitAll": "Enviar todos",
+                "submitting": "Enviando...",
+                "removeRow": "Remover",
+                "balanceNumber": "Saldo",
+                "successAll": "Todos os saldos atualizados com sucesso!",
+                "partialSuccess": "{success} de {total} saldos atualizados. {failed} falharam.",
+                "allFailed": "Falha ao atualizar saldos. Tente novamente.",
+                "emptyBatch": "Adicione pelo menos um saldo com dados válidos",
+                "duplicateMonthWarning": "Dois ou mais saldos têm o mesmo mês. Cada mês só pode aparecer uma vez, caso contrário o valor anterior seria sobrescrito. Remova os duplicados para continuar."
+            }
         },
         "incomeSection": {
             "placeholderCategory": "Selecione uma categoria",
@@ -740,7 +756,24 @@
             "confirmDelete": "Tem certeza que deseja excluir esta receita?",
             "successDelete": "Receita excluída com sucesso",
             "deleteBalanceRestore": "Você pode escolher restaurar um dos saldos, ou apenas excluir o registro sem modificar os saldos.",
-            "increaseWhichBalance": "Adicionar a"
+            "increaseWhichBalance": "Adicionar a",
+            "multiInsert": {
+                "toggle": "Multi-inserção",
+                "title": "Inserção múltipla de receitas",
+                "subtitle": "Adicione várias receitas de uma vez",
+                "addAnother": "Adicionar outra receita",
+                "duplicateLast": "Duplicar última",
+                "submitAll": "Enviar todas",
+                "submitting": "Enviando...",
+                "removeRow": "Remover",
+                "incomeNumber": "Receita",
+                "successAll": "Todas as receitas inseridas com sucesso!",
+                "partialSuccess": "{success} de {total} receitas inseridas. {failed} falharam.",
+                "allFailed": "Falha ao inserir receitas. Tente novamente.",
+                "emptyBatch": "Adicione pelo menos uma receita com dados válidos",
+                "confirmSubmit": "Enviar {count} receitas?",
+                "defaultAddTo": "Padrão: adicionar a"
+            }
         },
         "outflowSection": {
             "placeholderCategory": "Selecione uma categoria",
@@ -781,7 +814,8 @@
                 "partialSuccess": "{success} de {total} saídas inseridas. {failed} falharam.",
                 "allFailed": "Falha ao inserir saídas. Tente novamente.",
                 "emptyBatch": "Adicione pelo menos uma saída com dados válidos",
-                "confirmSubmit": "Enviar {count} saídas?"
+                "confirmSubmit": "Enviar {count} saídas?",
+                "defaultSubtractFrom": "Padrão: subtrair de"
             }
         },
         "investmentSection": {

@@ -2,6 +2,8 @@ import React from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Select, MenuItem } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import {
   ModernActionButton,
@@ -240,6 +242,7 @@ export default function BalanceSection({
   balanceDate,
   setBalanceDate,
   onUpdateBalance,
+  onOpenMultiInsert,
   translations,
 }) {
   const { currencySymbol, fromEUR } = React.useContext(CurrencyContext);
@@ -381,6 +384,29 @@ export default function BalanceSection({
         <ModernActionButton theme={theme} onClick={onUpdateBalance}>
           {translations.insert.balanceSection.updateButton}
         </ModernActionButton>
+        {onOpenMultiInsert && (
+          <button
+            onClick={onOpenMultiInsert}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '10px 18px',
+              borderRadius: '12px',
+              border: `1.5px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
+              background: 'transparent',
+              color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : '#64748b',
+              cursor: 'pointer',
+              fontSize: '0.88rem',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+            }}
+            data-umami-event="multi-insert-balance-opened"
+          >
+            <FontAwesomeIcon icon={faLayerGroup} />
+            {translations.insert.balanceSection.multiInsert?.toggle || 'Multi-insert'}
+          </button>
+        )}
       </FooterBar>
     </SectionWrapper>
   );

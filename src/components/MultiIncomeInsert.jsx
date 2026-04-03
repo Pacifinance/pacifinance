@@ -28,6 +28,7 @@ export const createEmptyIncomeRow = (defaults = {}) => ({
   categoryKey: defaults.categoryKey ?? '',
   categoryValue: defaults.categoryValue ?? '',
   amount: defaults.amount ?? '',
+  defaultAmount: defaults.defaultAmount ?? '',
   date: defaults.date ?? currentDate,
   note: defaults.note ?? '',
   balanceSource: defaults.balanceSource ?? '',
@@ -64,10 +65,11 @@ export default function MultiIncomeInsert({
 
   const duplicateLastRow = () => {
     const last = rows[rows.length - 1];
+    const lastAmount = last.amount || last.defaultAmount;
     setRows(prev => [...prev, createEmptyIncomeRow({
       categoryKey: last.categoryKey,
       categoryValue: last.categoryValue,
-      amount: last.amount,
+      defaultAmount: lastAmount,
       date: last.date,
       note: '',
       balanceSource: last.balanceSource,
@@ -79,9 +81,13 @@ export default function MultiIncomeInsert({
     setRows(prev => prev.filter(r => r.id !== id));
   };
 
-  const getValidRows = () => rows.filter(r =>
-    r.categoryKey !== '' && r.amount !== '' && Number(r.amount.replace(',', '.')) > 0
-  );
+  const getValidRows = () => rows.filter(r => {
+    const amt = r.amount || r.defaultAmount;
+    return r.categoryKey !== '' && amt !== '' && Number(amt.replace(',', '.')) > 0;
+  }).map(r => ({
+    ...r,
+    amount: r.amount || r.defaultAmount,
+  }));
 
   const handleDefaultBalanceChange = (newDefault) => {
     const oldDefault = defaultBalanceSource;
@@ -185,8 +191,11 @@ export default function MultiIncomeInsert({
                       theme={theme}
                       value={row.amount}
                       onChange={(e) => updateRow(row.id, 'amount', handleAmountInput(e.target.value))}
-                      onBlur={(e) => updateRow(row.id, 'amount', formatAmountBlur(e.target.value))}
-                      placeholder="0"
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        if (val !== '') updateRow(row.id, 'amount', formatAmountBlur(val));
+                      }}
+                      placeholder={row.defaultAmount || '0'}
                       disabled={isSubmitting}
                     />
                   </CurrencyWrap>

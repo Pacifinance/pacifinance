@@ -472,6 +472,47 @@ export default function InsertValue({
     };
   };
 
+  // Like createBalancesJson but accepts multiple source→newValue overrides at once.
+  // This avoids the stale-state bug when updating multiple sources in a loop.
+  const createBalancesJsonMulti = (date, overrides) => {
+    const assetSourceMap = {
+      bank: translations.assets.bank,
+      cash: translations.assets.cash,
+      digitalServices: translations.assets.digitalServices,
+      emergencyFund: translations.assets.emergencyFund,
+      stocks: translations.assets.stocks,
+      etf: translations.assets.etf,
+      bitcoin: translations.assets.bitcoin,
+      crypto: translations.assets.crypto,
+      bonds: translations.assets.bonds,
+      funds: translations.assets.funds,
+      gold: translations.assets.gold,
+    };
+    const stateValues = {
+      bank: bankValue, cash: cashValue, digitalServices: digitalServicesValue,
+      emergencyFund: emergencyFundValue, stocks: stocksValue, etf: etfValue,
+      bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
+      funds: fundsValue, gold: goldValue,
+    };
+    const dbKeys = {
+      bank: 'bank', cash: 'cash', digitalServices: 'digital_services',
+      emergencyFund: 'emergency_fund', stocks: 'stocks', etf: 'etf',
+      bitcoin: 'bitcoin', crypto: 'crypto', bonds: 'bonds',
+      funds: 'funds', gold: 'gold',
+    };
+
+    const balance = { date };
+    for (const [assetKey, translatedLabel] of Object.entries(assetSourceMap)) {
+      if (overrides[translatedLabel] !== undefined) {
+        balance[dbKeys[assetKey]] = Number(overrides[translatedLabel]) || 0;
+      } else {
+        const val = stateValues[assetKey];
+        balance[dbKeys[assetKey]] = typeof val === 'number' ? val : toEUR(parseFormattedAmount(val));
+      }
+    }
+    return { balance };
+  };
+
   // Function to convert month/year selection to actual date for DB
   const getBalanceDateForDB = (monthYearObj) => {
     const currentDate = new Date();
@@ -747,28 +788,36 @@ export default function InsertValue({
 
     // Update balances — group amounts by per-row balance source
     if (success > 0) {
-      const balanceOptionsMap = {
-        [translations.assets.bank]: bankValue,
-        [translations.assets.cash]: cashValue,
-        [translations.assets.digitalServices]: digitalServicesValue,
-        [translations.assets.stocks]: stocksValue,
-        [translations.assets.etf]: etfValue,
-        [translations.assets.bitcoin]: bitcoinValue,
-        [translations.assets.crypto]: cryptoValue,
-        [translations.assets.bonds]: bondsValue,
-        [translations.assets.funds]: fundsValue,
-        [translations.assets.gold]: goldValue,
-      };
+      // Only adjust balance for rows in the current month
+      const now = new Date();
+      const currentMonthRows = rows.filter(r => {
+        const d = new Date(r.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      });
+      const amountsBySource = groupAmountsByBalanceSource(currentMonthRows);
+      const sources = Object.entries(amountsBySource);
 
-      // Group total amounts by balance source
-      const amountsBySource = groupAmountsByBalanceSource(rows);
-
-      // One balance update per source
-      for (const [source, totalAmount] of Object.entries(amountsBySource)) {
+      if (sources.length > 0) {
         try {
-          const currentBalanceValue = parseFloat(balanceOptionsMap[source]);
-          const newValue = currentBalanceValue - toEUR(totalAmount);
-          const balancesJson = createBalancesJson(currentDate, source, newValue);
+          // Build a single balance update with all source changes applied
+          const overrides = {};
+          const balanceOptionsMap = {
+            [translations.assets.bank]: bankValue,
+            [translations.assets.cash]: cashValue,
+            [translations.assets.digitalServices]: digitalServicesValue,
+            [translations.assets.stocks]: stocksValue,
+            [translations.assets.etf]: etfValue,
+            [translations.assets.bitcoin]: bitcoinValue,
+            [translations.assets.crypto]: cryptoValue,
+            [translations.assets.bonds]: bondsValue,
+            [translations.assets.funds]: fundsValue,
+            [translations.assets.gold]: goldValue,
+          };
+          for (const [source, totalAmount] of sources) {
+            const currentVal = parseFloat(balanceOptionsMap[source]);
+            overrides[source] = currentVal - toEUR(totalAmount);
+          }
+          const balancesJson = createBalancesJsonMulti(currentDate, overrides);
           await financeService.addBalance(balancesJson);
         } catch {
           // Balance update failed but outflows were inserted — don't block
@@ -817,28 +866,36 @@ export default function InsertValue({
       onProgress(Math.min(((i + BATCH_SIZE) / total) * 100, 100));
     }
 
-    // Update balances — group amounts by per-row balance source (ADD to balance)
+    // Update balances — only for rows in the current month
     if (success > 0) {
-      const balanceOptionsMap = {
-        [translations.assets.bank]: bankValue,
-        [translations.assets.cash]: cashValue,
-        [translations.assets.digitalServices]: digitalServicesValue,
-        [translations.assets.stocks]: stocksValue,
-        [translations.assets.etf]: etfValue,
-        [translations.assets.bitcoin]: bitcoinValue,
-        [translations.assets.crypto]: cryptoValue,
-        [translations.assets.bonds]: bondsValue,
-        [translations.assets.funds]: fundsValue,
-        [translations.assets.gold]: goldValue,
-      };
+      const now = new Date();
+      const currentMonthRows = rows.filter(r => {
+        const d = new Date(r.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      });
+      const amountsBySource = groupIncomeAmountsBySource(currentMonthRows);
+      const sources = Object.entries(amountsBySource);
 
-      const amountsBySource = groupIncomeAmountsBySource(rows);
-
-      for (const [source, totalAmount] of Object.entries(amountsBySource)) {
+      if (sources.length > 0) {
         try {
-          const currentBalanceValue = parseFloat(balanceOptionsMap[source]);
-          const newValue = currentBalanceValue + toEUR(totalAmount); // ADD for incomes
-          const balancesJson = createBalancesJson(currentDate, source, newValue);
+          const overrides = {};
+          const balanceOptionsMap = {
+            [translations.assets.bank]: bankValue,
+            [translations.assets.cash]: cashValue,
+            [translations.assets.digitalServices]: digitalServicesValue,
+            [translations.assets.stocks]: stocksValue,
+            [translations.assets.etf]: etfValue,
+            [translations.assets.bitcoin]: bitcoinValue,
+            [translations.assets.crypto]: cryptoValue,
+            [translations.assets.bonds]: bondsValue,
+            [translations.assets.funds]: fundsValue,
+            [translations.assets.gold]: goldValue,
+          };
+          for (const [source, totalAmount] of sources) {
+            const currentVal = parseFloat(balanceOptionsMap[source]);
+            overrides[source] = currentVal + toEUR(totalAmount); // ADD for incomes
+          }
+          const balancesJson = createBalancesJsonMulti(currentDate, overrides);
           await financeService.addBalance(balancesJson);
         } catch {
           // Balance update failed but incomes were inserted

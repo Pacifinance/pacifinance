@@ -76,7 +76,7 @@ export default function MultiOutflowInsert({
       typoValue: last.typoValue,
       defaultAmount: lastAmount,
       date: last.date,
-      note: '',
+      note: last.note,
       balanceSource: last.balanceSource,
     })]);
   };

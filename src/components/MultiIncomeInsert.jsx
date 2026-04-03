@@ -71,7 +71,7 @@ export default function MultiIncomeInsert({
       categoryValue: last.categoryValue,
       defaultAmount: lastAmount,
       date: last.date,
-      note: '',
+      note: last.note,
       balanceSource: last.balanceSource,
     })]);
   };

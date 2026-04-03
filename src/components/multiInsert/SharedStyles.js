@@ -18,7 +18,7 @@ export const Overlay = styled.div`
     ? 'rgba(0, 0, 0, 0.7)'
     : 'rgba(15, 23, 42, 0.35)'};
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  z-index: 10002;
   display: flex;
   align-items: center;
   justify-content: center;

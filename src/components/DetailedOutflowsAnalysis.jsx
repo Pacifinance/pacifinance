@@ -19,7 +19,7 @@ import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
 import { getAllOutflows, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { translateTag } from '../data/tagTranslations';
+import { translateTag, resolveTagKeyFromLocalized } from '../data/tagTranslations';
 
 /* ═══════════════════════════════════════════════════════════════
    Styled Components — Compact, data-dense design
@@ -424,6 +424,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       if (!map.has(key)) {
         map.set(key, {
           category: translateTag(o.categoryTag?.label, language, 'expense') || o.categoryTag?.label || 'Other',
+          catKey,
           paymentType: translateTag(o.paymentType?.label, language, 'payment') || o.paymentType?.label || 'Unknown',
           amounts: [], frequency: 0, isSub: ptKey === 'subscription', notes
         });
@@ -525,14 +526,16 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
           </CatHeaderRow>
           {sortedCats.map(([cat, data], idx) => {
             const pct = overview.currentTotal > 0 ? (data.amount / overview.currentTotal * 100) : 0;
-            const color = getCategoryColor(cat, idx);
+            const dbKey = resolveTagKeyFromLocalized(cat, null, 'expense') || cat;
+            const displayName = translateTag(dbKey, language, 'expense') || cat;
+            const color = getCategoryColor(dbKey);
             const avgChange = data.avg12 > 0 ? ((data.amount - data.avg12) / data.avg12 * 100) : 0;
             return (
               <CatRow key={cat} theme={theme}>
                 <CatName>
-                  <CatIcon $color={color} theme={theme}>{React.createElement(getCategoryIcon(cat), { size: 13 })}</CatIcon>
+                  <CatIcon $color={color} theme={theme}>{React.createElement(getCategoryIcon(dbKey), { size: 13 })}</CatIcon>
                   <div style={{ minWidth: 0 }}>
-                    <CatLabel theme={theme}>{cat}<CatPercent theme={theme}>{isHidden ? '' : `${pct.toFixed(0)}%`}</CatPercent></CatLabel>
+                    <CatLabel theme={theme}>{displayName}<CatPercent theme={theme}>{isHidden ? '' : `${pct.toFixed(0)}%`}</CatPercent></CatLabel>
                     <ProgressBar theme={theme}><ProgressFill $color={color} $percent={pct} /></ProgressBar>
                   </div>
                 </CatName>
@@ -623,8 +626,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
               {recurring.map((r, i) => (
                 <RecurringItem key={i} theme={theme}>
                   <CatName>
-                    <CatIcon $color={getCategoryColor(r.category, i)} theme={theme}>
-                      {r.isSub ? <Repeat size={11} /> : React.createElement(getCategoryIcon(r.category), { size: 11 })}
+                    <CatIcon $color={getCategoryColor(r.catKey)} theme={theme}>
+                      {r.isSub ? <Repeat size={11} /> : React.createElement(getCategoryIcon(r.catKey), { size: 11 })}
                     </CatIcon>
                     <div style={{ minWidth: 0 }}>
                       <RecurringName theme={theme}>{r.category}</RecurringName>
@@ -663,8 +666,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
               {recurring12M.map((r, i) => (
                 <RecurringItem key={i} theme={theme}>
                   <CatName>
-                    <CatIcon $color={getCategoryColor(r.category, i)} theme={theme}>
-                      {r.isSub ? <Repeat size={11} /> : React.createElement(getCategoryIcon(r.category), { size: 11 })}
+                    <CatIcon $color={getCategoryColor(r.catKey)} theme={theme}>
+                      {r.isSub ? <Repeat size={11} /> : React.createElement(getCategoryIcon(r.catKey), { size: 11 })}
                     </CatIcon>
                     <div style={{ minWidth: 0 }}>
                       <RecurringName theme={theme}>{r.category}</RecurringName>

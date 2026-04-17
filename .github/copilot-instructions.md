@@ -460,6 +460,30 @@ Before every commit, ensure:
 - [ ] `npm test` passes
 - [ ] `npm run build` succeeds
 - [ ] README.md updated if architecture changed
+- [ ] **Roadmap updated** if user-facing feature added/completed (see below)
+
+---
+
+## 📢 Roadmap & User Notifications (MANDATORY for new features)
+
+Every time a **user-facing feature** is added or an important update is completed, you **MUST** update the roadmap so that users see it in the WhatsNewBanner notifications:
+
+### Steps:
+1. **Add/update entry in `scripts/roadmap-items.json`** with `completedDate` (format: `"YYYY-MM"`)
+2. **Add/update entry in `todo.md`** with `[x]` and `<!-- roadmap:id -->` marker
+3. **Run `npm run roadmap`** to regenerate `src/data/roadmapData.js`
+4. The WhatsNewBanner (in DashboardToolbar) automatically shows completed features from the last 3 months
+
+### What qualifies as a user-facing feature:
+- New functionality (e.g., multi-insert, new analysis page, new chart)
+- Major UX improvements (e.g., mobile optimization, new navigation)
+- Important bug fixes that users noticed
+- New integrations (e.g., crypto prices, bank format detection)
+
+### Data flow:
+```
+scripts/roadmap-items.json → npm run roadmap → src/data/roadmapData.js → WhatsNewBanner
+```
 
 ---
 

@@ -1,6 +1,6 @@
 ﻿# PaciFinance - TODO
 
-> Ultimo aggiornamento: 24/02/2026
+> Ultimo aggiornamento: 17/04/2026
 > Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
 > Roadmap status rapido: [x] completato · [~] in sviluppo · [ ] pianificato (con marker <!-- roadmap:id -->)
 
@@ -67,6 +67,9 @@
 - [x] Mock data allineati con file i18n per consistenza demo/dev/prod 
 - [x] Mock data CoinGecko per pagina Market Prices in dev mode
 - [x] Pagina prezzi di mercato crypto con dati e sparkline 7 giorni <!-- roadmap:market-prices -->
+- [x] Inserimento multiplo: uscite, entrate e bilanci in un'unica operazione (MultiOutflowInsert, MultiIncomeInsert, MultiBalanceInsert) <!-- roadmap:multi-insert -->
+- [x] Analisi dettagliata uscite: categorie, metodi di pagamento, pattern ricorrenti con confronti mensili <!-- roadmap:detailed-outflow-analysis -->
+- [x] Fix: categorie uscite tradotte in tutte le lingue (i18n category names in DetailedOutflowsAnalysis) <!-- roadmap:i18n-category-colors -->
 
 ---
 

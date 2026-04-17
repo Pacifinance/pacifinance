@@ -166,6 +166,42 @@ const roadmapData = [
     icon: '📈',
     completedDate: '2026-02',
   },
+  {
+    id: 'multi-insert',
+    title: { it: 'Inserimento Multiplo', en: 'Multi-Insert' },
+    description: {
+      it: 'Inserisci più uscite, entrate o voci di bilancio in un\'unica operazione, risparmiando tempo.',
+      en: 'Insert multiple outflows, incomes, or balance entries in a single operation, saving time.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '⚡',
+    completedDate: '2026-04',
+  },
+  {
+    id: 'detailed-outflow-analysis',
+    title: { it: 'Analisi Dettagliata Uscite', en: 'Detailed Outflow Analysis' },
+    description: {
+      it: 'Analisi approfondita delle uscite per categoria, metodi di pagamento e pattern ricorrenti con confronti mensili.',
+      en: 'In-depth outflow analysis by category, payment methods and recurring patterns with monthly comparisons.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📊',
+    completedDate: '2026-04',
+  },
+  {
+    id: 'i18n-category-colors',
+    title: { it: 'Colori Categorie Multilingua', en: 'Multilingual Category Colors' },
+    description: {
+      it: 'I colori e le icone delle categorie ora funzionano correttamente in tutte le lingue supportate.',
+      en: 'Category colors and icons now work correctly across all supported languages.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '🎨',
+    completedDate: '2026-04',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'goals-limits',

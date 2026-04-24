@@ -44,15 +44,18 @@ export default function MultiOutflowInsert({
   balanceOptions,
   onSubmitBatch,
   onClose,
+  initialRow,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
   const t = translations.insert.outflowSection.multiInsert;
 
-  const [rows, setRows] = useState([createEmptyRow()]);
+  const [rows, setRows] = useState(() => [createEmptyRow(initialRow || {})]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [defaultBalanceSource, setDefaultBalanceSource] = useState('');
+  const [defaultBalanceSource, setDefaultBalanceSource] = useState(
+    initialRow?.balanceSource || ''
+  );
 
   const hasBalanceOptions = balanceOptions && Object.keys(balanceOptions).length > 0;
 

@@ -1746,6 +1746,16 @@ export default function InsertValue({
               balanceOptions={options}
               onSubmitBatch={handleBatchOutflowSubmit}
               onClose={() => setShowMultiInsert(false)}
+              initialRow={{
+                categoryKey: categoryOutflow?.key || '',
+                categoryValue: categoryOutflow?.value || '',
+                typoKey: typoOutflow?.key || '',
+                typoValue: typoOutflow?.value || '',
+                amount: outflow || '',
+                date: outflowDate || currentDate,
+                note: noteOutflowAreaValue || '',
+                balanceSource: selectedOption || '',
+              }}
             />
           </Suspense>
         )}
@@ -1759,6 +1769,14 @@ export default function InsertValue({
               balanceOptions={options}
               onSubmitBatch={handleBatchIncomeSubmit}
               onClose={() => setShowMultiIncomeInsert(false)}
+              initialRow={{
+                categoryKey: categoryIncome?.key || '',
+                categoryValue: categoryIncome?.value || '',
+                amount: income || '',
+                date: incomeDate || currentDate,
+                note: noteIncomeAreaValue || '',
+                balanceSource: selectedOption || '',
+              }}
             />
           </Suspense>
         )}

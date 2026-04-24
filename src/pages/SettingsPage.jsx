@@ -989,20 +989,29 @@ const SettingsPage = () => {
                                     padding: "0.6rem 0.75rem",
                                     borderRadius: "10px",
                                     border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
-                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
-                                    color: theme.textColor,
+                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
+                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
                                     fontSize: "0.88rem",
                                     fontFamily: "inherit",
                                     cursor: "pointer",
                                 }}
                             >
-                                <option value={PAST_DATE_BALANCE_CHOICES.ASK}>
+                                <option
+                                    value={PAST_DATE_BALANCE_CHOICES.ASK}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
                                     {translations.sidebar.settings.pastDateBalanceAsk || (language === "it" ? "Chiedi ogni volta" : "Ask every time")}
                                 </option>
-                                <option value={PAST_DATE_BALANCE_CHOICES.NONE}>
+                                <option
+                                    value={PAST_DATE_BALANCE_CHOICES.NONE}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
                                     {translations.sidebar.settings.pastDateBalanceNone || (language === "it" ? "Nessun impatto sul bilancio" : "No balance impact")}
                                 </option>
-                                <option value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}>
+                                <option
+                                    value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
                                     {translations.sidebar.settings.pastDateBalancePastMonth || (language === "it" ? "Aggiorna bilancio del mese" : "Update that month's balance")}
                                 </option>
                             </select>

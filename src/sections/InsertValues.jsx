@@ -24,6 +24,7 @@ const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert")
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "../components/MultiBalanceInsert";
+import { buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from "../constants/balanceSchema";
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
@@ -558,7 +559,9 @@ export default function InsertValue({
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   };
 
-  // Translated balance-source label → { assetKey, dbKey } mapping
+  // Translated balance-source label → canonical asset key mapping.
+  // The camelCase ↔ snake_case mapping lives in `constants/balanceSchema.ts`
+  // (ASSET_TO_DB_KEY) — do NOT re-declare it inline anywhere.
   const getBalanceSourceMaps = () => {
     const translatedToAsset = {
       [translations.assets.bank]: 'bank',
@@ -573,13 +576,7 @@ export default function InsertValue({
       [translations.assets.funds]: 'funds',
       [translations.assets.gold]: 'gold',
     };
-    const assetToDbKey = {
-      bank: 'bank', cash: 'cash', digitalServices: 'digital_services',
-      emergencyFund: 'emergency_fund', stocks: 'stocks', etf: 'etf',
-      bitcoin: 'bitcoin', crypto: 'crypto', bonds: 'bonds',
-      funds: 'funds', gold: 'gold',
-    };
-    return { translatedToAsset, assetToDbKey };
+    return { translatedToAsset, assetToDbKey: ASSET_TO_DB_KEY };
   };
 
   /**
@@ -600,7 +597,7 @@ export default function InsertValue({
    * @returns {Promise<{updated: number, skipped: string[]}>}
    */
   const applyPastMonthBalanceAdjustments = async (rows, isOutflow) => {
-    const { translatedToAsset, assetToDbKey } = getBalanceSourceMaps();
+    const { translatedToAsset } = getBalanceSourceMaps();
     const result = { updated: 0, skipped: [] };
     if (!rows || rows.length === 0) return result;
 
@@ -632,20 +629,17 @@ export default function InsertValue({
         result.skipped.push(`${year}-${month}`);
         continue;
       }
-      // Build full balance payload from snapshot, applying deltas.
-      // NOTE: the snapshot (from GET /balances/get) uses CAMEL-CASE keys
-      // (digitalServices, emergencyFund) because that's the Mongoose schema,
-      // while the POST /balances/add payload uses SNAKE_CASE keys
-      // (digital_services, emergency_fund). Reading with dbKey here would
-      // silently return undefined → 0 and wipe those two fields in the DB.
-      const balancePayload = { date: getBalanceDateForDB({ month, year }) };
-      for (const [assetKey, dbKey] of Object.entries(assetToDbKey)) {
-        const current = Number(snapshot.balance?.[assetKey]) || 0;
-        const delta = perSource[assetKey] || 0;
-        balancePayload[dbKey] = current + delta;
-      }
+      // Build the POST payload via the centralized helper. This carries over
+      // every asset from the snapshot (read by camelCase key, written as
+      // snake_case for /balances/add) and applies only the asset deltas we
+      // actually want to change, preventing the snake/camel mismatch bug.
+      const balanceRequest = buildSnapshotWithDeltas(
+        getBalanceDateForDB({ month, year }),
+        snapshot.balance,
+        perSource,
+      );
       try {
-        const res = await financeService.addBalance({ balance: balancePayload });
+        const res = await financeService.addBalance(balanceRequest);
         if (res?.status === 200) result.updated += 1;
         else result.skipped.push(`${year}-${month}`);
       } catch {
@@ -694,7 +688,7 @@ export default function InsertValue({
    */
   const applyBalanceDeltaForDate = async (isoDate, deltaEUR, balanceSource) => {
     if (!balanceSource || !isoDate || !deltaEUR) return false;
-    const { translatedToAsset, assetToDbKey } = getBalanceSourceMaps();
+    const { translatedToAsset } = getBalanceSourceMaps();
     const assetKey = translatedToAsset[balanceSource];
     if (!assetKey) return false;
 
@@ -715,7 +709,8 @@ export default function InsertValue({
       } catch { return false; }
     }
 
-    // Past-month path — load snapshot, adjust, write back.
+    // Past-month path — load snapshot, adjust, write back using the central
+    // helper (handles the camelCase ↔ snake_case conversion correctly).
     const d = new Date(isoDate);
     const year = d.getFullYear();
     const month = d.getMonth() + 1;
@@ -727,16 +722,13 @@ export default function InsertValue({
       if (warning) showError(warning, 5000);
       return false;
     }
-    // See note in applyPastMonthBalanceAdjustments: snapshot keys are
-    // camelCase (schema), POST payload keys are snake_case. Read by assetKey,
-    // write by dbKey.
-    const balancePayload = { date: getBalanceDateForDB({ month, year }) };
-    for (const [aKey, dbKey] of Object.entries(assetToDbKey)) {
-      const current = Number(snapshot.balance?.[aKey]) || 0;
-      balancePayload[dbKey] = aKey === assetKey ? current + deltaEUR : current;
-    }
+    const balanceRequest = buildSnapshotWithDeltas(
+      getBalanceDateForDB({ month, year }),
+      snapshot.balance,
+      { [assetKey]: deltaEUR },
+    );
     try {
-      const res = await financeService.addBalance({ balance: balancePayload });
+      const res = await financeService.addBalance(balanceRequest);
       return res?.status === 200;
     } catch { return false; }
   };

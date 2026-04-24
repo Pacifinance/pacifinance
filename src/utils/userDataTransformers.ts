@@ -14,31 +14,76 @@ import {
   DEFAULT_EMERGENCY_FUND_TARGET,
 } from '../data/financeDefaults';
 
-// ─── Helpers ─────────────────────────────────────────────────────────
-
 import { translateTagObject, translateTag as translateTagDirect } from '../data/tagTranslations';
+
+// ─── Types ───────────────────────────────────────────────────────────
+
+export interface ProfileField {
+  key: number;
+  value: string;
+}
+
+export interface TransformedProfile {
+  userId: string;
+  userType: string;
+  username: string;
+  preferredCurrencyCode: string;
+  preferredCurrencyKey: number;
+  profile: Record<string, ProfileField | number | { key: number; value: string }> & {
+    completionPercentage: number;
+    preferredCurrency: { key: number; value: string };
+  };
+  profileCompletionPercentage: number;
+}
+
+export interface BalanceSnapshot {
+  cash?: number;
+  bank?: number;
+  emergencyFund?: number;
+  digitalServices?: number;
+  stocks?: number;
+  etf?: number;
+  bitcoin?: number;
+  crypto?: number;
+  bonds?: number;
+  funds?: number;
+  gold?: number;
+  totalValue?: number;
+  [key: string]: number | undefined;
+}
+
+export interface BalanceMonth {
+  date: string | null;
+  balance: BalanceSnapshot;
+}
+
+export interface Asset {
+  typology: string;
+  value: number;
+}
+
+export interface ChartDatum extends BalanceSnapshot {
+  month: string;
+  date: string | null;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────
 
 /**
  * Get a translated label from a tag object with fallback chain.
  * Prefers local translations (tagTranslations.js), then DB `.translations` field.
- * @param {Object|null} obj  Tag object with `.label` and optionally `.translations`
- * @param {string} language  Current language code
- * @param {string} fallback  Default string when no translation is found
- * @param {string} [type]    Optional tag type for scoped local lookup
- * @returns {string}
  */
-export const getTranslation = (obj, language, fallback, type) => {
-  return translateTagObject(obj, language, fallback, type);
-};
+export const getTranslation = (
+  obj: any,
+  language: string,
+  fallback: string,
+  type?: string,
+): string => translateTagObject(obj, language, fallback, type);
 
 // ─── Tags ────────────────────────────────────────────────────────────
 
-/**
- * Extract categorised tag arrays from the raw `/tags/get` response.
- * @param {Object} tagsData
- * @returns {Object}
- */
-export const transformTags = (tagsData) => ({
+/** Extract categorised tag arrays from the raw `/tags/get` response. */
+export const transformTags = (tagsData: any) => ({
   outflowsTags: tagsData.expense || [],
   incomesTags: tagsData.income || [],
   paymentTags: tagsData.payment || [],
@@ -58,21 +103,19 @@ export const transformTags = (tagsData) => ({
 // ─── User Profile ────────────────────────────────────────────────────
 
 /** Enum mapping for user type index → string */
-const USER_TYPE_DICT = {
+const USER_TYPE_DICT: Record<number, string> = {
   0: 'regular',
   1: 'premium',
   2: 'test',
   3: 'demo',
 };
 
-/**
- * Map raw `/user/get` response to a structured profile object.
- * @param {Object} infoData    Raw user info from API
- * @param {Array}  currencyTags  Available currencies
- * @param {string} language      Current language code
- * @returns {Object}
- */
-export const transformUserProfile = (infoData, currencyTags, language) => {
+/** Map raw `/user/get` response to a structured profile object. */
+export const transformUserProfile = (
+  infoData: any,
+  currencyTags: any[],
+  language: string,
+): TransformedProfile => {
   const userId = infoData.userId || '00000';
   const userType = USER_TYPE_DICT[infoData.type] || 'regular';
   const username = infoData.nickname ?? 'Username non impostato';
@@ -90,7 +133,7 @@ export const transformUserProfile = (infoData, currencyTags, language) => {
     }
   }
 
-  const fields = {
+  const fields: Record<string, ProfileField> = {
     nationality: { key: infoData.country?.index ?? -1, value: getTranslation(infoData.country, language, 'Nazionalità non impostata') },
     whereWorks: { key: infoData.jobCountry?.index ?? -1, value: getTranslation(infoData.jobCountry, language, 'Dove lavora non impostato') },
     job: { key: infoData.job?.index ?? -1, value: getTranslation(infoData.job, language, 'Lavoro non impostato') },
@@ -123,24 +166,26 @@ export const transformUserProfile = (infoData, currencyTags, language) => {
 
 // ─── Profile Completion ──────────────────────────────────────────────
 
-/**
- * Calculate profile completion percentage.
- * @param {Array<{key: number}>} fields
- * @returns {number} 0-100
- */
-export const calculateProfileCompletion = (fields) => {
+/** Calculate profile completion percentage (0-100). */
+export const calculateProfileCompletion = (fields: Array<{ key: number }>): number => {
   const completed = fields.filter(f => f.key !== -1).length;
   return Math.round((completed / fields.length) * 100);
 };
 
 // ─── Goals & Limits ──────────────────────────────────────────────────
 
-/**
- * Build goals and limits structure with defaults.
- * @param {Object} userGoals  Raw goals from `/user/get`
- * @returns {Object}
- */
-export const buildGoalsAndLimits = (userGoals) => {
+export interface GoalsAndLimits {
+  goals: any[];
+  limits: {
+    monthlySpendingLimit: number;
+    savingsGoalPercentage: number;
+    emergencyFundTarget: number;
+    notificationsEnabled: boolean;
+  };
+}
+
+/** Build goals and limits structure with defaults. */
+export const buildGoalsAndLimits = (userGoals: any): GoalsAndLimits => {
   const g = userGoals || { expensesLimit: -1, savingsPercent: -1, emergencyFundGoal: -1 };
   return {
     goals: [],
@@ -155,12 +200,8 @@ export const buildGoalsAndLimits = (userGoals) => {
 
 // ─── Balances ────────────────────────────────────────────────────────
 
-/**
- * Sum all asset fields in a balance object.
- * @param {Object} balance
- * @returns {number}
- */
-export const calculateTotal = (balance) => {
+/** Sum all asset fields in a balance object. */
+export const calculateTotal = (balance: BalanceSnapshot | null | undefined): number => {
   if (!balance) return 0;
   return (
     (balance.cash || 0) +
@@ -177,13 +218,9 @@ export const calculateTotal = (balance) => {
   );
 };
 
-/**
- * Normalise raw balance data from the API.
- * @param {Array} rawData
- * @returns {Array}
- */
-export const transformBalances = (rawData) => {
-  const balancesData = rawData.map(monthData => ({
+/** Normalise raw balance data from the API. */
+export const transformBalances = (rawData: any[]): BalanceMonth[] => {
+  const balancesData: BalanceMonth[] = rawData.map(monthData => ({
     date: monthData?.date || null,
     balance: monthData?.balance || {},
   }));
@@ -195,15 +232,13 @@ export const transformBalances = (rawData) => {
 
 // ─── Outflows Aggregation ────────────────────────────────────────────
 
-/**
- * Aggregate outflows by category for each month.
- * @param {Array<Array>} allOutflowsIncomesArray
- * @returns {Object} { [monthIndex]: { [categoryEn]: totalAmount } }
- */
-export const aggregateOutflowsByCategory = (allOutflowsIncomesArray) => {
-  const result = {};
+/** Aggregate outflows by category for each month. */
+export const aggregateOutflowsByCategory = (
+  allOutflowsIncomesArray: any[][],
+): Record<number, Record<string, number>> => {
+  const result: Record<number, Record<string, number>> = {};
   allOutflowsIncomesArray.forEach((month, index) => {
-    const perCategory = {};
+    const perCategory: Record<string, number> = {};
     if (!Array.isArray(month)) { result[index] = perCategory; return; }
     month.forEach(entry => {
       if (entry?.isExpense) {
@@ -223,12 +258,10 @@ export const aggregateOutflowsByCategory = (allOutflowsIncomesArray) => {
 
 // ─── Monthly Arrays ──────────────────────────────────────────────────
 
-/**
- * Build monthly income / outflow sum arrays (13 months).
- * @param {Array<Array>} allOutflowsIncomesArray
- * @returns {{ incomesArray: number[], outflowsArray: number[] }}
- */
-export const buildMonthlyArrays = (allOutflowsIncomesArray) => {
+/** Build monthly income / outflow sum arrays (13 months). */
+export const buildMonthlyArrays = (
+  allOutflowsIncomesArray: any[][],
+): { incomesArray: number[]; outflowsArray: number[] } => {
   const incomesArray = Array(13).fill(0);
   const outflowsArray = Array(13).fill(0);
   allOutflowsIncomesArray.forEach((outerItem, index) => {
@@ -248,23 +281,21 @@ export const buildMonthlyArrays = (allOutflowsIncomesArray) => {
 
 // ─── Chart Data ──────────────────────────────────────────────────────
 
-/**
- * Format balance data for the last-12-months chart.
- * @param {Array} balancesData  Normalised balance array (newest first)
- * @param {Date}  currentDate
- * @returns {Array}
- */
-export const buildChartData = (balancesData, currentDate) => {
+/** Format balance data for the last-12-months chart. */
+export const buildChartData = (
+  balancesData: BalanceMonth[] | null | undefined,
+  currentDate: Date,
+): ChartDatum[] => {
   // Index snapshots by (year, month) using the snapshot's real date so the
   // last-12-months window aligns by date rather than by array position.
-  const byMonth = new Map();
+  const byMonth = new Map<string, BalanceMonth>();
   for (const entry of balancesData || []) {
     if (!entry?.date) continue;
     const d = new Date(entry.date);
     if (Number.isNaN(d.getTime())) continue;
     byMonth.set(`${d.getFullYear()}-${d.getMonth() + 1}`, entry);
   }
-  const out = [];
+  const out: ChartDatum[] = [];
   for (let i = 11; i >= 0; i--) {
     const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
     const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
@@ -281,12 +312,8 @@ export const buildChartData = (balancesData, currentDate) => {
 
 // ─── Assets ──────────────────────────────────────────────────────────
 
-/**
- * Create an assets array from the current balance (non-zero entries only).
- * @param {Object} balance
- * @returns {Array<{typology: string, value: number}>}
- */
-export const buildAssetsFromBalance = (balance) => {
+/** Create an assets array from the current balance (non-zero entries only). */
+export const buildAssetsFromBalance = (balance: BalanceSnapshot | null | undefined): Asset[] => {
   const b = balance || {};
   return [
     { typology: 'cash', value: b.cash || 0 },
@@ -304,12 +331,10 @@ export const buildAssetsFromBalance = (balance) => {
 
 // ─── Incomes / Outflows Split ────────────────────────────────────────
 
-/**
- * Split the raw expenses-and-incomes matrix into two separate arrays.
- * @param {Array<Array>} allOutflowsIncomesArray
- * @returns {{ allOutflows: Array, allIncomes: Array }}
- */
-export const splitIncomesOutflows = (allOutflowsIncomesArray) => ({
+/** Split the raw expenses-and-incomes matrix into two separate arrays. */
+export const splitIncomesOutflows = (
+  allOutflowsIncomesArray: any[][],
+): { allOutflows: any[][]; allIncomes: any[][] } => ({
   allOutflows: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d?.isExpense) : []),
   allIncomes: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d && !d.isExpense) : []),
 });

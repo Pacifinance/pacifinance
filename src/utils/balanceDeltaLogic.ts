@@ -4,15 +4,28 @@
  * dependencies so they can be unit-tested in isolation.
  */
 
+export interface BalanceDelta {
+  /** ISO date identifying the month the delta applies to. */
+  month: string;
+  /** Signed amount in EUR. */
+  value: number;
+}
+
+export interface ComputeEditDeltasParams {
+  isOutflow: boolean;
+  oldDate: string;
+  oldAmount: number | string;
+  newDate: string;
+  newAmount: number | string;
+}
+
+export type EditNeedsBalanceUpdateParams = Omit<ComputeEditDeltasParams, 'isOutflow'>;
+
 /**
  * Check whether an ISO date string (YYYY-MM-DD) belongs to a month strictly
  * before the current month/year.
- *
- * @param {string} isoDate - ISO date string.
- * @param {Date} [now=new Date()] - Reference "now" (injectable for tests).
- * @returns {boolean}
  */
-export const isPastMonthDate = (isoDate, now = new Date()) => {
+export const isPastMonthDate = (isoDate: string, now: Date = new Date()): boolean => {
   if (!isoDate) return false;
   const d = new Date(isoDate);
   if (Number.isNaN(d.getTime())) return false;
@@ -21,10 +34,8 @@ export const isPastMonthDate = (isoDate, now = new Date()) => {
   return d.getMonth() < now.getMonth();
 };
 
-/**
- * Two ISO dates belong to the same calendar month (and year).
- */
-export const isSameMonth = (a, b) => {
+/** Two ISO dates belong to the same calendar month (and year). */
+export const isSameMonth = (a: string | Date, b: string | Date): boolean => {
   if (!a || !b) return false;
   const da = new Date(a);
   const db = new Date(b);
@@ -34,8 +45,7 @@ export const isSameMonth = (a, b) => {
 
 /**
  * Threshold below which a currency delta is treated as zero (floating point
- * tolerance for half-a-cent). 0.005 matches the rounding used elsewhere in
- * the app for EUR-stored values.
+ * tolerance for half-a-cent).
  */
 export const AMOUNT_EPSILON = 0.005;
 
@@ -52,15 +62,6 @@ export const AMOUNT_EPSILON = 0.005;
  * When the edit stays within the same month, the two effects are netted
  * into a single delta on that month. Otherwise two separate deltas are
  * returned: one reversing the old month, one applying the new month.
- *
- * @param {object} params
- * @param {boolean} params.isOutflow
- * @param {string}  params.oldDate - ISO date of the original transaction.
- * @param {number}  params.oldAmount - Original amount in EUR.
- * @param {string}  params.newDate - ISO date of the edited transaction.
- * @param {number}  params.newAmount - Edited amount in EUR.
- * @returns {Array<{month: string, value: number}>}
- *   Deltas with non-zero value. Empty array if nothing changed.
  */
 export const computeEditDeltas = ({
   isOutflow,
@@ -68,11 +69,11 @@ export const computeEditDeltas = ({
   oldAmount,
   newDate,
   newAmount,
-}) => {
+}: ComputeEditDeltasParams): BalanceDelta[] => {
   const oldAmt = Number(oldAmount) || 0;
   const newAmt = Number(newAmount) || 0;
-  const oldSign = isOutflow ? +1 : -1; // reversing the old transaction
-  const newSign = isOutflow ? -1 : +1; // applying the new transaction
+  const oldSign = isOutflow ? +1 : -1;
+  const newSign = isOutflow ? -1 : +1;
   const sameMonth = isSameMonth(oldDate, newDate);
 
   if (sameMonth) {
@@ -81,7 +82,7 @@ export const computeEditDeltas = ({
     return [{ month: newDate, value: net }];
   }
 
-  const out = [];
+  const out: BalanceDelta[] = [];
   const oldVal = oldSign * oldAmt;
   const newVal = newSign * newAmt;
   if (Math.abs(oldVal) >= AMOUNT_EPSILON) out.push({ month: oldDate, value: oldVal });
@@ -98,7 +99,7 @@ export const editNeedsBalanceUpdate = ({
   oldAmount,
   newDate,
   newAmount,
-}) => {
+}: EditNeedsBalanceUpdateParams): boolean => {
   const oldAmt = Number(oldAmount) || 0;
   const newAmt = Number(newAmount) || 0;
   const amountChanged = Math.abs(oldAmt - newAmt) >= AMOUNT_EPSILON;

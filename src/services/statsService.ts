@@ -3,26 +3,36 @@
  *
  * @module services/statsService
  */
+import type { AxiosInstance } from 'axios';
+import type { StatsAverageBucket, StatsAveragesResponse } from '../types/api';
 
-/**
- * Creates a stats-service bound to the given HTTP client.
- *
- * @param {import('axios').AxiosInstance} apiClient
- * @returns {Object}
- */
-export const createStatsService = (apiClient) => ({
-  /**
-   * Get average statistics (all users + similar users).
-   * @returns {Promise<Object>} Averages data
-   */
+export interface AveragesSnapshot {
+  all: StatsAverageBucket;
+  similar: StatsAverageBucket;
+}
+
+export interface StatsService {
+  getAverages(): Promise<AveragesSnapshot>;
+}
+
+const emptyBucket = (): StatsAverageBucket => ({
+  balances: null,
+  expenses: null,
+  incomes: null,
+  savingsRates: null,
+  expensesByCategory: null,
+});
+
+/** Creates a stats-service bound to the given HTTP client. */
+export const createStatsService = (apiClient: AxiosInstance): StatsService => ({
   async getAverages() {
-    const defaults = {
-      all: { balances: null, expenses: null, incomes: null, savingsRates: null, expensesByCategory: null },
-      similar: { balances: null, expenses: null, incomes: null, savingsRates: null, expensesByCategory: null },
+    const defaults: AveragesSnapshot = {
+      all: emptyBucket(),
+      similar: emptyBucket(),
     };
 
     try {
-      const res = await apiClient.post('/api/stats/averages', {});
+      const res = await apiClient.post<StatsAveragesResponse>('/api/stats/averages', {});
       const data = res.data;
 
       return {

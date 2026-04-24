@@ -16,6 +16,28 @@ export const getPreviousMonthBalance = (userData) => userData?.balances?.[1]?.ba
 
 export const getPreviousYearSameMonthBalance = (userData) => userData?.balances?.[12]?.balance || {};
 
+/**
+ * Return the balance snapshot entry `{ date, balance }` whose date matches the
+ * provided year/month (month is 1-based: 1 = January … 12 = December).
+ * Returns `null` if no snapshot exists for that month.
+ */
+export const getBalanceForMonth = (userData, year, month) => {
+  const balances = userData?.balances;
+  if (!Array.isArray(balances) || balances.length === 0) return null;
+  const yearNum = Number(year);
+  const monthNum = Number(month);
+  if (!Number.isFinite(yearNum) || !Number.isFinite(monthNum)) return null;
+  for (const entry of balances) {
+    if (!entry?.date) continue;
+    const d = new Date(entry.date);
+    if (Number.isNaN(d.getTime())) continue;
+    if (d.getFullYear() === yearNum && d.getMonth() + 1 === monthNum) {
+      return entry;
+    }
+  }
+  return null;
+};
+
 // Individual asset selectors for current month
 export const getCashValue = (userData) => getCurrentBalance(userData).cash || 0;
 export const getBankValue = (userData) => getCurrentBalance(userData).bank || 0;

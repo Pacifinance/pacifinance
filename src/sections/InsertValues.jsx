@@ -28,8 +28,10 @@ import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
     getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
-    getAllOutflows, getAllIncomes, getOutflowsArray
+    getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth
 } from '../utils/userDataSelectors';
+import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
+const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -376,6 +378,15 @@ export default function InsertValue({
   const [showMultiIncomeInsert, setShowMultiIncomeInsert] = useState(false);
   const [showMultiBalanceInsert, setShowMultiBalanceInsert] = useState(false);
 
+  // Past-date balance decision modal (for single & multi insert past-month flows)
+  const { pref: pastDatePref, setPref: setPastDatePref } = usePastDateBalancePref();
+  const [pastDateModal, setPastDateModal] = useState({
+    isOpen: false,
+    rows: [],
+    isOutflow: true,
+    onResolve: null, // (choice, remember) => void
+  });
+
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
   const [updateInExBalanceSuccess, setUpdateInExBalanceSuccess] = useState(false);
@@ -531,6 +542,131 @@ export default function InsertValue({
     const date = new Date(monthYearObj.year, monthYearObj.month, 0);
     const pad = (n) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  };
+
+  // Translated balance-source label → { assetKey, dbKey } mapping
+  const getBalanceSourceMaps = () => {
+    const translatedToAsset = {
+      [translations.assets.bank]: 'bank',
+      [translations.assets.cash]: 'cash',
+      [translations.assets.digitalServices]: 'digitalServices',
+      [translations.assets.emergencyFund]: 'emergencyFund',
+      [translations.assets.stocks]: 'stocks',
+      [translations.assets.etf]: 'etf',
+      [translations.assets.bitcoin]: 'bitcoin',
+      [translations.assets.crypto]: 'crypto',
+      [translations.assets.bonds]: 'bonds',
+      [translations.assets.funds]: 'funds',
+      [translations.assets.gold]: 'gold',
+    };
+    const assetToDbKey = {
+      bank: 'bank', cash: 'cash', digitalServices: 'digital_services',
+      emergencyFund: 'emergency_fund', stocks: 'stocks', etf: 'etf',
+      bitcoin: 'bitcoin', crypto: 'crypto', bonds: 'bonds',
+      funds: 'funds', gold: 'gold',
+    };
+    return { translatedToAsset, assetToDbKey };
+  };
+
+  /**
+   * Check whether an ISO date string (YYYY-MM-DD) belongs to a month strictly
+   * before the current month/year.
+   */
+  const isPastMonthDate = (isoDate) => {
+    if (!isoDate) return false;
+    const d = new Date(isoDate);
+    if (Number.isNaN(d.getTime())) return false;
+    const now = new Date();
+    if (d.getFullYear() < now.getFullYear()) return true;
+    if (d.getFullYear() > now.getFullYear()) return false;
+    return d.getMonth() < now.getMonth();
+  };
+
+  /**
+   * Apply deltas to historical balance snapshots. Groups rows by (year, month)
+   * and balanceSource, reads each month's snapshot, applies the signed delta,
+   * and calls financeService.addBalance sequentially (one request per month).
+   *
+   * @param {Array<{date: string, amount: number, balanceSource: string}>} rows
+   *   Rows whose dates are in past months (already filtered by caller).
+   * @param {boolean} isOutflow - subtract (true) or add (false)
+   * @returns {Promise<{updated: number, skipped: string[]}>}
+   */
+  const applyPastMonthBalanceAdjustments = async (rows, isOutflow) => {
+    const { translatedToAsset, assetToDbKey } = getBalanceSourceMaps();
+    const result = { updated: 0, skipped: [] };
+    if (!rows || rows.length === 0) return result;
+
+    // Group: monthKey → { year, month, perSource: { assetKey: deltaEUR } }
+    const groups = new Map();
+    for (const row of rows) {
+      if (!row?.balanceSource) continue;
+      const assetKey = translatedToAsset[row.balanceSource];
+      if (!assetKey) continue;
+      const d = new Date(row.date);
+      if (Number.isNaN(d.getTime())) continue;
+      const year = d.getFullYear();
+      const month = d.getMonth() + 1;
+      const key = `${year}-${month}`;
+      if (!groups.has(key)) groups.set(key, { year, month, perSource: {} });
+      const bucket = groups.get(key);
+      const amountEUR = toEUR(Number(row.amount) || 0);
+      const delta = isOutflow ? -amountEUR : amountEUR;
+      bucket.perSource[assetKey] = (bucket.perSource[assetKey] || 0) + delta;
+    }
+
+    for (const { year, month, perSource } of groups.values()) {
+      const snapshot = getBalanceForMonth(userData, year, month);
+      if (!snapshot) {
+        const warning = (translations.insert.pastDateBalance?.missingSnapshotWarning || '')
+          .replace('{month}', String(month).padStart(2, '0'))
+          .replace('{year}', year);
+        if (warning) showError(warning, 5000);
+        result.skipped.push(`${year}-${month}`);
+        continue;
+      }
+      // Build full balance payload from snapshot, applying deltas
+      const balancePayload = { date: getBalanceDateForDB({ month, year }) };
+      for (const [assetKey, dbKey] of Object.entries(assetToDbKey)) {
+        const current = Number(snapshot.balance?.[dbKey]) || 0;
+        const delta = perSource[assetKey] || 0;
+        balancePayload[dbKey] = current + delta;
+      }
+      try {
+        const res = await financeService.addBalance({ balance: balancePayload });
+        if (res?.status === 200) result.updated += 1;
+        else result.skipped.push(`${year}-${month}`);
+      } catch {
+        result.skipped.push(`${year}-${month}`);
+      }
+    }
+
+    return result;
+  };
+
+  /**
+   * Resolve the past-date balance choice. If pref is 'ask', open the modal and
+   * await the user's selection. Otherwise return the stored preference.
+   * @returns {Promise<'none' | 'past-month' | null>} null means user cancelled.
+   */
+  const resolvePastDateChoice = (rows, isOutflow) => {
+    if (pastDatePref === PAST_DATE_BALANCE_CHOICES.NONE
+      || pastDatePref === PAST_DATE_BALANCE_CHOICES.PAST_MONTH) {
+      return Promise.resolve(pastDatePref);
+    }
+    // 'ask' → open modal
+    return new Promise((resolve) => {
+      setPastDateModal({
+        isOpen: true,
+        rows,
+        isOutflow,
+        onResolve: (choice, remember) => {
+          if (remember && choice) setPastDatePref(choice);
+          setPastDateModal({ isOpen: false, rows: [], isOutflow: true, onResolve: null });
+          resolve(choice);
+        },
+      });
+    });
   };
 
   const options = {
@@ -794,6 +930,11 @@ export default function InsertValue({
         const d = new Date(r.date);
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       });
+      const pastMonthRows = rows.filter(r => {
+        const d = new Date(r.date);
+        return (d.getFullYear() < now.getFullYear())
+          || (d.getFullYear() === now.getFullYear() && d.getMonth() < now.getMonth());
+      });
       const amountsBySource = groupAmountsByBalanceSource(currentMonthRows);
       const sources = Object.entries(amountsBySource);
 
@@ -821,6 +962,29 @@ export default function InsertValue({
           await financeService.addBalance(balancesJson);
         } catch {
           // Balance update failed but outflows were inserted — don't block
+        }
+      }
+
+      // Past-month rows: prompt user (or use saved preference) to decide
+      // whether to also update historical balance snapshots.
+      if (pastMonthRows.length > 0) {
+        const choice = await resolvePastDateChoice(
+          pastMonthRows.map(r => ({
+            date: r.date,
+            amount: parseFormattedAmount(r.amount),
+            balanceSource: r.balanceSource,
+          })),
+          true,
+        );
+        if (choice === PAST_DATE_BALANCE_CHOICES.PAST_MONTH) {
+          await applyPastMonthBalanceAdjustments(
+            pastMonthRows.map(r => ({
+              date: r.date,
+              amount: parseFormattedAmount(r.amount),
+              balanceSource: r.balanceSource,
+            })),
+            true,
+          );
         }
       }
     }
@@ -873,6 +1037,11 @@ export default function InsertValue({
         const d = new Date(r.date);
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       });
+      const pastMonthRows = rows.filter(r => {
+        const d = new Date(r.date);
+        return (d.getFullYear() < now.getFullYear())
+          || (d.getFullYear() === now.getFullYear() && d.getMonth() < now.getMonth());
+      });
       const amountsBySource = groupIncomeAmountsBySource(currentMonthRows);
       const sources = Object.entries(amountsBySource);
 
@@ -899,6 +1068,28 @@ export default function InsertValue({
           await financeService.addBalance(balancesJson);
         } catch {
           // Balance update failed but incomes were inserted
+        }
+      }
+
+      // Past-month income rows: offer to also update historical snapshots.
+      if (pastMonthRows.length > 0) {
+        const choice = await resolvePastDateChoice(
+          pastMonthRows.map(r => ({
+            date: r.date,
+            amount: parseFormattedAmount(r.amount),
+            balanceSource: r.balanceSource,
+          })),
+          false,
+        );
+        if (choice === PAST_DATE_BALANCE_CHOICES.PAST_MONTH) {
+          await applyPastMonthBalanceAdjustments(
+            pastMonthRows.map(r => ({
+              date: r.date,
+              amount: parseFormattedAmount(r.amount),
+              balanceSource: r.balanceSource,
+            })),
+            false,
+          );
         }
       }
     }
@@ -1176,21 +1367,49 @@ export default function InsertValue({
           const valueBalanceSelected = parseFloat(balanceOptionsMap[selectedOption]);
           const outflowNumber = toEUR(parseFloat(originalOutflowAmount) || 0);
           const incomeNumber = toEUR(parseFloat(originalIncomeAmount) || 0);
-          let newValue = 0;
-          if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
-          else newValue = valueBalanceSelected + incomeNumber;
+          const txDate = isOutflow ? outflowDate : incomeDate;
+          const isPast = isPastMonthDate(txDate);
 
-          const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-
-          const balancesChange = await financeService.addBalance(balancesJson);
-
-          if (balancesChange.status === 200) {
-            handleSetIsUpdated(false);
-            setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
-            setUpdateInExBalanceSuccess(true);
-            fetchData();
+          if (isPast) {
+            // Past-month insert: respect user preference (ask/none/past-month).
+            const row = {
+              date: txDate,
+              amount: isOutflow ? (parseFloat(originalOutflowAmount) || 0) : (parseFloat(originalIncomeAmount) || 0),
+              balanceSource: selectedOption,
+            };
+            const choice = await resolvePastDateChoice([row], isOutflow);
+            if (choice === PAST_DATE_BALANCE_CHOICES.PAST_MONTH) {
+              const adj = await applyPastMonthBalanceAdjustments([row], isOutflow);
+              handleSetIsUpdated(false);
+              if (adj.updated > 0) setUpdateInExBalanceSuccess(true);
+              else if (isOutflow) setUpdateOutflowsSuccess(true);
+              else setUpdateIncomesSuccess(true);
+              fetchData();
+            } else {
+              // 'none' or cancelled → record transaction only, no balance change
+              handleSetIsUpdated(false);
+              if (isOutflow) setUpdateOutflowsSuccess(true);
+              else setUpdateIncomesSuccess(true);
+              fetchData();
+            }
           } else {
-            showError(translations.insert.errors.balanceUpdateFailed);
+            // Current month: existing behaviour (update current-month balance)
+            let newValue = 0;
+            if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
+            else newValue = valueBalanceSelected + incomeNumber;
+
+            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+
+            const balancesChange = await financeService.addBalance(balancesJson);
+
+            if (balancesChange.status === 200) {
+              handleSetIsUpdated(false);
+              setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
+              setUpdateInExBalanceSuccess(true);
+              fetchData();
+            } else {
+              showError(translations.insert.errors.balanceUpdateFailed);
+            }
           }
         } else {
           handleSetIsUpdated(false);
@@ -1608,6 +1827,24 @@ export default function InsertValue({
           onConfirmDeleteIncome={handleIncomesDelete}
           onConfirmDeleteOutflow={handleOutflowsDelete}
         />
+
+        {pastDateModal.isOpen && (
+          <Suspense fallback={null}>
+            <PastDateBalanceChoiceModal
+              isOpen={pastDateModal.isOpen}
+              theme={theme}
+              isOutflow={pastDateModal.isOutflow}
+              rows={pastDateModal.rows}
+              onConfirm={(choice, remember) => {
+                pastDateModal.onResolve?.(choice, remember);
+              }}
+              onCancel={() => {
+                // Treat cancel as "none" so transactions remain inserted without balance change
+                pastDateModal.onResolve?.(PAST_DATE_BALANCE_CHOICES.NONE, false);
+              }}
+            />
+          </Suspense>
+        )}
 
         <BottomSpacer />
       </ContentWrapper>

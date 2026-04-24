@@ -56,8 +56,10 @@ import {
     faUpload,
     faCoins,
     faBug,
-    faMobileScreen
+    faMobileScreen,
+    faHistory
 } from "@fortawesome/free-solid-svg-icons";
+import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
 
 const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
@@ -72,6 +74,9 @@ const SettingsPage = () => {
 
     const { userService } = useDemoServices();
     const { showSuccess, showError } = useToast();
+
+    // Past-date balance preference (used by insert flows)
+    const { pref: pastDatePref, setPref: setPastDatePref } = usePastDateBalancePref();
 
     // Shared account actions via DI hook
     const accountActions = useAccountActions({
@@ -939,6 +944,68 @@ const SettingsPage = () => {
                                 {translations.sidebar.settings.installAppSubtitle || (language === "it" ? "Aggiungi PaciFinance alla schermata home" : "Add PaciFinance to your home screen")}
                             </p>
                             <PWAInstallGuide variant="compact" />
+                        </div>
+
+                        {/* Past-date balance preference */}
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "14px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                            }}
+                        >
+                            <h3 style={{
+                                marginBottom: "0.5rem",
+                                color: theme.textColor,
+                                fontSize: "1.1rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faHistory} style={{
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
+                                }} />
+                                {translations.sidebar.settings.pastDateBalance || (language === "it" ? "Impatto bilancio per date passate" : "Past-date balance impact")}
+                            </h3>
+                            <p style={{
+                                color: theme.textColor,
+                                marginBottom: "0.85rem",
+                                fontSize: "0.8rem",
+                                lineHeight: "1.4",
+                                opacity: 0.7
+                            }}>
+                                {translations.sidebar.settings.pastDateBalanceSubtitle || (language === "it" ? "Scegli cosa succede quando inserisci spese o entrate con date di mesi precedenti" : "Choose what happens when you insert expenses or incomes with dates in previous months")}
+                            </p>
+                            <select
+                                value={pastDatePref}
+                                onChange={(e) => setPastDatePref(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "0.6rem 0.75rem",
+                                    borderRadius: "10px",
+                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
+                                    color: theme.textColor,
+                                    fontSize: "0.88rem",
+                                    fontFamily: "inherit",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <option value={PAST_DATE_BALANCE_CHOICES.ASK}>
+                                    {translations.sidebar.settings.pastDateBalanceAsk || (language === "it" ? "Chiedi ogni volta" : "Ask every time")}
+                                </option>
+                                <option value={PAST_DATE_BALANCE_CHOICES.NONE}>
+                                    {translations.sidebar.settings.pastDateBalanceNone || (language === "it" ? "Nessun impatto sul bilancio" : "No balance impact")}
+                                </option>
+                                <option value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}>
+                                    {translations.sidebar.settings.pastDateBalancePastMonth || (language === "it" ? "Aggiorna bilancio del mese" : "Update that month's balance")}
+                                </option>
+                            </select>
                         </div>
 
                         {/* Data Export Section */}

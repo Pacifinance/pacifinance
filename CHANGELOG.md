@@ -13,6 +13,7 @@ Il formato segue [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) e il p
 - **Prezzi crypto in tempo reale**: pagina Market Prices con dati CoinGecko e sparkline a 7 giorni
 - **Guida installazione PWA**: istruzioni auto-detect dispositivo (iOS, Android, Desktop) in Impostazioni e Info
 - **Modifica inline transazioni**: modifica entrate e uscite direttamente nella tabella con delete+reinsert
+- **Scelta impatto bilancio per date passate**: quando inserisci spese o entrate con data di un mese passato, una modale ti chiede se vuoi aggiornare anche lo snapshot del bilancio di quel mese. La preferenza è salvabile (Chiedi ogni volta / Nessun impatto / Aggiorna bilancio del mese) e modificabile dalle Impostazioni. Hook `usePastDateBalancePref`, selettore `getBalanceForMonth`, componente `PastDateBalanceChoiceModal`.
 - Mock data CoinGecko per pagina Market Prices in modalità dev
 - Mock data allineati con file i18n per consistenza demo/dev/prod
 - Changelog file per tracciare la storia del progetto

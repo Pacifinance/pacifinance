@@ -510,7 +510,12 @@
             "bugReport": "Report a bug",
             "bugReportSubtitle": "Open a report on GitHub",
             "installApp": "Install as App",
-            "installAppSubtitle": "Add PaciFinance to your home screen"
+            "installAppSubtitle": "Add PaciFinance to your home screen",
+            "pastDateBalance": "Past-date balance impact",
+            "pastDateBalanceSubtitle": "Choose what happens when you insert outflows or incomes with dates in previous months",
+            "pastDateBalanceAsk": "Ask every time",
+            "pastDateBalanceNone": "No balance impact",
+            "pastDateBalancePastMonth": "Update that month's balance"
         }
     },
     "whatsNew": {
@@ -851,6 +856,27 @@
             "selectCategory": "Sélectionne une catégorie",
             "selectPaymentType": "Sélectionne un type de paiement",
             "insertValidValue": "Insère une valeur valide supérieure à 0"
+        },
+        "pastDateBalance": {
+            "title": "Past date detected",
+            "subtitleOne": "You selected a date from a previous month. Should this amount also update that month's balance?",
+            "subtitleMany": "You are inserting {count} entries with dates in previous months (months involved: {months}). How should historical balances be handled?",
+            "optionNoneTitle": "Don't touch the balance",
+            "optionNoneDesc": "The entry will be saved as a historical transaction only, without changing any balance snapshot.",
+            "optionPastMonthTitle": "Update that month's balance",
+            "optionPastMonthDesc": "The amount will be subtracted from (or added to, for incomes) the balance snapshot of the transaction's month.",
+            "remember": "Remember my choice (editable in Settings)",
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "globalDefaultLabel": "Balance impact (past dates)",
+            "globalDefaultNone": "No impact",
+            "globalDefaultPastMonth": "Subtract from that month's balance",
+            "globalDefaultPastMonthIncome": "Add to that month's balance",
+            "globalDefaultRemembered": "Use my saved preference",
+            "perRowOverride": "Choice for this row",
+            "perRowOverrideDefault": "Use default",
+            "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped.",
+            "summaryBalancesUpdated": "{count} historical balances updated"
         }
     },
     "comparison": {

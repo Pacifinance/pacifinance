@@ -70,7 +70,7 @@
 - [x] Inserimento multiplo: uscite, entrate e bilanci in un'unica operazione (MultiOutflowInsert, MultiIncomeInsert, MultiBalanceInsert) <!-- roadmap:multi-insert -->
 - [x] Analisi dettagliata uscite: categorie, metodi di pagamento, pattern ricorrenti con confronti mensili <!-- roadmap:detailed-outflow-analysis -->
 - [x] Fix: categorie uscite tradotte in tutte le lingue (i18n category names in DetailedOutflowsAnalysis) <!-- roadmap:i18n-category-colors -->
-
+- [x] Scelta utente su impatto bilancio per inserimenti datati in mesi passati (past date balance choice) con modale, preferenza persistente e toggle in Impostazioni <!-- roadmap:past-date-balance-choice -->
 ---
 
 ## Da Fare

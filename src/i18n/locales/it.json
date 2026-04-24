@@ -510,7 +510,12 @@
             "bugReport": "Segnala un bug",
             "bugReportSubtitle": "Apri una segnalazione su GitHub",
             "installApp": "Installa come App",
-            "installAppSubtitle": "Aggiungi PaciFinance alla schermata home"
+            "installAppSubtitle": "Aggiungi PaciFinance alla schermata home",
+            "pastDateBalance": "Impatto bilancio per date passate",
+            "pastDateBalanceSubtitle": "Scegli cosa succede quando inserisci spese o entrate con date di mesi precedenti",
+            "pastDateBalanceAsk": "Chiedi ogni volta",
+            "pastDateBalanceNone": "Nessun impatto sul bilancio",
+            "pastDateBalancePastMonth": "Aggiorna bilancio del mese"
         }
     },
 
@@ -853,6 +858,27 @@
             "selectCategory": "Seleziona una categoria",
             "selectPaymentType": "Seleziona un tipo di pagamento",
             "insertValidValue": "Inserisci un valore valido maggiore di 0"
+        },
+        "pastDateBalance": {
+            "title": "Data passata rilevata",
+            "subtitleOne": "Hai selezionato una data di un mese precedente. Vuoi che questo importo aggiorni anche il bilancio di quel mese?",
+            "subtitleMany": "Hai inserito {count} voci con data di mesi precedenti (mesi coinvolti: {months}). Come vuoi che vengano gestiti i bilanci storici?",
+            "optionNoneTitle": "Non modificare il bilancio",
+            "optionNoneDesc": "La voce verrà salvata come transazione storica, senza toccare lo snapshot del bilancio. Scelta consigliata se aggiorni il bilancio separatamente o usi l'import.",
+            "optionPastMonthTitle": "Aggiorna il bilancio di quel mese",
+            "optionPastMonthDesc": "L'importo verrà sottratto (o aggiunto, per le entrate) dallo snapshot del bilancio del mese della transazione. Utile se usi solo l'inserimento di spese/entrate per tenere aggiornato il patrimonio.",
+            "remember": "Ricorda la mia scelta (modificabile dalle Impostazioni)",
+            "confirm": "Conferma",
+            "cancel": "Annulla",
+            "globalDefaultLabel": "Impatto sul bilancio (date passate)",
+            "globalDefaultNone": "Nessun impatto",
+            "globalDefaultPastMonth": "Sottrai dal bilancio di quel mese",
+            "globalDefaultPastMonthIncome": "Aggiungi al bilancio di quel mese",
+            "globalDefaultRemembered": "Usa la mia preferenza salvata",
+            "perRowOverride": "Scelta per questa riga",
+            "perRowOverrideDefault": "Usa default",
+            "missingSnapshotWarning": "Nessun bilancio trovato per {month}/{year}. Aggiornamento bilancio saltato.",
+            "summaryBalancesUpdated": "{count} bilanci storici aggiornati"
         }
     },
     "comparison": {

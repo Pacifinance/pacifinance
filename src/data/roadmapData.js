@@ -202,6 +202,18 @@ const roadmapData = [
     icon: '🎨',
     completedDate: '2026-04',
   },
+  {
+    id: 'past-date-balance-choice',
+    title: { it: 'Scelta Impatto Bilancio Date Passate', en: 'Past-Date Balance Impact Choice' },
+    description: {
+      it: 'Quando inserisci spese o entrate con data di un mese passato, puoi scegliere se aggiornare anche il bilancio di quel mese. La scelta è memorizzabile dalle Impostazioni.',
+      en: 'When inserting outflows or incomes dated in past months, you can choose whether to update that month\'s balance too. Preference can be saved from Settings.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🕑',
+    completedDate: '2026-04',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'goals-limits',

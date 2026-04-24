@@ -725,6 +725,8 @@
             "confirmUpdate": "Confirmar actualización del balance",
             "successUpdate": "Balance actualizado con éxito",
             "successFullUpdate": "Actualización de balance e ingresos/gastos exitosa",
+            "pastMonthBannerTitle": "You are editing a past month",
+            "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
             "multiInsert": {
                 "toggle": "Multi-inserción",
                 "title": "Actualización múltiple de balances",

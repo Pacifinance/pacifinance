@@ -723,6 +723,8 @@
             "confirmUpdate": "Guthabenaktualisierung bestätigen",
             "successUpdate": "Guthaben erfolgreich aktualisiert",
             "successFullUpdate": "Guthaben- und Einnahmen-/Ausgabenaktualisierung erfolgreich",
+            "pastMonthBannerTitle": "You are editing a past month",
+            "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
             "multiInsert": {
                 "toggle": "Mehrfacheingabe",
                 "title": "Mehrere Guthaben aktualisieren",

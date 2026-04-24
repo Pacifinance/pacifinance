@@ -410,23 +410,31 @@ describe('buildChartData', () => {
     expect(result[11].month).toBe('2025-06');
   });
 
-  it('preserves balance properties in output', () => {
-    const balances = Array(12).fill(null).map(() => ({
-      date: '2025-01',
-      balance: { bank: 999, totalValue: 999 },
-    }));
-    const result = buildChartData(balances, currentDate);
-    expect(result[0].bank).toBe(999);
-    expect(result[0].totalValue).toBe(999);
-  });
-
-  it('handles balances with fewer than 12 entries', () => {
+  it('preserves balance properties from the matching snapshot', () => {
+    // Snapshot for June 2025 only → only that slot should carry values,
+    // the other 11 months are zero-filled.
     const balances = [
-      { date: '2025-06', balance: { bank: 500 } },
-      { date: '2025-05', balance: { bank: 400 } },
+      { date: '2025-06-30', balance: { bank: 999, totalValue: 999 } },
     ];
     const result = buildChartData(balances, currentDate);
-    expect(result).toHaveLength(2);
+    // index 11 = June 2025
+    expect(result[11].bank).toBe(999);
+    expect(result[11].totalValue).toBe(999);
+    // older months are empty
+    expect(result[0].bank).toBeUndefined();
+  });
+
+  it('always returns 12 entries even when source has fewer snapshots', () => {
+    const balances = [
+      { date: '2025-06-30', balance: { bank: 500 } },
+      { date: '2025-05-31', balance: { bank: 400 } },
+    ];
+    const result = buildChartData(balances, currentDate);
+    expect(result).toHaveLength(12);
+    expect(result[11].bank).toBe(500); // June
+    expect(result[10].bank).toBe(400); // May
+    // the 10 older months are empty
+    expect(result[0].bank).toBeUndefined();
   });
 });
 

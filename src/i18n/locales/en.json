@@ -725,6 +725,8 @@
             "confirmUpdate": "Confirm balance update",
             "successUpdate": "Balance updated successfully",
             "successFullUpdate": "Balance and income/outflow update successful",
+            "pastMonthBannerTitle": "You are editing a past month",
+            "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
             "multiInsert": {
                 "toggle": "Multi-insert",
                 "title": "Batch Update Balances",

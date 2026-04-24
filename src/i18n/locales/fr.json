@@ -723,6 +723,8 @@
             "confirmUpdate": "Confirmer la mise à jour du solde",
             "successUpdate": "Solde mis à jour avec succès",
             "successFullUpdate": "Mise à jour du solde et des revenus/sorties réussie",
+            "pastMonthBannerTitle": "You are editing a past month",
+            "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
             "multiInsert": {
                 "toggle": "Multi-insertion",
                 "title": "Mise à jour multiple des soldes",

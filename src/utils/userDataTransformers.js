@@ -254,13 +254,30 @@ export const buildMonthlyArrays = (allOutflowsIncomesArray) => {
  * @param {Date}  currentDate
  * @returns {Array}
  */
-export const buildChartData = (balancesData, currentDate) =>
-  balancesData.slice(0, 12).reverse().map((monthData, i) => {
-    const monthOffset = 11 - i;
-    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - monthOffset, 1);
+export const buildChartData = (balancesData, currentDate) => {
+  // Index snapshots by (year, month) using the snapshot's real date so the
+  // last-12-months window aligns by date rather than by array position.
+  const byMonth = new Map();
+  for (const entry of balancesData || []) {
+    if (!entry?.date) continue;
+    const d = new Date(entry.date);
+    if (Number.isNaN(d.getTime())) continue;
+    byMonth.set(`${d.getFullYear()}-${d.getMonth() + 1}`, entry);
+  }
+  const out = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
     const monthString = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    return { ...monthData.balance, month: monthString, date: monthData.date };
-  });
+    const entry = byMonth.get(key);
+    out.push({
+      ...(entry?.balance || {}),
+      month: monthString,
+      date: entry?.date || null,
+    });
+  }
+  return out;
+};
 
 // ─── Assets ──────────────────────────────────────────────────────────
 

@@ -804,6 +804,55 @@ export default function InsertValue({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
+  /**
+   * Sync balance form fields with the snapshot of the selected month.
+   *
+   * When the user picks a past month in the balance section picker, the form
+   * must show that month's historical values (not the current ones), so that
+   * a submit writes back a coherent snapshot with only the fields the user
+   * actually edited changed. If the selected month is the current one, the
+   * fields mirror the live current-month values from userData.
+   */
+  useEffect(() => {
+    if (!userData) return;
+    const now = new Date();
+    const isCurrent =
+      balanceDate.month === now.getMonth() + 1 &&
+      balanceDate.year === now.getFullYear();
+
+    if (isCurrent) {
+      setBankValue(getBankValue(userData));
+      setCashValue(getCashValue(userData));
+      setDigitalServicesValue(getDigitalServicesValue(userData));
+      setEmergencyFundValue(getEmergencyFund(userData));
+      setStocksValue(getStocksValue(userData));
+      setETFValue(getEtfValue(userData));
+      setBitcoinValue(getBitcoinValue(userData));
+      setCryptoValue(getCryptoValue(userData));
+      setBondsValue(getBondsValue(userData));
+      setFundsValue(getFundsValue(userData));
+      setGoldValue(getGoldValue(userData));
+      return;
+    }
+
+    const snapshot = getBalanceForMonth(userData, balanceDate.year, balanceDate.month);
+    const b = snapshot?.balance || {};
+    // Map DB keys → state setters. For missing keys we set 0 so the placeholder
+    // is still clean (empty input means "keep this 0" on submit).
+    setBankValue(Number(b.bank) || 0);
+    setCashValue(Number(b.cash) || 0);
+    setDigitalServicesValue(Number(b.digitalServices) || 0);
+    setEmergencyFundValue(Number(b.emergencyFund) || 0);
+    setStocksValue(Number(b.stocks) || 0);
+    setETFValue(Number(b.etf) || 0);
+    setBitcoinValue(Number(b.bitcoin) || 0);
+    setCryptoValue(Number(b.crypto) || 0);
+    setBondsValue(Number(b.bonds) || 0);
+    setFundsValue(Number(b.funds) || 0);
+    setGoldValue(Number(b.gold) || 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balanceDate.month, balanceDate.year, userData]);
+
     // Imposta la sezione iniziale basata sul parametro URL - solo al primo caricamento
   useEffect(() => {
     if (initialSectionApplied.current) return; // Evita di eseguire più volte

@@ -335,20 +335,36 @@ export const getBalanceGrowth12Months = (userData) => {
 export const getBalanceChartData = (userData) => {
   const balances = userData?.balances || [];
   const currentDate = new Date();
-  
-  // Get last 12 months data in reverse order (oldest to newest for charts)
-  return balances.slice(0, 12).reverse().map((monthData, i) => {
-    const monthOffset = 11 - i;
-    const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - monthOffset, 1);
-    const monthString = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
-    
-    const balance = monthData?.balance || {};
-    const total = (balance.cash || 0) + (balance.digitalServices || 0) + (balance.stocks || 0) + 
-                  (balance.bank || 0) + (balance.crypto || 0) + (balance.etf || 0) + 
-                  (balance.bitcoin || 0) + (balance.bonds || 0) + (balance.funds || 0) + 
+
+  // Index balances by (year, month) using the snapshot's real date. This makes
+  // the chart robust to gaps, duplicates, reordering, or extra historical
+  // snapshots in the array (otherwise the old positional mapping could
+  // misalign months when the balances list grows or shrinks).
+  const byMonth = new Map();
+  for (const entry of balances) {
+    if (!entry?.date) continue;
+    const d = new Date(entry.date);
+    if (Number.isNaN(d.getTime())) continue;
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
+    // Later entries for the same month overwrite earlier ones. The backend
+    // already returns only one entry per month, but this guarantees
+    // determinism even if that invariant breaks in the future.
+    byMonth.set(key, entry);
+  }
+
+  // Emit the last 12 months oldest → newest, filling missing months with zeros.
+  const result = [];
+  for (let i = 11; i >= 0; i--) {
+    const target = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const key = `${target.getFullYear()}-${target.getMonth() + 1}`;
+    const monthString = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}`;
+    const balance = byMonth.get(key)?.balance || {};
+    const total = (balance.cash || 0) + (balance.digitalServices || 0) + (balance.stocks || 0) +
+                  (balance.bank || 0) + (balance.crypto || 0) + (balance.etf || 0) +
+                  (balance.bitcoin || 0) + (balance.bonds || 0) + (balance.funds || 0) +
                   (balance.gold || 0) + (balance.emergencyFund || 0);
-    
-    return {
+
+    result.push({
       name: monthString,
       cash: balance.cash || 0,
       digitalServices: balance.digitalServices || 0,
@@ -361,7 +377,7 @@ export const getBalanceChartData = (userData) => {
       funds: balance.funds || 0,
       gold: balance.gold || 0,
       emergencyFund: balance.emergencyFund || 0,
-      total: total,
+      total,
       amt: 2400, // Legacy property for compatibility
       // Add all properties with "Real" suffix for backward compatibility
       cashReal: balance.cash || 0,
@@ -375,7 +391,8 @@ export const getBalanceChartData = (userData) => {
       fundsReal: balance.funds || 0,
       goldReal: balance.gold || 0,
       emergencyFundReal: balance.emergencyFund || 0,
-      month: monthString // Legacy property for compatibility
-    };
-  });
+      month: monthString, // Legacy property for compatibility
+    });
+  }
+  return result;
 };

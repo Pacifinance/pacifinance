@@ -3,7 +3,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import { faLayerGroup, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import {
   ModernActionButton,
@@ -213,6 +213,30 @@ const FooterBar = styled.div`
   }
 `;
 
+const PastMonthBanner = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(251, 191, 36, 0.12)' : 'rgba(251, 191, 36, 0.15)'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(251, 191, 36, 0.35)' : 'rgba(217, 119, 6, 0.35)'};
+  color: ${p => p.theme.textColor};
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    color: ${p => p.theme.mode === 'dark' ? '#fbbf24' : '#d97706'};
+  }
+
+  strong {
+    font-weight: 600;
+  }
+`;
+
 /* ─── Component ─── */
 export default function BalanceSection({
   theme,
@@ -282,6 +306,12 @@ export default function BalanceSection({
     });
   }
 
+  /** True when the picker is on the current month — the normal, live state. */
+  const isCurrentMonth =
+    balanceDate.month === currentMonth && balanceDate.year === currentYear;
+  /** Human-readable label of the currently selected month (e.g. "Marzo 2026"). */
+  const selectedMonthLabel = `${monthNames[balanceDate.month] || ''} ${balanceDate.year}`;
+
   /* Asset definitions with icons and colors */
   const liquidityAssets = [
     { key: 'bank', label: translations.assets.bank, value: bankValue, setter: setBankValue },
@@ -330,6 +360,21 @@ export default function BalanceSection({
 
   return (
     <SectionWrapper>
+      {/* Past-month banner */}
+      {!isCurrentMonth && (
+        <PastMonthBanner theme={theme}>
+          <FontAwesomeIcon icon={faCircleInfo} />
+          <div>
+            <strong>{translations.insert.balanceSection.pastMonthBannerTitle}</strong>
+            {': '}
+            <span>
+              {(translations.insert.balanceSection.pastMonthBannerBody || '')
+                .replace('{month}', selectedMonthLabel)}
+            </span>
+          </div>
+        </PastMonthBanner>
+      )}
+
       {/* Liquidità Group */}
       <GroupCard>
         <GroupHeader theme={theme}>

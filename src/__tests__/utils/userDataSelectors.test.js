@@ -77,6 +77,7 @@ import {
   
   // Legacy helper
   createLegacyBalanceData,
+  getBalanceChartData,
 } from '../../utils/userDataSelectors';
 
 // Complete mock userData based on MockAuthContext structure
@@ -680,5 +681,73 @@ describe('userDataSelectors', () => {
       };
       expect(isNewUser(sparseUser)).toBe(true);
     });
+  });
+});
+
+// ═══════════════════════════════════════════
+// getBalanceChartData — date-based alignment
+// ═══════════════════════════════════════════
+
+describe('getBalanceChartData', () => {
+  /** Build an ISO date "YYYY-MM-15" for N months before `now`. */
+  const monthsAgoISO = (n, now = new Date()) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - n, 15);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-15`;
+  };
+
+  it('always returns exactly 12 entries in oldest → newest order', () => {
+    const result = getBalanceChartData({ balances: [] });
+    expect(result).toHaveLength(12);
+    // Names are YYYY-MM and strictly increasing
+    for (let i = 1; i < result.length; i++) {
+      expect(result[i].name > result[i - 1].name).toBe(true);
+    }
+  });
+
+  it('aligns snapshots by their real date, not by array position', () => {
+    const balances = [
+      // Intentionally unordered, only months -2 and -5 are present
+      { date: monthsAgoISO(5), balance: { bank: 500 } },
+      { date: monthsAgoISO(2), balance: { bank: 200 } },
+    ];
+    const result = getBalanceChartData({ balances });
+    expect(result[11 - 2].bank).toBe(200); // 2 months ago
+    expect(result[11 - 5].bank).toBe(500); // 5 months ago
+    // Months without a snapshot are zero
+    expect(result[11 - 4].bank).toBe(0);
+  });
+
+  it('is robust to duplicate entries for the same month (last one wins)', () => {
+    const balances = [
+      { date: monthsAgoISO(1), balance: { bank: 100 } },
+      { date: monthsAgoISO(1), balance: { bank: 999 } },
+    ];
+    const result = getBalanceChartData({ balances });
+    expect(result[10].bank).toBe(999);
+  });
+
+  it('ignores entries with missing or invalid dates', () => {
+    const balances = [
+      { date: null, balance: { bank: 111 } },
+      { date: 'not-a-date', balance: { bank: 222 } },
+      { date: monthsAgoISO(0), balance: { bank: 333 } },
+    ];
+    const result = getBalanceChartData({ balances });
+    expect(result[11].bank).toBe(333);
+    // Invalid entries must not appear anywhere
+    const bankValues = result.map((r) => r.bank);
+    expect(bankValues).not.toContain(111);
+    expect(bankValues).not.toContain(222);
+  });
+
+  it('computes total as the sum of all asset fields for each month', () => {
+    const balances = [
+      {
+        date: monthsAgoISO(0),
+        balance: { bank: 100, cash: 50, stocks: 25, emergencyFund: 25 },
+      },
+    ];
+    const result = getBalanceChartData({ balances });
+    expect(result[11].total).toBe(200);
   });
 });

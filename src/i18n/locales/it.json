@@ -725,6 +725,8 @@
             "confirmUpdate": "Conferma aggiornamento bilancio",
             "successUpdate": "Bilancio aggiornato con successo",
             "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo",
+            "pastMonthBannerTitle": "Stai modificando un mese passato",
+            "pastMonthBannerBody": "I valori mostrati sono lo snapshot di {month}. Qualunque modifica sovrascriverà il bilancio di quel mese.",
             "multiInsert": {
                 "toggle": "Multi-inserimento",
                 "title": "Aggiornamento multiplo bilanci",

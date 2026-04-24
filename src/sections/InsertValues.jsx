@@ -30,8 +30,10 @@ import {
     getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
     getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth
 } from '../utils/userDataSelectors';
+import { isPastMonthDate as isPastMonthDateUtil } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
+const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -387,6 +389,18 @@ export default function InsertValue({
     onResolve: null, // (choice, remember) => void
   });
 
+  // Edit-transaction confirmation modal (single-row edit that changes amount/month)
+  const [editModal, setEditModal] = useState({
+    isOpen: false,
+    isOutflow: true,
+    originalDate: '',
+    originalAmount: 0,
+    editedDate: '',
+    editedAmount: 0,
+    selectedSource: '',
+    onResolve: null, // (source|null) => void
+  });
+
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
   const [updateInExBalanceSuccess, setUpdateInExBalanceSuccess] = useState(false);
@@ -570,17 +584,10 @@ export default function InsertValue({
 
   /**
    * Check whether an ISO date string (YYYY-MM-DD) belongs to a month strictly
-   * before the current month/year.
+   * before the current month/year. Thin wrapper around the pure util
+   * (see src/utils/balanceDeltaLogic.js) for convenience.
    */
-  const isPastMonthDate = (isoDate) => {
-    if (!isoDate) return false;
-    const d = new Date(isoDate);
-    if (Number.isNaN(d.getTime())) return false;
-    const now = new Date();
-    if (d.getFullYear() < now.getFullYear()) return true;
-    if (d.getFullYear() > now.getFullYear()) return false;
-    return d.getMonth() < now.getMonth();
-  };
+  const isPastMonthDate = (isoDate) => isPastMonthDateUtil(isoDate);
 
   /**
    * Apply deltas to historical balance snapshots. Groups rows by (year, month)
@@ -664,6 +671,90 @@ export default function InsertValue({
           if (remember && choice) setPastDatePref(choice);
           setPastDateModal({ isOpen: false, rows: [], isOutflow: true, onResolve: null });
           resolve(choice);
+        },
+      });
+    });
+  };
+
+  /**
+   * Apply a signed balance delta (in EUR) on a single balance source for a given
+   * date. If the date is in the current month, updates the current snapshot via
+   * addBalance using current in-memory values. If the date is in a past month,
+   * reads that month's snapshot and writes back the adjusted value.
+   *
+   * @param {string} isoDate       - ISO date of the transaction month
+   * @param {number} deltaEUR      - signed delta to apply on the source (EUR)
+   * @param {string} balanceSource - translated label of the source (matches `options` keys)
+   * @returns {Promise<boolean>}   - true on success
+   */
+  const applyBalanceDeltaForDate = async (isoDate, deltaEUR, balanceSource) => {
+    if (!balanceSource || !isoDate || !deltaEUR) return false;
+    const { translatedToAsset, assetToDbKey } = getBalanceSourceMaps();
+    const assetKey = translatedToAsset[balanceSource];
+    if (!assetKey) return false;
+
+    if (!isPastMonthDate(isoDate)) {
+      // Current month path — use in-memory values + createBalancesJson.
+      const currentMap = {
+        bank: bankValue, cash: cashValue, digitalServices: digitalServicesValue,
+        emergencyFund: emergencyFundValue, stocks: stocksValue, etf: etfValue,
+        bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
+        funds: fundsValue, gold: goldValue,
+      };
+      const currentVal = parseFloat(currentMap[assetKey]) || 0;
+      const newVal = currentVal + deltaEUR;
+      const balancesJson = createBalancesJson(currentDate, balanceSource, newVal);
+      try {
+        const res = await financeService.addBalance(balancesJson);
+        return res?.status === 200;
+      } catch { return false; }
+    }
+
+    // Past-month path — load snapshot, adjust, write back.
+    const d = new Date(isoDate);
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const snapshot = getBalanceForMonth(userData, year, month);
+    if (!snapshot) {
+      const warning = (translations.insert.pastDateBalance?.missingSnapshotWarning || '')
+        .replace('{month}', String(month).padStart(2, '0'))
+        .replace('{year}', year);
+      if (warning) showError(warning, 5000);
+      return false;
+    }
+    const balancePayload = { date: getBalanceDateForDB({ month, year }) };
+    for (const [aKey, dbKey] of Object.entries(assetToDbKey)) {
+      const current = Number(snapshot.balance?.[dbKey]) || 0;
+      balancePayload[dbKey] = aKey === assetKey ? current + deltaEUR : current;
+    }
+    try {
+      const res = await financeService.addBalance({ balance: balancePayload });
+      return res?.status === 200;
+    } catch { return false; }
+  };
+
+  /**
+   * Open the edit-confirmation modal and await the user's decision.
+   *
+   * Resolves to one of:
+   *   - { cancelled: true }                  → user dismissed the modal
+   *   - { cancelled: false, source: null }   → user chose to save without
+   *                                            touching any balance
+   *   - { cancelled: false, source: '<label>' } → user picked a balance source
+   */
+  const openEditConfirmationModal = ({ isOutflow, originalDate, originalAmount, editedDate, editedAmount }) => {
+    return new Promise((resolve) => {
+      setEditModal({
+        isOpen: true,
+        isOutflow,
+        originalDate,
+        originalAmount,
+        editedDate,
+        editedAmount,
+        selectedSource: '',
+        onResolve: (result) => {
+          setEditModal((m) => ({ ...m, isOpen: false, onResolve: null }));
+          resolve(result);
         },
       });
     });
@@ -1178,83 +1269,107 @@ export default function InsertValue({
     setShowConfirmationDeleteOutflow(true);
   };
 
-  // Inline edit save handlers — delete original + insert new
+  // Inline edit save handlers — delete original + insert new, then apply a
+  // balance delta if the amount and/or month changed (one source, applied to
+  // both old and new month as needed).
   const handleSaveEditOutflow = async (originalAdd, editedValues) => {
-    try {
-      // 1. Delete original
-      const deleteData = {
-        expense: {
-          date: originalAdd.date,
-          amount: Number(originalAdd.amount) || 0,
-          is_expense: true,
-        },
-      };
-      const deleteResult = await financeService.deleteExpenseOrIncome(deleteData);
-      if (deleteResult.status !== 200) {
-        showError(translations.insert.outflowSection.editFailed);
-        return false;
-      }
-      // 2. Insert edited
-      const inExJson = createInExJson(
-        true,
-        editedValues.date,
-        editedValues.amount,
-        editedValues.note,
-        editedValues.typologyKey,
-        editedValues.categoryKey,
-      );
-      const insertResult = await financeService.addExpenseOrIncome(inExJson);
-      if (insertResult.status === 200) {
-        handleSetIsUpdated(false);
-        showSuccess(translations.insert.outflowSection.successEdit);
-        fetchData();
-        return true;
-      } else {
-        showError(translations.insert.outflowSection.editFailed);
-        return false;
-      }
-    } catch (error) {
-      console.error("Error saving inline edit (outflow):", error);
-      showError(translations.insert.outflowSection.editFailed);
-      return false;
-    }
+    return saveEditTransaction(originalAdd, editedValues, true);
   };
 
   const handleSaveEditIncome = async (originalAdd, editedValues) => {
+    return saveEditTransaction(originalAdd, editedValues, false);
+  };
+
+  /**
+   * Shared edit flow for both outflow and income. Detects whether the edit
+   * changed the amount or the transaction's month and, if so, asks the user
+   * to pick a balance source before performing delete+insert and applying the
+   * corresponding deltas to the affected months.
+   */
+  const saveEditTransaction = async (originalAdd, editedValues, isOutflow) => {
+    const oldDate = originalAdd.date ? new Date(originalAdd.date).toISOString().split('T')[0] : '';
+    const newDate = editedValues.date;
+    const oldAmountEUR = Number(originalAdd.amount) || 0;
+    const newAmountEUR = toEUR(Number(editedValues.amount) || 0);
+    const amountChanged = Math.abs(oldAmountEUR - newAmountEUR) > 0.005;
+    const sameMonth = (() => {
+      if (!oldDate || !newDate) return true;
+      const a = new Date(oldDate), b = new Date(newDate);
+      if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return true;
+      return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+    })();
+    const needsBalanceUpdate = amountChanged || !sameMonth;
+
+    // 1. Ask for balance source if the edit impacts balances (recommended but optional).
+    let balanceSource = null;
+    if (needsBalanceUpdate) {
+      const result = await openEditConfirmationModal({
+        isOutflow,
+        originalDate: oldDate,
+        originalAmount: oldAmountEUR,
+        editedDate: newDate,
+        editedAmount: newAmountEUR,
+      });
+      if (!result || result.cancelled) return false; // user dismissed the modal
+      balanceSource = result.source; // null means: save edit, don't touch balances
+    }
+
+    const sectionKey = isOutflow ? 'outflowSection' : 'incomeSection';
     try {
-      const deleteData = {
+      // 2. Delete original.
+      const deleteResult = await financeService.deleteExpenseOrIncome({
         expense: {
           date: originalAdd.date,
-          amount: Number(originalAdd.amount) || 0,
-          is_expense: false,
+          amount: oldAmountEUR,
+          is_expense: isOutflow,
         },
-      };
-      const deleteResult = await financeService.deleteExpenseOrIncome(deleteData);
+      });
       if (deleteResult.status !== 200) {
-        showError(translations.insert.incomeSection.editFailed);
+        showError(translations.insert[sectionKey].editFailed);
         return false;
       }
+
+      // 3. Insert edited.
       const inExJson = createInExJson(
-        false,
+        isOutflow,
         editedValues.date,
         editedValues.amount,
         editedValues.note,
-        0,
+        isOutflow ? editedValues.typologyKey : 0,
         editedValues.categoryKey,
       );
       const insertResult = await financeService.addExpenseOrIncome(inExJson);
-      if (insertResult.status === 200) {
-        handleSetIsUpdated(false);
-        showSuccess(translations.insert.incomeSection.successEdit);
-        fetchData();
-        return true;
-      } else {
-        showError(translations.insert.incomeSection.editFailed);
+      if (insertResult.status !== 200) {
+        showError(translations.insert[sectionKey].editFailed);
         return false;
       }
+
+      // 4. Apply balance deltas if needed.
+      if (needsBalanceUpdate && balanceSource) {
+        // Reversing the old transaction on the OLD month:
+        //   outflow → +oldAmount   income → -oldAmount
+        // Applying the new transaction on the NEW month:
+        //   outflow → -newAmount   income → +newAmount
+        const oldSign = isOutflow ? +1 : -1;
+        const newSign = isOutflow ? -1 : +1;
+        if (sameMonth) {
+          const net = oldSign * oldAmountEUR + newSign * newAmountEUR;
+          if (Math.abs(net) > 0.005) {
+            await applyBalanceDeltaForDate(newDate, net, balanceSource);
+          }
+        } else {
+          await applyBalanceDeltaForDate(oldDate, oldSign * oldAmountEUR, balanceSource);
+          await applyBalanceDeltaForDate(newDate, newSign * newAmountEUR, balanceSource);
+        }
+      }
+
+      handleSetIsUpdated(false);
+      showSuccess(translations.insert[sectionKey].successEdit);
+      fetchData();
+      return true;
     } catch (error) {
-      console.error("Error saving inline edit (income):", error);
-      showError(translations.insert.incomeSection.editFailed);
+      console.error(`Error saving inline edit (${isOutflow ? 'outflow' : 'income'}):`, error);
+      showError(translations.insert[sectionKey].editFailed);
       return false;
     }
   };
@@ -1445,35 +1560,49 @@ export default function InsertValue({
         is_expense: false,
       },
     };
-    
+
     try {
       const incomesDelete = await financeService.deleteExpenseOrIncome(data);
 
       // If user selected a balance to adjust, subtract the deleted income from that balance
       if (incomesDelete.status === 200) {
         if (selectedOption) {
-          // Find the current value for the selected balance
-          const balanceOptions = {
-            [translations.assets.bank]: bankValue,
-            [translations.assets.cash]: cashValue,
-            [translations.assets.digitalServices]: digitalServicesValue,
-            [translations.assets.stocks]: stocksValue,
-            [translations.assets.etf]: etfValue,
-            [translations.assets.bitcoin]: bitcoinValue,
-            [translations.assets.crypto]: cryptoValue,
-            [translations.assets.bonds]: bondsValue,
-            [translations.assets.funds]: fundsValue,
-            [translations.assets.gold]: goldValue,
-          };
-          const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-          const incomeNumber = parseFloat(deleteIncomeAmount);
-          const newValue = valueBalanceSelected - incomeNumber;
-          // Build balancesJson for update
-          const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-          await financeService.addBalance(balancesJson);
+          if (isPastMonthDate(deleteIncomeDate)) {
+            // Past-month transaction → adjust historical snapshot.
+            // Deleting an income REMOVES money from the chosen balance → same
+            // sign as inserting an outflow (isOutflow=true).
+            await applyPastMonthBalanceAdjustments(
+              [{
+                date: deleteIncomeDate,
+                amount: Number(deleteIncomeAmount) || 0,
+                balanceSource: selectedOption,
+              }],
+              true,
+            );
+          } else {
+            // Current-month path (unchanged)
+            const balanceOptions = {
+              [translations.assets.bank]: bankValue,
+              [translations.assets.cash]: cashValue,
+              [translations.assets.digitalServices]: digitalServicesValue,
+              [translations.assets.stocks]: stocksValue,
+              [translations.assets.etf]: etfValue,
+              [translations.assets.bitcoin]: bitcoinValue,
+              [translations.assets.crypto]: cryptoValue,
+              [translations.assets.bonds]: bondsValue,
+              [translations.assets.funds]: fundsValue,
+              [translations.assets.gold]: goldValue,
+            };
+            const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+            const incomeNumber = parseFloat(deleteIncomeAmount);
+            const newValue = valueBalanceSelected - incomeNumber;
+            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            await financeService.addBalance(balancesJson);
+          }
         }
         handleSetIsUpdated(false);
         setDeleteIncomesSuccess(true);
+        setSelectedOption("");
         fetchData();
       } else {
         showError(translations.insert.errors.incomeDeleteFailed);
@@ -1497,33 +1626,49 @@ export default function InsertValue({
         is_expense: true,
       },
     };
-    
+
     try {
       const outflowsDelete = await financeService.deleteExpenseOrIncome(data);
 
       // If user selected a balance to adjust, add the deleted outflow back to that balance
       if (outflowsDelete.status === 200) {
         if (selectedOption) {
-          const balanceOptions = {
-            [translations.assets.bank]: bankValue,
-            [translations.assets.cash]: cashValue,
-            [translations.assets.digitalServices]: digitalServicesValue,
-            [translations.assets.stocks]: stocksValue,
-            [translations.assets.etf]: etfValue,
-            [translations.assets.bitcoin]: bitcoinValue,
-            [translations.assets.crypto]: cryptoValue,
-            [translations.assets.bonds]: bondsValue,
-            [translations.assets.funds]: fundsValue,
-            [translations.assets.gold]: goldValue,
-          };
-          const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-          const outflowNumber = parseFloat(deleteOutflowAmount);
-          const newValue = valueBalanceSelected + outflowNumber;
-          const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-          await financeService.addBalance(balancesJson);
+          if (isPastMonthDate(deleteOutflowDate)) {
+            // Past-month transaction → adjust historical snapshot.
+            // Deleting an outflow RESTORES money to the chosen balance → same
+            // sign as inserting an income (isOutflow=false).
+            await applyPastMonthBalanceAdjustments(
+              [{
+                date: deleteOutflowDate,
+                amount: Number(deleteOutflowAmount) || 0,
+                balanceSource: selectedOption,
+              }],
+              false,
+            );
+          } else {
+            // Current-month path (unchanged)
+            const balanceOptions = {
+              [translations.assets.bank]: bankValue,
+              [translations.assets.cash]: cashValue,
+              [translations.assets.digitalServices]: digitalServicesValue,
+              [translations.assets.stocks]: stocksValue,
+              [translations.assets.etf]: etfValue,
+              [translations.assets.bitcoin]: bitcoinValue,
+              [translations.assets.crypto]: cryptoValue,
+              [translations.assets.bonds]: bondsValue,
+              [translations.assets.funds]: fundsValue,
+              [translations.assets.gold]: goldValue,
+            };
+            const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
+            const outflowNumber = parseFloat(deleteOutflowAmount);
+            const newValue = valueBalanceSelected + outflowNumber;
+            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            await financeService.addBalance(balancesJson);
+          }
         }
         handleSetIsUpdated(false);
         setDeleteOutflowsSuccess(true);
+        setSelectedOption("");
         fetchData();
       } else {
         showError(translations.insert.errors.outflowDeleteFailed);
@@ -1844,6 +1989,10 @@ export default function InsertValue({
           onConfirmBalance={handleConfirmBalance}
           onConfirmDeleteIncome={handleIncomesDelete}
           onConfirmDeleteOutflow={handleOutflowsDelete}
+          deleteIncomeDate={deleteIncomeDate}
+          deleteIncomeAmount={deleteIncomeAmount}
+          deleteOutflowDate={deleteOutflowDate}
+          deleteOutflowAmount={deleteOutflowAmount}
         />
 
         {pastDateModal.isOpen && (
@@ -1860,6 +2009,29 @@ export default function InsertValue({
                 // Treat cancel as "none" so transactions remain inserted without balance change
                 pastDateModal.onResolve?.(PAST_DATE_BALANCE_CHOICES.NONE, false);
               }}
+            />
+          </Suspense>
+        )}
+
+        {editModal.isOpen && (
+          <Suspense fallback={null}>
+            <EditTransactionModal
+              isOpen={editModal.isOpen}
+              theme={theme}
+              isOutflow={editModal.isOutflow}
+              originalDate={editModal.originalDate}
+              originalAmount={editModal.originalAmount}
+              editedDate={editModal.editedDate}
+              editedAmount={editModal.editedAmount}
+              balanceOptions={options}
+              selectedSource={editModal.selectedSource}
+              onChangeSelectedSource={(src) =>
+                setEditModal((m) => ({ ...m, selectedSource: src }))
+              }
+              onConfirm={(resolvedSource) =>
+                editModal.onResolve?.({ cancelled: false, source: resolvedSource ?? null })
+              }
+              onCancel={() => editModal.onResolve?.({ cancelled: true })}
             />
           </Suspense>
         )}

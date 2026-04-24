@@ -879,6 +879,38 @@
             "perRowOverrideDefault": "Use default",
             "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped.",
             "summaryBalancesUpdated": "{count} historical balances updated"
+        },
+        "deleteTransaction": {
+            "titleOutflow": "Are you sure you want to delete this outflow?",
+            "titleIncome": "Are you sure you want to delete this income?",
+            "transactionDateLabel": "Transaction date",
+            "transactionAmountLabel": "Amount",
+            "explanationCurrentOutflow": "You can choose which balance to restore the money to. The amount will be added to this month's balance.",
+            "explanationCurrentIncome": "You can choose which balance to remove the money from. The amount will be subtracted from this month's balance.",
+            "explanationPastOutflow": "You can choose which balance to restore the money to. The amount will be added to the balance snapshot of {month} (transaction's month).",
+            "explanationPastIncome": "You can choose which balance to remove the money from. The amount will be subtracted from the balance snapshot of {month} (transaction's month).",
+            "noBalanceChange": "If you don't pick a balance, the entry will be deleted without changing any balance snapshot.",
+            "balanceSourceLabel": "Balance to update (optional)",
+            "balanceSourceNone": "None (don't change balances)",
+            "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped; transaction was still deleted.",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        },
+        "editTransaction": {
+            "titleOutflow": "Confirm outflow edit",
+            "titleIncome": "Confirm income edit",
+            "subtitle": "You changed the amount or date. We recommend picking a source so balances stay consistent, but you can also save the edit without updating any balance.",
+            "before": "Before",
+            "after": "After",
+            "explanationSameMonth": "The net difference will be applied to the transaction's month balance:",
+            "explanationDifferentMonths": "The old amount will be reversed on the original month's balance and the new amount will be applied to the new month's balance:",
+            "balanceSourceLabel": "Balance source (recommended)",
+            "balanceSourcePlaceholder": "Select a source...",
+            "balanceSourceNone": "Don't update balances",
+            "balanceSourceRecommended": "We recommend picking a source to keep balances consistent with your transactions.",
+            "noBalanceChange": "You chose not to update balances: the edit will be saved but your balances won't reflect the change in amount or month.",
+            "confirm": "Confirm edit",
+            "cancel": "Cancel"
         }
     },
     "comparison": {

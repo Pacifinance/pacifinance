@@ -1,20 +1,12 @@
 
 import React from 'react';
-import { Select, MenuItem } from '@mui/material';
 import styled, { keyframes } from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { getAssetIcon } from '../data/assetIcons';
 import { getAssetColor } from '../data/assetColors';
-import {
-  MuiCustomDialog,
-  MuiCustomButton,
-  MuiCustomDialogTitle,
-  MuiCustomDialogContent,
-  MuiCustomDialogContentText,
-  MuiCustomDialogActions,
-} from '../styles/MyStyled';
+import DeleteTransactionModal from './DeleteTransactionModal';
 
 /* ─── Balance Confirm Modal Styled Components ─── */
 const fadeIn = keyframes`
@@ -283,6 +275,10 @@ export default function InsertModals({
   onConfirmBalance,
   onConfirmDeleteIncome,
   onConfirmDeleteOutflow,
+  deleteIncomeDate,
+  deleteIncomeAmount,
+  deleteOutflowDate,
+  deleteOutflowAmount,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
@@ -396,91 +392,33 @@ export default function InsertModals({
       )}
 
       {showConfirmationDeleteIncome && (
-        <MuiCustomDialog
-          open={showConfirmationDeleteIncome}
-          onClose={() => setShowConfirmationDeleteIncome(false)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {translations.insert.incomeSection.confirmDelete}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogContent>
-            <MuiCustomDialogContentText>
-              {translations.insert.incomeSection.deleteBalanceRestore ||
-                'Se vuoi, puoi scegliere da quale bilancio togliere i soldi per mantenere il saldo corretto. (Opzionale)'}
-            </MuiCustomDialogContentText>
-            <Select
-              value={selectedOption}
-              onChange={(e) => setSelectedOption(e.target.value)}
-              displayEmpty
-              style={{ marginTop: '1em', minWidth: 200 }}
-            >
-              <MenuItem value="">
-                {translations.general.selectAnOption}
-              </MenuItem>
-              {Object.keys(options).map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </MuiCustomDialogContent>
-          <MuiCustomDialogActions>
-            <MuiCustomButton onClick={onConfirmDeleteIncome}>
-              {translations.general.confirm}
-            </MuiCustomButton>
-            <MuiCustomButton
-              onClick={() => setShowConfirmationDeleteIncome(false)}
-            >
-              {translations.general.cancel}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
+        <DeleteTransactionModal
+          isOpen={showConfirmationDeleteIncome}
+          theme={theme}
+          isOutflow={false}
+          transactionDate={deleteIncomeDate}
+          transactionAmount={deleteIncomeAmount}
+          balanceOptions={options}
+          selectedOption={selectedOption}
+          onChangeSelectedOption={setSelectedOption}
+          onConfirm={onConfirmDeleteIncome}
+          onCancel={() => setShowConfirmationDeleteIncome(false)}
+        />
       )}
 
       {showConfirmationDeleteOutflow && (
-        <MuiCustomDialog
-          open={showConfirmationDeleteOutflow}
-          onClose={() => setShowConfirmationDeleteOutflow(false)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <MuiCustomDialogTitle>
-            {translations.insert.outflowSection.confirmDelete}
-          </MuiCustomDialogTitle>
-          <MuiCustomDialogContent>
-            <MuiCustomDialogContentText>
-              {translations.insert.outflowSection.deleteBalanceRestore ||
-                'Se vuoi, puoi scegliere dove riaggiungere i soldi per mantenere il saldo corretto. (Opzionale)'}
-            </MuiCustomDialogContentText>
-            <Select
-              value={selectedOption}
-              onChange={(e) => setSelectedOption(e.target.value)}
-              displayEmpty
-              style={{ marginTop: '1em', minWidth: 200 }}
-            >
-              <MenuItem value="">
-                {translations.general.selectAnOption}
-              </MenuItem>
-              {Object.keys(options).map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </MuiCustomDialogContent>
-          <MuiCustomDialogActions>
-            <MuiCustomButton onClick={onConfirmDeleteOutflow}>
-              {translations.general.confirm}
-            </MuiCustomButton>
-            <MuiCustomButton
-              onClick={() => setShowConfirmationDeleteOutflow(false)}
-            >
-              {translations.general.cancel}
-            </MuiCustomButton>
-          </MuiCustomDialogActions>
-        </MuiCustomDialog>
+        <DeleteTransactionModal
+          isOpen={showConfirmationDeleteOutflow}
+          theme={theme}
+          isOutflow={true}
+          transactionDate={deleteOutflowDate}
+          transactionAmount={deleteOutflowAmount}
+          balanceOptions={options}
+          selectedOption={selectedOption}
+          onChangeSelectedOption={setSelectedOption}
+          onConfirm={onConfirmDeleteOutflow}
+          onCancel={() => setShowConfirmationDeleteOutflow(false)}
+        />
       )}
     </>
   );

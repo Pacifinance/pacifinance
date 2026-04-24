@@ -879,6 +879,38 @@
             "perRowOverrideDefault": "Usa default",
             "missingSnapshotWarning": "Nessun bilancio trovato per {month}/{year}. Aggiornamento bilancio saltato.",
             "summaryBalancesUpdated": "{count} bilanci storici aggiornati"
+        },
+        "deleteTransaction": {
+            "titleOutflow": "Sei sicuro di voler eliminare questa uscita?",
+            "titleIncome": "Sei sicuro di voler eliminare questa entrata?",
+            "transactionDateLabel": "Data transazione",
+            "transactionAmountLabel": "Importo",
+            "explanationCurrentOutflow": "Puoi scegliere da quale bilancio rimettere i soldi. L'importo verrà aggiunto al bilancio del mese corrente.",
+            "explanationCurrentIncome": "Puoi scegliere da quale bilancio togliere i soldi. L'importo verrà sottratto dal bilancio del mese corrente.",
+            "explanationPastOutflow": "Puoi scegliere a quale bilancio rimettere i soldi. L'importo verrà aggiunto allo snapshot del bilancio di {month} (mese della transazione).",
+            "explanationPastIncome": "Puoi scegliere da quale bilancio togliere i soldi. L'importo verrà sottratto dallo snapshot del bilancio di {month} (mese della transazione).",
+            "noBalanceChange": "Se non scegli alcun bilancio, la voce verrà eliminata senza modificare nessuno snapshot di bilancio.",
+            "balanceSourceLabel": "Bilancio da aggiornare (opzionale)",
+            "balanceSourceNone": "Nessuno (non modificare i bilanci)",
+            "missingSnapshotWarning": "Nessun bilancio trovato per {month}/{year}. Aggiornamento bilancio saltato, la transazione è stata comunque eliminata.",
+            "confirm": "Elimina",
+            "cancel": "Annulla"
+        },
+        "editTransaction": {
+            "titleOutflow": "Conferma modifica uscita",
+            "titleIncome": "Conferma modifica entrata",
+            "subtitle": "Hai cambiato l'importo o la data. Ti consigliamo di scegliere una fonte per aggiornare i bilanci, ma puoi anche salvare solo la modifica senza toccare i saldi.",
+            "before": "Prima",
+            "after": "Dopo",
+            "explanationSameMonth": "La differenza netta verrà applicata al bilancio del mese della transazione:",
+            "explanationDifferentMonths": "Il vecchio importo verrà stornato dal bilancio del mese originale e il nuovo importo verrà applicato al bilancio del nuovo mese:",
+            "balanceSourceLabel": "Fonte del bilancio (consigliata)",
+            "balanceSourcePlaceholder": "Seleziona una fonte...",
+            "balanceSourceNone": "Non aggiornare il bilancio",
+            "balanceSourceRecommended": "Ti consigliamo di scegliere una fonte per mantenere i bilanci coerenti con le transazioni.",
+            "noBalanceChange": "Hai scelto di non aggiornare i bilanci: la modifica verrà salvata ma i saldi non rifletteranno la variazione di importo o mese.",
+            "confirm": "Conferma modifica",
+            "cancel": "Annulla"
         }
     },
     "comparison": {

@@ -632,10 +632,15 @@ export default function InsertValue({
         result.skipped.push(`${year}-${month}`);
         continue;
       }
-      // Build full balance payload from snapshot, applying deltas
+      // Build full balance payload from snapshot, applying deltas.
+      // NOTE: the snapshot (from GET /balances/get) uses CAMEL-CASE keys
+      // (digitalServices, emergencyFund) because that's the Mongoose schema,
+      // while the POST /balances/add payload uses SNAKE_CASE keys
+      // (digital_services, emergency_fund). Reading with dbKey here would
+      // silently return undefined → 0 and wipe those two fields in the DB.
       const balancePayload = { date: getBalanceDateForDB({ month, year }) };
       for (const [assetKey, dbKey] of Object.entries(assetToDbKey)) {
-        const current = Number(snapshot.balance?.[dbKey]) || 0;
+        const current = Number(snapshot.balance?.[assetKey]) || 0;
         const delta = perSource[assetKey] || 0;
         balancePayload[dbKey] = current + delta;
       }
@@ -722,9 +727,12 @@ export default function InsertValue({
       if (warning) showError(warning, 5000);
       return false;
     }
+    // See note in applyPastMonthBalanceAdjustments: snapshot keys are
+    // camelCase (schema), POST payload keys are snake_case. Read by assetKey,
+    // write by dbKey.
     const balancePayload = { date: getBalanceDateForDB({ month, year }) };
     for (const [aKey, dbKey] of Object.entries(assetToDbKey)) {
-      const current = Number(snapshot.balance?.[dbKey]) || 0;
+      const current = Number(snapshot.balance?.[aKey]) || 0;
       balancePayload[dbKey] = aKey === assetKey ? current + deltaEUR : current;
     }
     try {

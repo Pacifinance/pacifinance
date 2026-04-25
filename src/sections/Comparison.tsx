@@ -884,7 +884,7 @@ function Comparison({ theme, userData, isHidden}) {
         const categoryKey = isExpense ? 'outflows' : category;
         const motivationalTexts = translations.leaderboard.rankings.motivational[level];
         
-        let content = {
+        const content = {
             type: level,
             title: motivationalTexts.title,
             message: motivationalTexts[categoryKey] || motivationalTexts.balance,

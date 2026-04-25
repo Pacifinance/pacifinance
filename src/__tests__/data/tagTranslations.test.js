@@ -47,7 +47,7 @@ describe('TAG_TRANSLATIONS', () => {
     expect(Object.keys(expenseMap).length).toBeGreaterThan(0);
 
     // Every entry should have at least 'it' and 'en'
-    for (const [label, translations] of Object.entries(expenseMap)) {
+    for (const [, translations] of Object.entries(expenseMap)) {
       expect(translations).toHaveProperty('it');
       expect(translations).toHaveProperty('en');
       expect(typeof translations.it).toBe('string');

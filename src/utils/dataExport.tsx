@@ -10,7 +10,7 @@ function filterDataByDateRange(data, filterOptions) {
   }
 
   const now = new Date();
-  let filteredData = { ...data };
+  const filteredData = { ...data };
   let filterInfo = {};
 
   if (filterOptions.type === 'last12') {

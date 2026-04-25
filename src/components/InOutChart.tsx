@@ -353,11 +353,11 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
-    let monthOptions = [];
+    const monthOptions = [];
     let year = currentYear;
 
     for (let i = 0; i < Object.keys(totalOutflowsPerCategoryPerMonth).length; i++) {
-      let month = ((currentMonth - i - 1 + 12) % 12) + 1;
+      const month = ((currentMonth - i - 1 + 12) % 12) + 1;
       if (month === 12 && i !== 0) {
         year--;
       }

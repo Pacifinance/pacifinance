@@ -25,6 +25,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 // Badge Categories
 // ═══════════════════════════════════════════
 import { DEFAULT_MONTHLY_SPENDING_LIMIT } from '../data/financeDefaults';
+import { ASSET_KEYS, INVESTMENT_KEYS } from '../constants/balanceSchema';
 
 export const BADGE_CATEGORIES = {
   dataConsistency: 'dataConsistency',
@@ -227,8 +228,7 @@ export const BADGE_DEFINITIONS = {
     check: (data) => {
       const balance = data.balances?.[0]?.balance;
       if (!balance) return false;
-      const investmentTypes = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold'];
-      return investmentTypes.some(type => (balance[type] || 0) > 0);
+      return INVESTMENT_KEYS.some(type => (balance[type] || 0) > 0);
     },
   },
   diversified3: {
@@ -487,8 +487,7 @@ function countMonthsWithData(data) {
     // A month has data if totalValue > 0, or if any individual balance field > 0
     if (bal.totalValue > 0) return true;
     // Fallback: check individual fields in case totalValue isn't computed
-    const fields = ['bank', 'cash', 'digitalServices', 'emergencyFund', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold'];
-    return fields.some(f => (bal[f] || 0) > 0);
+    return ASSET_KEYS.some(f => (bal[f] || 0) > 0);
   }).length;
 }
 
@@ -496,8 +495,7 @@ function countMonthsWithData(data) {
 function countActiveAssetTypes(data) {
   const balance = data.balances?.[0]?.balance;
   if (!balance) return 0;
-  const assetTypes = ['bank', 'cash', 'digitalServices', 'emergencyFund', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold'];
-  return assetTypes.filter(type => (balance[type] || 0) > 0).length;
+  return ASSET_KEYS.filter(type => (balance[type] || 0) > 0).length;
 }
 
 // Calculate consecutive months with positive savings (income > outflows)
@@ -542,9 +540,8 @@ function calculateDataStreak(data) {
     const bal = entry.balance;
     if (!bal) break;
     
-    const hasData = bal.totalValue > 0 || 
-      ['bank', 'cash', 'digitalServices', 'emergencyFund', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold']
-        .some(f => (bal[f] || 0) > 0);
+    const hasData = bal.totalValue > 0 ||
+      ASSET_KEYS.some(f => (bal[f] || 0) > 0);
     
     if (hasData) {
       streak++;

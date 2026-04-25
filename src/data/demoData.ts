@@ -139,7 +139,7 @@ const generateOutflowsForMonth = (monthOffset) => {
 
   for (let i = 0; i < numTransactions; i++) {
     // Pick category weighted
-    let r = rng();
+    const r = rng();
     let selectedCat = categoryWeights[0];
     let cumWeight = 0;
     for (const cw of categoryWeights) {

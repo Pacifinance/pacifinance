@@ -44,6 +44,48 @@ export const isSameMonth = (a: string | Date, b: string | Date): boolean => {
 };
 
 /**
+ * Build the timestamp to send to `/balances/add` for a (month, year) selection.
+ *
+ * The backend stores `userDate` (the date the user claims the snapshot is for)
+ * and uses `sort: { userDate: -1, date: -1 }` to pick the "winning" balance
+ * inside each month bucket. To guarantee that a NEW past-month snapshot
+ * supersedes any pre-existing entry for that month, we must send the **last
+ * possible instant** of that month — UTC `23:59:59.999` of the last day.
+ *
+ * For the *current* month we keep the live `now` timestamp so that ordering
+ * with concurrent same-day inserts is preserved naturally.
+ *
+ * Always returns a full ISO-8601 UTC string (`...Z`) so the backend's
+ * `new Date()` parsing is unambiguous regardless of the user's timezone.
+ *
+ * @example
+ *   getBalanceUserDateForMonth({ month: 3, year: 2026 })
+ *   // → '2026-03-31T23:59:59.999Z'  (assuming current month ≠ March 2026)
+ */
+export const getBalanceUserDateForMonth = (
+  monthYearObj: { month: number; year: number },
+  now: Date = new Date()
+): string => {
+  const isCurrentMonth =
+    monthYearObj.month === now.getMonth() + 1 &&
+    monthYearObj.year === now.getFullYear();
+
+  if (isCurrentMonth) {
+    return now.toISOString();
+  }
+
+  // Last day of the selected month at 23:59:59.999 UTC.
+  // `Date.UTC(year, monthIdx + 1, 0, ...)` → day 0 of next month = last day of this month.
+  const utcMs = Date.UTC(
+    monthYearObj.year,
+    monthYearObj.month, // already 1-based, so passing it as monthIndex+1 effectively
+    0,                  // day 0 of next month = last day of selected month
+    23, 59, 59, 999
+  );
+  return new Date(utcMs).toISOString();
+};
+
+/**
  * Threshold below which a currency delta is treated as zero (floating point
  * tolerance for half-a-cent).
  */

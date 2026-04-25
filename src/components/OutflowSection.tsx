@@ -408,7 +408,7 @@ export default function OutflowSection({
   };
 
   const handleOutflowDateChange = (event) => {
-    let inputDate = event.target.value;
+    const inputDate = event.target.value;
     setOutflowDate(inputDate);
   };
 
@@ -671,8 +671,6 @@ export default function OutflowSection({
         let colorKey = undefined;
         if (add.categoryTag && add.categoryTag.key) {
           colorKey = add.categoryTag.key;
-        } else if (add.categoryTag && add.categoryTag.label) {
-          colorKey = add.categoryTag.label;
         } else if (add.categoryTag && add.categoryTag.label) {
           colorKey = add.categoryTag.label;
         } else if (add.categoryTag && add.categoryTag.translations) {

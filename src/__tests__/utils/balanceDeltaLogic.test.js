@@ -8,6 +8,7 @@ import {
   computeEditDeltas,
   editNeedsBalanceUpdate,
   AMOUNT_EPSILON,
+  getBalanceUserDateForMonth,
 } from '../../utils/balanceDeltaLogic';
 
 /* ────────────────────────────────────────────────────────────────── */
@@ -67,6 +68,47 @@ describe('isSameMonth', () => {
     expect(isSameMonth('', '2026-03-15')).toBe(false);
     expect(isSameMonth('2026-03-15', null)).toBe(false);
     expect(isSameMonth('garbage', '2026-03-15')).toBe(false);
+  });
+});
+
+/* ────────────────────────────────────────────────────────────────── */
+/* getBalanceUserDateForMonth                                         */
+/* ────────────────────────────────────────────────────────────────── */
+describe('getBalanceUserDateForMonth', () => {
+  it('past month → UTC 23:59:59.999 of last day', () => {
+    const fakeNow = new Date('2026-04-25T11:30:00Z');
+    const iso = getBalanceUserDateForMonth({ month: 3, year: 2026 }, fakeNow);
+    expect(iso).toBe('2026-03-31T23:59:59.999Z');
+  });
+
+  it('past month with 30 days → last day is 30', () => {
+    const fakeNow = new Date('2026-12-15T08:00:00Z');
+    const iso = getBalanceUserDateForMonth({ month: 11, year: 2026 }, fakeNow);
+    expect(iso).toBe('2026-11-30T23:59:59.999Z');
+  });
+
+  it('past month February non-leap → 28th', () => {
+    const fakeNow = new Date('2026-04-25T11:30:00Z');
+    const iso = getBalanceUserDateForMonth({ month: 2, year: 2026 }, fakeNow);
+    expect(iso).toBe('2026-02-28T23:59:59.999Z');
+  });
+
+  it('past month February leap → 29th', () => {
+    const fakeNow = new Date('2024-04-25T11:30:00Z');
+    const iso = getBalanceUserDateForMonth({ month: 2, year: 2024 }, fakeNow);
+    expect(iso).toBe('2024-02-29T23:59:59.999Z');
+  });
+
+  it('previous year December → correct year', () => {
+    const fakeNow = new Date('2026-01-15T00:00:00Z');
+    const iso = getBalanceUserDateForMonth({ month: 12, year: 2025 }, fakeNow);
+    expect(iso).toBe('2025-12-31T23:59:59.999Z');
+  });
+
+  it('current month → live now timestamp', () => {
+    const fakeNow = new Date('2026-04-25T11:30:00Z');
+    const iso = getBalanceUserDateForMonth({ month: 4, year: 2026 }, fakeNow);
+    expect(iso).toBe('2026-04-25T11:30:00.000Z');
   });
 });
 

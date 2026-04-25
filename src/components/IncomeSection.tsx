@@ -441,7 +441,7 @@ export default function IncomeSection({
   };
 
   const handleIncomeDateChange = (event) => {
-    let inputDate = event.target.value;
+    const inputDate = event.target.value;
     setIncomeDate(inputDate);
   };
 

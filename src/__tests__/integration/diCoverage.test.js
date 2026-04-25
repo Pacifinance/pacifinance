@@ -19,7 +19,7 @@ const SRC_DIR = path.resolve(__dirname, '../../');
 /**
  * Recursively collect all .jsx and .js files in a directory.
  */
-function collectFiles(dir, extensions = ['.js', '.jsx']) {
+function collectFiles(dir, extensions = ['.js', '.jsx', '.ts', '.tsx']) {
   const results = [];
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true });

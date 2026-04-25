@@ -18,8 +18,7 @@ import {
   Star,
   Settings,
   Monitor,
-  Smartphone,
-  Wifi
+  Smartphone
 } from 'lucide-react';
 
 // Mappa delle icone per le categorie esistenti in categoryColors.js

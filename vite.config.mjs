@@ -1,9 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    // Mirror path aliases from src/tsconfig.json — single source of truth.
+    tsconfigPaths({ projects: ['./src/tsconfig.json'] }),
     react({
       babel: {
         plugins: [

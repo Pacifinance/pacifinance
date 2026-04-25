@@ -29,7 +29,7 @@ export default function Buymeacoffee({ showLink = false }) {
     script.setAttribute("data-y_margin", "18");
 
     script.onload = function () {
-      var evt = document.createEvent("Event");
+      const evt = document.createEvent("Event");
       evt.initEvent("DOMContentLoaded", false, false);
       window.dispatchEvent(evt);
     };

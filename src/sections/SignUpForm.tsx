@@ -25,7 +25,7 @@ import {
     EyeVisibilityOff,
 } from "../styles/MyStyled";
 
-var generated_user_id = "";
+let generated_user_id = "";
 
 // Cloudflare Turnstile configuration
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.meta.env.REACT_APP_TURNSTILE_SITE_KEY;

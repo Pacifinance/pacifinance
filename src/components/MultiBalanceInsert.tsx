@@ -181,14 +181,18 @@ const GroupLabel = styled.div`
 
 /* ─── Helpers (exported for testing) ─── */
 
-/** Asset keys in the same order as the DB schema */
-export const ASSET_KEYS = [
-  'bank', 'cash', 'digitalServices', 'emergencyFund',
-  'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold',
-];
+// Asset keys are centrally defined in `src/constants/balanceSchema.ts`.
+// We re-export them here to preserve the historical import path used by
+// existing consumers and tests.
+import {
+  ASSET_KEYS as _ASSET_KEYS,
+  LIQUIDITY_KEYS as _LIQUIDITY_KEYS,
+  INVESTMENT_KEYS as _INVESTMENT_KEYS,
+} from '../constants/balanceSchema';
 
-export const LIQUIDITY_KEYS = ['bank', 'cash', 'digitalServices', 'emergencyFund'];
-export const INVESTMENT_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold'];
+export const ASSET_KEYS = _ASSET_KEYS;
+export const LIQUIDITY_KEYS = _LIQUIDITY_KEYS;
+export const INVESTMENT_KEYS = _INVESTMENT_KEYS;
 
 export const createEmptyBalanceRow = (defaults = {}) => {
   const assets = {};

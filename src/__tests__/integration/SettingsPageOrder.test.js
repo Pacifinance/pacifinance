@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('SettingsPage section order', () => {
   it('should have Data Export section before Danger Zone', () => {
-    const filePath = resolve(__dirname, '../../pages/SettingsPage.jsx');
+    const filePath = resolve(__dirname, '../../pages/SettingsPage.tsx');
     const content = readFileSync(filePath, 'utf-8');
 
     const dataExportIndex = content.indexOf('data-export') !== -1
@@ -33,7 +33,7 @@ describe('SettingsPage section order', () => {
   });
 
   it('should have Security section before Data Export', () => {
-    const filePath = resolve(__dirname, '../../pages/SettingsPage.jsx');
+    const filePath = resolve(__dirname, '../../pages/SettingsPage.tsx');
     const content = readFileSync(filePath, 'utf-8');
 
     const securityIndex = content.indexOf('Security Settings');

@@ -2,10 +2,11 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'build', 'html', 'coverage']),
+  globalIgnores(['dist', 'build', 'html', 'coverage', 'aStableBuild']),
   // ── CommonJS config files (Node.js) ──
   {
     files: ['postcss.config.js', 'tailwind.config.js'],
@@ -72,6 +73,34 @@ export default defineConfig([
       'eqeqeq': ['warn', 'smart'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'react-refresh/only-export-components': 'off',
+    },
+  },
+  // ── TypeScript source code ──
+  {
+    files: ['src/**/*.{ts,tsx}', 'scripts/**/*.ts'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      reactHooks.configs['recommended-latest'],
+    ],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    rules: {
+      // Permissive baseline during the gradual migration. Tightened in Phase 6.
+      'no-unused-vars': 'off', // handled by @typescript-eslint version
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      'no-alert': 'error',
+      'no-debugger': 'error',
+      'eqeqeq': ['warn', 'smart'],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
 ])

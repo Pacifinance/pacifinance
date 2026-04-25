@@ -28,7 +28,26 @@
     /* Quality of life */
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+
+    /* Path aliases — mirrored in vite.config.mjs via vite-tsconfig-paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*":           ["*"],
+      "@components/*": ["components/*"],
+      "@sections/*":   ["sections/*"],
+      "@pages/*":      ["pages/*"],
+      "@hooks/*":      ["hooks/*"],
+      "@contexts/*":   ["contexts/*"],
+      "@services/*":   ["services/*"],
+      "@utils/*":      ["utils/*"],
+      "@data/*":       ["data/*"],
+      "@constants/*":  ["constants/*"],
+      "@types/*":      ["types/*"],
+      "@i18n/*":       ["i18n/*"],
+      "@styles/*":     ["styles/*"],
+      "@assets/*":     ["assets/*"]
+    }
   },
   "include": [
     ".",

@@ -31,7 +31,7 @@ import {
     getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
     getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth
 } from '../utils/userDataSelectors';
-import { isPastMonthDate as isPastMonthDateUtil } from '../utils/balanceDeltaLogic';
+import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
@@ -539,25 +539,13 @@ export default function InsertValue({
     return { balance };
   };
 
-  // Function to convert month/year selection to actual date for DB
-  const getBalanceDateForDB = (monthYearObj) => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-    
-    // If selected month/year is current month/year, use current date
-    if (monthYearObj.month === currentMonth && monthYearObj.year === currentYear) {
-      return currentDate.toISOString().split('T')[0];
-    }
-    
-    // Otherwise, use the last day of the selected month
-    // monthYearObj.month è 1-based (1=Gennaio, 11=Novembre, 12=Dicembre)
-    // Per ottenere l'ultimo giorno: creiamo il primo giorno del mese successivo e sottraiamo 1 giorno
-    //return date.toISOString().split('T')[0];
-    const date = new Date(monthYearObj.year, monthYearObj.month, 0);
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-  };
+  // Function to convert month/year selection to actual date for DB.
+  // Delegates to `getBalanceUserDateForMonth` which guarantees:
+  //   - current month  → live `now` timestamp
+  //   - past months    → last day at UTC 23:59:59.999 (max possible userDate
+  //                      inside that month, so the new snapshot always wins
+  //                      the backend's `sort: {userDate: -1, date: -1}`).
+  const getBalanceDateForDB = (monthYearObj) => getBalanceUserDateForMonth(monthYearObj);
 
   // Translated balance-source label → canonical asset key mapping.
   // The camelCase ↔ snake_case mapping lives in `constants/balanceSchema.ts`
@@ -959,9 +947,9 @@ export default function InsertValue({
   const currentYear = new Date().getFullYear();
 
   // Build the last 12 months (including current) - newest first, oldest last
-  let monthsArray = [];
+  const monthsArray = [];
   for (let i = 0; i < 12; i++) {
-    let d = new Date(currentYear, currentMonth - 1 - i, 1);
+    const d = new Date(currentYear, currentMonth - 1 - i, 1);
     monthsArray.push({
       month: d.getMonth() + 1,
       year: d.getFullYear(),
@@ -970,7 +958,7 @@ export default function InsertValue({
   // Non serve più reverse() - così il mese corrente sarà all'indice 0
 
   // Build monthOptions
-  let monthOptions = monthsArray.map((obj, idx) => ({
+  const monthOptions = monthsArray.map((obj, idx) => ({
     value: idx,
     label: `${monthNames[obj.month]} ${obj.year}`,
     month: obj.month,
@@ -980,7 +968,7 @@ export default function InsertValue({
   const incomeMonthOptions = monthOptions;
   const outflowMonthOptions = monthOptions;
 
-  let currentMonthIdx = monthsArray.findIndex(
+  const currentMonthIdx = monthsArray.findIndex(
     (obj) => obj.month === currentMonth && obj.year === currentYear,
   );
 

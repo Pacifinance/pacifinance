@@ -295,9 +295,9 @@ export default function BalanceSection({
     12: translations.months.december,
   };
 
-  let monthsArray = [];
+  const monthsArray = [];
   for (let i = 0; i < 12; i++) {
-    let d = new Date(currentYear, currentMonth - 1 - i, 1);
+    const d = new Date(currentYear, currentMonth - 1 - i, 1);
     monthsArray.push({
       month: d.getMonth() + 1,
       year: d.getFullYear(),

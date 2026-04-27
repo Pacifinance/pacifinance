@@ -30,6 +30,9 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
 
+    /* Silence TS 6 deprecation warning for baseUrl (still needed for vite-tsconfig-paths). */
+    "ignoreDeprecations": "5.0",
+
     /* Path aliases — mirrored in vite.config.mjs via vite-tsconfig-paths */
     "baseUrl": ".",
     "paths": {
@@ -60,3 +63,6 @@
     "__tests__"
   ]
 }
+
+
+

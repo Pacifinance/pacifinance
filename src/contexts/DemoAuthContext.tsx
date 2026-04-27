@@ -59,7 +59,7 @@ export const DemoAuthProvider = ({ children }) => {
     if (!userData) return null;
     return {
       ...userData,
-      ...createLegacyBalanceData(userData),
+      ...createLegacyBalanceData(userData as any),
     };
   }, [userData]);
 

@@ -15,8 +15,49 @@ import {
 } from '../data/financeDefaults';
 
 import { translateTagObject, translateTag as translateTagDirect } from '../data/tagTranslations';
+import type { TagsGetResponse, BalanceMonthDto } from '../types/api';
 
-// ─── Types ───────────────────────────────────────────────────────────
+/** Raw tag object as it arrives from the user-profile API (nested in profile fields). */
+interface RawTagObject {
+  index?: number | null;
+  label?: string | null;
+  translations?: Record<string, string> | null;
+  [key: string]: unknown;
+}
+
+/** Shape of the user info object as received from GET /user/get. */
+interface RawUserInfoData {
+  userId?: unknown;
+  nickname?: unknown;
+  type?: unknown;
+  preferredCurrency?: unknown;
+  country?: RawTagObject | null;
+  jobCountry?: RawTagObject | null;
+  job?: RawTagObject | null;
+  jobType?: RawTagObject | null;
+  workTime?: RawTagObject | null;
+  remoteType?: RawTagObject | null;
+  age?: RawTagObject | null;
+  livingSituation?: RawTagObject | null;
+  housingType?: RawTagObject | null;
+  children?: RawTagObject | null;
+  yearsOfExperience?: RawTagObject | null;
+}
+
+/** Currency tag as returned by GET /tags/get. */
+interface RawCurrencyTag {
+  index?: unknown;
+  label?: unknown;
+}
+
+/** Raw goals object from GET /user/goals. */
+interface RawGoals {
+  expensesLimit?: number | null;
+  savingsPercent?: number | null;
+  emergencyFundGoal?: number | null;
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ProfileField {
   key: number;
@@ -49,7 +90,6 @@ export interface BalanceSnapshot {
   funds?: number;
   gold?: number;
   totalValue?: number;
-  [key: string]: number | undefined;
 }
 
 export interface BalanceMonth {
@@ -74,7 +114,7 @@ export interface ChartDatum extends BalanceSnapshot {
  * Prefers local translations (tagTranslations.js), then DB `.translations` field.
  */
 export const getTranslation = (
-  obj: any,
+  obj: RawTagObject | null | undefined,
   language: string,
   fallback: string,
   type?: string,
@@ -83,7 +123,7 @@ export const getTranslation = (
 // ─── Tags ────────────────────────────────────────────────────────────
 
 /** Extract categorised tag arrays from the raw `/tags/get` response. */
-export const transformTags = (tagsData: any) => ({
+export const transformTags = (tagsData: TagsGetResponse) => ({
   outflowsTags: tagsData.expense || [],
   incomesTags: tagsData.income || [],
   paymentTags: tagsData.payment || [],
@@ -112,13 +152,13 @@ const USER_TYPE_DICT: Record<number, string> = {
 
 /** Map raw `/user/get` response to a structured profile object. */
 export const transformUserProfile = (
-  infoData: any,
-  currencyTags: any[],
+  infoData: RawUserInfoData,
+  currencyTags: unknown[],
   language: string,
 ): TransformedProfile => {
-  const userId = infoData.userId || '00000';
-  const userType = USER_TYPE_DICT[infoData.type] || 'regular';
-  const username = infoData.nickname ?? 'Username non impostato';
+  const userId = String(infoData.userId || '00000');
+  const userType = USER_TYPE_DICT[Number(infoData.type)] || 'regular';
+  const username = String(infoData.nickname ?? 'Username non impostato');
 
   // Resolve preferred currency
   const preferredCurrencyIndex = infoData.preferredCurrency;
@@ -126,10 +166,11 @@ export const transformUserProfile = (
   let preferredCurrencyKey = -1;
   const normalizedPreferredCurrencyIndex = Number(preferredCurrencyIndex);
   if (Number.isFinite(normalizedPreferredCurrencyIndex) && currencyTags.length > 0) {
-    const matchedTag = currencyTags.find(tag => Number(tag.index) === normalizedPreferredCurrencyIndex);
-    if (matchedTag?.label) {
-      preferredCurrencyCode = matchedTag.label.toUpperCase();
-      preferredCurrencyKey = Number(matchedTag.index);
+    const matchedTag = (currencyTags as Array<Record<string, unknown>>).find(tag => Number(tag['index']) === normalizedPreferredCurrencyIndex);
+    const matchedLabel = matchedTag?.['label'];
+    if (typeof matchedLabel === 'string' && matchedLabel) {
+      preferredCurrencyCode = matchedLabel.toUpperCase();
+      preferredCurrencyKey = Number(matchedTag?.['index']);
     }
   }
 
@@ -175,7 +216,7 @@ export const calculateProfileCompletion = (fields: Array<{ key: number }>): numb
 // ─── Goals & Limits ──────────────────────────────────────────────────
 
 export interface GoalsAndLimits {
-  goals: any[];
+  goals: unknown[];
   limits: {
     monthlySpendingLimit: number;
     savingsGoalPercentage: number;
@@ -185,14 +226,14 @@ export interface GoalsAndLimits {
 }
 
 /** Build goals and limits structure with defaults. */
-export const buildGoalsAndLimits = (userGoals: any): GoalsAndLimits => {
+export const buildGoalsAndLimits = (userGoals: RawGoals | null | undefined): GoalsAndLimits => {
   const g = userGoals || { expensesLimit: -1, savingsPercent: -1, emergencyFundGoal: -1 };
   return {
     goals: [],
     limits: {
-      monthlySpendingLimit: g.expensesLimit !== -1 ? g.expensesLimit : DEFAULT_MONTHLY_SPENDING_LIMIT,
-      savingsGoalPercentage: g.savingsPercent !== -1 ? g.savingsPercent : DEFAULT_SAVINGS_GOAL_PERCENTAGE,
-      emergencyFundTarget: g.emergencyFundGoal !== -1 ? g.emergencyFundGoal : DEFAULT_EMERGENCY_FUND_TARGET,
+      monthlySpendingLimit: (g.expensesLimit != null && g.expensesLimit !== -1) ? g.expensesLimit : DEFAULT_MONTHLY_SPENDING_LIMIT,
+      savingsGoalPercentage: (g.savingsPercent != null && g.savingsPercent !== -1) ? g.savingsPercent : DEFAULT_SAVINGS_GOAL_PERCENTAGE,
+      emergencyFundTarget: (g.emergencyFundGoal != null && g.emergencyFundGoal !== -1) ? g.emergencyFundGoal : DEFAULT_EMERGENCY_FUND_TARGET,
       notificationsEnabled: true,
     },
   };
@@ -219,7 +260,7 @@ export const calculateTotal = (balance: BalanceSnapshot | null | undefined): num
 };
 
 /** Normalise raw balance data from the API. */
-export const transformBalances = (rawData: any[]): BalanceMonth[] => {
+export const transformBalances = (rawData: BalanceMonthDto[]): BalanceMonth[] => {
   const balancesData: BalanceMonth[] = rawData.map(monthData => ({
     date: monthData?.date || null,
     balance: monthData?.balance || {},
@@ -232,9 +273,16 @@ export const transformBalances = (rawData: any[]): BalanceMonth[] => {
 
 // ─── Outflows Aggregation ────────────────────────────────────────────
 
+/** Shape of a single transaction entry as stored in allOutflows / allIncomes arrays. */
+interface RawTransactionEntry {
+  isExpense?: unknown;
+  amount?: unknown;
+  categoryTag?: RawTagObject | null;
+}
+
 /** Aggregate outflows by category for each month. */
 export const aggregateOutflowsByCategory = (
-  allOutflowsIncomesArray: any[][],
+  allOutflowsIncomesArray: RawTransactionEntry[][],
 ): Record<number, Record<string, number>> => {
   const result: Record<number, Record<string, number>> = {};
   allOutflowsIncomesArray.forEach((month, index) => {
@@ -260,7 +308,7 @@ export const aggregateOutflowsByCategory = (
 
 /** Build monthly income / outflow sum arrays (13 months). */
 export const buildMonthlyArrays = (
-  allOutflowsIncomesArray: any[][],
+  allOutflowsIncomesArray: RawTransactionEntry[][],
 ): { incomesArray: number[]; outflowsArray: number[] } => {
   const incomesArray = Array(13).fill(0);
   const outflowsArray = Array(13).fill(0);
@@ -333,8 +381,9 @@ export const buildAssetsFromBalance = (balance: BalanceSnapshot | null | undefin
 
 /** Split the raw expenses-and-incomes matrix into two separate arrays. */
 export const splitIncomesOutflows = (
-  allOutflowsIncomesArray: any[][],
-): { allOutflows: any[][]; allIncomes: any[][] } => ({
+  allOutflowsIncomesArray: Record<string, unknown>[][],
+): { allOutflows: Record<string, unknown>[][]; allIncomes: Record<string, unknown>[][] } => ({
   allOutflows: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d?.isExpense) : []),
   allIncomes: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d && !d.isExpense) : []),
 });
+

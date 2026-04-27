@@ -2,17 +2,18 @@
  * Utility functions to extract data from optimized UserContext structure.
  * These selectors maintain compatibility with existing components while using
  * the new optimized data structure.
- *
- * Note: `userData` is intentionally typed as `any` here because the UserContext
- * still holds a loose shape that gradually converges on the API types from
- * `src/types/api.ts`. Return types are narrowed where possible.
  */
 
+import type { UserData } from '../types/user';
+import type { TagDto, ExpenseDto } from '../types/api';
 import {
   DEFAULT_MONTHLY_SPENDING_LIMIT,
   DEFAULT_SAVINGS_GOAL_PERCENTAGE,
   DEFAULT_EMERGENCY_FUND_TARGET,
 } from '../data/financeDefaults';
+
+/** Accepts the full userData, null (loading), or undefined (unauthenticated). */
+type UserDataLike = UserData | null | undefined;
 
 export interface BalanceSnapshotLike {
   cash?: number;
@@ -27,7 +28,6 @@ export interface BalanceSnapshotLike {
   funds?: number;
   gold?: number;
   totalValue?: number;
-  [key: string]: number | undefined;
 }
 
 export interface BalanceMonthEntry {
@@ -41,13 +41,13 @@ export interface ProfileFieldValue {
 }
 
 // Current balance selectors
-export const getCurrentBalance = (userData: any): BalanceSnapshotLike =>
+export const getCurrentBalance = (userData: UserDataLike): BalanceSnapshotLike =>
   userData?.balances?.[0]?.balance || {};
 
-export const getPreviousMonthBalance = (userData: any): BalanceSnapshotLike =>
+export const getPreviousMonthBalance = (userData: UserDataLike): BalanceSnapshotLike =>
   userData?.balances?.[1]?.balance || {};
 
-export const getPreviousYearSameMonthBalance = (userData: any): BalanceSnapshotLike =>
+export const getPreviousYearSameMonthBalance = (userData: UserDataLike): BalanceSnapshotLike =>
   userData?.balances?.[12]?.balance || {};
 
 /**
@@ -56,7 +56,7 @@ export const getPreviousYearSameMonthBalance = (userData: any): BalanceSnapshotL
  * Returns `null` if no snapshot exists for that month.
  */
 export const getBalanceForMonth = (
-  userData: any,
+  userData: UserDataLike,
   year: number | string,
   month: number | string,
 ): BalanceMonthEntry | null => {
@@ -77,49 +77,49 @@ export const getBalanceForMonth = (
 };
 
 // Individual asset selectors for current month
-export const getCashValue = (userData: any): number => getCurrentBalance(userData).cash || 0;
-export const getBankValue = (userData: any): number => getCurrentBalance(userData).bank || 0;
-export const getDigitalServicesValue = (userData: any): number => getCurrentBalance(userData).digitalServices || 0;
-export const getEmergencyFund = (userData: any): number => getCurrentBalance(userData).emergencyFund || 0;
-export const getStocksValue = (userData: any): number => getCurrentBalance(userData).stocks || 0;
-export const getEtfValue = (userData: any): number => getCurrentBalance(userData).etf || 0;
-export const getBitcoinValue = (userData: any): number => getCurrentBalance(userData).bitcoin || 0;
-export const getCryptoValue = (userData: any): number => getCurrentBalance(userData).crypto || 0;
-export const getBondsValue = (userData: any): number => getCurrentBalance(userData).bonds || 0;
-export const getFundsValue = (userData: any): number => getCurrentBalance(userData).funds || 0;
-export const getGoldValue = (userData: any): number => getCurrentBalance(userData).gold || 0;
-export const getTotalValue = (userData: any): number => getCurrentBalance(userData).totalValue || 0;
+export const getCashValue = (userData: UserDataLike): number => getCurrentBalance(userData).cash || 0;
+export const getBankValue = (userData: UserDataLike): number => getCurrentBalance(userData).bank || 0;
+export const getDigitalServicesValue = (userData: UserDataLike): number => getCurrentBalance(userData).digitalServices || 0;
+export const getEmergencyFund = (userData: UserDataLike): number => getCurrentBalance(userData).emergencyFund || 0;
+export const getStocksValue = (userData: UserDataLike): number => getCurrentBalance(userData).stocks || 0;
+export const getEtfValue = (userData: UserDataLike): number => getCurrentBalance(userData).etf || 0;
+export const getBitcoinValue = (userData: UserDataLike): number => getCurrentBalance(userData).bitcoin || 0;
+export const getCryptoValue = (userData: UserDataLike): number => getCurrentBalance(userData).crypto || 0;
+export const getBondsValue = (userData: UserDataLike): number => getCurrentBalance(userData).bonds || 0;
+export const getFundsValue = (userData: UserDataLike): number => getCurrentBalance(userData).funds || 0;
+export const getGoldValue = (userData: UserDataLike): number => getCurrentBalance(userData).gold || 0;
+export const getTotalValue = (userData: UserDataLike): number => getCurrentBalance(userData).totalValue || 0;
 
 // Previous month balance selectors
-export const getCashValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).cash || 0;
-export const getBankValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).bank || 0;
-export const getDigitalServicesValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).digitalServices || 0;
-export const getEmergencyFundPreMonth = (userData: any): number => getPreviousMonthBalance(userData).emergencyFund || 0;
-export const getStocksValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).stocks || 0;
-export const getEtfValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).etf || 0;
-export const getBitcoinValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).bitcoin || 0;
-export const getCryptoValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).crypto || 0;
-export const getBondsValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).bonds || 0;
-export const getFundsValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).funds || 0;
-export const getGoldValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).gold || 0;
-export const getTotalValuePreMonth = (userData: any): number => getPreviousMonthBalance(userData).totalValue || 0;
+export const getCashValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).cash || 0;
+export const getBankValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).bank || 0;
+export const getDigitalServicesValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).digitalServices || 0;
+export const getEmergencyFundPreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).emergencyFund || 0;
+export const getStocksValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).stocks || 0;
+export const getEtfValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).etf || 0;
+export const getBitcoinValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).bitcoin || 0;
+export const getCryptoValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).crypto || 0;
+export const getBondsValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).bonds || 0;
+export const getFundsValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).funds || 0;
+export const getGoldValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).gold || 0;
+export const getTotalValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).totalValue || 0;
 
 // Previous year same month balance selectors
-export const getCashValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).cash || 0;
-export const getBankValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).bank || 0;
-export const getDigitalServicesValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).digitalServices || 0;
-export const getEmergencyFundPreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).emergencyFund || 0;
-export const getStocksValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).stocks || 0;
-export const getEtfValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).etf || 0;
-export const getBitcoinValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).bitcoin || 0;
-export const getCryptoValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).crypto || 0;
-export const getBondsValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).bonds || 0;
-export const getFundsValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).funds || 0;
-export const getGoldValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).gold || 0;
-export const getTotalValuePreYearSameMonth = (userData: any): number => getPreviousYearSameMonthBalance(userData).totalValue || 0;
+export const getCashValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).cash || 0;
+export const getBankValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).bank || 0;
+export const getDigitalServicesValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).digitalServices || 0;
+export const getEmergencyFundPreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).emergencyFund || 0;
+export const getStocksValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).stocks || 0;
+export const getEtfValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).etf || 0;
+export const getBitcoinValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).bitcoin || 0;
+export const getCryptoValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).crypto || 0;
+export const getBondsValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).bonds || 0;
+export const getFundsValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).funds || 0;
+export const getGoldValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).gold || 0;
+export const getTotalValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).totalValue || 0;
 
 // Legacy format creators for backward compatibility
-export const createLegacyBalanceData = (userData: any) => {
+export const createLegacyBalanceData = (userData: UserDataLike) => {
   const currentBalance = getCurrentBalance(userData);
   const preMonthBalance = getPreviousMonthBalance(userData);
   const preYearSameMonthBalance = getPreviousYearSameMonthBalance(userData);
@@ -174,118 +174,112 @@ export const createLegacyBalanceData = (userData: any) => {
 };
 
 // User profile selectors
-export const getUserNationality = (userData: any): ProfileFieldValue => userData?.profile?.nationality || { key: -1, value: 'Nazionalità non impostata' };
-export const getUserWhereWorks = (userData: any): ProfileFieldValue => userData?.profile?.whereWorks || { key: -1, value: 'Dove lavora non impostato' };
-export const getUserJob = (userData: any): ProfileFieldValue => userData?.profile?.job || { key: -1, value: 'Lavoro non impostato' };
-export const getUserJobType = (userData: any): ProfileFieldValue => userData?.profile?.jobType || { key: -1, value: 'Tipo di lavoro non impostato' };
-export const getUserWorkTime = (userData: any): ProfileFieldValue => userData?.profile?.workTime || { key: -1, value: 'Tipologia contratto non impostato' };
-export const getUserRemoteType = (userData: any): ProfileFieldValue => userData?.profile?.remoteType || { key: -1, value: 'Tipologia lavoro non impostata' };
-export const getUserAge = (userData: any): ProfileFieldValue => userData?.profile?.age || { key: -1, value: 'Età non impostata' };
-export const getUserLivingSituation = (userData: any): ProfileFieldValue => userData?.profile?.livingSituation || { key: -1, value: 'Situazione abitativa non impostata' };
-export const getUserHousingType = (userData: any): ProfileFieldValue => userData?.profile?.housingType || { key: -1, value: 'Tipologia abitativa non impostata' };
-export const getUserChildren = (userData: any): ProfileFieldValue => userData?.profile?.children || { key: -1, value: 'Figli non impostati' };
-export const getUserYearsOfExperience = (userData: any): ProfileFieldValue => userData?.profile?.yearsOfExperience || { key: -1, value: 'Anni di esperienza non impostati' };
-export const getProfileCompletionPercentage = (userData: any): number => userData?.profileCompletionPercentage || userData?.profile?.completionPercentage || 0;
+export const getUserNationality = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.nationality || { key: -1, value: 'Nazionalità non impostata' };
+export const getUserWhereWorks = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.whereWorks || { key: -1, value: 'Dove lavora non impostato' };
+export const getUserJob = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.job || { key: -1, value: 'Lavoro non impostato' };
+export const getUserJobType = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.jobType || { key: -1, value: 'Tipo di lavoro non impostato' };
+export const getUserWorkTime = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.workTime || { key: -1, value: 'Tipologia contratto non impostato' };
+export const getUserRemoteType = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.remoteType || { key: -1, value: 'Tipologia lavoro non impostata' };
+export const getUserAge = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.age || { key: -1, value: 'Età non impostata' };
+export const getUserLivingSituation = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.livingSituation || { key: -1, value: 'Situazione abitativa non impostata' };
+export const getUserHousingType = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.housingType || { key: -1, value: 'Tipologia abitativa non impostata' };
+export const getUserChildren = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.children || { key: -1, value: 'Figli non impostati' };
+export const getUserYearsOfExperience = (userData: UserDataLike): ProfileFieldValue => userData?.profile?.yearsOfExperience || { key: -1, value: 'Anni di esperienza non impostati' };
+export const getProfileCompletionPercentage = (userData: UserDataLike): number => userData?.profileCompletionPercentage || userData?.profile?.completionPercentage || 0;
 
 // New user detection (no balances, no transactions)
 // Note: allOutflows/allIncomes are arrays of month-arrays (e.g. [[], [], ...]),
 // so we must check for actual items inside, not just outer array length.
-export const isNewUser = (userData: any): boolean => {
+export const isNewUser = (userData: UserDataLike): boolean => {
   if (!userData) return false;
   const hasBalance = getTotalValue(userData) > 0;
   const outflows = getAllOutflows(userData);
-  const hasOutflows = outflows.some((month: any) => Array.isArray(month) ? month.length > 0 : false);
+  const hasOutflows = outflows.some((month: ExpenseDto[]) => Array.isArray(month) ? month.length > 0 : false);
   const incomes = getAllIncomes(userData);
-  const hasIncomes = incomes.some((month: any) => Array.isArray(month) ? month.length > 0 : false);
+  const hasIncomes = incomes.some((month: ExpenseDto[]) => Array.isArray(month) ? month.length > 0 : false);
   return !hasBalance && !hasOutflows && !hasIncomes;
 };
 
 // Expense and income selectors
-export const getAllOutflows = (userData: any): any[] => userData?.expenses?.allOutflows || userData?.allOutflows || [];
-export const getOutflowsArray = (userData: any): number[] => userData?.expenses?.outflowsArray || userData?.outflowsArray || [];
-export const getTotalOutflowsPerCategoryPerMonth = (userData: any): Record<string, any> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
-export const getAllIncomes = (userData: any): any[] => userData?.incomes?.allIncomes || userData?.allIncomes || [];
-export const getIncomesArray = (userData: any): number[] => userData?.incomes?.incomesArray || userData?.incomesArray || [];
+export const getAllOutflows = (userData: UserDataLike): any[] => userData?.expenses?.allOutflows || [];
+export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.expenses?.outflowsArray || [];
+export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, any> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
+export const getAllIncomes = (userData: UserDataLike): any[] => userData?.incomes?.allIncomes || [];
+export const getIncomesArray = (userData: UserDataLike): number[] => userData?.incomes?.incomesArray || [];
 
 // Totale spese/income/saved del mese corrente
-export const getTotalOutflowsCurrentMonth = (userData: any): number => {
+export const getTotalOutflowsCurrentMonth = (userData: UserDataLike): number => {
   if (typeof userData?.expenses?.totalOutflowsMonth === 'number') {
     return userData.expenses.totalOutflowsMonth;
   }
   if (Array.isArray(userData?.expenses?.outflowsArray)) {
     return userData.expenses.outflowsArray[0] || 0;
   }
-  if (Array.isArray(userData?.outflowsArray)) {
-    return userData.outflowsArray[0] || 0;
-  }
   return 0;
 };
 
-export const getTotalIncomesCurrentMonth = (userData: any): number => {
+export const getTotalIncomesCurrentMonth = (userData: UserDataLike): number => {
   if (typeof userData?.incomes?.totalIncomesMonth === 'number') {
     return userData.incomes.totalIncomesMonth;
   }
   if (Array.isArray(userData?.incomes?.incomesArray)) {
     return userData.incomes.incomesArray[0] || 0;
   }
-  if (Array.isArray(userData?.incomesArray)) {
-    return userData.incomesArray[0] || 0;
-  }
   return 0;
 };
 
-export const getTotalSavedCurrentMonth = (userData: any): number => {
+export const getTotalSavedCurrentMonth = (userData: UserDataLike): number => {
   return getTotalIncomesCurrentMonth(userData) - getTotalOutflowsCurrentMonth(userData);
 };
 
 // Tags selectors
-export const getOutflowsTags = (userData: any): any[] => userData?.tags?.outflowsTags || [];
-export const getIncomesTags = (userData: any): any[] => userData?.tags?.incomesTags || [];
-export const getPaymentTags = (userData: any): any[] => userData?.tags?.paymentTags || [];
-export const getNationalityTags = (userData: any): any[] => userData?.tags?.nationalityTags || [];
-export const getJobTags = (userData: any): any[] => userData?.tags?.jobTags || [];
-export const getJobTypeTags = (userData: any): any[] => userData?.tags?.jobTypeTags || [];
-export const getWorkTimeTags = (userData: any): any[] => userData?.tags?.workTimeTags || [];
-export const getRemoteTypeTags = (userData: any): any[] => userData?.tags?.remoteTypeTags || [];
-export const getAgeTags = (userData: any): any[] => userData?.tags?.ageTags || [];
-export const getLivingSituationTags = (userData: any): any[] => userData?.tags?.livingSituationTags || [];
-export const getHousingTypeTags = (userData: any): any[] => userData?.tags?.housingTypeTags || [];
-export const getChildrenTags = (userData: any): any[] => userData?.tags?.childrenTags || [];
-export const getYearsOfExperienceTags = (userData: any): any[] => userData?.tags?.yearsOfExperienceTags || [];
-export const getCurrencyTags = (userData: any): any[] => userData?.tags?.currencyTags || [];
+export const getOutflowsTags = (userData: UserDataLike): any[] => userData?.tags?.outflowsTags || [];
+export const getIncomesTags = (userData: UserDataLike): any[] => userData?.tags?.incomesTags || [];
+export const getPaymentTags = (userData: UserDataLike): any[] => userData?.tags?.paymentTags || [];
+export const getNationalityTags = (userData: UserDataLike): any[] => userData?.tags?.nationalityTags || [];
+export const getJobTags = (userData: UserDataLike): any[] => userData?.tags?.jobTags || [];
+export const getJobTypeTags = (userData: UserDataLike): any[] => userData?.tags?.jobTypeTags || [];
+export const getWorkTimeTags = (userData: UserDataLike): any[] => userData?.tags?.workTimeTags || [];
+export const getRemoteTypeTags = (userData: UserDataLike): any[] => userData?.tags?.remoteTypeTags || [];
+export const getAgeTags = (userData: UserDataLike): any[] => userData?.tags?.ageTags || [];
+export const getLivingSituationTags = (userData: UserDataLike): any[] => userData?.tags?.livingSituationTags || [];
+export const getHousingTypeTags = (userData: UserDataLike): any[] => userData?.tags?.housingTypeTags || [];
+export const getChildrenTags = (userData: UserDataLike): any[] => userData?.tags?.childrenTags || [];
+export const getYearsOfExperienceTags = (userData: UserDataLike): any[] => userData?.tags?.yearsOfExperienceTags || [];
+export const getCurrencyTags = (userData: UserDataLike): any[] => userData?.tags?.currencyTags || [];
 
 // Preferred currency selector (returns {key, value} like other profile fields)
-export const getUserPreferredCurrency = (userData: any): ProfileFieldValue =>
+export const getUserPreferredCurrency = (userData: UserDataLike): ProfileFieldValue =>
   userData?.profile?.preferredCurrency || { key: -1, value: 'EUR' };
 
 // Rankings selectors
-export const getPercentageRankOnBalance = (userData: any): number => userData?.rankings?.balance || 0;
-export const getPercentageRankOnIncomes = (userData: any): number => userData?.rankings?.incomes || 0;
-export const getPercentageRankOnOutflows = (userData: any): number => userData?.rankings?.outflows || 0;
+export const getPercentageRankOnBalance = (userData: UserDataLike): number => userData?.rankings?.balance || 0;
+export const getPercentageRankOnIncomes = (userData: UserDataLike): number => userData?.rankings?.incomes || 0;
+export const getPercentageRankOnOutflows = (userData: UserDataLike): number => userData?.rankings?.outflows || 0;
 /** @deprecated Use getPercentageRankOnOutflows instead */
 export const getPercentageRankOnExpenses = getPercentageRankOnOutflows;
-export const getPercentageRankOnBalanceSimilar = (userData: any): number => userData?.rankings?.balanceSimilar || 0;
-export const getPercentageRankOnIncomesSimilar = (userData: any): number => userData?.rankings?.incomesSimilar || 0;
-export const getPercentageRankOnOutflowsSimilar = (userData: any): number => userData?.rankings?.outflowsSimilar || 0;
+export const getPercentageRankOnBalanceSimilar = (userData: UserDataLike): number => userData?.rankings?.balanceSimilar || 0;
+export const getPercentageRankOnIncomesSimilar = (userData: UserDataLike): number => userData?.rankings?.incomesSimilar || 0;
+export const getPercentageRankOnOutflowsSimilar = (userData: UserDataLike): number => userData?.rankings?.outflowsSimilar || 0;
 /** @deprecated Use getPercentageRankOnOutflowsSimilar instead */
 export const getPercentageRankOnExpensesSimilar = getPercentageRankOnOutflowsSimilar;
 
 // Dates selectors
-export const getCurrentDate = (userData: any): string | undefined => userData?.dates?.current;
-export const getPreMonthDate = (userData: any): string | undefined => userData?.dates?.preMonth;
-export const getPreYearSameMonthDate = (userData: any): string | undefined => userData?.dates?.preYearSameMonth;
-export const getFormattedPreMonthDate = (userData: any): string => {
+export const getCurrentDate = (userData: UserDataLike): string | undefined => userData?.dates?.current;
+export const getPreMonthDate = (userData: UserDataLike): string | undefined => userData?.dates?.preMonth;
+export const getPreYearSameMonthDate = (userData: UserDataLike): string | undefined => userData?.dates?.preYearSameMonth;
+export const getFormattedPreMonthDate = (userData: UserDataLike): string => {
   const legacyData = createLegacyBalanceData(userData);
   return legacyData.formattedPreMonthDate;
 };
 
-export const getFormattedPreYearSameMonthDate = (userData: any): string => {
+export const getFormattedPreYearSameMonthDate = (userData: UserDataLike): string => {
   const legacyData = createLegacyBalanceData(userData);
   return legacyData.formattedPreYearSameMonthDate;
 };
 
 // Localized date formatters
-export const getFormattedPreMonthDateLocalized = (userData: any, language: string = 'it'): string => {
+export const getFormattedPreMonthDateLocalized = (userData: UserDataLike, language: string = 'it'): string => {
   const preMonthDate = getPreMonthDate(userData);
   if (!preMonthDate) return '';
 
@@ -307,7 +301,7 @@ export const getFormattedPreMonthDateLocalized = (userData: any, language: strin
   return `${month} ${year}`;
 };
 
-export const getFormattedPreYearSameMonthDateLocalized = (userData: any, language: string = 'it'): string => {
+export const getFormattedPreYearSameMonthDateLocalized = (userData: UserDataLike, language: string = 'it'): string => {
   const preYearDate = getPreYearSameMonthDate(userData);
   if (!preYearDate) return '';
 
@@ -330,33 +324,33 @@ export const getFormattedPreYearSameMonthDateLocalized = (userData: any, languag
 };
 
 // Averages selectors (from /stats/averages API)
-export const getAverages = (userData: any) => userData?.averages || { all: {}, similar: {} };
-export const getAveragesAll = (userData: any) => userData?.averages?.all || {};
-export const getAveragesSimilar = (userData: any) => userData?.averages?.similar || {};
+export const getAverages = (userData: UserDataLike) => userData?.averages || { all: {}, similar: {} };
+export const getAveragesAll = (userData: UserDataLike) => userData?.averages?.all || {};
+export const getAveragesSimilar = (userData: UserDataLike) => userData?.averages?.similar || {};
 
-export const getAveragesAllBalances = (userData: any) => userData?.averages?.all?.balances ?? null;
-export const getAveragesAllExpenses = (userData: any) => userData?.averages?.all?.expenses ?? null;
-export const getAveragesAllIncomes = (userData: any) => userData?.averages?.all?.incomes ?? null;
-export const getAveragesAllSavingsRates = (userData: any) => userData?.averages?.all?.savingsRates ?? null;
-export const getAveragesAllExpensesByCategory = (userData: any) => userData?.averages?.all?.expensesByCategory ?? null;
+export const getAveragesAllBalances = (userData: UserDataLike) => userData?.averages?.all?.balances ?? null;
+export const getAveragesAllExpenses = (userData: UserDataLike) => userData?.averages?.all?.expenses ?? null;
+export const getAveragesAllIncomes = (userData: UserDataLike) => userData?.averages?.all?.incomes ?? null;
+export const getAveragesAllSavingsRates = (userData: UserDataLike): number | null => (userData?.averages?.all?.savingsRates as number | null) ?? null;
+export const getAveragesAllExpensesByCategory = (userData: UserDataLike) => userData?.averages?.all?.expensesByCategory ?? null;
 
-export const getAveragesSimilarBalances = (userData: any) => userData?.averages?.similar?.balances ?? null;
-export const getAveragesSimilarExpenses = (userData: any) => userData?.averages?.similar?.expenses ?? null;
-export const getAveragesSimilarIncomes = (userData: any) => userData?.averages?.similar?.incomes ?? null;
-export const getAveragesSimilarSavingsRates = (userData: any) => userData?.averages?.similar?.savingsRates ?? null;
-export const getAveragesSimilarExpensesByCategory = (userData: any) => userData?.averages?.similar?.expensesByCategory ?? null;
+export const getAveragesSimilarBalances = (userData: UserDataLike) => userData?.averages?.similar?.balances ?? null;
+export const getAveragesSimilarExpenses = (userData: UserDataLike) => userData?.averages?.similar?.expenses ?? null;
+export const getAveragesSimilarIncomes = (userData: UserDataLike) => userData?.averages?.similar?.incomes ?? null;
+export const getAveragesSimilarSavingsRates = (userData: UserDataLike): number | null => (userData?.averages?.similar?.savingsRates as number | null) ?? null;
+export const getAveragesSimilarExpensesByCategory = (userData: UserDataLike) => userData?.averages?.similar?.expensesByCategory ?? null;
 
 // Goals and limits selectors (for backward compatibility)
-export const getMonthlySpendingLimit = (userData: any): number => userData?.limits?.monthlySpendingLimit ?? DEFAULT_MONTHLY_SPENDING_LIMIT;
-export const getSavingsGoalPercentage = (userData: any): number => userData?.limits?.savingsGoalPercentage ?? DEFAULT_SAVINGS_GOAL_PERCENTAGE;
-export const getEmergencyFundTarget = (userData: any): number => userData?.limits?.emergencyFundTarget ?? DEFAULT_EMERGENCY_FUND_TARGET;
+export const getMonthlySpendingLimit = (userData: UserDataLike): number => userData?.limits?.monthlySpendingLimit ?? DEFAULT_MONTHLY_SPENDING_LIMIT;
+export const getSavingsGoalPercentage = (userData: UserDataLike): number => userData?.limits?.savingsGoalPercentage ?? DEFAULT_SAVINGS_GOAL_PERCENTAGE;
+export const getEmergencyFundTarget = (userData: UserDataLike): number => userData?.limits?.emergencyFundTarget ?? DEFAULT_EMERGENCY_FUND_TARGET;
 
 // Balance growth calculation
-export const getBalanceGrowth12Months = (userData: any): number => {
+export const getBalanceGrowth12Months = (userData: UserDataLike): number => {
   const currentBalance = getTotalValue(userData) || 0;
 
   const balances = userData?.balances || [];
-  const balance12MonthsAgo = balances[11]?.balance?.totalValue || 0;
+  const balance12MonthsAgo = (balances[11]?.balance as BalanceSnapshotLike)?.totalValue || 0;
 
   if (balance12MonthsAgo === 0 || currentBalance === 0) return 0;
   return ((currentBalance - balance12MonthsAgo) / balance12MonthsAgo) * 100;
@@ -392,7 +386,7 @@ export interface BalanceChartDatum {
 }
 
 // Chart data selectors
-export const getBalanceChartData = (userData: any): BalanceChartDatum[] => {
+export const getBalanceChartData = (userData: UserDataLike): BalanceChartDatum[] => {
   const balances: BalanceMonthEntry[] = userData?.balances || [];
   const currentDate = new Date();
 
@@ -456,3 +450,5 @@ export const getBalanceChartData = (userData: any): BalanceChartDatum[] => {
   }
   return result;
 };
+
+

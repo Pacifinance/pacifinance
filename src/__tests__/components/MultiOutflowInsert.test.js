@@ -223,11 +223,12 @@ describe('MultiOutflowInsert helpers', () => {
     });
 
     it('should parse plain decimal strings (dot separator)', () => {
-      expect(parseFormattedAmount('10.5')).toBe(105);
-      // Note: "10.5" is ambiguous — could be decimal or truncated thousands.
-      // parseFormattedAmount strips all dots, so "10.5" → "105" → 105.
-      // This is OK because handleAmountInput already converts commas to dots,
-      // so raw input never reaches this function with dot-as-decimal.
+      expect(parseFormattedAmount('10.5')).toBe(10.5);
+      expect(parseFormattedAmount('1000.50')).toBe(1000.5);
+      // Dot-only strings (no comma) are treated as raw decimal notation.
+      // When the user blurs, formatAmountBlur produces "10,50" (IT format with comma),
+      // which is handled by the IT branch. If blur never fires, the raw decimal
+      // string is still parsed correctly.
     });
 
     it('should return number as-is', () => {

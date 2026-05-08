@@ -260,8 +260,6 @@ const PercentBadge = styled.span`
   margin-left: 4px;
 `;
 
-const currentDate = new Date().toISOString().split('T')[0];
-
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
     .replace(/,/g, '.') // Substitute commas with dots
@@ -335,8 +333,10 @@ export default function OutflowSection({
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const _now = new Date();
+  const currentDate = `${_now.getFullYear()}-${pad(_now.getMonth() + 1)}-${pad(_now.getDate())}`;
   
-  // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
 

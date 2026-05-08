@@ -11,10 +11,16 @@
  */
 export const parseFormattedAmount = (value) => {
   if (typeof value === 'number') return value;
-  const str = String(value);
-  // Remove thousands dots, replace decimal comma with dot
-  const cleaned = str.replace(/\./g, '').replace(',', '.');
-  const num = parseFloat(cleaned);
+  const str = String(value).trim();
+  if (!str) return 0;
+  // IT-formatted string (comma as decimal separator, e.g. "1.234,56" or "1,23")
+  if (str.includes(',')) {
+    const cleaned = str.replace(/\./g, '').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  }
+  // Raw numeric string with dot as decimal separator (e.g. "1234.56" or "1234")
+  const num = parseFloat(str);
   return isNaN(num) ? 0 : num;
 };
 

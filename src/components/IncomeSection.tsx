@@ -15,8 +15,6 @@ import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 
-const currentDate = new Date().toISOString().split('T')[0];
-
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
     .replace(/,/g, '.') // Substitute commas with dots
@@ -370,7 +368,10 @@ export default function IncomeSection({
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
-  
+  const _pad = (n: number) => String(n).padStart(2, '0');
+  const _now = new Date();
+  const currentDate = `${_now.getFullYear()}-${_pad(_now.getMonth() + 1)}-${_pad(_now.getDate())}`;
+
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');

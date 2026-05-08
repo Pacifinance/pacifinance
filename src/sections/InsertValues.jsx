@@ -36,7 +36,11 @@ import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/useP
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
 
-const currentDate = new Date().toISOString().split("T")[0];
+const getTodayStr = () => {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
 
 /* ─────────────── Styled Components ─────────────── */
 
@@ -438,8 +442,8 @@ export default function InsertValue({
   const [noteOutflowAreaValue, setNoteOutflowAreaValue] = useState("");
   const [allIncomesAdds, setAllIncomesAdds] = useState([]);
   const [allOutflowsAdds, setAllOutflowsAdds] = useState([]);
-  const [incomeDate, setIncomeDate] = useState(currentDate);
-  const [outflowDate, setOutflowDate] = useState(currentDate);
+  const [incomeDate, setIncomeDate] = useState(getTodayStr);
+  const [outflowDate, setOutflowDate] = useState(getTodayStr);
   const [balanceDate, setBalanceDate] = useState({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
   const [activePage, setActivePage] = useState("outflows");
   const [OutflowsTags, setOutflowsTags] = useState([]);
@@ -690,7 +694,7 @@ export default function InsertValue({
       };
       const currentVal = parseFloat(currentMap[assetKey]) || 0;
       const newVal = currentVal + deltaEUR;
-      const balancesJson = createBalancesJson(currentDate, balanceSource, newVal);
+      const balancesJson = createBalancesJson(getTodayStr(), balanceSource, newVal);
       try {
         const res = await financeService.addBalance(balancesJson);
         return res?.status === 200;
@@ -1086,7 +1090,7 @@ export default function InsertValue({
             const currentVal = parseFloat(balanceOptionsMap[source]);
             overrides[source] = currentVal - toEUR(totalAmount);
           }
-          const balancesJson = createBalancesJsonMulti(currentDate, overrides);
+          const balancesJson = createBalancesJsonMulti(getTodayStr(), overrides);
           await financeService.addBalance(balancesJson);
         } catch {
           // Balance update failed but outflows were inserted — don't block
@@ -1192,7 +1196,7 @@ export default function InsertValue({
             const currentVal = parseFloat(balanceOptionsMap[source]);
             overrides[source] = currentVal + toEUR(totalAmount); // ADD for incomes
           }
-          const balancesJson = createBalancesJsonMulti(currentDate, overrides);
+          const balancesJson = createBalancesJsonMulti(getTodayStr(), overrides);
           await financeService.addBalance(balancesJson);
         } catch {
           // Balance update failed but incomes were inserted
@@ -1550,7 +1554,7 @@ export default function InsertValue({
             if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
             else newValue = valueBalanceSelected + incomeNumber;
 
-            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            const balancesJson = createBalancesJson(getTodayStr(), selectedOption, newValue);
 
             const balancesChange = await financeService.addBalance(balancesJson);
 
@@ -1633,7 +1637,7 @@ export default function InsertValue({
             const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
             const incomeNumber = parseFloat(deleteIncomeAmount);
             const newValue = valueBalanceSelected - incomeNumber;
-            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            const balancesJson = createBalancesJson(getTodayStr(), selectedOption, newValue);
             await financeService.addBalance(balancesJson);
           }
         }
@@ -1699,7 +1703,7 @@ export default function InsertValue({
             const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
             const outflowNumber = parseFloat(deleteOutflowAmount);
             const newValue = valueBalanceSelected + outflowNumber;
-            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            const balancesJson = createBalancesJson(getTodayStr(), selectedOption, newValue);
             await financeService.addBalance(balancesJson);
           }
         }
@@ -1934,7 +1938,7 @@ export default function InsertValue({
                 typoKey: typoOutflow?.key || '',
                 typoValue: typoOutflow?.value || '',
                 amount: outflow || '',
-                date: outflowDate || currentDate,
+                date: outflowDate || getTodayStr(),
                 note: noteOutflowAreaValue || '',
                 balanceSource: selectedOption || '',
               }}
@@ -1955,7 +1959,7 @@ export default function InsertValue({
                 categoryKey: categoryIncome?.key || '',
                 categoryValue: categoryIncome?.value || '',
                 amount: income || '',
-                date: incomeDate || currentDate,
+                date: incomeDate || getTodayStr(),
                 note: noteIncomeAreaValue || '',
                 balanceSource: selectedOption || '',
               }}

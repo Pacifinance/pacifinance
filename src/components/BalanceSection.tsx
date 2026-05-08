@@ -30,14 +30,14 @@ const handleInputChange = (e, setterFunction) => {
 };
 
 const handleInputBlur = (e, setterFunction) => {
-  const cleanedValue = e.target.value
+  const rawValue = e.target.value
     .replace(/,/g, '.')
     .replace(/[^\d.]/g, '')
     .replace(/^0+(\d)/, '$1');
-  const cleanedFinalValue = Number(cleanedValue).toLocaleString('it-IT', {
-    minimumFractionDigits: 2,
-  });
-  if (!isNaN(cleanedFinalValue)) setterFunction(cleanedFinalValue);
+  const num = Number(rawValue);
+  if (!isNaN(num) && rawValue !== '') {
+    setterFunction(num.toLocaleString('it-IT', { minimumFractionDigits: 2 }));
+  }
 };
 
 /* ─── Styled Components ─── */

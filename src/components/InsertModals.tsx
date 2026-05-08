@@ -6,6 +6,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { getAssetIcon } from '../data/assetIcons';
 import { getAssetColor } from '../data/assetColors';
+import { parseFormattedAmount } from './multiInsert/helpers';
 import DeleteTransactionModal from './DeleteTransactionModal';
 
 /* ─── Balance Confirm Modal Styled Components ─── */
@@ -237,7 +238,7 @@ function BalanceAssetRow({ assetKey, label, value, currencySymbol, theme }) {
   const IconComponent = getAssetIcon(assetKey);
   const colorData = getAssetColor(assetKey);
   const color = typeof colorData === 'object' ? colorData.primary : colorData;
-  const formattedValue = Number(value || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedValue = parseFormattedAmount(value ?? 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <AssetRow theme={theme}>

@@ -14,9 +14,18 @@ import { getMuiSelectMenuProps } from './ThemedSelect';
 
 /* ─── Helpers ─── */
 const handleInputChange = (e, setterFunction) => {
-  let cleanedValue = e.target.value
-    .replace(/,/g, '.')
-    .replace(/[^\d.]/g, '');
+  const rawValue = e.target.value.trim();
+  const hasComma = rawValue.includes(',');
+  const hasDot = rawValue.includes('.');
+  let cleanedValue = rawValue;
+
+  if (hasComma && hasDot) {
+    cleanedValue = cleanedValue.replace(/\./g, '').replace(/,/g, '.');
+  } else {
+    cleanedValue = cleanedValue.replace(/,/g, '.');
+  }
+
+  cleanedValue = cleanedValue.replace(/[^\d.]/g, '');
   const dotIndex = cleanedValue.indexOf('.');
   if (dotIndex !== -1) {
     cleanedValue =
@@ -30,8 +39,10 @@ const handleInputChange = (e, setterFunction) => {
 };
 
 const handleInputBlur = (e, setterFunction) => {
-  const rawValue = e.target.value
-    .replace(/,/g, '.')
+  const value = e.target.value.trim();
+  const rawValue = (value.includes(',') && value.includes('.')
+    ? value.replace(/\./g, '').replace(/,/g, '.')
+    : value.replace(/,/g, '.'))
     .replace(/[^\d.]/g, '')
     .replace(/^0+(\d)/, '$1');
   const num = Number(rawValue);
@@ -334,6 +345,14 @@ export default function BalanceSection({
     const IconComponent = getAssetIcon(asset.key);
     const colorData = getAssetColor(asset.key);
     const color = typeof colorData === 'object' ? colorData.primary : colorData;
+    const displayValue =
+      typeof asset.value === 'number'
+        ? fromEUR(asset.value).toLocaleString('it-IT', { minimumFractionDigits: 2 })
+        : asset.value;
+    const placeholderValue =
+      typeof asset.value === 'number'
+        ? fromEUR(asset.value).toLocaleString('it-IT', { minimumFractionDigits: 2 })
+        : asset.value;
 
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
@@ -349,9 +368,10 @@ export default function BalanceSection({
             type="text"
             theme={theme}
             $color={color}
+            value={isHidden ? '' : displayValue}
             onChange={(e) => handleInputChange(e, asset.setter)}
             onBlur={(e) => handleInputBlur(e, asset.setter)}
-            placeholder={isHidden ? '****' : fromEUR(asset.value).toLocaleString('it-IT', { minimumFractionDigits: 2 })}
+            placeholder={isHidden ? '****' : placeholderValue}
           />
         </CurrencyInputWrapper>
       </AssetItem>

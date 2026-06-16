@@ -24,7 +24,7 @@ const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert")
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "../components/MultiBalanceInsert";
-import { buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from "../constants/balanceSchema";
+import { buildAddBalancePayload, buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from "../constants/balanceSchema";
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
@@ -468,7 +468,7 @@ export default function InsertValue({
   // Helper function to create balances JSON - simplified with component context access
   const createBalancesJson = (date, selectedOption = null, newValue = null) => {
     const getValue = (assetKey, currentValue) => {
-      if (selectedOption?.includes(translations.assets[assetKey])) {
+      if (selectedOption === translations.assets[assetKey]) {
         // newValue is already in EUR (pre-converted by caller)
         return Number(newValue) || 0;
       }
@@ -479,23 +479,20 @@ export default function InsertValue({
       // If value is a string, the user edited the field — it's in display currency
       return toEUR(parseFormattedAmount(currentValue));
     };
-    
-    return {
-      balance: {
-        date,
-        bank: getValue('bank', bankValue),
-        cash: getValue('cash', cashValue),
-        digital_services: getValue('digitalServices', digitalServicesValue),
-        emergency_fund: getValue('emergencyFund', emergencyFundValue),
-        stocks: getValue('stocks', stocksValue),
-        etf: getValue('etf', etfValue),
-        bitcoin: getValue('bitcoin', bitcoinValue),
-        crypto: getValue('crypto', cryptoValue),
-        bonds: getValue('bonds', bondsValue),
-        funds: getValue('funds', fundsValue),
-        gold: getValue('gold', goldValue),
-      }
-    };
+
+    return buildAddBalancePayload(date, {
+      bank: getValue('bank', bankValue),
+      cash: getValue('cash', cashValue),
+      digitalServices: getValue('digitalServices', digitalServicesValue),
+      emergencyFund: getValue('emergencyFund', emergencyFundValue),
+      stocks: getValue('stocks', stocksValue),
+      etf: getValue('etf', etfValue),
+      bitcoin: getValue('bitcoin', bitcoinValue),
+      crypto: getValue('crypto', cryptoValue),
+      bonds: getValue('bonds', bondsValue),
+      funds: getValue('funds', fundsValue),
+      gold: getValue('gold', goldValue),
+    });
   };
 
   // Like createBalancesJson but accepts multiple source→newValue overrides at once.
@@ -520,23 +517,17 @@ export default function InsertValue({
       bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
       funds: fundsValue, gold: goldValue,
     };
-    const dbKeys = {
-      bank: 'bank', cash: 'cash', digitalServices: 'digital_services',
-      emergencyFund: 'emergency_fund', stocks: 'stocks', etf: 'etf',
-      bitcoin: 'bitcoin', crypto: 'crypto', bonds: 'bonds',
-      funds: 'funds', gold: 'gold',
-    };
 
-    const balance = { date };
+    const values = {};
     for (const [assetKey, translatedLabel] of Object.entries(assetSourceMap)) {
       if (overrides[translatedLabel] !== undefined) {
-        balance[dbKeys[assetKey]] = Number(overrides[translatedLabel]) || 0;
+        values[assetKey] = Number(overrides[translatedLabel]) || 0;
       } else {
         const val = stateValues[assetKey];
-        balance[dbKeys[assetKey]] = typeof val === 'number' ? val : toEUR(parseFormattedAmount(val));
+        values[assetKey] = typeof val === 'number' ? val : toEUR(parseFormattedAmount(val));
       }
     }
-    return { balance };
+    return buildAddBalancePayload(date, values);
   };
 
   // Function to convert month/year selection to actual date for DB.

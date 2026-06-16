@@ -49,8 +49,11 @@ export const isSameMonth = (a: string | Date, b: string | Date): boolean => {
  * The backend stores `userDate` (the date the user claims the snapshot is for)
  * and uses `sort: { userDate: -1, date: -1 }` to pick the "winning" balance
  * inside each month bucket. To guarantee that a NEW past-month snapshot
- * supersedes any pre-existing entry for that month, we must send the **last
- * possible instant** of that month — UTC `23:59:59.999` of the last day.
+ * supersedes any pre-existing entry for that month, we must send the latest
+ * backend-included instant of that month: UTC `23:59:59.998` of the last day.
+ *
+ * Note: the backend month upper bound is exclusive at `23:59:59.999`, so
+ * the latest timestamp that is still included in the selected month is `.998`.
  *
  * For the *current* month we keep the live `now` timestamp so that ordering
  * with concurrent same-day inserts is preserved naturally.
@@ -60,7 +63,7 @@ export const isSameMonth = (a: string | Date, b: string | Date): boolean => {
  *
  * @example
  *   getBalanceUserDateForMonth({ month: 3, year: 2026 })
- *   // → '2026-03-31T23:59:59.999Z'  (assuming current month ≠ March 2026)
+ *   // → '2026-03-31T23:59:59.998Z'  (assuming current month ≠ March 2026)
  */
 export const getBalanceUserDateForMonth = (
   monthYearObj: { month: number; year: number },
@@ -74,13 +77,15 @@ export const getBalanceUserDateForMonth = (
     return now.toISOString();
   }
 
-  // Last day of the selected month at 23:59:59.999 UTC.
+  // Last day of the selected month at 23:59:59.998 UTC.
+  // The backend's upper bound is exclusive at .999, so .998 is the latest
+  // timestamp that still belongs to the selected month in /balances/get.
   // `Date.UTC(year, monthIdx + 1, 0, ...)` → day 0 of next month = last day of this month.
   const utcMs = Date.UTC(
     monthYearObj.year,
     monthYearObj.month, // already 1-based, so passing it as monthIndex+1 effectively
     0,                  // day 0 of next month = last day of selected month
-    23, 59, 59, 999
+    23, 59, 59, 998
   );
   return new Date(utcMs).toISOString();
 };

@@ -5,7 +5,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { PageWrapper } from '../styles/MyStyled';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import Sidebar from '../sections/Sidebar';
-import InsertValues from '../sections/InsertValues';
+import InsertValues from '../sections/InsertValues.tsx';
 import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
 

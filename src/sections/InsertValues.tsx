@@ -37,6 +37,7 @@ const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBala
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
 
 const currentDate = new Date().toISOString().split("T")[0];
+const createEmptyBalanceInputs = () => Object.fromEntries(ASSET_KEYS.map((key) => [key, '']));
 
 /* ─────────────── Styled Components ─────────────── */
 
@@ -429,6 +430,7 @@ export default function InsertValue({
   const [bondsValue, setBondsValue] = useState(0);
   const [fundsValue, setFundsValue] = useState(0);
   const [goldValue, setGoldValue] = useState(0);
+  const [balanceInputs, setBalanceInputs] = useState(createEmptyBalanceInputs);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
   const [typoOutflow, setTypoOutflow] = useState({ key: "", value: "" });
@@ -465,33 +467,60 @@ export default function InsertValue({
   const [showOutflowNoteInput, setShowOutflowNoteInput] = useState(false);
   const [showOutflowDatePicker, setShowOutflowDatePicker] = useState(false);
 
+  const balanceBaseValues = {
+    bank: bankValue,
+    cash: cashValue,
+    digitalServices: digitalServicesValue,
+    emergencyFund: emergencyFundValue,
+    stocks: stocksValue,
+    etf: etfValue,
+    bitcoin: bitcoinValue,
+    crypto: cryptoValue,
+    bonds: bondsValue,
+    funds: fundsValue,
+    gold: goldValue,
+  };
+
+  const setBalanceInputValue = (assetKey) => (value) => {
+    setBalanceInputs((prev) => ({ ...prev, [assetKey]: value }));
+  };
+
+  const getBalanceFieldValue = (assetKey) => {
+    const draftValue = balanceInputs[assetKey];
+    return draftValue !== '' ? draftValue : balanceBaseValues[assetKey];
+  };
+
+  const resetBalanceInputs = () => {
+    setBalanceInputs(createEmptyBalanceInputs());
+  };
+
   // Helper function to create balances JSON - simplified with component context access
   const createBalancesJson = (date, selectedOption = null, newValue = null) => {
-    const getValue = (assetKey, currentValue) => {
+    const getValue = (assetKey) => {
       if (selectedOption === translations.assets[assetKey]) {
         // newValue is already in EUR (pre-converted by caller)
         return Number(newValue) || 0;
       }
       // If value is still a number, it hasn't been user-edited — it's EUR from DB
-      if (typeof currentValue === 'number') {
-        return currentValue;
+      if (balanceInputs[assetKey] !== '') {
+        return toEUR(parseFormattedAmount(balanceInputs[assetKey]));
       }
       // If value is a string, the user edited the field — it's in display currency
-      return toEUR(parseFormattedAmount(currentValue));
+      return Number(balanceBaseValues[assetKey]) || 0;
     };
 
     return buildAddBalancePayload(date, {
-      bank: getValue('bank', bankValue),
-      cash: getValue('cash', cashValue),
-      digitalServices: getValue('digitalServices', digitalServicesValue),
-      emergencyFund: getValue('emergencyFund', emergencyFundValue),
-      stocks: getValue('stocks', stocksValue),
-      etf: getValue('etf', etfValue),
-      bitcoin: getValue('bitcoin', bitcoinValue),
-      crypto: getValue('crypto', cryptoValue),
-      bonds: getValue('bonds', bondsValue),
-      funds: getValue('funds', fundsValue),
-      gold: getValue('gold', goldValue),
+      bank: getValue('bank'),
+      cash: getValue('cash'),
+      digitalServices: getValue('digitalServices'),
+      emergencyFund: getValue('emergencyFund'),
+      stocks: getValue('stocks'),
+      etf: getValue('etf'),
+      bitcoin: getValue('bitcoin'),
+      crypto: getValue('crypto'),
+      bonds: getValue('bonds'),
+      funds: getValue('funds'),
+      gold: getValue('gold'),
     });
   };
 
@@ -511,20 +540,14 @@ export default function InsertValue({
       funds: translations.assets.funds,
       gold: translations.assets.gold,
     };
-    const stateValues = {
-      bank: bankValue, cash: cashValue, digitalServices: digitalServicesValue,
-      emergencyFund: emergencyFundValue, stocks: stocksValue, etf: etfValue,
-      bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
-      funds: fundsValue, gold: goldValue,
-    };
-
     const values = {};
     for (const [assetKey, translatedLabel] of Object.entries(assetSourceMap)) {
       if (overrides[translatedLabel] !== undefined) {
         values[assetKey] = Number(overrides[translatedLabel]) || 0;
+      } else if (balanceInputs[assetKey] !== '') {
+        values[assetKey] = toEUR(parseFormattedAmount(balanceInputs[assetKey]));
       } else {
-        const val = stateValues[assetKey];
-        values[assetKey] = typeof val === 'number' ? val : toEUR(parseFormattedAmount(val));
+        values[assetKey] = Number(balanceBaseValues[assetKey]) || 0;
       }
     }
     return buildAddBalancePayload(date, values);
@@ -1412,6 +1435,7 @@ export default function InsertValue({
       if (balancesChange.status === 200) {
         handleSetIsUpdated(false);
         setUpdateBalanceSuccess(true);
+        resetBalanceInputs();
         fetchData();
         // Reset to current month/year after successful update
         setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
@@ -1719,30 +1743,31 @@ export default function InsertValue({
           <BalanceSection
             theme={theme}
             isHidden={isHidden}
-            bankValue={bankValue}
-            setBankValue={setBankValue}
-            cashValue={cashValue}
-            setCashValue={setCashValue}
-            digitalServicesValue={digitalServicesValue}
-            setDigitalServicesValue={setDigitalServicesValue}
-            emergencyFund={emergencyFundValue}
-            setEmergencyFund={setEmergencyFundValue}
-            stocksValue={stocksValue}
-            setStocksValue={setStocksValue}
-            etfValue={etfValue}
-            setETFValue={setETFValue}
-            bitcoinValue={bitcoinValue}
-            setBitcoinValue={setBitcoinValue}
-            cryptoValue={cryptoValue}
-            setCryptoValue={setCryptoValue}
-            bondsValue={bondsValue}
-            setBondsValue={setBondsValue}
-            fundsValue={fundsValue}
-            setFundsValue={setFundsValue}
-            goldValue={goldValue}
-            setGoldValue={setGoldValue}
+            bankValue={balanceInputs.bank}
+            setBankValue={setBalanceInputValue('bank')}
+            cashValue={balanceInputs.cash}
+            setCashValue={setBalanceInputValue('cash')}
+            digitalServicesValue={balanceInputs.digitalServices}
+            setDigitalServicesValue={setBalanceInputValue('digitalServices')}
+            emergencyFund={balanceInputs.emergencyFund}
+            setEmergencyFund={setBalanceInputValue('emergencyFund')}
+            stocksValue={balanceInputs.stocks}
+            setStocksValue={setBalanceInputValue('stocks')}
+            etfValue={balanceInputs.etf}
+            setETFValue={setBalanceInputValue('etf')}
+            bitcoinValue={balanceInputs.bitcoin}
+            setBitcoinValue={setBalanceInputValue('bitcoin')}
+            cryptoValue={balanceInputs.crypto}
+            setCryptoValue={setBalanceInputValue('crypto')}
+            bondsValue={balanceInputs.bonds}
+            setBondsValue={setBalanceInputValue('bonds')}
+            fundsValue={balanceInputs.funds}
+            setFundsValue={setBalanceInputValue('funds')}
+            goldValue={balanceInputs.gold}
+            setGoldValue={setBalanceInputValue('gold')}
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
+            balancePlaceholders={balanceBaseValues}
             onUpdateBalance={handleUpdateBalance}
             onOpenMultiInsert={() => setShowMultiBalanceInsert(true)}
             language={language}
@@ -2000,17 +2025,17 @@ export default function InsertValue({
           showConfirmationDeleteOutflow={showConfirmationDeleteOutflow}
           setShowConfirmationDeleteOutflow={setShowConfirmationDeleteOutflow}
           balanceDate={balanceDate}
-          bankValue={bankValue}
-          cashValue={cashValue}
-          digitalServicesValue={digitalServicesValue}
-          emergencyFundValue={emergencyFundValue}
-          stocksValue={stocksValue}
-          etfValue={etfValue}
-          bitcoinValue={bitcoinValue}
-          cryptoValue={cryptoValue}
-          bondsValue={bondsValue}
-          fundsValue={fundsValue}
-          goldValue={goldValue}
+          bankValue={getBalanceFieldValue('bank')}
+          cashValue={getBalanceFieldValue('cash')}
+          digitalServicesValue={getBalanceFieldValue('digitalServices')}
+          emergencyFundValue={getBalanceFieldValue('emergencyFund')}
+          stocksValue={getBalanceFieldValue('stocks')}
+          etfValue={getBalanceFieldValue('etf')}
+          bitcoinValue={getBalanceFieldValue('bitcoin')}
+          cryptoValue={getBalanceFieldValue('crypto')}
+          bondsValue={getBalanceFieldValue('bonds')}
+          fundsValue={getBalanceFieldValue('funds')}
+          goldValue={getBalanceFieldValue('gold')}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           options={options}

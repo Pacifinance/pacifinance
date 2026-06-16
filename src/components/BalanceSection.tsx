@@ -276,6 +276,7 @@ export default function BalanceSection({
   setGoldValue,
   balanceDate,
   setBalanceDate,
+  balancePlaceholders,
   onUpdateBalance,
   onOpenMultiInsert,
   translations,
@@ -345,14 +346,8 @@ export default function BalanceSection({
     const IconComponent = getAssetIcon(asset.key);
     const colorData = getAssetColor(asset.key);
     const color = typeof colorData === 'object' ? colorData.primary : colorData;
-    const displayValue =
-      typeof asset.value === 'number'
-        ? fromEUR(asset.value).toLocaleString('it-IT', { minimumFractionDigits: 2 })
-        : asset.value;
-    const placeholderValue =
-      typeof asset.value === 'number'
-        ? fromEUR(asset.value).toLocaleString('it-IT', { minimumFractionDigits: 2 })
-        : asset.value;
+    const placeholderAmount = balancePlaceholders?.[asset.key] ?? 0;
+    const placeholderValue = fromEUR(placeholderAmount).toLocaleString('it-IT', { minimumFractionDigits: 2 });
 
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
@@ -368,7 +363,7 @@ export default function BalanceSection({
             type="text"
             theme={theme}
             $color={color}
-            value={isHidden ? '' : displayValue}
+            value={isHidden ? '' : asset.value}
             onChange={(e) => handleInputChange(e, asset.setter)}
             onBlur={(e) => handleInputBlur(e, asset.setter)}
             placeholder={isHidden ? '****' : placeholderValue}

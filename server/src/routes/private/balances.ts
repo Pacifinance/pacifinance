@@ -1,9 +1,8 @@
 import express from "express"
-import { SessionData } from "express-session"
 
 import { ExtDate } from "../../libs/datelib"
 
-import db from "../../db/mongo"
+import db from "../../db/db"
 import common from "../common"
 
 /**
@@ -51,9 +50,8 @@ balancesRouter.post("/add", async (req, res) => {
         return;
     }
     // Add the balance to the database
-    const session = req.session as SessionData
     const doc = await db.balances.insertNew(
-        session.userId, balance.date, balance.bank, balance.cash, balance.digital_services,
+        req.userId as string, balance.date, balance.bank, balance.cash, balance.digital_services,
         balance.stocks, balance.etf, balance.bitcoin, balance.crypto,
         balance.bonds, balance.funds, balance.gold, balance.emergency_fund
     );
@@ -70,10 +68,20 @@ balancesRouter.post("/add", async (req, res) => {
     res.send();
 });
 
+const DEFAULT_MONTHS = 24
+const MAX_MONTHS = 600 // 50 years, safety cap against abuse
+
 balancesRouter.post("/get", async (req, res) => {
-    // Get the last 12 month of balances from the database
-    const session = req.session as SessionData
-    const balances = await db.balances.getYearlyBalanceByUserId(session.userId);
+    // Optional range: `months` (number, capped) or the string "all" for the entire history.
+    // Omitted -> defaults to 24 months (previous fixed behavior, unchanged for existing callers).
+    let months: number | undefined
+    if (req.body?.months === "all") {
+        months = undefined
+    } else {
+        const requested = Number(req.body?.months)
+        months = (Number.isFinite(requested) && requested > 0) ? Math.min(requested, MAX_MONTHS) : DEFAULT_MONTHS
+    }
+    const balances = await db.balances.getBalanceHistoryByUserId(req.userId as string, months);
     // If a balance is empty, fill it with the data of the most recent
     // non-empty balance
     const isBalanceEmpty = (balance: any) => {

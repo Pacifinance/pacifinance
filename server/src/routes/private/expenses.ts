@@ -1,9 +1,8 @@
 import express from "express"
-import { SessionData } from "express-session"
 
 import { ExtDate } from "../../libs/datelib"
 
-import db from "../../db/mongo"
+import db from "../../db/db"
 import common from "../common"
 
 /**
@@ -56,10 +55,10 @@ expensesRouter.post("/add", async (req, res) => {
         return;
     }
     // Add the expense to the database
-    const session = req.session as SessionData
+    const user_category_id = Number.isFinite(Number(expense.user_category_id)) ? Number(expense.user_category_id) : null
     const doc = await db.expenses.insertNew(
-        session.userId, expense.date, expense.amount, expense.is_expense,
-        expense.notes, expense.payment_type, expense.category_tag
+        req.userId as string, expense.date, expense.amount, expense.is_expense,
+        expense.notes, expense.payment_type, expense.category_tag, user_category_id
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -78,10 +77,9 @@ expensesRouter.post("/get", async (req, res) => {
     // Retrieve the expenses for a full year
     let year = [];
     let reference_date = ExtDate.fromNow()
-    const session = req.session as SessionData
     for (let i = 0; i <= 12; i++) {
         // Get the expenses from the database for the desired month and add them to the year array
-        const expenses = await db.expenses.getMonthlyExpensesByUserId(session.userId, reference_date);
+        const expenses = await db.expenses.getMonthlyExpensesByUserId(req.userId as string, reference_date);
         year.push(expenses);
         // Go to the next month
         reference_date.moveByMonths(-1)
@@ -91,11 +89,31 @@ expensesRouter.post("/get", async (req, res) => {
     res.json(year);
 });
 
+const MAX_MONTHS = 600 // 50 years, safety cap against abuse
+
+expensesRouter.post("/monthly-totals", async (req, res) => {
+    // Aggregated outflow/income totals per month (no per-transaction detail),
+    // for the multi-year chart history. `months` (number, capped) or "all";
+    // omitted -> full history, since this endpoint is only called on demand.
+    let months: number | undefined
+    if (req.body?.months !== "all") {
+        const requested = Number(req.body?.months)
+        if (Number.isFinite(requested) && requested > 0)
+            months = Math.min(requested, MAX_MONTHS)
+    }
+    const totals = await db.expenses.getMonthlyTotalsByUserId(req.userId as string, months)
+    if (totals === null)
+    {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(totals)
+})
+
 expensesRouter.post("/delete", async (req, res) => {
     // Delete the requested expense
     const expense = req.body.expense;
-    const session = req.session as SessionData
-    const del_res = await db.expenses.deleteExpenseByData(session.userId, expense.date, expense.amount, expense.is_expense);
+    const del_res = await db.expenses.deleteExpenseByData(req.userId as string, expense.date, expense.amount, expense.is_expense);
     // Check if the document was deleted successfully. Send
     // status code 500 (Internal Server Error) if it failed
     if (del_res === null || del_res.deletedCount !== 1)

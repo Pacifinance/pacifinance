@@ -1,76 +1,43 @@
-import mongoose from "mongoose"
+import supabase from "../supabase"
 
 import { ExtDate } from "../../libs/datelib"
 
-import users from "./users"
+const BALANCE_COLUMNS = "recorded_at, user_date, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, gold, emergency_fund"
 
-const balanceSchema = new mongoose.Schema({
-    userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
-    date: {type: Date, required: true, index: true},
-    userDate: {type: Date, required: true, index: true},
-    bank: {type: Number, required: true},
-    cash: {type: Number, required: true},
-    digitalServices: {type: Number, required: true},
-    stocks: {type: Number, required: true},
-    etf: {type: Number, required: true},
-    bitcoin: {type: Number, required: true},
-    crypto: {type: Number, required: true},
-    bonds: {type: Number, required: true},
-    funds: {type: Number, required: true},
-    gold: {type: Number, required: true},
-    emergencyFund: {type: Number, required: true},
-});
-
-/* ==================== Template queries ==================== */
-
-/**
- * Adds a balance
- * @param data Data of the new Balance document 
- * @returns Balance document
- */
-async function addOne(data: object) {
-    return (await Balance.create(data)).toJSON();
+type BalanceRow = {
+    recorded_at: string
+    user_date: string
+    bank: number, cash: number, digital_services: number, stocks: number, etf: number,
+    bitcoin: number, crypto: number, bonds: number, funds: number, gold: number, emergency_fund: number
 }
 
 /**
- * Gets a balance that matches a filter
- * @param where Filter to match
- * @param select Fields to return
- * @param sort Fields to sort by and their order
- * @returns Balance document
+ * Formats a date as a UTC "YYYY-MM-DD" string, matching the "date" column
+ * granularity. Built from explicit UTC getters (not toISOString().split)
+ * to avoid the UTC-midnight/local-timezone shift bug.
  */
-async function getOneSorted(where: object, select: string, sort: any) {
-    const res = await Balance.find(where, select).sort(sort).limit(1).lean().exec();
-    if (res.length === 0)
-        return null;
-    return res[0];
+function toDateOnly(d: Date) {
+    const y = d.getUTCFullYear()
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(d.getUTCDate()).padStart(2, "0")
+    return `${y}-${m}-${day}`
 }
 
-/**
- * Gets a list of balances that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @param sort Fields to sort by and their order
- * @returns List of Balance documents
- */
-async function getSorted(where: object, select: string, sort: any) {
-    return await Balance.find(where, select).sort(sort).lean().exec()
-}
-
-/**
- * Deletes all balances that match a filter
- * @param where Filter to match
- * @returns DeleteResult object
- */
-async function deleteMany(where: object) {
-    return await Balance.deleteMany(where).lean().exec();
+function toBalance(row: BalanceRow) {
+    return {
+        date: row.recorded_at,
+        userDate: row.user_date,
+        bank: row.bank, cash: row.cash, digitalServices: row.digital_services,
+        stocks: row.stocks, etf: row.etf, bitcoin: row.bitcoin, crypto: row.crypto,
+        bonds: row.bonds, funds: row.funds, gold: row.gold, emergencyFund: row.emergency_fund
+    }
 }
 
 /* ==================== Specific queries ==================== */
 
 /**
  * Adds a balance associated to a user
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param user_date Month and year inserted by the user
  * @param bank Bank amount
  * @param cash Cash amount
@@ -83,146 +50,156 @@ async function deleteMany(where: object) {
  * @param funds Funds amount
  * @param gold Gold amount
  * @param emergency_fund Emergency fund amount
- * @returns Balance document
+ * @returns Balance document, or null in case of error
  */
 async function insertNew(
     user_id: string, user_date: Date, bank: number, cash: number, digital_services: number,
     stocks: number, etf: number, bitcoin: number, crypto: number, bonds: number,
     funds: number, gold: number, emergency_fund: number
 ) {
-    const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
-        return null;
-    const data = {
-        userRef: user._id,
-        date: ExtDate.fromNow(),
-        userDate: user_date,
-        bank: bank,
-        cash: cash,
-        digitalServices: digital_services,
-        stocks: stocks,
-        etf: etf,
-        bitcoin: bitcoin,
-        crypto: crypto,
-        bonds: bonds,
-        funds: funds,
-        gold: gold,
-        emergencyFund: emergency_fund
-    };
-    return await addOne(data);
+    const {data, error} = await supabase.from("balances").insert({
+        user_id,
+        user_date: toDateOnly(new ExtDate(user_date)),
+        bank, cash, digital_services: digital_services, stocks, etf, bitcoin, crypto,
+        bonds, funds, gold, emergency_fund: emergency_fund
+    }).select(BALANCE_COLUMNS).single()
+    if (error || !data) return null
+    return toBalance(data)
 }
 
 /**
  * Checks if there are balances associated to a user
- * @param user_ref ObjectId of the user
+ * @param user_id uuid of the user
  * @returns true if there are balances associated to the user, false otherwise
  */
-async function balancesExistByUserRef(user_ref: mongoose.Types.ObjectId) {
-    const balance = await getOneSorted({userRef: user_ref}, "", {});
-    return balance !== null;
+async function balancesExistByUserId(user_id: string) {
+    const {data} = await supabase.from("balances").select("id").eq("user_id", user_id).limit(1).maybeSingle()
+    return data !== null
 }
 
 /**
- * Gets all the balances of a user, sorted by user-insterted date
- * @param user_id ID of the user
+ * Gets all the balances of a user, sorted by user-inserted date
+ * @param user_id uuid of the user
  * @returns List of Balance documents
  */
 async function getAllByUserId(user_id: string) {
-    const user = await users.getReferenceByUserId(user_id)
-    if (user === null)
-        return null
-    // Get all the balances of the user, sorted by date
-    return await getSorted({userRef: user._id}, "-_id -__v -userRef", {userDate: 1})
+    const {data, error} = await supabase.from("balances")
+        .select(BALANCE_COLUMNS)
+        .eq("user_id", user_id)
+        .order("user_date", {ascending: true})
+    if (error || !data) return null
+    return data.map(toBalance)
 }
 
 /**
  * Gets the latest balance of a user
- * @param user_id ID of the user
- * @param limit_date Date after which balances are ignored
+ * @param user_id uuid of the user
+ * @param limit_date Exclusive upper bound (day granularity): balances on or after this date are ignored
  * @returns Balance document
  */
 async function getLatestByUserId(user_id: string, limit_date: ExtDate | undefined = undefined) {
-    const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
-        return null;
-    // Get the balances with the most recent user-inserted date. Among these balances, the latest one
-    // is that with the most recent insertion date (the one that overwrites all the others)
-    let filter = {userRef: user._id, userDate: {$lte: ExtDate.fromNow()}};
-    if (limit_date !== undefined)
-        filter.userDate = {$lte: limit_date};
-    return await getOneSorted(filter, "-_id -__v -userRef", {userDate: -1, date: -1});
+    const limit = limit_date !== undefined ? limit_date : ExtDate.fromNow()
+    const {data, error} = await supabase.from("balances")
+        .select(BALANCE_COLUMNS)
+        .eq("user_id", user_id)
+        .lt("user_date", toDateOnly(limit))
+        .order("user_date", {ascending: false})
+        .order("recorded_at", {ascending: false})
+        .limit(1)
+        .maybeSingle()
+    if (error || !data) return null
+    return toBalance(data)
 }
 
 /**
  * Gets the latest balance of a user and sums all its parts together
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param limit_date Date after which balances are ignored
  * @return Total balance of the user
  */
 async function getTotalLatestByUserId(user_id: string, limit_date: ExtDate | undefined = undefined) {
-    const balance = await getLatestByUserId(user_id, limit_date);
+    const balance = await getLatestByUserId(user_id, limit_date)
     if (balance === null)
-        return null;
+        return null
     return (
         balance.bank + balance.cash + balance.digitalServices + balance.stocks +
         balance.etf + balance.bitcoin + balance.crypto + balance.bonds + balance.funds +
         balance.gold
-    );
+    )
 }
 
 /**
- * Gets the balances of a user for the last 24 months
- * @param user_id ID of the user
- * @returns List of Balance documents
+ * Number of whole calendar months between two dates (UTC), `to` minus `from`.
  */
-async function getYearlyBalanceByUserId(user_id: string) {
-    // Get start and end of the current month
-    let month_start = ExtDate.fromThisMonthStart()
-    let month_end = ExtDate.fromThisMonthEnd()
-    // Find the most recent balance for each one of the last 24 months
-    const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
-        return [];
-    let balances = [];
-    for (let i = 0; i < 24; i++)
-    {
-        // Find the most recent balance of the month
-        const res = await getOneSorted({
-                userRef: user._id, userDate: {$gte: month_start, $lt: month_end}
-            }, 
-            "-_id -__v -userRef -stocks._id -etf._id -bitcoin._id -crypto._id",
-            {userDate: -1, date: -1}
-        );
-        // If a balance was found for this month, then add it to the array; otherwise, add an empty object
-        const balance = (res !== null) ? res : {};
-        balances.push({date: new ExtDate(month_start), balance: balance});
-        // Decrease the month start and end by one month for the next iteration
-        month_start.moveByMonths(-1)
-        month_end.moveByMonths(-1)
+function monthsBetween(from: ExtDate, to: ExtDate) {
+    return (to.getUTCFullYear() - from.getUTCFullYear()) * 12 + (to.getUTCMonth() - from.getUTCMonth())
+}
+
+/**
+ * Gets one balance snapshot per month (the most recent entry inserted in
+ * that month) for a user, as a single aggregate query (get_balance_history
+ * RPC) instead of one query per month.
+ * @param user_id uuid of the user
+ * @param months Number of months back to include (e.g. 24), or undefined for the entire history
+ * @returns List of {date, balance} newest-first; months with no entry get an empty balance {}
+ */
+async function getBalanceHistoryByUserId(user_id: string, months?: number) {
+    const {data, error} = await supabase.rpc("get_balance_history", {
+        p_user_id: user_id,
+        p_months: months ?? null
+    })
+    if (error || !data) return []
+
+    const rows = data as (BalanceRow & {month_start: string})[]
+    const byMonth = new Map<string, BalanceRow>()
+    for (const row of rows)
+        byMonth.set(row.month_start.slice(0, 7), row) // "YYYY-MM"
+
+    const thisMonthStart = ExtDate.fromThisMonthStart()
+
+    // How many months to emit: the requested window, or (for "all time") from
+    // the earliest month actually present in the data (rows are newest-first).
+    let span: number
+    if (months !== undefined)
+        span = months
+    else if (rows.length === 0)
+        span = 0
+    else
+        span = monthsBetween(new ExtDate(rows[rows.length - 1].month_start), thisMonthStart) + 1
+
+    let balances = []
+    let cursor = thisMonthStart.copy()
+    for (let i = 0; i < span; i++) {
+        const key = `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, "0")}`
+        const row = byMonth.get(key)
+        balances.push({date: cursor.copy(), balance: row ? toBalance(row) : {}})
+        cursor.moveByMonths(-1)
     }
-    return balances;
+    return balances
 }
 
 /**
- * Deletes all balances of a user given the reference to that user
- * @param user_ref ObjectId of the user
- * @returns DeleteResult object
+ * Gets {userId, total} pairs for the balance-ranking pool (all users, or only
+ * those "similar" to reference_user_id) via a single aggregate query
+ * (get_balance_ranking_pool RPC) instead of one balance query per user.
+ * @param reference_user_id uuid to restrict to "similar" users, or undefined for everyone
+ * @param ignore_test_demo Exclude test/demo accounts from the pool
  */
-async function deleteBalancesByUserRef(user_ref: mongoose.Types.ObjectId) {
-    return await deleteMany({userRef: user_ref});
+async function getRankingPool(reference_user_id?: string, ignore_test_demo: boolean = true) {
+    const {data, error} = await supabase.rpc("get_balance_ranking_pool", {
+        p_reference_user: reference_user_id ?? null,
+        p_ignore_test_demo: ignore_test_demo
+    })
+    if (error || !data) return []
+    return (data as any[]).map((row) => ({userId: row.user_id as string, total: Number(row.total_balance)}))
 }
-
-/**
- * Balance model
- */
-const Balance = mongoose.model("Balance", balanceSchema);
 
 export default {
     insertNew,
-    balancesExistByUserRef,
+    balancesExistByUserId,
     getAllByUserId,
     getLatestByUserId,
     getTotalLatestByUserId,
-    getYearlyBalanceByUserId,
-    deleteBalancesByUserRef
+    getBalanceHistoryByUserId,
+    getRankingPool
 };

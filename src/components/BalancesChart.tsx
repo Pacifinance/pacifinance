@@ -13,6 +13,7 @@ import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { UserContext } from '../contexts/UserContext';
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { RiFileExcel2Line } from "react-icons/ri";
@@ -32,9 +33,25 @@ import { compactNumber, CustomTick } from '../utils/customGraphsInfo.jsx';
 function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR } = useContext(CurrencyContext);
+  const { fetchAllTimeBalances } = useContext(UserContext) || {};
   const [last12MonthsData, setLast12MonthsData] = useState([]);
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
+  const [isLoadingFullHistory, setIsLoadingFullHistory] = useState(false);
+  const [hasFullHistory, setHasFullHistory] = useState(false);
+
+  // "ALL" richiede lo storico completo (oltre i 24 mesi già disponibili di
+  // default): lo richiediamo una sola volta, on-demand, per non gravare
+  // sull'egress ad ogni caricamento pagina.
+  const handlePeriodSelect = async (period) => {
+    if (period === 'all' && !hasFullHistory && fetchAllTimeBalances) {
+      setIsLoadingFullHistory(true);
+      await fetchAllTimeBalances();
+      setHasFullHistory(true);
+      setIsLoadingFullHistory(false);
+    }
+    setSelectedPeriod(period);
+  };
 
   // Funzione per filtrare i dati in base al periodo selezionato
   const getFilteredData = () => {
@@ -65,10 +82,11 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       case '6m':
         return allData.slice(-6); // Ultimi 6 mesi
       case '1y':
-        return allData; // Tutti i 12 mesi
+        return allData.slice(-12); // Ultimi 12 mesi
       case '2y':
+        return allData.slice(-24); // Ultimi 24 mesi (già disponibili di default)
       case 'all':
-        return allData; // Per ora stesso dei 12 mesi
+        return allData; // Intero storico (richiesto on-demand, vedi handlePeriodSelect)
       default:
         return allData;
     }
@@ -110,8 +128,11 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
     const fetchData = async () => {
       if (userData) {
         try {
-          // Use the new selector to get chart data
-          const chartData = getBalanceChartData(userData);
+          // Emit as many months as we actually have (min 12, so a new user
+          // still sees a full empty-bar chart) — grows automatically once
+          // fetchAllTimeBalances widens userData.balances for "ALL".
+          const monthsAvailable = Math.max((userData.balances || []).length, 12);
+          const chartData = getBalanceChartData(userData, monthsAvailable);
           setLast12MonthsData(chartData);
         } catch (error) {
           console.error('Errore durante le operazioni:', error);
@@ -408,35 +429,31 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       {/* Time Period Selector */}
       <div className="flex gap-1 z-10">
         {['3m', '6m', '1y', '2y', 'all'].map((period) => {
-          const isDisabled = period === '2y' || period === 'all';
           const isActive = selectedPeriod === period;
-          
+          const isBusy = period === 'all' && isLoadingFullHistory;
+
           return (
             <button
               key={period}
-              onClick={() => !isDisabled && setSelectedPeriod(period)}
-              disabled={isDisabled}
+              onClick={() => handlePeriodSelect(period)}
+              disabled={isBusy}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
-                isDisabled 
-                  ? 'cursor-not-allowed opacity-50' 
-                  : 'hover:scale-105'
+                isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
               }`}
               style={{
-                backgroundColor: isActive 
+                backgroundColor: isActive
                   ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
                   : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                color: isActive 
-                  ? '#ffffff' 
-                  : (isDisabled 
-                    ? (theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)')
-                    : (theme.mode === 'dark' ? '#ffffff' : '#333333')),
-                border: `1px solid ${isActive 
-                  ? 'rgba(7, 145, 100, 0.8)' 
+                color: isActive
+                  ? '#ffffff'
+                  : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
+                border: `1px solid ${isActive
+                  ? 'rgba(7, 145, 100, 0.8)'
                   : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
                 backdropFilter: 'blur(10px)'
               }}
             >
-              {period.toUpperCase()}
+              {isBusy ? '…' : period.toUpperCase()}
             </button>
           );
         })}

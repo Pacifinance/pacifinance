@@ -1,0 +1,21 @@
+name: Refresh crypto prices cache
+
+# Vercel Hobby only allows daily cron jobs, but the crypto prices cache needs
+# an hourly refresh. This free GitHub Actions schedule fills the gap without
+# requiring a paid Vercel plan. Requires two repo secrets:
+#   APP_URL     e.g. https://pacifinance.vercel.app
+#   CRON_SECRET same value configured in Doppler / Vercel env vars
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call refresh-crypto-prices endpoint
+        run: |
+          curl -sSf -X GET "${{ secrets.APP_URL }}/api/cron/refresh-crypto-prices" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

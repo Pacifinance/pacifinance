@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import supabase from "../supabase"
 
 const TagType = {
     expense: {name: "expense", value: 0},
@@ -17,16 +17,6 @@ const TagType = {
     currency: {name: "currency", value: 13},
 }
 
-const tagsSchema = new mongoose.Schema({
-    label: {type: String, required: true},
-    index: {type: Number, required: true},
-    type: {type: Number, required: true},
-    translations: {type: {
-        en: {type: String},
-        it: {type: String}
-    }, required: true}
-});
-
 /**
  * Capitalizes the first character of a string
  * @param str Target string
@@ -37,46 +27,11 @@ function capitalizeFirst(str: string) {
     return str[0].toUpperCase() + str.slice(1)
 }
 
-/* ==================== Template queries ==================== */
-
 /**
- * Adds a tag
- * @param data Data of the new Tag document 
- * @returns Tag document
+ * Maps a "tags" row to the public Tag shape used by the frontend (unchanged from the MongoDB documents)
  */
-async function addOne(data: object) {
-    return (await Tag.create(data)).toJSON();
-}
-
-/**
- * Gets a list of tags that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @param sort Fields to sort by and their order
- * @returns List of Tags documents
- */
-async function getSorted(where: object, select: string, sort: any) {
-    return await Tag.find(where, select).sort(sort).lean().exec();
-}
-
-/**
- * Gets a tag that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @returns Tag document
- */
-async function getOne(where: object, select: string) {
-    return await Tag.findOne(where, select).lean().exec();
-}
-
-/**
- * Updates a tag that match a filter
- * @param where Filter to match
- * @param update Fields to update
- * @returns Tag document
- */
-async function setOne(where: object, update: object) {
-    return await Tag.findOneAndUpdate(where, {$set: update}).lean().exec();
+function toTag(row: {label: string, client_index: number, type: number, translations: object}) {
+    return {label: row.label, index: row.client_index, type: row.type, translations: row.translations}
 }
 
 /* ==================== Specific queries ==================== */
@@ -88,26 +43,27 @@ async function setOne(where: object, update: object) {
  * @param type Type of tag
  * @returns Tag document
  */
-async function insertNew(label: string, index: number, type: typeof TagType) {
-    const data = {
-        label: label,
-        index: index,
-        type: type,
-        translations: {
-            en: capitalizeFirst(label)
-        }
-    }
-    return await addOne(data);
+async function insertNew(label: string, index: number, type: number) {
+    const {data, error} = await supabase.from("tags").insert({
+        label, client_index: index, type, translations: {en: capitalizeFirst(label)}
+    }).select("label, client_index, type, translations").single()
+    if (error || !data) return null
+    return toTag(data)
 }
 
 /**
  * Gets the object reference of a tag
  * @param index Label index (client side ID)
  * @param type Type of tag
- * @returns Tag document
+ * @returns {id} object
  */
 async function getReferenceByIndexAndType(index: number, type: number) {
-    return await getOne({index: index, type: type}, "_id");
+    const {data, error} = await supabase.from("tags")
+        .select("id")
+        .eq("client_index", index).eq("type", type)
+        .maybeSingle()
+    if (error || !data) return null
+    return {id: data.id as number}
 }
 
 /**
@@ -116,16 +72,26 @@ async function getReferenceByIndexAndType(index: number, type: number) {
  * @returns List of Tag documents
  */
 async function getAllTagsByType(type: number) {
-    return await getSorted({type: type}, "-_id -__v -translations._id", {index: 1});
+    const {data, error} = await supabase.from("tags")
+        .select("label, client_index, type, translations")
+        .eq("type", type)
+        .order("client_index", {ascending: true})
+    if (error || !data) return []
+    return data.map(toTag)
 }
 
 /**
  * Gets a tag by reference
- * @param ref Reference to a tag
+ * @param ref Reference (id) to a tag
  * @returns Tag document
  */
-async function getTagByReference(ref: mongoose.ObjectId) {
-    return await getOne({_id: ref}, "-_id -__v");
+async function getTagByReference(ref: number) {
+    const {data, error} = await supabase.from("tags")
+        .select("label, client_index, type, translations")
+        .eq("id", ref)
+        .maybeSingle()
+    if (error || !data) return null
+    return toTag(data)
 }
 
 /**
@@ -134,17 +100,23 @@ async function getTagByReference(ref: mongoose.ObjectId) {
  * @param type Type of tag
  * @param lang Language (two letters format)
  * @param translation Translation to set
- * @returns 
+ * @returns Updated tag document
  */
 async function setTranslationByIndexAndType(index: number, type: number, lang: string, translation: string) {
-    const field = "translations." + lang;
-    return await setOne({index: index, type: type}, {[field]: translation});
+    const existing = await supabase.from("tags")
+        .select("translations")
+        .eq("client_index", index).eq("type", type)
+        .maybeSingle()
+    if (existing.error || !existing.data) return null
+    const translations = {...(existing.data.translations as object), [lang]: translation}
+    const {data, error} = await supabase.from("tags")
+        .update({translations})
+        .eq("client_index", index).eq("type", type)
+        .select("label, client_index, type, translations")
+        .maybeSingle()
+    if (error || !data) return null
+    return toTag(data)
 }
-
-/**
- * Tags model
- */
-const Tag = mongoose.model("Tag", tagsSchema);
 
 export default {
     TagType,

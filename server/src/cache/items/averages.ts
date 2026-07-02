@@ -126,21 +126,23 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
     let averagesData = new AveragesData()
 
     for (const user of usersList) {
-        if (user.type >= users.UserType.test.value)
-            continue
+        // Note: usersList only carries {id, userId} (see users.getAllUsersIds) - it never
+        // included account_type, so a "skip test/demo users" check here was always a no-op
+        // even before the migration (test/demo exclusion happens via getAllUsersIds'
+        // ignore_test_users param instead, see fetchUserAverages below).
 
         // User balance up to last month
-        const balanceTotal = await balances.getTotalLatestByUserId(user.userId, thisMonthStart)
+        const balanceTotal = await balances.getTotalLatestByUserId(user.id, thisMonthStart)
         if (balanceTotal !== null)
             averagesData.addBalance(balanceTotal)
 
         // User total expenses of the last month
-        const expensesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.userId, lastMonthStart, true)
+        const expensesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.id, lastMonthStart, true)
         if (expensesTotal !== null)
             averagesData.addExpense(expensesTotal)
 
         // User total incomes of the last month
-        const incomesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.userId, lastMonthStart, false)
+        const incomesTotal = await expenses.getTotalMonthlyExpensesByUserId(user.id, lastMonthStart, false)
         if (incomesTotal !== null)
             averagesData.addIncome(incomesTotal)
 
@@ -156,10 +158,10 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
         
             yearlyExpenses = [
                 ...yearlyExpenses,
-                ...(await expenses.getMonthlyExpensesByUserId(user.userId, month, true))
+                ...(await expenses.getMonthlyExpensesByUserId(user.id, month, true))
             ]
-            expensesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.userId, month, true) ?? 0
-            incomesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.userId, month, false) ?? 0
+            expensesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.id, month, true) ?? 0
+            incomesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.id, month, false) ?? 0
         }
 
         // User saving rate for the full year
@@ -171,6 +173,7 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
         // User expenses by category for the full year
         let yearlyTotalExpensesByCategory: {[categoryIndex: number]: number} = {}
         for (const expense of yearlyExpenses) {
+            if (!expense.categoryTag) continue // category_tag_id is NOT NULL in the DB; guards a failed join only
             const categoryIndex = expense.categoryTag.index
             yearlyTotalExpensesByCategory[categoryIndex] =
                 (yearlyTotalExpensesByCategory[categoryIndex] || 0) + expense.amount
@@ -210,7 +213,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     averagesCachedData.all = await computeAverages(allUsersList, now)
 
     for (let user of allUsersList) {
-        const userRef = user._id.toString()
+        const userRef = user.id
         const similarUsersList = await users.getAllUsersIds(userRef, true) // only similar, non-test users
         averagesCachedData[userRef] = await computeAverages(similarUsersList, now)
     }

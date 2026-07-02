@@ -1,17 +1,16 @@
-import { createClient, RedisJSON } from "redis"
-
 import { ExtDate } from "../libs/datelib"
 
+import redis from "./redisClient"
 import averages from "./items/averages"
 import prices from "./items/prices"
 
 interface CacheItemInfo {
     durationSec: number
-    fetch: () => Promise<RedisJSON | null>
+    fetch: () => Promise<any>
 }
 
 type CacheItemData = {
-    value: RedisJSON
+    value: any
     expiration: string
 }
 
@@ -24,13 +23,6 @@ const expectedItems: {[key: string]: CacheItemInfo} = {
 }
 
 /**
- * Redis client for caching values
- */
-const cacheClient = createClient({url: process.env.REDIS_URI})
-cacheClient.on("connect", () => console.log("Redis cache client connected"))
-cacheClient.on("error", err => console.log("Redis cache client error: ", err))
-
-/**
  * Gets the list of expected cache items keys
  * @returns List of keys
  */
@@ -39,12 +31,12 @@ function getExpectedKeys() {
 }
 
 /**
- * Retrieves the data from the cache associated to the given key, and parses it as JSON
+ * Retrieves the data from the cache associated to the given key
  * @param key Key of the element to get
  * @returns Cached data for the given key, or null if no data was found for the key
  */
 async function getCachedItemData(key: string): Promise<CacheItemData | null> {
-    return await cacheClient.json.get(key) as CacheItemData | null
+    return await redis.get<CacheItemData>(key)
 }
 
 /**
@@ -63,30 +55,13 @@ async function valueExpired(key: string) {
 }
 
 /**
- * Initializes the cache
- */
-async function init() {
-    // Connect the client
-    if (cacheClient.isReady)
-        return
-    await cacheClient.connect()
-
-    // Check for expired entries
-    for (let key of Object.keys(expectedItems)) {
-        const isExpired = await valueExpired(key)
-        if (isExpired)
-            await invalidate(key)
-    }
-}
-
-/**
- * Invalidates one or all elements of the cache
+ * Invalidates one or all elements of the cache, refetching their value
  * @param key Key of the element to invalidate, or 'undefined' to invalidate all
  */
 async function invalidate(key: string | undefined = undefined) {
     if (key === undefined) {
         for (let k of Object.keys(expectedItems))
-            invalidate(k)
+            await invalidate(k)
         return
     }
 
@@ -114,11 +89,11 @@ async function get(key: string) {
 }
 
 /**
- * Stores a new value in the cache and in the database by key
+ * Stores a new value in the cache by key
  * @param key Key of the element to set
  * @param value New value to set
  */
-async function set(key: string, value: RedisJSON) {
+async function set(key: string, value: any) {
     if ((!Object.keys(expectedItems).includes(key)) || (!value))
         return
 
@@ -130,13 +105,12 @@ async function set(key: string, value: RedisJSON) {
         expiration: new_expiration.toISOString()
     }
 
-    await cacheClient.json.set(key, "$", newCacheItemData)
+    await redis.set(key, newCacheItemData)
 }
 
 export default {
     getExpectedKeys,
     valueExpired,
-    init,
     invalidate,
     get,
     set

@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faCopy, faPaperPlane, faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { sortTagsByLanguage } from '../utils/sortingUtils';
-import { translateTag } from '../data/tagTranslations';
 import { getMuiSelectMenuProps } from './ThemedSelect';
+import CategoryPicker from './CategoryPicker';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton,
   ModalBody, ModalFooter, RowCard, RowHeader, RowBadge, RemoveBtn,
@@ -27,6 +26,8 @@ export const createEmptyIncomeRow = (defaults = {}) => ({
   id: Date.now() + Math.random(),
   categoryKey: defaults.categoryKey ?? '',
   categoryValue: defaults.categoryValue ?? '',
+  userCategoryId: defaults.userCategoryId ?? null,
+  userCategoryLabel: defaults.userCategoryLabel ?? '',
   amount: defaults.amount ?? '',
   defaultAmount: defaults.defaultAmount ?? '',
   date: defaults.date ?? currentDate,
@@ -39,11 +40,13 @@ export default function MultiIncomeInsert({
   theme,
   incomesTags,
   balanceOptions,
+  customCategories,
+  onCreateCategory,
   onSubmitBatch,
   onClose,
   initialRow,
 }) {
-  const { language, translations } = React.useContext(LanguageContext);
+  const { translations } = React.useContext(LanguageContext);
   const { currencySymbol } = React.useContext(CurrencyContext);
   const t = translations.insert.incomeSection.multiInsert;
 
@@ -62,6 +65,10 @@ export default function MultiIncomeInsert({
     setRows(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
   }, []);
 
+  const updateRowFields = useCallback((id, fields) => {
+    setRows(prev => prev.map(r => r.id === id ? { ...r, ...fields } : r));
+  }, []);
+
   const addEmptyRow = () => {
     setRows(prev => [...prev, createEmptyIncomeRow({ balanceSource: defaultBalanceSource })]);
   };
@@ -72,6 +79,8 @@ export default function MultiIncomeInsert({
     setRows(prev => [...prev, createEmptyIncomeRow({
       categoryKey: last.categoryKey,
       categoryValue: last.categoryValue,
+      userCategoryId: last.userCategoryId,
+      userCategoryLabel: last.userCategoryLabel,
       defaultAmount: lastAmount,
       date: last.date,
       note: last.note,
@@ -155,33 +164,20 @@ export default function MultiIncomeInsert({
                 {/* Category */}
                 <div>
                   <FieldLabel theme={theme}>{translations.general.category}</FieldLabel>
-                  <Select
-                    value={row.categoryKey}
-                    onChange={(e) => {
-                      const key = e.target.value;
-                      const item = incomesTags.find(t => t.index === key);
-                      if (item) {
-                        updateRow(row.id, 'categoryKey', key);
-                        updateRow(row.id, 'categoryValue', translateTag(item.label, language, 'income'));
-                      }
-                    }}
-                    sx={selectSx}
-                    displayEmpty
-                    size="small"
-                    MenuProps={getMuiSelectMenuProps(theme)}
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={incomesTags}
+                    customCategories={customCategories}
+                    categoryType="income"
+                    categoryKey={row.categoryKey}
+                    userCategoryId={row.userCategoryId}
+                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                      updateRowFields(row.id, { categoryKey, categoryValue, userCategoryId, userCategoryLabel })
+                    }
+                    onCreateCategory={onCreateCategory}
                     disabled={isSubmitting}
-                    renderValue={(v) => v === '' ? translations.insert.incomeSection.placeholderCategory : (
-                      incomesTags.find(t => t.index === v)
-                        ? translateTag(incomesTags.find(t => t.index === v).label, language, 'income')
-                        : v
-                    )}
-                  >
-                    {sortTagsByLanguage(incomesTags, language, 'income').map((item) => (
-                      <MenuItem key={item.index} value={item.index}>
-                        {translateTag(item.label, language, 'income')}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    placeholder={translations.insert.incomeSection.placeholderCategory}
+                  />
                 </div>
 
                 {/* Amount */}

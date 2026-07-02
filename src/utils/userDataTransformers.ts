@@ -329,13 +329,18 @@ export const buildMonthlyArrays = (
 
 // ─── Chart Data ──────────────────────────────────────────────────────
 
-/** Format balance data for the last-12-months chart. */
+/**
+ * Format balance data for the chart. Defaults to the last 12 months; pass
+ * `monthsBack` explicitly (e.g. from `userData.balances.length` once a wider
+ * fetch has completed) to widen the window for the "2Y"/"ALL" period selectors.
+ */
 export const buildChartData = (
   balancesData: BalanceMonth[] | null | undefined,
   currentDate: Date,
+  monthsBack: number = 12,
 ): ChartDatum[] => {
   // Index snapshots by (year, month) using the snapshot's real date so the
-  // last-12-months window aligns by date rather than by array position.
+  // window aligns by date rather than by array position.
   const byMonth = new Map<string, BalanceMonth>();
   for (const entry of balancesData || []) {
     if (!entry?.date) continue;
@@ -343,8 +348,9 @@ export const buildChartData = (
     if (Number.isNaN(d.getTime())) continue;
     byMonth.set(`${d.getFullYear()}-${d.getMonth() + 1}`, entry);
   }
+  const months = monthsBack;
   const out: ChartDatum[] = [];
-  for (let i = 11; i >= 0; i--) {
+  for (let i = months - 1; i >= 0; i--) {
     const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
     const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
     const monthString = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;

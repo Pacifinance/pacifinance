@@ -104,6 +104,9 @@ export const UserProvider = ({ children }) => {
             const tagsData = await userService.getTags();
             const tags = transformTags(tagsData);
 
+            //************************************* CUSTOM CATEGORIES ********************************/
+            const customCategories = await financeService.getCustomCategories();
+
             //************************************* USER INFO ********************************/
             const infoData = await userService.getUserInfo();
             const language = localStorage.getItem('language') || 'en';
@@ -149,6 +152,7 @@ export const UserProvider = ({ children }) => {
               expenses: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
               incomes: { allIncomes, incomesArray },
               tags,
+              customCategories,
               rankings,
               dates: {
                 current: currentDate,
@@ -210,6 +214,60 @@ export const UserProvider = ({ children }) => {
     setIsUpdated(value);
   };
 
+  // Lazy-loaded full balance history, fetched on demand (e.g. "ALL" period
+  // selector in BalancesChart) instead of on every page load, to keep the
+  // default egress low. Replaces `userData.balances`/`last12MonthsData` in
+  // place — every selector reading them already tolerates a longer array.
+  const fetchAllTimeBalances = async () => {
+    if (isDemoMode || isDemoSession()) return; // demo data is already complete/synthetic
+    try {
+      const balancesRawData = await financeService.getBalances('all');
+      const balancesData = transformBalances(balancesRawData);
+      const currentDate = new Date();
+      setUserData(prev => prev ? {
+        ...prev,
+        balances: balancesData,
+        last12MonthsData: buildChartData(balancesData, currentDate),
+      } : prev);
+    } catch (error) {
+      console.error('Errore durante il caricamento dello storico completo dei saldi:', error);
+    }
+  };
+
+  // Lazy-loaded full monthly income/outflow totals (aggregated server-side,
+  // no per-transaction detail), for the InOutChart "ALL" period selector.
+  const fetchAllTimeMonthlyTotals = async () => {
+    if (isDemoMode || isDemoSession()) return;
+    try {
+      const monthlyTotalsAllTime = await financeService.getMonthlyTotals('all');
+      setUserData(prev => prev ? { ...prev, monthlyTotalsAllTime } : prev);
+    } catch (error) {
+      console.error('Errore durante il caricamento dei totali mensili storici:', error);
+    }
+  };
+
+  // Creates a custom sub-category (child of an official tag) and appends it
+  // to userData.customCategories on success.
+  const addCustomCategory = async ({ label, parent_index, is_expense }) => {
+    const created = await financeService.addCustomCategory({ label, parent_index, is_expense });
+    setUserData(prev => prev ? {
+      ...prev,
+      customCategories: [...(prev.customCategories || []), created],
+    } : prev);
+    return created;
+  };
+
+  // Deletes a custom sub-category. Past expenses referencing it keep their
+  // official category (server-side ON DELETE SET NULL), they just lose the
+  // personalized label.
+  const deleteCustomCategory = async (id) => {
+    await financeService.deleteCustomCategory({ id });
+    setUserData(prev => prev ? {
+      ...prev,
+      customCategories: (prev.customCategories || []).filter(c => c.id !== id),
+    } : prev);
+  };
+
   if (isLoading) return null; // oppure uno spinner
 
   // Create enhanced userData with both new structure and legacy compatibility
@@ -230,7 +288,11 @@ export const UserProvider = ({ children }) => {
       isLoading,
       isDemoMode,
       error,
-      retryFetch
+      retryFetch,
+      fetchAllTimeBalances,
+      fetchAllTimeMonthlyTotals,
+      addCustomCategory,
+      deleteCustomCategory
     }}>
       {children}
     </UserContext.Provider>

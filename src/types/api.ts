@@ -71,8 +71,14 @@ export interface BalanceMonthDto {
   balance: BalanceSnapshotDto | Record<string, never>;
 }
 
-/** Full GET /balances/get response — 24 months oldest-last / newest-first. */
+/** Full GET /balances/get response — newest-first. 24 months by default; pass
+ * `months` (capped) or `"all"` in the request body for a wider/full range. */
 export type BalancesGetResponse = BalanceMonthDto[];
+
+/** Body of POST /balances/get. Omit for the default 24-month window. */
+export interface BalancesGetRequest {
+  months?: number | 'all';
+}
 
 /**
  * Body of POST /balances/add. Note the snake_case keys and the flat shape
@@ -108,9 +114,26 @@ export interface ExpenseDto {
   notes: string;
   payment_type: number; // index into tags.paymentTags (0 for income)
   category_tag: number; // index into tags.outflowsTags / tags.incomesTags
+  /** Optional custom sub-category id (from /categories/get), display-only — stats stay on category_tag. */
+  user_category_id?: number | null;
 }
 
 export interface ExpenseAddRequest { expense: ExpenseDto; }
+
+/** Body of POST /expenses/monthly-totals. Omitted `months` -> full history. */
+export interface MonthlyTotalsRequest {
+  months?: number | 'all';
+}
+
+/** One element of the POST /expenses/monthly-totals response — aggregated
+ * server-side (SQL SUM/GROUP BY), no per-transaction detail. */
+export interface MonthlyTotalDto {
+  monthStart: string; // "YYYY-MM-DD"
+  totalOutflows: number;
+  totalIncomes: number;
+}
+
+export type MonthlyTotalsResponse = MonthlyTotalDto[];
 
 /** Single month bucket returned by POST /expenses/get (13-element array). */
 export interface ExpensesMonthDto {
@@ -213,6 +236,28 @@ export interface TagDto {
  * `currencyTags`, etc.
  */
 export type TagsGetResponse = Record<string, TagDto[]>;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * /categories (user-defined sub-categories, children of an official tag)
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+export interface UserCategoryDto {
+  id: number;
+  /** Client-facing index of the official parent tag (outflowsTags/incomesTags) — matches TagDto.tag / .index. */
+  parentIndex: number;
+  label: string;
+}
+
+export type CategoriesGetResponse = UserCategoryDto[];
+
+export interface CategoryAddRequest {
+  label: string;
+  /** Client-facing index of the official parent tag (outflowsTags/incomesTags). */
+  parent_index: number;
+  is_expense: boolean;
+}
+
+export interface CategoryDeleteRequest { id: number; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * /rank

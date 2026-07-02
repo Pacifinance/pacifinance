@@ -207,6 +207,11 @@ export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Rec
 export const getAllIncomes = (userData: UserDataLike): any[] => userData?.incomes?.allIncomes || [];
 export const getIncomesArray = (userData: UserDataLike): number[] => userData?.incomes?.incomesArray || [];
 
+/** Lazy-loaded full monthly outflow/income totals (see fetchAllTimeMonthlyTotals in UserContext),
+ * aggregated server-side — empty until the "2Y"/"ALL" period selector triggers the fetch. */
+export const getMonthlyTotalsAllTime = (userData: UserDataLike): Array<{ monthStart: string; totalOutflows: number; totalIncomes: number }> =>
+  userData?.monthlyTotalsAllTime || [];
+
 // Totale spese/income/saved del mese corrente
 export const getTotalOutflowsCurrentMonth = (userData: UserDataLike): number => {
   if (typeof userData?.expenses?.totalOutflowsMonth === 'number') {
@@ -247,6 +252,10 @@ export const getHousingTypeTags = (userData: UserDataLike): any[] => userData?.t
 export const getChildrenTags = (userData: UserDataLike): any[] => userData?.tags?.childrenTags || [];
 export const getYearsOfExperienceTags = (userData: UserDataLike): any[] => userData?.tags?.yearsOfExperienceTags || [];
 export const getCurrencyTags = (userData: UserDataLike): any[] => userData?.tags?.currencyTags || [];
+
+/** User's custom sub-categories (children of an official expense/income tag). See UserContext.addCustomCategory/deleteCustomCategory. */
+export const getCustomCategories = (userData: UserDataLike): Array<{ id: number; parentIndex: number; label: string }> =>
+  userData?.customCategories || [];
 
 // Preferred currency selector (returns {key, value} like other profile fields)
 export const getUserPreferredCurrency = (userData: UserDataLike): ProfileFieldValue =>
@@ -386,9 +395,17 @@ export interface BalanceChartDatum {
 }
 
 // Chart data selectors
-export const getBalanceChartData = (userData: UserDataLike): BalanceChartDatum[] => {
+/**
+ * Builds chart-ready balance data.
+ * @param userData Full user data (must have `balances`, newest-first)
+ * @param monthsBack How many months to emit (oldest → newest). Defaults to 12;
+ *   pass an explicit wider value (e.g. `userData.balances.length` after
+ *   `fetchAllTimeBalances`) to widen the "2Y"/"ALL" period selectors.
+ */
+export const getBalanceChartData = (userData: UserDataLike, monthsBack: number = 12): BalanceChartDatum[] => {
   const balances: BalanceMonthEntry[] = userData?.balances || [];
   const currentDate = new Date();
+  const months = monthsBack;
 
   // Index balances by (year, month) using the snapshot's real date. This makes
   // the chart robust to gaps, duplicates, reordering, or extra historical
@@ -406,9 +423,9 @@ export const getBalanceChartData = (userData: UserDataLike): BalanceChartDatum[]
     byMonth.set(key, entry);
   }
 
-  // Emit the last 12 months oldest → newest, filling missing months with zeros.
+  // Emit the last `months` months oldest → newest, filling missing months with zeros.
   const result: BalanceChartDatum[] = [];
-  for (let i = 11; i >= 0; i--) {
+  for (let i = months - 1; i >= 0; i--) {
     const target = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
     const key = `${target.getFullYear()}-${target.getMonth() + 1}`;
     const monthString = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}`;

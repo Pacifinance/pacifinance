@@ -1,7 +1,6 @@
-import bcrypt from "bcrypt"
 import crypto from "crypto"
 
-import db from "../db/mongo"
+import db from "../db/db"
 
 /**
  * Rounds a currency value to the second decimal digit
@@ -63,32 +62,8 @@ async function generateUserId(nDigits: number) {
     return user_id
 }
 
-/**
- * Hashes a password
- * @param password Password to hash
- * @param salt_rounds Number of salt rounds
- * @returns Hashed password
- */
-function hashPassword(password: string, salt_rounds: number) {
-    // Hash the password using the given number of salt rounds
-    // Cast to Number is used to make sure that the correct technique is used
-    return bcrypt.hashSync(password, Number(salt_rounds))
-}
-
-/**
- * Checks if a plain password corresponds to an hashed password
- * @param plain_password Plain password to check
- * @param hashed_password Reference hashed password
- * @returns true if the two passwords correspond, false otherwise
- */
-function checkPassword(plain_password: string, hashed_password: string) {
-    return bcrypt.compareSync(plain_password, hashed_password)
-}
-
 export default {
     roundCurrency,
     sanitizeInput,
     generateUserId,
-    hashPassword,
-    checkPassword,
 }

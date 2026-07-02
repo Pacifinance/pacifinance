@@ -911,6 +911,19 @@
             "noBalanceChange": "You chose not to update balances: the edit will be saved but your balances won't reflect the change in amount or month.",
             "confirm": "Confirm edit",
             "cancel": "Cancel"
+        },
+        "categoryPicker": {
+            "createNew": "Create new category",
+            "customBadge": "Custom",
+            "dialogTitle": "New custom category",
+            "dialogSubtitle": "Stays linked to an official category, so stats and rankings remain correct.",
+            "parentLabel": "Official category",
+            "labelLabel": "Category name",
+            "labelPlaceholder": "E.g. Dinner with friends",
+            "createAction": "Create",
+            "errorEmptyLabel": "Enter a name for the category",
+            "errorNoParent": "Select an official category",
+            "errorCreateFailed": "Error creating the category. Please try again."
         }
     },
     "comparison": {

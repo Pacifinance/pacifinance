@@ -1,18 +1,23 @@
 import express from "express"
-import { SessionData } from "express-session"
 
 import { ExtDate } from "../../libs/datelib"
 
-import db from "../../db/mongo"
+import db from "../../db/db"
 import common from "../common"
+import authCookies from "../authCookies"
+import supabase from "../../db/supabase"
 
 /* === /user/* === */
 
 const userRouter = express.Router()
 
 userRouter.post("/logout", async (req, res) => {
-    // Invalidate the session 
-    req.session.destroy(() => {})
+    // Best-effort revoke of the refresh token on Supabase's side; the cookies
+    // are cleared regardless, which is what actually ends the session client-side
+    const {accessToken} = authCookies.getAuthCookies(req)
+    if (accessToken)
+        await supabase.auth.admin.signOut(accessToken).catch(() => {})
+    authCookies.clearAuthCookies(res)
     // Send status code 200 (OK)
     res.status(200)
     res.send()
@@ -21,8 +26,8 @@ userRouter.post("/logout", async (req, res) => {
 userRouter.post("/delete", async (req, res) => {
     // Check if the user has the right to delete the account.
     // Send status code 403 (Forbidden) if it doesn't
-    const session = req.session as SessionData
-    const type = await db.users.getTypeOfUserId(session.userId)
+    const userId = req.userId as string
+    const type = await db.users.getTypeOfUserId(userId)
     if (type === null || type.type >= db.users.UserType.test.value)
     {
         res.status(403)
@@ -33,7 +38,7 @@ userRouter.post("/delete", async (req, res) => {
     const deletion_delay_days = 30
     let deletion_date = ExtDate.fromNow()
     deletion_date.moveByDays(deletion_delay_days)
-    const doc = await db.delqueue.insertNew(session.userId, deletion_date)
+    const doc = await db.delqueue.insertNew(userId, deletion_date)
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
     if (doc === null)
@@ -49,8 +54,8 @@ userRouter.post("/delete", async (req, res) => {
 userRouter.post("/set-id", async (req, res) => {
     // Check if the user has the right to change ID.
     // Send status code 403 (Forbidden) if it doesn't
-    const session = req.session as SessionData
-    const type = await db.users.getTypeOfUserId(session.userId)
+    const userId = req.userId as string
+    const type = await db.users.getTypeOfUserId(userId)
     if (type === null || type.type === db.users.UserType.demo.value)
     {
         res.status(403)
@@ -66,38 +71,29 @@ userRouter.post("/set-id", async (req, res) => {
         res.send()
         return
     }
-    // Check if the user exists in the db. Send status code 401
-    // (Unauthorized) if the user does not exist
-    const user = await db.users.getPasswordByUserId(session.userId)
-    if (user === null)
-    {
-        res.status(401)
-        res.send()
-        return
-    }
     // Check if the password is correct. Send status code 401
     // (Unauthorized) if the password is wrong
-    if (!common.checkPassword(password, user.password))
+    if (!(await db.users.verifyPassword(userId, password)))
     {
         res.status(401)
         res.send()
         return
     }
-    // Invalidate the session
-    const curr_user_id = session.userId
-    req.session.destroy(() => {})
-    // Generate a new random user ID and update the corresponding User document.
-    // Send status code 500 (Internal Server Error) in case of failure
+    // Generate a new random public user ID and update the corresponding profile
+    // (and the internal synthetic email). Send status code 500 (Internal Server
+    // Error) in case of failure
     const new_user_id = await common.generateUserId(db.users.userIdLength)
-    const result = await db.users.setUserIdByUserId(curr_user_id, new_user_id)
+    const result = await db.users.setUserIdByUserId(userId, new_user_id)
     if (result === null)
     {
-        console.log(`Failed to change ID of user ${curr_user_id} to ${new_user_id}`)
+        console.log(`Failed to change ID of user ${userId} to ${new_user_id}`)
         res.status(500).send()
         return
     }
-    // Send the new user ID to the cliend with status code 200 (OK)
-    console.log(`Changed ID of user ${curr_user_id} to ${new_user_id}`)
+    // Force the logout: the client must log back in with the new ID
+    authCookies.clearAuthCookies(res)
+    // Send the new user ID to the client with status code 200 (OK)
+    console.log(`Changed ID of user ${userId} to ${new_user_id}`)
     res.status(200)
     res.json({new_id: new_user_id})
 })
@@ -105,8 +101,8 @@ userRouter.post("/set-id", async (req, res) => {
 userRouter.post("/set-password", async (req, res) => {
     // Check if the user has the right to change password.
     // Send status code 403 (Forbidden) if it doesn't
-    const session = req.session as SessionData
-    const type = await db.users.getTypeOfUserId(session.userId)
+    const userId = req.userId as string
+    const type = await db.users.getTypeOfUserId(userId)
     if (type === null || type.type === db.users.UserType.demo.value)
     {
         res.status(403)
@@ -135,35 +131,23 @@ userRouter.post("/set-password", async (req, res) => {
         res.send()
         return
     }
-    // Check if the user exists in the db. Send status code 401
-    // (Unauthorized) if the user does not exist
-    const user = await db.users.getPasswordByUserId(session.userId)
-    if (user === null)
-    {
-        res.status(401)
-        res.send()
-        return
-    }
-    // Check if the password is correct. Send status code 401
+    // Check if the old password is correct. Send status code 401
     // (Unauthorized) if the password is wrong
-    if (!common.checkPassword(old_pwd, user.password))
+    if (!(await db.users.verifyPassword(userId, old_pwd)))
     {
         res.status(401)
         res.send()
         return
     }
     // The old password is correct and the new passwords are equal:
-    // hash the new password and store it in the db
-    // Then, force the logout (redirect to /logout route)
-    let hashed_new_pwd = common.hashPassword(new_pwd, Number.parseInt(process.env.SALT_ROUNDS || "1"))
-    await db.users.setPasswordOfUserId(session.userId, hashed_new_pwd)
+    // update it via the Supabase Auth Admin API, then force the logout
+    await db.users.setPasswordOfUserId(userId, new_pwd)
     res.redirect(307, "logout")
 })
 
 userRouter.post("/get", async (req, res) => {
     // Get the user's public information
-    const session = req.session as SessionData
-    const user = await db.users.getPublicInfoByUserId(session.userId)
+    const user = await db.users.getPublicInfoByUserId(req.userId as string)
     // Send the data to the client with status code 200 (OK)
     res.status(200)
     res.json(user)
@@ -171,9 +155,8 @@ userRouter.post("/get", async (req, res) => {
 
 userRouter.post("/set", async(req, res) => {
     // Set the user's new public data
-    const session = req.session as SessionData
     const doc = await db.users.setPublicInfoOfUserId(
-        session.userId, req.body.age, req.body.living_situation, req.body.housing_type,
+        req.userId as string, req.body.age, req.body.living_situation, req.body.housing_type,
         req.body.children, req.body.country, req.body.job, req.body.job_type,
         req.body.job_country, req.body.work_time, req.body.remote_type,
         req.body.years_of_experience, req.body.preferred_currency
@@ -193,7 +176,6 @@ userRouter.post("/set", async(req, res) => {
 
 userRouter.post("/goals", async (req, res) => {
     // Set the users's goals and limits
-    const session = req.session as SessionData
     let expensesLimit = req.body.expenses_limit
     let savingsPercent = req.body.savings_percent
     let emergencyFundGoal = req.body.emergency_fund_goal
@@ -206,7 +188,7 @@ userRouter.post("/goals", async (req, res) => {
     if (emergencyFundGoal < 0)
         emergencyFundGoal = -1
     const doc = await db.users.setGoalsOfUserId(
-        session.userId, expensesLimit, savingsPercent, emergencyFundGoal
+        req.userId as string, expensesLimit, savingsPercent, emergencyFundGoal
     )
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -222,12 +204,12 @@ userRouter.post("/goals", async (req, res) => {
 })
 
 userRouter.post("/alldata", async (req, res) => {
-    const session = req.session as SessionData
+    const userId = req.userId as string
     // Get all user's data. Return status 500 (Internal Server Error) if any
     // of the query fails
-    const user = await db.users.getPublicInfoByUserId(session.userId)
-    const balances = await db.balances.getAllByUserId(session.userId)
-    const expenses = await db.expenses.getAllByUserId(session.userId)
+    const user = await db.users.getPublicInfoByUserId(userId)
+    const balances = await db.balances.getAllByUserId(userId)
+    const expenses = await db.expenses.getAllByUserId(userId)
     if (user === null || balances === null || expenses === null)
     {
         res.status(500).send()
@@ -238,17 +220,17 @@ userRouter.post("/alldata", async (req, res) => {
         user: {
             userId: user.userId,
             creationDate: user.creationDate,
-            age: (user.age as any).label,
-            livingSituation: (user.livingSituation as any).label,
-            housingType: (user.housingType as any).label,
-            children: (user.children as any).label,
-            country: (user.country as any).label,
-            job: (user.job as any).label,
-            jobType: (user.jobType as any).label,
-            jobCountry: (user.jobCountry as any).label,
-            workTime: (user.workTime as any).label,
-            remoteType: (user.remoteType as any).label,
-            yearsOfExperience: (user.yearsOfExperience as any).label
+            age: (user.age as any)?.label,
+            livingSituation: (user.livingSituation as any)?.label,
+            housingType: (user.housingType as any)?.label,
+            children: (user.children as any)?.label,
+            country: (user.country as any)?.label,
+            job: (user.job as any)?.label,
+            jobType: (user.jobType as any)?.label,
+            jobCountry: (user.jobCountry as any)?.label,
+            workTime: (user.workTime as any)?.label,
+            remoteType: (user.remoteType as any)?.label,
+            yearsOfExperience: (user.yearsOfExperience as any)?.label
         },
 
         balances: balances.map((balance) => {
@@ -271,8 +253,8 @@ userRouter.post("/alldata", async (req, res) => {
                 amount: expense.amount,
                 isExpense: expense.isExpense,
                 notes: expense.notes,
-                paymentType: (expense.paymentType as any).label,
-                categoryTag: (expense.categoryTag as any).label
+                paymentType: (expense.paymentType as any)?.label,
+                categoryTag: (expense.categoryTag as any)?.label
             }
         })
     }

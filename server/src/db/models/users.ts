@@ -1,19 +1,10 @@
-import mongoose from "mongoose"
-
-import { ExtDate } from "../../libs/datelib"
+import supabase from "../supabase"
 
 import tags from "./tags"
 
-const userIdLength = 6;
-const sessionIdLength = 32;
+const userIdLength = 6
 
-/**
- * Creates a new invalid ObjectID for mongoDB
- * @returns A new mongoDB ObjectID
- */
-function newNullObjectId() {
-    return new mongoose.Types.ObjectId(NaN);
-}
+const SYNTHETIC_EMAIL_DOMAIN = "users.pacifinance.internal"
 
 const UserType = {
     regular: {name: "regular", value: 0},
@@ -22,270 +13,226 @@ const UserType = {
     demo: {name: "demo", value: 3}
 };
 
-const userSchema = new mongoose.Schema({
-    userId: {type: String, required: true, unique: true, dropDups: true},
-    password: {type: String, required: true},
-    creationDate: {type: Date, required: true},
-    type: {type: Number, required: true},
-    nickname: {type: String, default: ""},
-    age: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    livingSituation: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    housingType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    children: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    country: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    job: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    jobType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    jobCountry: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    workTime: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    remoteType: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    yearsOfExperience: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    preferredCurrency: {type: mongoose.Types.ObjectId, ref: "Tag", default: ""},
-    goals: {type: {
-        expensesLimit: {type: Number, required: true},
-        savingsPercent: {type: Number, required: true},
-        emergencyFundGoal: {type: Number, required: true},
-    }, required: true},
-    session: {type: {
-        sessionId: {type: String, required: true, unique: true, dropDups: true},
-        expirationDate: {type: Date, required: true}
-    }, required: true}
-});
-
-/* ==================== Template queries ==================== */
-
 /**
- * Adds a user
- * @param data Data of the new User document 
- * @returns User document, or null in case of error
+ * Builds the internal, synthetic email address used only to satisfy Supabase
+ * Auth's email/password flow. It is never shown to the user, never collected
+ * via a form, and is not a real, reachable address: login/registration stay
+ * ID (6 digits) + password only, exactly as before.
+ * @param user_code Public-facing 6-digit user ID
+ * @returns Synthetic email address
  */
-async function addOne(data: object) {
-    const user = await User.create(data).catch(() => null)
-    if (!user || !user._id)
-        return null
-    return user.toJSON()
+function emailForUserCode(user_code: string) {
+    return `${user_code}@${SYNTHETIC_EMAIL_DOMAIN}`
 }
 
 /**
- * Gets a list of users that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @returns List of User documents
+ * Maps a "tags" row (or a null join result) to the public Tag shape used by the frontend
  */
-async function get(where: object, select: string) {
-    return await User.find(where, select).lean().exec();
+function mapTagRow(row: any) {
+    if (!row) return null
+    return {label: row.label, index: row.client_index, type: row.type, translations: row.translations}
 }
 
-/**
- * Gets a user that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @returns User document
- */
-async function getOne(where: object, select: string) {
-    return await User.findOne(where, select).lean().exec();
-}
-
-/**
- * Gets a user that match a filter, substituting all Tag references with Tag data
- * @param where Filter to match
- * @param select Fields to return
- * @returns User document
- */
-async function getOneAndPopulate(where: object, select: string) {
-    return await User.findOne(where, select)
-    .populate({path: "age", select: "-_id -__v -translations._id"})
-    .populate({path: "livingSituation", select: "-_id -__v -translations._id"})
-    .populate({path: "housingType", select: "-_id -__v -translations._id"})
-    .populate({path: "children", select: "-_id -__v -translations._id"})
-    .populate({path: "country", select: "-_id -__v -translations._id"})
-    .populate({path: "job", select: "-_id -__v -translations._id"})
-    .populate({path: "jobType", select: "-_id -__v -translations._id"})
-    .populate({path: "jobCountry", select: "-_id -__v -translations._id"})
-    .populate({path: "workTime", select: "-_id -__v -translations._id"})
-    .populate({path: "remoteType", select: "-_id -__v -translations._id"})
-    .populate({path: "yearsOfExperience", select: "-_id -__v -translations._id"})
-    .populate({path: "preferredCurrency", select: "-_id -__v -translations._id"})
-    .lean().exec();
-}
-
-/**
- * Updates a user that match a filter
- * @param where Filter to match
- * @param update Fields to update
- * @returns User document
- */
-async function setOne(where: object, update: object) {
-    return await User.findOneAndUpdate(where, {$set: update}).lean().exec();
-}
-
-/**
- * Deletes a user that match a filter
- * @param where Filter to match
- * @returns DeleteResult object
- */
-async function deleteOne(where: object) {
-    return await User.deleteOne(where).lean().exec();
-}
+const TAG_JOIN_FIELDS = `
+    age:tags!profiles_age_tag_id_fkey(label, client_index, type, translations),
+    living_situation:tags!profiles_living_situation_tag_id_fkey(label, client_index, type, translations),
+    housing_type:tags!profiles_housing_type_tag_id_fkey(label, client_index, type, translations),
+    children:tags!profiles_children_tag_id_fkey(label, client_index, type, translations),
+    country:tags!profiles_country_tag_id_fkey(label, client_index, type, translations),
+    job:tags!profiles_job_tag_id_fkey(label, client_index, type, translations),
+    job_type:tags!profiles_job_type_tag_id_fkey(label, client_index, type, translations),
+    job_country:tags!profiles_job_country_tag_id_fkey(label, client_index, type, translations),
+    work_time:tags!profiles_work_time_tag_id_fkey(label, client_index, type, translations),
+    remote_type:tags!profiles_remote_type_tag_id_fkey(label, client_index, type, translations),
+    years_of_experience:tags!profiles_years_of_experience_tag_id_fkey(label, client_index, type, translations),
+    preferred_currency:tags!profiles_preferred_currency_tag_id_fkey(label, client_index, type, translations)
+`
 
 /* ==================== Specific queries ==================== */
 
 /**
- * Adds a new user
- * @param user_id ID of the user
- * @param password Hashed password
+ * Registers a new user: creates the Supabase Auth account (with a synthetic
+ * internal email) and the corresponding profile row.
+ * @param user_code Public 6-digit user ID
+ * @param password Plain-text password (hashed internally by Supabase Auth)
  * @param type Account type (regular, premium, test, ...)
+ * @returns {id, userId} of the new user, or null in case of error
  */
-async function insertNew(user_id: string, password: string, type: number = UserType.regular.value) {
-    const data = {
-        userId: user_id,
-        password: password,
-        creationDate: ExtDate.fromNow(),
-        type: type,
-        nickname: "",
-        age: newNullObjectId(),
-        livingSituation: newNullObjectId(),
-        housingType: newNullObjectId(),
-        children: newNullObjectId(),
-        country: newNullObjectId(),
-        job: newNullObjectId(),
-        jobType: newNullObjectId(),
-        jobCountry: newNullObjectId(),
-        workTime: newNullObjectId(),
-        remoteType: newNullObjectId(),
-        yearsOfExperience: newNullObjectId(),
-        preferredCurrency: newNullObjectId(),
-        goals: {
-            expensesLimit: -1,
-            savingsPercent: -1,
-            emergencyFundGoal: -1,
-        },
-        session: {
-            sessionId: user_id, // the first (invalid) sessionId is set to user_id to be unique
-            expirationDate: new ExtDate(0)
-        }
+async function insertNew(user_code: string, password: string, type: number = UserType.regular.value) {
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: emailForUserCode(user_code),
+        password,
+        email_confirm: true,
+        user_metadata: {user_code}
+    })
+    if (authError || !authData.user)
+        return null
+
+    const { data: profile, error: profileError } = await supabase.from("profiles").insert({
+        id: authData.user.id,
+        user_code,
+        account_type: type
+    }).select("id, user_code").single()
+
+    if (profileError || !profile) {
+        // Roll back the orphaned Auth user if the profile insert failed
+        await supabase.auth.admin.deleteUser(authData.user.id)
+        return null
     }
-    return await addOne(data);
+    return {id: profile.id as string, userId: profile.user_code as string}
 }
 
 /**
- * Checks if a user exists in the DB
- * @param user_ref ObjectId of the user
- * @returns true if the user exists, false otherwise
+ * Gets the public 6-digit user ID of a user
+ * @param user_id uuid of the user
+ * @returns Public user ID, or null if not found
  */
-async function userExistsByRef(user_ref: mongoose.Types.ObjectId) {
-    const user = await getOne({_id: user_ref}, "");
-    return user !== null;
+async function getUserCodeById(user_id: string) {
+    const {data, error} = await supabase.from("profiles")
+        .select("user_code")
+        .eq("id", user_id)
+        .maybeSingle()
+    if (error || !data) return null
+    return data.user_code as string
 }
 
 /**
- * Gets the object reference of a user
- * @param user_id ID of the user
- * @returns User document
+ * Verifies a user's current password by attempting a Supabase Auth sign-in
+ * with it. Used to confirm identity before sensitive operations (change ID,
+ * change password) since the backend never has access to the password hash.
+ * @param user_id uuid of the user
+ * @param password Plain-text password to verify
+ * @returns true if the password is correct, false otherwise
  */
-async function getReferenceByUserId(user_id: string) {
-    return await getOne({userId: user_id}, "_id");
+async function verifyPassword(user_id: string, password: string) {
+    const user_code = await getUserCodeById(user_id)
+    if (user_code === null) return false
+    const {error} = await supabase.auth.signInWithPassword({
+        email: emailForUserCode(user_code),
+        password
+    })
+    return !error
 }
 
 /**
  * Gets all user IDs, filtering by "similar" users if a reference user is provided
- * @param reference_user_id ID or reference of the user to use as a reference for filtering
+ * @param reference_user_id uuid of the user to use as a reference for filtering
  * @param ignore_test_users True if test and demo users must be ignored, false otherwise
- * @returns List of User documents
+ * @returns List of {id, userId} objects
  */
 async function getAllUsersIds(reference_user_id: string | undefined = undefined, ignore_test_users: boolean = false) {
-    let filter: any = {};
+    let query = supabase.from("profiles").select("id, user_code")
+
     if (reference_user_id !== undefined) {
-        // Get the data of the reference user
-        if (reference_user_id.length < 24) // length of a mongodb ObjectID converted to hex string
-            var reference_user = await getOne({userId: reference_user_id}, "");
-        else
-            var reference_user = await getOne({_id: reference_user_id}, "");
-        // Create a filter to only retrieve data of "similar" users
-        if (reference_user !== null) {
-            filter = {
-                jobType: reference_user.jobType,
-                jobCountry: reference_user.jobCountry,
-                workTime: reference_user.workTime
-            };
+        const {data: reference} = await supabase.from("profiles")
+            .select("job_type_tag_id, job_country_tag_id, work_time_tag_id")
+            .eq("id", reference_user_id)
+            .maybeSingle()
+        if (reference !== null) {
+            query = query
+                .eq("job_type_tag_id", reference.job_type_tag_id)
+                .eq("job_country_tag_id", reference.job_country_tag_id)
+                .eq("work_time_tag_id", reference.work_time_tag_id)
         }
     }
-    // If test/demo users must be ignored, add the corresponding filter
-    if (ignore_test_users) {
-        filter.type = {$lt: UserType.test.value}
-    }
-    return await get(filter, "_id userId");
+    if (ignore_test_users)
+        query = query.lt("account_type", UserType.test.value)
+
+    const {data, error} = await query
+    if (error || !data) return []
+    return data.map((row) => ({id: row.id as string, userId: row.user_code as string}))
 }
 
 /**
- * Updates the ID of a user
- * @param old_user_id Current ID of the user
- * @param new_user_id New ID to set
- * @returns User document
+ * Updates the public 6-digit ID of a user. Also updates the internal synthetic
+ * email in Supabase Auth so that future logins with the new ID keep working.
+ * @param user_id uuid of the user
+ * @param new_user_code New 6-digit ID to set
  */
-async function setUserIdByUserId(old_user_id: string, new_user_id: string) {
-    return await setOne({userId: old_user_id}, {userId: new_user_id});
+async function setUserIdByUserId(user_id: string, new_user_code: string) {
+    const {error: authError} = await supabase.auth.admin.updateUserById(user_id, {
+        email: emailForUserCode(new_user_code)
+    })
+    if (authError) return null
+    const {data, error} = await supabase.from("profiles")
+        .update({user_code: new_user_code})
+        .eq("id", user_id)
+        .select("id, user_code")
+        .maybeSingle()
+    if (error || !data) return null
+    return data
 }
 
 /**
- * Gets the password of a user
- * @param user_id ID of the user
- * @returns User document
+ * Updates the password of a user via the Supabase Auth Admin API
+ * @param user_id uuid of the user
+ * @param new_password New plain-text password to set
  */
-async function getPasswordByUserId(user_id: string) {
-    return await getOne({userId: user_id}, "_id password");
+async function setPasswordOfUserId(user_id: string, new_password: string) {
+    const {error} = await supabase.auth.admin.updateUserById(user_id, {password: new_password})
+    if (error) return null
+    return {id: user_id}
 }
 
 /**
- * Updates the password of a user
- * @param user_id ID of the user
- * @param hashed_new_pwd New hashed password to store
- * @returns User document
- */
-async function setPasswordOfUserId(user_id: string, hashed_new_pwd: string) {
-    return await setOne({userId: user_id}, {password: hashed_new_pwd});
-}
-
-/**
- * Updates the nickname of a user
- * @param user_id ID of the user
- * @param nickname Nickname to set
- * @returns User document
- */
-async function setNicknameOfUserId(user_id: string, nickname: string) {
-    return await setOne({userId: user_id}, {nickname: nickname});
-}
-
-/**
- * Gets the type of a user
- * @param user_id ID of the user
- * @returns User document
+ * Gets the account type of a user
+ * @param user_id uuid of the user
+ * @returns {type} object
  */
 async function getTypeOfUserId(user_id: string) {
-    return await getOne({userId: user_id}, "-_id type");
+    const {data, error} = await supabase.from("profiles")
+        .select("account_type")
+        .eq("id", user_id)
+        .maybeSingle()
+    if (error || !data) return null
+    return {type: data.account_type as number}
 }
 
 /**
- * Updates the type of a user
- * @param user_id ID of the user
- * @param new_type Index of the type to set
- * @returns User document
- */
-async function setTypeOfUserId(user_id: string, new_type: number) {
-    return await setOne({userId: user_id}, {type: new_type});
-}
-
-/**
- * Gets all public information of a user
- * @param user_id ID of the user
- * @returns User document
+ * Gets all public information of a user, resolving all tag references
+ * @param user_id uuid of the user
+ * @returns User profile object, with each tag field resolved to its label/translations
  */
 async function getPublicInfoByUserId(user_id: string) {
-    return await getOneAndPopulate({userId: user_id}, "-_id -__v -password -session");
+    const {data, error} = await supabase.from("profiles")
+        .select(`
+            user_code, nickname, account_type, created_at,
+            expenses_limit, savings_percent, emergency_fund_goal,
+            ${TAG_JOIN_FIELDS}
+        `)
+        .eq("id", user_id)
+        .maybeSingle()
+    if (error || !data) return null
+
+    const d = data as any
+    return {
+        userId: d.user_code as string,
+        creationDate: d.created_at,
+        type: d.account_type as number,
+        nickname: d.nickname as string,
+        age: mapTagRow(d.age),
+        livingSituation: mapTagRow(d.living_situation),
+        housingType: mapTagRow(d.housing_type),
+        children: mapTagRow(d.children),
+        country: mapTagRow(d.country),
+        job: mapTagRow(d.job),
+        jobType: mapTagRow(d.job_type),
+        jobCountry: mapTagRow(d.job_country),
+        workTime: mapTagRow(d.work_time),
+        remoteType: mapTagRow(d.remote_type),
+        yearsOfExperience: mapTagRow(d.years_of_experience),
+        preferredCurrency: mapTagRow(d.preferred_currency),
+        goals: {
+            expensesLimit: d.expenses_limit as number,
+            savingsPercent: d.savings_percent as number,
+            emergencyFundGoal: d.emergency_fund_goal as number
+        }
+    }
 }
 
 /**
  * Sets all public information of a user
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param age Index of the age tag to set
  * @param livingSituation Index of the livingSituation tag to set
  * @param housingType Index of the housingType tag to set
@@ -298,88 +245,87 @@ async function getPublicInfoByUserId(user_id: string) {
  * @param remoteType Index of the remoteType tag to set
  * @param yearsOfExperience Index of the yearsOfExperience tag to set
  * @param preferredCurrency Index of the preferredCurrency tag to set
- * @returns User document
+ * @returns Updated profile row, or null in case of error
  */
 async function setPublicInfoOfUserId(user_id: string, age: number, livingSituation: number, housingType: number,
     children: number, country: number, job: number, jobType: number, jobCountry: number, workTime: number,
     remoteType: number, yearsOfExperience: number, preferredCurrency: number) {
-    // Get the tags references by their index and type
-    // If a reference is found, add it to the object that will be used to update the User document
+
     const valueToTagMapping = [
-        {field: "age", tagType: tags.TagType.age.value, newSelection: age},
-        {field: "livingSituation", tagType: tags.TagType.livingSituation.value, newSelection: livingSituation},
-        {field: "housingType", tagType: tags.TagType.housingType.value, newSelection: housingType},
-        {field: "children", tagType: tags.TagType.children.value, newSelection: children},
-        {field: "country", tagType: tags.TagType.country.value, newSelection: country},
-        {field: "job", tagType: tags.TagType.job.value, newSelection: job},
-        {field: "jobType", tagType: tags.TagType.jobType.value, newSelection: jobType},
-        {field: "jobCountry", tagType: tags.TagType.country.value, newSelection: jobCountry},
-        {field: "workTime", tagType: tags.TagType.workTime.value, newSelection: workTime},
-        {field: "remoteType", tagType: tags.TagType.remoteType.value, newSelection: remoteType},
-        {field: "yearsOfExperience", tagType: tags.TagType.yearsOfExperience.value, newSelection: yearsOfExperience},
-        {field: "preferredCurrency", tagType: tags.TagType.currency.value, newSelection: preferredCurrency},
+        {column: "age_tag_id", tagType: tags.TagType.age.value, newSelection: age},
+        {column: "living_situation_tag_id", tagType: tags.TagType.livingSituation.value, newSelection: livingSituation},
+        {column: "housing_type_tag_id", tagType: tags.TagType.housingType.value, newSelection: housingType},
+        {column: "children_tag_id", tagType: tags.TagType.children.value, newSelection: children},
+        {column: "country_tag_id", tagType: tags.TagType.country.value, newSelection: country},
+        {column: "job_tag_id", tagType: tags.TagType.job.value, newSelection: job},
+        {column: "job_type_tag_id", tagType: tags.TagType.jobType.value, newSelection: jobType},
+        {column: "job_country_tag_id", tagType: tags.TagType.country.value, newSelection: jobCountry},
+        {column: "work_time_tag_id", tagType: tags.TagType.workTime.value, newSelection: workTime},
+        {column: "remote_type_tag_id", tagType: tags.TagType.remoteType.value, newSelection: remoteType},
+        {column: "years_of_experience_tag_id", tagType: tags.TagType.yearsOfExperience.value, newSelection: yearsOfExperience},
+        {column: "preferred_currency_tag_id", tagType: tags.TagType.currency.value, newSelection: preferredCurrency},
     ]
-    let update_object: any = {};
+    let update_object: {[column: string]: number} = {}
     for (let curr of valueToTagMapping) {
-        const tag_ref = await tags.getReferenceByIndexAndType(curr.newSelection, curr.tagType);
-        if (tag_ref !== null) {
-            update_object[curr.field] = tag_ref._id;
-        }
+        const tag_ref = await tags.getReferenceByIndexAndType(curr.newSelection, curr.tagType)
+        if (tag_ref !== null)
+            update_object[curr.column] = tag_ref.id
     }
-    // Update the User document
-    return await setOne({userId: user_id}, update_object);
+    const {data, error} = await supabase.from("profiles")
+        .update(update_object)
+        .eq("id", user_id)
+        .select("id")
+        .maybeSingle()
+    if (error || !data) return null
+    return data
 }
 
 /**
  * Sets the goals of a user
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param expensesLimit Limit on expenses
  * @param savingsPercent Goal on savings percentage
  * @param emergencyFundGoal Goal on emergency fund
- * @returns User document
+ * @returns Updated profile row, or null in case of error
  */
 async function setGoalsOfUserId(user_id: string, expensesLimit: number,
     savingsPercent: number, emergencyFundGoal: number) {
-    const update_object = {
-        goals: {
-            expensesLimit: expensesLimit,
-            savingsPercent: savingsPercent,
-            emergencyFundGoal: emergencyFundGoal,
-        }
-    }
-    return await setOne({userId: user_id}, update_object)
+    const {data, error} = await supabase.from("profiles")
+        .update({
+            expenses_limit: expensesLimit,
+            savings_percent: savingsPercent,
+            emergency_fund_goal: emergencyFundGoal
+        })
+        .eq("id", user_id)
+        .select("id")
+        .maybeSingle()
+    if (error || !data) return null
+    return data
 }
 
 /**
- * Deletes a user by its reference
- * @param user_ref ObjectId of the user
- * @returns DeleteResult object
+ * Deletes a user via the Supabase Auth Admin API. Cascades automatically to
+ * profile/balances/expenses/deletion-queue rows (all FK on delete cascade).
+ * @param user_id uuid of the user
  */
-async function deleteUserByRef(user_ref: mongoose.Types.ObjectId) {
-    return await deleteOne({_id: user_ref});
+async function deleteUserById(user_id: string) {
+    const {error} = await supabase.auth.admin.deleteUser(user_id)
+    return error ? null : {id: user_id}
 }
-
-/**
- * User model
- */
-const User = mongoose.model("User", userSchema);
 
 export default {
     userIdLength,
-    sessionIdLength,
     UserType,
+    emailForUserCode,
     insertNew,
-    userExistsByRef,
-    getReferenceByUserId,
+    getUserCodeById,
+    verifyPassword,
     getAllUsersIds,
     setUserIdByUserId,
-    getPasswordByUserId,
     setPasswordOfUserId,
-    setNicknameOfUserId,
     getTypeOfUserId,
-    setTypeOfUserId,
     getPublicInfoByUserId,
     setPublicInfoOfUserId,
     setGoalsOfUserId,
-    deleteUserByRef
+    deleteUserById
 };

@@ -1,6 +1,6 @@
 import express from "express"
 
-import db from "../../db/mongo"
+import db from "../../db/db"
 
 /* === /tags/* === */
 

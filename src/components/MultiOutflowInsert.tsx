@@ -7,6 +7,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import { translateTag } from '../data/tagTranslations';
 import { getMuiSelectMenuProps } from './ThemedSelect';
+import CategoryPicker from './CategoryPicker';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton,
   ModalBody, ModalFooter, RowCard, RowHeader, RowBadge, RemoveBtn,
@@ -27,6 +28,8 @@ export const createEmptyRow = (defaults = {}) => ({
   id: Date.now() + Math.random(),
   categoryKey: defaults.categoryKey ?? '',
   categoryValue: defaults.categoryValue ?? '',
+  userCategoryId: defaults.userCategoryId ?? null,
+  userCategoryLabel: defaults.userCategoryLabel ?? '',
   typoKey: defaults.typoKey ?? '',
   typoValue: defaults.typoValue ?? '',
   amount: defaults.amount ?? '',
@@ -42,6 +45,8 @@ export default function MultiOutflowInsert({
   OutflowsTags,
   paymentTags,
   balanceOptions,
+  customCategories,
+  onCreateCategory,
   onSubmitBatch,
   onClose,
   initialRow,
@@ -65,6 +70,10 @@ export default function MultiOutflowInsert({
     setRows(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
   }, []);
 
+  const updateRowFields = useCallback((id, fields) => {
+    setRows(prev => prev.map(r => r.id === id ? { ...r, ...fields } : r));
+  }, []);
+
   const addEmptyRow = () => {
     setRows(prev => [...prev, createEmptyRow({ balanceSource: defaultBalanceSource })]);
   };
@@ -75,6 +84,8 @@ export default function MultiOutflowInsert({
     setRows(prev => [...prev, createEmptyRow({
       categoryKey: last.categoryKey,
       categoryValue: last.categoryValue,
+      userCategoryId: last.userCategoryId,
+      userCategoryLabel: last.userCategoryLabel,
       typoKey: last.typoKey,
       typoValue: last.typoValue,
       defaultAmount: lastAmount,
@@ -163,33 +174,20 @@ export default function MultiOutflowInsert({
                 {/* Category */}
                 <div>
                   <FieldLabel theme={theme}>{translations.general.category}</FieldLabel>
-                  <Select
-                    value={row.categoryKey}
-                    onChange={(e) => {
-                      const key = e.target.value;
-                      const item = OutflowsTags.find(t => t.index === key);
-                      if (item) {
-                        updateRow(row.id, 'categoryKey', key);
-                        updateRow(row.id, 'categoryValue', translateTag(item.label, language, 'expense'));
-                      }
-                    }}
-                    sx={selectSx}
-                    displayEmpty
-                    size="small"
-                    MenuProps={getMuiSelectMenuProps(theme)}
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={OutflowsTags}
+                    customCategories={customCategories}
+                    categoryType="expense"
+                    categoryKey={row.categoryKey}
+                    userCategoryId={row.userCategoryId}
+                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                      updateRowFields(row.id, { categoryKey, categoryValue, userCategoryId, userCategoryLabel })
+                    }
+                    onCreateCategory={onCreateCategory}
                     disabled={isSubmitting}
-                    renderValue={(v) => v === '' ? translations.insert.outflowSection.placeholderCategory : (
-                      OutflowsTags.find(t => t.index === v)
-                        ? translateTag(OutflowsTags.find(t => t.index === v).label, language, 'expense')
-                        : v
-                    )}
-                  >
-                    {sortTagsByLanguage(OutflowsTags, language, 'expense').map((item) => (
-                      <MenuItem key={item.index} value={item.index}>
-                        {translateTag(item.label, language, 'expense')}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    placeholder={translations.insert.outflowSection.placeholderCategory}
+                  />
                 </div>
 
                 {/* Payment Type */}

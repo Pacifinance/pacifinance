@@ -113,8 +113,8 @@
     "server/src",
     "server/src/cache", "server/src/cache/items",
     "server/src/db", "server/src/db/models",
-    "server/src/jobs", "server/src/jobs/functions",
     "server/src/libs",
-    "server/src/routes", "server/src/routes/public", "server/src/routes/private",
+    "server/src/routes", "server/src/routes/public", "server/src/routes/private", "server/src/routes/cron",
+    "server/src/types",
   ]
 }

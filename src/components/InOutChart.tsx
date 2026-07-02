@@ -19,7 +19,8 @@ import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
+import { UserContext } from '../contexts/UserContext';
+import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth, getMonthlyTotalsAllTime } from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 
@@ -30,11 +31,15 @@ import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslation
 function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
-  
+  const { fetchAllTimeMonthlyTotals } = useContext(UserContext) || {};
+
   // Line chart state
   const [incomesArray, setIncomesArray] = useState([]);
   const [outflowsArray, setOutflowsArray] = useState([]);
-  
+  const [monthlyTotalsAllTime, setMonthlyTotalsAllTime] = useState([]);
+  const [isLoadingFullHistory, setIsLoadingFullHistory] = useState(false);
+  const [hasFullHistory, setHasFullHistory] = useState(false);
+
   // Pie chart state
   const [totalOutflowsPerCategoryPerMonth, setTotalOutflowsPerCategoryPerMonth] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0);
@@ -125,6 +130,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           if (type === "line") {
             setIncomesArray(getIncomesArray(userData) ? [...getIncomesArray(userData)] : []);
             setOutflowsArray(getOutflowsArray(userData) ? [...getOutflowsArray(userData)] : []);
+            setMonthlyTotalsAllTime(getMonthlyTotalsAllTime(userData));
           } else {
             setTotalOutflowsPerCategoryPerMonth(getTotalOutflowsPerCategoryPerMonth(userData) || []);
           }
@@ -144,7 +150,39 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   ];
 
   const today = new Date();
-  
+
+  // "2Y"/"ALL" richiedono i totali mensili aggregati oltre i 12 mesi già
+  // disponibili di default: li richiediamo una sola volta, on-demand, per
+  // non gravare sull'egress ad ogni caricamento pagina (nessun dettaglio di
+  // singola transazione viene trasferito, solo somme mensili).
+  const handlePeriodSelect = async (period) => {
+    if ((period === '2y' || period === 'all') && !hasFullHistory && fetchAllTimeMonthlyTotals) {
+      setIsLoadingFullHistory(true);
+      await fetchAllTimeMonthlyTotals();
+      setHasFullHistory(true);
+      setIsLoadingFullHistory(false);
+    }
+    setSelectedPeriod(period);
+  };
+
+  // Converte i totali mensili aggregati (monthlyTotalsAllTime) nello stesso
+  // formato usato dal grafico, ordinati cronologicamente.
+  const buildDataFromMonthlyTotals = (totals) => {
+    return [...totals]
+      .sort((a, b) => a.monthStart.localeCompare(b.monthStart))
+      .map((t) => {
+        const incomesValue = Math.abs(t.totalIncomes || 0);
+        const outflowsValue = Math.abs(t.totalOutflows || 0);
+        return {
+          name: t.monthStart.slice(0, 7),
+          [translations.general.outflows]: outflowsValue,
+          [translations.general.incomes]: incomesValue,
+          [translations.general.saved]: Math.max(incomesValue - outflowsValue, 0),
+          amt: 0,
+        };
+      });
+  };
+
   // Funzione per filtrare i dati in base al periodo selezionato
   const getFilteredData = () => {
     const lastTwelveMonths = [];
@@ -186,9 +224,14 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         return lastTwelveMonths.slice(-6); // Ultimi 6 mesi
       case '1y':
         return lastTwelveMonths; // Tutti i 12 mesi
-      case '2y':
-      case 'all':
-        return lastTwelveMonths; // Per ora stesso dei 12 mesi
+      case '2y': {
+        const extended = buildDataFromMonthlyTotals(monthlyTotalsAllTime);
+        return extended.length > 0 ? extended.slice(-24) : lastTwelveMonths;
+      }
+      case 'all': {
+        const extended = buildDataFromMonthlyTotals(monthlyTotalsAllTime);
+        return extended.length > 0 ? extended : lastTwelveMonths;
+      }
       default:
         return lastTwelveMonths;
     }
@@ -432,35 +475,31 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         {/* Time Period Selector */}
         <div className="flex gap-1 z-10">
           {['3m', '6m', '1y', '2y', 'all'].map((period) => {
-            const isDisabled = period === '2y' || period === 'all';
             const isActive = selectedPeriod === period;
-            
+            const isBusy = (period === '2y' || period === 'all') && isLoadingFullHistory;
+
             return (
               <button
                 key={period}
-                onClick={() => !isDisabled && setSelectedPeriod(period)}
-                disabled={isDisabled}
+                onClick={() => handlePeriodSelect(period)}
+                disabled={isBusy}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
-                  isDisabled 
-                    ? 'cursor-not-allowed opacity-50' 
-                    : 'hover:scale-105'
+                  isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
                 }`}
                 style={{
-                  backgroundColor: isActive 
+                  backgroundColor: isActive
                     ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
                     : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                  color: isActive 
-                    ? '#ffffff' 
-                    : (isDisabled 
-                      ? (theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)')
-                      : (theme.mode === 'dark' ? '#ffffff' : '#333333')),
-                  border: `1px solid ${isActive 
-                    ? 'rgba(7, 145, 100, 0.8)' 
+                  color: isActive
+                    ? '#ffffff'
+                    : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
+                  border: `1px solid ${isActive
+                    ? 'rgba(7, 145, 100, 0.8)'
                     : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
                   backdropFilter: 'blur(10px)'
                 }}
               >
-                {period.toUpperCase()}
+                {isBusy ? '…' : period.toUpperCase()}
               </button>
             );
           })}

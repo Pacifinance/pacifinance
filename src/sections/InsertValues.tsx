@@ -1,9 +1,10 @@
 
-import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
+import React, { useContext, useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { useDemoServices } from "../hooks/useDemoServices";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
+import { UserContext } from "../contexts/UserContext";
 import { useToast } from "../contexts/ToastContext";
 import BalanceSection from "../components/BalanceSection";
 import IncomeSection from "../components/IncomeSection";
@@ -29,7 +30,7 @@ import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
     getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
-    getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth
+    getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth, getCustomCategories
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
@@ -368,6 +369,7 @@ export default function InsertValue({
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
+  const { addCustomCategory } = useContext(UserContext) || {};
   const { showSuccess, showError } = useToast();
   const { financeService } = useDemoServices();
   const location = useLocation();
@@ -1055,6 +1057,7 @@ export default function InsertValue({
           row.note,
           row.typoKey,
           row.categoryKey,
+          row.userCategoryId,
         );
         return financeService.addExpenseOrIncome(inExJson)
           .then((res) => { if (res.status === 200) success++; else failed++; })
@@ -1163,6 +1166,7 @@ export default function InsertValue({
           row.note,
           0,
           row.categoryKey,
+          row.userCategoryId,
         );
         return financeService.addExpenseOrIncome(inExJson)
           .then((res) => { if (res.status === 200) success++; else failed++; })
@@ -1452,7 +1456,7 @@ export default function InsertValue({
     }
   };
 
-  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag) => {
+  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null) => {
     const numericAmount = Number(amount) || 0;
     return {
       expense: {
@@ -1461,6 +1465,7 @@ export default function InsertValue({
         is_expense: isOutflow,
         payment_type: payment_type,
         category_tag: category_tag,
+        user_category_id: user_category_id,
         notes: notes,
       },
     };
@@ -1942,6 +1947,8 @@ export default function InsertValue({
               OutflowsTags={OutflowsTags}
               paymentTags={paymentTags}
               balanceOptions={options}
+              customCategories={getCustomCategories(userData)}
+              onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: true })}
               onSubmitBatch={handleBatchOutflowSubmit}
               onClose={() => setShowMultiInsert(false)}
               initialRow={{
@@ -1965,6 +1972,8 @@ export default function InsertValue({
               theme={theme}
               incomesTags={incomesTags}
               balanceOptions={options}
+              customCategories={getCustomCategories(userData)}
+              onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: false })}
               onSubmitBatch={handleBatchIncomeSubmit}
               onClose={() => setShowMultiIncomeInsert(false)}
               initialRow={{

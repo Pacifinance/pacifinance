@@ -89,6 +89,7 @@ Mappatura dalle 5 collection Mongo. Note di design:
 - `users.password`/`users.session` **spariscono**: gestiti da `auth.users` (Supabase Auth).
 - `users.goals` (subdocument embedded) → appiattito in colonne su `profiles`.
 - Gli 11 campi `ObjectId ref "Tag"` del profilo → colonne `bigint references tags(id)`, nullable (niente più placeholder "ObjectId nullo").
+- `tags.type` e `profiles.account_type` sono `smallint` (non enum Postgres): restano 1:1 compatibili con le costanti numeriche `TagType`/`UserType` già usate in tutto il codice server e nel frontend, evitando una conversione enum↔numero in ogni query.
 - `tags.translations` resta `jsonb` (non split in colonne `label_en`/`label_it`) per non dover fare una migration ogni volta che si aggiunge una lingua in `src/i18n/languagesConfig.js`.
 - `expenses` resta un'unica tabella per outflows+incomes (`is_expense boolean`), fedele all'originale.
 - `balances` non ha vincolo unique su `(user_id, user_date)`: preservato lo storico multiplo esistente (la logica applicativa prende la riga più recente).
@@ -151,7 +152,7 @@ $$;
 
 ### Fase 4 — Configurazione Vercel
 21. `vercel.json`: rewrites per instradare `/api/*` alla function, `crons` per i job periodici (`/api/cron/refresh-crypto-prices`, `/api/cron/refresh-user-averages`, `/api/cron/delete-users`), redirect/rewrite per il prefisso lingua (oggi gestito da middleware Express in `index.ts` righe 52-60).
-22. Variabili d'ambiente su Vercel: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, `CG_KEY`, `CRON_SECRET`. (`SALT_ROUNDS`/bcrypt non più necessari lato server — l'hashing lo fa Supabase Auth.)
+22. Variabili d'ambiente su Vercel (via sync Doppler, vedi sezione dedicata): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, `CG_KEY`, `CRON_SECRET`, `DB_ENCRYPTION_KEY`. (`SALT_ROUNDS`/bcrypt non più necessari lato server — l'hashing lo fa Supabase Auth.)
 23. Build settings: framework Vite, output `build/`, build command coerente con `npm run build` (che include `prebuild`/roadmap generation esistente).
 
 ### Fase 5 — Test e go-live
@@ -159,6 +160,37 @@ $$;
 25. Cutover DNS: puntare `pacifinance.com`/`www.pacifinance.com` a Vercel; spegnere il reverse proxy su Hetzner.
 26. Monitorare log Vercel Functions + dashboard Supabase/Upstash nelle prime ore.
 27. Tenere la VM Hetzner (spenta ma non distrutta) per un periodo di rollback di sicurezza prima di decommissionare definitivamente VPS/Mongo/Redis.
+
+---
+
+## Funzionalità aggiuntive implementate su questo branch
+
+Oltre al lift-and-shift, sul branch `migration/vercel-supabase` sono state aggiunte quattro funzionalità, approfittando del cambio di database.
+
+### Cifratura di `expenses.notes`
+
+App-level, `AES-256-GCM` via il modulo nativo `crypto` di Node (`server/src/db/crypto.ts`), chiave a 32 byte in `DB_ENCRYPTION_KEY` (Doppler → Vercel, mai nel DB). Cifrato/decifrato in modo trasparente in `server/src/db/models/expenses.ts`. Solo `notes` è cifrato (unico campo a testo libero); importi/categorie/date restano in chiaro per poter continuare ad aggregarli in SQL. Formato salvato: `v1:<iv>:<authTag>:<ciphertext>` (versionato, per rotazione futura della chiave).
+
+### Categorie personalizzate
+
+Tabella `user_categories` (figlia di un tag ufficiale `tags`), colonna opzionale `expenses.user_category_id`. Le statistiche/ranking continuano a raggruppare sempre su `expenses.category_tag_id` (mai toccato): la categoria personalizzata è solo un'etichetta di visualizzazione. API: `POST /categories/get|add|delete` (`server/src/routes/private/categories.ts`). Lato frontend è pronto il livello dati (`financeService.getCustomCategories/addCustomCategory/deleteCustomCategory`, `userData.customCategories` popolato da `UserContext`) — l'integrazione nel picker di categoria del form di inserimento spesa è un follow-up.
+
+### Storico multi-anno nei grafici
+
+Gli stub UI "2Y"/"ALL" già presenti (disabilitati) in `BalancesChart.tsx`/`InOutChart.tsx` sono stati sbloccati:
+- `GET /balances/get` accetta `{months: N}` o `{months: "all"}` (default 24, invariato per i chiamanti esistenti).
+- `GET /expenses/monthly-totals` (nuovo): totali entrate/uscite aggregati per mese via SQL `SUM`/`GROUP BY`, **nessun dettaglio di transazione trasferito** — pensato apposta per non pesare sull'egress quando si guardano anni di storico.
+- Fetch lazy: il caricamento pagina resta sui 24 mesi di default; lo storico completo viene richiesto solo al click su "ALL" (una volta, poi cachato in `userData` per la sessione).
+
+### Query ottimizzate (RPC Postgres)
+
+Sostituiti i loop N+1 con funzioni SQL aggregate, invocate via `supabase.rpc(...)`:
+- `get_balance_history` — sostituisce le 24 query di `getYearlyBalanceByUserId` con una sola query a finestra, e supporta range arbitrario/all-time.
+- `get_monthly_totals` — somme mensili entrate/uscite in un'unica query.
+- `get_balance_ranking_pool` / `get_expense_ranking_pool` — sostituiscono il loop "una query per utente" di `rank.ts` con un'unica query per l'intero pool (tutti gli utenti o solo quelli "simili"); il calcolo del percentile resta identico, lato applicativo.
+- `averages.ts` (medie utenti, cron giornaliero) resta com'era: non è nel path di richiesta interattivo e beneficia dei 300s di Fluid Compute — ottimizzabile in futuro se la userbase cresce molto.
+
+Tutte le nuove funzioni SQL sono in [`supabase/schema.sql`](../supabase/schema.sql).
 
 ---
 

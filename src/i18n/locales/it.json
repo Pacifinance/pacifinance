@@ -913,6 +913,19 @@
             "noBalanceChange": "Hai scelto di non aggiornare i bilanci: la modifica verrà salvata ma i saldi non rifletteranno la variazione di importo o mese.",
             "confirm": "Conferma modifica",
             "cancel": "Annulla"
+        },
+        "categoryPicker": {
+            "createNew": "Crea nuova categoria",
+            "customBadge": "Personalizzata",
+            "dialogTitle": "Nuova categoria personalizzata",
+            "dialogSubtitle": "Resta collegata a una categoria ufficiale, così statistiche e classifiche restano corrette.",
+            "parentLabel": "Categoria ufficiale",
+            "labelLabel": "Nome categoria",
+            "labelPlaceholder": "Es. Cena con amici",
+            "createAction": "Crea",
+            "errorEmptyLabel": "Inserisci un nome per la categoria",
+            "errorNoParent": "Seleziona una categoria ufficiale",
+            "errorCreateFailed": "Errore durante la creazione della categoria. Riprova."
         }
     },
     "comparison": {

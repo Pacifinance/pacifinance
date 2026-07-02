@@ -1,14 +1,13 @@
 import express from "express"
-import { SessionData } from "express-session"
 
 import { ExtDate } from "../../libs/datelib"
 
-import db from "../../db/mongo"
+import db from "../../db/db"
 
 /**
  * Computes the rank of a user among other users
  * @param array Sorted array of objects (must have a 'user' field)
- * @param target_user Target user ID or ObjectID whose position must be found
+ * @param target_user Target user uuid whose position must be found
  * @returns Object containing the position (top=1, bottom=array.length) and the total number of users
  */
 function computeRankOfUser(array: any[], target_user: string) {
@@ -26,8 +25,7 @@ const rankRouter = express.Router()
 
 rankRouter.post("/balances", async (req, res) => {
     // If the user is of test/demo type, assign some random values
-    const session = req.session as SessionData
-    const target_user = session.userId;
+    const target_user = req.userId as string;
     const user_type = await db.users.getTypeOfUserId(target_user);
     if (user_type === null || user_type.type >= db.users.UserType.test.value)
     {
@@ -43,16 +41,10 @@ rankRouter.post("/balances", async (req, res) => {
     let reference_user = undefined;
     if (req.body && req.body.similar)
         reference_user = target_user;
-    // Get the list of all/similar users IDs
-    const users = await db.users.getAllUsersIds(reference_user, true);
-    // For each user get its latest balance up to the last day of the last month
-    let limit_date = ExtDate.fromThisMonthStart()
-    let balances = [];
-    for (let user of users) {
-        const balance = await db.balances.getTotalLatestByUserId(user.userId, limit_date);
-        if (balance !== null)
-            balances.push({user: user.userId, balance: balance});
-    }
+    // Get the latest-balance pool in a single aggregate query (RPC) instead
+    // of one query per user
+    const pool = await db.balances.getRankingPool(reference_user, true);
+    let balances = pool.map((p) => ({user: p.userId, balance: p.total}));
     // Sort the array of balances to get the rank of the user
     balances.sort((a, b) => a.balance - b.balance);
     const rank = computeRankOfUser(balances, target_user);
@@ -63,8 +55,7 @@ rankRouter.post("/balances", async (req, res) => {
 
 rankRouter.post("/expenses", async (req, res) => {
     // If the user is of test/demo type, assign some random values
-    const session = req.session as SessionData
-    const target_user = session.userId;
+    const target_user = req.userId as string;
     const user_type = await db.users.getTypeOfUserId(target_user);
     if (user_type === null || user_type.type >= db.users.UserType.test.value)
     {
@@ -80,17 +71,12 @@ rankRouter.post("/expenses", async (req, res) => {
     let reference_user = undefined;
     if (req.body && req.body.similar)
         reference_user = target_user;
-    // Get the list of all/similar users IDs
-    const users = await db.users.getAllUsersIds(reference_user, true);
-    // For each user get the expenses/incomes of the last month
+    // Get the expenses/incomes-of-last-month pool in a single aggregate query
+    // (RPC) instead of one query per user
     let reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
     let is_expense_filter = Boolean(req.body.expenses);
-    let expenses = [];
-    for (let user of users) {
-        const total_amount = await db.expenses.getTotalMonthlyExpensesByUserId(user.userId, reference_date, is_expense_filter);
-        if (total_amount !== null)
-            expenses.push({user: user.userId, amount: total_amount});
-    }
+    const pool = await db.expenses.getExpenseRankingPool(reference_user, is_expense_filter, reference_date);
+    let expenses = pool.map((p) => ({user: p.userId, amount: p.total}));
     // Sort the array of expenses to get the rank of the user
     expenses.sort((a, b) => a.amount - b.amount);
     const rank = computeRankOfUser(expenses, target_user);

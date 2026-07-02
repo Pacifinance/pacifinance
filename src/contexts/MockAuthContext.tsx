@@ -244,6 +244,9 @@ export const mockUserData = {
         })()
     },
     
+    // Custom sub-categories (see /categories/* API) — empty in mock mode
+    customCategories: [],
+
     incomes: {
         allIncomes: [
             // Mese corrente [0] - array di transazioni income

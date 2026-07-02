@@ -1,14 +1,18 @@
 import express from "express"
-import { SessionData } from "express-session"
 
 import publicRouter from "./public/public"
+import cronRouter from "./cron/cron"
 import userRouter from "./private/user"
 import balancesRouter from "./private/balances"
 import expensesRouter from "./private/expenses"
 import tagsRouter from "./private/tags"
+import categoriesRouter from "./private/categories"
 import rankRouter from "./private/rank"
 import statsRouter from "./private/stats"
 import pricesRouter from "./private/prices"
+
+import supabase from "../db/supabase"
+import authCookies from "./authCookies"
 
 /**
  * Root-level express router
@@ -19,18 +23,41 @@ const rootRouter = express.Router()
 
 rootRouter.use("/", publicRouter)
 
+/* ========== Cron routes (secret-header authenticated, not session-based) ========== */
+
+rootRouter.use("/cron", cronRouter)
+
 /* ========== Private routes ========== */
 
-// Middleware to check session validity before accessing private routes
-rootRouter.use((req, res, next) => {
-    // Check if the session is valid. Send status code 401
-    // (Unauthorized) if it's not valid
-    const session = req.session as SessionData
-    if (!session || !session.userId) {
+// Middleware to check the Supabase Auth session validity before accessing private routes.
+// Reads the access token cookie and verifies it; if expired, tries to refresh it using the
+// refresh token cookie. Sends status code 401 (Unauthorized) if neither is valid.
+rootRouter.use(async (req, res, next) => {
+    const {accessToken, refreshToken} = authCookies.getAuthCookies(req)
+    if (!accessToken) {
         res.status(401).send()
         return
     }
 
+    const {data, error} = await supabase.auth.getUser(accessToken)
+    if (!error && data.user) {
+        req.userId = data.user.id
+        next()
+        return
+    }
+
+    if (!refreshToken) {
+        res.status(401).send()
+        return
+    }
+    const refreshed = await supabase.auth.refreshSession({refresh_token: refreshToken})
+    if (refreshed.error || !refreshed.data.session || !refreshed.data.user) {
+        authCookies.clearAuthCookies(res)
+        res.status(401).send()
+        return
+    }
+    authCookies.setAuthCookies(res, refreshed.data.session)
+    req.userId = refreshed.data.user.id
     next()
 })
 
@@ -38,6 +65,7 @@ rootRouter.use("/user", userRouter)
 rootRouter.use("/balances", balancesRouter)
 rootRouter.use("/expenses", expensesRouter)
 rootRouter.use("/tags", tagsRouter)
+rootRouter.use("/categories", categoriesRouter)
 rootRouter.use("/rank", rankRouter)
 rootRouter.use("/stats", statsRouter)
 rootRouter.use("/prices", pricesRouter)

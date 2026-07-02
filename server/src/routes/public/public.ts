@@ -1,10 +1,12 @@
 import express from "express"
 
-import db from "../../db/mongo"
+import db from "../../db/db"
 import common from "../common"
+import authCookies from "../authCookies"
+import supabase from "../../db/supabase"
+import redis from "../../cache/redisClient"
 
 const publicRouter = express.Router()
-let registrationTokensCache = new Set<string>()
 
 /**
  * Checks if a Turnstile token is valid
@@ -12,18 +14,16 @@ let registrationTokensCache = new Set<string>()
  * @returns A tuple with a boolean verification result and the HTTP status code to use for the response
  */
 async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
-    const token_lifetime = 3 * 60 * 1000
+    const token_lifetime_sec = 3 * 60
     const expected_hostnames = process.env.NODE_ENV === "production"
         ? ["pacifinance.com", "www.pacifinance.com"]
         : ["localhost", "127.0.0.1"]
 
-    // Check if the token has already been used
-    if (registrationTokensCache.has(token))
+    // Check if the token has already been used. The key is created only if it doesn't
+    // exist yet (NX) with the given TTL: a non-null result means this is the first use.
+    const firstUse = await redis.set(`turnstile:${token}`, "1", {nx: true, ex: token_lifetime_sec})
+    if (firstUse === null)
         return [false, 401]
-
-    // Add token to cache and schedule its deletion after few minutes
-    registrationTokensCache.add(token)
-    setTimeout(() => registrationTokensCache.delete(token), token_lifetime)
 
     // Verify the token via the Cloudflare Turnstile API
     const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
@@ -73,13 +73,12 @@ publicRouter.post("/registration", async (req, res) => {
         res.status(response_code).send()
         return
     }
-    // Generate a random user ID
+    // Generate a random public user ID
     const user_id = await common.generateUserId(db.users.userIdLength)
-    // Hash the password
-    const hashed_password = common.hashPassword(user_pwd, Number.parseInt(process.env.SALT_ROUNDS || "0"))
-    // Add the user to the DB. Send status code 500 (Internal Server Error) in
-    // case of error
-    const insertion = await db.users.insertNew(user_id, hashed_password)
+    // Register the account: creates the Supabase Auth user (password hashing is
+    // handled internally by Supabase Auth) and the corresponding profile row.
+    // Send status code 500 (Internal Server Error) in case of error
+    const insertion = await db.users.insertNew(user_id, user_pwd)
     if (insertion === null)
     {
         console.log("Error while trying to insert a new user in the database")
@@ -105,28 +104,23 @@ publicRouter.post("/login", async (req, res) => {
         res.send()
         return
     }
-    // Check if the user exists in the db. Send status code 401
-    // (Unauthorized) if the user does not exist
-    const user = await db.users.getPasswordByUserId(user_id)
-    if (user === null)
+    // Attempt sign-in via Supabase Auth using the internal synthetic email
+    // derived from the public user ID. Send status code 401 (Unauthorized)
+    // if the ID doesn't exist or the password is wrong
+    const {data, error} = await supabase.auth.signInWithPassword({
+        email: db.users.emailForUserCode(user_id),
+        password: user_pwd
+    })
+    if (error || !data.session || !data.user)
     {
         res.status(401)
         res.send()
         return
     }
-    // Check if the password is correct. Send status code 401
-    // (Unauthorized) if the password is wrong
-    if (!common.checkPassword(user_pwd, user.password))
-    {
-        res.status(401)
-        res.send()
-        return
-    }
-    // The password is correct:
-    // Add the user ID and session information to the cookie
-    req.session.userId = user_id
-    // Remove the account from the deletion queue
-    await db.delqueue.removeFromQueueByUserRef(user._id)
+    // Set the session tokens as httpOnly cookies
+    authCookies.setAuthCookies(res, data.session)
+    // Remove the account from the deletion queue, if present
+    await db.delqueue.removeFromQueueByUserId(data.user.id)
     // Send status code 200 (OK)
     res.status(200)
     res.send()

@@ -1,226 +1,200 @@
-import mongoose from "mongoose"
+import supabase from "../supabase"
 
 import { ExtDate } from "../../libs/datelib"
 
-import users from "./users"
 import tags from "./tags"
+import { encryptField, decryptField } from "../crypto"
 
-const expenseSchema = new mongoose.Schema({
-    userRef: {type: mongoose.Types.ObjectId, required: true, index: true},
-    date: {type: Date, required: true, index: true},
-    amount: {type: Number, required: true},
-    isExpense: {type: Boolean, required: true},
-    notes: {type: String},
-    paymentType: {type: mongoose.Types.ObjectId, ref: "Tag", required: true},
-    categoryTag: {type: mongoose.Types.ObjectId, ref: "Tag", required: true}
-});
+const EXPENSE_SELECT = `
+    occurred_at, amount, is_expense, notes,
+    payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type, translations),
+    category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type, translations),
+    user_category:user_categories(id, label)
+`
 
-type Tag = Awaited<ReturnType<typeof tags.getAllTagsByType>>[0]
-type PopulatedExpense = 
-    Omit<typeof Expense, "categoryTag"> & {
-        categoryTag: Tag
+function mapTagJoin(row: any) {
+    if (!row) return null
+    return {label: row.label, index: row.client_index, type: row.type, translations: row.translations}
+}
+
+function toExpense(row: any) {
+    return {
+        date: row.occurred_at,
+        amount: row.amount as number,
+        isExpense: row.is_expense as boolean,
+        notes: decryptField(row.notes),
+        paymentType: mapTagJoin(row.payment_type),
+        categoryTag: mapTagJoin(row.category_tag),
+        userCategory: row.user_category ? {id: row.user_category.id as number, label: row.user_category.label as string} : null
     }
-
-/* ==================== Template queries ==================== */
-
-/**
- * Adds an expense
- * @param data Data of the new Expense document 
- * @returns Expense document
- */
-async function addOne(data: object) {
-    return (await Expense.create(data)).toJSON();
-}
-
-/**
- * Gets a list of expenses that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @param sort Fields to sort by and their order
- * @returns List of Expense documents
- */
-async function getSorted(where: object, select: string, sort: any) {
-    return await Expense.find(where, select)
-    .populate({path: "paymentType", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "paymentType"
-    .populate<PopulatedExpense>({path: "categoryTag", select: "-_id -__v -translations._id"}) // substitution of Tag references with Tag data for "categoryTag"
-    .sort(sort).lean().exec();
-}
-
-/**
- * Deletes all expenses that match a filter
- * @param where Filter to match
- * @returns DeleteResult object
- */
-async function deleteMany(where: object) {
-    return await Expense.deleteMany(where).lean().exec();
-}
-
-/**
- * Deletes an expense that match a filter
- * @param where Filter to match
- * @returns DeleteResult object
- */
-async function deleteOne(where: object) {
-    return await Expense.deleteOne(where).lean().exec();
 }
 
 /* ==================== Specific queries ==================== */
 
 /**
  * Adds an expense associated to a user
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param date Date of the expense
  * @param amount Amount of the expense
  * @param is_expense True if this is entry is an expense, false if it's an income
- * @param notes User notes or description associated to the expense
+ * @param notes User notes or description associated to the expense (encrypted at rest, see db/crypto.ts)
  * @param payment_type Type of payment (None, Single, Subscription or Installment)
  * @param category_tag Category tag of the expense
- * @returns Expense document
+ * @param user_category_id Optional custom sub-category (child of category_tag), display-only
+ * @returns Expense document, or null in case of error
  */
-async function insertNew(user_id: string, date: Date, amount: number, is_expense: boolean, 
-    notes: string, payment_type: number, category_tag: number) {
-    // Get the user reference
-    const user = await users.getReferenceByUserId(user_id);
-    // If this is an expense, get the payment type reference and the expense category reference
-    let payment_type_ref = null;
-    let category_tag_ref = null;
-    if (is_expense)
-    {
+async function insertNew(user_id: string, date: Date, amount: number, is_expense: boolean,
+    notes: string, payment_type: number, category_tag: number, user_category_id: number | null = null) {
+    let payment_type_ref = null
+    let category_tag_ref = null
+    if (is_expense) {
         // For an expense the payment type cannot be zero
-        if (payment_type === 0) return null;
-        payment_type_ref = await tags.getReferenceByIndexAndType(payment_type, tags.TagType.payment.value);
-        category_tag_ref = await tags.getReferenceByIndexAndType(category_tag, tags.TagType.expense.value);
+        if (payment_type === 0) return null
+        payment_type_ref = await tags.getReferenceByIndexAndType(payment_type, tags.TagType.payment.value)
+        category_tag_ref = await tags.getReferenceByIndexAndType(category_tag, tags.TagType.expense.value)
+    } else {
+        payment_type_ref = await tags.getReferenceByIndexAndType(0, tags.TagType.payment.value)
+        category_tag_ref = await tags.getReferenceByIndexAndType(category_tag, tags.TagType.income.value)
     }
-    // Otherwise, if it's an income, get the income category reference only
-    else
-    {
-        payment_type_ref = await tags.getReferenceByIndexAndType(0, tags.TagType.payment.value);
-        category_tag_ref = await tags.getReferenceByIndexAndType(category_tag, tags.TagType.income.value);
-    }
-    // If any of the queries fail, return null
-    if (user === null || payment_type_ref === null || category_tag_ref === null)
-        return null;
-    // Create and insert the new entry
-    const data = {
-        userRef: user._id,
-        date: date,
-        amount: amount,
-        isExpense: is_expense,
-        notes: notes,
-        paymentType: payment_type_ref._id,
-        categoryTag: category_tag_ref._id
-    };
-    return await addOne(data);
-}
+    if (payment_type_ref === null || category_tag_ref === null)
+        return null
 
-/**
- * Checks if there are expenses associated to a user
- * @param user_ref ObjectId of the user
- * @returns true if there are expenses associated to the user, false otherwise
- */
-async function expensesExistByUserRef(user_ref: mongoose.Types.ObjectId) {
-    const expense = await getSorted({userRef: user_ref}, "", {});
-    return expense.length !== 0;
+    const {data, error} = await supabase.from("expenses").insert({
+        user_id,
+        occurred_at: date,
+        amount,
+        is_expense,
+        notes: encryptField(notes),
+        payment_type_tag_id: payment_type_ref.id,
+        category_tag_id: category_tag_ref.id,
+        user_category_id
+    }).select(EXPENSE_SELECT).single()
+    if (error || !data) return null
+    return toExpense(data)
 }
 
 /**
  * Gets all the expenses of a user
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @returns List of Expense documents
  */
 async function getAllByUserId(user_id: string) {
-    const user = await users.getReferenceByUserId(user_id)
-    if (user === null)
-        return null
-    // Get all the expenses of the user, sorted by date
-    return await getSorted(
-        {userRef: user._id},
-        "-_id -__v -userRef -paymentType.translations -categoryTag.translations",
-        {date: 1}
-    )
+    const {data, error} = await supabase.from("expenses")
+        .select(EXPENSE_SELECT)
+        .eq("user_id", user_id)
+        .order("occurred_at", {ascending: true})
+    if (error || !data) return null
+    return data.map(toExpense)
 }
 
 /**
  * Gets the expenses of a user for the month
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param reference_date Date object containing the year and month to look for
  * @param is_expense_filter True to retrieve only expenses, false to retrieve only incomes, undefined for both
  * @returns List of Expense documents
  */
 async function getMonthlyExpensesByUserId(user_id: string, reference_date: ExtDate,
     is_expense_filter: boolean | undefined = undefined) {
-    const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
-        return [];
-    // Get start and end of the current month
     const month_start = ExtDate.fromReferenceMonthStart(reference_date)
     const month_end = ExtDate.fromReferenceMonthEnd(reference_date)
-    // Filter out expenses or incomes depending on input parameters
-    let expenses_filter = {
-        userRef: user._id,
-        date: {$gte: month_start, $lte: month_end},
-        isExpense: {$in: [false, true]}
-    };
+
+    let query = supabase.from("expenses")
+        .select(EXPENSE_SELECT)
+        .eq("user_id", user_id)
+        .gte("occurred_at", month_start.toISOString())
+        .lte("occurred_at", month_end.toISOString())
     if (is_expense_filter !== undefined)
-        expenses_filter.isExpense = {$in: [is_expense_filter]};
-    // Get and return the monthly expenses in descending order of date
-    return await getSorted(expenses_filter, "-_id -__v -userRef", {date: -1});
+        query = query.eq("is_expense", is_expense_filter)
+
+    const {data, error} = await query.order("occurred_at", {ascending: false})
+    if (error || !data) return []
+    return data.map(toExpense)
 }
 
 /**
  * Gets the expenses of a user for the month and sums all the amounts
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param reference_date Date object containing the year and month to look for
  * @param is_expense_filter True to retrieve only expenses, false to retrieve only incomes, undefined for both
  * @returns Total expenses/incomes of the user for the month
  */
 async function getTotalMonthlyExpensesByUserId(user_id: string, reference_date: ExtDate,
     is_expense_filter: boolean | undefined = undefined) {
-    // Get the expenses for the month
-    const expenses = await getMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter);
+    const expenses = await getMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter)
     if (expenses.length === 0)
-        return null;
-    // Sum all the amounts
-    return expenses.reduce((accumulator, expense) => accumulator + expense.amount, 0);
+        return null
+    return expenses.reduce((accumulator, expense) => accumulator + expense.amount, 0)
+}
+
+/**
+ * Gets outflow/income totals per month, aggregated server-side (SQL SUM/GROUP
+ * BY via the get_monthly_totals RPC) — no per-transaction detail is
+ * transferred, used for multi-year chart history without the egress cost of
+ * fetching years of individual transactions.
+ * @param user_id uuid of the user
+ * @param months Number of months back to include, or undefined for the full history
+ * @returns List of {monthStart, totalOutflows, totalIncomes}, newest first
+ */
+async function getMonthlyTotalsByUserId(user_id: string, months?: number) {
+    const {data, error} = await supabase.rpc("get_monthly_totals", {
+        p_user_id: user_id,
+        p_months: months ?? null
+    })
+    if (error || !data) return null
+    return (data as any[]).map((row) => ({
+        monthStart: row.month_start as string,
+        totalOutflows: Number(row.total_outflows),
+        totalIncomes: Number(row.total_incomes)
+    }))
 }
 
 /**
  * Deletes an expense/income of a user, given the entry date, amount and direction
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param date Date of the expense
  * @param amount Amount of the expense
  * @param is_expense True if this is entry is an expense, false if it's an income
- * @returns DeleteResult object
+ * @returns {deletedCount} object
  */
 async function deleteExpenseByData(user_id: string, date: Date, amount: number, is_expense: boolean) {
-    // Get the user reference from its ID
-    const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
-        return null;
-    // Delete the expense, filtering by user reference, date, amount and expense/income flag
-    return await deleteOne({userRef: user._id, date: date, amount: amount, isExpense: is_expense});
+    const {error, count} = await supabase.from("expenses")
+        .delete({count: "exact"})
+        .eq("user_id", user_id)
+        .eq("occurred_at", new Date(date).toISOString())
+        .eq("amount", amount)
+        .eq("is_expense", is_expense)
+    if (error) return null
+    return {deletedCount: count ?? 0}
 }
 
 /**
- * Deletes all expenses/incomes of a user given the reference to that user
- * @param user_ref ObjectId of the user
- * @returns DeleteResult object
+ * Gets {userId, total} pairs for the expense/income-ranking pool (all users,
+ * or only those "similar" to reference_user_id) for a given month, via a
+ * single aggregate query (get_expense_ranking_pool RPC) instead of one query
+ * per user.
+ * @param reference_user_id uuid to restrict to "similar" users, or undefined for everyone
+ * @param is_expense_filter true = expenses pool, false = incomes pool
+ * @param reference_date Any date within the target month
  */
-async function deleteExpensesByUserRef(user_ref: mongoose.Types.ObjectId) {
-    return await deleteMany({userRef: user_ref});
+async function getExpenseRankingPool(reference_user_id: string | undefined, is_expense_filter: boolean, reference_date: ExtDate) {
+    const month_start = ExtDate.fromReferenceMonthStart(reference_date)
+    const p_month = `${month_start.getUTCFullYear()}-${String(month_start.getUTCMonth() + 1).padStart(2, "0")}-01`
+    const {data, error} = await supabase.rpc("get_expense_ranking_pool", {
+        p_reference_user: reference_user_id ?? null,
+        p_is_expense: is_expense_filter,
+        p_month
+    })
+    if (error || !data) return []
+    return (data as any[]).map((row) => ({userId: row.user_id as string, total: Number(row.total_amount)}))
 }
-
-/**
- * Expense model
- */
-const Expense = mongoose.model("Expense", expenseSchema);
 
 export default {
     insertNew,
-    expensesExistByUserRef,
     getAllByUserId,
     getMonthlyExpensesByUserId,
     getTotalMonthlyExpensesByUserId,
-    deleteExpenseByData,
-    deleteExpensesByUserRef
+    getMonthlyTotalsByUserId,
+    getExpenseRankingPool,
+    deleteExpenseByData
 };

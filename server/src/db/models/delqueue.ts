@@ -1,86 +1,47 @@
-import mongoose from "mongoose"
-import users from "./users"
-
-const deletionQueueSchema = new mongoose.Schema({
-    userRef: {type: mongoose.Types.ObjectId, ref: "User", required: true, unique: true, dropDups: true},
-    date: {type: Date, required: true}
-});
-
-/**
- * Adds a document to the deletion queue
- * @param data Data of the new DeletionQueue document 
- * @returns DeletionQueue document
- */
-async function addOne(data: object) {
-    return (await DeletionQueue.create(data)).toJSON();
-}
-
-/**
- * Gets a list of documents that match a filter
- * @param where Filter to match
- * @param select Fields to return
- * @returns List of DeletionQueue documents
- */
-async function get(where: object, select: string) {
-    return await DeletionQueue.find(where, select).lean().exec();
-}
-
-/**
- * Deletes a document from the deletion queue
- * @param where Filter to match
- * @returns DeleteResult object
- */
-async function deleteOne(where: object) {
-    return await DeletionQueue.deleteOne(where).lean().exec();
-}
+import supabase from "../supabase"
 
 /* ==================== Specific queries ==================== */
 
 /**
  * Adds a new account to the deletion queue
- * @param user_id ID of the user
+ * @param user_id uuid of the user
  * @param date Expected deletion date
+ * @returns {userId, scheduledFor} object, or null if already queued / on error
  */
 async function insertNew(user_id: string, date: Date) {
-    const user = await users.getReferenceByUserId(user_id);
-    if (user === null)
-        return null;
-    // Do not add the account to the queue if it's already present
-    const docs = await get({userRef: user._id}, "");
-    if (docs.length !== 0)
-        return null;
-    // Add the account to the queue
-    const data = {
-        userRef: user._id,
-        date: date
-    };
-    return await addOne(data);
+    const {data: existing} = await supabase.from("deletions")
+        .select("user_id").eq("user_id", user_id).maybeSingle()
+    if (existing !== null)
+        return null
+
+    const {data, error} = await supabase.from("deletions").insert({
+        user_id, scheduled_for: date
+    }).select("user_id, scheduled_for").single()
+    if (error || !data) return null
+    return {userId: data.user_id as string, scheduledFor: new Date(data.scheduled_for)}
 }
 
 /**
  * Gets all accounts currently in the deletion queue
- * @returns List of DeletionQueue documents
+ * @returns List of {userId, scheduledFor} objects
  */
 async function getAllAccountsInQueue() {
-    return await get({}, "-__v");
+    const {data, error} = await supabase.from("deletions").select("user_id, scheduled_for")
+    if (error || !data) return []
+    return data.map((row) => ({userId: row.user_id as string, scheduledFor: new Date(row.scheduled_for)}))
 }
 
 /**
- * Removes an account from the deletion queue given a reference to its User document
- * @param user_ref Reference to a User document
- * @returns DeleteResult object
+ * Removes an account from the deletion queue
+ * @param user_id uuid of the user
  */
-async function removeFromQueueByUserRef(user_ref: mongoose.Types.ObjectId) {
-    return await deleteOne({userRef: user_ref});
+async function removeFromQueueByUserId(user_id: string) {
+    const {error} = await supabase.from("deletions").delete().eq("user_id", user_id)
+    return error ? null : {userId: user_id}
 }
-
-/**
- * DeletionQueue model
- */
-const DeletionQueue = mongoose.model("Deletion", deletionQueueSchema);
 
 export default {
     insertNew,
     getAllAccountsInQueue,
-    removeFromQueueByUserRef
+    removeFromQueueByUserId
 };

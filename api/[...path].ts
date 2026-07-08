@@ -1,14 +1,11 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import serverless from "serverless-http"
 
 import app from "../server/src/index"
 
-const handler = serverless(app)
-
 /**
- * Vercel serverless entrypoint: wraps the existing Express app (lift-and-shift)
- * as a single catch-all function serving everything under /api/*.
+ * Vercel Node.js entrypoint: Vercel already provides Node req/res objects, so
+ * the Express app can handle them directly.
  */
 export default async function (req: VercelRequest, res: VercelResponse) {
-    return handler(req, res)
+    return app(req, res)
 }

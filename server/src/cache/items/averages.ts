@@ -54,18 +54,17 @@ class AveragesData {
         [categoryIndex: number]: Accumulator
     }
 
-    public constructor() {
+    public constructor(expenseCategories?: Awaited<ReturnType<typeof tags.getAllTagsByType>>) {
         this.balances = new Accumulator()
         this.expenses = new Accumulator()
         this.incomes = new Accumulator()
         this.savingRates = new Accumulator()
         this.expensesByCategory = {}
 
-        tags.getAllTagsByType(tags.TagType.expense.value)
-        .then((expenseTags) => {
-            for (const category of expenseTags)
+        if (expenseCategories) {
+            for (const category of expenseCategories)
                 this.expensesByCategory[category.index] = new Accumulator()
-        })
+        }
     }
 
     public addBalance(value: number) {
@@ -123,7 +122,8 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
     const thisMonthStart = ExtDate.fromReferenceMonthStart(now)
     const lastMonthStart = ExtDate.fromReferenceMonthEnd(now)
 
-    const averagesData = new AveragesData()
+    const expenseTags = await tags.getAllTagsByType(tags.TagType.expense.value)
+    const averagesData = new AveragesData(expenseTags)
 
     for (const user of usersList) {
         // Note: usersList only carries {id, userId} (see users.getAllUsersIds) - it never

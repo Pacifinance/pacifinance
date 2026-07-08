@@ -63,6 +63,7 @@ async function insertNew(
         bank, cash, digital_services: digital_services, stocks, etf, bitcoin, crypto,
         bonds, funds, gold, emergency_fund: emergency_fund
     }).select(BALANCE_COLUMNS).single()
+    if (error) console.error("balances.insertNew: failed to insert balance", error)
     if (error || !data) return null
     return toBalance(data)
 }
@@ -87,6 +88,7 @@ async function getAllByUserId(user_id: string) {
         .select(BALANCE_COLUMNS)
         .eq("user_id", user_id)
         .order("user_date", {ascending: true})
+    if (error) console.error("balances.getAllByUserId: failed to read balances", error)
     if (error || !data) return null
     return data.map(toBalance)
 }
@@ -107,6 +109,7 @@ async function getLatestByUserId(user_id: string, limit_date: ExtDate | undefine
         .order("recorded_at", {ascending: false})
         .limit(1)
         .maybeSingle()
+    if (error) console.error("balances.getLatestByUserId: failed to read latest balance", error)
     if (error || !data) return null
     return toBalance(data)
 }
@@ -148,6 +151,7 @@ async function getBalanceHistoryByUserId(user_id: string, months?: number) {
         p_user_id: user_id,
         p_months: months ?? null
     })
+    if (error) console.error("balances.getBalanceHistoryByUserId: get_balance_history RPC failed", error)
     if (error || !data) return []
 
     const rows = data as (BalanceRow & {month_start: string})[]
@@ -190,6 +194,7 @@ async function getRankingPool(reference_user_id?: string, ignore_test_demo: bool
         p_reference_user: reference_user_id ?? null,
         p_ignore_test_demo: ignore_test_demo
     })
+    if (error) console.error("balances.getRankingPool: get_balance_ranking_pool RPC failed", error)
     if (error || !data) return []
     return (data as any[]).map((row) => ({userId: row.user_id as string, total: Number(row.total_balance)}))
 }

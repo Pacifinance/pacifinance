@@ -69,6 +69,7 @@ async function insertNew(user_id: string, date: Date, amount: number, is_expense
         category_tag_id: category_tag_ref.id,
         user_category_id
     }).select(EXPENSE_SELECT).single()
+    if (error) console.error("expenses.insertNew: failed to insert expense", error)
     if (error || !data) return null
     return toExpense(data)
 }
@@ -83,6 +84,7 @@ async function getAllByUserId(user_id: string) {
         .select(EXPENSE_SELECT)
         .eq("user_id", user_id)
         .order("occurred_at", {ascending: true})
+    if (error) console.error("expenses.getAllByUserId: failed to read expenses", error)
     if (error || !data) return null
     return data.map(toExpense)
 }
@@ -108,6 +110,7 @@ async function getMonthlyExpensesByUserId(user_id: string, reference_date: ExtDa
         query = query.eq("is_expense", is_expense_filter)
 
     const {data, error} = await query.order("occurred_at", {ascending: false})
+    if (error) console.error("expenses.getMonthlyExpensesByUserId: failed to read monthly expenses", error)
     if (error || !data) return []
     return data.map(toExpense)
 }
@@ -141,6 +144,7 @@ async function getMonthlyTotalsByUserId(user_id: string, months?: number) {
         p_user_id: user_id,
         p_months: months ?? null
     })
+    if (error) console.error("expenses.getMonthlyTotalsByUserId: get_monthly_totals RPC failed", error)
     if (error || !data) return null
     return (data as any[]).map((row) => ({
         monthStart: row.month_start as string,
@@ -164,6 +168,7 @@ async function deleteExpenseByData(user_id: string, date: Date, amount: number, 
         .eq("occurred_at", new Date(date).toISOString())
         .eq("amount", amount)
         .eq("is_expense", is_expense)
+    if (error) console.error("expenses.deleteExpenseByData: failed to delete expense", error)
     if (error) return null
     return {deletedCount: count ?? 0}
 }
@@ -185,6 +190,7 @@ async function getExpenseRankingPool(reference_user_id: string | undefined, is_e
         p_is_expense: is_expense_filter,
         p_month
     })
+    if (error) console.error("expenses.getExpenseRankingPool: get_expense_ranking_pool RPC failed", error)
     if (error || !data) return []
     return (data as any[]).map((row) => ({userId: row.user_id as string, total: Number(row.total_amount)}))
 }

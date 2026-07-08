@@ -45,20 +45,18 @@ function padLeftWithZeros(s: string, nCharacters: number) {
 }
 
 /**
- * Generates a random unique user ID
+ * Generates a random unique user ID. Checks each candidate against the
+ * `user_code` unique index (a single indexed lookup) instead of fetching
+ * every existing user ID, so cost doesn't grow with the user base.
  * @param nDigits Number of digits of the user ID
  * @returns A new user ID
  */
 async function generateUserId(nDigits: number) {
-    // Get the list of all user IDs
-    const users = await db.users.getAllUsersIds()
-    let ids = users.map(({userId}) => userId)
-    // Generate a random user ID until a unique one is generated
     let user_id = ""
     do {
         user_id = String(crypto.randomInt(0, 10 ** nDigits))
         user_id = padLeftWithZeros(user_id, nDigits)
-    } while (ids.includes(user_id))
+    } while (await db.users.userCodeExists(user_id))
     return user_id
 }
 

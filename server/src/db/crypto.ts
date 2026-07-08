@@ -55,7 +55,8 @@ export function decryptField(stored: string | null | undefined): string {
         decipher.setAuthTag(Buffer.from(authTagB64, "base64"))
         const plaintext = Buffer.concat([decipher.update(Buffer.from(ciphertextB64, "base64")), decipher.final()])
         return plaintext.toString("utf8")
-    } catch {
+    } catch (error) {
+        console.error("crypto.decryptField: failed to decrypt field (wrong/rotated DB_ENCRYPTION_KEY?)", error)
         return ""
     }
 }

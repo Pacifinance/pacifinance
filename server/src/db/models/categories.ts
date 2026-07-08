@@ -18,6 +18,7 @@ async function getAllByUserId(user_id: string) {
         .select(CATEGORY_SELECT)
         .eq("user_id", user_id)
         .order("label", {ascending: true})
+    if (error) console.error("categories.getAllByUserId: failed to read categories", error)
     if (error || !data) return []
     return data.map(toCategory)
 }
@@ -35,6 +36,7 @@ async function insertNew(user_id: string, parent_tag_id: number, label: string) 
         .insert({user_id, parent_tag_id, label})
         .select(CATEGORY_SELECT)
         .single()
+    if (error) console.error("categories.insertNew: failed to insert category", error)
     if (error || !data) return null
     return toCategory(data)
 }
@@ -51,6 +53,7 @@ async function deleteById(user_id: string, category_id: number) {
         .delete({count: "exact"})
         .eq("user_id", user_id)
         .eq("id", category_id)
+    if (error) console.error("categories.deleteById: failed to delete category", error)
     if (error) return null
     return {deletedCount: count ?? 0}
 }

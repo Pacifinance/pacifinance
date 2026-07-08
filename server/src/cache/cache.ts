@@ -71,6 +71,8 @@ async function invalidate(key: string | undefined = undefined) {
     const new_value = await expectedItems[key].fetch()
     if (new_value !== null)
         await set(key, new_value)
+    else
+        console.error(`cache.invalidate: fetch for "${key}" returned null, keeping stale cached value`)
 }
 
 /**

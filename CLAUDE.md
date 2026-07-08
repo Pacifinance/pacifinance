@@ -36,9 +36,8 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 5. **Mock** — ogni campo `userData` nuovo → aggiornare `MockAuthContext.tsx`
 6. **Colors/Icons** — `getAssetColor()`, `getCategoryColor()` da `src/data/`. Mai hardcoded.
 7. **Outflows not expenses** — "outflows/uscite" sempre. "expenses" solo se investimenti esclusi.
-8. **No server/** — backend off limits
-9. **Roadmap** — feature user-facing completata → `roadmap-items.json` + `todo.md` + `npm run roadmap`
-10. **No `any`** — TypeScript strict. Props come `interface`.
+8. **Roadmap** — feature user-facing completata → `roadmap-items.json` + `todo.md` + `npm run roadmap`
+9. **No `any`** — TypeScript strict. Props come `interface`.
 
 ## Key Files
 | File | Scopo |
@@ -66,7 +65,6 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 ```
 
 ## DO NOT
-- Modificare `server/`
 - Usare `Link` o `useNavigate` diretti (usa i localized wrapper)
 - Hardcodare `€`, `EUR`, colori hex per dati finanziari, testo UI
 - Accedere a `userData.property` senza selector

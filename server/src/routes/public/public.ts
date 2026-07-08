@@ -16,7 +16,7 @@ const publicRouter = express.Router()
 async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
     const token_lifetime_sec = 3 * 60
     const expected_hostnames = process.env.NODE_ENV === "production"
-        ? ["pacifinance.com", "www.pacifinance.com"]
+        ? (process.env.TURNSTILE_ALLOWED_HOSTNAMES?.split(",").map(h => h.trim()) ?? ["pacifinance.com", "www.pacifinance.com"])
         : ["localhost", "127.0.0.1"]
 
     // Check if the token has already been used. The key is created only if it doesn't
@@ -34,14 +34,20 @@ async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
             response: token
         })
     })
-    if (response.status != 200) // Bad request
+    if (response.status != 200) { // Bad request
+        console.error(`verifyTurnstileToken: siteverify request failed with status ${response.status}`)
         return [false, 500]
+    }
 
     const verification = await response.json()
-    if (!verification.success) // Cloudflare didn't authenticate the token
+    if (!verification.success) { // Cloudflare didn't authenticate the token
+        console.error("verifyTurnstileToken: token rejected by Cloudflare", verification["error-codes"])
         return [false, 401]
-    if (!expected_hostnames.includes(verification.hostname))
+    }
+    if (!expected_hostnames.includes(verification.hostname)) {
+        console.error(`verifyTurnstileToken: hostname mismatch, got "${verification.hostname}", expected one of [${expected_hostnames.join(", ")}]`)
         return [false, 401]
+    }
 
     return [true, 200]
 }

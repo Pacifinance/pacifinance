@@ -32,6 +32,11 @@ rootRouter.use("/cron", cronRouter)
 // Middleware to check the Supabase Auth session validity before accessing private routes.
 // Reads the access token cookie and verifies it; if expired, tries to refresh it using the
 // refresh token cookie. Sends status code 401 (Unauthorized) if neither is valid.
+//
+// Uses getClaims() rather than getUser(): on projects with asymmetric JWT signing keys it
+// verifies the token locally (WebCrypto, cached JWKS) instead of a network round-trip to
+// Supabase Auth on every private request. Projects still on a symmetric secret transparently
+// fall back to the same getUser()-based network check as before.
 rootRouter.use(async (req, res, next) => {
     const {accessToken, refreshToken} = authCookies.getAuthCookies(req)
     if (!accessToken) {
@@ -39,9 +44,9 @@ rootRouter.use(async (req, res, next) => {
         return
     }
 
-    const {data, error} = await supabase.auth.getUser(accessToken)
-    if (!error && data.user) {
-        req.userId = data.user.id
+    const {data, error} = await supabase.auth.getClaims(accessToken)
+    if (!error && data?.claims.sub) {
+        req.userId = data.claims.sub
         next()
         return
     }

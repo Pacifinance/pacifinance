@@ -47,6 +47,7 @@ async function insertNew(label: string, index: number, type: number) {
     const {data, error} = await supabase.from("tags").insert({
         label, client_index: index, type, translations: {en: capitalizeFirst(label)}
     }).select("label, client_index, type, translations").single()
+    if (error) console.error("tags.insertNew: failed to insert tag", error)
     if (error || !data) return null
     return toTag(data)
 }
@@ -62,6 +63,7 @@ async function getReferenceByIndexAndType(index: number, type: number) {
         .select("id")
         .eq("client_index", index).eq("type", type)
         .maybeSingle()
+    if (error) console.error("tags.getReferenceByIndexAndType: lookup failed", error)
     if (error || !data) return null
     return {id: data.id as number}
 }
@@ -76,6 +78,7 @@ async function getAllTagsByType(type: number) {
         .select("label, client_index, type, translations")
         .eq("type", type)
         .order("client_index", {ascending: true})
+    if (error) console.error("tags.getAllTagsByType: failed to read tags", error)
     if (error || !data) return []
     return data.map(toTag)
 }
@@ -90,6 +93,7 @@ async function getTagByReference(ref: number) {
         .select("label, client_index, type, translations")
         .eq("id", ref)
         .maybeSingle()
+    if (error) console.error("tags.getTagByReference: lookup failed", error)
     if (error || !data) return null
     return toTag(data)
 }
@@ -107,6 +111,7 @@ async function setTranslationByIndexAndType(index: number, type: number, lang: s
         .select("translations")
         .eq("client_index", index).eq("type", type)
         .maybeSingle()
+    if (existing.error) console.error("tags.setTranslationByIndexAndType: lookup failed", existing.error)
     if (existing.error || !existing.data) return null
     const translations = {...(existing.data.translations as object), [lang]: translation}
     const {data, error} = await supabase.from("tags")
@@ -114,6 +119,7 @@ async function setTranslationByIndexAndType(index: number, type: number, lang: s
         .eq("client_index", index).eq("type", type)
         .select("label, client_index, type, translations")
         .maybeSingle()
+    if (error) console.error("tags.setTranslationByIndexAndType: update failed", error)
     if (error || !data) return null
     return toTag(data)
 }

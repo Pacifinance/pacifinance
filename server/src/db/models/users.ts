@@ -65,6 +65,7 @@ async function insertNew(user_code: string, password: string, type: number = Use
         email_confirm: true,
         user_metadata: {user_code}
     })
+    if (authError) console.error("users.insertNew: failed to create Auth user", authError)
     if (authError || !authData.user)
         return null
 
@@ -75,6 +76,7 @@ async function insertNew(user_code: string, password: string, type: number = Use
     }).select("id, user_code").single()
 
     if (profileError || !profile) {
+        console.error("users.insertNew: failed to insert profile row, rolling back Auth user", profileError)
         // Roll back the orphaned Auth user if the profile insert failed
         await supabase.auth.admin.deleteUser(authData.user.id)
         return null
@@ -92,8 +94,25 @@ async function getUserCodeById(user_id: string) {
         .select("user_code")
         .eq("id", user_id)
         .maybeSingle()
+    if (error) console.error("users.getUserCodeById: lookup failed", error)
     if (error || !data) return null
     return data.user_code as string
+}
+
+/**
+ * Checks whether a public user ID is already taken. Backed by the `user_code`
+ * unique index, so this is a single indexed point lookup rather than a full
+ * table scan.
+ * @param user_code Public 6-digit user ID to check
+ * @returns true if the ID is already in use, false otherwise
+ */
+async function userCodeExists(user_code: string) {
+    const {data, error} = await supabase.from("profiles")
+        .select("user_code")
+        .eq("user_code", user_code)
+        .maybeSingle()
+    if (error) console.error("users.userCodeExists: lookup failed", error)
+    return data !== null
 }
 
 /**
@@ -153,12 +172,14 @@ async function setUserIdByUserId(user_id: string, new_user_code: string) {
     const {error: authError} = await supabase.auth.admin.updateUserById(user_id, {
         email: emailForUserCode(new_user_code)
     })
+    if (authError) console.error("users.setUserIdByUserId: failed to update Auth email", authError)
     if (authError) return null
     const {data, error} = await supabase.from("profiles")
         .update({user_code: new_user_code})
         .eq("id", user_id)
         .select("id, user_code")
         .maybeSingle()
+    if (error) console.error("users.setUserIdByUserId: failed to update profile row", error)
     if (error || !data) return null
     return data
 }
@@ -170,6 +191,7 @@ async function setUserIdByUserId(user_id: string, new_user_code: string) {
  */
 async function setPasswordOfUserId(user_id: string, new_password: string) {
     const {error} = await supabase.auth.admin.updateUserById(user_id, {password: new_password})
+    if (error) console.error("users.setPasswordOfUserId: failed to update password", error)
     if (error) return null
     return {id: user_id}
 }
@@ -184,6 +206,7 @@ async function getTypeOfUserId(user_id: string) {
         .select("account_type")
         .eq("id", user_id)
         .maybeSingle()
+    if (error) console.error("users.getTypeOfUserId: lookup failed", error)
     if (error || !data) return null
     return {type: data.account_type as number}
 }
@@ -202,6 +225,7 @@ async function getPublicInfoByUserId(user_id: string) {
         `)
         .eq("id", user_id)
         .maybeSingle()
+    if (error) console.error("users.getPublicInfoByUserId: lookup failed", error)
     if (error || !data) return null
 
     const d = data as any
@@ -276,6 +300,7 @@ async function setPublicInfoOfUserId(user_id: string, age: number, livingSituati
         .eq("id", user_id)
         .select("id")
         .maybeSingle()
+    if (error) console.error("users.setPublicInfoOfUserId: update failed", error)
     if (error || !data) return null
     return data
 }
@@ -299,6 +324,7 @@ async function setGoalsOfUserId(user_id: string, expensesLimit: number,
         .eq("id", user_id)
         .select("id")
         .maybeSingle()
+    if (error) console.error("users.setGoalsOfUserId: update failed", error)
     if (error || !data) return null
     return data
 }
@@ -310,6 +336,7 @@ async function setGoalsOfUserId(user_id: string, expensesLimit: number,
  */
 async function deleteUserById(user_id: string) {
     const {error} = await supabase.auth.admin.deleteUser(user_id)
+    if (error) console.error("users.deleteUserById: failed to delete Auth user", error)
     return error ? null : {id: user_id}
 }
 
@@ -319,6 +346,7 @@ export default {
     emailForUserCode,
     insertNew,
     getUserCodeById,
+    userCodeExists,
     verifyPassword,
     getAllUsersIds,
     setUserIdByUserId,

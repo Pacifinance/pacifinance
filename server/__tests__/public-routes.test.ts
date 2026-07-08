@@ -12,14 +12,18 @@ describe("public backend routes", () => {
 
     it("reports dependency health without exposing secrets", async () => {
         const response = await request(app, "/api/health/dependencies")
+        const aliasResponse = await request(app, "/api/health-dependencies")
 
         expect(response.status).toBe(200)
         expect(response.json).toEqual({
             redis: {configured: true, ok: true},
-            supabase: {configured: true},
+            supabase: {configured: true, ok: true},
             coingecko: {configured: false}
         })
-        expect(mockRedis.ping).toHaveBeenCalled()
+        expect(aliasResponse.status).toBe(200)
+        expect(aliasResponse.json).toEqual(response.json)
+        expect(mockRedis.ping).toHaveBeenCalledTimes(2)
+        expect(mockSupabase.auth.admin.listUsers).toHaveBeenCalledTimes(2)
         expect(JSON.stringify(response.json)).not.toContain("redis-token")
         expect(JSON.stringify(response.json)).not.toContain("supabase-service-role")
     })

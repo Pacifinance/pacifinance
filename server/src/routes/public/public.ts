@@ -9,6 +9,22 @@ import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
 
 const publicRouter = express.Router()
 
+type DependencyHealth = {
+    redis: {
+        configured: boolean
+        ok: boolean
+        error?: "timeout" | "unreachable"
+    }
+    supabase: {
+        configured: boolean
+        ok: boolean
+        error?: "timeout" | "unreachable"
+    }
+    coingecko: {
+        configured: boolean
+    }
+}
+
 /**
  * Checks if a Turnstile token is valid
  * @param token The token to check
@@ -65,18 +81,15 @@ async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
     return [true, 200]
 }
 
-publicRouter.get("/health", (_, res) => {
-    res.status(200).send("OK")
-})
-
-publicRouter.get("/health/dependencies", async (_, res) => {
-    const dependencies: Record<string, any> = {
+async function getDependencyHealth(): Promise<DependencyHealth> {
+    const dependencies: DependencyHealth = {
         redis: {
             configured: Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN),
             ok: false
         },
         supabase: {
-            configured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+            configured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+            ok: false
         },
         coingecko: {
             configured: Boolean(process.env.CG_KEY)
@@ -95,8 +108,34 @@ publicRouter.get("/health/dependencies", async (_, res) => {
         }
     }
 
-    res.status(dependencies.redis.configured && !dependencies.redis.ok ? 503 : 200).json(dependencies)
+    if (dependencies.supabase.configured) {
+        try {
+            dependencies.supabase.ok = await withTimeout(
+                supabase.auth.admin.listUsers({page: 1, perPage: 1}).then(({error}) => !error),
+                getTimeoutMs("DEPENDENCY_HEALTH_TIMEOUT_MS", 3000),
+                "supabase health check"
+            )
+        } catch (error) {
+            dependencies.supabase.error = error instanceof TimeoutError ? "timeout" : "unreachable"
+        }
+    }
+
+    return dependencies
+}
+
+async function dependencyHealthHandler(_: express.Request, res: express.Response) {
+    const dependencies = await getDependencyHealth()
+    const unhealthy = (dependencies.redis.configured && !dependencies.redis.ok)
+        || (dependencies.supabase.configured && !dependencies.supabase.ok)
+    res.status(unhealthy ? 503 : 200).json(dependencies)
+}
+
+publicRouter.get("/health", (_, res) => {
+    res.status(200).send("OK")
 })
+
+publicRouter.get("/health/dependencies", dependencyHealthHandler)
+publicRouter.get("/health-dependencies", dependencyHealthHandler)
 
 publicRouter.post("/registration", async (req, res) => {
     try {

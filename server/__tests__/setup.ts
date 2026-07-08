@@ -84,6 +84,7 @@ const mocks = vi.hoisted(() => {
             signInWithPassword: vi.fn(),
             admin: {
                 signOut: vi.fn(),
+                listUsers: vi.fn(),
                 createUser: vi.fn(),
                 deleteUser: vi.fn(),
                 updateUserById: vi.fn()
@@ -150,6 +151,7 @@ export function resetServerMocks() {
         error: {message: "invalid credentials"}
     })
     mockSupabase.auth.admin.signOut.mockResolvedValue({})
+    mockSupabase.auth.admin.listUsers.mockResolvedValue({data: {users: []}, error: null})
 
     mockDb.users.userCodeExists.mockResolvedValue(false)
     mockDb.users.insertNew.mockResolvedValue({id: "user-uuid", userId: "123456"})

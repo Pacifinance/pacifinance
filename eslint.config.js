@@ -103,4 +103,25 @@ export default defineConfig([
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
+  // ── Server (Express, deployed as Vercel serverless functions) ──
+  {
+    files: ['server/**/*.ts', 'api/**/*.ts'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+    ],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: globals.node,
+    },
+    rules: {
+      'no-unused-vars': 'off', // handled by @typescript-eslint version
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      'eqeqeq': ['warn', 'smart'],
+      'no-console': 'off', // console.* is the actual logging mechanism (Vercel function logs)
+    },
+  },
 ])

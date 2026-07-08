@@ -289,8 +289,8 @@ async function setPublicInfoOfUserId(user_id: string, age: number, livingSituati
         {column: "years_of_experience_tag_id", tagType: tags.TagType.yearsOfExperience.value, newSelection: yearsOfExperience},
         {column: "preferred_currency_tag_id", tagType: tags.TagType.currency.value, newSelection: preferredCurrency},
     ]
-    let update_object: {[column: string]: number} = {}
-    for (let curr of valueToTagMapping) {
+    const update_object: {[column: string]: number} = {}
+    for (const curr of valueToTagMapping) {
         const tag_ref = await tags.getReferenceByIndexAndType(curr.newSelection, curr.tagType)
         if (tag_ref !== null)
             update_object[curr.column] = tag_ref.id

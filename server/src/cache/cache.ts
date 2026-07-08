@@ -60,7 +60,7 @@ async function valueExpired(key: string) {
  */
 async function invalidate(key: string | undefined = undefined) {
     if (key === undefined) {
-        for (let k of Object.keys(expectedItems))
+        for (const k of Object.keys(expectedItems))
             await invalidate(k)
         return
     }
@@ -99,7 +99,7 @@ async function set(key: string, value: any) {
     if ((!Object.keys(expectedItems).includes(key)) || (!value))
         return
 
-    let new_expiration = ExtDate.fromNow()
+    const new_expiration = ExtDate.fromNow()
     new_expiration.moveBySeconds(expectedItems[key].durationSec)
 
     const newCacheItemData: CacheItemData = {

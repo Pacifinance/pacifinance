@@ -171,8 +171,8 @@ async function getBalanceHistoryByUserId(user_id: string, months?: number) {
     else
         span = monthsBetween(new ExtDate(rows[rows.length - 1].month_start), thisMonthStart) + 1
 
-    let balances = []
-    let cursor = thisMonthStart.copy()
+    const balances = []
+    const cursor = thisMonthStart.copy()
     for (let i = 0; i < span; i++) {
         const key = `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, "0")}`
         const row = byMonth.get(key)

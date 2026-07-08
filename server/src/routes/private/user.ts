@@ -36,7 +36,7 @@ userRouter.post("/delete", async (req, res) => {
     }
     // Add the user to the deletion queue with a deletion delay
     const deletion_delay_days = 30
-    let deletion_date = ExtDate.fromNow()
+    const deletion_date = ExtDate.fromNow()
     deletion_date.moveByDays(deletion_delay_days)
     const doc = await db.delqueue.insertNew(userId, deletion_date)
     // Check if the document was inserted successfully. Send
@@ -64,7 +64,7 @@ userRouter.post("/set-id", async (req, res) => {
     }
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (empty strings after sanitization)
-    let password = common.sanitizeInput(req.body.password)
+    const password = common.sanitizeInput(req.body.password)
     if (password === "")
     {
         res.status(400)

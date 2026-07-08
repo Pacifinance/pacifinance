@@ -44,7 +44,7 @@ rankRouter.post("/balances", async (req, res) => {
     // Get the latest-balance pool in a single aggregate query (RPC) instead
     // of one query per user
     const pool = await db.balances.getRankingPool(reference_user, true);
-    let balances = pool.map((p) => ({user: p.userId, balance: p.total}));
+    const balances = pool.map((p) => ({user: p.userId, balance: p.total}));
     // Sort the array of balances to get the rank of the user
     balances.sort((a, b) => a.balance - b.balance);
     const rank = computeRankOfUser(balances, target_user);
@@ -73,10 +73,10 @@ rankRouter.post("/expenses", async (req, res) => {
         reference_user = target_user;
     // Get the expenses/incomes-of-last-month pool in a single aggregate query
     // (RPC) instead of one query per user
-    let reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
-    let is_expense_filter = Boolean(req.body.expenses);
+    const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
+    const is_expense_filter = Boolean(req.body.expenses);
     const pool = await db.expenses.getExpenseRankingPool(reference_user, is_expense_filter, reference_date);
-    let expenses = pool.map((p) => ({user: p.userId, amount: p.total}));
+    const expenses = pool.map((p) => ({user: p.userId, amount: p.total}));
     // Sort the array of expenses to get the rank of the user
     expenses.sort((a, b) => a.amount - b.amount);
     const rank = computeRankOfUser(expenses, target_user);

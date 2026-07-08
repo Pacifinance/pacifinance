@@ -8,12 +8,12 @@ const tagsRouter = express.Router()
 
 tagsRouter.post("/get", async (_, res) => {
     // Get all the tags from the database
-    let tags: any = {}
-    for (let tag_type of Object.keys(db.tags.TagType))
+    const tags: any = {}
+    for (const tag_type of Object.keys(db.tags.TagType))
     {
-        // @ts-ignore
+        // @ts-expect-error tag_type is a string key from Object.keys(), not a literal of TagType
         const tag_type_name = db.tags.TagType[tag_type].name;
-        // @ts-ignore
+        // @ts-expect-error tag_type is a string key from Object.keys(), not a literal of TagType
         const tag_type_value = db.tags.TagType[tag_type].value;
         const tags_of_type = await db.tags.getAllTagsByType(tag_type_value);
         tags[tag_type_name] = tags_of_type;

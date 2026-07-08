@@ -139,11 +139,11 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
         console.log("Error while fetching crypto current data")
         return expiredCachedPrices
     }
-    let coinsData = await res.json() as CoinsFetchedSimpleData[]
+    const coinsData = await res.json() as CoinsFetchedSimpleData[]
 
     // Build the object with the updated data of all coins
-    let data: CoinCachedData = {}
-    for (let coin of coinsData) {
+    const data: CoinCachedData = {}
+    for (const coin of coinsData) {
         const oldCoinData = expiredCachedPrices ? expiredCachedPrices[coin.id] : undefined
 
         // Check whether the historic data must be fetched for this coin

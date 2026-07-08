@@ -123,7 +123,7 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
     const thisMonthStart = ExtDate.fromReferenceMonthStart(now)
     const lastMonthStart = ExtDate.fromReferenceMonthEnd(now)
 
-    let averagesData = new AveragesData()
+    const averagesData = new AveragesData()
 
     for (const user of usersList) {
         // Note: usersList only carries {id, userId} (see users.getAllUsersIds) - it never
@@ -150,7 +150,7 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
         let yearlyExpenses: Expense[] = []
         let expensesYearlyTotal = 0
         let incomesYearlyTotal = 0
-        let month = thisMonthStart
+        const month = thisMonthStart
         let countedMonths = 0
         while (countedMonths < 12) {
             countedMonths++
@@ -171,7 +171,7 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
         }
 
         // User expenses by category for the full year
-        let yearlyTotalExpensesByCategory: {[categoryIndex: number]: number} = {}
+        const yearlyTotalExpensesByCategory: {[categoryIndex: number]: number} = {}
         for (const expense of yearlyExpenses) {
             if (!expense.categoryTag) continue // category_tag_id is NOT NULL in the DB; guards a failed join only
             const categoryIndex = expense.categoryTag.index
@@ -197,7 +197,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
 
     console.log("Started computation of users averages")
 
-    let averagesCachedData: AveragesCachedData = {
+    const averagesCachedData: AveragesCachedData = {
         all: {
             balances: 0,
             expenses: 0,
@@ -212,7 +212,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     const allUsersList = await users.getAllUsersIds() // test users included
     averagesCachedData.all = await computeAverages(allUsersList, now)
 
-    for (let user of allUsersList) {
+    for (const user of allUsersList) {
         const userRef = user.id
         const similarUsersList = await users.getAllUsersIds(userRef, true) // only similar, non-test users
         averagesCachedData[userRef] = await computeAverages(similarUsersList, now)

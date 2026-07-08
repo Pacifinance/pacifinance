@@ -17,7 +17,7 @@ function isExpenseValid(data: any) {
     data.amount = common.roundCurrency(Number(data.amount));
     data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
-    let now = ExtDate.fromNow()
+    const now = ExtDate.fromNow()
     data.date = new ExtDate(data.date);
     if (data.date === undefined || isNaN(data.date.getTime()) || data.date > now) data.date = now;
     // If it's an income, the payment type is forced to 'none'
@@ -47,7 +47,7 @@ const expensesRouter = express.Router()
 expensesRouter.post("/add", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
-    let expense = req.body.expense;
+    const expense = req.body.expense;
     if (!isExpenseValid(expense))
     {
         res.status(400);
@@ -75,8 +75,8 @@ expensesRouter.post("/add", async (req, res) => {
 
 expensesRouter.post("/get", async (req, res) => {
     // Retrieve the expenses for a full year
-    let year = [];
-    let reference_date = ExtDate.fromNow()
+    const year = [];
+    const reference_date = ExtDate.fromNow()
     for (let i = 0; i <= 12; i++) {
         // Get the expenses from the database for the desired month and add them to the year array
         const expenses = await db.expenses.getMonthlyExpensesByUserId(req.userId as string, reference_date);

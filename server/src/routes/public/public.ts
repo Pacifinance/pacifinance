@@ -34,7 +34,7 @@ async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
             response: token
         })
     })
-    if (response.status != 200) { // Bad request
+    if (response.status !== 200) { // Bad request
         console.error(`verifyTurnstileToken: siteverify request failed with status ${response.status}`)
         return [false, 500]
     }
@@ -62,10 +62,10 @@ publicRouter.post("/registration", async (req, res) => {
     // or if the two passwords don't match
     let user_pwd = req.body.user_pwd
     let repeated_pwd = req.body.repeated_pwd
-    let turnstile_token = req.body.turnstile_token
+    const turnstile_token = req.body.turnstile_token
     user_pwd = common.sanitizeInput(user_pwd)
     repeated_pwd = common.sanitizeInput(repeated_pwd)
-    if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd || turnstile_token == undefined)
+    if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd || turnstile_token == null)
     {
         res.status(400)
         res.send()

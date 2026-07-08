@@ -96,7 +96,6 @@ export default function SignUpForm() {
                     callback: onTurnstileSuccess,
                     "error-callback": onTurnstileError,
                     "expired-callback": onTurnstileExpired,
-                    size: "invisible",
                     theme: theme.mode === "dark" ? "dark" : "light",
                 });
             }
@@ -379,8 +378,8 @@ export default function SignUpForm() {
                             ),
                         }}
                     />
-                    {/* Invisible Turnstile widget */}
-                    <div ref={turnstileRef} style={{ display: "none" }}></div>
+                    {/* Cloudflare Turnstile widget (Managed mode) */}
+                    <div ref={turnstileRef} style={{ margin: "10px 0" }}></div>
 
                     <div className="button-wrapper">
                         <SignUpButton

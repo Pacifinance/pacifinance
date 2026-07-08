@@ -23,10 +23,11 @@ function roundCurrency(n: number) {
  * @returns Sanitized data
  */
 function sanitizeInput(data: string) {
+    if (data === undefined || data === null) return ""
     // Remove empty spaces
     let sanitized_data = String(data).trim()
     // Check if there are HTML tags and remove them
-    const regex = /(<.*>)*/g
+    const regex = /<[^>]*>/g
     sanitized_data = sanitized_data.replace(regex, "")
     // Return the sanitized input
     return sanitized_data

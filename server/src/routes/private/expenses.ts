@@ -47,8 +47,8 @@ const expensesRouter = express.Router()
 expensesRouter.post("/add", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
-    const expense = req.body.expense;
-    if (!isExpenseValid(expense))
+    const expense = req.body?.expense;
+    if (!expense || !isExpenseValid(expense))
     {
         res.status(400);
         res.send();

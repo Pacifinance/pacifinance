@@ -1,0 +1,42 @@
+import { describe, expect, it } from "vitest"
+
+import app from "../src/index"
+import { request } from "./helpers/http"
+import { mockCache, mockDb } from "./setup"
+
+describe("cron backend routes", () => {
+    it("rejects cron calls without the shared Vercel secret", async () => {
+        const response = await request(app, "/api/cron/delete-users")
+
+        expect(response.status).toBe(401)
+        expect(mockDb.delqueue.getAllAccountsInQueue).not.toHaveBeenCalled()
+    })
+
+    it("deletes only queued users whose scheduled date has passed", async () => {
+        mockDb.delqueue.getAllAccountsInQueue.mockResolvedValue([
+            {userId: "expired-user", scheduledFor: new Date("2024-01-01T00:00:00.000Z")},
+            {userId: "future-user", scheduledFor: new Date("2999-01-01T00:00:00.000Z")}
+        ])
+
+        const response = await request(app, "/api/cron/delete-users", {
+            headers: {authorization: "Bearer test-cron-secret"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({deleted: 1})
+        expect(mockDb.users.deleteUserById).toHaveBeenCalledTimes(1)
+        expect(mockDb.users.deleteUserById).toHaveBeenCalledWith("expired-user")
+    })
+
+    it("invalidates user averages only when the cache item is expired", async () => {
+        mockCache.valueExpired.mockResolvedValue(true)
+
+        const response = await request(app, "/api/cron/refresh-user-averages", {
+            headers: {authorization: "Bearer test-cron-secret"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockCache.valueExpired).toHaveBeenCalledWith("userAverages")
+        expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
+    })
+})

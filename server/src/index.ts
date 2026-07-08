@@ -17,6 +17,27 @@ app.use((req, res, next) => {
     }
     next()
 })
+app.use((req, res, next) => {
+    const body = (req as any).body
+    if (!Buffer.isBuffer(body)) {
+        next()
+        return
+    }
+
+    const rawBody = body.toString("utf8")
+    if (rawBody === "") {
+        (req as any).body = {}
+        next()
+        return
+    }
+
+    try {
+        (req as any).body = JSON.parse(rawBody)
+        next()
+    } catch {
+        res.status(400).send()
+    }
+})
 app.use(express.json())
 
 /* ============================ Express.js routes ============================ */

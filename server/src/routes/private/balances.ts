@@ -42,8 +42,8 @@ const balancesRouter = express.Router()
 balancesRouter.post("/add", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
-    const balance = req.body.balance;
-    if (!isBalanceValid(balance))
+    const balance = req.body?.balance;
+    if (!balance || !isBalanceValid(balance))
     {
         res.status(400);
         res.send();

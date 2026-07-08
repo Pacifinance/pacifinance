@@ -9,6 +9,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "dev:server": "tsx server/src/index.ts",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",

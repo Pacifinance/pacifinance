@@ -5,6 +5,7 @@ import common from "../common"
 import authCookies from "../authCookies"
 import supabase from "../../db/supabase"
 import redis from "../../cache/redisClient"
+import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
 
 const publicRouter = express.Router()
 
@@ -21,19 +22,31 @@ async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
 
     // Check if the token has already been used. The key is created only if it doesn't
     // exist yet (NX) with the given TTL: a non-null result means this is the first use.
-    const firstUse = await redis.set(`turnstile:${token}`, "1", {nx: true, ex: token_lifetime_sec})
+    const firstUse = await withTimeout(
+        redis.set(`turnstile:${token}`, "1", {nx: true, ex: token_lifetime_sec}),
+        getTimeoutMs("REGISTRATION_STEP_TIMEOUT_MS", 10000),
+        "turnstile anti-replay check"
+    )
     if (firstUse === null)
         return [false, 401]
 
     // Verify the token via the Cloudflare Turnstile API
-    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-        method: 'POST',
-        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            secret: process.env.TURNSTILE_SECRET_KEY,
-            response: token
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), getTimeoutMs("TURNSTILE_VERIFY_TIMEOUT_MS", 10000))
+    let response: Response
+    try {
+        response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+            method: 'POST',
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                secret: process.env.TURNSTILE_SECRET_KEY,
+                response: token
+            }),
+            signal: controller.signal
         })
-    })
+    } finally {
+        clearTimeout(timeout)
+    }
     if (response.status !== 200) { // Bad request
         console.error(`verifyTurnstileToken: siteverify request failed with status ${response.status}`)
         return [false, 500]
@@ -56,52 +69,103 @@ publicRouter.get("/health", (_, res) => {
     res.status(200).send("OK")
 })
 
+publicRouter.get("/health/dependencies", async (_, res) => {
+    const dependencies: Record<string, any> = {
+        redis: {
+            configured: Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN),
+            ok: false
+        },
+        supabase: {
+            configured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+        },
+        coingecko: {
+            configured: Boolean(process.env.CG_KEY)
+        }
+    }
+
+    if (dependencies.redis.configured) {
+        try {
+            dependencies.redis.ok = await withTimeout(
+                redis.ping().then((result) => result === "PONG"),
+                getTimeoutMs("DEPENDENCY_HEALTH_TIMEOUT_MS", 3000),
+                "redis health check"
+            )
+        } catch (error) {
+            dependencies.redis.error = error instanceof TimeoutError ? "timeout" : "unreachable"
+        }
+    }
+
+    res.status(dependencies.redis.configured && !dependencies.redis.ok ? 503 : 200).json(dependencies)
+})
+
 publicRouter.post("/registration", async (req, res) => {
-    // Sanitize user input. Send status code 400 (Bad Request)
-    // in case of invalid data (empty strings after sanitization)
-    // or if the two passwords don't match
-    let user_pwd = req.body.user_pwd
-    let repeated_pwd = req.body.repeated_pwd
-    const turnstile_token = req.body.turnstile_token
-    user_pwd = common.sanitizeInput(user_pwd)
-    repeated_pwd = common.sanitizeInput(repeated_pwd)
-    if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd || turnstile_token == null)
-    {
-        res.status(400)
-        res.send()
-        return
-    }
-    // Verify Cloudflare Turnstile token. Send status code 401 (Unauthorized) if
-    // the verification failed, or 500 (Internal Server Error) if Cloudflare
-    // responded with an error status code
-    const [verified, response_code] = await verifyTurnstileToken(turnstile_token)
-    if (!verified) {
-        res.status(response_code).send()
-        return
-    }
-    // Generate a random public user ID
-    const user_id = await common.generateUserId(db.users.userIdLength)
-    // Register the account: creates the Supabase Auth user (password hashing is
-    // handled internally by Supabase Auth) and the corresponding profile row.
-    // Send status code 500 (Internal Server Error) in case of error
-    const insertion = await db.users.insertNew(user_id, user_pwd)
-    if (insertion === null)
-    {
-        console.log("Error while trying to insert a new user in the database")
+    try {
+        // Sanitize user input. Send status code 400 (Bad Request)
+        // in case of invalid data (empty strings after sanitization)
+        // or if the two passwords don't match
+        let user_pwd = req.body?.user_pwd
+        let repeated_pwd = req.body?.repeated_pwd
+        const turnstile_token = req.body?.turnstile_token
+        user_pwd = common.sanitizeInput(user_pwd)
+        repeated_pwd = common.sanitizeInput(repeated_pwd)
+        if (user_pwd === "" || repeated_pwd === "" || user_pwd !== repeated_pwd || turnstile_token == null)
+        {
+            res.status(400)
+            res.send()
+            return
+        }
+        // Verify Cloudflare Turnstile token. Send status code 401 (Unauthorized) if
+        // the verification failed, or 500 (Internal Server Error) if Cloudflare
+        // responded with an error status code
+        console.log("registration: verifying Turnstile token")
+        const [verified, response_code] = await verifyTurnstileToken(turnstile_token)
+        if (!verified) {
+            res.status(response_code).send()
+            return
+        }
+        // Generate a random public user ID
+        console.log("registration: generating user code")
+        const user_id = await withTimeout(
+            common.generateUserId(db.users.userIdLength),
+            getTimeoutMs("REGISTRATION_STEP_TIMEOUT_MS", 10000),
+            "registration user code generation"
+        )
+        // Register the account: creates the Supabase Auth user (password hashing is
+        // handled internally by Supabase Auth) and the corresponding profile row.
+        // Send status code 500 (Internal Server Error) in case of error
+        console.log(`registration: creating Supabase user for code ${user_id}`)
+        const insertion = await withTimeout(
+            db.users.insertNew(user_id, user_pwd),
+            getTimeoutMs("REGISTRATION_STEP_TIMEOUT_MS", 10000),
+            "registration Supabase user creation"
+        )
+        if (insertion === null)
+        {
+            console.log("Error while trying to insert a new user in the database")
+            res.status(500).send()
+            return
+        }
+        console.log(`User ${user_id} registered`)
+        // Send the user ID to the client with status code 200 (OK)
+        res.status(200)
+        res.json({user_id: user_id})
+    } catch (error) {
+        if (error instanceof TimeoutError || (error instanceof Error && error.name === "AbortError")) {
+            console.error("registration: external dependency timed out", error)
+            res.status(504).send()
+            return
+        }
+
+        console.error("registration: unexpected failure", error)
         res.status(500).send()
-        return
     }
-    console.log(`User ${user_id} registered`)
-    // Send the user ID to the client with status code 200 (OK)
-    res.status(200)
-    res.json({user_id: user_id})
 })
 
 publicRouter.post("/login", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (empty strings after sanitization)
-    let user_id = req.body.user_id
-    let user_pwd = req.body.password
+    let user_id = req.body?.user_id
+    let user_pwd = req.body?.password
     user_id = common.sanitizeInput(user_id)
     user_pwd = common.sanitizeInput(user_pwd)
     if (user_id === "" || user_pwd === "")

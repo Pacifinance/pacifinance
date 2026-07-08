@@ -95,7 +95,8 @@ const mocks = vi.hoisted(() => {
 
     const redis = {
         get: vi.fn(),
-        set: vi.fn()
+        set: vi.fn(),
+        ping: vi.fn()
     }
 
     const cache = {
@@ -126,6 +127,14 @@ export function resetServerMocks() {
     process.env.VERCEL = "1"
     process.env.NODE_ENV = "test"
     process.env.CRON_SECRET = "test-cron-secret"
+    process.env.REGISTRATION_STEP_TIMEOUT_MS = "10000"
+    process.env.TURNSTILE_VERIFY_TIMEOUT_MS = "10000"
+    process.env.SUPABASE_FETCH_TIMEOUT_MS = "10000"
+    process.env.DEPENDENCY_HEALTH_TIMEOUT_MS = "3000"
+    process.env.UPSTASH_REDIS_REST_URL = "https://redis.example"
+    process.env.UPSTASH_REDIS_REST_TOKEN = "redis-token"
+    process.env.SUPABASE_URL = "https://supabase.example"
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "supabase-service-role"
     vi.clearAllMocks()
 
     mockSupabase.auth.getClaims.mockResolvedValue({
@@ -174,6 +183,7 @@ export function resetServerMocks() {
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")
+    mockRedis.ping.mockResolvedValue("PONG")
 
     mockCache.getExpectedKeys.mockReturnValue(["userAverages", "crypto"])
     mockCache.valueExpired.mockResolvedValue(false)

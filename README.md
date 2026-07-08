@@ -137,8 +137,11 @@ cd pacifinance
 # Install dependencies
 npm install
 
-# Start development server
+# Start frontend development server
 npm run dev
+
+# In another terminal, start the real backend used by /api/* calls
+npm run dev:server
 
 # Open browser at http://localhost:5173
 ```
@@ -163,7 +166,8 @@ Or manually:
 ### Available Scripts
 
 ```bash
-npm run dev        # Start dev server
+npm run dev        # Start frontend dev server
+npm run dev:server # Start Express backend on localhost:3000
 npm run build      # Production build (auto-generates roadmap)
 npm run preview    # Preview production build
 npm run lint       # Run ESLint
@@ -651,8 +655,8 @@ docker compose down
 
 3. **Start with real backend**
    ```bash
-   # Terminal 1: Start backend (in server/ folder)
-   cd server && npm run dev
+   # Terminal 1: Start backend
+   npm run dev:server
    
    # Terminal 2: Start frontend
    npm run dev

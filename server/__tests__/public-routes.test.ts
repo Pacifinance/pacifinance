@@ -10,6 +10,20 @@ describe("public backend routes", () => {
         await expect(request(app, "/it/api/health")).resolves.toMatchObject({status: 200, text: "OK"})
     })
 
+    it("reports dependency health without exposing secrets", async () => {
+        const response = await request(app, "/api/health/dependencies")
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({
+            redis: {configured: true, ok: true},
+            supabase: {configured: true},
+            coingecko: {configured: false}
+        })
+        expect(mockRedis.ping).toHaveBeenCalled()
+        expect(JSON.stringify(response.json)).not.toContain("redis-token")
+        expect(JSON.stringify(response.json)).not.toContain("supabase-service-role")
+    })
+
     it("rejects registration payloads with missing credentials", async () => {
         const response = await request(app, "/api/registration", {
             method: "POST",
@@ -41,6 +55,27 @@ describe("public backend routes", () => {
         expect(response.json.user_id).toMatch(/^\d{6}$/)
         expect(mockRedis.set).toHaveBeenCalledWith("turnstile:turnstile-token", "1", {nx: true, ex: 180})
         expect(mockDb.users.insertNew).toHaveBeenCalledWith(expect.stringMatching(/^\d{6}$/), "password")
+    })
+
+    it("returns 504 instead of hanging when Supabase registration does not resolve", async () => {
+        process.env.REGISTRATION_STEP_TIMEOUT_MS = "20"
+        mockRedis.set.mockResolvedValue("OK")
+        mockDb.users.insertNew.mockReturnValue(new Promise(() => {}))
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            success: true,
+            hostname: "localhost"
+        }), {status: 200, headers: {"content-type": "application/json"}}))
+
+        const response = await request(app, "/api/registration", {
+            method: "POST",
+            body: {
+                user_pwd: "password",
+                repeated_pwd: "password",
+                turnstile_token: "turnstile-token"
+            }
+        })
+
+        expect(response.status).toBe(504)
     })
 
     it("rejects replayed Turnstile tokens before calling Cloudflare", async () => {

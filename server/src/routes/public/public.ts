@@ -18,11 +18,28 @@ type DependencyHealth = {
     supabase: {
         configured: boolean
         ok: boolean
-        error?: "timeout" | "unreachable"
+        error?: "auth_error" | "timeout" | "unreachable"
     }
     coingecko: {
         configured: boolean
     }
+}
+
+function classifySupabaseHealthError(error: unknown): DependencyHealth["supabase"]["error"] {
+    if (error instanceof TimeoutError)
+        return "timeout"
+
+    if (error && typeof error === "object") {
+        const maybeStatus = "status" in error ? Number(error.status) : undefined
+        if (maybeStatus === 401 || maybeStatus === 403)
+            return "auth_error"
+
+        const message = "message" in error ? String(error.message).toLowerCase() : ""
+        if (message.includes("jwt") || message.includes("unauthorized") || message.includes("forbidden") || message.includes("api key"))
+            return "auth_error"
+    }
+
+    return "unreachable"
 }
 
 /**
@@ -110,13 +127,16 @@ async function getDependencyHealth(): Promise<DependencyHealth> {
 
     if (dependencies.supabase.configured) {
         try {
-            dependencies.supabase.ok = await withTimeout(
-                supabase.auth.admin.listUsers({page: 1, perPage: 1}).then(({error}) => !error),
+            const {error} = await withTimeout(
+                supabase.auth.admin.listUsers({page: 1, perPage: 1}),
                 getTimeoutMs("DEPENDENCY_HEALTH_TIMEOUT_MS", 3000),
                 "supabase health check"
             )
+            dependencies.supabase.ok = !error
+            if (error)
+                dependencies.supabase.error = classifySupabaseHealthError(error)
         } catch (error) {
-            dependencies.supabase.error = error instanceof TimeoutError ? "timeout" : "unreachable"
+            dependencies.supabase.error = classifySupabaseHealthError(error)
         }
     }
 

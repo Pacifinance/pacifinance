@@ -473,15 +473,6 @@ export default function StatsCharts() {
         return (
             <>
                 <SectionContainer>
-                    <SectionHeader>
-                        <SectionTitle theme={theme}>
-                            {translations.graphs.statsBalance.titleGraph}
-                        </SectionTitle>
-                        <SectionDescription theme={theme}>
-                            {translations.graphs.descriptions.balanceOverview}
-                        </SectionDescription>
-                    </SectionHeader>
-                    
                     <ChartGrid columns={2}>
                         <ChartCard theme={theme} className="slide-in-left">
                             <BalancesChart 

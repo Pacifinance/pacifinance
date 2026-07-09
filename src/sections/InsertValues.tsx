@@ -534,6 +534,97 @@ export default function InsertValue({
     return draftValue !== '' ? draftValue : balanceBaseValues[assetKey];
   };
 
+  const getBaseBalanceSourceEntries = () => [
+    { label: translations.assets.bank, assetKey: 'bank' },
+    { label: translations.assets.cash, assetKey: 'cash' },
+    { label: translations.assets.digitalServices, assetKey: 'digitalServices' },
+    { label: translations.assets.emergencyFund, assetKey: 'emergencyFund' },
+    { label: translations.assets.stocks, assetKey: 'stocks' },
+    { label: translations.assets.etf, assetKey: 'etf' },
+    { label: translations.assets.bitcoin, assetKey: 'bitcoin' },
+    { label: translations.assets.crypto, assetKey: 'crypto' },
+    { label: translations.assets.bonds, assetKey: 'bonds' },
+    { label: translations.assets.funds, assetKey: 'funds' },
+    { label: translations.assets.gold, assetKey: 'gold' },
+  ];
+
+  const getHoldingValue = (holding) => Number(holding?.currentValue ?? holding?.investedAmount ?? 0) || 0;
+  const getHoldingLabel = (holding) => holding?.instrument?.symbol || holding?.instrument?.name || holding?.notes || ('Holding #' + holding?.id);
+  const getDetailedSourceLabel = (assetKey, detailLabel) => (translations.assets[assetKey] ? (translations.assets[assetKey] + ' / ' + detailLabel) : detailLabel);
+
+  const getBalanceSourceEntries = () => {
+    const entries = [...getBaseBalanceSourceEntries()];
+    const seen = new Set(entries.map((entry) => entry.label));
+    const addEntry = (entry) => {
+      if (!entry.label || seen.has(entry.label)) return;
+      seen.add(entry.label);
+      entries.push(entry);
+    };
+
+    liquidityAccounts.forEach((account) => {
+      if (!account?.assetKey || !account?.label) return;
+      addEntry({
+        label: getDetailedSourceLabel(account.assetKey, account.label),
+        assetKey: account.assetKey,
+        detailType: 'liquidity',
+        detailId: account.id,
+      });
+    });
+
+    investmentHoldings.forEach((holding) => {
+      if (!holding?.assetKey) return;
+      addEntry({
+        label: getDetailedSourceLabel(holding.assetKey, getHoldingLabel(holding)),
+        assetKey: holding.assetKey,
+        detailType: 'investment',
+        detailId: holding.id,
+      });
+    });
+
+    return entries;
+  };
+
+  const getBalanceSourceMeta = () => Object.fromEntries(getBalanceSourceEntries().map((entry) => [entry.label, entry]));
+
+  const applyCurrentDetailSourceDelta = async (balanceSource, deltaEUR) => {
+    const meta = getBalanceSourceMeta()[balanceSource];
+    if (!meta?.detailType || !deltaEUR) return;
+
+    if (meta.detailType === 'liquidity') {
+      const account = liquidityAccounts.find((item) => item.id === meta.detailId);
+      if (!account) return;
+      await liquidityAccountService.saveAccount({
+        id: account.id,
+        asset_key: account.assetKey,
+        label: account.label,
+        current_value: (Number(account.currentValue) || 0) + deltaEUR,
+        currency: account.currency,
+        notes: account.notes,
+      });
+      await refreshLiquidityAccounts();
+      return;
+    }
+
+    if (meta.detailType === 'investment') {
+      const holding = investmentHoldings.find((item) => item.id === meta.detailId);
+      if (!holding?.instrument?.id) return;
+      await investmentService.saveHolding({
+        id: holding.id,
+        instrument_id: holding.instrument.id,
+        asset_key: holding.assetKey,
+        position_type: holding.positionType,
+        quantity: holding.quantity,
+        average_price: holding.averagePrice,
+        current_value: getHoldingValue(holding) + deltaEUR,
+        invested_amount: holding.investedAmount,
+        currency: holding.currency,
+        notes: holding.notes,
+      });
+      await refreshInvestmentHoldings();
+    }
+  };
+
+
   const resetBalanceInputs = () => {
     setBalanceInputs(createEmptyBalanceInputs());
   };
@@ -541,7 +632,8 @@ export default function InsertValue({
   // Helper function to create balances JSON - simplified with component context access
   const createBalancesJson = (date, selectedOption = null, newValue = null) => {
     const getValue = (assetKey) => {
-      if (selectedOption === translations.assets[assetKey]) {
+      const targetAssetKey = selectedOption ? getBalanceSourceMaps().translatedToAsset[selectedOption] : null;
+      if (targetAssetKey === assetKey) {
         // newValue is already in EUR (pre-converted by caller)
         return Number(newValue) || 0;
       }
@@ -571,23 +663,17 @@ export default function InsertValue({
   // Like createBalancesJson but accepts multiple source→newValue overrides at once.
   // This avoids the stale-state bug when updating multiple sources in a loop.
   const createBalancesJsonMulti = (date, overrides) => {
-    const assetSourceMap = {
-      bank: translations.assets.bank,
-      cash: translations.assets.cash,
-      digitalServices: translations.assets.digitalServices,
-      emergencyFund: translations.assets.emergencyFund,
-      stocks: translations.assets.stocks,
-      etf: translations.assets.etf,
-      bitcoin: translations.assets.bitcoin,
-      crypto: translations.assets.crypto,
-      bonds: translations.assets.bonds,
-      funds: translations.assets.funds,
-      gold: translations.assets.gold,
-    };
+    const { translatedToAsset } = getBalanceSourceMaps();
+    const overridesByAsset = {};
+    Object.entries(overrides || {}).forEach(([source, value]) => {
+      const assetKey = translatedToAsset[source];
+      if (assetKey) overridesByAsset[assetKey] = Number(value) || 0;
+    });
+
     const values = {};
-    for (const [assetKey, translatedLabel] of Object.entries(assetSourceMap)) {
-      if (overrides[translatedLabel] !== undefined) {
-        values[assetKey] = Number(overrides[translatedLabel]) || 0;
+    for (const assetKey of ASSET_KEYS) {
+      if (overridesByAsset[assetKey] !== undefined) {
+        values[assetKey] = overridesByAsset[assetKey];
       } else if (balanceInputs[assetKey] !== '') {
         values[assetKey] = toEUR(parseFormattedAmount(balanceInputs[assetKey]));
       } else {
@@ -609,19 +695,9 @@ export default function InsertValue({
   // The camelCase ↔ snake_case mapping lives in `constants/balanceSchema.ts`
   // (ASSET_TO_DB_KEY) — do NOT re-declare it inline anywhere.
   const getBalanceSourceMaps = () => {
-    const translatedToAsset = {
-      [translations.assets.bank]: 'bank',
-      [translations.assets.cash]: 'cash',
-      [translations.assets.digitalServices]: 'digitalServices',
-      [translations.assets.emergencyFund]: 'emergencyFund',
-      [translations.assets.stocks]: 'stocks',
-      [translations.assets.etf]: 'etf',
-      [translations.assets.bitcoin]: 'bitcoin',
-      [translations.assets.crypto]: 'crypto',
-      [translations.assets.bonds]: 'bonds',
-      [translations.assets.funds]: 'funds',
-      [translations.assets.gold]: 'gold',
-    };
+    const translatedToAsset = Object.fromEntries(
+      getBalanceSourceEntries().map((entry) => [entry.label, entry.assetKey])
+    );
     return { translatedToAsset, assetToDbKey: ASSET_TO_DB_KEY };
   };
 
@@ -740,18 +816,16 @@ export default function InsertValue({
 
     if (!isPastMonthDate(isoDate)) {
       // Current month path — use in-memory values + createBalancesJson.
-      const currentMap = {
-        bank: bankValue, cash: cashValue, digitalServices: digitalServicesValue,
-        emergencyFund: emergencyFundValue, stocks: stocksValue, etf: etfValue,
-        bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
-        funds: fundsValue, gold: goldValue,
-      };
-      const currentVal = parseFloat(currentMap[assetKey]) || 0;
+      const currentVal = parseFloat(options[balanceSource]?.[0]) || 0;
       const newVal = currentVal + deltaEUR;
       const balancesJson = createBalancesJson(currentDate, balanceSource, newVal);
       try {
         const res = await financeService.addBalance(balancesJson);
-        return res?.status === 200;
+        if (res?.status === 200) {
+          await applyCurrentDetailSourceDelta(balanceSource, deltaEUR);
+          return true;
+        }
+        return false;
       } catch { return false; }
     }
 
@@ -806,19 +880,23 @@ export default function InsertValue({
     });
   };
 
-  const options = {
-    [translations.assets.bank]: [bankValue, setBankValue],
-    [translations.assets.cash]: [cashValue, setCashValue],
-    [translations.assets.digitalServices]: [digitalServicesValue, setDigitalServicesValue],
-    [translations.assets.emergencyFund]: [emergencyFundValue, setEmergencyFundValue],
-    [translations.assets.stocks]: [stocksValue, setStocksValue],
-    [translations.assets.etf]: [etfValue, setETFValue],
-    [translations.assets.bitcoin]: [bitcoinValue, setBitcoinValue],
-    [translations.assets.crypto]: [cryptoValue, setCryptoValue],
-    [translations.assets.bonds]: [bondsValue, setBondsValue],
-    [translations.assets.funds]: [fundsValue, setFundsValue],
-    [translations.assets.gold]: [goldValue, setGoldValue],
+  const balanceSourceValueMap = {
+    bank: [bankValue, setBankValue],
+    cash: [cashValue, setCashValue],
+    digitalServices: [digitalServicesValue, setDigitalServicesValue],
+    emergencyFund: [emergencyFundValue, setEmergencyFundValue],
+    stocks: [stocksValue, setStocksValue],
+    etf: [etfValue, setETFValue],
+    bitcoin: [bitcoinValue, setBitcoinValue],
+    crypto: [cryptoValue, setCryptoValue],
+    bonds: [bondsValue, setBondsValue],
+    funds: [fundsValue, setFundsValue],
+    gold: [goldValue, setGoldValue],
   };
+
+  const options = Object.fromEntries(
+    getBalanceSourceEntries().map((entry) => [entry.label, balanceSourceValueMap[entry.assetKey]])
+  );
 
   const fetchData = async () => {
     if (userData) {
@@ -1129,24 +1207,18 @@ export default function InsertValue({
         try {
           // Build a single balance update with all source changes applied
           const overrides = {};
-          const balanceOptionsMap = {
-            [translations.assets.bank]: bankValue,
-            [translations.assets.cash]: cashValue,
-            [translations.assets.digitalServices]: digitalServicesValue,
-            [translations.assets.stocks]: stocksValue,
-            [translations.assets.etf]: etfValue,
-            [translations.assets.bitcoin]: bitcoinValue,
-            [translations.assets.crypto]: cryptoValue,
-            [translations.assets.bonds]: bondsValue,
-            [translations.assets.funds]: fundsValue,
-            [translations.assets.gold]: goldValue,
-          };
           for (const [source, totalAmount] of sources) {
-            const currentVal = parseFloat(balanceOptionsMap[source]);
-            overrides[source] = currentVal - toEUR(totalAmount);
+            const deltaEUR = -toEUR(totalAmount);
+            const currentVal = parseFloat(options[source]?.[0]) || 0;
+            overrides[source] = currentVal + deltaEUR;
           }
           const balancesJson = createBalancesJsonMulti(currentDate, overrides);
-          await financeService.addBalance(balancesJson);
+          const balanceRes = await financeService.addBalance(balancesJson);
+          if (balanceRes?.status === 200) {
+            for (const [source, totalAmount] of sources) {
+              await applyCurrentDetailSourceDelta(source, -toEUR(totalAmount));
+            }
+          }
         } catch {
           // Balance update failed but outflows were inserted — don't block
         }
@@ -1236,24 +1308,18 @@ export default function InsertValue({
       if (sources.length > 0) {
         try {
           const overrides = {};
-          const balanceOptionsMap = {
-            [translations.assets.bank]: bankValue,
-            [translations.assets.cash]: cashValue,
-            [translations.assets.digitalServices]: digitalServicesValue,
-            [translations.assets.stocks]: stocksValue,
-            [translations.assets.etf]: etfValue,
-            [translations.assets.bitcoin]: bitcoinValue,
-            [translations.assets.crypto]: cryptoValue,
-            [translations.assets.bonds]: bondsValue,
-            [translations.assets.funds]: fundsValue,
-            [translations.assets.gold]: goldValue,
-          };
           for (const [source, totalAmount] of sources) {
-            const currentVal = parseFloat(balanceOptionsMap[source]);
-            overrides[source] = currentVal + toEUR(totalAmount); // ADD for incomes
+            const deltaEUR = toEUR(totalAmount);
+            const currentVal = parseFloat(options[source]?.[0]) || 0;
+            overrides[source] = currentVal + deltaEUR;
           }
           const balancesJson = createBalancesJsonMulti(currentDate, overrides);
-          await financeService.addBalance(balancesJson);
+          const balanceRes = await financeService.addBalance(balancesJson);
+          if (balanceRes?.status === 200) {
+            for (const [source, totalAmount] of sources) {
+              await applyCurrentDetailSourceDelta(source, toEUR(totalAmount));
+            }
+          }
         } catch {
           // Balance update failed but incomes were inserted
         }
@@ -1548,18 +1614,6 @@ export default function InsertValue({
     }
     try {
       const inExAdd = await financeService.addExpenseOrIncome(inExJson);
-      const balanceOptionsMap = {
-        [translations.assets.bank]: bankValue,
-        [translations.assets.cash]: cashValue,
-        [translations.assets.digitalServices]: digitalServicesValue,
-        [translations.assets.stocks]: stocksValue,
-        [translations.assets.etf]: etfValue,
-        [translations.assets.bitcoin]: bitcoinValue,
-        [translations.assets.crypto]: cryptoValue,
-        [translations.assets.bonds]: bondsValue,
-        [translations.assets.funds]: fundsValue,
-        [translations.assets.gold]: goldValue,
-      };
       if (inExAdd.status === 200) {
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
@@ -1581,7 +1635,7 @@ export default function InsertValue({
         }
         
         if (selectedOption !== "") {
-          const valueBalanceSelected = parseFloat(balanceOptionsMap[selectedOption]);
+          const valueBalanceSelected = parseFloat(options[selectedOption]?.[0]) || 0;
           const outflowNumber = toEUR(parseFloat(originalOutflowAmount) || 0);
           const incomeNumber = toEUR(parseFloat(originalIncomeAmount) || 0);
           const txDate = isOutflow ? outflowDate : incomeDate;
@@ -1620,6 +1674,7 @@ export default function InsertValue({
             const balancesChange = await financeService.addBalance(balancesJson);
 
             if (balancesChange.status === 200) {
+              await applyCurrentDetailSourceDelta(selectedOption, isOutflow ? -outflowNumber : incomeNumber);
               handleSetIsUpdated(false);
               setBalanceDate({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
               setUpdateInExBalanceSuccess(true);
@@ -1683,23 +1738,14 @@ export default function InsertValue({
             );
           } else {
             // Current-month path (unchanged)
-            const balanceOptions = {
-              [translations.assets.bank]: bankValue,
-              [translations.assets.cash]: cashValue,
-              [translations.assets.digitalServices]: digitalServicesValue,
-              [translations.assets.stocks]: stocksValue,
-              [translations.assets.etf]: etfValue,
-              [translations.assets.bitcoin]: bitcoinValue,
-              [translations.assets.crypto]: cryptoValue,
-              [translations.assets.bonds]: bondsValue,
-              [translations.assets.funds]: fundsValue,
-              [translations.assets.gold]: goldValue,
-            };
-            const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-            const incomeNumber = parseFloat(deleteIncomeAmount);
+            const valueBalanceSelected = parseFloat(options[selectedOption]?.[0]) || 0;
+            const incomeNumber = toEUR(parseFloat(deleteIncomeAmount) || 0);
             const newValue = valueBalanceSelected - incomeNumber;
             const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-            await financeService.addBalance(balancesJson);
+            const balanceRes = await financeService.addBalance(balancesJson);
+            if (balanceRes?.status === 200) {
+              await applyCurrentDetailSourceDelta(selectedOption, -incomeNumber);
+            }
           }
         }
         handleSetIsUpdated(false);
@@ -1749,23 +1795,14 @@ export default function InsertValue({
             );
           } else {
             // Current-month path (unchanged)
-            const balanceOptions = {
-              [translations.assets.bank]: bankValue,
-              [translations.assets.cash]: cashValue,
-              [translations.assets.digitalServices]: digitalServicesValue,
-              [translations.assets.stocks]: stocksValue,
-              [translations.assets.etf]: etfValue,
-              [translations.assets.bitcoin]: bitcoinValue,
-              [translations.assets.crypto]: cryptoValue,
-              [translations.assets.bonds]: bondsValue,
-              [translations.assets.funds]: fundsValue,
-              [translations.assets.gold]: goldValue,
-            };
-            const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
-            const outflowNumber = parseFloat(deleteOutflowAmount);
+            const valueBalanceSelected = parseFloat(options[selectedOption]?.[0]) || 0;
+            const outflowNumber = toEUR(parseFloat(deleteOutflowAmount) || 0);
             const newValue = valueBalanceSelected + outflowNumber;
             const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
-            await financeService.addBalance(balancesJson);
+            const balanceRes = await financeService.addBalance(balancesJson);
+            if (balanceRes?.status === 200) {
+              await applyCurrentDetailSourceDelta(selectedOption, outflowNumber);
+            }
           }
         }
         handleSetIsUpdated(false);

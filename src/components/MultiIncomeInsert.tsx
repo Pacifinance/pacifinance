@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash, faCopy, faPaperPlane, faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, faCopy, faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { getMuiSelectMenuProps } from './ThemedSelect';
@@ -12,7 +12,7 @@ import {
   RowGrid, RowFieldFull, FieldLabel, FieldInput, CurrencyWrap,
   CurrencySymbolSpan, CurrencyFieldInput, NoteInput,
   ActionBar, AddButton, DuplicateButton,
-  CountBadge, SubmitButton, ProgressBar, getSelectSx, InfoHint,
+  CountBadge, SubmitButton, ProgressBar, getSelectSx,
 } from './multiInsert/SharedStyles';
 import { handleAmountInput, formatAmountBlur, groupAmountsByBalanceSource } from './multiInsert/helpers';
 
@@ -215,21 +215,12 @@ export default function MultiIncomeInsert({
 
                 {/* Balance source per-row */}
                 {hasBalanceOptions && (() => {
-                  const rowDate = new Date(row.date);
-                  const now = new Date();
-                  const isPastMonth = rowDate.getMonth() !== now.getMonth() || rowDate.getFullYear() !== now.getFullYear();
                   return (
                     <div>
                       <FieldLabel theme={theme}>
                         {translations.insert.incomeSection.increaseWhichBalance || 'Add to'}
                       </FieldLabel>
-                      {isPastMonth ? (
-                        <InfoHint theme={theme}>
-                          <FontAwesomeIcon icon={faInfoCircle} />
-                          {t.pastMonthNoBalance}
-                        </InfoHint>
-                      ) : (
-                        <Select
+                                              <Select
                           value={row.balanceSource}
                           onChange={(e) => updateRow(row.id, 'balanceSource', e.target.value)}
                           sx={selectSx}
@@ -250,7 +241,6 @@ export default function MultiIncomeInsert({
                             <MenuItem key={option} value={option}>{option}</MenuItem>
                           ))}
                         </Select>
-                      )}
                     </div>
                   );
                 })()}

@@ -482,14 +482,14 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        gap: '0.75rem',
+        gap: isMobile ? '0.35rem' : '0.75rem',
         width: '100%',
-        padding: isMobile ? '0 0.25rem' : '0 0.5rem',
-        marginBottom: '0.75rem',
+        padding: isMobile ? '0' : '0 0.5rem',
+        marginBottom: isMobile ? '0.45rem' : '0.75rem',
         flexWrap: 'wrap'
       }}>
       {/* Time Period Selector */}
-      <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap' }}>
+      <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap', gap: isMobile ? '0.2rem' : undefined, flex: '1 1 auto', minWidth: 0 }}>
         {['3m', '6m', '1y', '2y', 'all'].map((period) => {
           const isActive = selectedPeriod === period;
           const isBusy = period === 'all' && isLoadingFullHistory;
@@ -499,7 +499,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
               key={period}
               onClick={() => handlePeriodSelect(period)}
               disabled={isBusy}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+              className={`font-medium rounded-md transition-all duration-200 ${
                 isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
               }`}
               style={{
@@ -521,7 +521,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
         })}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', fontSize: '0.75rem', color: theme.textColor }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.68rem' : '0.75rem', color: theme.textColor, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-between' : 'flex-start' }}>
         <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
         <input
           type="month"
@@ -532,7 +532,11 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
           style={{
             border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
             borderRadius: 8,
-            padding: '0.34rem 0.45rem',
+            padding: isMobile ? '0.25rem 0.3rem' : '0.34rem 0.45rem',
+            fontSize: isMobile ? '0.72rem' : undefined,
+            minWidth: 0,
+            flex: isMobile ? '1 1 0' : undefined,
+            maxWidth: isMobile ? '8rem' : undefined,
             background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
             color: theme.textColor,
             colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
@@ -548,7 +552,11 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
           style={{
             border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
             borderRadius: 8,
-            padding: '0.34rem 0.45rem',
+            padding: isMobile ? '0.25rem 0.3rem' : '0.34rem 0.45rem',
+            fontSize: isMobile ? '0.72rem' : undefined,
+            minWidth: 0,
+            flex: isMobile ? '1 1 0' : undefined,
+            maxWidth: isMobile ? '8rem' : undefined,
             background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
             color: theme.textColor,
             colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
@@ -557,16 +565,18 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       </div>
 
       {/* Export buttons */}
-      <div className="flex gap-1 z-10">
+      <div className="flex gap-1 z-10" style={{ flexShrink: 0, gap: isMobile ? '0.25rem' : undefined }}>
         <CSVLink
           data={data}
           headers={headers}
           filename={`distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
-          className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+          className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
           style={{
             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
             borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-            backdropFilter: 'blur(10px)'
+            backdropFilter: 'blur(10px)',
+            width: isMobile ? 30 : 40,
+            height: isMobile ? 30 : 40
           }}
         >
           <BsFiletypeCsv className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
@@ -574,11 +584,13 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
         <button
           onClick={async () => await downloadExcel(data, headers, `distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-          className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg border transition-all duration-200 hover:scale-105"
+          className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
           style={{
             backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
             borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-            backdropFilter: 'blur(10px)'
+            backdropFilter: 'blur(10px)',
+            width: isMobile ? 30 : 40,
+            height: isMobile ? 30 : 40
           }}
         >
           <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />

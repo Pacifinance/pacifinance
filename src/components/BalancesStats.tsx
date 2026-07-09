@@ -5,6 +5,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { assetIcons } from '../data/assetIcons';
 import { assetColors } from '../data/assetColors';
+import { useDemoServices } from '../hooks/useDemoServices';
 import { 
   getStocksValue, getEtfValue, getBankValue, getCashValue, getCryptoValue, 
   getBitcoinValue, getDigitalServicesValue, getBondsValue, getFundsValue, 
@@ -156,7 +157,7 @@ const ComparisonTable = styled.div`
 
 const TableHeader = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1.2fr 0.8fr 1fr 1fr;
   padding: 0.4rem 0.75rem;
   background: ${p => p.theme.mode === 'dark'
     ? 'rgba(255, 255, 255, 0.02)'
@@ -187,7 +188,7 @@ const TableHeaderCell = styled.div`
 
 const ComparisonRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1.2fr 0.8fr 1fr 1fr;
   padding: 0.5rem 0.75rem;
   align-items: center;
   transition: background 0.15s ease;
@@ -223,6 +224,63 @@ const MetricName = styled.div`
     font-size: 0.78rem;
     gap: 0.25rem;
   }
+`;
+
+
+const ValueCell = styled.div`
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.08rem;
+  min-width: 0;
+`;
+
+const CurrentAmount = styled.span`
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: ${p => p.theme.textColor};
+
+  @media (max-width: 768px) {
+    font-size: 0.72rem;
+  }
+`;
+
+const CurrentPercent = styled.span`
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.42)' : 'rgba(0,0,0,0.38)'};
+
+  @media (max-width: 768px) {
+    font-size: 0.58rem;
+  }
+`;
+
+const DetailRow = styled(ComparisonRow)`
+  padding-top: 0.38rem;
+  padding-bottom: 0.38rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.01)'};
+`;
+
+const DetailName = styled(MetricName)`
+  padding-left: 1.4rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.62)'};
+
+  @media (max-width: 768px) {
+    padding-left: 0.7rem;
+    font-size: 0.7rem;
+  }
+`;
+
+const DetailMarker = styled.span`
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: ${p => p.$color};
+  flex-shrink: 0;
+  opacity: 0.85;
 `;
 
 const AssetIcon = styled.span`
@@ -306,11 +364,14 @@ function isPositiveVal(current, previous) {
 function BalancesStats({ theme, userData, isHidden }) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
+    const { investmentService, liquidityAccountService } = useDemoServices();
     const fmt = (val) => formatAmount(val, { maximumFractionDigits: 0 });
 
     const [current, setCurrent] = useState({});
     const [prevMonth, setPrevMonth] = useState({});
     const [prevYear, setPrevYear] = useState({});
+    const [investmentHoldings, setInvestmentHoldings] = useState([]);
+    const [liquidityAccounts, setLiquidityAccounts] = useState([]);
 
     useEffect(() => {
         if (!userData) return;
@@ -362,6 +423,62 @@ function BalancesStats({ theme, userData, isHidden }) {
         }
     }, [userData]);
 
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadDetailedAssets = async () => {
+            try {
+                const [holdings, accounts] = await Promise.all([
+                    investmentService.getHoldings(),
+                    liquidityAccountService.getAccounts(),
+                ]);
+
+                if (!cancelled) {
+                    setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
+                    setLiquidityAccounts(Array.isArray(accounts) ? accounts : []);
+                }
+            } catch (error) {
+                console.error('Error loading detailed balance assets:', error);
+            }
+        };
+
+        loadDetailedAssets();
+        return () => { cancelled = true; };
+    }, [investmentService, liquidityAccountService]);
+
+    const getHoldingValue = (holding) => Number(holding?.currentValue ?? holding?.investedAmount ?? 0) || 0;
+    const getHoldingLabel = (holding) => holding?.instrument?.symbol || holding?.instrument?.name || holding?.notes || ('Holding #' + holding?.id);
+
+    const detailRowsByAsset = useMemo(() => {
+        const grouped = {};
+        const pushRow = (assetKey, row) => {
+            if (!assetKey || !row.value) return;
+            grouped[assetKey] = grouped[assetKey] || [];
+            grouped[assetKey].push(row);
+        };
+
+        liquidityAccounts.forEach((account) => {
+            const value = Number(account?.currentValue ?? 0) || 0;
+            pushRow(account?.assetKey, {
+                id: 'account-' + account?.id,
+                label: account?.label || translations.assets?.[account?.assetKey] || 'Account',
+                value,
+            });
+        });
+
+        investmentHoldings.forEach((holding) => {
+            const value = getHoldingValue(holding);
+            pushRow(holding?.assetKey, {
+                id: 'holding-' + holding?.id,
+                label: getHoldingLabel(holding),
+                value,
+            });
+        });
+
+        Object.values(grouped).forEach((rows) => rows.sort((a, b) => b.value - a.value));
+        return grouped;
+    }, [investmentHoldings, liquidityAccounts, translations.assets]);
+
     // Asset configuration
     const assetsConfig = [
         { key: 'bank', icon: assetIcons.bank, color: assetColors.bank.primary, label: translations.assets.bank },
@@ -379,7 +496,7 @@ function BalancesStats({ theme, userData, isHidden }) {
 
     // Only show assets with non-zero values
     const visibleAssets = assetsConfig.filter(a =>
-        (current[a.key] || 0) !== 0 || (prevMonth[a.key] || 0) !== 0 || (prevYear[a.key] || 0) !== 0
+        (current[a.key] || 0) !== 0 || (prevMonth[a.key] || 0) !== 0 || (prevYear[a.key] || 0) !== 0 || (detailRowsByAsset[a.key]?.length || 0) > 0
     );
 
     // Period labels
@@ -430,6 +547,16 @@ function BalancesStats({ theme, userData, isHidden }) {
                     {isHidden ? '••••' : formattedPct}
                 </ChangePercent>
             </ChangeCell>
+        );
+    };
+
+    const renderCurrentValue = (value) => {
+        const pct = totalCurrent ? ((value / totalCurrent) * 100).toFixed(1) : '0.0';
+        return (
+            <ValueCell>
+                <CurrentAmount theme={theme}>{isHidden ? '****' : fmt(value)}</CurrentAmount>
+                <CurrentPercent theme={theme}>{isHidden ? '****' : (pct + '%')}</CurrentPercent>
+            </ValueCell>
         );
     };
 
@@ -490,6 +617,9 @@ function BalancesStats({ theme, userData, isHidden }) {
                 <TableHeader theme={theme}>
                     <TableHeaderCell theme={theme}>{tStats.asset || 'Asset'}</TableHeaderCell>
                     <TableHeaderCell theme={theme} $align="right">
+                        {tGeneral.value || 'Valore'}
+                    </TableHeaderCell>
+                    <TableHeaderCell theme={theme} $align="right">
                         {periodLabels.month}
                     </TableHeaderCell>
                     <TableHeaderCell theme={theme} $align="right">
@@ -503,17 +633,33 @@ function BalancesStats({ theme, userData, isHidden }) {
                     const pm = prevMonth[asset.key] || 0;
                     const py = prevYear[asset.key] || 0;
 
+                    const detailRows = detailRowsByAsset[asset.key] || [];
+
                     return (
-                        <ComparisonRow key={asset.key} theme={theme}>
-                            <MetricName theme={theme}>
-                                <AssetIcon $color={asset.color}>
-                                    <IconComponent />
-                                </AssetIcon>
-                                {asset.label}
-                            </MetricName>
-                            {renderChange(cur, pm)}
-                            {renderChange(cur, py)}
-                        </ComparisonRow>
+                        <React.Fragment key={asset.key}>
+                            <ComparisonRow theme={theme}>
+                                <MetricName theme={theme}>
+                                    <AssetIcon $color={asset.color}>
+                                        <IconComponent />
+                                    </AssetIcon>
+                                    {asset.label}
+                                </MetricName>
+                                {renderCurrentValue(cur)}
+                                {renderChange(cur, pm)}
+                                {renderChange(cur, py)}
+                            </ComparisonRow>
+                            {detailRows.map((detail) => (
+                                <DetailRow key={detail.id} theme={theme}>
+                                    <DetailName theme={theme}>
+                                        <DetailMarker $color={asset.color} />
+                                        {detail.label}
+                                    </DetailName>
+                                    {renderCurrentValue(detail.value)}
+                                    <ChangeCell />
+                                    <ChangeCell />
+                                </DetailRow>
+                            ))}
+                        </React.Fragment>
                     );
                 })}
             </ComparisonTable>

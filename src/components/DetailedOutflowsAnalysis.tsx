@@ -16,7 +16,7 @@ import {
   PieChart
 } from 'lucide-react';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
-import { getAllOutflows, getTotalOutflowsCategoryBreakdownPerMonth } from '../utils/userDataSelectors';
+import { getAllOutflows, getAllIncomes, getTotalOutflowsCategoryBreakdownPerMonth, getTotalIncomesCategoryBreakdownPerMonth } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { translateTag, resolveTagKeyFromLocalized } from '../data/tagTranslations';
@@ -315,6 +315,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   const { formatAmount } = useContext(CurrencyContext);
   const t = translations.graphs.statsOutflows.outflowAnalysis;
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
+  const [selectedFlow, setSelectedFlow] = useState('expense');
   const [showCategories, setShowCategories] = useState(true);
   const [showPayments, setShowPayments] = useState(false);
   const [showRecurringMonth, setShowRecurringMonth] = useState(false);
@@ -334,13 +335,16 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   }, [language, t]);
 
   const analysis = useMemo(() => {
-    const allOutflows = getAllOutflows(userData);
-    const catPerMonth = getTotalOutflowsCategoryBreakdownPerMonth(userData);
-    if (!allOutflows || allOutflows.length === 0 || !catPerMonth) return null;
+    const isIncomeFlow = selectedFlow === 'income';
+    const allEntries = isIncomeFlow ? getAllIncomes(userData) : getAllOutflows(userData);
+    const catPerMonth = isIncomeFlow
+      ? getTotalIncomesCategoryBreakdownPerMonth(userData)
+      : getTotalOutflowsCategoryBreakdownPerMonth(userData);
+    if (!allEntries || allEntries.length === 0 || !catPerMonth) return null;
 
-    const current = allOutflows[selectedMonthIndex] || [];
-    const previous = allOutflows[selectedMonthIndex + 1] || [];
-    const last12 = allOutflows.slice(0, 12) || [];
+    const current = allEntries[selectedMonthIndex] || [];
+    const previous = allEntries[selectedMonthIndex + 1] || [];
+    const last12 = allEntries.slice(0, 12) || [];
 
     const currentTotal = current.reduce((s, e) => s + e.amount, 0);
     const previousTotal = previous.reduce((s, e) => s + e.amount, 0);
@@ -364,7 +368,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       avg12 = months > 0 ? avg12 / months : 0;
       const mChange = prevAmt > 0 ? ((amount - prevAmt) / prevAmt) * 100 : 0;
       const txCount = current.filter(o => {
-        const name = translateTag(o.categoryTag?.label, 'en', 'expense') || o.categoryTag?.label || 'Other';
+        const name = translateTag(o.categoryTag?.label, 'en', selectedFlow) || o.categoryTag?.label || 'Other';
         return name === cat;
       }).length;
       cats[cat] = { amount, prevAmt, avg12, mChange, txCount, subcategories: categoryData?.subcategories || {} };
@@ -401,7 +405,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
         return eCatKey === catKey && ePtKey === ptKey && (notesMatch || !notes) && Math.abs((e.amount || 0) - amt) < 20;
       });
       if (similar.length >= 3) {
-        const cat = translateTag(o.categoryTag?.label, language, 'expense') || o.categoryTag?.label || 'Other';
+        const cat = translateTag(o.categoryTag?.label, language, selectedFlow) || o.categoryTag?.label || 'Other';
         const pt = translateTag(o.paymentType?.label, language, 'payment') || o.paymentType?.label || 'Unknown';
         if (!recurring.find(r => r.catKey === catKey && r.ptKey === ptKey && r.notes === notes)) {
           recurring.push({ category: cat, catKey, amount: amt, frequency: similar.length, paymentType: pt, ptKey, notes, isSub: ptKey === 'subscription' });
@@ -415,7 +419,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       payments,
       recurring: recurring.sort((a, b) => b.amount - a.amount)
     };
-  }, [userData, selectedMonthIndex, language]);
+  }, [userData, selectedMonthIndex, language, selectedFlow]);
 
   const recurring12M = useMemo(() => {
     const allOutflows = getAllOutflows(userData);
@@ -430,7 +434,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       const key = `${catKey}-${ptKey}-${notes}`;
       if (!map.has(key)) {
         map.set(key, {
-          category: translateTag(o.categoryTag?.label, language, 'expense') || o.categoryTag?.label || 'Other',
+          category: translateTag(o.categoryTag?.label, language, selectedFlow) || o.categoryTag?.label || 'Other',
           catKey,
           paymentType: translateTag(o.paymentType?.label, language, 'payment') || o.paymentType?.label || 'Unknown',
           amounts: [], frequency: 0, isSub: ptKey === 'subscription', notes
@@ -475,7 +479,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   const sortedCats = Object.entries(categories).filter(([c, d]) => c && d && typeof d === 'object').sort((a, b) => b[1].amount - a[1].amount);
   const sortedPayments = Object.entries(payments).filter(([k, d]) => k && d).sort((a, b) => b[1].total - a[1].total);
 
-  const overviewTrendPositive = overview.monthlyChange <= -5;
+  const overviewTrendPositive = selectedFlow === 'income' ? overview.monthlyChange >= 5 : overview.monthlyChange <= -5;
   const overviewTrendNeutral = Math.abs(overview.monthlyChange) < 5;
 
   return (
@@ -484,6 +488,40 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
         <Title theme={theme}><BarChart3 />{t.title}</Title>
         <Subtitle theme={theme}>{t.subtitle}</Subtitle>
       </Header>
+
+
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 6,
+        padding: '0.6rem 1rem 0',
+      }}>
+        {[
+          { key: 'expense', label: translations.general.outflows || (language === 'it' ? 'Uscite' : 'Outflows') },
+          { key: 'income', label: translations.general.incomes || (language === 'it' ? 'Entrate' : 'Incomes') },
+        ].map((flow) => {
+          const active = selectedFlow === flow.key;
+          return (
+            <button
+              key={flow.key}
+              type="button"
+              onClick={() => setSelectedFlow(flow.key)}
+              style={{
+                border: '1px solid ' + (active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)')),
+                borderRadius: 999,
+                padding: '0.32rem 0.7rem',
+                cursor: 'pointer',
+                fontSize: '0.76rem',
+                fontWeight: 700,
+                background: active ? theme.buttonBackgroundColor : 'transparent',
+                color: active ? '#fff' : theme.textColor,
+              }}
+            >
+              {flow.label}
+            </button>
+          );
+        })}
+      </div>
 
       <MonthSelect theme={theme}>
         <select value={selectedMonthIndex} onChange={e => setSelectedMonthIndex(Number(e.target.value))}>
@@ -533,8 +571,8 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
           </CatHeaderRow>
           {sortedCats.map(([cat, data]) => {
             const pct = overview.currentTotal > 0 ? (data.amount / overview.currentTotal * 100) : 0;
-            const dbKey = resolveTagKeyFromLocalized(cat, null, 'expense') || cat;
-            const displayName = translateTag(dbKey, language, 'expense') || cat;
+            const dbKey = resolveTagKeyFromLocalized(cat, null, selectedFlow) || cat;
+            const displayName = translateTag(dbKey, language, selectedFlow) || cat;
             const color = getCategoryColor(dbKey);
             const avgChange = data.avg12 > 0 ? ((data.amount - data.avg12) / data.avg12 * 100) : 0;
             return (

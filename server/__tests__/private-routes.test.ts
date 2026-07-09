@@ -135,4 +135,61 @@ describe("private backend routes", () => {
             null
         )
     })
+
+    it("loads dashboard expenses with one batched monthly query", async () => {
+        mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue([[{amount: 10}]])
+
+        const response = await request(app, "/api/expenses/get", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([[{amount: 10}]])
+        expect(mockDb.expenses.getRecentMonthlyExpensesByUserId).toHaveBeenCalledWith("user-uuid", 13)
+        expect(mockDb.expenses.getMonthlyExpensesByUserId).not.toHaveBeenCalled()
+    })
+
+    it("renames custom categories without changing their parent category", async () => {
+        const response = await request(app, "/api/categories/rename", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {id: 1, label: " Groceries "}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({id: 1, parentIndex: 0, parentType: 0, label: "Renamed"})
+        expect(mockDb.categories.renameById).toHaveBeenCalledWith("user-uuid", 1, "Groceries")
+    })
+
+    it("returns all rankings through one aggregate route", async () => {
+        mockDb.balances.getRankingPool
+            .mockResolvedValueOnce([{userId: "other", total: 50}, {userId: "user-uuid", total: 100}])
+            .mockResolvedValueOnce([{userId: "user-uuid", total: 100}])
+        mockDb.expenses.getExpenseRankingPool
+            .mockResolvedValueOnce([{userId: "user-uuid", total: 200}, {userId: "other", total: 100}])
+            .mockResolvedValueOnce([{userId: "user-uuid", total: 200}])
+            .mockResolvedValueOnce([{userId: "other", total: 100}, {userId: "user-uuid", total: 200}])
+            .mockResolvedValueOnce([{userId: "user-uuid", total: 200}])
+
+        const response = await request(app, "/api/rank/get", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({
+            balance: 50,
+            incomes: 50,
+            outflows: 50,
+            balanceSimilar: 100,
+            incomesSimilar: 100,
+            outflowsSimilar: 0
+        })
+        expect(mockDb.users.getTypeOfUserId).toHaveBeenCalledTimes(1)
+        expect(mockDb.balances.getRankingPool).toHaveBeenCalledTimes(2)
+        expect(mockDb.expenses.getExpenseRankingPool).toHaveBeenCalledTimes(4)
+    })
 })

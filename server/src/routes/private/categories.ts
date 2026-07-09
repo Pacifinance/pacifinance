@@ -40,6 +40,23 @@ categoriesRouter.post("/add", async (req, res) => {
     res.status(200).json(category)
 })
 
+categoriesRouter.post("/rename", async (req, res) => {
+    const category_id = Number(req.body.id)
+    const label = common.sanitizeInput(req.body.label)
+    if (!Number.isFinite(category_id) || label === "")
+    {
+        res.status(400).send()
+        return
+    }
+    const category = await db.categories.renameById(req.userId as string, category_id, label)
+    if (category === null)
+    {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(category)
+})
+
 categoriesRouter.post("/delete", async (req, res) => {
     const category_id = Number(req.body.id)
     if (!Number.isFinite(category_id))

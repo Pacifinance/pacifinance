@@ -1,7 +1,7 @@
 /**
  * Tests for rankingService — dependency-injected ranking API layer.
  *
- * Validates that all 6 ranking calls are made in parallel and results
+ * Validates that rankings are loaded through the aggregated endpoint and
  * are properly extracted and defaulted on failure.
  */
 
@@ -22,18 +22,20 @@ describe('rankingService', () => {
   });
 
   describe('getAllRankings', () => {
-    it('should make 6 parallel calls and return positions', async () => {
-      mockClient.post
-        .mockResolvedValueOnce({ data: { position: 75 } })   // balance
-        .mockResolvedValueOnce({ data: { position: 60 } })   // incomes
-        .mockResolvedValueOnce({ data: { position: 40 } })   // outflows
-        .mockResolvedValueOnce({ data: { position: 80 } })   // balanceSimilar
-        .mockResolvedValueOnce({ data: { position: 55 } })   // incomesSimilar
-        .mockResolvedValueOnce({ data: { position: 35 } });  // outflowsSimilar
+    it('should make one aggregated call and return positions', async () => {
+      mockClient.post.mockResolvedValue({ data: {
+        balance: 75,
+        incomes: 60,
+        outflows: 40,
+        balanceSimilar: 80,
+        incomesSimilar: 55,
+        outflowsSimilar: 35,
+      } });
 
       const result = await service.getAllRankings();
 
-      expect(mockClient.post).toHaveBeenCalledTimes(6);
+      expect(mockClient.post).toHaveBeenCalledTimes(1);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/get', {});
       expect(result).toEqual({
         balance: 75,
         incomes: 60,
@@ -44,21 +46,16 @@ describe('rankingService', () => {
       });
     });
 
-    it('should call correct endpoints with correct params', async () => {
+    it('should call the aggregated endpoint with an empty body', async () => {
       mockClient.post.mockResolvedValue({ data: { position: 50 } });
 
       await service.getAllRankings();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/balances', {});
-      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: false });
-      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: true });
-      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/balances', { similar: true });
-      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: false, similar: true });
-      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/expenses', { expenses: true, similar: true });
+      expect(mockClient.post).toHaveBeenCalledWith('/api/rank/get', {});
     });
 
-    it('should default to 0 when position is null', async () => {
-      mockClient.post.mockResolvedValue({ data: { position: null } });
+    it('should default to 0 when values are null', async () => {
+      mockClient.post.mockResolvedValue({ data: { balance: null } });
 
       const result = await service.getAllRankings();
 
@@ -88,13 +85,12 @@ describe('rankingService', () => {
     });
 
     it('should default partial failures to 0', async () => {
-      mockClient.post
-        .mockResolvedValueOnce({ data: { position: 90 } })
-        .mockResolvedValueOnce({ data: {} })                  // no position key
-        .mockResolvedValueOnce({ data: { position: undefined } })
-        .mockResolvedValueOnce({ data: { position: 70 } })
-        .mockResolvedValueOnce({ data: null })
-        .mockResolvedValueOnce({ data: { position: 30 } });
+      mockClient.post.mockResolvedValue({ data: {
+        balance: 90,
+        outflows: undefined,
+        balanceSimilar: 70,
+        outflowsSimilar: 30,
+      } });
 
       const result = await service.getAllRankings();
 

@@ -111,6 +111,7 @@ const createMockServices = (overrides = {}) => {
       addExpenseOrIncome: vi.fn(),
       deleteExpenseOrIncome: vi.fn(),
       addCustomCategory: vi.fn(),
+      renameCustomCategory: vi.fn(),
       deleteCustomCategory: vi.fn(),
       ...overrides.financeService,
     },
@@ -209,11 +210,14 @@ describe('UserContext — Critical State Transitions', () => {
     });
 
     expect(services.userService.getTags).toHaveBeenCalled();
-    expect(services.userService.getUserInfo).toHaveBeenCalled();
+    expect(services.userService.getUserInfo).not.toHaveBeenCalled();
     expect(services.financeService.getBalances).toHaveBeenCalled();
     expect(services.financeService.getExpensesAndIncomes).toHaveBeenCalled();
-    expect(services.rankingService.getAllRankings).toHaveBeenCalled();
-    expect(services.statsService.getAverages).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(services.rankingService.getAllRankings).toHaveBeenCalled();
+      expect(services.statsService.getAverages).toHaveBeenCalled();
+    });
   });
 
   it('should set error when data fetch fails', async () => {

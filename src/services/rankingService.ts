@@ -4,11 +4,6 @@
  * @module services/rankingService
  */
 import type { AxiosInstance } from 'axios';
-import type {
-  RankBalancesRequest,
-  RankExpensesRequest,
-  RankResponse,
-} from '../types/api';
 
 export interface RankingSnapshot {
   balance: number;
@@ -36,34 +31,16 @@ export const createRankingService = (apiClient: AxiosInstance): RankingService =
     };
 
     try {
-      const asBalances = (body: RankBalancesRequest) =>
-        apiClient.post<RankResponse>('/api/rank/balances', body);
-      const asExpenses = (body: RankExpensesRequest) =>
-        apiClient.post<RankResponse>('/api/rank/expenses', body);
-
-      const [
-        rankBalance,
-        rankIncome,
-        rankExpense,
-        rankBalanceSimilar,
-        rankIncomeSimilar,
-        rankExpenseSimilar,
-      ] = await Promise.all([
-        asBalances({}),
-        asExpenses({ expenses: false }),
-        asExpenses({ expenses: true }),
-        asBalances({ similar: true }),
-        asExpenses({ expenses: false, similar: true }),
-        asExpenses({ expenses: true, similar: true }),
-      ]);
+      const res = await apiClient.post<Partial<RankingSnapshot>>('/api/rank/get', {});
+      const data = res.data || {};
 
       return {
-        balance: rankBalance?.data?.position ?? 0,
-        incomes: rankIncome?.data?.position ?? 0,
-        outflows: rankExpense?.data?.position ?? 0,
-        balanceSimilar: rankBalanceSimilar?.data?.position ?? 0,
-        incomesSimilar: rankIncomeSimilar?.data?.position ?? 0,
-        outflowsSimilar: rankExpenseSimilar?.data?.position ?? 0,
+        balance: data.balance ?? 0,
+        incomes: data.incomes ?? 0,
+        outflows: data.outflows ?? 0,
+        balanceSimilar: data.balanceSimilar ?? 0,
+        incomesSimilar: data.incomesSimilar ?? 0,
+        outflowsSimilar: data.outflowsSimilar ?? 0,
       };
     } catch {
       console.warn('Ranking endpoints error, using defaults');

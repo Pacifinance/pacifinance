@@ -13,6 +13,8 @@ import { CURRENCIES } from "../data/currencyConfig";
 import { MESSAGE_AUTO_DISMISS_MS } from "../data/financeDefaults";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { useAuth } from "../hooks/useAuth";
+import { getCustomCategories, getIncomesTags, getOutflowsTags } from "../utils/userDataSelectors";
+import { translateTag } from "../data/tagTranslations";
 
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
@@ -57,7 +59,10 @@ import {
     faCoins,
     faBug,
     faMobileScreen,
-    faHistory
+    faHistory,
+    faTag,
+    faPen,
+    faCheck
 } from "@fortawesome/free-solid-svg-icons";
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
 
@@ -69,6 +74,8 @@ const SettingsPage = () => {
     const { currency, setCurrency } = useContext(CurrencyContext);
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
+    const userContext = useContext(UserContext) || {};
+    const { renameCustomCategory, deleteCustomCategory } = userContext;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
 
@@ -119,6 +126,10 @@ const SettingsPage = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [exportLoading, setExportLoading] = useState(false);
     const [showImportWizard, setShowImportWizard] = useState(false);
+    const [editingCategoryId, setEditingCategoryId] = useState(null);
+    const [editingCategoryLabel, setEditingCategoryLabel] = useState("");
+    const [categoryBusyId, setCategoryBusyId] = useState(null);
+    const [pendingDeleteCategoryId, setPendingDeleteCategoryId] = useState(null);
     
     // Stati per il filtro dati export
     const [exportFilter, setExportFilter] = useState("all");
@@ -126,6 +137,9 @@ const SettingsPage = () => {
     const [selectedYear, setSelectedYear] = useState("");
 
     const userType = userData?.userType || "";
+    const customCategories = getCustomCategories(userData);
+    const outflowTags = getOutflowsTags(userData);
+    const incomeTags = getIncomesTags(userData);
 
     const isDemo = ["test", "demo"].includes(userType);
     const demoTooltip = translations?.header?.demo?.disabledTooltip || 'This feature is disabled in the demo account. Sign up for free to unlock it!';
@@ -154,7 +168,56 @@ const SettingsPage = () => {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, i) => currentYear - i); // Ultimi 5 anni
 
+    const getCategoryParentLabel = (category) => {
+        const isIncome = category.parentType === 1;
+        const parentTags = isIncome ? incomeTags : outflowTags;
+        const parent = parentTags.find(tag => tag.index === category.parentIndex);
+        if (!parent) return isIncome
+            ? (language === "it" ? "Entrata" : "Income")
+            : (language === "it" ? "Spesa" : "Expense");
+        return translateTag(parent.label, language, isIncome ? "income" : "expense");
+    };
 
+    const startRenamingCategory = (category) => {
+        setEditingCategoryId(category.id);
+        setEditingCategoryLabel(category.label);
+        setPendingDeleteCategoryId(null);
+    };
+
+    const handleRenameCategory = async (category) => {
+        const label = editingCategoryLabel.trim();
+        if (!label || !renameCustomCategory) return;
+        setCategoryBusyId(category.id);
+        try {
+            await renameCustomCategory({ id: category.id, label });
+            setEditingCategoryId(null);
+            setEditingCategoryLabel("");
+            setPendingDeleteCategoryId(null);
+            showSuccess(language === "it" ? "Categoria aggiornata." : "Category updated.");
+        } catch {
+            showError(language === "it" ? "Impossibile rinominare la categoria." : "Could not rename category.");
+        } finally {
+            setCategoryBusyId(null);
+        }
+    };
+
+    const handleDeleteCategory = async (category) => {
+        if (!deleteCustomCategory) return;
+        if (pendingDeleteCategoryId !== category.id) {
+            setPendingDeleteCategoryId(category.id);
+            return;
+        }
+        setCategoryBusyId(category.id);
+        try {
+            await deleteCustomCategory(category.id);
+            setPendingDeleteCategoryId(null);
+            showSuccess(language === "it" ? "Categoria eliminata." : "Category deleted.");
+        } catch {
+            showError(language === "it" ? "Impossibile eliminare la categoria." : "Could not delete category.");
+        } finally {
+            setCategoryBusyId(null);
+        }
+    };
 
     const handleGenerateID = async (event) => {
         event.preventDefault();
@@ -447,6 +510,174 @@ const SettingsPage = () => {
                                     </select>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Custom Categories */}
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "14px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                            }}
+                        >
+                            <h3 style={{
+                                marginBottom: "0.4rem",
+                                color: theme.textColor,
+                                fontSize: "1.1rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faTag} style={{
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
+                                }} />
+                                {language === "it" ? "Categorie personalizzate" : "Custom categories"}
+                            </h3>
+                            <p style={{
+                                margin: "0 0 0.75rem",
+                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)',
+                                fontSize: "0.78rem",
+                                lineHeight: 1.5
+                            }}>
+                                {language === "it"
+                                    ? "Puoi crearle mentre inserisci una spesa o un'entrata. Qui puoi rinominarle o eliminarle: le statistiche restano sempre sulla categoria madre."
+                                    : "Create them while adding an expense or income. Here you can rename or delete them: statistics always stay linked to the parent category."}
+                            </p>
+
+                            {customCategories.length === 0 ? (
+                                <div style={{
+                                    padding: "0.7rem 0.75rem",
+                                    borderRadius: "10px",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)',
+                                    fontSize: "0.82rem"
+                                }}>
+                                    {language === "it"
+                                        ? "Nessuna categoria personalizzata. La prima la puoi creare dal menu categoria durante l'inserimento."
+                                        : "No custom categories yet. Create the first one from the category menu while inserting a transaction."}
+                                </div>
+                            ) : (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                    {customCategories.map(category => {
+                                        const isEditing = editingCategoryId === category.id;
+                                        const busy = categoryBusyId === category.id;
+                                        return (
+                                            <div
+                                                key={category.id}
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between",
+                                                    gap: "0.75rem",
+                                                    padding: "0.6rem 0.75rem",
+                                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                                    borderRadius: "10px",
+                                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
+                                                }}
+                                            >
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    {isEditing ? (
+                                                        <input
+                                                            value={editingCategoryLabel}
+                                                            onChange={(e) => setEditingCategoryLabel(e.target.value)}
+                                                            maxLength={40}
+                                                            disabled={busy}
+                                                            style={{
+                                                                width: "100%",
+                                                                padding: "0.45rem 0.6rem",
+                                                                borderRadius: "8px",
+                                                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)'}`,
+                                                                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff',
+                                                                color: theme.textColor,
+                                                                fontSize: "0.85rem"
+                                                            }}
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        <>
+                                                            <div style={{
+                                                                color: theme.textColor,
+                                                                fontSize: "0.9rem",
+                                                                fontWeight: 600,
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis",
+                                                                whiteSpace: "nowrap"
+                                                            }}>
+                                                                {category.label}
+                                                            </div>
+                                                            <div style={{
+                                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)',
+                                                                fontSize: "0.72rem",
+                                                                marginTop: "0.15rem"
+                                                            }}>
+                                                                {language === "it" ? "Madre:" : "Parent:"} {getCategoryParentLabel(category)}
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+
+                                                <div style={{ display: "flex", gap: "0.35rem", flexShrink: 0 }}>
+                                                    {isEditing ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRenameCategory(category)}
+                                                            disabled={busy || editingCategoryLabel.trim() === ""}
+                                                            style={{
+                                                                border: "none",
+                                                                borderRadius: "8px",
+                                                                padding: "0.45rem 0.6rem",
+                                                                background: theme.buttonBackgroundColor,
+                                                                color: "#fff",
+                                                                cursor: busy ? "default" : "pointer"
+                                                            }}
+                                                        >
+                                                            <FontAwesomeIcon icon={faCheck} />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => startRenamingCategory(category)}
+                                                            disabled={busy}
+                                                            style={{
+                                                                border: "none",
+                                                                borderRadius: "8px",
+                                                                padding: "0.45rem 0.6rem",
+                                                                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                                                                color: theme.textColor,
+                                                                cursor: busy ? "default" : "pointer"
+                                                            }}
+                                                        >
+                                                            <FontAwesomeIcon icon={faPen} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDeleteCategory(category)}
+                                                        disabled={busy}
+                                                        style={{
+                                                            border: "none",
+                                                            borderRadius: "8px",
+                                                            padding: "0.45rem 0.6rem",
+                                                            background: theme.mode === 'dark' ? 'rgba(239,68,68,0.18)' : 'rgba(239,68,68,0.1)',
+                                                            color: "#ef4444",
+                                                            cursor: busy ? "default" : "pointer"
+                                                        }}
+                                                    >
+                                                        {pendingDeleteCategoryId === category.id
+                                                            ? (language === "it" ? "Conferma" : "Confirm")
+                                                            : <FontAwesomeIcon icon={faTrashCan} />}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
 
                         {/* Theme & Display */}

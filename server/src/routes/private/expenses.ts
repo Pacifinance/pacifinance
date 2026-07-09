@@ -76,19 +76,9 @@ expensesRouter.post("/add", async (req, res) => {
 });
 
 expensesRouter.post("/get", async (req, res) => {
-    // Retrieve the expenses for a full year
-    const year = [];
-    const reference_date = ExtDate.fromNow()
-    for (let i = 0; i <= 12; i++) {
-        // Get the expenses from the database for the desired month and add them to the year array
-        const expenses = await db.expenses.getMonthlyExpensesByUserId(req.userId as string, reference_date);
-        year.push(expenses);
-        // Go to the next month
-        reference_date.moveByMonths(-1)
-    }
-    // Send the data to the client with status code 200 (OK)
-    res.status(200);
-    res.json(year);
+    const months = 13
+    const year = await db.expenses.getRecentMonthlyExpensesByUserId(req.userId as string, months)
+    res.status(200).json(year)
 });
 
 const MAX_MONTHS = 600 // 50 years, safety cap against abuse

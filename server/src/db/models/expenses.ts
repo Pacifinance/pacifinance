@@ -116,6 +116,48 @@ async function getMonthlyExpensesByUserId(user_id: string, reference_date: ExtDa
 }
 
 /**
+ * Gets the last N months of expenses/incomes in a single Supabase request and
+ * returns the same newest-first monthly bucket shape used by /expenses/get.
+ * @param user_id uuid of the user
+ * @param months Number of months to include, current month included
+ * @returns List of monthly Expense arrays, newest month first
+ */
+async function getRecentMonthlyExpensesByUserId(user_id: string, months: number) {
+    const reference_months = []
+    const now = ExtDate.fromNow()
+    for (let i = 0; i < months; i++) {
+        const ref = now.copy()
+        ref.moveByMonths(-i)
+        reference_months.push(ref)
+    }
+
+    const oldest = reference_months[reference_months.length - 1]
+    const range_start = ExtDate.fromReferenceMonthStart(oldest)
+    const range_end = ExtDate.fromReferenceMonthEnd(reference_months[0])
+
+    const {data, error} = await supabase.from("expenses")
+        .select(EXPENSE_SELECT)
+        .eq("user_id", user_id)
+        .gte("occurred_at", range_start.toISOString())
+        .lte("occurred_at", range_end.toISOString())
+        .order("occurred_at", {ascending: false})
+
+    if (error) console.error("expenses.getRecentMonthlyExpensesByUserId: failed to read recent expenses", error)
+    if (error || !data) return reference_months.map(() => [])
+
+    const buckets = new Map<string, ReturnType<typeof toExpense>[]>()
+    for (const row of data) {
+        const occurred_at = new Date(row.occurred_at)
+        const key = `${occurred_at.getUTCFullYear()}-${occurred_at.getUTCMonth()}`
+        const bucket = buckets.get(key) ?? []
+        bucket.push(toExpense(row))
+        buckets.set(key, bucket)
+    }
+
+    return reference_months.map((ref) => buckets.get(`${ref.getUTCFullYear()}-${ref.getUTCMonth()}`) ?? [])
+}
+
+/**
  * Gets the expenses of a user for the month and sums all the amounts
  * @param user_id uuid of the user
  * @param reference_date Date object containing the year and month to look for
@@ -199,6 +241,7 @@ export default {
     insertNew,
     getAllByUserId,
     getMonthlyExpensesByUserId,
+    getRecentMonthlyExpensesByUserId,
     getTotalMonthlyExpensesByUserId,
     getMonthlyTotalsByUserId,
     getExpenseRankingPool,

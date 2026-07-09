@@ -16,6 +16,7 @@ import type {
   CategoriesGetResponse,
   CategoryAddRequest,
   CategoryDeleteRequest,
+  CategoryRenameRequest,
   UserCategoryDto,
 } from '../types/api';
 
@@ -36,6 +37,8 @@ export interface FinanceService {
   getCustomCategories(): Promise<CategoriesGetResponse>;
   /** POST /categories/add. */
   addCustomCategory(data: CategoryAddRequest): Promise<UserCategoryDto>;
+  /** POST /categories/rename. */
+  renameCustomCategory(data: CategoryRenameRequest): Promise<UserCategoryDto>;
   /** POST /categories/delete. */
   deleteCustomCategory(data: CategoryDeleteRequest): Promise<AxiosResponse>;
 }
@@ -81,6 +84,11 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
 
   async addCustomCategory(data) {
     const res = await apiClient.post<UserCategoryDto>('/api/categories/add', data);
+    return res.data;
+  },
+
+  async renameCustomCategory(data) {
+    const res = await apiClient.post<UserCategoryDto>('/api/categories/rename', data);
     return res.data;
   },
 

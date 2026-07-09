@@ -40,6 +40,7 @@ const mocks = vi.hoisted(() => {
         expenses: {
             insertNew: vi.fn(),
             getMonthlyExpensesByUserId: vi.fn(),
+            getRecentMonthlyExpensesByUserId: vi.fn(),
             getMonthlyTotalsByUserId: vi.fn(),
             getAllByUserId: vi.fn(),
             deleteExpenseByData: vi.fn(),
@@ -68,6 +69,7 @@ const mocks = vi.hoisted(() => {
         categories: {
             getAllByUserId: vi.fn(),
             insertNew: vi.fn(),
+            renameById: vi.fn(),
             deleteById: vi.fn()
         },
         delqueue: {
@@ -169,6 +171,7 @@ export function resetServerMocks() {
 
     mockDb.expenses.insertNew.mockResolvedValue({id: 1})
     mockDb.expenses.getMonthlyExpensesByUserId.mockResolvedValue([])
+    mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue([])
     mockDb.expenses.getMonthlyTotalsByUserId.mockResolvedValue([])
     mockDb.expenses.getAllByUserId.mockResolvedValue([])
     mockDb.expenses.deleteExpenseByData.mockResolvedValue({deletedCount: 1})
@@ -177,7 +180,8 @@ export function resetServerMocks() {
     mockDb.tags.getAllTagsByType.mockResolvedValue([])
     mockDb.tags.getReferenceByIndexAndType.mockResolvedValue({id: 10})
     mockDb.categories.getAllByUserId.mockResolvedValue([])
-    mockDb.categories.insertNew.mockResolvedValue({id: 1, parentIndex: 0, label: "Custom"})
+    mockDb.categories.insertNew.mockResolvedValue({id: 1, parentIndex: 0, parentType: 0, label: "Custom"})
+    mockDb.categories.renameById.mockResolvedValue({id: 1, parentIndex: 0, parentType: 0, label: "Renamed"})
     mockDb.categories.deleteById.mockResolvedValue({deletedCount: 1})
     mockDb.delqueue.removeFromQueueByUserId.mockResolvedValue({})
     mockDb.delqueue.getAllAccountsInQueue.mockResolvedValue([])

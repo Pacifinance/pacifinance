@@ -106,6 +106,18 @@ describe('financeService', () => {
     });
   });
 
+  describe('custom categories', () => {
+    it('should call /categories/rename and return the renamed category', async () => {
+      const renamed = { id: 7, parentIndex: 2, parentType: 0, label: 'Lunch' };
+      mockClient.post.mockResolvedValue({ data: renamed });
+
+      const result = await service.renameCustomCategory({ id: 7, label: 'Lunch' });
+
+      expect(mockClient.post).toHaveBeenCalledWith('/api/categories/rename', { id: 7, label: 'Lunch' });
+      expect(result).toEqual(renamed);
+    });
+  });
+
   describe('DI isolation', () => {
     it('services created with different clients are independent', async () => {
       const client1 = createMockClient();

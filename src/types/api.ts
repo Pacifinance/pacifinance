@@ -245,6 +245,8 @@ export interface UserCategoryDto {
   id: number;
   /** Client-facing index of the official parent tag (outflowsTags/incomesTags) — matches TagDto.tag / .index. */
   parentIndex: number;
+  /** Official parent type: 0 = expense, 1 = income. */
+  parentType: number;
   label: string;
 }
 
@@ -258,6 +260,11 @@ export interface CategoryAddRequest {
 }
 
 export interface CategoryDeleteRequest { id: number; }
+
+export interface CategoryRenameRequest {
+  id: number;
+  label: string;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * /rank

@@ -25,7 +25,7 @@ const CREATE_NEW_VALUE = '__create_new__';
  * @param {Object} props
  * @param {Object} props.theme
  * @param {Array<{index:number,label:string}>} props.officialTags
- * @param {Array<{id:number,parentIndex:number,label:string}>} props.customCategories
+ * @param {Array<{id:number,parentIndex:number,parentType?:number,label:string}>} props.customCategories
  * @param {'expense'|'income'} props.categoryType
  * @param {number|''} props.categoryKey - selected official tag index
  * @param {number|null} props.userCategoryId - selected custom category id, if any
@@ -57,7 +57,10 @@ export default function CategoryPicker({
   const [isCreating, setIsCreating] = useState(false);
 
   const sortedTags = sortTagsByLanguage(officialTags || [], language, categoryType);
-  const safeCustomCategories = customCategories || [];
+  const expectedParentType = categoryType === 'expense' ? 0 : 1;
+  const safeCustomCategories = (customCategories || []).filter((category) =>
+    category.parentType === undefined || category.parentType === expectedParentType
+  );
 
   // Composite select value so official tags and custom sub-categories never collide: "off:<index>" | "cus:<id>"
   const selectValue = userCategoryId != null

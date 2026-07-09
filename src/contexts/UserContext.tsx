@@ -19,8 +19,31 @@ const UserContext = React.createContext();
 /** Check if demo mode is active via sessionStorage */
 const isDemoSession = () => sessionStorage.getItem('pacifinance-demo') === 'true';
 
+const defaultRankings = {
+  balance: 0,
+  incomes: 0,
+  outflows: 0,
+  balanceSimilar: 0,
+  incomesSimilar: 0,
+  outflowsSimilar: 0,
+};
+
+const emptyAverageBucket = {
+  balances: null,
+  expenses: null,
+  incomes: null,
+  savingsRates: null,
+  expensesByCategory: null,
+};
+
+const defaultAverages = {
+  all: emptyAverageBucket,
+  similar: emptyAverageBucket,
+};
+
 export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
+  const [sessionUserInfo, setSessionUserInfo] = useState(null);
   const [isUpdated, setIsUpdated] = useState(false);
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -70,8 +93,10 @@ export const UserProvider = ({ children }) => {
 
       try {
         const sessionData = await userService.checkSession();
+        setSessionUserInfo(sessionData || null);
         setIsAuthenticated(!!sessionData);
       } catch {
+        setSessionUserInfo(null);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -100,15 +125,26 @@ export const UserProvider = ({ children }) => {
             const preMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
             const preYearSameMonthDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
 
-            //************************************* TAGS ********************************/
-            const tagsData = await userService.getTags();
+            const initialUserInfo = sessionUserInfo;
+
+            //************************************* CRITICAL DATA ********************************/
+            const [
+              tagsData,
+              customCategories,
+              infoData,
+              balancesRawData,
+              allOutflowsIncomesArray,
+            ] = await Promise.all([
+              userService.getTags(),
+              financeService.getCustomCategories(),
+              initialUserInfo ? Promise.resolve(initialUserInfo) : userService.getUserInfo(),
+              financeService.getBalances(),
+              financeService.getExpensesAndIncomes(),
+            ]);
+
             const tags = transformTags(tagsData);
 
-            //************************************* CUSTOM CATEGORIES ********************************/
-            const customCategories = await financeService.getCustomCategories();
-
             //************************************* USER INFO ********************************/
-            const infoData = await userService.getUserInfo();
             const language = localStorage.getItem('language') || 'en';
             const userProfile = transformUserProfile(infoData, tags.currencyTags, language);
 
@@ -117,23 +153,15 @@ export const UserProvider = ({ children }) => {
             const { goals, limits } = buildGoalsAndLimits(userGoals);
 
             //************************************* BALANCES **********************************************/
-            const balancesRawData = await financeService.getBalances();
             const balancesData = transformBalances(balancesRawData);
 
             //************************************* EXPENSES AND INCOMES **********************************************/
-            const allOutflowsIncomesArray = await financeService.getExpensesAndIncomes();
             const totalOutflowsPerCategoryPerMonth = aggregateOutflowsByCategory(allOutflowsIncomesArray);
             const { incomesArray, outflowsArray } = buildMonthlyArrays(allOutflowsIncomesArray);
             const { allOutflows, allIncomes } = splitIncomesOutflows(allOutflowsIncomesArray);
 
             //************************************* PROCESSED DATA **********************************************/
             const last12MonthsData = buildChartData(balancesData, currentDate);
-
-            //************************************* RANKING **********************************************/
-            const rankings = await rankingService.getAllRankings();
-
-            //************************************* STATS AVERAGES **********************************************/
-            const averages = await statsService.getAverages();
 
             //************************************* ASSETS **********************************************/
             const currentBalance = balancesData[0]?.balance || {};
@@ -153,16 +181,31 @@ export const UserProvider = ({ children }) => {
               incomes: { allIncomes, incomesArray },
               tags,
               customCategories,
-              rankings,
+              rankings: defaultRankings,
               dates: {
                 current: currentDate,
                 preMonth: preMonthDate,
                 preYearSameMonth: preYearSameMonthDate,
               },
-              goals, limits, assets, averages,
+              goals, limits, assets, averages: defaultAverages,
               currency: userProfile.preferredCurrencyCode,
             });
-            handleSetIsUpdated(true);
+            setSessionUserInfo(null);
+            setIsUpdated(true);
+
+            Promise.allSettled([
+              rankingService.getAllRankings(),
+              statsService.getAverages(),
+            ]).then(([rankingsResult, averagesResult]) => {
+              setUserData(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  rankings: rankingsResult.status === 'fulfilled' ? rankingsResult.value : prev.rankings,
+                  averages: averagesResult.status === 'fulfilled' ? averagesResult.value : prev.averages,
+                };
+              });
+            });
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);
@@ -170,7 +213,7 @@ export const UserProvider = ({ children }) => {
       }
     };
     fetchUserData();
-  }, [isAuthenticated, isUpdated, retryCounter, isDemoMode, userService, financeService, rankingService, statsService]);
+  }, [isAuthenticated, isUpdated, retryCounter, isDemoMode, sessionUserInfo, userService, financeService, rankingService, statsService]);
 
   // Retry function: reset error and trigger re-fetch
   const retryFetch = () => {
@@ -196,6 +239,7 @@ export const UserProvider = ({ children }) => {
     if (!value) {
       // Reset on deauthentication so next login triggers data fetch
       setIsUpdated(false);
+      setSessionUserInfo(null);
       setError(null);
       // Clear demo mode on logout
       if (isDemoMode || isDemoSession()) {
@@ -211,6 +255,7 @@ export const UserProvider = ({ children }) => {
       setUserData(generateDemoData());
       return;
     }
+    if (!value) setSessionUserInfo(null);
     setIsUpdated(value);
   };
 
@@ -257,6 +302,16 @@ export const UserProvider = ({ children }) => {
     return created;
   };
 
+  // Renames a custom sub-category without changing its official parent tag.
+  const renameCustomCategory = async ({ id, label }) => {
+    const renamed = await financeService.renameCustomCategory({ id, label });
+    setUserData(prev => prev ? {
+      ...prev,
+      customCategories: (prev.customCategories || []).map(c => c.id === renamed.id ? renamed : c),
+    } : prev);
+    return renamed;
+  };
+
   // Deletes a custom sub-category. Past expenses referencing it keep their
   // official category (server-side ON DELETE SET NULL), they just lose the
   // personalized label.
@@ -292,6 +347,7 @@ export const UserProvider = ({ children }) => {
       fetchAllTimeBalances,
       fetchAllTimeMonthlyTotals,
       addCustomCategory,
+      renameCustomCategory,
       deleteCustomCategory
     }}>
       {children}

@@ -18,20 +18,12 @@ const TagType = {
 }
 
 /**
- * Capitalizes the first character of a string
- * @param str Target string
- * @returns The same string but with the first character capitalized
+ * Maps a "tags" row to the public Tag shape used by the frontend.
+ * Le traduzioni non vivono più a DB: il frontend le risolve dai locale i18n
+ * tramite la label (src/data/tagTranslations.ts).
  */
-function capitalizeFirst(str: string) {
-    str = str.toLowerCase()
-    return str[0].toUpperCase() + str.slice(1)
-}
-
-/**
- * Maps a "tags" row to the public Tag shape used by the frontend (unchanged from the MongoDB documents)
- */
-function toTag(row: {label: string, client_index: number, type: number, translations: object}) {
-    return {label: row.label, index: row.client_index, type: row.type, translations: row.translations}
+function toTag(row: {label: string, client_index: number, type: number}) {
+    return {label: row.label, index: row.client_index, type: row.type}
 }
 
 /* ==================== Specific queries ==================== */
@@ -45,8 +37,8 @@ function toTag(row: {label: string, client_index: number, type: number, translat
  */
 async function insertNew(label: string, index: number, type: number) {
     const {data, error} = await supabase.from("tags").insert({
-        label, client_index: index, type, translations: {en: capitalizeFirst(label)}
-    }).select("label, client_index, type, translations").single()
+        label, client_index: index, type
+    }).select("label, client_index, type").single()
     if (error) console.error("tags.insertNew: failed to insert tag", error)
     if (error || !data) return null
     return toTag(data)
@@ -75,7 +67,7 @@ async function getReferenceByIndexAndType(index: number, type: number) {
  */
 async function getAllTagsByType(type: number) {
     const {data, error} = await supabase.from("tags")
-        .select("label, client_index, type, translations")
+        .select("label, client_index, type")
         .eq("type", type)
         .order("client_index", {ascending: true})
     if (error) console.error("tags.getAllTagsByType: failed to read tags", error)
@@ -90,36 +82,10 @@ async function getAllTagsByType(type: number) {
  */
 async function getTagByReference(ref: number) {
     const {data, error} = await supabase.from("tags")
-        .select("label, client_index, type, translations")
+        .select("label, client_index, type")
         .eq("id", ref)
         .maybeSingle()
     if (error) console.error("tags.getTagByReference: lookup failed", error)
-    if (error || !data) return null
-    return toTag(data)
-}
-
-/**
- * Adds or updates the translation of a tag for a given language
- * @param index Label index (client side ID)
- * @param type Type of tag
- * @param lang Language (two letters format)
- * @param translation Translation to set
- * @returns Updated tag document
- */
-async function setTranslationByIndexAndType(index: number, type: number, lang: string, translation: string) {
-    const existing = await supabase.from("tags")
-        .select("translations")
-        .eq("client_index", index).eq("type", type)
-        .maybeSingle()
-    if (existing.error) console.error("tags.setTranslationByIndexAndType: lookup failed", existing.error)
-    if (existing.error || !existing.data) return null
-    const translations = {...(existing.data.translations as object), [lang]: translation}
-    const {data, error} = await supabase.from("tags")
-        .update({translations})
-        .eq("client_index", index).eq("type", type)
-        .select("label, client_index, type, translations")
-        .maybeSingle()
-    if (error) console.error("tags.setTranslationByIndexAndType: update failed", error)
     if (error || !data) return null
     return toTag(data)
 }
@@ -129,6 +95,5 @@ export default {
     insertNew,
     getReferenceByIndexAndType,
     getAllTagsByType,
-    getTagByReference,
-    setTranslationByIndexAndType
+    getTagByReference
 };

@@ -13,6 +13,11 @@
 server/build
 aStableBuild/
 
+# migration output e backup DB (contengono hash bcrypt e dati utente — mai committare)
+migration-final.sql
+migration-encryption-key.txt
+backupMongo/
+
 # misc
 server/scripts
 .DS_Store

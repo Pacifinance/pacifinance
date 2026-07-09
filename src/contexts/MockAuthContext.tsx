@@ -15,51 +15,40 @@ export const useMockAuth = () => {
 };
 
 // ── Helper: build a tag object from i18n keys ──
-// Generates { index, label, type?, translations: { it, en } } from the tags sections
-const buildTag = (label, type, index, section) => ({
+// Genera { index, label, type? } come l'API reale: i tag non portano più il
+// campo translations, il display passa da translateTag/i18n tramite la label.
+const buildTag = (label, type, index) => ({
     index,
     label,
-    ...(type !== undefined ? { type } : {}),
-    translations: {
-        it: it.tags[section]?.[label] || label,
-        en: en.tags[section]?.[label] || label
-    }
+    ...(type !== undefined ? { type } : {})
 });
 
 // ── Expense tags from i18n ──
 const expenseKeys = Object.keys(en.tags.expense);
-const outflowsTags = expenseKeys.map((key, i) => 
-    buildTag(key, 0, key === 'other' ? 9999 : i + 1, 'expense')
+const outflowsTags = expenseKeys.map((key, i) =>
+    buildTag(key, 0, key === 'other' ? 9999 : i + 1)
 );
 
 // ── Income tags from i18n ──
 const incomeKeys = Object.keys(en.tags.income);
-const incomesTags = incomeKeys.map((key, i) => 
-    buildTag(key, 1, key === 'other' ? 9999 : i, 'income')
+const incomesTags = incomeKeys.map((key, i) =>
+    buildTag(key, 1, key === 'other' ? 9999 : i)
 );
 
 // ── Payment tags from i18n ──
 const paymentKeys = Object.keys(en.tags.payment);
 const paymentTags = paymentKeys.map((key, i) => ({
     index: i,
-    label: key,
-    translations: {
-        it: it.tags.payment[key] || key,
-        en: en.tags.payment[key] || key
-    }
+    label: key
 }));
 
 // ── Profile tag helpers ──
 const buildProfileTag = (label, section, index) => ({
     index,
-    label,
-    translations: {
-        it: it.tags[section]?.[label] || label,
-        en: en.tags[section]?.[label] || label
-    }
+    label
 });
 
-const buildProfileTags = (section) => 
+const buildProfileTags = (section) =>
     Object.keys(en.tags[section] || {}).map((key, i) => buildProfileTag(key, section, i));
 
 // ── Helper: get outflow tag object by label ──
@@ -287,11 +276,11 @@ export const mockUserData = {
         childrenTags: buildProfileTags('children'),
         yearsOfExperienceTags: buildProfileTags('yearsOfExperience'),
         currencyTags: [
-            { label: "eur", index: 0, type: 13, translations: { it: "EUR (€)", en: "EUR (€)" } },
-            { label: "usd", index: 1, type: 13, translations: { it: "USD ($)", en: "USD ($)" } },
-            { label: "gbp", index: 2, type: 13, translations: { it: "GBP (£)", en: "GBP (£)" } },
-            { label: "chf", index: 3, type: 13, translations: { it: "CHF", en: "CHF" } },
-            { label: "jpy", index: 4, type: 13, translations: { it: "JPY (¥)", en: "JPY (¥)" } }
+            { label: "eur", index: 0, type: 13 },
+            { label: "usd", index: 1, type: 13 },
+            { label: "gbp", index: 2, type: 13 },
+            { label: "chf", index: 3, type: 13 },
+            { label: "jpy", index: 4, type: 13 }
         ]
     },
     

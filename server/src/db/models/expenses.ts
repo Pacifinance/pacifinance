@@ -7,14 +7,14 @@ import { encryptField, decryptField } from "../crypto"
 
 const EXPENSE_SELECT = `
     occurred_at, amount, is_expense, notes,
-    payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type, translations),
-    category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type, translations),
+    payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type),
+    category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type),
     user_category:user_categories(id, label)
 `
 
 function mapTagJoin(row: any) {
     if (!row) return null
-    return {label: row.label, index: row.client_index, type: row.type, translations: row.translations}
+    return {label: row.label, index: row.client_index, type: row.type}
 }
 
 function toExpense(row: any) {

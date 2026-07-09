@@ -28,6 +28,7 @@ import {
   CenteredRankings 
 } from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
+import { translateTag } from '../data/tagTranslations';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import EqualIcon from '@mui/icons-material/DragHandle';
@@ -1344,9 +1345,13 @@ function Comparison({ theme, userData, isHidden}) {
                                     {translations.comparison.cards.spendingCategories.topCategories}
                                 </div>
                                 {spendingByCategory.slice(0, 5).map((category, index) => {
-                                // Find the category index to look up averages
+                                // Find the category index to look up averages.
+                                // category.name è la traduzione EN della label (vedi
+                                // userDataTransformers), quindi si confronta con la
+                                // stessa traduzione i18n: i tag dal DB non portano
+                                // più il campo translations.
                                 const categoryIndex = userData?.tags?.outflowsTags?.find(
-                                    t => t.translations?.en === category.name || t.translations?.it === category.name || t.label === category.name.toLowerCase()
+                                    t => translateTag(t.label, 'en', 'expense') === category.name || t.label === category.name.toLowerCase()
                                 )?.index;
                                 
                                 const similarAvg = categoryIndex && similarUsersExpensesByCategory ? similarUsersExpensesByCategory[categoryIndex] : null;

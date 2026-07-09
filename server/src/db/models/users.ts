@@ -30,22 +30,22 @@ function emailForUserCode(user_code: string) {
  */
 function mapTagRow(row: any) {
     if (!row) return null
-    return {label: row.label, index: row.client_index, type: row.type, translations: row.translations}
+    return {label: row.label, index: row.client_index, type: row.type}
 }
 
 const TAG_JOIN_FIELDS = `
-    age:tags!profiles_age_tag_id_fkey(label, client_index, type, translations),
-    living_situation:tags!profiles_living_situation_tag_id_fkey(label, client_index, type, translations),
-    housing_type:tags!profiles_housing_type_tag_id_fkey(label, client_index, type, translations),
-    children:tags!profiles_children_tag_id_fkey(label, client_index, type, translations),
-    country:tags!profiles_country_tag_id_fkey(label, client_index, type, translations),
-    job:tags!profiles_job_tag_id_fkey(label, client_index, type, translations),
-    job_type:tags!profiles_job_type_tag_id_fkey(label, client_index, type, translations),
-    job_country:tags!profiles_job_country_tag_id_fkey(label, client_index, type, translations),
-    work_time:tags!profiles_work_time_tag_id_fkey(label, client_index, type, translations),
-    remote_type:tags!profiles_remote_type_tag_id_fkey(label, client_index, type, translations),
-    years_of_experience:tags!profiles_years_of_experience_tag_id_fkey(label, client_index, type, translations),
-    preferred_currency:tags!profiles_preferred_currency_tag_id_fkey(label, client_index, type, translations)
+    age:tags!profiles_age_tag_id_fkey(label, client_index, type),
+    living_situation:tags!profiles_living_situation_tag_id_fkey(label, client_index, type),
+    housing_type:tags!profiles_housing_type_tag_id_fkey(label, client_index, type),
+    children:tags!profiles_children_tag_id_fkey(label, client_index, type),
+    country:tags!profiles_country_tag_id_fkey(label, client_index, type),
+    job:tags!profiles_job_tag_id_fkey(label, client_index, type),
+    job_type:tags!profiles_job_type_tag_id_fkey(label, client_index, type),
+    job_country:tags!profiles_job_country_tag_id_fkey(label, client_index, type),
+    work_time:tags!profiles_work_time_tag_id_fkey(label, client_index, type),
+    remote_type:tags!profiles_remote_type_tag_id_fkey(label, client_index, type),
+    years_of_experience:tags!profiles_years_of_experience_tag_id_fkey(label, client_index, type),
+    preferred_currency:tags!profiles_preferred_currency_tag_id_fkey(label, client_index, type)
 `
 
 /* ==================== Specific queries ==================== */

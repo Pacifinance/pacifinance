@@ -16,12 +16,14 @@
 -- type: 0 expense, 1 income, 2 payment, 3 country, 4 job, 5 jobType, 6 workTime,
 --       7 remoteType, 8 yearsOfExperience, 9 age, 10 livingSituation, 11 housingType,
 --       12 children, 13 currency (vedi TagType in server/src/db/models/tags.ts)
+-- Le traduzioni delle label NON vivono più a DB: il frontend le risolve dai
+-- locale i18n (src/i18n/locales/*.json, sezione tags.<tipo>.<label>) per tutte
+-- le lingue supportate; le valute (type 13) si mostrano via currencyConfig.ts.
 create table public.tags (
   id bigint generated always as identity primary key,
   client_index integer not null,           -- ex "index" Mongo, usato dal frontend
   type smallint not null,
   label text not null,
-  translations jsonb not null default '{}'::jsonb,  -- {"en": "...", "it": "..."}
   unique (client_index, type)
 );
 

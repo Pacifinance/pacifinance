@@ -372,7 +372,7 @@ export default function InsertValue({
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory } = useContext(UserContext) || {};
   const { showSuccess, showError } = useToast();
-  const { financeService, investmentService } = useDemoServices();
+  const { financeService, investmentService, liquidityAccountService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -434,6 +434,7 @@ export default function InsertValue({
   const [fundsValue, setFundsValue] = useState(0);
   const [goldValue, setGoldValue] = useState(0);
   const [investmentHoldings, setInvestmentHoldings] = useState([]);
+  const [liquidityAccounts, setLiquidityAccounts] = useState([]);
   const [balanceInputs, setBalanceInputs] = useState(createEmptyBalanceInputs);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
@@ -489,10 +490,15 @@ export default function InsertValue({
     setBalanceInputs((prev) => ({ ...prev, [assetKey]: value }));
   };
 
-  // Maps a verifiable investment asset key onto the setter that holds its EUR "base"
-  // value (the persisted-from-DB value, as opposed to the display-currency draft in
-  // balanceInputs) — used to reconcile the aggregate input with detailed holdings.
-  const investmentBaseSetters = {
+  // Maps an asset key that supports detailed sub-accounts (verifiable investments or
+  // liquidity accounts) onto the setter that holds its EUR "base" value (the
+  // persisted-from-DB value, as opposed to the display-currency draft in balanceInputs)
+  // — used to reconcile the aggregate input with the sub-accounts' sum.
+  const assetBaseSetters = {
+    bank: setBankValue,
+    cash: setCashValue,
+    digitalServices: setDigitalServicesValue,
+    emergencyFund: setEmergencyFundValue,
     stocks: setStocksValue,
     etf: setETFValue,
     bitcoin: setBitcoinValue,
@@ -502,8 +508,8 @@ export default function InsertValue({
   };
 
   const handleAssetBaseValueOverride = (assetKey, eurValue) => {
-    investmentBaseSetters[assetKey]?.(eurValue);
-    // Clear any stale draft so createBalancesJson picks the holdings-derived base value.
+    assetBaseSetters[assetKey]?.(eurValue);
+    // Clear any stale draft so createBalancesJson picks the sub-accounts-derived base value.
     setBalanceInputValue(assetKey)('');
   };
 
@@ -512,8 +518,14 @@ export default function InsertValue({
     setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
   };
 
+  const refreshLiquidityAccounts = async () => {
+    const accounts = await liquidityAccountService.getAccounts();
+    setLiquidityAccounts(Array.isArray(accounts) ? accounts : []);
+  };
+
   useEffect(() => {
     refreshInvestmentHoldings();
+    refreshLiquidityAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1812,6 +1824,8 @@ export default function InsertValue({
             translations={translations}
             investmentHoldings={investmentHoldings}
             onHoldingsChanged={refreshInvestmentHoldings}
+            liquidityAccounts={liquidityAccounts}
+            onLiquidityAccountsChanged={refreshLiquidityAccounts}
             onAssetBaseValueChange={handleAssetBaseValueOverride}
           />
         </SectionCard>

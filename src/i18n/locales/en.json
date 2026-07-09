@@ -3,7 +3,7 @@
         "total": "Total",
         "bank": "Bank",
         "cash": "Cash",
-        "digitalServices": "Digital services",
+        "digitalServices": "Digital wallets",
         "emergencyFund": "Emergency Fund",
         "stocks": "Stocks",
         "etf": "ETF",
@@ -2525,5 +2525,19 @@
         "attribution": {
             "coingecko": "Data provided by CoinGecko"
         }
+    },
+    "liquidityAccounts": {
+        "title": "Detailed accounts",
+        "emptyState": "No sub-accounts for this category yet. Add one below.",
+        "addTitle": "Add account",
+        "editTitle": "Edit account",
+        "label": "Name",
+        "amount": "Amount",
+        "addButton": "Add",
+        "saveButton": "Save",
+        "cancelEdit": "Cancel",
+        "deleteButton": "Delete",
+        "manageLink": "Manage accounts",
+        "calculatedFromN": "Calculated from {count} accounts"
     }
 }

@@ -4,6 +4,7 @@ import expenses from "./models/expenses"
 import tags from "./models/tags"
 import categories from "./models/categories"
 import investments from "./models/investments"
+import liquidityAccounts from "./models/liquidityAccounts"
 import delqueue from "./models/delqueue"
 
-export default {users, balances, expenses, tags, categories, investments, delqueue}
+export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, delqueue}

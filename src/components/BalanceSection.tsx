@@ -12,7 +12,9 @@ import { getAssetIcon } from '../data/assetIcons';
 import { getAssetColor } from '../data/assetColors';
 import { getMuiSelectMenuProps } from './ThemedSelect';
 import InvestmentHoldingsPanel from './InvestmentHoldingsPanel';
+import LiquidityAccountsPanel from './LiquidityAccountsPanel';
 import { isVerifiableAssetKey } from '../constants/investmentSchema';
+import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
 
 /* ─── Helpers ─── */
 const handleInputChange = (e, setterFunction) => {
@@ -330,10 +332,12 @@ export default function BalanceSection({
   translations,
   investmentHoldings = [],
   onHoldingsChanged,
+  liquidityAccounts = [],
+  onLiquidityAccountsChanged,
   onAssetBaseValueChange,
 }) {
   const { currencySymbol, fromEUR } = React.useContext(CurrencyContext);
-  const [openHoldingsAssetKey, setOpenHoldingsAssetKey] = useState(null);
+  const [openSubAccountsAssetKey, setOpenSubAccountsAssetKey] = useState(null);
 
   const holdingsByAssetKey = useMemo(() => {
     const map = {};
@@ -343,9 +347,17 @@ export default function BalanceSection({
     return map;
   }, [investmentHoldings]);
 
-  // Reconciliation: whenever an asset has verified holdings, its aggregate value is
-  // derived from them (sum of currentValue, falling back to investedAmount) instead
-  // of the free-text input — see plan decision in constants/investmentSchema.ts.
+  const liquidityAccountsByAssetKey = useMemo(() => {
+    const map = {};
+    for (const account of liquidityAccounts) {
+      (map[account.assetKey] ||= []).push(account);
+    }
+    return map;
+  }, [liquidityAccounts]);
+
+  // Reconciliation: whenever an asset has verified holdings or detailed liquidity
+  // sub-accounts, its aggregate value is derived from them instead of the free-text
+  // input — see plan decisions in constants/investmentSchema.ts.
   useEffect(() => {
     if (!onAssetBaseValueChange) return;
     for (const assetKey of Object.keys(holdingsByAssetKey)) {
@@ -354,8 +366,14 @@ export default function BalanceSection({
       const sumEur = assetHoldings.reduce((sum, h) => sum + (h.currentValue ?? h.investedAmount ?? 0), 0);
       onAssetBaseValueChange(assetKey, sumEur);
     }
+    for (const assetKey of Object.keys(liquidityAccountsByAssetKey)) {
+      const assetAccounts = liquidityAccountsByAssetKey[assetKey];
+      if (!assetAccounts || assetAccounts.length === 0) continue;
+      const sumEur = assetAccounts.reduce((sum, a) => sum + (a.currentValue ?? 0), 0);
+      onAssetBaseValueChange(assetKey, sumEur);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [holdingsByAssetKey]);
+  }, [holdingsByAssetKey, liquidityAccountsByAssetKey]);
 
   const handleBalanceDateChange = (event) => {
     const [month, year] = event.target.value.split('-').map(Number);
@@ -423,10 +441,15 @@ export default function BalanceSection({
     const placeholderAmount = balancePlaceholders?.[asset.key] ?? 0;
     const placeholderValue = fromEUR(placeholderAmount).toLocaleString('it-IT', { minimumFractionDigits: 2 });
 
-    const assetHoldings = holdingsByAssetKey[asset.key] || [];
-    const hasHoldings = assetHoldings.length > 0;
-    const verifiable = isVerifiableAssetKey(asset.key);
-    const t = translations.investments?.holdings;
+    const isLiquidityKey = LIQUIDITY_KEYS.includes(asset.key);
+    const isInvestmentKey = isVerifiableAssetKey(asset.key);
+    const subEntries = isLiquidityKey
+      ? (liquidityAccountsByAssetKey[asset.key] || [])
+      : isInvestmentKey
+        ? (holdingsByAssetKey[asset.key] || [])
+        : [];
+    const hasHoldings = subEntries.length > 0;
+    const t = isLiquidityKey ? translations.liquidityAccounts : translations.investments?.holdings;
 
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
@@ -454,18 +477,18 @@ export default function BalanceSection({
             />
           </CurrencyInputWrapper>
         )}
-        {verifiable && t && (
+        {(isLiquidityKey || isInvestmentKey) && t && (
           <HoldingsLinkRow>
             {hasHoldings && (
               <CalculatedBadge theme={theme}>
-                {t.calculatedFromN.replace('{count}', assetHoldings.length)}
+                {t.calculatedFromN.replace('{count}', subEntries.length)}
               </CalculatedBadge>
             )}
             <HoldingsLinkButton
               type="button"
               theme={theme}
               $color={color}
-              onClick={() => setOpenHoldingsAssetKey(asset.key)}
+              onClick={() => setOpenSubAccountsAssetKey(asset.key)}
             >
               <FontAwesomeIcon icon={faListCheck} />
               {t.manageLink}
@@ -572,11 +595,20 @@ export default function BalanceSection({
         )}
       </FooterBar>
 
-      {openHoldingsAssetKey && (
+      {openSubAccountsAssetKey && LIQUIDITY_KEYS.includes(openSubAccountsAssetKey) && (
+        <LiquidityAccountsPanel
+          assetKey={openSubAccountsAssetKey}
+          accounts={liquidityAccountsByAssetKey[openSubAccountsAssetKey] || []}
+          onClose={() => setOpenSubAccountsAssetKey(null)}
+          onChanged={async () => { if (onLiquidityAccountsChanged) await onLiquidityAccountsChanged(); }}
+        />
+      )}
+
+      {openSubAccountsAssetKey && isVerifiableAssetKey(openSubAccountsAssetKey) && (
         <InvestmentHoldingsPanel
-          assetKey={openHoldingsAssetKey}
-          holdings={holdingsByAssetKey[openHoldingsAssetKey] || []}
-          onClose={() => setOpenHoldingsAssetKey(null)}
+          assetKey={openSubAccountsAssetKey}
+          holdings={holdingsByAssetKey[openSubAccountsAssetKey] || []}
+          onClose={() => setOpenSubAccountsAssetKey(null)}
           onChanged={async () => { if (onHoldingsChanged) await onHoldingsChanged(); }}
         />
       )}

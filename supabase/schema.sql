@@ -150,6 +150,24 @@ create table public.user_investment_holdings (
 create index user_investment_holdings_user_idx on public.user_investment_holdings (user_id, updated_at desc);
 create index user_investment_holdings_instrument_idx on public.user_investment_holdings (instrument_id);
 
+-- ---------- user_liquidity_accounts (sotto-conti opzionali per bank/cash/digitalServices/emergencyFund) ----------
+-- Come user_investment_holdings ma senza catalogo condiviso: qui l'etichetta è testo
+-- libero (es. "Intesa Sanpaolo", "Satispay"), non c'è nulla da verificare con provider
+-- esterni. La somma dei sotto-conti di un asset_key sostituisce il valore aggregato
+-- inserito manualmente in balances per quell'asset, quando ne esiste almeno uno.
+create table public.user_liquidity_accounts (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  asset_key text not null check (asset_key in ('bank', 'cash', 'digitalServices', 'emergencyFund')),
+  label text not null,
+  current_value numeric not null default 0,
+  currency text not null default 'EUR',
+  notes text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+create index user_liquidity_accounts_user_idx on public.user_liquidity_accounts (user_id, asset_key, updated_at desc);
+
 -- ---------- expenses (outflows + incomes, discriminati da is_expense) ----------
 create table public.expenses (
   id bigint generated always as identity primary key,
@@ -183,6 +201,7 @@ alter table public.expenses enable row level security;
 alter table public.user_categories enable row level security;
 alter table public.investment_instruments enable row level security;
 alter table public.user_investment_holdings enable row level security;
+alter table public.user_liquidity_accounts enable row level security;
 alter table public.deletions enable row level security;
 
 create policy "tags_select_authenticated" on public.tags
@@ -204,6 +223,9 @@ create policy "investment_instruments_select_authenticated" on public.investment
   for select to authenticated using (active = true);
 
 create policy "user_investment_holdings_own_rows" on public.user_investment_holdings
+  for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "user_liquidity_accounts_own_rows" on public.user_liquidity_accounts
   for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "deletions_own_row" on public.deletions

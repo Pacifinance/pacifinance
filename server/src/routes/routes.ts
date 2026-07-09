@@ -11,6 +11,7 @@ import rankRouter from "./private/rank"
 import statsRouter from "./private/stats"
 import pricesRouter from "./private/prices"
 import investmentsRouter from "./private/investments"
+import liquidityAccountsRouter from "./private/liquidityAccounts"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
@@ -76,5 +77,6 @@ rootRouter.use("/rank", rankRouter)
 rootRouter.use("/stats", statsRouter)
 rootRouter.use("/prices", pricesRouter)
 rootRouter.use("/investments", investmentsRouter)
+rootRouter.use("/liquidity-accounts", liquidityAccountsRouter)
 
 export default rootRouter

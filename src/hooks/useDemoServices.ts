@@ -14,7 +14,7 @@
 import { useMemo } from 'react';
 import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
-import type { InvestmentInstrumentDto, InvestmentHoldingDto } from '../types/api';
+import type { InvestmentInstrumentDto, InvestmentHoldingDto, LiquidityAccountDto } from '../types/api';
 
 const FAKE_SUCCESS = { status: 200, data: { success: true } };
 
@@ -84,6 +84,23 @@ export const useDemoServices = () => {
           instrument: DEMO_INSTRUMENTS.find((i) => i.id === data.instrument_id) ?? null,
         }),
         deleteHolding: async () => FAKE_SUCCESS,
+      },
+      liquidityAccountService: {
+        ...services.liquidityAccountService,
+        getAccounts: async (): Promise<LiquidityAccountDto[]> => [],
+        saveAccount: async (data: {
+          id?: number; asset_key: LiquidityAccountDto['assetKey']; label: string;
+          current_value: number; currency?: string; notes?: string;
+        }): Promise<LiquidityAccountDto> => ({
+          id: data.id ?? -Date.now(),
+          assetKey: data.asset_key,
+          label: data.label,
+          currentValue: data.current_value,
+          currency: data.currency ?? 'EUR',
+          notes: data.notes ?? '',
+          updatedAt: new Date().toISOString(),
+        }),
+        deleteAccount: async () => FAKE_SUCCESS,
       },
     };
   }, [isDemoMode, services]);

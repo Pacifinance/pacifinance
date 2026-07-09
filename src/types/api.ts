@@ -379,3 +379,32 @@ export interface InvestmentHoldingSaveRequest {
 }
 
 export interface InvestmentHoldingDeleteRequest { id: number; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * /liquidity-accounts
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+export type LiquidityAssetKey = 'bank' | 'cash' | 'digitalServices' | 'emergencyFund';
+
+export interface LiquidityAccountDto {
+  id: number;
+  assetKey: LiquidityAssetKey;
+  label: string;
+  currentValue: number;
+  currency: string;
+  notes: string;
+  updatedAt: string;
+}
+
+export type LiquidityAccountsGetResponse = LiquidityAccountDto[];
+
+export interface LiquidityAccountSaveRequest {
+  id?: number;
+  asset_key: LiquidityAssetKey;
+  label: string;
+  current_value: number;
+  currency?: string;
+  notes?: string;
+}
+
+export interface LiquidityAccountDeleteRequest { id: number; }

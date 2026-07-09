@@ -16,7 +16,7 @@ import {
   PieChart
 } from 'lucide-react';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
-import { getAllOutflows, getTotalOutflowsPerCategoryPerMonth } from '../utils/userDataSelectors';
+import { getAllOutflows, getTotalOutflowsCategoryBreakdownPerMonth } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { translateTag, resolveTagKeyFromLocalized } from '../data/tagTranslations';
@@ -335,7 +335,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
 
   const analysis = useMemo(() => {
     const allOutflows = getAllOutflows(userData);
-    const catPerMonth = getTotalOutflowsPerCategoryPerMonth(userData);
+    const catPerMonth = getTotalOutflowsCategoryBreakdownPerMonth(userData);
     if (!allOutflows || allOutflows.length === 0 || !catPerMonth) return null;
 
     const current = allOutflows[selectedMonthIndex] || [];
@@ -350,17 +350,24 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
 
     const cats = {};
     const currentCats = catPerMonth[selectedMonthIndex] || {};
-    Object.entries(currentCats).forEach(([cat, amount]) => {
-      const prevAmt = catPerMonth[selectedMonthIndex + 1]?.[cat] || 0;
+    Object.entries(currentCats).forEach(([cat, categoryData]) => {
+      const amount = Number(categoryData?.amount) || 0;
+      const prevAmt = Number(catPerMonth[selectedMonthIndex + 1]?.[cat]?.amount) || 0;
       let avg12 = 0, months = 0;
-      for (let i = 0; i < 12; i++) { if (catPerMonth[i]?.[cat]) { avg12 += catPerMonth[i][cat]; months++; } }
+      for (let i = 0; i < 12; i++) {
+        const monthlyAmount = Number(catPerMonth[i]?.[cat]?.amount) || 0;
+        if (monthlyAmount > 0) {
+          avg12 += monthlyAmount;
+          months++;
+        }
+      }
       avg12 = months > 0 ? avg12 / months : 0;
       const mChange = prevAmt > 0 ? ((amount - prevAmt) / prevAmt) * 100 : 0;
       const txCount = current.filter(o => {
-        const name = translateTag(o.categoryTag?.label, language, 'expense') || o.categoryTag?.label || 'Other';
+        const name = translateTag(o.categoryTag?.label, 'en', 'expense') || o.categoryTag?.label || 'Other';
         return name === cat;
       }).length;
-      cats[cat] = { amount, prevAmt, avg12, mChange, txCount };
+      cats[cat] = { amount, prevAmt, avg12, mChange, txCount, subcategories: categoryData?.subcategories || {} };
     });
 
     const payments = {};
@@ -524,32 +531,63 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
             <CatHeaderText theme={theme} $align="right">{t.vsPrevMonth}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">{t.vs12MAvg}</CatHeaderText>
           </CatHeaderRow>
-          {sortedCats.map(([cat, data], idx) => {
+          {sortedCats.map(([cat, data]) => {
             const pct = overview.currentTotal > 0 ? (data.amount / overview.currentTotal * 100) : 0;
             const dbKey = resolveTagKeyFromLocalized(cat, null, 'expense') || cat;
             const displayName = translateTag(dbKey, language, 'expense') || cat;
             const color = getCategoryColor(dbKey);
             const avgChange = data.avg12 > 0 ? ((data.amount - data.avg12) / data.avg12 * 100) : 0;
             return (
-              <CatRow key={cat} theme={theme}>
-                <CatName>
-                  <CatIcon $color={color} theme={theme}>{React.createElement(getCategoryIcon(dbKey), { size: 13 })}</CatIcon>
-                  <div style={{ minWidth: 0 }}>
-                    <CatLabel theme={theme}>{displayName}<CatPercent theme={theme}>{isHidden ? '' : `${pct.toFixed(0)}%`}</CatPercent></CatLabel>
-                    <ProgressBar theme={theme}><ProgressFill $color={color} $percent={pct} /></ProgressBar>
+              <React.Fragment key={cat}>
+                <CatRow theme={theme}>
+                  <CatName>
+                    <CatIcon $color={color} theme={theme}>{React.createElement(getCategoryIcon(dbKey), { size: 13 })}</CatIcon>
+                    <div style={{ minWidth: 0 }}>
+                      <CatLabel theme={theme}>{displayName}<CatPercent theme={theme}>{isHidden ? '' : `${pct.toFixed(0)}%`}</CatPercent></CatLabel>
+                      <ProgressBar theme={theme}><ProgressFill $color={color} $percent={pct} /></ProgressBar>
+                    </div>
+                  </CatName>
+                  <CatAmount theme={theme}>{isHidden ? '••••' : fmt(data.amount)}</CatAmount>
+                  <div style={{ textAlign: 'right' }}>
+                    <TrendBadge $trend={getTrend(data.mChange)} theme={theme}>
+                      {getTrend(data.mChange) === 'up' ? <ArrowUpRight /> : getTrend(data.mChange) === 'down' ? <ArrowDownRight /> : <Minus />}
+                      {isHidden ? '••' : formatPct(data.mChange)}
+                    </TrendBadge>
                   </div>
-                </CatName>
-                <CatAmount theme={theme}>{isHidden ? '••••' : fmt(data.amount)}</CatAmount>
-                <div style={{ textAlign: 'right' }}>
-                  <TrendBadge $trend={getTrend(data.mChange)} theme={theme}>
-                    {getTrend(data.mChange) === 'up' ? <ArrowUpRight /> : getTrend(data.mChange) === 'down' ? <ArrowDownRight /> : <Minus />}
-                    {isHidden ? '••' : formatPct(data.mChange)}
-                  </TrendBadge>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <TrendBadge $trend={getTrend(avgChange)} theme={theme}>{isHidden ? '••' : formatPct(avgChange)}</TrendBadge>
-                </div>
-              </CatRow>
+                  <div style={{ textAlign: 'right' }}>
+                    <TrendBadge $trend={getTrend(avgChange)} theme={theme}>{isHidden ? '••' : formatPct(avgChange)}</TrendBadge>
+                  </div>
+                </CatRow>
+                {!isHidden && Object.entries(data.subcategories || {})
+                  .filter(([, amount]) => Number(amount) > 0)
+                  .sort((a, b) => Number(b[1]) - Number(a[1]))
+                  .map(([subCategory, subAmount]) => {
+                    const subPct = data.amount > 0 ? (Number(subAmount) / data.amount * 100) : 0;
+                    return (
+                      <CatRow key={`${cat}-${subCategory}`} theme={theme} style={{ background: theme.mode === 'dark' ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.01)' }}>
+                        <CatName style={{ paddingLeft: '1.25rem' }}>
+                          <div style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: '50%',
+                            background: color,
+                            opacity: 0.55,
+                            flexShrink: 0,
+                          }} />
+                          <div style={{ minWidth: 0 }}>
+                            <CatLabel theme={theme} style={{ fontSize: '0.78rem', fontWeight: 500, opacity: 0.82 }}>
+                              ↳ {subCategory}
+                              <CatPercent theme={theme}>{`${subPct.toFixed(0)}%`}</CatPercent>
+                            </CatLabel>
+                          </div>
+                        </CatName>
+                        <CatAmount theme={theme} style={{ fontSize: '0.78rem', opacity: 0.82 }}>{fmt(Number(subAmount))}</CatAmount>
+                        <div />
+                        <div />
+                      </CatRow>
+                    );
+                  })}
+              </React.Fragment>
             );
           })}
         </div>

@@ -20,7 +20,13 @@ import { BsFiletypeCsv } from "react-icons/bs";
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
-import { getIncomesArray, getOutflowsArray, getTotalOutflowsPerCategoryPerMonth, getMonthlyTotalsAllTime } from '../utils/userDataSelectors';
+import {
+  getIncomesArray,
+  getOutflowsArray,
+  getTotalIncomesCategoryBreakdownPerMonth,
+  getTotalOutflowsCategoryBreakdownPerMonth,
+  getMonthlyTotalsAllTime,
+} from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 
@@ -41,8 +47,10 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   const [hasFullHistory, setHasFullHistory] = useState(false);
 
   // Pie chart state
-  const [totalOutflowsPerCategoryPerMonth, setTotalOutflowsPerCategoryPerMonth] = useState([]);
+  const [totalOutflowsCategoryBreakdownPerMonth, setTotalOutflowsCategoryBreakdownPerMonth] = useState([]);
+  const [totalIncomesCategoryBreakdownPerMonth, setTotalIncomesCategoryBreakdownPerMonth] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0);
+  const [selectedPieFlow, setSelectedPieFlow] = useState('outflows');
   
   // Common state
   const [containerWidth, setContainerWidth] = useState(800);
@@ -132,7 +140,8 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             setOutflowsArray(getOutflowsArray(userData) ? [...getOutflowsArray(userData)] : []);
             setMonthlyTotalsAllTime(getMonthlyTotalsAllTime(userData));
           } else {
-            setTotalOutflowsPerCategoryPerMonth(getTotalOutflowsPerCategoryPerMonth(userData) || []);
+            setTotalOutflowsCategoryBreakdownPerMonth(getTotalOutflowsCategoryBreakdownPerMonth(userData) || []);
+            setTotalIncomesCategoryBreakdownPerMonth(getTotalIncomesCategoryBreakdownPerMonth(userData) || []);
           }
         } catch (error) {
           console.error('Error during operations:', error);
@@ -242,16 +251,27 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   // Pie Chart Functions
   const renderPieChart = () => {
     let pieData = [];
+    const activeBreakdown = selectedPieFlow === 'incomes'
+      ? totalIncomesCategoryBreakdownPerMonth
+      : totalOutflowsCategoryBreakdownPerMonth;
+    const categoryType = selectedPieFlow === 'incomes' ? 'income' : 'expense';
     
-    if (totalOutflowsPerCategoryPerMonth[selectedMonth]) {
-      pieData = Object.entries(totalOutflowsPerCategoryPerMonth[selectedMonth])
-        .filter(([, value]) => value > 0)
-        .map(([key, value], index) => {
-          const tagLabel = resolveTagKeyFromLocalized(key, 'en', 'expense');
-          const translatedName = tagLabel ? translateTag(tagLabel, language, 'expense') : key;
+    if (activeBreakdown[selectedMonth]) {
+      pieData = Object.entries(activeBreakdown[selectedMonth])
+        .filter(([, data]) => data?.amount > 0)
+        .map(([key, data], index) => {
+          const tagLabel = resolveTagKeyFromLocalized(key, 'en', categoryType);
+          const translatedName = tagLabel ? translateTag(tagLabel, language, categoryType) : key;
+          const subcategories = Object.entries(data.subcategories || {})
+            .filter(([, amount]) => amount > 0)
+            .sort((a, b) => b[1] - a[1])
+            .map(([label, amount]) => ({ label, amount }));
           return {
           name: translatedName,
-          value: isHidden ? Math.floor(Math.random() * 1000) : value,
+          parentKey: key,
+          value: isHidden ? Math.floor(Math.random() * 1000) : data.amount,
+          realValue: data.amount,
+          subcategories,
           fill: isHidden 
             ? getGrayscaleColor(getCategoryColor(key, language), index)
             : getLighterSolidColor(getCategoryColor(key, language))
@@ -352,20 +372,42 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             return (
               <div key={index} style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
+                flexDirection: 'column',
+                gap: '3px',
                 fontSize: isMobile ? '0.7rem' : '0.8rem',
                 color: theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)',
-                whiteSpace: 'nowrap'
+                maxWidth: isMobile ? '140px' : '190px'
               }}>
-                <div style={{
-                  width: isMobile ? 8 : 10,
-                  height: isMobile ? 8 : 10,
-                  borderRadius: '50%',
-                  backgroundColor: entry.fill,
-                  flexShrink: 0
-                }} />
-                <span>{isHidden ? '****' : `${entry.name} ${pct}%`}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}>
+                  <div style={{
+                    width: isMobile ? 8 : 10,
+                    height: isMobile ? 8 : 10,
+                    borderRadius: '50%',
+                    backgroundColor: entry.fill,
+                    flexShrink: 0
+                  }} />
+                  <span>{isHidden ? '****' : `${entry.name} ${pct}%`}</span>
+                </div>
+                {!isHidden && entry.subcategories.length > 0 && (
+                  <div style={{
+                    paddingLeft: isMobile ? 13 : 15,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)',
+                    fontSize: isMobile ? '0.64rem' : '0.72rem',
+                    lineHeight: 1.25,
+                  }}>
+                    {entry.subcategories.slice(0, 3).map((sub) => (
+                      <span key={sub.label} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        ↳ {sub.label} · {formatAmount(sub.amount, { maximumFractionDigits: 0 })}
+                      </span>
+                    ))}
+                    {entry.subcategories.length > 3 && (
+                      <span>+{entry.subcategories.length - 3}</span>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -399,7 +441,11 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
     const monthOptions = [];
     let year = currentYear;
 
-    for (let i = 0; i < Object.keys(totalOutflowsPerCategoryPerMonth).length; i++) {
+    const activeBreakdown = selectedPieFlow === 'incomes'
+      ? totalIncomesCategoryBreakdownPerMonth
+      : totalOutflowsCategoryBreakdownPerMonth;
+
+    for (let i = 0; i < Object.keys(activeBreakdown).length; i++) {
       const month = ((currentMonth - i - 1 + 12) % 12) + 1;
       if (month === 12 && i !== 0) {
         year--;
@@ -450,6 +496,33 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           textAlign: 'center', 
           borderBottom: theme.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
         }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 8 }}>
+            {[
+              { key: 'outflows', label: translations.general.outflows },
+              { key: 'incomes', label: translations.general.incomes },
+            ].map((option) => {
+              const active = selectedPieFlow === option.key;
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  onClick={() => setSelectedPieFlow(option.key)}
+                  style={{
+                    border: `1px solid ${active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)')}`,
+                    borderRadius: 999,
+                    padding: '0.35rem 0.75rem',
+                    cursor: 'pointer',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    background: active ? theme.buttonBackgroundColor : 'transparent',
+                    color: active ? '#fff' : theme.textColor,
+                  }}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
           {renderMonthSelector()}
         </div>
         <div style={{ flex: 1, minHeight: 0 }}>

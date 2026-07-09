@@ -13,7 +13,7 @@ import {
     getOutflowsArray,
     getBalanceGrowth12Months,
     getProfileCompletionPercentage,
-    getTotalOutflowsPerCategoryPerMonth,
+    getTotalOutflowsParentCategoryPerMonth,
     getAveragesAllSavingsRates,
     getAveragesSimilarSavingsRates,
     getAveragesAllExpensesByCategory,
@@ -1002,7 +1002,7 @@ function Comparison({ theme, userData, isHidden}) {
 
     // Calculate Spending by Category (last 12 months)
     const calculateSpendingByCategory = () => {
-        const totalOutflowsPerCategory = getTotalOutflowsPerCategoryPerMonth(userData);
+        const totalOutflowsPerCategory = getTotalOutflowsParentCategoryPerMonth(userData);
         const categoryTotals = {};
         
         // Sum up all categories across 12 months
@@ -1636,4 +1636,3 @@ function Comparison({ theme, userData, isHidden}) {
 }
 
 export default Comparison;
-

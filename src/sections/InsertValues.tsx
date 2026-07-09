@@ -1393,6 +1393,7 @@ export default function InsertValue({
         editedValues.note,
         isOutflow ? editedValues.typologyKey : 0,
         editedValues.categoryKey,
+        editedValues.userCategoryId ?? null,
       );
       const insertResult = await financeService.addExpenseOrIncome(inExJson);
       if (insertResult.status !== 200) {

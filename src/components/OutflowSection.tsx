@@ -355,6 +355,7 @@ export default function OutflowSection({
       add.amount === editingAdd.amount &&
       add.categoryTag?.index === editingAdd.categoryTag?.index &&
       add.paymentType?.index === editingAdd.paymentType?.index &&
+      (add.userCategory?.id ?? null) === (editingAdd.userCategory?.id ?? null) &&
       add.notes === editingAdd.notes
     );
   };
@@ -364,6 +365,10 @@ export default function OutflowSection({
     setEditingAdd(add);
     setEditValues({
       categoryKey: add.categoryTag?.index ?? "",
+      categoryValue: translateTag(add.categoryTag?.label, language, 'expense'),
+      parentValue: translateTag(add.categoryTag?.label, language, 'expense'),
+      userCategoryId: add.userCategory?.id ?? null,
+      userCategoryLabel: add.userCategory?.label ?? null,
       typologyKey: add.paymentType?.index ?? "",
       amount: String(parseFloat(displayAmount.toFixed(2))),
       note: add.notes || "",
@@ -691,17 +696,29 @@ export default function OutflowSection({
           return (
             <tr key={index} style={{ background: 'rgba(59, 130, 246, 0.08)', outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
               <td>
-                <InlineSelect
-                  theme={theme}
-                  value={editValues.categoryKey}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, categoryKey: Number(e.target.value) }))}
-                >
-                  {sortTagsByLanguage(OutflowsTags, language, 'expense').map((item) => (
-                    <option key={item.index} value={item.index}>
-                      {translateTag(item.label, language, 'expense')}
-                    </option>
-                  ))}
-                </InlineSelect>
+                <div style={{ minWidth: 180 }}>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={OutflowsTags}
+                    customCategories={customCategories}
+                    categoryType="expense"
+                    categoryKey={editValues.categoryKey}
+                    userCategoryId={editValues.userCategoryId ?? null}
+                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                      setEditValues(prev => ({
+                        ...prev,
+                        categoryKey,
+                        categoryValue: userCategoryLabel || categoryValue,
+                        parentValue: categoryValue,
+                        userCategoryId,
+                        userCategoryLabel,
+                      }))
+                    }
+                    onCreateCategory={onCreateCategory}
+                    disabled={isSaving}
+                    placeholder={translations.insert.outflowSection.placeholderCategory}
+                  />
+                </div>
               </td>
               <td>
                 <InlineSelect

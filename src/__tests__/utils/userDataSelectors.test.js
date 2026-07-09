@@ -42,6 +42,9 @@ import {
   getAllOutflows,
   getOutflowsArray,
   getTotalOutflowsPerCategoryPerMonth,
+  getTotalOutflowsParentCategoryPerMonth,
+  getTotalOutflowsCategoryBreakdownPerMonth,
+  getTotalIncomesCategoryBreakdownPerMonth,
   getAllIncomes,
   getIncomesArray,
   getTotalOutflowsCurrentMonth,
@@ -183,14 +186,22 @@ const mockUserData = {
     ],
     outflowsArray: [2100, 1950, 2200, 1800, 2300, 1750, 2150, 1900, 2050, 1850, 2250, 1700, 2000],
     totalOutflowsPerCategoryPerMonth: {
-      0: { 'House': 800, 'Food': 600, 'Transport': 400, 'Entertainment': 300 }
+      0: {
+        'House': 800,
+        'Food': 200,
+        'Food / Groceries': 400,
+        'Food / Work lunch': 100,
+        'Transport': 400,
+        'Entertainment': 300,
+      }
     }
   },
   
   incomes: {
     allIncomes: [
       [
-        { amount: 2800, categoryTag: { translations: { en: 'Salary' } }, isExpense: false }
+        { amount: 2600, categoryTag: { translations: { en: 'Salary' } }, isExpense: false },
+        { amount: 200, categoryTag: { translations: { en: 'Salary' } }, userCategory: { label: 'Bonus' }, isExpense: false }
       ]
     ],
     incomesArray: [2800, 2750, 2900, 2650, 2850, 2700, 2800, 2750, 2900, 2650, 2850, 2700, 2600]
@@ -414,6 +425,21 @@ describe('userDataSelectors', () => {
       const result = getTotalOutflowsPerCategoryPerMonth(mockUserData);
       expect(result[0]).toBeDefined();
       expect(result[0].House).toBe(800);
+      expect(result[0]['Food / Groceries']).toBe(400);
+    });
+
+    it('getTotalOutflowsParentCategoryPerMonth should collapse custom categories into parents', () => {
+      const result = getTotalOutflowsParentCategoryPerMonth(mockUserData);
+      expect(result[0].House).toBe(800);
+      expect(result[0].Food).toBe(700);
+      expect(result[0]['Food / Groceries']).toBeUndefined();
+    });
+
+    it('getTotalOutflowsCategoryBreakdownPerMonth should expose parent and subcategory totals', () => {
+      const result = getTotalOutflowsCategoryBreakdownPerMonth(mockUserData);
+      expect(result[0].Food.amount).toBe(700);
+      expect(result[0].Food.subcategories.Groceries).toBe(400);
+      expect(result[0].Food.subcategories['Work lunch']).toBe(100);
     });
 
     it('getAllIncomes should return incomes array', () => {
@@ -424,6 +450,12 @@ describe('userDataSelectors', () => {
     it('getIncomesArray should return monthly income totals', () => {
       const result = getIncomesArray(mockUserData);
       expect(result[0]).toBe(2800);
+    });
+
+    it('getTotalIncomesCategoryBreakdownPerMonth should expose income subcategory totals', () => {
+      const result = getTotalIncomesCategoryBreakdownPerMonth(mockUserData);
+      expect(result[0].Salary.amount).toBe(2800);
+      expect(result[0].Salary.subcategories.Bonus).toBe(200);
     });
 
     it('getTotalOutflowsCurrentMonth should return current month outflows', () => {

@@ -11,6 +11,7 @@ import {
   DEFAULT_SAVINGS_GOAL_PERCENTAGE,
   DEFAULT_EMERGENCY_FUND_TARGET,
 } from '../data/financeDefaults';
+import { translateTag as translateTagDirect } from '../data/tagTranslations';
 
 /** Accepts the full userData, null (loading), or undefined (unauthenticated). */
 type UserDataLike = UserData | null | undefined;
@@ -204,7 +205,117 @@ export const isNewUser = (userData: UserDataLike): boolean => {
 export const getAllOutflows = (userData: UserDataLike): any[] => userData?.expenses?.allOutflows || [];
 export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.expenses?.outflowsArray || [];
 export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, any> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
+
+type CategoryBreakdown = Record<string, {
+  amount: number;
+  subcategories: Record<string, number>;
+}>;
+
+const splitCategoryPath = (category: string): { parent: string; child: string | null } => {
+  const [parent, ...childParts] = String(category || '').split(' / ');
+  const child = childParts.join(' / ').trim();
+  return {
+    parent: parent.trim() || 'Unknown',
+    child: child || null,
+  };
+};
+
+/**
+ * Collapse custom sub-categories into their official parent category.
+ *
+ * Use this for comparisons/rankings against other users: custom categories are
+ * user-specific, so cross-user metrics must only compare the shared parent tags.
+ */
+export const getTotalOutflowsParentCategoryPerMonth = (userData: UserDataLike): Record<string, Record<string, number>> => {
+  const detailed = getTotalOutflowsPerCategoryPerMonth(userData);
+  const collapsed: Record<string, Record<string, number>> = {};
+
+  Object.entries(detailed).forEach(([monthIndex, monthData]) => {
+    const perParent: Record<string, number> = {};
+    Object.entries(monthData || {}).forEach(([category, value]) => {
+      const { parent } = splitCategoryPath(category);
+      perParent[parent] = (perParent[parent] || 0) + (Number(value) || 0);
+    });
+    collapsed[monthIndex] = perParent;
+  });
+
+  return collapsed;
+};
+
+/**
+ * Build a personal category breakdown:
+ * { Food: { amount: 120, subcategories: { Groceries: 80, Work lunch: 40 } } }
+ *
+ * Use this only in personal statistics where the user's own sub-categories are
+ * useful. The parent amount always includes all children plus uncategorized rows.
+ */
+export const getTotalOutflowsCategoryBreakdownPerMonth = (userData: UserDataLike): Record<string, CategoryBreakdown> => {
+  const detailed = getTotalOutflowsPerCategoryPerMonth(userData);
+  const breakdown: Record<string, CategoryBreakdown> = {};
+
+  Object.entries(detailed).forEach(([monthIndex, monthData]) => {
+    const perParent: CategoryBreakdown = {};
+    Object.entries(monthData || {}).forEach(([category, value]) => {
+      const amount = Number(value) || 0;
+      const { parent, child } = splitCategoryPath(category);
+      if (!perParent[parent]) {
+        perParent[parent] = { amount: 0, subcategories: {} };
+      }
+      perParent[parent].amount += amount;
+      if (child) {
+        perParent[parent].subcategories[child] = (perParent[parent].subcategories[child] || 0) + amount;
+      }
+    });
+    breakdown[monthIndex] = perParent;
+  });
+
+  return breakdown;
+};
+
 export const getAllIncomes = (userData: UserDataLike): any[] => userData?.incomes?.allIncomes || [];
+
+const aggregateTransactionsByCategory = (
+  monthlyEntries: any[],
+  type: 'expense' | 'income',
+): Record<string, CategoryBreakdown> => {
+  const breakdown: Record<string, CategoryBreakdown> = {};
+
+  monthlyEntries.forEach((month, monthIndex) => {
+    const perParent: CategoryBreakdown = {};
+    if (!Array.isArray(month)) {
+      breakdown[monthIndex] = perParent;
+      return;
+    }
+
+    month.forEach((entry) => {
+      const parent =
+        translateTagDirect(entry?.categoryTag?.label, 'en', type) ||
+        entry?.categoryTag?.translations?.en ||
+        entry?.categoryTag?.label ||
+        'Unknown';
+      const child = entry?.userCategory?.label || null;
+      const amount = Number(entry?.amount) || 0;
+      if (amount <= 0) return;
+
+      if (!perParent[parent]) {
+        perParent[parent] = { amount: 0, subcategories: {} };
+      }
+      perParent[parent].amount += amount;
+      if (child) {
+        perParent[parent].subcategories[child] = (perParent[parent].subcategories[child] || 0) + amount;
+      }
+    });
+
+    breakdown[monthIndex] = perParent;
+  });
+
+  return breakdown;
+};
+
+/** Personal income category breakdown, including custom sub-categories. */
+export const getTotalIncomesCategoryBreakdownPerMonth = (userData: UserDataLike): Record<string, CategoryBreakdown> =>
+  aggregateTransactionsByCategory(getAllIncomes(userData), 'income');
+
 export const getIncomesArray = (userData: UserDataLike): number[] => userData?.incomes?.incomesArray || [];
 
 /** Lazy-loaded full monthly outflow/income totals (see fetchAllTimeMonthlyTotals in UserContext),
@@ -467,5 +578,3 @@ export const getBalanceChartData = (userData: UserDataLike, monthsBack: number =
   }
   return result;
 };
-
-

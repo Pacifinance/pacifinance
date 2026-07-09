@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { sortTagsByLanguage } from '../utils/sortingUtils';
 import { translateTag } from '../data/tagTranslations';
 import styled from 'styled-components';
 import {
@@ -290,26 +289,6 @@ const InlineInput = styled.input`
   }
 `;
 
-const InlineSelect = styled.select`
-  width: 100%;
-  min-width: 80px;
-  padding: 4px 6px;
-  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
-  border-radius: 6px;
-  font-size: 0.82rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
-  color: ${p => p.theme.textColor};
-  box-sizing: border-box;
-  outline: none;
-  cursor: pointer;
-  font-family: inherit;
-
-  option {
-    background: ${p => p.theme.mode === 'dark' ? '#1e293b' : '#ffffff'};
-    color: ${p => p.theme.mode === 'dark' ? '#e2e8f0' : '#1e293b'};
-  }
-`;
-
 const TotalRow = styled.tr`
   font-weight: 600;
   
@@ -390,6 +369,7 @@ export default function IncomeSection({
       add.date === editingAdd.date &&
       add.amount === editingAdd.amount &&
       add.categoryTag?.index === editingAdd.categoryTag?.index &&
+      (add.userCategory?.id ?? null) === (editingAdd.userCategory?.id ?? null) &&
       add.notes === editingAdd.notes
     );
   };
@@ -399,6 +379,10 @@ export default function IncomeSection({
     setEditingAdd(add);
     setEditValues({
       categoryKey: add.categoryTag?.index ?? "",
+      categoryValue: translateTag(add.categoryTag?.label, language, 'income'),
+      parentValue: translateTag(add.categoryTag?.label, language, 'income'),
+      userCategoryId: add.userCategory?.id ?? null,
+      userCategoryLabel: add.userCategory?.label ?? null,
       amount: String(parseFloat(displayAmount.toFixed(2))),
       note: add.notes || "",
       date: add.date ? new Date(add.date).toISOString().split('T')[0] : "",
@@ -692,17 +676,29 @@ export default function IncomeSection({
           return (
             <tr key={index} style={{ background: 'rgba(59, 130, 246, 0.08)', outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
               <td>
-                <InlineSelect
-                  theme={theme}
-                  value={editValues.categoryKey}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, categoryKey: Number(e.target.value) }))}
-                >
-                  {sortTagsByLanguage(incomesTags, language, 'income').map((item) => (
-                    <option key={item.index} value={item.index}>
-                      {translateTag(item.label, language, 'income')}
-                    </option>
-                  ))}
-                </InlineSelect>
+                <div style={{ minWidth: 180 }}>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={incomesTags}
+                    customCategories={customCategories}
+                    categoryType="income"
+                    categoryKey={editValues.categoryKey}
+                    userCategoryId={editValues.userCategoryId ?? null}
+                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                      setEditValues(prev => ({
+                        ...prev,
+                        categoryKey,
+                        categoryValue: userCategoryLabel || categoryValue,
+                        parentValue: categoryValue,
+                        userCategoryId,
+                        userCategoryLabel,
+                      }))
+                    }
+                    onCreateCategory={onCreateCategory}
+                    disabled={isSaving}
+                    placeholder={translations.insert.incomeSection.placeholderCategory}
+                  />
+                </div>
               </td>
               <td>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>

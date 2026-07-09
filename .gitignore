@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+html/html.meta.json.gz
 
 # production
 /build

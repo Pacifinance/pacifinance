@@ -25,7 +25,7 @@ import {
 } from "react-icons/md";
 import { assetIcons } from '../data/assetIcons';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
-import { BiTrendingUp, BiWallet } from 'react-icons/bi';
+import { BiTrendingUp, BiWallet, BiListUl } from 'react-icons/bi';
 
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -37,7 +37,7 @@ import {
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
     getFundsValue, getGoldValue, getTotalValue, getOutflowsArray, getIncomesArray
 } from '../utils/userDataSelectors';
-import { 
+import {
     ModernDashboardContainer,
     ModernDashboardHeader,
     ModernBalanceOverview,
@@ -58,8 +58,16 @@ import {
     InvestmentCardWrapper,
     InvestmentRowWrapper,
     AssetCardWrapper,
-    AssetRowWrapper
+    AssetRowWrapper,
+    SubEntriesList,
+    SubEntryRow,
+    SubEntriesMore
 } from '../styles/ModernDashboardStyled';
+import { useDemoServices } from '../hooks/useDemoServices';
+import InvestmentHoldingsPanel from '../components/InvestmentHoldingsPanel';
+import LiquidityAccountsPanel from '../components/LiquidityAccountsPanel';
+import { isVerifiableAssetKey } from '../constants/investmentSchema';
+import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
 const FinancialInsights = lazy(() => import('../components/FinancialInsights'));
 const GoalTracker = lazy(() => import('../components/GoalTracker'));
 const OnboardingWelcome = lazy(() => import('../components/OnboardingWelcome'));
@@ -86,7 +94,53 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const { sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode } = useDashboardLayout();
-    
+    const { investmentService, liquidityAccountService } = useDemoServices();
+    const [investmentHoldings, setInvestmentHoldings] = useState([]);
+    const [liquidityAccounts, setLiquidityAccounts] = useState([]);
+    const [openSubAccountsAssetKey, setOpenSubAccountsAssetKey] = useState(null);
+
+    const refreshInvestmentHoldings = async () => {
+        const holdings = await investmentService.getHoldings();
+        setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
+    };
+
+    const refreshLiquidityAccounts = async () => {
+        const accounts = await liquidityAccountService.getAccounts();
+        setLiquidityAccounts(Array.isArray(accounts) ? accounts : []);
+    };
+
+    useEffect(() => {
+        refreshInvestmentHoldings();
+        refreshLiquidityAccounts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const holdingsByAssetKey = useMemo(() => {
+        const map = {};
+        for (const holding of investmentHoldings) {
+            (map[holding.assetKey] ||= []).push(holding);
+        }
+        return map;
+    }, [investmentHoldings]);
+
+    const liquidityAccountsByAssetKey = useMemo(() => {
+        const map = {};
+        for (const account of liquidityAccounts) {
+            (map[account.assetKey] ||= []).push(account);
+        }
+        return map;
+    }, [liquidityAccounts]);
+
+    /** Live value for an asset: sum of its sub-accounts if any exist, otherwise the recorded balance. */
+    const liveAssetValue = (assetKey, recordedValue) => {
+        const subEntries = LIQUIDITY_KEYS.includes(assetKey)
+            ? (liquidityAccountsByAssetKey[assetKey] || [])
+            : (holdingsByAssetKey[assetKey] || []);
+        if (subEntries.length === 0) return recordedValue;
+        return subEntries.reduce((sum, entry) => sum + (entry.currentValue ?? entry.investedAmount ?? 0), 0);
+    };
+
+
     
     // Stati per i bilanci
     const [stocksValue, setStocksValue] = useState(0);
@@ -142,90 +196,103 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
     // Dati per i bilanci tradizionali (Banca, Contanti, Servizi Digitali)
     const traditionalAssets = useMemo(() => [
-        { 
-            name: translations.assets.bank, 
-            value: bankValue >= 0 ? bankValue : 0,
+        {
+            key: 'bank',
+            name: translations.assets.bank,
+            value: liveAssetValue('bank', bankValue >= 0 ? bankValue : 0),
             icon: assetIcons.bank,
             color: assetColors.bank.primary,
             gradient: assetColors.bank.gradient
         },
-        { 
-            name: translations.assets.cash, 
-            value: cashValue >= 0 ? cashValue : 0,
+        {
+            key: 'cash',
+            name: translations.assets.cash,
+            value: liveAssetValue('cash', cashValue >= 0 ? cashValue : 0),
             icon: assetIcons.cash,
             color: assetColors.cash.primary,
             gradient: assetColors.cash.gradient
         },
-        { 
-            name: translations.assets.digitalServices, 
-            value: digitalServicesValue >= 0 ? digitalServicesValue : 0,
+        {
+            key: 'digitalServices',
+            name: translations.assets.digitalServices,
+            value: liveAssetValue('digitalServices', digitalServicesValue >= 0 ? digitalServicesValue : 0),
             icon: assetIcons.digitalServices,
             color: assetColors.digitalServices.primary,
             gradient: assetColors.digitalServices.gradient
         },
-    ], [translations, bankValue, cashValue, digitalServicesValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- liveAssetValue only reads liquidityAccountsByAssetKey, already listed
+    ], [translations, bankValue, cashValue, digitalServicesValue, liquidityAccountsByAssetKey]);
 
     // Fondo di Emergenza - Sezione separata
     const emergencyFundAsset = useMemo(() => ({
-        name: translations.assets.emergencyFund, 
-        value: emergencyFund >= 0 ? emergencyFund : 0,
+        key: 'emergencyFund',
+        name: translations.assets.emergencyFund,
+        value: liveAssetValue('emergencyFund', emergencyFund >= 0 ? emergencyFund : 0),
         icon: assetIcons.emergencyFund,
         color: assetColors.emergencyFund.primary,
         gradient: assetColors.emergencyFund.gradient
-    }), [translations, emergencyFund]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- liveAssetValue only reads liquidityAccountsByAssetKey, already listed
+    }), [translations, emergencyFund, liquidityAccountsByAssetKey]);
 
     // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Gold)
     const allInvestments = [
-        { 
-            name: translations.assets.stocks, 
-            value: stocksValue >= 0 ? stocksValue : 0,
+        {
+            key: 'stocks',
+            name: translations.assets.stocks,
+            value: liveAssetValue('stocks', stocksValue >= 0 ? stocksValue : 0),
             icon: assetIcons.stocks,
             color: assetColors.stocks.primary,
             gradient: assetColors.stocks.gradient,
             description: translations.dashboard.stockDescription
         },
-        { 
-            name: translations.assets.etf, 
-            value: etfValue >= 0 ? etfValue : 0,
+        {
+            key: 'etf',
+            name: translations.assets.etf,
+            value: liveAssetValue('etf', etfValue >= 0 ? etfValue : 0),
             icon: assetIcons.etf,
             color: assetColors.etf.primary,
             gradient: assetColors.etf.gradient,
             description: translations.dashboard.etfDescription
         },
-        { 
-            name: translations.assets.bitcoin, 
-            value: bitcoinValue >= 0 ? bitcoinValue : 0,
+        {
+            key: 'bitcoin',
+            name: translations.assets.bitcoin,
+            value: liveAssetValue('bitcoin', bitcoinValue >= 0 ? bitcoinValue : 0),
             icon: assetIcons.bitcoin,
             color: assetColors.bitcoin.primary,
             gradient: assetColors.bitcoin.gradient,
             description: translations.dashboard.bitcoinDescription
         },
-        { 
-            name: translations.assets.crypto, 
-            value: cryptoValue >= 0 ? cryptoValue : 0,
+        {
+            key: 'crypto',
+            name: translations.assets.crypto,
+            value: liveAssetValue('crypto', cryptoValue >= 0 ? cryptoValue : 0),
             icon: assetIcons.crypto,
             color: assetColors.crypto.primary,
             gradient: assetColors.crypto.gradient,
             description: translations.dashboard.cryptoDescription
         },
-        { 
-            name: translations.assets.bonds, 
-            value: bondsValue >= 0 ? bondsValue : 0,
+        {
+            key: 'bonds',
+            name: translations.assets.bonds,
+            value: liveAssetValue('bonds', bondsValue >= 0 ? bondsValue : 0),
             icon: assetIcons.bonds,
             color: assetColors.bonds.primary,
             gradient: assetColors.bonds.gradient,
             description: translations.dashboard.bondsDescription,
         },
-        { 
-            name: translations.assets.funds, 
-            value: fundsValue >= 0 ? fundsValue : 0,
+        {
+            key: 'funds',
+            name: translations.assets.funds,
+            value: liveAssetValue('funds', fundsValue >= 0 ? fundsValue : 0),
             icon: assetIcons.funds,
             color: assetColors.funds.primary,
             gradient: assetColors.funds.gradient,
             description: translations.dashboard.fundsDescription,
         },
-        { 
-            name: translations.assets.gold, 
+        {
+            key: 'gold',
+            name: translations.assets.gold,
             value: goldValue >= 0 ? goldValue : 0,
             icon: assetIcons.gold,
             color: assetColors.gold.primary,
@@ -456,9 +523,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 // Funzione helper per renderizzare una card asset
                                 const renderAssetCard = (asset, index) => {
                                     const IconComponent = asset.icon;
+                                    const subEntries = (liquidityAccountsByAssetKey[asset.key] || [])
+                                        .slice()
+                                        .sort((a, b) => (b.currentValue ?? 0) - (a.currentValue ?? 0));
                                     return (
-                                        <AssetCardWrapper 
-                                            key={index} 
+                                        <AssetCardWrapper
+                                            key={index}
                                             $itemCount={count}
                                             $index={index}
                                         >
@@ -468,24 +538,50 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                         <div className="icon-container">
                                                             <IconComponent className="asset-icon" />
                                                         </div>
-                                                        <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
-                                                            <AiOutlinePlusCircle />
-                                                        </LocalizedLink>
+                                                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                            <button
+                                                                type="button"
+                                                                className="action-button"
+                                                                onClick={() => setOpenSubAccountsAssetKey(asset.key)}
+                                                                aria-label={translations.liquidityAccounts.manageLink}
+                                                                data-umami-event="dashboard-manage-liquidity"
+                                                            >
+                                                                <BiListUl />
+                                                            </button>
+                                                            <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                                <AiOutlinePlusCircle />
+                                                            </LocalizedLink>
+                                                        </div>
                                                     </div>
-                                                    
+
                                                     <div className="card-content">
                                                         <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
                                                         <div className="asset-value">{formatCurrency(asset.value)}</div>
                                                         <div className="asset-percentage">
                                                             {formatPercentage(asset.value, totalBalance)} {translations.dashboard.ofTotal}
                                                         </div>
+                                                        {!isHidden && subEntries.length > 0 && (
+                                                            <SubEntriesList $color="white">
+                                                                {subEntries.slice(0, 4).map((entry) => (
+                                                                    <SubEntryRow key={entry.id}>
+                                                                        <span className="sub-entry-label">{entry.label}</span>
+                                                                        <span className="sub-entry-value">{formatCurrency(entry.currentValue ?? 0)}</span>
+                                                                    </SubEntryRow>
+                                                                ))}
+                                                                {subEntries.length > 4 && (
+                                                                    <SubEntriesMore>
+                                                                        {translations.liquidityAccounts.calculatedFromN.replace('{count}', subEntries.length)}
+                                                                    </SubEntriesMore>
+                                                                )}
+                                                            </SubEntriesList>
+                                                        )}
                                                     </div>
-                                                    
+
                                                     <div className="card-footer">
                                                         <div className="progress-bar">
-                                                            <div 
-                                                                className="progress-fill" 
-                                                                style={{ 
+                                                            <div
+                                                                className="progress-fill"
+                                                                style={{
                                                                     width: `${formatPercentage(asset.value, totalBalance)}%`,
                                                                     backgroundColor: asset.color
                                                                 }}
@@ -522,11 +618,22 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                     <div className="icon-container">
                                                         <GiUmbrella className="asset-icon" />
                                                     </div>
-                                                    <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
-                                                        <AiOutlinePlusCircle />
-                                                    </LocalizedLink>
+                                                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                        <button
+                                                            type="button"
+                                                            className="action-button"
+                                                            onClick={() => setOpenSubAccountsAssetKey('emergencyFund')}
+                                                            aria-label={translations.liquidityAccounts.manageLink}
+                                                            data-umami-event="dashboard-manage-emergency"
+                                                        >
+                                                            <BiListUl />
+                                                        </button>
+                                                        <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
+                                                            <AiOutlinePlusCircle />
+                                                        </LocalizedLink>
+                                                    </div>
                                                 </div>
-                                                
+
                                                 <div className="card-content">
                                                     <h4 className="asset-name">{isHidden ? '****' : emergencyFundAsset.name}</h4>
                                                     <div className="asset-value">{formatCurrency(emergencyFundAsset.value)}</div>
@@ -542,6 +649,20 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                         }}>
                                                             {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
                                                         </div>
+                                                    )}
+                                                    {!isHidden && (liquidityAccountsByAssetKey.emergencyFund || []).length > 0 && (
+                                                        <SubEntriesList $color="white">
+                                                            {(liquidityAccountsByAssetKey.emergencyFund || [])
+                                                                .slice()
+                                                                .sort((a, b) => (b.currentValue ?? 0) - (a.currentValue ?? 0))
+                                                                .slice(0, 4)
+                                                                .map((entry) => (
+                                                                    <SubEntryRow key={entry.id}>
+                                                                        <span className="sub-entry-label">{entry.label}</span>
+                                                                        <span className="sub-entry-value">{formatCurrency(entry.currentValue ?? 0)}</span>
+                                                                    </SubEntryRow>
+                                                                ))}
+                                                        </SubEntriesList>
                                                     )}
                                                 </div>
                                                 
@@ -577,6 +698,9 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                             // Funzione helper per renderizzare una card
                             const renderInvestmentCard = (investment, index) => {
                                 const IconComponent = investment.icon;
+                                const subEntries = (holdingsByAssetKey[investment.key] || [])
+                                    .slice()
+                                    .sort((a, b) => (b.currentValue ?? b.investedAmount ?? 0) - (a.currentValue ?? a.investedAmount ?? 0));
                                 return (
                                     <InvestmentCardWrapper 
                                         key={index} 
@@ -623,13 +747,47 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                             <span className="stat-value">{formatPercentage(investment.value, totalBalance)}</span>
                                                         </div>
                                                     </div>
+                                                    {!isHidden && subEntries.length > 0 && (
+                                                        <SubEntriesList $color={theme.textColor}>
+                                                            {subEntries.slice(0, 4).map((entry) => (
+                                                                <SubEntryRow key={entry.id}>
+                                                                    <span className="sub-entry-label">{entry.instrument?.symbol ?? '—'}</span>
+                                                                    <span className="sub-entry-value">{formatCurrency(entry.currentValue ?? entry.investedAmount ?? 0)}</span>
+                                                                </SubEntryRow>
+                                                            ))}
+                                                            {subEntries.length > 4 && (
+                                                                <SubEntriesMore>
+                                                                    {translations.investments.holdings.calculatedFromN.replace('{count}', subEntries.length)}
+                                                                </SubEntriesMore>
+                                                            )}
+                                                        </SubEntriesList>
+                                                    )}
                                                 </div>
-                                                
+
                                                 <div className="card-footer">
-                                                    <LocalizedLink to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment">
-                                                        <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
-                                                        {translations.dashboard.updateValue}
-                                                    </LocalizedLink>
+                                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                        {isVerifiableAssetKey(investment.key) && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setOpenSubAccountsAssetKey(investment.key)}
+                                                                aria-label={translations.investments.holdings.manageLink}
+                                                                data-umami-event="dashboard-manage-holdings"
+                                                                style={{
+                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                    background: 'transparent', color: theme.textColor,
+                                                                    border: `1.5px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}`,
+                                                                    borderRadius: '0.6rem', padding: '0.6rem 0.9rem', fontSize: '0.85rem',
+                                                                    fontWeight: 600, cursor: 'pointer',
+                                                                }}
+                                                            >
+                                                                <BiListUl />
+                                                            </button>
+                                                        )}
+                                                        <LocalizedLink to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment" style={{ flex: 1 }}>
+                                                            <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
+                                                            {translations.dashboard.updateValue}
+                                                        </LocalizedLink>
+                                                    </div>
                                                 </div>
                                             </FloatingElement>
                                         </ModernInvestmentCard>
@@ -1112,6 +1270,24 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
                 </ResponsivePadding>
             </DashboardContent>
+
+            {openSubAccountsAssetKey && LIQUIDITY_KEYS.includes(openSubAccountsAssetKey) && (
+                <LiquidityAccountsPanel
+                    assetKey={openSubAccountsAssetKey}
+                    accounts={liquidityAccountsByAssetKey[openSubAccountsAssetKey] || []}
+                    onClose={() => setOpenSubAccountsAssetKey(null)}
+                    onChanged={refreshLiquidityAccounts}
+                />
+            )}
+
+            {openSubAccountsAssetKey && isVerifiableAssetKey(openSubAccountsAssetKey) && (
+                <InvestmentHoldingsPanel
+                    assetKey={openSubAccountsAssetKey}
+                    holdings={holdingsByAssetKey[openSubAccountsAssetKey] || []}
+                    onClose={() => setOpenSubAccountsAssetKey(null)}
+                    onChanged={refreshInvestmentHoldings}
+                />
+            )}
         </MainDashboardLayout>
     );
 };

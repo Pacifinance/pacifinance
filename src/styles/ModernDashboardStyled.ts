@@ -650,6 +650,42 @@ export const ModernAssetCard = styled.div`
     }
   }
 `;
+export const SubEntriesList = styled.div`
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid ${props => props.$color || 'currentColor'}33;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: ${props => props.$color || 'inherit'};
+`;
+
+export const SubEntryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+
+  .sub-entry-label {
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sub-entry-value {
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+`;
+
+export const SubEntriesMore = styled.div`
+  font-size: 0.66rem;
+  opacity: 0.65;
+  text-align: right;
+`;
+
 export const ModernInvestmentCard = styled.div`
   background: ${props => props.theme.mode === 'dark' 
     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)'

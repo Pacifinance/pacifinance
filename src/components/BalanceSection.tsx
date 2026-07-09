@@ -355,11 +355,27 @@ export default function BalanceSection({
     return map;
   }, [liquidityAccounts]);
 
+  const handleBalanceDateChange = (event) => {
+    const [month, year] = event.target.value.split('-').map(Number);
+    setBalanceDate({ month, year });
+  };
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+
+  /** True when the picker is on the current month — the normal, live state. */
+  const isCurrentMonth =
+    balanceDate.month === currentMonth && balanceDate.year === currentYear;
+
   // Reconciliation: whenever an asset has verified holdings or detailed liquidity
   // sub-accounts, its aggregate value is derived from them instead of the free-text
-  // input — see plan decisions in constants/investmentSchema.ts.
+  // input — see plan decisions in constants/investmentSchema.ts. Sub-accounts only
+  // represent the CURRENT portfolio (no historical snapshots exist per month), so
+  // this override only applies while editing the current month — past months stay
+  // fully manual, exactly like before this feature existed.
   useEffect(() => {
-    if (!onAssetBaseValueChange) return;
+    if (!onAssetBaseValueChange || !isCurrentMonth) return;
     for (const assetKey of Object.keys(holdingsByAssetKey)) {
       const assetHoldings = holdingsByAssetKey[assetKey];
       if (!assetHoldings || assetHoldings.length === 0) continue;
@@ -373,17 +389,8 @@ export default function BalanceSection({
       onAssetBaseValueChange(assetKey, sumEur);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [holdingsByAssetKey, liquidityAccountsByAssetKey]);
+  }, [holdingsByAssetKey, liquidityAccountsByAssetKey, isCurrentMonth]);
 
-  const handleBalanceDateChange = (event) => {
-    const [month, year] = event.target.value.split('-').map(Number);
-    setBalanceDate({ month, year });
-  };
-
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
-  
   const monthNames = {
     1: translations.months.january,
     2: translations.months.february,
@@ -410,9 +417,6 @@ export default function BalanceSection({
     });
   }
 
-  /** True when the picker is on the current month — the normal, live state. */
-  const isCurrentMonth =
-    balanceDate.month === currentMonth && balanceDate.year === currentYear;
   /** Human-readable label of the currently selected month (e.g. "Marzo 2026"). */
   const selectedMonthLabel = `${monthNames[balanceDate.month] || ''} ${balanceDate.year}`;
 
@@ -448,7 +452,9 @@ export default function BalanceSection({
       : isInvestmentKey
         ? (holdingsByAssetKey[asset.key] || [])
         : [];
-    const hasHoldings = subEntries.length > 0;
+    // Sub-accounts only drive the aggregate for the current month — there are no
+    // historical per-holding snapshots, so past months stay fully editable/manual.
+    const hasHoldings = subEntries.length > 0 && isCurrentMonth;
     const t = isLiquidityKey ? translations.liquidityAccounts : translations.investments?.holdings;
 
     return (

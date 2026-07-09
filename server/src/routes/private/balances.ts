@@ -64,6 +64,20 @@ balancesRouter.post("/add", async (req, res) => {
         res.send();
         return;
     }
+    // Best-effort snapshot of the user's current detailed holdings/liquidity
+    // sub-accounts, dated at this balance's month — builds up history over time
+    // without needing a separate user action. Run in parallel (never sequential,
+    // see the prod search timeout bug), and awaited (not fire-and-forget) because
+    // Vercel may freeze the function shortly after the response is sent, which
+    // would silently drop a dangling snapshot write. Each promise catches its own
+    // error so a snapshot failure never turns the (already-successful) balance
+    // write into a 500.
+    await Promise.all([
+        db.investments.snapshotHoldingsForUser(req.userId as string, balance.date)
+            .catch((error) => console.error("balances/add: failed to snapshot holdings history", error)),
+        db.liquidityAccounts.snapshotAccountsForUser(req.userId as string, balance.date)
+            .catch((error) => console.error("balances/add: failed to snapshot liquidity history", error)),
+    ]);
     // Send status code 200 (OK)
     res.status(200);
     res.send();

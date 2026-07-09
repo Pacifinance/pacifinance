@@ -7,6 +7,8 @@ import type { AxiosInstance, AxiosResponse } from 'axios';
 import type {
   LiquidityAccountDeleteRequest,
   LiquidityAccountDto,
+  LiquidityAccountHistoryRequest,
+  LiquidityAccountHistoryResponse,
   LiquidityAccountSaveRequest,
   LiquidityAccountsGetResponse,
 } from '../types/api';
@@ -15,6 +17,7 @@ export interface LiquidityAccountService {
   getAccounts(): Promise<LiquidityAccountsGetResponse>;
   saveAccount(data: LiquidityAccountSaveRequest): Promise<LiquidityAccountDto>;
   deleteAccount(data: LiquidityAccountDeleteRequest): Promise<AxiosResponse>;
+  getAccountHistory(params?: LiquidityAccountHistoryRequest): Promise<LiquidityAccountHistoryResponse>;
 }
 
 export const createLiquidityAccountService = (apiClient: AxiosInstance): LiquidityAccountService => ({
@@ -31,6 +34,11 @@ export const createLiquidityAccountService = (apiClient: AxiosInstance): Liquidi
   async deleteAccount(data) {
     const res = await apiClient.post('/api/liquidity-accounts/delete', data);
     return res;
+  },
+
+  async getAccountHistory(params = {}) {
+    const res = await apiClient.post<LiquidityAccountHistoryResponse>('/api/liquidity-accounts/history', params);
+    return Array.isArray(res.data) ? res.data : [];
   },
 });
 

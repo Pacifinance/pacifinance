@@ -1,6 +1,7 @@
 import supabase from "../supabase"
 import openfigiProvider from "../../libs/providers/openfigiProvider"
 import coingeckoProvider from "../../libs/providers/coingeckoProvider"
+import { ExtDate } from "../../libs/datelib"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
 export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "gold"] as const
@@ -264,7 +265,11 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
 
     if (candidates.length === 0) return localResults
 
-    for (const candidate of candidates) await upsertInstrument(candidate)
+    // Parallel, not sequential: with up to MAX_RESULTS candidates each costing 1-2
+    // Supabase round-trips, a sequential loop could take several seconds and blow
+    // through Vercel's serverless function timeout (10s on Hobby). upsertInstrument
+    // already handles concurrent-insert races (23505 retry-read), so this is safe.
+    await Promise.all(candidates.map((candidate) => upsertInstrument(candidate)))
 
     return await searchLocalInstruments(cleanQuery, kind, limit)
 }
@@ -348,6 +353,114 @@ async function deleteHolding(user_id: string, holding_id: number) {
     return {deletedCount: count ?? 0}
 }
 
+/**
+ * Formats a date as a UTC "YYYY-MM-DD" string, matching the "user_date" column
+ * granularity (same helper as server/src/db/models/balances.ts::toDateOnly).
+ */
+function toDateOnly(d: Date) {
+    const y = d.getUTCFullYear()
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(d.getUTCDate()).padStart(2, "0")
+    return `${y}-${m}-${day}`
+}
+
+/**
+ * Snapshots the user's current holdings into user_investment_holding_history,
+ * dated at user_date (the balance month being recorded). Called from the
+ * balances/add flow so the history accumulates at the same monthly cadence the
+ * user already follows. A single bulk insert regardless of holding count — no
+ * per-row round-trips (see the sequential-upsert bug fixed in searchInstruments).
+ * Best-effort: logs on failure but never throws, so it can't break /balances/add.
+ */
+async function snapshotHoldingsForUser(user_id: string, user_date: Date) {
+    const holdings = await getHoldingsByUserId(user_id)
+    const rows = holdings
+        .filter((h) => h.instrument !== null)
+        .map((h) => ({
+            user_id,
+            holding_id: h.id,
+            instrument_id: (h.instrument as NonNullable<typeof h.instrument>).id,
+            asset_key: h.assetKey,
+            symbol: (h.instrument as NonNullable<typeof h.instrument>).symbol,
+            name: (h.instrument as NonNullable<typeof h.instrument>).name,
+            quantity: h.quantity,
+            average_price: h.averagePrice,
+            current_value: h.currentValue,
+            invested_amount: h.investedAmount,
+            currency: h.currency,
+            user_date: toDateOnly(user_date),
+        }))
+    if (rows.length === 0) return
+
+    const {error} = await supabase.from("user_investment_holding_history").insert(rows)
+    if (error) console.error("investments.snapshotHoldingsForUser: failed to insert history rows", error)
+}
+
+type HoldingHistoryRow = {
+    id: number
+    holding_id: number | null
+    instrument_id: number
+    asset_key: InvestmentAssetKey
+    symbol: string
+    name: string
+    quantity: number | null
+    average_price: number | null
+    current_value: number | null
+    invested_amount: number | null
+    currency: string
+    user_date: string
+    recorded_at: string
+}
+
+const HOLDING_HISTORY_SELECT = [
+    "id", "holding_id", "instrument_id", "asset_key", "symbol", "name",
+    "quantity", "average_price", "current_value", "invested_amount", "currency",
+    "user_date", "recorded_at",
+].join(", ")
+
+function toHoldingHistory(row: HoldingHistoryRow) {
+    return {
+        id: row.id,
+        holdingId: row.holding_id,
+        instrumentId: row.instrument_id,
+        assetKey: row.asset_key,
+        symbol: row.symbol,
+        name: row.name,
+        quantity: row.quantity,
+        averagePrice: row.average_price,
+        currentValue: row.current_value,
+        investedAmount: row.invested_amount,
+        currency: row.currency,
+        userDate: row.user_date,
+        recordedAt: row.recorded_at,
+    }
+}
+
+/**
+ * Reads the user's holding history, newest first. `months` optionally limits
+ * how far back to look (by user_date). No per-month dedup RPC yet — there is no
+ * chart/analysis consumer for this data yet; add one (mirroring get_balance_history)
+ * when a real consumer needs it.
+ */
+async function getHoldingHistoryByUserId(user_id: string, months?: number) {
+    let request = supabase.from("user_investment_holding_history")
+        .select(HOLDING_HISTORY_SELECT)
+        .eq("user_id", user_id)
+        .order("user_date", {ascending: false})
+        .order("recorded_at", {ascending: false})
+
+    if (months !== undefined) {
+        const cutoff = ExtDate.fromNow()
+        cutoff.moveByMonths(-months)
+        request = request.gte("user_date", toDateOnly(cutoff))
+    }
+
+    const {data, error} = await request
+    if (error) console.error("investments.getHoldingHistoryByUserId: failed to read history", error)
+    if (error || !data) return []
+    return (data as unknown as HoldingHistoryRow[]).map(toHoldingHistory)
+}
+
 export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
@@ -360,4 +473,6 @@ export default {
     insertHolding,
     updateHolding,
     deleteHolding,
+    snapshotHoldingsForUser,
+    getHoldingHistoryByUserId,
 }

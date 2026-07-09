@@ -5,7 +5,7 @@ import type { UpsertInstrumentInput } from "../../db/models/investments"
 
 const OPENFIGI_SEARCH_URL = "https://api.openfigi.com/v3/search"
 const OPENFIGI_SEARCH_LIMIT_PER_MIN = 4 // stays under the public 5/min search limit; higher once OPENFIGI_KEY is set
-const MAX_RESULTS = 20
+const MAX_RESULTS = 8 // bounds the upsertInstrument() fan-out — keep well under Vercel's function timeout
 
 type OpenFigiSearchResult = {
     figi: string
@@ -75,7 +75,7 @@ export async function searchOpenFigi(query: string): Promise<UpsertInstrumentInp
     if (process.env.OPENFIGI_KEY) headers["X-OPENFIGI-APIKEY"] = process.env.OPENFIGI_KEY
 
     const controller = new AbortController()
-    const timeoutMs = getTimeoutMs("OPENFIGI_TIMEOUT_MS", 10000)
+    const timeoutMs = getTimeoutMs("OPENFIGI_TIMEOUT_MS", 6000)
     const timeout = setTimeout(() => controller.abort(), timeoutMs)
 
     try {

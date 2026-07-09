@@ -168,6 +168,50 @@ create table public.user_liquidity_accounts (
 
 create index user_liquidity_accounts_user_idx on public.user_liquidity_accounts (user_id, asset_key, updated_at desc);
 
+-- ---------- user_investment_holding_history / user_liquidity_account_history ----------
+-- Storico append-only, stesso principio di "balances": ogni volta che l'utente
+-- aggiorna il bilancio mensile (POST /balances/add), si scatta uno snapshot degli
+-- holding/conti correnti. holding_id/account_id usano "on delete set null" (non
+-- cascade): se l'utente elimina un holding, lo storico resta — per questo
+-- symbol/name/label sono denormalizzati qui, per restare leggibili anche se lo
+-- strumento/holding live cambia o sparisce. In futuro l'aggiornamento automatico
+-- dei prezzi potrà scrivere qui con la sua cadenza (es. giornaliera), senza
+-- bisogno di modificare lo schema.
+create table public.user_investment_holding_history (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  holding_id bigint references public.user_investment_holdings(id) on delete set null,
+  instrument_id bigint not null references public.investment_instruments(id),
+  asset_key text not null,
+  symbol text not null,
+  name text not null,
+  quantity numeric,
+  average_price numeric,
+  current_value numeric,
+  invested_amount numeric,
+  currency text not null default 'EUR',
+  user_date date not null,
+  recorded_at timestamptz not null default now()
+);
+
+create index user_investment_holding_history_user_idx
+  on public.user_investment_holding_history (user_id, asset_key, user_date desc, recorded_at desc);
+
+create table public.user_liquidity_account_history (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  account_id bigint references public.user_liquidity_accounts(id) on delete set null,
+  asset_key text not null,
+  label text not null,
+  current_value numeric not null,
+  currency text not null default 'EUR',
+  user_date date not null,
+  recorded_at timestamptz not null default now()
+);
+
+create index user_liquidity_account_history_user_idx
+  on public.user_liquidity_account_history (user_id, asset_key, user_date desc, recorded_at desc);
+
 -- ---------- expenses (outflows + incomes, discriminati da is_expense) ----------
 create table public.expenses (
   id bigint generated always as identity primary key,
@@ -202,6 +246,8 @@ alter table public.user_categories enable row level security;
 alter table public.investment_instruments enable row level security;
 alter table public.user_investment_holdings enable row level security;
 alter table public.user_liquidity_accounts enable row level security;
+alter table public.user_investment_holding_history enable row level security;
+alter table public.user_liquidity_account_history enable row level security;
 alter table public.deletions enable row level security;
 
 create policy "tags_select_authenticated" on public.tags
@@ -227,6 +273,12 @@ create policy "user_investment_holdings_own_rows" on public.user_investment_hold
 
 create policy "user_liquidity_accounts_own_rows" on public.user_liquidity_accounts
   for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "user_investment_holding_history_select_own" on public.user_investment_holding_history
+  for select to authenticated using (auth.uid() = user_id);
+
+create policy "user_liquidity_account_history_select_own" on public.user_liquidity_account_history
+  for select to authenticated using (auth.uid() = user_id);
 
 create policy "deletions_own_row" on public.deletions
   for select to authenticated using (auth.uid() = user_id);

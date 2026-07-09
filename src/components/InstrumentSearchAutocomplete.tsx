@@ -175,10 +175,16 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
     const requestId = ++requestIdRef.current;
     setLoading(true);
     debounceRef.current = setTimeout(async () => {
-      const found = await investmentService.searchInstruments({ query: query.trim(), kind, source, limit: 15 });
-      if (requestIdRef.current === requestId) {
-        setResults(found);
-        setLoading(false);
+      let found: InvestmentInstrumentDto[] = [];
+      try {
+        found = await investmentService.searchInstruments({ query: query.trim(), kind, source, limit: 15 });
+      } catch (error) {
+        console.error('InstrumentSearchAutocomplete: search request failed', error);
+      } finally {
+        if (requestIdRef.current === requestId) {
+          setResults(found);
+          setLoading(false);
+        }
       }
     }, SEARCH_DEBOUNCE_MS);
 

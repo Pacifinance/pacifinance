@@ -84,6 +84,7 @@ export const useDemoServices = () => {
           instrument: DEMO_INSTRUMENTS.find((i) => i.id === data.instrument_id) ?? null,
         }),
         deleteHolding: async () => FAKE_SUCCESS,
+        getHoldingHistory: async () => [],
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,
@@ -101,6 +102,7 @@ export const useDemoServices = () => {
           updatedAt: new Date().toISOString(),
         }),
         deleteAccount: async () => FAKE_SUCCESS,
+        getAccountHistory: async () => [],
       },
     };
   }, [isDemoMode, services]);

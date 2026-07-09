@@ -79,4 +79,13 @@ liquidityAccountsRouter.post("/delete", async (req, res) => {
     res.status(200).send()
 })
 
+liquidityAccountsRouter.post("/history", async (req, res) => {
+    const months = Number(req.body.months)
+    const history = await db.liquidityAccounts.getAccountHistoryByUserId(
+        req.userId as string,
+        Number.isFinite(months) && months > 0 ? months : undefined,
+    )
+    res.status(200).json(history)
+})
+
 export default liquidityAccountsRouter

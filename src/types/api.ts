@@ -380,6 +380,25 @@ export interface InvestmentHoldingSaveRequest {
 
 export interface InvestmentHoldingDeleteRequest { id: number; }
 
+export interface InvestmentHoldingHistoryDto {
+  id: number;
+  holdingId: number | null;
+  instrumentId: number;
+  assetKey: InvestmentAssetKey;
+  symbol: string;
+  name: string;
+  quantity: number | null;
+  averagePrice: number | null;
+  currentValue: number | null;
+  investedAmount: number | null;
+  currency: string;
+  userDate: string;
+  recordedAt: string;
+}
+
+export interface InvestmentHoldingHistoryRequest { months?: number; }
+export type InvestmentHoldingHistoryResponse = InvestmentHoldingHistoryDto[];
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /liquidity-accounts
  * ═══════════════════════════════════════════════════════════════════════════*/
@@ -408,3 +427,17 @@ export interface LiquidityAccountSaveRequest {
 }
 
 export interface LiquidityAccountDeleteRequest { id: number; }
+
+export interface LiquidityAccountHistoryDto {
+  id: number;
+  accountId: number | null;
+  assetKey: LiquidityAssetKey;
+  label: string;
+  currentValue: number;
+  currency: string;
+  userDate: string;
+  recordedAt: string;
+}
+
+export interface LiquidityAccountHistoryRequest { months?: number; }
+export type LiquidityAccountHistoryResponse = LiquidityAccountHistoryDto[];

@@ -5,7 +5,7 @@ import type { UpsertInstrumentInput } from "../../db/models/investments"
 
 const CG_SEARCH_URL = "https://api.coingecko.com/api/v3/search"
 const COINGECKO_SEARCH_LIMIT_PER_MIN = 25 // stays under the 30/min CoinGecko demo-plan limit
-const MAX_RESULTS = 20
+const MAX_RESULTS = 8 // bounds the upsertInstrument() fan-out — keep well under Vercel's function timeout
 
 type CryptoCacheEntry = {
     name: string
@@ -54,7 +54,12 @@ export async function searchCoingecko(query: string): Promise<UpsertInstrumentIn
     const q = query.trim().toLowerCase()
     if (q.length < 2) return []
 
-    const cachedPrices = await cache.get("crypto") as CryptoCache | null
+    let cachedPrices: CryptoCache | null = null
+    try {
+        cachedPrices = await cache.get("crypto") as CryptoCache | null
+    } catch (error) {
+        console.error("coingeckoProvider.searchCoingecko: failed to read price cache, falling back to live search", error)
+    }
     if (cachedPrices) {
         const cacheMatches = Object.entries(cachedPrices)
             .filter(([coinId, coin]) => coinId.includes(q) || coin.name.toLowerCase().includes(q))
@@ -68,7 +73,7 @@ export async function searchCoingecko(query: string): Promise<UpsertInstrumentIn
     if (!allowed) return []
 
     const controller = new AbortController()
-    const timeoutMs = getTimeoutMs("CG_TIMEOUT_MS", 10000)
+    const timeoutMs = getTimeoutMs("CG_TIMEOUT_MS", 6000)
     const timeout = setTimeout(() => controller.abort(), timeoutMs)
 
     try {

@@ -55,7 +55,9 @@ expensesRouter.post("/add", async (req, res) => {
         return;
     }
     // Add the expense to the database
-    const user_category_id = Number.isFinite(Number(expense.user_category_id)) ? Number(expense.user_category_id) : null
+    const raw_user_category_id = expense.user_category_id
+    const user_category_id = (raw_user_category_id !== null && raw_user_category_id !== undefined && Number.isFinite(Number(raw_user_category_id)))
+        ? Number(raw_user_category_id) : null
     const doc = await db.expenses.insertNew(
         req.userId as string, expense.date, expense.amount, expense.is_expense,
         expense.notes, expense.payment_type, expense.category_tag, user_category_id

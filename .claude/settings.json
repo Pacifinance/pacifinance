@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /workspaces/pacifinance-serverless log --oneline -- scripts/mongoArchiveToSupabase.js)",
+      "Bash(git -C /workspaces/pacifinance-serverless status --short)",
+      "Bash(awk -F', ' '{print $3}')",
+      "Bash(vercel --version)",
+      "Bash(vercel whoami *)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)"
+    ]
+  }
+}

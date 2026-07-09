@@ -372,7 +372,7 @@ export default function InsertValue({
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory } = useContext(UserContext) || {};
   const { showSuccess, showError } = useToast();
-  const { financeService } = useDemoServices();
+  const { financeService, investmentService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -433,6 +433,7 @@ export default function InsertValue({
   const [bondsValue, setBondsValue] = useState(0);
   const [fundsValue, setFundsValue] = useState(0);
   const [goldValue, setGoldValue] = useState(0);
+  const [investmentHoldings, setInvestmentHoldings] = useState([]);
   const [balanceInputs, setBalanceInputs] = useState(createEmptyBalanceInputs);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
@@ -487,6 +488,34 @@ export default function InsertValue({
   const setBalanceInputValue = (assetKey) => (value) => {
     setBalanceInputs((prev) => ({ ...prev, [assetKey]: value }));
   };
+
+  // Maps a verifiable investment asset key onto the setter that holds its EUR "base"
+  // value (the persisted-from-DB value, as opposed to the display-currency draft in
+  // balanceInputs) — used to reconcile the aggregate input with detailed holdings.
+  const investmentBaseSetters = {
+    stocks: setStocksValue,
+    etf: setETFValue,
+    bitcoin: setBitcoinValue,
+    crypto: setCryptoValue,
+    bonds: setBondsValue,
+    funds: setFundsValue,
+  };
+
+  const handleAssetBaseValueOverride = (assetKey, eurValue) => {
+    investmentBaseSetters[assetKey]?.(eurValue);
+    // Clear any stale draft so createBalancesJson picks the holdings-derived base value.
+    setBalanceInputValue(assetKey)('');
+  };
+
+  const refreshInvestmentHoldings = async () => {
+    const holdings = await investmentService.getHoldings();
+    setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
+  };
+
+  useEffect(() => {
+    refreshInvestmentHoldings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getBalanceFieldValue = (assetKey) => {
     const draftValue = balanceInputs[assetKey];
@@ -1781,6 +1810,9 @@ export default function InsertValue({
             onOpenMultiInsert={() => setShowMultiBalanceInsert(true)}
             language={language}
             translations={translations}
+            investmentHoldings={investmentHoldings}
+            onHoldingsChanged={refreshInvestmentHoldings}
+            onAssetBaseValueChange={handleAssetBaseValueOverride}
           />
         </SectionCard>
       );

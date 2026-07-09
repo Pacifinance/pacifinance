@@ -1,4 +1,6 @@
 import supabase from "../supabase"
+import openfigiProvider from "../../libs/providers/openfigiProvider"
+import coingeckoProvider from "../../libs/providers/coingeckoProvider"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
 export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "gold"] as const
@@ -52,6 +54,27 @@ export type HoldingInput = {
     currency: string
     notes: string
 }
+
+export const INVESTMENT_SEARCH_SOURCES = ["figi", "coingecko"] as const
+export type InvestmentSearchSource = typeof INVESTMENT_SEARCH_SOURCES[number]
+
+/** Candidate produced by a provider (OpenFIGI/CoinGecko), ready to be persisted into the shared catalog. */
+export type UpsertInstrumentInput = {
+    kind: InvestmentKind
+    symbol: string
+    exchange: string | null
+    name: string
+    currency: string | null
+    country: string | null
+    figi?: string | null
+    isin?: string | null
+    coingeckoId?: string | null
+    provider: string
+    metadata: Record<string, unknown>
+}
+
+/** Below this many local matches, a provider is consulted to enrich the catalog. */
+const MIN_LOCAL_RESULTS_BEFORE_PROVIDER = 5
 
 const INSTRUMENT_SELECT = [
     "id",
@@ -140,13 +163,9 @@ function toHoldingPayload(user_id: string, input: HoldingInput) {
 }
 
 /**
- * Searches canonical investment instruments already known by the platform.
- * Provider calls should be layered above this and persisted here after verification.
+ * Searches canonical investment instruments already known by the platform (local catalog only).
  */
-async function searchInstruments(query: string, kind?: InvestmentKind, limit = 20) {
-    const cleanQuery = query.replace(/[%*,]/g, "").trim()
-    if (cleanQuery.length < 2) return []
-
+async function searchLocalInstruments(cleanQuery: string, kind?: InvestmentKind, limit = 20) {
     let request = supabase.from("investment_instruments")
         .select(INSTRUMENT_SELECT)
         .eq("active", true)
@@ -158,9 +177,96 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     if (kind) request = request.eq("kind", kind)
 
     const {data, error} = await request
-    if (error) console.error("investments.searchInstruments: failed to search instruments", error)
+    if (error) console.error("investments.searchLocalInstruments: failed to search instruments", error)
     if (error || !data) return []
     return (data as unknown as InstrumentRow[]).map(toInstrument)
+}
+
+/**
+ * Finds an existing instrument matching a provider candidate, preferring the strongest
+ * identifier available (FIGI, then CoinGecko id, then kind+symbol+exchange).
+ */
+async function findExistingInstrument(input: UpsertInstrumentInput) {
+    if (input.figi) {
+        const {data} = await supabase.from("investment_instruments")
+            .select(INSTRUMENT_SELECT).eq("figi", input.figi).maybeSingle()
+        if (data) return data as unknown as InstrumentRow
+    }
+
+    if (input.coingeckoId) {
+        const {data} = await supabase.from("investment_instruments")
+            .select(INSTRUMENT_SELECT).eq("coingecko_id", input.coingeckoId).maybeSingle()
+        if (data) return data as unknown as InstrumentRow
+    }
+
+    let request = supabase.from("investment_instruments")
+        .select(INSTRUMENT_SELECT).eq("kind", input.kind).eq("symbol", input.symbol)
+    request = input.exchange ? request.eq("exchange", input.exchange) : request.is("exchange", null)
+    const {data} = await request.maybeSingle()
+    return data as unknown as InstrumentRow | null
+}
+
+/**
+ * Persists a provider-verified candidate into the shared catalog, or returns the
+ * already-existing canonical row if one matches (idempotent — safe to call repeatedly
+ * as the community catalog grows from user searches).
+ */
+async function upsertInstrument(input: UpsertInstrumentInput) {
+    const existing = await findExistingInstrument(input)
+    if (existing) return toInstrument(existing)
+
+    const payload = {
+        kind: input.kind,
+        symbol: input.symbol,
+        exchange: input.exchange,
+        name: input.name,
+        currency: input.currency,
+        country: input.country,
+        figi: input.figi ?? null,
+        isin: input.isin ?? null,
+        coingecko_id: input.coingeckoId ?? null,
+        provider: input.provider,
+        verified: true,
+        active: true,
+        metadata: input.metadata,
+    }
+
+    const {data, error} = await supabase.from("investment_instruments")
+        .insert(payload).select(INSTRUMENT_SELECT).single()
+    if (!error && data) return toInstrument(data as unknown as InstrumentRow)
+
+    if (error?.code === "23505") { // unique violation: a concurrent request won the race
+        const retried = await findExistingInstrument(input)
+        if (retried) return toInstrument(retried)
+    }
+
+    console.error("investments.upsertInstrument: failed to insert instrument", error)
+    return null
+}
+
+/**
+ * Searches canonical investment instruments. When `sourceHint` is provided and the local
+ * catalog has too few matches, consults the corresponding external provider (OpenFIGI for
+ * stocks/ETFs/bonds/funds, CoinGecko for crypto), persists any new candidates via
+ * `upsertInstrument`, and re-runs the local search so the growing catalog stays the single
+ * source of truth for the response shape.
+ */
+async function searchInstruments(query: string, kind?: InvestmentKind, limit = 20, sourceHint?: InvestmentSearchSource) {
+    const cleanQuery = query.replace(/[%*,]/g, "").trim()
+    if (cleanQuery.length < 2) return []
+
+    const localResults = await searchLocalInstruments(cleanQuery, kind, limit)
+    if (!sourceHint || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
+
+    const candidates = sourceHint === "figi"
+        ? await openfigiProvider.searchOpenFigi(cleanQuery)
+        : await coingeckoProvider.searchCoingecko(cleanQuery)
+
+    if (candidates.length === 0) return localResults
+
+    for (const candidate of candidates) await upsertInstrument(candidate)
+
+    return await searchLocalInstruments(cleanQuery, kind, limit)
 }
 
 /**
@@ -246,7 +352,9 @@ export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
     INVESTMENT_POSITION_TYPES,
+    INVESTMENT_SEARCH_SOURCES,
     searchInstruments,
+    upsertInstrument,
     getInstrumentById,
     getHoldingsByUserId,
     insertHolding,

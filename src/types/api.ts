@@ -353,10 +353,13 @@ export interface InvestmentHoldingDto {
   instrument: InvestmentInstrumentDto | null;
 }
 
+export type InvestmentSearchSource = 'figi' | 'coingecko';
+
 export interface InvestmentInstrumentSearchRequest {
   query: string;
   kind?: InvestmentKind;
   limit?: number;
+  source?: InvestmentSearchSource;
 }
 
 export type InvestmentInstrumentSearchResponse = InvestmentInstrumentDto[];

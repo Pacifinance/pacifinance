@@ -40,13 +40,14 @@ import { createUserService } from '../services/userService';
 import { createFinanceService } from '../services/financeService';
 import { createRankingService } from '../services/rankingService';
 import { createStatsService } from '../services/statsService';
+import { createInvestmentService } from '../services/investmentService';
 
 const ServiceContext = createContext(null);
 
 /**
  * Hook to access all injected services.
  *
- * @returns {{ apiClient: import('axios').AxiosInstance, userService: Object, financeService: Object, rankingService: Object, statsService: Object }}
+ * @returns {{ apiClient: import('axios').AxiosInstance, userService: Object, financeService: Object, rankingService: Object, statsService: Object, investmentService: Object }}
  */
 export const useServices = () => {
   const ctx = useContext(ServiceContext);
@@ -74,6 +75,7 @@ export const createServices = (client) => {
     financeService: createFinanceService(apiClient),
     rankingService: createRankingService(apiClient),
     statsService: createStatsService(apiClient),
+    investmentService: createInvestmentService(apiClient),
   };
 };
 

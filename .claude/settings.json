@@ -7,7 +7,10 @@
       "Bash(vercel --version)",
       "Bash(vercel whoami *)",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "WebFetch(domain:www.openfigi.com)",
+      "Bash(git -C /workspaces/pacifinance-serverless log --oneline -1 -- src/sections/InsertValues.jsx)",
+      "Bash(git -C /workspaces/pacifinance-serverless log --oneline -1 -- src/sections/InsertValues.tsx)"
     ]
   }
 }

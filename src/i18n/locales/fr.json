@@ -2490,5 +2490,38 @@
                 "nymex": "NYMEX (Énergie)"
             }
         }
+    },
+    "investments": {
+        "search": {
+            "placeholder": "Rechercher par nom ou symbole...",
+            "loading": "Recherche en cours...",
+            "noResults": "Aucun résultat",
+            "verifiedBadge": "Vérifié",
+            "provider": {
+                "openfigi": "Vérifié avec OpenFIGI",
+                "coingecko": "Vérifié avec CoinGecko",
+                "manual": "Saisi manuellement"
+            }
+        },
+        "holdings": {
+            "title": "Positions détaillées",
+            "emptyState": "Aucune position vérifiée pour cet actif. Ajoutez-en une ci-dessous.",
+            "addTitle": "Ajouter une position",
+            "editTitle": "Modifier la position",
+            "quantity": "Quantité",
+            "averagePrice": "Prix moyen",
+            "currentValue": "Valeur actuelle",
+            "investedAmount": "Montant investi",
+            "notesPlaceholder": "Notes (facultatif)",
+            "addButton": "Ajouter",
+            "saveButton": "Enregistrer",
+            "cancelEdit": "Annuler",
+            "deleteButton": "Supprimer",
+            "manageLink": "Gérer les positions vérifiées",
+            "calculatedFromN": "Calculé à partir de {count} positions"
+        },
+        "attribution": {
+            "coingecko": "Données fournies par CoinGecko"
+        }
     }
 }

@@ -62,6 +62,7 @@ async function parseHoldingPayload(body: any) {
 investmentsRouter.post("/instruments/search", async (req, res) => {
     const query = common.sanitizeInput(req.body.query).slice(0, 80)
     const kind = common.sanitizeInput(req.body.kind)
+    const source = common.sanitizeInput(req.body.source)
     const limit = Math.min(Math.max(Number(req.body.limit) || 20, 1), 30)
 
     if (query.length < 2) {
@@ -74,7 +75,17 @@ investmentsRouter.post("/instruments/search", async (req, res) => {
         return
     }
 
-    const instruments = await db.investments.searchInstruments(query, kind === "" ? undefined : kind, limit)
+    if (source !== "" && !isOneOf(source, db.investments.INVESTMENT_SEARCH_SOURCES)) {
+        res.status(400).send()
+        return
+    }
+
+    const instruments = await db.investments.searchInstruments(
+        query,
+        kind === "" ? undefined : kind,
+        limit,
+        source === "" ? undefined : source,
+    )
     res.status(200).json(instruments)
 })
 

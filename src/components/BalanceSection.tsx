@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLayerGroup, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { faLayerGroup, faCircleInfo, faListCheck } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import {
   ModernActionButton,
@@ -11,6 +11,8 @@ import {
 import { getAssetIcon } from '../data/assetIcons';
 import { getAssetColor } from '../data/assetColors';
 import { getMuiSelectMenuProps } from './ThemedSelect';
+import InvestmentHoldingsPanel from './InvestmentHoldingsPanel';
+import { isVerifiableAssetKey } from '../constants/investmentSchema';
 
 /* ─── Helpers ─── */
 const handleInputChange = (e, setterFunction) => {
@@ -248,6 +250,52 @@ const PastMonthBanner = styled.div`
   }
 `;
 
+const HoldingsLinkRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+`;
+
+const HoldingsLinkButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: ${(p) => p.$color || p.theme.buttonBackgroundColor};
+  cursor: pointer;
+  opacity: 0.85;
+
+  svg { width: 10px; height: 10px; }
+
+  &:hover { opacity: 1; }
+`;
+
+const CalculatedBadge = styled.span`
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.5;
+`;
+
+const ReadOnlyValue = styled.div`
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  border: 1px dashed ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1')};
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: right;
+  box-sizing: border-box;
+  opacity: 0.85;
+`;
+
 /* ─── Component ─── */
 export default function BalanceSection({
   theme,
@@ -280,8 +328,34 @@ export default function BalanceSection({
   onUpdateBalance,
   onOpenMultiInsert,
   translations,
+  investmentHoldings = [],
+  onHoldingsChanged,
+  onAssetBaseValueChange,
 }) {
   const { currencySymbol, fromEUR } = React.useContext(CurrencyContext);
+  const [openHoldingsAssetKey, setOpenHoldingsAssetKey] = useState(null);
+
+  const holdingsByAssetKey = useMemo(() => {
+    const map = {};
+    for (const holding of investmentHoldings) {
+      (map[holding.assetKey] ||= []).push(holding);
+    }
+    return map;
+  }, [investmentHoldings]);
+
+  // Reconciliation: whenever an asset has verified holdings, its aggregate value is
+  // derived from them (sum of currentValue, falling back to investedAmount) instead
+  // of the free-text input — see plan decision in constants/investmentSchema.ts.
+  useEffect(() => {
+    if (!onAssetBaseValueChange) return;
+    for (const assetKey of Object.keys(holdingsByAssetKey)) {
+      const assetHoldings = holdingsByAssetKey[assetKey];
+      if (!assetHoldings || assetHoldings.length === 0) continue;
+      const sumEur = assetHoldings.reduce((sum, h) => sum + (h.currentValue ?? h.investedAmount ?? 0), 0);
+      onAssetBaseValueChange(assetKey, sumEur);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [holdingsByAssetKey]);
 
   const handleBalanceDateChange = (event) => {
     const [month, year] = event.target.value.split('-').map(Number);
@@ -349,6 +423,11 @@ export default function BalanceSection({
     const placeholderAmount = balancePlaceholders?.[asset.key] ?? 0;
     const placeholderValue = fromEUR(placeholderAmount).toLocaleString('it-IT', { minimumFractionDigits: 2 });
 
+    const assetHoldings = holdingsByAssetKey[asset.key] || [];
+    const hasHoldings = assetHoldings.length > 0;
+    const verifiable = isVerifiableAssetKey(asset.key);
+    const t = translations.investments?.holdings;
+
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
         <AssetLabel theme={theme}>
@@ -357,18 +436,42 @@ export default function BalanceSection({
           </AssetIconWrapper>
           {asset.label}
         </AssetLabel>
-        <CurrencyInputWrapper>
-          <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
-          <CurrencyInput
-            type="text"
-            theme={theme}
-            $color={color}
-            value={isHidden ? '' : asset.value}
-            onChange={(e) => handleInputChange(e, asset.setter)}
-            onBlur={(e) => handleInputBlur(e, asset.setter)}
-            placeholder={isHidden ? '****' : placeholderValue}
-          />
-        </CurrencyInputWrapper>
+        {hasHoldings ? (
+          <ReadOnlyValue theme={theme}>
+            {isHidden ? '****' : `${currencySymbol} ${placeholderValue}`}
+          </ReadOnlyValue>
+        ) : (
+          <CurrencyInputWrapper>
+            <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
+            <CurrencyInput
+              type="text"
+              theme={theme}
+              $color={color}
+              value={isHidden ? '' : asset.value}
+              onChange={(e) => handleInputChange(e, asset.setter)}
+              onBlur={(e) => handleInputBlur(e, asset.setter)}
+              placeholder={isHidden ? '****' : placeholderValue}
+            />
+          </CurrencyInputWrapper>
+        )}
+        {verifiable && t && (
+          <HoldingsLinkRow>
+            {hasHoldings && (
+              <CalculatedBadge theme={theme}>
+                {t.calculatedFromN.replace('{count}', assetHoldings.length)}
+              </CalculatedBadge>
+            )}
+            <HoldingsLinkButton
+              type="button"
+              theme={theme}
+              $color={color}
+              onClick={() => setOpenHoldingsAssetKey(asset.key)}
+            >
+              <FontAwesomeIcon icon={faListCheck} />
+              {t.manageLink}
+            </HoldingsLinkButton>
+          </HoldingsLinkRow>
+        )}
       </AssetItem>
     );
   };
@@ -468,6 +571,15 @@ export default function BalanceSection({
           </button>
         )}
       </FooterBar>
+
+      {openHoldingsAssetKey && (
+        <InvestmentHoldingsPanel
+          assetKey={openHoldingsAssetKey}
+          holdings={holdingsByAssetKey[openHoldingsAssetKey] || []}
+          onClose={() => setOpenHoldingsAssetKey(null)}
+          onChanged={async () => { if (onHoldingsChanged) await onHoldingsChanged(); }}
+        />
+      )}
     </SectionWrapper>
   );
 }

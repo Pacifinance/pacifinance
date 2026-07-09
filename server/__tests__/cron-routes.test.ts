@@ -39,4 +39,16 @@ describe("cron backend routes", () => {
         expect(mockCache.valueExpired).toHaveBeenCalledWith("userAverages")
         expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
     })
+
+    it("forces a user averages recompute via ?force=true even when the cache isn't expired yet", async () => {
+        mockCache.valueExpired.mockResolvedValue(false)
+
+        const response = await request(app, "/api/cron/refresh-user-averages", {
+            headers: {authorization: "Bearer test-cron-secret"},
+            query: {force: "true"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
+    })
 })

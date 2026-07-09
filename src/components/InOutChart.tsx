@@ -606,7 +606,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                     isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
                   }`}
                   style={{
-                    padding: isMobile ? '0.4rem 0.7rem' : '0.5rem 1rem',
+                    padding: isMobile ? '0.3rem 0.5rem' : '0.35rem 0.65rem',
                     backgroundColor: isActive
                       ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
                       : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),

@@ -202,6 +202,9 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const minMonth = allData[0]?.name || '';
   const maxMonth = allData[allData.length - 1]?.name || '';
   const isLongRange = data.length > 18;
+  // Solo gli asset con almeno un valore non-zero nel periodo visualizzato: se uno
+  // e' sempre a zero nello storico mostrato, non ha senso elencarlo in ogni tooltip.
+  const visibleAssetKeys = ASSET_KEYS_BY_GROUP.filter((key) => data.some((row) => row[key] !== 0));
   const xAxisInterval = data.length > 60 ? Math.ceil(data.length / 8) : data.length > 36 ? 5 : data.length > 24 ? 3 : data.length > 12 ? 1 : 0;
   const formatXAxisTick = (value, index) => {
     if (!value || isHidden) return isHidden ? '****' : value;
@@ -255,9 +258,13 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
         <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
           {isHidden ? '****' : `${monthName} ${year}`}
         </div>
-        {ASSET_KEYS_BY_GROUP.map((key) => (
+        {visibleAssetKeys.map((key) => (
           <div key={key} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-            <span>{translations.assets[key]}</span>
+            {/* Il tooltip ha sempre sfondo chiaro: forziamo la variante 'light' (colore piu'
+                scuro/leggibile su bianco) indipendentemente dal tema dark/light dell'app. */}
+            <span style={{ color: isHidden ? undefined : getAssetColor(key, 'light'), fontWeight: 600 }}>
+              {translations.assets[key]}
+            </span>
             <span>{isHidden ? '****' : formatAmount(row[key], { maximumFractionDigits: 0 })}</span>
           </div>
         ))}
@@ -506,7 +513,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
                   isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
                 }`}
                 style={{
-                  padding: isMobile ? '0.4rem 0.7rem' : '0.5rem 1rem',
+                  padding: isMobile ? '0.3rem 0.5rem' : '0.35rem 0.65rem',
                   backgroundColor: isActive
                     ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
                     : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),

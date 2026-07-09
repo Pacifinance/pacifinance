@@ -56,10 +56,14 @@ cronRouter.get("/refresh-crypto-prices", async (_, res) => {
 })
 
 /**
- * Refreshes the user averages cache entry if expired
+ * Refreshes the user averages cache entry if expired. Vercel Cron always hits
+ * this without ?force - the query param exists so a maintainer can trigger an
+ * immediate recompute (e.g. right after a similarUsers.ts logic change)
+ * instead of waiting for the entry's 24h TTL to lapse.
  */
-cronRouter.get("/refresh-user-averages", async (_, res) => {
-    if (await cache.valueExpired("userAverages"))
+cronRouter.get("/refresh-user-averages", async (req, res) => {
+    const force = req.query.force === "true"
+    if (force || await cache.valueExpired("userAverages"))
         await cache.invalidate("userAverages")
     res.status(200).send()
 })

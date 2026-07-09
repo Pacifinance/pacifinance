@@ -7,6 +7,7 @@ type RequestOptions = {
     method?: string
     body?: JsonBody
     headers?: Record<string, string>
+    query?: Record<string, string>
 }
 
 export async function request(app: Express, path: string, options: RequestOptions = {}) {
@@ -25,7 +26,10 @@ export async function request(app: Express, path: string, options: RequestOption
             identity: {sourceIp: "127.0.0.1"},
             requestId: "test-request"
         },
-        queryStringParameters: null,
+        // A literal "?" inside `path` is NOT a query string as far as serverless-http's
+        // requestUrl() is concerned (it feeds `path` straight into url.format's pathname,
+        // which percent-encodes "?") - pass query params here instead.
+        queryStringParameters: options.query ?? null,
         multiValueQueryStringParameters: null,
         multiValueHeaders: {}
     }, {})

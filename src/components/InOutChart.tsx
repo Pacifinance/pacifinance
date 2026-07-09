@@ -15,7 +15,7 @@ import {
 import { SectionInOut, PercentageOutflowsChartContainer } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
 import { CSVLink } from 'react-csv';
-import { BsFiletypeCsv } from "react-icons/bs";
+import { BsFiletypeCsv, BsCalendarRange } from "react-icons/bs";
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
@@ -56,6 +56,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
   const [customStartMonth, setCustomStartMonth] = useState('');
   const [customEndMonth, setCustomEndMonth] = useState('');
+  const [showCustomRange, setShowCustomRange] = useState(false);
   const isMobile = containerWidth < 500;
 
   // Line visibility state for legend toggle
@@ -605,6 +606,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                     isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
                   }`}
                   style={{
+                    padding: isMobile ? '0.4rem 0.7rem' : '0.5rem 1rem',
                     backgroundColor: isActive
                       ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
                       : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
@@ -657,47 +659,76 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           </div>
         </div>
 
-        {/* Custom date range — secondary filter, centered and de-emphasized */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
-          <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
-          <input
-            type="month"
-            value={customStartMonth}
-            min={minMonth}
-            max={maxMonth}
-            onChange={(e) => handleCustomRangeChange('start', e.target.value)}
+        {/* Custom date range — collapsed behind a toggle button, secondary/de-emphasized */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setShowCustomRange((prev) => !prev)}
+            title={translations.general.filterByDate || 'Filtra per data'}
+            aria-label={translations.general.filterByDate || 'Filtra per data'}
+            className="flex items-center justify-center gap-1 rounded-md transition-all duration-200 hover:scale-105"
             style={{
-              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-              borderRadius: 6,
-              padding: '0.2rem 0.3rem',
-              fontSize: isMobile ? '0.64rem' : '0.68rem',
-              minWidth: 0,
-              maxWidth: '6.5rem',
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
-              color: theme.textColor,
-              colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+              padding: isMobile ? '0.25rem 0.5rem' : '0.3rem 0.6rem',
+              fontSize: isMobile ? '0.62rem' : '0.68rem',
+              backgroundColor: selectedPeriod === 'custom'
+                ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
+                : (theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)'),
+              color: selectedPeriod === 'custom' ? '#ffffff' : theme.textColor,
+              opacity: selectedPeriod === 'custom' ? 1 : 0.75,
+              border: `1px solid ${selectedPeriod === 'custom'
+                ? 'rgba(7, 145, 100, 0.8)'
+                : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
             }}
-          />
-          <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
-          <input
-            type="month"
-            value={customEndMonth}
-            min={minMonth}
-            max={maxMonth}
-            onChange={(e) => handleCustomRangeChange('end', e.target.value)}
-            style={{
-              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-              borderRadius: 6,
-              padding: '0.2rem 0.3rem',
-              fontSize: isMobile ? '0.64rem' : '0.68rem',
-              minWidth: 0,
-              maxWidth: '6.5rem',
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
-              color: theme.textColor,
-              colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
-            }}
-          />
+          >
+            <BsCalendarRange />
+            {selectedPeriod === 'custom' && !isMobile && (
+              <span>{customStartMonth || minMonth} → {customEndMonth || maxMonth}</span>
+            )}
+          </button>
         </div>
+
+        {showCustomRange && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
+            <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
+            <input
+              type="month"
+              value={customStartMonth}
+              min={minMonth}
+              max={maxMonth}
+              onChange={(e) => handleCustomRangeChange('start', e.target.value)}
+              style={{
+                border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+                borderRadius: 6,
+                padding: '0.2rem 0.3rem',
+                fontSize: isMobile ? '0.64rem' : '0.68rem',
+                minWidth: 0,
+                maxWidth: '6.5rem',
+                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
+                color: theme.textColor,
+                colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+              }}
+            />
+            <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
+            <input
+              type="month"
+              value={customEndMonth}
+              min={minMonth}
+              max={maxMonth}
+              onChange={(e) => handleCustomRangeChange('end', e.target.value)}
+              style={{
+                border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+                borderRadius: 6,
+                padding: '0.2rem 0.3rem',
+                fontSize: isMobile ? '0.64rem' : '0.68rem',
+                minWidth: 0,
+                maxWidth: '6.5rem',
+                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
+                color: theme.textColor,
+                colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+              }}
+            />
+          </div>
+        )}
         </div>
 
         {/* Responsive chart container */}

@@ -79,7 +79,11 @@ const WEIGHTS: Record<ComparisonMetric, Record<Field, number>> = {
     ) as Record<Field, number>
 }
 
-/** Anonymity floor: below this many eligible candidates, "similar" data isn't shown at all. */
+/**
+ * Ideal/target cohort size once the platform has enough users to support it.
+ * Below this, selectCohort() falls back to the best-available matches rather
+ * than reporting "no data" - see selectCohort for the small-population case.
+ */
 export const MIN_COHORT = 20
 /** Perf/stability cap: no statistical benefit to a larger cohort. */
 export const MAX_COHORT = 300
@@ -156,18 +160,28 @@ export type SimilarUsersResult = { userIds: string[], insufficientData: boolean 
  * too heterogeneous to hit the anonymity minimum otherwise.
  */
 export function selectCohort(scoredCandidates: Array<{ id: string, score: number }>, populationSize: number): SimilarUsersResult {
-    if (populationSize < MIN_COHORT) return { userIds: [], insufficientData: true }
+    // Only a truly empty population means there is no one to compare against at
+    // all. Below MIN_COHORT, the platform is still small (few active users) -
+    // rather than blocking the feature outright, fall back to the best-available
+    // matches: an approximate comparison beats none. MIN_COHORT/the similarity
+    // floor still shape target size and quality once the population is large
+    // enough to support them.
+    if (populationSize === 0) return { userIds: [], insufficientData: true }
 
     const sorted = [...scoredCandidates].sort((a, b) => b.score - a.score)
-    const targetSize = clamp(Math.round(populationSize * TARGET_FRACTION), MIN_COHORT, MAX_COHORT)
+    const targetSize = Math.min(populationSize, clamp(Math.round(populationSize * TARGET_FRACTION), MIN_COHORT, MAX_COHORT))
+    const idealSize = Math.min(MIN_COHORT, populationSize)
 
     let cohort: Array<{ id: string, score: number }> = []
     for (let floor = SIMILARITY_FLOOR_START; floor >= SIMILARITY_FLOOR_MIN - 1e-9; floor -= SIMILARITY_FLOOR_STEP) {
         cohort = sorted.filter((c) => c.score >= floor).slice(0, targetSize)
-        if (cohort.length >= MIN_COHORT) break
+        if (cohort.length >= idealSize) break
     }
 
-    if (cohort.length < MIN_COHORT) return { userIds: [], insufficientData: true }
+    // Even the lowest floor found nobody (small, very heterogeneous population):
+    // use the best-available candidates regardless of score instead of nothing.
+    if (cohort.length === 0) cohort = sorted.slice(0, targetSize)
+
     return { userIds: cohort.map((c) => c.id), insufficientData: false }
 }
 

@@ -96,11 +96,20 @@ describe("similarityScore", () => {
 })
 
 describe("selectCohort", () => {
-    it("returns insufficientData when the eligible population is below the anonymity floor", () => {
-        const candidates = Array.from({ length: MIN_COHORT - 1 }, (_, i) => ({ id: `u${i}`, score: 1 }))
-        const result = selectCohort(candidates, candidates.length)
+    it("returns insufficientData only when there is nobody at all to compare against", () => {
+        const result = selectCohort([], 0)
         expect(result.insufficientData).toBe(true)
         expect(result.userIds).toEqual([])
+    })
+
+    it("falls back to every eligible candidate when the population is below the ideal cohort size", () => {
+        // A small/early-stage platform: fewer eligible users than MIN_COHORT. Rather than
+        // blocking the feature, the cohort should include everyone available.
+        const populationSize = 8
+        const candidates = Array.from({ length: populationSize }, (_, i) => ({ id: `u${i}`, score: 0.4 }))
+        const result = selectCohort(candidates, populationSize)
+        expect(result.insufficientData).toBe(false)
+        expect(result.userIds.length).toBe(populationSize)
     })
 
     it("caps the cohort at MAX_COHORT even with a huge, uniformly similar population", () => {
@@ -118,7 +127,7 @@ describe("selectCohort", () => {
         expect(result.userIds.length).toBe(30)
     })
 
-    it("relaxes the similarity floor to still reach the anonymity minimum in a heterogeneous population", () => {
+    it("relaxes the similarity floor to still reach the ideal size in a heterogeneous population", () => {
         const populationSize = 50
         // Only a handful score above 0.5; most are middling (0.3) — a strict 0.5 floor alone
         // would fall short of MIN_COHORT, so the floor must relax down toward 0.2.
@@ -131,14 +140,11 @@ describe("selectCohort", () => {
         expect(result.userIds.length).toBeGreaterThanOrEqual(MIN_COHORT)
     })
 
-    it("returns insufficientData when even the relaxed floor can't reach the anonymity minimum", () => {
+    it("falls back to the best-available candidates when even the lowest floor finds nobody", () => {
         const populationSize = 30
-        const candidates = [
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `ok${i}`, score: 0.25 })),
-            ...Array.from({ length: populationSize - 5 }, (_, i) => ({ id: `low${i}`, score: 0.05 }))
-        ]
+        const candidates = Array.from({ length: populationSize }, (_, i) => ({ id: `low${i}`, score: 0.05 }))
         const result = selectCohort(candidates, populationSize)
-        expect(result.insufficientData).toBe(true)
-        expect(result.userIds).toEqual([])
+        expect(result.insufficientData).toBe(false)
+        expect(result.userIds.length).toBeGreaterThan(0)
     })
 })

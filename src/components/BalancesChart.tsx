@@ -17,9 +17,19 @@ import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from "react-icons/bs";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { downloadExcel } from '../utils/downloadData.jsx';
+import { BsCalendarRange } from "react-icons/bs";
 import { assetColors, getAssetColor } from '../data/assetColors.js';
 import { getBalanceChartData } from '../utils/userDataSelectors.js';
 import { compactNumber, CustomTick } from '../utils/customGraphsInfo.jsx';
+
+// Stacking/legend order grouped by asset type (Liquidità, Investimenti, Crypto),
+// matching the Dashboard's "Allocazione Asset" breakdown - reads as three
+// semantic blocks instead of an arbitrary color gradient.
+const ASSET_KEYS_BY_GROUP = [
+  'bank', 'cash', 'digitalServices', 'emergencyFund', // Liquidità
+  'stocks', 'etf', 'bonds', 'funds', 'gold', // Investimenti
+  'bitcoin', 'crypto', // Crypto
+];
 
 /**
  * Componente unificato per grafici dei bilanci
@@ -40,6 +50,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const [customEndMonth, setCustomEndMonth] = useState('');
   const [isLoadingFullHistory, setIsLoadingFullHistory] = useState(false);
   const [hasFullHistory, setHasFullHistory] = useState(false);
+  const [showCustomRange, setShowCustomRange] = useState(false);
 
   const buildAllData = () => last12MonthsData.map((monthData) => {
     const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0) + (monthData.emergencyFundReal || 0);
@@ -202,77 +213,71 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
     return `${month}/${year.slice(2)}`;
   };
 
-  // Componente Tooltip condiviso
-  const renderTooltip = () => (
-    <Tooltip
-      position={{ x: undefined, y: undefined }}
-      allowEscapeViewBox={{ x: false, y: false }}
-      contentStyle={{
+  // Contenuto custom del tooltip: legge i valori direttamente dalla riga dati
+  // (non dal payload delle serie Recharts), cosi' il "Totale" e' sempre corretto
+  // e in grassetto, indipendentemente da quale barra/area e' stata hover-ata.
+  const renderTooltipContent = ({ active, payload, label }) => {
+    if (!active || !payload || !payload.length) return null;
+    const row = payload[0]?.payload;
+    if (!row) return null;
+
+    const [year, monthNum] = String(label).split('-');
+    const monthNames = {
+      1: translations.months.january,
+      2: translations.months.february,
+      3: translations.months.march,
+      4: translations.months.april,
+      5: translations.months.may,
+      6: translations.months.june,
+      7: translations.months.july,
+      8: translations.months.august,
+      9: translations.months.september,
+      10: translations.months.october,
+      11: translations.months.november,
+      12: translations.months.december,
+    };
+    const monthName = monthNames[parseInt(monthNum)] || monthNum;
+    const borderColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)';
+
+    return (
+      <div style={{
         backgroundColor: 'rgba(255,255,255,0.95)',
-        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-        borderRadius: '10px',
+        border: `1px solid ${borderColor}`,
+        borderRadius: 10,
         padding: isMobile ? '8px 10px' : '10px 12px',
-        fontSize: isMobile ? '12px' : '13px',
-        fontWeight: '500',
+        fontSize: isMobile ? 12 : 13,
+        fontWeight: 500,
         boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
         color: '#333',
         maxHeight: isMobile ? 220 : 280,
         overflowY: 'auto'
-      }}
-      wrapperStyle={{ zIndex: 20 }}
-      labelStyle={{
-        color: '#333',
-        fontWeight: 'bold',
-        marginBottom: '4px'
-      }}
-      labelFormatter={(label) => {
-        if (isHidden) return '****';
-        
-        // Converti formato YYYY-MM in nome mese tradotto + anno
-        const [year, monthNum] = label.split('-');
-        const monthIndex = parseInt(monthNum);
-        
-        const monthNames = {
-          1: translations.months.january,
-          2: translations.months.february,
-          3: translations.months.march,
-          4: translations.months.april,
-          5: translations.months.may,
-          6: translations.months.june,
-          7: translations.months.july,
-          8: translations.months.august,
-          9: translations.months.september,
-          10: translations.months.october,
-          11: translations.months.november,
-          12: translations.months.december,
-        };
-        
-        const monthName = monthNames[monthIndex] || monthNum;
-        return `${monthName} ${year}`;
-      }}
-      formatter={(value, name) => {
-        if (isHidden) return ['****'];
-        
-        const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
-        
-        // Mappa i nomi inglesi a quelli localizzati
-        const nameMap = {
-          'cash': translations.assets.cash,
-          'digitalServices': translations.assets.digitalServices,
-          'stocks': translations.assets.stocks,
-          'bank': translations.assets.bank,
-          'crypto': translations.assets.crypto,
-          'etf': translations.assets.etf,
-          'bitcoin': translations.assets.bitcoin,
-          'bonds': translations.assets.bonds,
-          'funds': translations.assets.funds,
-          'gold': translations.assets.gold,
-          'total': translations.assets.total
-        };
+      }}>
+        <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
+          {isHidden ? '****' : `${monthName} ${year}`}
+        </div>
+        {ASSET_KEYS_BY_GROUP.map((key) => (
+          <div key={key} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <span>{translations.assets[key]}</span>
+            <span>{isHidden ? '****' : formatAmount(row[key], { maximumFractionDigits: 0 })}</span>
+          </div>
+        ))}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', gap: 12,
+          fontWeight: 'bold', marginTop: 4, paddingTop: 4, borderTop: `1px solid ${borderColor}`
+        }}>
+          <span>{translations.assets.total}</span>
+          <span>{isHidden ? '****' : formatAmount(row.total, { maximumFractionDigits: 0 })}</span>
+        </div>
+      </div>
+    );
+  };
 
-        const translatedName = nameMap[name] || name;
-        return [formattedValue, translatedName];
-      }}
+  const renderTooltip = () => (
+    <Tooltip
+      position={{ x: undefined, y: undefined }}
+      allowEscapeViewBox={{ x: false, y: false }}
+      wrapperStyle={{ zIndex: 20 }}
+      content={renderTooltipContent}
     />
   );
 
@@ -354,19 +359,19 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
       {/* {renderLegend()} */}
 
-      {/* Styled bars with centralized colors */}
-      <Bar dataKey="cash" stackId="a" fill={isHidden ? '#808080' : getAssetColor('cash', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="digitalServices" stackId="a" fill={isHidden ? '#909090' : getAssetColor('digitalServices', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="stocks" stackId="a" fill={isHidden ? '#A0A0A0' : getAssetColor('stocks', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="bank" stackId="a" fill={isHidden ? '#B0B0B0' : getAssetColor('bank', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="crypto" stackId="a" fill={isHidden ? '#C0C0C0' : getAssetColor('crypto', theme.mode)} radius={[0, 0, 0, 0]} />
+      {/* Styled bars with centralized colors, stacked grouped by type (Liquidità/Investimenti/Crypto) */}
+      <Bar dataKey="bank" stackId="a" fill={isHidden ? '#808080' : getAssetColor('bank', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="cash" stackId="a" fill={isHidden ? '#909090' : getAssetColor('cash', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="digitalServices" stackId="a" fill={isHidden ? '#A0A0A0' : getAssetColor('digitalServices', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="emergencyFund" stackId="a" fill={isHidden ? '#B0B0B0' : getAssetColor('emergencyFund', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="stocks" stackId="a" fill={isHidden ? '#C0C0C0' : getAssetColor('stocks', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="etf" stackId="a" fill={isHidden ? '#D0D0D0' : getAssetColor('etf', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="bitcoin" stackId="a" fill={isHidden ? '#E0E0E0' : getAssetColor('bitcoin', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="bonds" stackId="a" fill={isHidden ? '#F0F0F0' : getAssetColor('bonds', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="funds" stackId="a" fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="gold" stackId="a" fill={isHidden ? '#F8F8F8' : getAssetColor('gold', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="emergencyFund" stackId="a" fill={isHidden ? '#E5E5E5' : getAssetColor('emergencyFund', theme.mode)} radius={[4, 4, 0, 0]} />
-      
+      <Bar dataKey="bonds" stackId="a" fill={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="funds" stackId="a" fill={isHidden ? '#F0F0F0' : getAssetColor('funds', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="gold" stackId="a" fill={isHidden ? '#E8E8E8' : getAssetColor('gold', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="bitcoin" stackId="a" fill={isHidden ? '#F8F8F8' : getAssetColor('bitcoin', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="crypto" stackId="a" fill={isHidden ? '#E5E5E5' : getAssetColor('crypto', theme.mode)} radius={[4, 4, 0, 0]} />
+
       {/* Barra invisibile per il total - serve solo per mostrarlo nel tooltip */}
       <Bar dataKey="total" fill="transparent" strokeWidth={0} />
       
@@ -448,19 +453,19 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
       {/* {renderLegend()} */}
 
-      {/* Areas with centralized colors */}
+      {/* Areas with centralized colors, ordered grouped by type (Liquidità/Investimenti/Crypto) */}
       {data.every(item => item['total'] === 0) || <Area type="monotone" dataKey={'total'} stroke={isHidden ? '#606060' : assetColors.totalBalance} fillOpacity={0.3} fill={isHidden ? '#606060' : assetColors.totalBalance} />}
       {data.every(item => item['bank'] === 0) || <Area type="monotone" dataKey={'bank'} stroke={isHidden ? '#707070' : getAssetColor('bank', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#707070' : getAssetColor('bank', theme.mode)} />}
       {data.every(item => item['cash'] === 0) || <Area type="monotone" dataKey={'cash'} stroke={isHidden ? '#808080' : getAssetColor('cash', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#808080' : getAssetColor('cash', theme.mode)} />}
       {data.every(item => item['digitalServices']=== 0) || <Area type="monotone" dataKey={'digitalServices'} stroke={isHidden ? '#909090' : getAssetColor('digitalServices', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#909090' : getAssetColor('digitalServices', theme.mode)} />}
-      {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={'stocks'} stroke={isHidden ? '#A0A0A0' : getAssetColor('stocks', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#A0A0A0' : getAssetColor('stocks', theme.mode)} />}
-      {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={'crypto'} stroke={isHidden ? '#B0B0B0' : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#B0B0B0' : getAssetColor('crypto', theme.mode)} />}
+      {data.every(item => item['emergencyFund'] === 0) || <Area type="monotone" dataKey={'emergencyFund'} stroke={isHidden ? '#A0A0A0' : getAssetColor('emergencyFund', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#A0A0A0' : getAssetColor('emergencyFund', theme.mode)} />}
+      {data.every(item => item['stocks'] === 0) || <Area type="monotone" dataKey={'stocks'} stroke={isHidden ? '#B0B0B0' : getAssetColor('stocks', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#B0B0B0' : getAssetColor('stocks', theme.mode)} />}
       {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={'etf'} stroke={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} />}
-      {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={'bitcoin'} stroke={isHidden ? '#D0D0D0' : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#D0D0D0' : getAssetColor('bitcoin', theme.mode)} />}
-      {data.every(item => item['bonds'] === 0) || <Area type="monotone" dataKey={'bonds'} stroke={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} />}
-      {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} />}
+      {data.every(item => item['bonds'] === 0) || <Area type="monotone" dataKey={'bonds'} stroke={isHidden ? '#D0D0D0' : getAssetColor('bonds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#D0D0D0' : getAssetColor('bonds', theme.mode)} />}
+      {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E0E0E0' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E0E0E0' : getAssetColor('funds', theme.mode)} />}
       {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
-      {data.every(item => item['emergencyFund'] === 0) || <Area type="monotone" dataKey={'emergencyFund'} stroke={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} />}
+      {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={'bitcoin'} stroke={isHidden ? '#E8E8E8' : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('bitcoin', theme.mode)} />}
+      {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={'crypto'} stroke={isHidden ? '#F8F8F8' : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('crypto', theme.mode)} />}
       {!isMobile && data.length > 18 && (
         <Brush
           dataKey="name"
@@ -501,6 +506,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
                   isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
                 }`}
                 style={{
+                  padding: isMobile ? '0.4rem 0.7rem' : '0.5rem 1rem',
                   backgroundColor: isActive
                     ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
                     : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
@@ -553,47 +559,76 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
         </div>
       </div>
 
-      {/* Custom date range — secondary filter, centered and de-emphasized */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
-        <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
-        <input
-          type="month"
-          value={customStartMonth}
-          min={minMonth}
-          max={maxMonth}
-          onChange={(e) => handleCustomRangeChange('start', e.target.value)}
+      {/* Custom date range — collapsed behind a toggle button, secondary/de-emphasized */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          onClick={() => setShowCustomRange((prev) => !prev)}
+          title={translations.general.filterByDate || 'Filtra per data'}
+          aria-label={translations.general.filterByDate || 'Filtra per data'}
+          className="flex items-center justify-center gap-1 rounded-md transition-all duration-200 hover:scale-105"
           style={{
-            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-            borderRadius: 6,
-            padding: '0.2rem 0.3rem',
-            fontSize: isMobile ? '0.64rem' : '0.68rem',
-            minWidth: 0,
-            maxWidth: '6.5rem',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
-            color: theme.textColor,
-            colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            padding: isMobile ? '0.25rem 0.5rem' : '0.3rem 0.6rem',
+            fontSize: isMobile ? '0.62rem' : '0.68rem',
+            backgroundColor: selectedPeriod === 'custom'
+              ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
+              : (theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)'),
+            color: selectedPeriod === 'custom' ? '#ffffff' : theme.textColor,
+            opacity: selectedPeriod === 'custom' ? 1 : 0.75,
+            border: `1px solid ${selectedPeriod === 'custom'
+              ? 'rgba(7, 145, 100, 0.8)'
+              : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
           }}
-        />
-        <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
-        <input
-          type="month"
-          value={customEndMonth}
-          min={minMonth}
-          max={maxMonth}
-          onChange={(e) => handleCustomRangeChange('end', e.target.value)}
-          style={{
-            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-            borderRadius: 6,
-            padding: '0.2rem 0.3rem',
-            fontSize: isMobile ? '0.64rem' : '0.68rem',
-            minWidth: 0,
-            maxWidth: '6.5rem',
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
-            color: theme.textColor,
-            colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
-          }}
-        />
+        >
+          <BsCalendarRange />
+          {selectedPeriod === 'custom' && !isMobile && (
+            <span>{customStartMonth || minMonth} → {customEndMonth || maxMonth}</span>
+          )}
+        </button>
       </div>
+
+      {showCustomRange && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
+          <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
+          <input
+            type="month"
+            value={customStartMonth}
+            min={minMonth}
+            max={maxMonth}
+            onChange={(e) => handleCustomRangeChange('start', e.target.value)}
+            style={{
+              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+              borderRadius: 6,
+              padding: '0.2rem 0.3rem',
+              fontSize: isMobile ? '0.64rem' : '0.68rem',
+              minWidth: 0,
+              maxWidth: '6.5rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
+              color: theme.textColor,
+              colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            }}
+          />
+          <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
+          <input
+            type="month"
+            value={customEndMonth}
+            min={minMonth}
+            max={maxMonth}
+            onChange={(e) => handleCustomRangeChange('end', e.target.value)}
+            style={{
+              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+              borderRadius: 6,
+              padding: '0.2rem 0.3rem',
+              fontSize: isMobile ? '0.64rem' : '0.68rem',
+              minWidth: 0,
+              maxWidth: '6.5rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
+              color: theme.textColor,
+              colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            }}
+          />
+        </div>
+      )}
       </div>
 
       <div style={{ 

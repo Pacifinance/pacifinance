@@ -6,7 +6,8 @@
       "Bash(awk -F', ' '{print $3}')",
       "Bash(vercel --version)",
       "Bash(vercel whoami *)",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)",
+      "Bash(node -e ' *)"
     ]
   }
 }

@@ -1,21 +1,9 @@
 import crypto from "crypto"
 
 import db from "../db/db"
+import { roundCurrency, toCents, fromCents, addCurrency } from "../libs/money"
 
-/**
- * Rounds a currency value to the second decimal digit
- * @param n Currency value
- * @returns Rounded currency value
- */
-function roundCurrency(n: number) {
-    if (n === undefined || isNaN(n)) return 0
-    // Round to the second decimal digit
-	let r = +n.toFixed(2) // toFixed() returns a string, but with the + in front it becomes a number
-    // If the rounding was of the 'ceiling' type, make it 'floor'
-	if (r > n) r -= 0.01
-    // Round again to the second decimal digit to account for floating point shenanigans
-	return +r.toFixed(2)
-}
+export { roundCurrency, toCents, fromCents, addCurrency }
 
 /**
  * Sanitizes user input by removing blank spaces and HTML tags
@@ -63,6 +51,9 @@ async function generateUserId(nDigits: number) {
 
 export default {
     roundCurrency,
+    toCents,
+    fromCents,
+    addCurrency,
     sanitizeInput,
     generateUserId,
 }

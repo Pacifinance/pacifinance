@@ -15,6 +15,7 @@ import {
 } from '../data/financeDefaults';
 
 import { translateTagObject, translateTag as translateTagDirect } from '../data/tagTranslations';
+import { addCurrency } from './money';
 import type { TagsGetResponse, BalanceMonthDto } from '../types/api';
 
 /** Raw tag object as it arrives from the user-profile API (nested in profile fields). */
@@ -244,18 +245,18 @@ export const buildGoalsAndLimits = (userGoals: RawGoals | null | undefined): Goa
 /** Sum all asset fields in a balance object. */
 export const calculateTotal = (balance: BalanceSnapshot | null | undefined): number => {
   if (!balance) return 0;
-  return (
-    (balance.cash || 0) +
-    (balance.bank || 0) +
-    (balance.emergencyFund || 0) +
-    (balance.digitalServices || 0) +
-    (balance.stocks || 0) +
-    (balance.etf || 0) +
-    (balance.bitcoin || 0) +
-    (balance.crypto || 0) +
-    (balance.bonds || 0) +
-    (balance.funds || 0) +
-    (balance.gold || 0)
+  return addCurrency(
+    balance.cash || 0,
+    balance.bank || 0,
+    balance.emergencyFund || 0,
+    balance.digitalServices || 0,
+    balance.stocks || 0,
+    balance.etf || 0,
+    balance.bitcoin || 0,
+    balance.crypto || 0,
+    balance.bonds || 0,
+    balance.funds || 0,
+    balance.gold || 0
   );
 };
 

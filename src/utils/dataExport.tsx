@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
 import { getIncomesArray, getOutflowsArray } from './userDataSelectors';
+import { addCurrency } from './money';
 
 // Funzione per filtrare i dati in base alle opzioni selezionate
 function filterDataByDateRange(data, filterOptions) {
@@ -91,7 +92,7 @@ function filterDataByDateRange(data, filterOptions) {
       if (!categoryStats[category]) {
         categoryStats[category] = { total: 0, count: 0 };
       }
-      categoryStats[category].total += parseFloat(expense.amount || 0);
+      categoryStats[category].total = addCurrency(categoryStats[category].total, parseFloat(expense.amount || 0));
       categoryStats[category].count += 1;
     });
 
@@ -161,8 +162,10 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
 
     // Processa i bilanci con calcolo del totale
     const balances = Array.isArray(userData.balances) ? userData.balances.map((balance, index) => {
-      const total = (balance.bank || 0) + (balance.cash || 0) + (balance.digitalServices || 0) + 
-                   (balance.stocks || 0) + (balance.etf || 0) + (balance.bitcoin || 0) + (balance.crypto || 0);
+      const total = addCurrency(
+        balance.bank || 0, balance.cash || 0, balance.digitalServices || 0,
+        balance.stocks || 0, balance.etf || 0, balance.bitcoin || 0, balance.crypto || 0
+      );
       
       return {
         month: `Month ${index + 1}`,
@@ -200,20 +203,16 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
                expenseDate.getMonth() === monthIndex;
       });
 
-      const income = monthExpenses
-        .filter(e => !e.isExpense)
-        .reduce((sum, e) => sum + (e.amount || 0), 0);
-      
-      const outflow = monthExpenses
-        .filter(e => e.isExpense)
-        .reduce((sum, e) => sum + (e.amount || 0), 0);
+      const income = addCurrency(...monthExpenses.filter(e => !e.isExpense).map(e => e.amount || 0));
+
+      const outflow = addCurrency(...monthExpenses.filter(e => e.isExpense).map(e => e.amount || 0));
 
       return {
         month: new Date(currentYear, monthIndex).toLocaleDateString('en', { month: 'long' }),
         monthNumber: monthIndex + 1,
         income: Number(income).toFixed(2),
         expenses: Number(outflow).toFixed(2),
-        net: Number(income - outflow).toFixed(2),
+        net: Number(addCurrency(income, -outflow)).toFixed(2),
         transactionCount: monthExpenses.length
       };
     });
@@ -225,7 +224,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       if (!categoryStats[category]) {
         categoryStats[category] = { total: 0, count: 0 };
       }
-      categoryStats[category].total += expense.amount || 0;
+      categoryStats[category].total = addCurrency(categoryStats[category].total, expense.amount || 0);
       categoryStats[category].count += 1;
     });
 
@@ -240,13 +239,9 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
     const totalBalance = balances.length > 0 ? 
       parseFloat(balances[balances.length - 1]?.total || 0) : 0;
     
-    const totalIncome = userData.expenses
-      .filter(e => !e.isExpense)
-      .reduce((sum, e) => sum + (e.amount || 0), 0);
-    
-    const totalExpenses = userData.expenses
-      .filter(e => e.isExpense)  
-      .reduce((sum, e) => sum + (e.amount || 0), 0);
+    const totalIncome = addCurrency(...userData.expenses.filter(e => !e.isExpense).map(e => e.amount || 0));
+
+    const totalExpenses = addCurrency(...userData.expenses.filter(e => e.isExpense).map(e => e.amount || 0));
 
     const monthCount = Math.max(1, userData.balances.length || 1);
     const demographics = {
@@ -254,7 +249,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       totalBalance: Number(totalBalance || 0).toFixed(2),
       totalIncome: Number(totalIncome || 0).toFixed(2),
       totalExpenses: Number(totalExpenses || 0).toFixed(2),
-      netWorth: Number((totalIncome || 0) - (totalExpenses || 0)).toFixed(2),
+      netWorth: Number(addCurrency(totalIncome || 0, -(totalExpenses || 0))).toFixed(2),
       totalTransactions: userData.expenses?.length || 0,
       balanceEntries: userData.balances?.length || 0,
       avgMonthlyIncome: Number((totalIncome || 0) / monthCount).toFixed(2),

@@ -71,6 +71,7 @@ import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { BsPercent } from 'react-icons/bs';
 import { GiUmbrella } from 'react-icons/gi';
 import { isNewUser } from '../utils/userDataSelectors';
+import { addCurrency } from '../utils/money';
 
 const ResponsivePadding = styled.div`
   padding: 0 2rem;
@@ -236,8 +237,8 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     // Filtra gli investimenti per mostrare solo quelli con valore > 0
     const investments = allInvestments.filter(investment => investment.value > 0);
 
-    const totalTraditional = traditionalAssets.reduce((acc, asset) => acc + asset.value, 0);
-    const totalInvestments = allInvestments.reduce((acc, investment) => acc + investment.value, 0);
+    const totalTraditional = addCurrency(...traditionalAssets.map(asset => asset.value));
+    const totalInvestments = addCurrency(...allInvestments.map(investment => investment.value));
     const totalEmergencySecurity = emergencyFundAsset.value; // For now only emergency fund, but prepared for future additions
     const totalBalance = totalValue;
 

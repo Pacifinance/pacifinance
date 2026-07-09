@@ -1,6 +1,7 @@
 import supabase from "../supabase"
 
 import { ExtDate } from "../../libs/datelib"
+import { addCurrency } from "../../libs/money"
 
 const BALANCE_COLUMNS = "recorded_at, user_date, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, gold, emergency_fund"
 
@@ -124,9 +125,9 @@ async function getTotalLatestByUserId(user_id: string, limit_date: ExtDate | und
     const balance = await getLatestByUserId(user_id, limit_date)
     if (balance === null)
         return null
-    return (
-        balance.bank + balance.cash + balance.digitalServices + balance.stocks +
-        balance.etf + balance.bitcoin + balance.crypto + balance.bonds + balance.funds +
+    return addCurrency(
+        balance.bank, balance.cash, balance.digitalServices, balance.stocks,
+        balance.etf, balance.bitcoin, balance.crypto, balance.bonds, balance.funds,
         balance.gold
     )
 }

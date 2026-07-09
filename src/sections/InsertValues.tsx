@@ -34,6 +34,7 @@ import {
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
+import { addCurrency, roundCurrency } from '../utils/money';
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
 
@@ -1520,10 +1521,10 @@ export default function InsertValue({
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
           // L'indice 0 corrisponde al mese corrente nell'array outflowsArray
           const currentOutflowsThisMonth = getOutflowsArray(userData)?.[0] || 0;
-          const newTotal = currentOutflowsThisMonth + parseFloat(originalOutflowAmount.replace(',', '.'));
-          
+          const newTotal = addCurrency(currentOutflowsThisMonth, parseFloat(originalOutflowAmount.replace(',', '.')));
+
           if (newTotal > userData.limits.monthlySpendingLimit) {
-            const exceeding = newTotal - userData.limits.monthlySpendingLimit;
+            const exceeding = roundCurrency(newTotal - userData.limits.monthlySpendingLimit);
             const warningMessage = language === 'it' 
               ? `⚠️ Limite mensile superato! Hai raggiunto ${currencySymbol}${newTotal.toFixed(2)}, superando il tuo limite di ${currencySymbol}${userData.limits.monthlySpendingLimit} di ${currencySymbol}${exceeding.toFixed(2)}.`
               : `⚠️ Monthly limit exceeded! You've reached ${currencySymbol}${newTotal.toFixed(2)}, exceeding your limit of ${currencySymbol}${userData.limits.monthlySpendingLimit} by ${currencySymbol}${exceeding.toFixed(2)}.`;

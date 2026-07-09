@@ -22,6 +22,7 @@ function isBalanceValid(data: any) {
     data.bonds = common.roundCurrency(Number(data.bonds));
     data.funds = common.roundCurrency(Number(data.funds));
     data.gold = common.roundCurrency(Number(data.gold));
+    data.emergency_fund = common.roundCurrency(Number(data.emergency_fund));
     // If the date field is not set or invalid, set it to now
     const now = ExtDate.fromNow()
     data.date = new ExtDate(data.date);
@@ -31,7 +32,7 @@ function isBalanceValid(data: any) {
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
         !isNaN(data.stocks) && !isNaN(data.etf) && !isNaN(data.bitcoin) &&
         !isNaN(data.crypto) && !isNaN(data.bonds) && !isNaN(data.funds) &&
-        !isNaN(data.gold)
+        !isNaN(data.gold) && !isNaN(data.emergency_fund)
     );
 }
 

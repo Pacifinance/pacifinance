@@ -1,4 +1,5 @@
 import { ExtDate } from "../../libs/datelib"
+import { addCurrency, roundCurrency, toCents, fromCents } from "../../libs/money"
 
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
@@ -19,26 +20,29 @@ type Averages = {
 }
 
 /**
- * Accumulates values to compute their average
+ * Accumulates values (currency amounts or percentages, both 2-decimal
+ * precision) to compute their average. Sums in integer-scaled-by-100 space so
+ * repeated accumulation across many users/months never drifts from float
+ * representation noise - see server/src/libs/money.ts.
  */
 class Accumulator {
-    private sum: number
+    private sumScaled: number
     private count: number
-    
+
     public constructor() {
-        this.sum = 0
+        this.sumScaled = 0
         this.count = 0
     }
 
     public accumulate(value: number) {
-        this.sum += value
+        this.sumScaled += toCents(value)
         this.count++
     }
 
     public getAverage() {
         if (this.count === 0)
             return 0
-        return this.sum / this.count
+        return roundCurrency(fromCents(this.sumScaled) / this.count)
     }
 }
 
@@ -160,8 +164,8 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
                 ...yearlyExpenses,
                 ...(await expenses.getMonthlyExpensesByUserId(user.id, month, true))
             ]
-            expensesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.id, month, true) ?? 0
-            incomesYearlyTotal += await expenses.getTotalMonthlyExpensesByUserId(user.id, month, false) ?? 0
+            expensesYearlyTotal = addCurrency(expensesYearlyTotal, await expenses.getTotalMonthlyExpensesByUserId(user.id, month, true) ?? 0)
+            incomesYearlyTotal = addCurrency(incomesYearlyTotal, await expenses.getTotalMonthlyExpensesByUserId(user.id, month, false) ?? 0)
         }
 
         // User saving rate for the full year
@@ -176,7 +180,7 @@ async function computeAverages(usersList: UsersList, now: ExtDate): Promise<Aver
             if (!expense.categoryTag) continue // category_tag_id is NOT NULL in the DB; guards a failed join only
             const categoryIndex = expense.categoryTag.index
             yearlyTotalExpensesByCategory[categoryIndex] =
-                (yearlyTotalExpensesByCategory[categoryIndex] || 0) + expense.amount
+                addCurrency(yearlyTotalExpensesByCategory[categoryIndex] || 0, expense.amount)
         }
         for (const categoryIndexStr of Object.keys(yearlyTotalExpensesByCategory)) {
             const categoryIndex = Number(categoryIndexStr)

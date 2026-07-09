@@ -19,6 +19,7 @@ import {
 } from 'react-icons/bs';
 import { MdInsights, MdTrendingUp } from 'react-icons/md';
 import { getOutflowsArray, getIncomesArray } from '../utils/userDataSelectors';
+import { addCurrency } from '../utils/money';
 
 // Styled Components
 const InsightsContainer = styled.div`
@@ -165,7 +166,7 @@ const generateInsights = (userData, language, isHidden, translations, currencySy
   const insights = [];
   
   // Calcola totali usando i dati degli array del dashboard
-  const totalAssets = userData.assets.reduce((sum, asset) => sum + (asset.value || 0), 0);
+  const totalAssets = addCurrency(...userData.assets.map(asset => asset.value || 0));
   
   // Usa i dati dal dashboard (indice 0 = mese corrente)
   const totalExpenses = getOutflowsArray(userData) && getOutflowsArray(userData)[0] ? getOutflowsArray(userData)[0] : 0;
@@ -192,7 +193,7 @@ const generateInsights = (userData, language, isHidden, translations, currencySy
   );
   
   if (investmentAssets.length > 0) {
-    const investmentTotal = investmentAssets.reduce((sum, asset) => sum + (asset.value || 0), 0);
+    const investmentTotal = addCurrency(...investmentAssets.map(asset => asset.value || 0));
     const diversification = investmentAssets.length;
     
     const level = diversification >= 3 ? 'excellent' : diversification >= 2 ? 'good' : 'poor';
@@ -211,7 +212,7 @@ const generateInsights = (userData, language, isHidden, translations, currencySy
   const liquidAssets = userData.assets.filter(asset => 
     ['bank', 'cash', 'digitalServices'].includes(asset.typology)
   );
-  const liquidTotal = liquidAssets.reduce((sum, asset) => sum + (asset.value || 0), 0);
+  const liquidTotal = addCurrency(...liquidAssets.map(asset => asset.value || 0));
   const liquidityRatio = (liquidTotal / totalAssets) * 100;
 
   const liquidityLevel = liquidityRatio >= 10 && liquidityRatio <= 30 ? 'adequate' 

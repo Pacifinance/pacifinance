@@ -3,6 +3,8 @@
  * Used by MultiOutflowInsert, MultiIncomeInsert, and MultiBalanceInsert.
  */
 
+import { addCurrency } from '../../utils/money';
+
 /**
  * Parse an Italian-formatted amount string (e.g. "1.234,56") into a number.
  * Handles both raw input ("10.5") and locale-formatted strings ("1.234,56").
@@ -71,7 +73,7 @@ export const groupAmountsByBalanceSource = (rows) => {
     if (row.balanceSource && row.balanceSource !== '') {
       const val = parseFormattedAmount(row.amount);
       if (val > 0) {
-        result[row.balanceSource] = (result[row.balanceSource] || 0) + val;
+        result[row.balanceSource] = addCurrency(result[row.balanceSource] || 0, val);
       }
     }
   }

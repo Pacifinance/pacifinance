@@ -28,7 +28,7 @@ import {
   CenteredRankings 
 } from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
-import { translateTag } from '../data/tagTranslations';
+import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslations';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import EqualIcon from '@mui/icons-material/DragHandle';
@@ -1017,12 +1017,20 @@ function Comparison({ theme, userData, isHidden}) {
         if (totalSpending <= 0) return [];
         
         const categories = Object.entries(categoryTotals)
-            .map(([name, value]) => ({
-                name,
-                value,
-                percentage: (value / totalSpending) * 100,
-                color: getCategoryColor(name, language)
-            }))
+            .map(([name, value]) => {
+                const tagKey =
+                    resolveTagKeyFromLocalized(name, 'en', 'expense') ||
+                    resolveTagKeyFromLocalized(name, language, 'expense') ||
+                    String(name).toLowerCase();
+                return {
+                    name,
+                    tagKey,
+                    displayName: translateTag(tagKey, language, 'expense') || name,
+                    value,
+                    percentage: (value / totalSpending) * 100,
+                    color: getCategoryColor(tagKey, language)
+                };
+            })
             .sort((a, b) => b.value - a.value);
         
         return categories;
@@ -1351,7 +1359,7 @@ function Comparison({ theme, userData, isHidden}) {
                                 // stessa traduzione i18n: i tag dal DB non portano
                                 // più il campo translations.
                                 const categoryIndex = userData?.tags?.outflowsTags?.find(
-                                    t => translateTag(t.label, 'en', 'expense') === category.name || t.label === category.name.toLowerCase()
+                                    t => t.label === category.tagKey || translateTag(t.label, 'en', 'expense') === category.name
                                 )?.index;
                                 
                                 const similarAvg = categoryIndex && similarUsersExpensesByCategory ? similarUsersExpensesByCategory[categoryIndex] : null;
@@ -1361,7 +1369,7 @@ function Comparison({ theme, userData, isHidden}) {
                                     <div key={index} style={{ marginBottom: '0.75rem' }}>
                                         <CategoryBar theme={theme}>
                                             <div className="color-dot" style={{ background: category.color }} />
-                                            <span className="category-name">{category.name}</span>
+                                            <span className="category-name">{category.displayName}</span>
                                             <span className="category-value">
                                                 {isHidden ? '****' : formatCurrency(category.value)}
                                             </span>

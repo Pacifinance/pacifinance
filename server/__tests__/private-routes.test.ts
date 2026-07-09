@@ -192,4 +192,75 @@ describe("private backend routes", () => {
         expect(mockDb.balances.getRankingPool).toHaveBeenCalledTimes(2)
         expect(mockDb.expenses.getExpenseRankingPool).toHaveBeenCalledTimes(4)
     })
+
+    it("searches canonical investment instruments from the verified catalog", async () => {
+        mockDb.investments.searchInstruments.mockResolvedValue([
+            {id: 1, kind: "stock", symbol: "AAPL", exchange: "NASDAQ", name: "Apple Inc.", verified: true}
+        ])
+
+        const response = await request(app, "/api/investments/instruments/search", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {query: " apple ", kind: "stock", limit: 50}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([
+            {id: 1, kind: "stock", symbol: "AAPL", exchange: "NASDAQ", name: "Apple Inc.", verified: true}
+        ])
+        expect(mockDb.investments.searchInstruments).toHaveBeenCalledWith("apple", "stock", 30)
+    })
+
+    it("saves detailed investment holdings only for existing instruments", async () => {
+        mockDb.investments.insertHolding.mockResolvedValue({
+            id: 9,
+            assetKey: "stocks",
+            positionType: "pac",
+            instrument: {id: 1, symbol: "AAPL"}
+        })
+
+        const response = await request(app, "/api/investments/holdings/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                instrument_id: 1,
+                asset_key: "stocks",
+                position_type: "pac",
+                quantity: "2.5",
+                average_price: "150",
+                current_value: "420",
+                invested_amount: "375",
+                currency: "eur",
+                notes: "<b>long term</b>"
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json.id).toBe(9)
+        expect(mockDb.investments.getInstrumentById).toHaveBeenCalledWith(1)
+        expect(mockDb.investments.insertHolding).toHaveBeenCalledWith("user-uuid", {
+            instrumentId: 1,
+            assetKey: "stocks",
+            positionType: "pac",
+            quantity: 2.5,
+            averagePrice: 150,
+            currentValue: 420,
+            investedAmount: 375,
+            currency: "EUR",
+            notes: "long term"
+        })
+    })
+
+    it("rejects detailed holdings that reference unknown instruments", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue(null)
+
+        const response = await request(app, "/api/investments/holdings/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 999, asset_key: "stocks", position_type: "single"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.insertHolding).not.toHaveBeenCalled()
+    })
 })

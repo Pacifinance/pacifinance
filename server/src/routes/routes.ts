@@ -10,6 +10,7 @@ import categoriesRouter from "./private/categories"
 import rankRouter from "./private/rank"
 import statsRouter from "./private/stats"
 import pricesRouter from "./private/prices"
+import investmentsRouter from "./private/investments"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
@@ -74,5 +75,6 @@ rootRouter.use("/categories", categoriesRouter)
 rootRouter.use("/rank", rankRouter)
 rootRouter.use("/stats", statsRouter)
 rootRouter.use("/prices", pricesRouter)
+rootRouter.use("/investments", investmentsRouter)
 
 export default rootRouter

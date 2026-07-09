@@ -92,6 +92,64 @@ create table public.user_categories (
 
 create index user_categories_user_idx on public.user_categories (user_id);
 
+-- ---------- investment_instruments (catalogo canonico strumenti verificati) ----------
+-- Strumenti confrontabili tra utenti. Le posizioni utente devono referenziare
+-- questo catalogo invece di salvare testo libero: così "AAPL", "Apple" e
+-- "NASDAQ:AAPL" diventano lo stesso strumento per statistiche anonime e analisi.
+create table public.investment_instruments (
+  id bigint generated always as identity primary key,
+  kind text not null check (kind in ('stock', 'etf', 'crypto', 'bond', 'fund', 'commodity', 'other')),
+  symbol text not null,
+  exchange text,
+  name text not null,
+  currency text,
+  country text,
+  sector text,
+  industry text,
+  figi text,
+  isin text,
+  coingecko_id text,
+  provider text not null default 'manual',
+  verified boolean not null default true,
+  active boolean not null default true,
+  metadata jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create unique index investment_instruments_symbol_exchange_uidx
+  on public.investment_instruments (kind, symbol, coalesce(exchange, ''));
+create unique index investment_instruments_figi_uidx on public.investment_instruments (figi) where figi is not null;
+create unique index investment_instruments_isin_uidx on public.investment_instruments (isin) where isin is not null;
+create unique index investment_instruments_coingecko_uidx on public.investment_instruments (coingecko_id) where coingecko_id is not null;
+create index investment_instruments_search_idx
+  on public.investment_instruments using gin (
+    to_tsvector('simple', symbol || ' ' || name || ' ' || coalesce(isin, '') || ' ' || coalesce(coingecko_id, ''))
+  );
+create index investment_instruments_kind_idx on public.investment_instruments (kind, active);
+
+-- ---------- user_investment_holdings (dettaglio opzionale portafoglio) ----------
+-- Layer più specifico dei saldi mensili: il saldo "ETF" resta aggregato in balances,
+-- mentre qui l'utente può indicare strumenti specifici verificati. Gli aggregati
+-- pubblici vanno sempre calcolati su instrument_id e con soglie minime privacy.
+create table public.user_investment_holdings (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  instrument_id bigint not null references public.investment_instruments(id),
+  asset_key text not null check (asset_key in ('stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold')),
+  position_type text not null default 'single' check (position_type in ('single', 'pac', 'other')),
+  quantity numeric,
+  average_price numeric,
+  current_value numeric,
+  invested_amount numeric,
+  currency text not null default 'EUR',
+  notes text not null default '',
+  updated_at timestamptz not null default now(),
+  unique (user_id, instrument_id)
+);
+
+create index user_investment_holdings_user_idx on public.user_investment_holdings (user_id, updated_at desc);
+create index user_investment_holdings_instrument_idx on public.user_investment_holdings (instrument_id);
+
 -- ---------- expenses (outflows + incomes, discriminati da is_expense) ----------
 create table public.expenses (
   id bigint generated always as identity primary key,
@@ -123,6 +181,8 @@ alter table public.profiles enable row level security;
 alter table public.balances enable row level security;
 alter table public.expenses enable row level security;
 alter table public.user_categories enable row level security;
+alter table public.investment_instruments enable row level security;
+alter table public.user_investment_holdings enable row level security;
 alter table public.deletions enable row level security;
 
 create policy "tags_select_authenticated" on public.tags
@@ -138,6 +198,12 @@ create policy "expenses_own_rows" on public.expenses
   for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "user_categories_own_rows" on public.user_categories
+  for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "investment_instruments_select_authenticated" on public.investment_instruments
+  for select to authenticated using (active = true);
+
+create policy "user_investment_holdings_own_rows" on public.user_investment_holdings
   for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "deletions_own_row" on public.deletions

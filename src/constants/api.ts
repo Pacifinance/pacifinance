@@ -50,6 +50,12 @@ export const ENDPOINTS = {
   PRICES_STOCKS:      '/api/prices/stocks',
   PRICES_COMMODITIES: '/api/prices/commodities',
   PRICES_BONDS:       '/api/prices/bonds',
+
+  // Investments
+  INVESTMENTS_SEARCH:  '/api/investments/instruments/search',
+  INVESTMENTS_GET:     '/api/investments/holdings/get',
+  INVESTMENTS_SAVE:    '/api/investments/holdings/save',
+  INVESTMENTS_DELETE:  '/api/investments/holdings/delete',
 } as const;
 
 export type Endpoint = typeof ENDPOINTS[keyof typeof ENDPOINTS];

@@ -23,3 +23,6 @@ export type { StatsService, AveragesSnapshot } from './statsService';
 
 export { createPricesService } from './pricesService';
 export type { PricesService } from './pricesService';
+
+export { createInvestmentService } from './investmentService';
+export type { InvestmentService } from './investmentService';

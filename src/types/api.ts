@@ -311,3 +311,68 @@ export interface PriceDto {
 
 /** Response of GET /prices/crypto — map keyed by coin id. */
 export type PricesResponse = Record<string, PriceDto>;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * /investments
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+export type InvestmentKind = 'stock' | 'etf' | 'crypto' | 'bond' | 'fund' | 'commodity' | 'other';
+export type InvestmentAssetKey = 'stocks' | 'etf' | 'bitcoin' | 'crypto' | 'bonds' | 'funds' | 'gold';
+export type InvestmentPositionType = 'single' | 'pac' | 'other';
+
+export interface InvestmentInstrumentDto {
+  id: number;
+  kind: InvestmentKind;
+  symbol: string;
+  exchange?: string | null;
+  name: string;
+  currency?: string | null;
+  country?: string | null;
+  sector?: string | null;
+  industry?: string | null;
+  figi?: string | null;
+  isin?: string | null;
+  coingeckoId?: string | null;
+  provider: string;
+  verified: boolean;
+  active: boolean;
+  metadata: Record<string, unknown>;
+}
+
+export interface InvestmentHoldingDto {
+  id: number;
+  assetKey: InvestmentAssetKey;
+  positionType: InvestmentPositionType;
+  quantity: number | null;
+  averagePrice: number | null;
+  currentValue: number | null;
+  investedAmount: number | null;
+  currency: string;
+  notes: string;
+  updatedAt: string;
+  instrument: InvestmentInstrumentDto | null;
+}
+
+export interface InvestmentInstrumentSearchRequest {
+  query: string;
+  kind?: InvestmentKind;
+  limit?: number;
+}
+
+export type InvestmentInstrumentSearchResponse = InvestmentInstrumentDto[];
+export type InvestmentHoldingsGetResponse = InvestmentHoldingDto[];
+
+export interface InvestmentHoldingSaveRequest {
+  id?: number;
+  instrument_id: number;
+  asset_key: InvestmentAssetKey;
+  position_type?: InvestmentPositionType;
+  quantity?: number | null;
+  average_price?: number | null;
+  current_value?: number | null;
+  invested_amount?: number | null;
+  currency?: string;
+  notes?: string;
+}
+
+export interface InvestmentHoldingDeleteRequest { id: number; }

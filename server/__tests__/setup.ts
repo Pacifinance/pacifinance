@@ -6,6 +6,7 @@ type MockDb = {
     expenses: Record<string, any>
     tags: Record<string, any>
     categories: Record<string, any>
+    investments: Record<string, any>
     delqueue: Record<string, any>
 }
 
@@ -71,6 +72,17 @@ const mocks = vi.hoisted(() => {
             insertNew: vi.fn(),
             renameById: vi.fn(),
             deleteById: vi.fn()
+        },
+        investments: {
+            INVESTMENT_KINDS: ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"],
+            INVESTMENT_ASSET_KEYS: ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "gold"],
+            INVESTMENT_POSITION_TYPES: ["single", "pac", "other"],
+            searchInstruments: vi.fn(),
+            getInstrumentById: vi.fn(),
+            getHoldingsByUserId: vi.fn(),
+            insertHolding: vi.fn(),
+            updateHolding: vi.fn(),
+            deleteHolding: vi.fn()
         },
         delqueue: {
             removeFromQueueByUserId: vi.fn(),
@@ -183,6 +195,20 @@ export function resetServerMocks() {
     mockDb.categories.insertNew.mockResolvedValue({id: 1, parentIndex: 0, parentType: 0, label: "Custom"})
     mockDb.categories.renameById.mockResolvedValue({id: 1, parentIndex: 0, parentType: 0, label: "Renamed"})
     mockDb.categories.deleteById.mockResolvedValue({deletedCount: 1})
+    mockDb.investments.searchInstruments.mockResolvedValue([])
+    mockDb.investments.getInstrumentById.mockResolvedValue({
+        id: 1,
+        kind: "stock",
+        symbol: "AAPL",
+        exchange: "NASDAQ",
+        name: "Apple Inc.",
+        verified: true,
+        active: true
+    })
+    mockDb.investments.getHoldingsByUserId.mockResolvedValue([])
+    mockDb.investments.insertHolding.mockResolvedValue({id: 1})
+    mockDb.investments.updateHolding.mockResolvedValue({id: 1})
+    mockDb.investments.deleteHolding.mockResolvedValue({deletedCount: 1})
     mockDb.delqueue.removeFromQueueByUserId.mockResolvedValue({})
     mockDb.delqueue.getAllAccountsInQueue.mockResolvedValue([])
     mockDb.delqueue.insertNew.mockResolvedValue({id: 1})

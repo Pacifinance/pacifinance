@@ -337,28 +337,23 @@ language sql stable as $$
 $$;
 
 -- Pool di saldi totali (ultimo saldo precedente al mese corrente) per il
--- ranking: tutti gli utenti, o solo quelli "simili" a p_reference_user
--- (stesso jobType/jobCountry/workTime) se specificato. Il calcolo del
+-- ranking: tutti gli utenti, o solo quelli in p_user_ids se specificato.
+-- Cohort membership ("simili" = similarità pesata su tutti i campi profilo,
+-- non solo jobType/jobCountry/workTime) è risolta lato applicativo in
+-- server/src/services/similarUsers.ts - unica fonte di verità, sia per questo
+-- ranking sia per le medie giornaliere (averages.ts). Il calcolo del
 -- percentile resta lato applicativo (server/src/routes/private/rank.ts),
 -- qui si ottimizza solo il fetch (1 query invece di N).
 create or replace function public.get_balance_ranking_pool(
-  p_reference_user uuid default null,
+  p_user_ids uuid[] default null,
   p_ignore_test_demo boolean default true
 )
 returns table(user_id uuid, total_balance numeric)
 language sql stable as $$
-  with reference as (
-    select job_type_tag_id, job_country_tag_id, work_time_tag_id
-    from public.profiles where id = p_reference_user
-  ),
-  eligible as (
+  with eligible as (
     select p.id from public.profiles p
     where (not p_ignore_test_demo or p.account_type < 2)
-      and (p_reference_user is null or (
-        p.job_type_tag_id is not distinct from (select job_type_tag_id from reference) and
-        p.job_country_tag_id is not distinct from (select job_country_tag_id from reference) and
-        p.work_time_tag_id is not distinct from (select work_time_tag_id from reference)
-      ))
+      and (p_user_ids is null or p.id = any(p_user_ids))
   )
   select distinct on (b.user_id) b.user_id,
     (b.bank + b.cash + b.digital_services + b.stocks + b.etf + b.bitcoin + b.crypto + b.bonds + b.funds + b.gold) as total_balance
@@ -369,26 +364,18 @@ language sql stable as $$
 $$;
 
 -- Pool di spese/entrate totali del mese p_month per il ranking, stesso
--- principio di sopra (cohort "tutti" o "simili").
+-- principio di sopra (cohort "tutti" o esplicita per p_user_ids - vedi nota sopra).
 create or replace function public.get_expense_ranking_pool(
-  p_reference_user uuid default null,
+  p_user_ids uuid[] default null,
   p_is_expense boolean default true,
   p_month date default null
 )
 returns table(user_id uuid, total_amount numeric)
 language sql stable as $$
-  with reference as (
-    select job_type_tag_id, job_country_tag_id, work_time_tag_id
-    from public.profiles where id = p_reference_user
-  ),
-  eligible as (
+  with eligible as (
     select p.id from public.profiles p
     where p.account_type < 2
-      and (p_reference_user is null or (
-        p.job_type_tag_id is not distinct from (select job_type_tag_id from reference) and
-        p.job_country_tag_id is not distinct from (select job_country_tag_id from reference) and
-        p.work_time_tag_id is not distinct from (select work_time_tag_id from reference)
-      ))
+      and (p_user_ids is null or p.id = any(p_user_ids))
   ),
   target_month as (
     select coalesce(p_month, (date_trunc('month', now()) - interval '1 month')::date) as m

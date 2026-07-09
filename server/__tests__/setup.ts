@@ -108,6 +108,10 @@ const mocks = vi.hoisted(() => {
         rpc: vi.fn()
     }
 
+    const similarUsers = {
+        getSimilarUserIds: vi.fn()
+    }
+
     const redis = {
         get: vi.fn(),
         set: vi.fn(),
@@ -122,12 +126,18 @@ const mocks = vi.hoisted(() => {
         set: vi.fn()
     }
 
-    return {db, supabase, redis, cache}
+    return {db, supabase, similarUsers, redis, cache}
 })
 
 vi.mock("../src/db/db", () => ({default: mocks.db}))
 vi.mock("../src/db/models/users", () => ({default: mocks.db.users}))
 vi.mock("../src/db/supabase", () => ({default: mocks.supabase}))
+// Only the default export's getSimilarUserIds is mocked (route-level tests use this);
+// named exports (similarityScore, selectCohort, ...) stay real for similarUsers.test.ts.
+vi.mock("../src/services/similarUsers", async (importOriginal) => {
+    const actual = await importOriginal() as object
+    return {...actual, default: {...(actual as {default: object}).default, getSimilarUserIds: mocks.similarUsers.getSimilarUserIds}}
+})
 vi.mock("../src/cache/redisClient", () => ({default: mocks.redis}))
 vi.mock("../src/cache/cache", () => ({default: mocks.cache}))
 
@@ -135,6 +145,7 @@ process.env.VERCEL = "1"
 
 export const mockDb = mocks.db
 export const mockSupabase = mocks.supabase
+export const mockSimilarUsers = mocks.similarUsers
 export const mockRedis = mocks.redis
 export const mockCache = mocks.cache
 
@@ -188,6 +199,8 @@ export function resetServerMocks() {
     mockDb.expenses.getAllByUserId.mockResolvedValue([])
     mockDb.expenses.deleteExpenseByData.mockResolvedValue({deletedCount: 1})
     mockDb.expenses.getExpenseRankingPool.mockResolvedValue([])
+
+    mockSimilarUsers.getSimilarUserIds.mockResolvedValue({userIds: [], insufficientData: true})
 
     mockDb.tags.getAllTagsByType.mockResolvedValue([])
     mockDb.tags.getReferenceByIndexAndType.mockResolvedValue({id: 10})

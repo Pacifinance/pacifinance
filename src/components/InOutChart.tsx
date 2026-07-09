@@ -580,51 +580,85 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   return (
     <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Toolbar: period selector + export buttons */}
+        {/* Toolbar: period selector + export buttons (row 1), custom date range (row 2, secondary) */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: 'column',
           width: '100%',
           padding: isMobile ? '0' : '0 0.5rem',
-          marginBottom: isMobile ? '0.45rem' : '0.75rem',
-          gap: isMobile ? '0.35rem' : '0.75rem',
-          flexWrap: 'wrap'
+          marginBottom: isMobile ? '0.5rem' : '0.85rem',
+          gap: isMobile ? '0.35rem' : '0.4rem'
         }}>
-        {/* Time Period Selector */}
-        <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap', gap: isMobile ? '0.2rem' : undefined, flex: '1 1 auto', minWidth: 0 }}>
-          {['3m', '6m', '1y', '2y', 'all'].map((period) => {
-            const isActive = selectedPeriod === period;
-            const isBusy = (period === '2y' || period === 'all') && isLoadingFullHistory;
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.75rem', flexWrap: 'wrap' }}>
+          {/* Time Period Selector */}
+          <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap', gap: isMobile ? '0.2rem' : undefined, flex: '1 1 auto', minWidth: 0 }}>
+            {['3m', '6m', '1y', '2y', 'all'].map((period) => {
+              const isActive = selectedPeriod === period;
+              const isBusy = (period === '2y' || period === 'all') && isLoadingFullHistory;
 
-            return (
-              <button
-                key={period}
-                onClick={() => handlePeriodSelect(period)}
-                disabled={isBusy}
-                className={`font-medium rounded-md transition-all duration-200 ${
-                  isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
-                }`}
-                style={{
-                  backgroundColor: isActive
-                    ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
-                    : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                  color: isActive
-                    ? '#ffffff'
-                    : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
-                  border: `1px solid ${isActive
-                    ? 'rgba(7, 145, 100, 0.8)'
-                    : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                {isBusy ? '…' : period.toUpperCase()}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={period}
+                  onClick={() => handlePeriodSelect(period)}
+                  disabled={isBusy}
+                  className={`font-medium rounded-md transition-all duration-200 ${
+                    isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
+                  }`}
+                  style={{
+                    backgroundColor: isActive
+                      ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
+                      : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
+                    color: isActive
+                      ? '#ffffff'
+                      : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
+                    border: `1px solid ${isActive
+                      ? 'rgba(7, 145, 100, 0.8)'
+                      : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
+                    backdropFilter: 'blur(10px)'
+                  }}
+                >
+                  {isBusy ? '…' : period.toUpperCase()}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Export buttons — small, top-right */}
+          <div className="flex gap-1 z-10" style={{ flexShrink: 0, gap: isMobile ? '0.2rem' : '0.3rem' }}>
+            <CSVLink
+              data={data}
+              headers={headers}
+              filename={`incomeOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
+              className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
+              style={{
+                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+                borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                backdropFilter: 'blur(10px)',
+              width: isMobile ? 24 : 28,
+              height: isMobile ? 24 : 28
+              }}
+            >
+              <BsFiletypeCsv className="text-paciGreen text-sm" />
+            </CSVLink>
+
+            <button
+              onClick={async () => await downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+              className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
+              style={{
+                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+                borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                backdropFilter: 'blur(10px)',
+              width: isMobile ? 24 : 28,
+              height: isMobile ? 24 : 28
+              }}
+            >
+              <RiFileExcel2Line className="text-paciGreen text-sm" />
+            </button>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.68rem' : '0.75rem', color: theme.textColor, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-between' : 'flex-start' }}>
+        {/* Custom date range — secondary filter, centered and de-emphasized */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
           <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
           <input
             type="month"
@@ -633,14 +667,13 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             max={maxMonth}
             onChange={(e) => handleCustomRangeChange('start', e.target.value)}
             style={{
-              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
-              borderRadius: 8,
-              padding: isMobile ? '0.25rem 0.3rem' : '0.34rem 0.45rem',
-            fontSize: isMobile ? '0.72rem' : undefined,
-            minWidth: 0,
-            flex: isMobile ? '1 1 0' : undefined,
-            maxWidth: isMobile ? '8rem' : undefined,
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+              borderRadius: 6,
+              padding: '0.2rem 0.3rem',
+              fontSize: isMobile ? '0.64rem' : '0.68rem',
+              minWidth: 0,
+              maxWidth: '6.5rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
               color: theme.textColor,
               colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
             }}
@@ -653,51 +686,17 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             max={maxMonth}
             onChange={(e) => handleCustomRangeChange('end', e.target.value)}
             style={{
-              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
-              borderRadius: 8,
-              padding: isMobile ? '0.25rem 0.3rem' : '0.34rem 0.45rem',
-            fontSize: isMobile ? '0.72rem' : undefined,
-            minWidth: 0,
-            flex: isMobile ? '1 1 0' : undefined,
-            maxWidth: isMobile ? '8rem' : undefined,
-              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+              borderRadius: 6,
+              padding: '0.2rem 0.3rem',
+              fontSize: isMobile ? '0.64rem' : '0.68rem',
+              minWidth: 0,
+              maxWidth: '6.5rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
               color: theme.textColor,
               colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
             }}
           />
-        </div>
-
-        {/* Export buttons */}
-        <div className="flex gap-1 z-10" style={{ flexShrink: 0, gap: isMobile ? '0.25rem' : undefined }}>
-          <CSVLink 
-            data={data}
-            headers={headers}
-            filename={`incomeOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`} 
-            className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
-            style={{
-              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
-              borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-              backdropFilter: 'blur(10px)',
-            width: isMobile ? 30 : 40,
-            height: isMobile ? 30 : 40
-            }}
-          >
-            <BsFiletypeCsv className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
-          </CSVLink>
-
-          <button
-            onClick={async () => await downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-            className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
-            style={{
-              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
-              borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-              backdropFilter: 'blur(10px)',
-            width: isMobile ? 30 : 40,
-            height: isMobile ? 30 : 40
-            }}
-          >
-            <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
-          </button>
         </div>
         </div>
 
@@ -957,7 +956,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 ) : null;
               })()
             )}
-            {data.length > 18 && (
+            {!isMobile && data.length > 18 && (
               <Brush
                 dataKey="name"
                 height={22}

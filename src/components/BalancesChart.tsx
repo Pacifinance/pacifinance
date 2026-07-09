@@ -370,8 +370,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       {/* Barra invisibile per il total - serve solo per mostrarlo nel tooltip */}
       <Bar dataKey="total" fill="transparent" strokeWidth={0} />
       
-      {/* <Brush dataKey='name' height={containerWidth < 500 ? 80 : 60} stroke={theme.textColor} fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} /> */}
-      {data.length > 18 && (
+      {!isMobile && data.length > 18 && (
         <Brush
           dataKey="name"
           height={22}
@@ -462,7 +461,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} />}
       {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
       {data.every(item => item['emergencyFund'] === 0) || <Area type="monotone" dataKey={'emergencyFund'} stroke={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} />}
-      {data.length > 18 && (
+      {!isMobile && data.length > 18 && (
         <Brush
           dataKey="name"
           height={22}
@@ -477,51 +476,85 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
   return (
     <SectionBalancesCharts theme={theme} style={{position: 'relative', height: '100%'}}>
-      {/* Toolbar: period selector + export buttons */}
+      {/* Toolbar: period selector + export buttons (row 1), custom date range (row 2, secondary) */}
       <div style={{
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: isMobile ? '0.35rem' : '0.75rem',
+        flexDirection: 'column',
+        gap: isMobile ? '0.35rem' : '0.4rem',
         width: '100%',
         padding: isMobile ? '0' : '0 0.5rem',
-        marginBottom: isMobile ? '0.45rem' : '0.75rem',
-        flexWrap: 'wrap'
+        marginBottom: isMobile ? '0.5rem' : '0.85rem'
       }}>
-      {/* Time Period Selector */}
-      <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap', gap: isMobile ? '0.2rem' : undefined, flex: '1 1 auto', minWidth: 0 }}>
-        {['3m', '6m', '1y', '2y', 'all'].map((period) => {
-          const isActive = selectedPeriod === period;
-          const isBusy = period === 'all' && isLoadingFullHistory;
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.75rem', flexWrap: 'wrap' }}>
+        {/* Time Period Selector */}
+        <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap', gap: isMobile ? '0.2rem' : undefined, flex: '1 1 auto', minWidth: 0 }}>
+          {['3m', '6m', '1y', '2y', 'all'].map((period) => {
+            const isActive = selectedPeriod === period;
+            const isBusy = period === 'all' && isLoadingFullHistory;
 
-          return (
-            <button
-              key={period}
-              onClick={() => handlePeriodSelect(period)}
-              disabled={isBusy}
-              className={`font-medium rounded-md transition-all duration-200 ${
-                isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
-              }`}
-              style={{
-                backgroundColor: isActive
-                  ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
-                  : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                color: isActive
-                  ? '#ffffff'
-                  : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
-                border: `1px solid ${isActive
-                  ? 'rgba(7, 145, 100, 0.8)'
-                  : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              {isBusy ? '…' : period.toUpperCase()}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={period}
+                onClick={() => handlePeriodSelect(period)}
+                disabled={isBusy}
+                className={`font-medium rounded-md transition-all duration-200 ${
+                  isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
+                }`}
+                style={{
+                  backgroundColor: isActive
+                    ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
+                    : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
+                  color: isActive
+                    ? '#ffffff'
+                    : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
+                  border: `1px solid ${isActive
+                    ? 'rgba(7, 145, 100, 0.8)'
+                    : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
+                  backdropFilter: 'blur(10px)'
+                }}
+              >
+                {isBusy ? '…' : period.toUpperCase()}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Export buttons — small, top-right */}
+        <div className="flex gap-1 z-10" style={{ flexShrink: 0, gap: isMobile ? '0.2rem' : '0.3rem' }}>
+          <CSVLink
+            data={data}
+            headers={headers}
+            filename={`distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
+            className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
+            style={{
+              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+              borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              backdropFilter: 'blur(10px)',
+              width: isMobile ? 24 : 28,
+              height: isMobile ? 24 : 28
+            }}
+          >
+            <BsFiletypeCsv className="text-paciGreen text-sm" />
+          </CSVLink>
+
+          <button
+            onClick={async () => await downloadExcel(data, headers, `distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
+            className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
+            style={{
+              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
+              borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              backdropFilter: 'blur(10px)',
+              width: isMobile ? 24 : 28,
+              height: isMobile ? 24 : 28
+            }}
+          >
+            <RiFileExcel2Line className="text-paciGreen text-sm" />
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.68rem' : '0.75rem', color: theme.textColor, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-between' : 'flex-start' }}>
+      {/* Custom date range — secondary filter, centered and de-emphasized */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
         <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
         <input
           type="month"
@@ -530,14 +563,13 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
           max={maxMonth}
           onChange={(e) => handleCustomRangeChange('start', e.target.value)}
           style={{
-            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
-            borderRadius: 8,
-            padding: isMobile ? '0.25rem 0.3rem' : '0.34rem 0.45rem',
-            fontSize: isMobile ? '0.72rem' : undefined,
+            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+            borderRadius: 6,
+            padding: '0.2rem 0.3rem',
+            fontSize: isMobile ? '0.64rem' : '0.68rem',
             minWidth: 0,
-            flex: isMobile ? '1 1 0' : undefined,
-            maxWidth: isMobile ? '8rem' : undefined,
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+            maxWidth: '6.5rem',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
             color: theme.textColor,
             colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
           }}
@@ -550,51 +582,17 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
           max={maxMonth}
           onChange={(e) => handleCustomRangeChange('end', e.target.value)}
           style={{
-            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
-            borderRadius: 8,
-            padding: isMobile ? '0.25rem 0.3rem' : '0.34rem 0.45rem',
-            fontSize: isMobile ? '0.72rem' : undefined,
+            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
+            borderRadius: 6,
+            padding: '0.2rem 0.3rem',
+            fontSize: isMobile ? '0.64rem' : '0.68rem',
             minWidth: 0,
-            flex: isMobile ? '1 1 0' : undefined,
-            maxWidth: isMobile ? '8rem' : undefined,
-            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+            maxWidth: '6.5rem',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
             color: theme.textColor,
             colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
           }}
         />
-      </div>
-
-      {/* Export buttons */}
-      <div className="flex gap-1 z-10" style={{ flexShrink: 0, gap: isMobile ? '0.25rem' : undefined }}>
-        <CSVLink
-          data={data}
-          headers={headers}
-          filename={`distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
-          className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
-          style={{
-            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
-            borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-            backdropFilter: 'blur(10px)',
-            width: isMobile ? 30 : 40,
-            height: isMobile ? 30 : 40
-          }}
-        >
-          <BsFiletypeCsv className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
-        </CSVLink>
-
-        <button
-          onClick={async () => await downloadExcel(data, headers, `distributionAssets_${type}_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-          className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
-          style={{
-            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
-            borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-            backdropFilter: 'blur(10px)',
-            width: isMobile ? 30 : 40,
-            height: isMobile ? 30 : 40
-          }}
-        >
-          <RiFileExcel2Line className="text-paciGreen text-lg md:text-lg max-md:text-sm" />
-        </button>
       </div>
       </div>
 

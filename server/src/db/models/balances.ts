@@ -185,14 +185,15 @@ async function getBalanceHistoryByUserId(user_id: string, months?: number) {
 
 /**
  * Gets {userId, total} pairs for the balance-ranking pool (all users, or only
- * those "similar" to reference_user_id) via a single aggregate query
+ * an explicit cohort of user ids - see server/src/services/similarUsers.ts
+ * for "similar users" cohort selection) via a single aggregate query
  * (get_balance_ranking_pool RPC) instead of one balance query per user.
- * @param reference_user_id uuid to restrict to "similar" users, or undefined for everyone
+ * @param user_ids Restrict the pool to these user ids, or undefined for everyone
  * @param ignore_test_demo Exclude test/demo accounts from the pool
  */
-async function getRankingPool(reference_user_id?: string, ignore_test_demo: boolean = true) {
+async function getRankingPool(user_ids?: string[], ignore_test_demo: boolean = true) {
     const {data, error} = await supabase.rpc("get_balance_ranking_pool", {
-        p_reference_user: reference_user_id ?? null,
+        p_user_ids: user_ids ?? null,
         p_ignore_test_demo: ignore_test_demo
     })
     if (error) console.error("balances.getRankingPool: get_balance_ranking_pool RPC failed", error)

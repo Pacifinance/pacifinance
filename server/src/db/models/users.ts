@@ -134,26 +134,14 @@ async function verifyPassword(user_id: string, password: string) {
 }
 
 /**
- * Gets all user IDs, filtering by "similar" users if a reference user is provided
- * @param reference_user_id uuid of the user to use as a reference for filtering
+ * Gets all user IDs. For "similar" (cohort-restricted) users, see
+ * server/src/services/similarUsers.ts instead.
  * @param ignore_test_users True if test and demo users must be ignored, false otherwise
  * @returns List of {id, userId} objects
  */
-async function getAllUsersIds(reference_user_id: string | undefined = undefined, ignore_test_users: boolean = false) {
+async function getAllUsersIds(ignore_test_users: boolean = false) {
     let query = supabase.from("profiles").select("id, user_code")
 
-    if (reference_user_id !== undefined) {
-        const {data: reference} = await supabase.from("profiles")
-            .select("job_type_tag_id, job_country_tag_id, work_time_tag_id")
-            .eq("id", reference_user_id)
-            .maybeSingle()
-        if (reference !== null) {
-            query = query
-                .eq("job_type_tag_id", reference.job_type_tag_id)
-                .eq("job_country_tag_id", reference.job_country_tag_id)
-                .eq("work_time_tag_id", reference.work_time_tag_id)
-        }
-    }
     if (ignore_test_users)
         query = query.lt("account_type", UserType.test.value)
 

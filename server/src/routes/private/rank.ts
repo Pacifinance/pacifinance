@@ -3,6 +3,7 @@ import express from "express"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
+import similarUsers from "../../services/similarUsers"
 
 /**
  * Computes the rank of a user among other users
@@ -56,6 +57,11 @@ rankRouter.post("/get", async (req, res) => {
     }
 
     const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
+    const [balanceCohort, incomeCohort, expenseCohort] = await Promise.all([
+        similarUsers.getSimilarUserIds(target_user, "balance"),
+        similarUsers.getSimilarUserIds(target_user, "incomes"),
+        similarUsers.getSimilarUserIds(target_user, "outflows"),
+    ])
     const [
         balancePool,
         balanceSimilarPool,
@@ -65,11 +71,11 @@ rankRouter.post("/get", async (req, res) => {
         expenseSimilarPool,
     ] = await Promise.all([
         db.balances.getRankingPool(undefined, true),
-        db.balances.getRankingPool(target_user, true),
+        db.balances.getRankingPool(balanceCohort.userIds, true),
         db.expenses.getExpenseRankingPool(undefined, false, reference_date),
-        db.expenses.getExpenseRankingPool(target_user, false, reference_date),
+        db.expenses.getExpenseRankingPool(incomeCohort.userIds, false, reference_date),
         db.expenses.getExpenseRankingPool(undefined, true, reference_date),
-        db.expenses.getExpenseRankingPool(target_user, true, reference_date),
+        db.expenses.getExpenseRankingPool(expenseCohort.userIds, true, reference_date),
     ])
 
     res.status(200).json({
@@ -97,12 +103,12 @@ rankRouter.post("/balances", async (req, res) => {
         return;
     }
     // Check if the ranking is requested among all users or only similar users
-    let reference_user = undefined;
+    let user_ids = undefined;
     if (req.body && req.body.similar)
-        reference_user = target_user;
+        user_ids = (await similarUsers.getSimilarUserIds(target_user, "balance")).userIds;
     // Get the latest-balance pool in a single aggregate query (RPC) instead
     // of one query per user
-    const pool = await db.balances.getRankingPool(reference_user, true);
+    const pool = await db.balances.getRankingPool(user_ids, true);
     const rank = {position: rankFromBalancePool(pool, target_user)};
     // Send the data to the client with status code 200 (OK)
     res.status(200);
@@ -123,15 +129,15 @@ rankRouter.post("/expenses", async (req, res) => {
         res.json(fake_rank);
         return;
     }
-    // Check if the ranking is requested among all users or only similar users
-    let reference_user = undefined;
-    if (req.body && req.body.similar)
-        reference_user = target_user;
     // Get the expenses/incomes-of-last-month pool in a single aggregate query
     // (RPC) instead of one query per user
     const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
     const is_expense_filter = Boolean(req.body.expenses);
-    const pool = await db.expenses.getExpenseRankingPool(reference_user, is_expense_filter, reference_date);
+    // Check if the ranking is requested among all users or only similar users
+    let user_ids = undefined;
+    if (req.body && req.body.similar)
+        user_ids = (await similarUsers.getSimilarUserIds(target_user, is_expense_filter ? "outflows" : "incomes")).userIds;
+    const pool = await db.expenses.getExpenseRankingPool(user_ids, is_expense_filter, reference_date);
     const rank = {position: rankFromExpensePool(pool, target_user, is_expense_filter)};
     // Send the data to the client with status code 200 (OK)
     res.status(200);

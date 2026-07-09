@@ -217,18 +217,19 @@ async function deleteExpenseByData(user_id: string, date: Date, amount: number, 
 
 /**
  * Gets {userId, total} pairs for the expense/income-ranking pool (all users,
- * or only those "similar" to reference_user_id) for a given month, via a
- * single aggregate query (get_expense_ranking_pool RPC) instead of one query
- * per user.
- * @param reference_user_id uuid to restrict to "similar" users, or undefined for everyone
+ * or only an explicit cohort of user ids - see
+ * server/src/services/similarUsers.ts for "similar users" cohort selection)
+ * for a given month, via a single aggregate query (get_expense_ranking_pool
+ * RPC) instead of one query per user.
+ * @param user_ids Restrict the pool to these user ids, or undefined for everyone
  * @param is_expense_filter true = expenses pool, false = incomes pool
  * @param reference_date Any date within the target month
  */
-async function getExpenseRankingPool(reference_user_id: string | undefined, is_expense_filter: boolean, reference_date: ExtDate) {
+async function getExpenseRankingPool(user_ids: string[] | undefined, is_expense_filter: boolean, reference_date: ExtDate) {
     const month_start = ExtDate.fromReferenceMonthStart(reference_date)
     const p_month = `${month_start.getUTCFullYear()}-${String(month_start.getUTCMonth() + 1).padStart(2, "0")}-01`
     const {data, error} = await supabase.rpc("get_expense_ranking_pool", {
-        p_reference_user: reference_user_id ?? null,
+        p_user_ids: user_ids ?? null,
         p_is_expense: is_expense_filter,
         p_month
     })

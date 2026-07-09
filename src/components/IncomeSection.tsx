@@ -14,6 +14,7 @@ import {
 import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
+import CategoryPicker from './CategoryPicker';
 
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
@@ -344,6 +345,8 @@ export default function IncomeSection({
   noteIncomeAreaValue,
   setNoteIncomeAreaValue,
   incomesTags,
+  customCategories = [],
+  onCreateCategory,
   selectedIncomesMonth,
   setSelectedIncomesMonth,
   incomeMonthOptions,
@@ -757,7 +760,13 @@ export default function IncomeSection({
 
         return (
           <tr key={index} style={{ background: rowGradient }}>
-            <td>{isHidden ? '****' : translateTag(add.categoryTag?.label, language, 'income')}</td>
+            <td>
+              {isHidden
+                ? '****'
+                : add.userCategory?.label
+                  ? `${translateTag(add.categoryTag?.label, language, 'income')} / ${add.userCategory.label}`
+                  : translateTag(add.categoryTag?.label, language, 'income')}
+            </td>
             <td>
               {isHidden
                 ? '****'
@@ -852,34 +861,25 @@ export default function IncomeSection({
         {/* Category */}
         <FormField>
           <FieldLabel theme={theme}>{translations.general.category}</FieldLabel>
-          <Select
-            value={categoryIncome.value}
-            onChange={(event) => {
-              const selectedKey = event.target.value;
-              const selectedItem = incomesTags.find((item) => item.index === selectedKey);
-              if (selectedItem) {
-                setCategoryIncome({
-                  key: selectedKey,
-                  value: translateTag(selectedItem.label, language, 'income'),
-                });
-              }
-            }}
-            sx={selectSx}
-            displayEmpty
-            MenuProps={getMuiSelectMenuProps(theme)}
-            renderValue={(value) =>
-              value === '' ? translations.insert.incomeSection.placeholderCategory : value
+          <CategoryPicker
+            theme={theme}
+            officialTags={incomesTags}
+            customCategories={customCategories}
+            categoryType="income"
+            categoryKey={categoryIncome.key}
+            userCategoryId={categoryIncome.userCategoryId ?? null}
+            onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+              setCategoryIncome({
+                key: categoryKey,
+                value: userCategoryLabel || categoryValue,
+                parentValue: categoryValue,
+                userCategoryId,
+                userCategoryLabel,
+              })
             }
-          >
-            <MenuItem value="">
-              <em>{translations.insert.incomeSection.placeholderCategory}</em>
-            </MenuItem>
-            {sortTagsByLanguage(incomesTags, language, 'income').map((item) => (
-              <MenuItem key={item.index} value={item.index}>
-                {translateTag(item.label, language, 'income')}
-              </MenuItem>
-            ))}
-          </Select>
+            onCreateCategory={onCreateCategory}
+            placeholder={translations.insert.incomeSection.placeholderCategory}
+          />
         </FormField>
 
         {/* Amount */}

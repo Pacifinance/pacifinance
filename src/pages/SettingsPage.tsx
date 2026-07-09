@@ -75,7 +75,7 @@ const SettingsPage = () => {
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const userContext = useContext(UserContext) || {};
-    const { renameCustomCategory, deleteCustomCategory } = userContext;
+    const { addCustomCategory, renameCustomCategory, deleteCustomCategory } = userContext;
     const { isMobileScreen } = useContext(MediaQueryContext);
     const navigate = useLocalizedNavigate();
 
@@ -130,6 +130,10 @@ const SettingsPage = () => {
     const [editingCategoryLabel, setEditingCategoryLabel] = useState("");
     const [categoryBusyId, setCategoryBusyId] = useState(null);
     const [pendingDeleteCategoryId, setPendingDeleteCategoryId] = useState(null);
+    const [newCategoryType, setNewCategoryType] = useState("expense");
+    const [newCategoryParentIndex, setNewCategoryParentIndex] = useState("");
+    const [newCategoryLabel, setNewCategoryLabel] = useState("");
+    const [isCreatingCategory, setIsCreatingCategory] = useState(false);
     
     // Stati per il filtro dati export
     const [exportFilter, setExportFilter] = useState("all");
@@ -176,6 +180,33 @@ const SettingsPage = () => {
             ? (language === "it" ? "Entrata" : "Income")
             : (language === "it" ? "Spesa" : "Expense");
         return translateTag(parent.label, language, isIncome ? "income" : "expense");
+    };
+
+    const categoryParentOptions = newCategoryType === "income" ? incomeTags : outflowTags;
+
+    const handleCreateCategory = async () => {
+        const label = newCategoryLabel.trim();
+        const parentIndex = Number(newCategoryParentIndex);
+        if (!label || !Number.isFinite(parentIndex) || !addCustomCategory) {
+            showError(language === "it"
+                ? "Scegli una categoria madre e inserisci un nome."
+                : "Choose a parent category and enter a name.");
+            return;
+        }
+        setIsCreatingCategory(true);
+        try {
+            await addCustomCategory({
+                label,
+                parent_index: parentIndex,
+                is_expense: newCategoryType === "expense",
+            });
+            setNewCategoryLabel("");
+            showSuccess(language === "it" ? "Categoria creata." : "Category created.");
+        } catch {
+            showError(language === "it" ? "Impossibile creare la categoria." : "Could not create category.");
+        } finally {
+            setIsCreatingCategory(false);
+        }
     };
 
     const startRenamingCategory = (category) => {
@@ -548,6 +579,111 @@ const SettingsPage = () => {
                                     ? "Puoi crearle mentre inserisci una spesa o un'entrata. Qui puoi rinominarle o eliminarle: le statistiche restano sempre sulla categoria madre."
                                     : "Create them while adding an expense or income. Here you can rename or delete them: statistics always stay linked to the parent category."}
                             </p>
+
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: isMobileScreen ? "1fr" : "0.8fr 1.1fr 1.4fr auto",
+                                gap: "0.5rem",
+                                alignItems: "end",
+                                padding: "0.7rem",
+                                marginBottom: "0.75rem",
+                                borderRadius: "10px",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
+                            }}>
+                                <div>
+                                    <label style={{ display: "block", marginBottom: "0.25rem", color: theme.textColor, fontSize: "0.75rem", fontWeight: 600 }}>
+                                        {language === "it" ? "Tipo" : "Type"}
+                                    </label>
+                                    <select
+                                        value={newCategoryType}
+                                        onChange={(e) => {
+                                            setNewCategoryType(e.target.value);
+                                            setNewCategoryParentIndex("");
+                                        }}
+                                        disabled={isCreatingCategory}
+                                        style={{
+                                            width: "100%",
+                                            padding: "0.5rem 0.6rem",
+                                            borderRadius: "8px",
+                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)'}`,
+                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff',
+                                            color: theme.textColor,
+                                            fontSize: "0.82rem"
+                                        }}
+                                    >
+                                        <option value="expense" style={{ color: "#1a1a2e" }}>{language === "it" ? "Spesa" : "Expense"}</option>
+                                        <option value="income" style={{ color: "#1a1a2e" }}>{language === "it" ? "Entrata" : "Income"}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ display: "block", marginBottom: "0.25rem", color: theme.textColor, fontSize: "0.75rem", fontWeight: 600 }}>
+                                        {language === "it" ? "Categoria madre" : "Parent category"}
+                                    </label>
+                                    <select
+                                        value={newCategoryParentIndex}
+                                        onChange={(e) => setNewCategoryParentIndex(e.target.value)}
+                                        disabled={isCreatingCategory}
+                                        style={{
+                                            width: "100%",
+                                            padding: "0.5rem 0.6rem",
+                                            borderRadius: "8px",
+                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)'}`,
+                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff',
+                                            color: theme.textColor,
+                                            fontSize: "0.82rem"
+                                        }}
+                                    >
+                                        <option value="" style={{ color: "#1a1a2e" }}>
+                                            {language === "it" ? "Scegli..." : "Choose..."}
+                                        </option>
+                                        {categoryParentOptions.map(tag => (
+                                            <option key={`${newCategoryType}-${tag.index}`} value={tag.index} style={{ color: "#1a1a2e" }}>
+                                                {translateTag(tag.label, language, newCategoryType)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ display: "block", marginBottom: "0.25rem", color: theme.textColor, fontSize: "0.75rem", fontWeight: 600 }}>
+                                        {language === "it" ? "Nome" : "Name"}
+                                    </label>
+                                    <input
+                                        value={newCategoryLabel}
+                                        onChange={(e) => setNewCategoryLabel(e.target.value)}
+                                        maxLength={40}
+                                        disabled={isCreatingCategory}
+                                        placeholder={language === "it" ? "Es. Spesa casa" : "E.g. Home groceries"}
+                                        style={{
+                                            width: "100%",
+                                            padding: "0.5rem 0.6rem",
+                                            borderRadius: "8px",
+                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)'}`,
+                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff',
+                                            color: theme.textColor,
+                                            fontSize: "0.82rem",
+                                            boxSizing: "border-box"
+                                        }}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleCreateCategory}
+                                    disabled={isCreatingCategory || !newCategoryLabel.trim() || newCategoryParentIndex === ""}
+                                    style={{
+                                        border: "none",
+                                        borderRadius: "8px",
+                                        padding: "0.55rem 0.9rem",
+                                        background: theme.buttonBackgroundColor,
+                                        color: "#fff",
+                                        fontWeight: 700,
+                                        cursor: isCreatingCategory ? "default" : "pointer",
+                                        opacity: isCreatingCategory || !newCategoryLabel.trim() || newCategoryParentIndex === "" ? 0.6 : 1
+                                    }}
+                                >
+                                    {language === "it" ? "Crea" : "Create"}
+                                </button>
+                            </div>
 
                             {customCategories.length === 0 ? (
                                 <div style={{

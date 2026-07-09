@@ -152,6 +152,18 @@ export default function CategoryPicker({
         disabled={disabled}
         renderValue={renderSelectedLabel}
       >
+        <MenuItem
+          value={CREATE_NEW_VALUE}
+          sx={{
+            color: theme.buttonBackgroundColor || '#3b82f6',
+            fontWeight: 700,
+            borderBottom: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'}`,
+            mb: 0.5,
+          }}
+        >
+          <FontAwesomeIcon icon={faPlus} style={{ marginRight: 8 }} />
+          {t.createNew}
+        </MenuItem>
         {sortedTags.flatMap((tag) => {
           const label = translateTag(tag.label, language, categoryType);
           const children = safeCustomCategories.filter((c) => c.parentIndex === tag.index);
@@ -166,23 +178,12 @@ export default function CategoryPicker({
             ...children.map((c) => (
               <MenuItem key={`cus-${c.id}`} value={`cus:${c.id}`} sx={{ pl: 4, fontSize: '0.85rem', opacity: 0.85 }}>
                 <FontAwesomeIcon icon={faTag} style={{ fontSize: 10, marginRight: 8, opacity: 0.6 }} />
+                <span style={{ opacity: 0.7, marginRight: 6 }}>↳</span>
                 {c.label}
               </MenuItem>
             )),
           ];
         })}
-        <MenuItem
-          value={CREATE_NEW_VALUE}
-          sx={{
-            color: theme.buttonBackgroundColor || '#3b82f6',
-            fontWeight: 600,
-            borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'}`,
-            mt: 0.5,
-          }}
-        >
-          <FontAwesomeIcon icon={faPlus} style={{ marginRight: 8 }} />
-          {t.createNew}
-        </MenuItem>
       </Select>
 
       {dialogOpen && (

@@ -14,6 +14,7 @@ import {
 import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
+import CategoryPicker from './CategoryPicker';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
 
@@ -307,6 +308,8 @@ export default function OutflowSection({
   setNoteOutflowAreaValue,
   OutflowsTags,
   paymentTags,
+  customCategories = [],
+  onCreateCategory,
   selectedOutflowsMonth,
   setSelectedOutflowsMonth,
   outflowMonthOptions,
@@ -769,7 +772,13 @@ export default function OutflowSection({
 
         return (
           <tr key={index} style={{ background: rowGradient }}>
-            <td>{isHidden ? '****' : translateTag(add.categoryTag?.label, language, 'expense')}</td>
+            <td>
+              {isHidden
+                ? '****'
+                : add.userCategory?.label
+                  ? `${translateTag(add.categoryTag?.label, language, 'expense')} / ${add.userCategory.label}`
+                  : translateTag(add.categoryTag?.label, language, 'expense')}
+            </td>
             <td>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</td>
             <td>
               {isHidden
@@ -865,34 +874,25 @@ export default function OutflowSection({
         {/* Category */}
         <FormField>
           <FieldLabel theme={theme}>{translations.general.category}</FieldLabel>
-          <Select
-            value={categoryOutflow.value}
-            onChange={(event) => {
-              const selectedKey = event.target.value;
-              const selectedItem = OutflowsTags.find((item) => item.index === selectedKey);
-              if (selectedItem) {
-                setCategoryOutflow({
-                  key: selectedKey,
-                  value: translateTag(selectedItem.label, language, 'expense'),
-                });
-              }
-            }}
-            sx={selectSx}
-            displayEmpty
-            MenuProps={getMuiSelectMenuProps(theme)}
-            renderValue={(value) =>
-              value === '' ? translations.insert.outflowSection.placeholderCategory : value
+          <CategoryPicker
+            theme={theme}
+            officialTags={OutflowsTags}
+            customCategories={customCategories}
+            categoryType="expense"
+            categoryKey={categoryOutflow.key}
+            userCategoryId={categoryOutflow.userCategoryId ?? null}
+            onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+              setCategoryOutflow({
+                key: categoryKey,
+                value: userCategoryLabel || categoryValue,
+                parentValue: categoryValue,
+                userCategoryId,
+                userCategoryLabel,
+              })
             }
-          >
-            <MenuItem value="">
-              <em>{translations.insert.outflowSection.placeholderCategory}</em>
-            </MenuItem>
-            {sortTagsByLanguage(OutflowsTags, language, 'expense').map((item) => (
-              <MenuItem key={item.index} value={item.index}>
-                {translateTag(item.label, language, 'expense')}
-              </MenuItem>
-            ))}
-          </Select>
+            onCreateCategory={onCreateCategory}
+            placeholder={translations.insert.outflowSection.placeholderCategory}
+          />
         </FormField>
 
         {/* Payment Type */}

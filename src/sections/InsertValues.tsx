@@ -1485,6 +1485,7 @@ export default function InsertValue({
         noteOutflowAreaValue,
         typoOutflow.key,
         categoryOutflow.key,
+        categoryOutflow.userCategoryId ?? null,
       );
       // Only reset note and value - keep category, typology, date and balance source for quick re-entry
       setNoteOutflowAreaValue("");
@@ -1497,6 +1498,7 @@ export default function InsertValue({
         noteIncomeAreaValue,
         0,
         categoryIncome.key,
+        categoryIncome.userCategoryId ?? null,
       );
       // Only reset note and value - keep category, date and balance destination for quick re-entry
       setNoteIncomeAreaValue("");
@@ -1796,6 +1798,8 @@ export default function InsertValue({
             noteIncomeAreaValue={noteIncomeAreaValue}
             setNoteIncomeAreaValue={setNoteIncomeAreaValue}
             incomesTags={incomesTags}
+            customCategories={getCustomCategories(userData)}
+            onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: false })}
             selectedIncomesMonth={selectedIncomesMonth}
             setSelectedIncomesMonth={setSelectedIncomesMonth}
             incomeMonthOptions={incomeMonthOptions}
@@ -1841,6 +1845,8 @@ export default function InsertValue({
             setNoteOutflowAreaValue={setNoteOutflowAreaValue}
             OutflowsTags={OutflowsTags}
             paymentTags={paymentTags}
+            customCategories={getCustomCategories(userData)}
+            onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: true })}
             selectedOutflowsMonth={selectedOutflowsMonth}
             setSelectedOutflowsMonth={setSelectedOutflowsMonth}
             outflowMonthOptions={outflowMonthOptions}
@@ -1954,7 +1960,9 @@ export default function InsertValue({
               onClose={() => setShowMultiInsert(false)}
               initialRow={{
                 categoryKey: categoryOutflow?.key || '',
-                categoryValue: categoryOutflow?.value || '',
+                categoryValue: categoryOutflow?.parentValue || categoryOutflow?.value || '',
+                userCategoryId: categoryOutflow?.userCategoryId ?? null,
+                userCategoryLabel: categoryOutflow?.userCategoryLabel || null,
                 typoKey: typoOutflow?.key || '',
                 typoValue: typoOutflow?.value || '',
                 amount: outflow || '',
@@ -1979,7 +1987,9 @@ export default function InsertValue({
               onClose={() => setShowMultiIncomeInsert(false)}
               initialRow={{
                 categoryKey: categoryIncome?.key || '',
-                categoryValue: categoryIncome?.value || '',
+                categoryValue: categoryIncome?.parentValue || categoryIncome?.value || '',
+                userCategoryId: categoryIncome?.userCategoryId ?? null,
+                userCategoryLabel: categoryIncome?.userCategoryLabel || null,
                 amount: income || '',
                 date: incomeDate || currentDate,
                 note: noteIncomeAreaValue || '',

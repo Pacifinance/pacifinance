@@ -6,7 +6,6 @@ import {
   YAxis, 
   LineChart, 
   Line, 
-  Legend, 
   PieChart, 
   Pie, 
   Cell,
@@ -55,6 +54,8 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   // Common state
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
+  const [customStartMonth, setCustomStartMonth] = useState('');
+  const [customEndMonth, setCustomEndMonth] = useState('');
   const isMobile = containerWidth < 500;
 
   // Line visibility state for legend toggle
@@ -164,14 +165,27 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   // disponibili di default: li richiediamo una sola volta, on-demand, per
   // non gravare sull'egress ad ogni caricamento pagina (nessun dettaglio di
   // singola transazione viene trasferito, solo somme mensili).
-  const handlePeriodSelect = async (period) => {
-    if ((period === '2y' || period === 'all') && !hasFullHistory && fetchAllTimeMonthlyTotals) {
+  const ensureFullHistory = async () => {
+    if (!hasFullHistory && fetchAllTimeMonthlyTotals) {
       setIsLoadingFullHistory(true);
       await fetchAllTimeMonthlyTotals();
       setHasFullHistory(true);
       setIsLoadingFullHistory(false);
     }
+  };
+
+  const handlePeriodSelect = async (period) => {
+    if (period === '2y' || period === 'all') {
+      await ensureFullHistory();
+    }
     setSelectedPeriod(period);
+  };
+
+  const handleCustomRangeChange = async (field, value) => {
+    if (field === 'start') setCustomStartMonth(value);
+    if (field === 'end') setCustomEndMonth(value);
+    setSelectedPeriod('custom');
+    await ensureFullHistory();
   };
 
   // Converte i totali mensili aggregati (monthlyTotalsAllTime) nello stesso
@@ -192,8 +206,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
       });
   };
 
-  // Funzione per filtrare i dati in base al periodo selezionato
-  const getFilteredData = () => {
+  const buildLastTwelveMonthsData = () => {
     const lastTwelveMonths = [];
 
     // Crea array da 11 mesi fa al mese corrente (ordine cronologico corretto)
@@ -225,6 +238,18 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
       });
     }
 
+    return lastTwelveMonths;
+  };
+
+  const getExtendedData = () => {
+    const extended = buildDataFromMonthlyTotals(monthlyTotalsAllTime);
+    return extended.length > 0 ? extended : buildLastTwelveMonthsData();
+  };
+
+  // Funzione per filtrare i dati in base al periodo selezionato
+  const getFilteredData = () => {
+    const lastTwelveMonths = buildLastTwelveMonthsData();
+
     // Filtra in base al periodo selezionato
     switch(selectedPeriod) {
       case '3m':
@@ -234,12 +259,20 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
       case '1y':
         return lastTwelveMonths; // Tutti i 12 mesi
       case '2y': {
-        const extended = buildDataFromMonthlyTotals(monthlyTotalsAllTime);
+        const extended = getExtendedData();
         return extended.length > 0 ? extended.slice(-24) : lastTwelveMonths;
       }
       case 'all': {
-        const extended = buildDataFromMonthlyTotals(monthlyTotalsAllTime);
+        const extended = getExtendedData();
         return extended.length > 0 ? extended : lastTwelveMonths;
+      }
+      case 'custom': {
+        const extended = getExtendedData();
+        const start = customStartMonth || extended[0]?.name;
+        const end = customEndMonth || extended[extended.length - 1]?.name;
+        if (!start || !end) return extended;
+        const [from, to] = start <= end ? [start, end] : [end, start];
+        return extended.filter((item) => item.name >= from && item.name <= to);
       }
       default:
         return lastTwelveMonths;
@@ -247,6 +280,20 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   };
 
   const data = getFilteredData();
+  const rangeData = getExtendedData();
+  const minMonth = rangeData[0]?.name || '';
+  const maxMonth = rangeData[rangeData.length - 1]?.name || '';
+  const isLongRange = data.length > 18;
+  const xAxisInterval = data.length > 60 ? Math.ceil(data.length / 8) : data.length > 36 ? 5 : data.length > 24 ? 3 : data.length > 12 ? 1 : 0;
+  const formatXAxisTick = (value, index) => {
+    if (!value || isHidden) return isHidden ? '****' : value;
+    const [year, month] = String(value).split('-');
+    if (!year || !month) return value;
+    if (data.length > 18) {
+      return month === '01' || index === 0 || index === data.length - 1 ? `${month}/${year.slice(2)}` : month;
+    }
+    return `${month}/${year.slice(2)}`;
+  };
 
   // Pie Chart Functions
   const renderPieChart = () => {
@@ -300,9 +347,6 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         </text>
       );
     };
-
-    const pieSize = isMobile ? Math.min(containerWidth - 20, 280) : Math.min(containerWidth, 350);
-    const outerR = isMobile ? Math.min(pieSize * 0.42, 100) : Math.min(pieSize * 0.4, 140);
 
     return (
       <div style={{ 
@@ -543,10 +587,12 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           alignItems: 'center',
           width: '100%',
           padding: isMobile ? '0 0.25rem' : '0 0.5rem',
-          marginBottom: isMobile ? '0.25rem' : '0'
+          marginBottom: '0.75rem',
+          gap: '0.75rem',
+          flexWrap: 'wrap'
         }}>
         {/* Time Period Selector */}
-        <div className="flex gap-1 z-10">
+        <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap' }}>
           {['3m', '6m', '1y', '2y', 'all'].map((period) => {
             const isActive = selectedPeriod === period;
             const isBusy = (period === '2y' || period === 'all') && isLoadingFullHistory;
@@ -576,6 +622,41 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
               </button>
             );
           })}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', fontSize: '0.75rem', color: theme.textColor }}>
+          <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
+          <input
+            type="month"
+            value={customStartMonth}
+            min={minMonth}
+            max={maxMonth}
+            onChange={(e) => handleCustomRangeChange('start', e.target.value)}
+            style={{
+              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
+              borderRadius: 8,
+              padding: '0.34rem 0.45rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+              color: theme.textColor,
+              colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            }}
+          />
+          <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
+          <input
+            type="month"
+            value={customEndMonth}
+            min={minMonth}
+            max={maxMonth}
+            onChange={(e) => handleCustomRangeChange('end', e.target.value)}
+            style={{
+              border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
+              borderRadius: 8,
+              padding: '0.34rem 0.45rem',
+              background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+              color: theme.textColor,
+              colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            }}
+          />
         </div>
 
         {/* Export buttons */}
@@ -611,7 +692,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
         {/* Responsive chart container */}
         <div style={{ 
           width: '100%', 
-          height: isMobile ? '280px' : '400px',
+          height: isMobile ? '320px' : '460px',
           padding: isMobile ? '0' : '0 0.5rem'
         }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -621,7 +702,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
               top: isMobile ? 10 : 20,
               right: isMobile ? 5 : 30,
               left: isMobile ? -15 : 10,
-              bottom: isMobile ? 5 : 20
+              bottom: data.length > 18 ? 8 : (isMobile ? 5 : 20)
             }}
             syncId="incomeOutflowChart"
           >
@@ -645,22 +726,16 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             <XAxis 
               dataKey="name"
               type="category"
+              interval={isMobile ? Math.max(1, xAxisInterval) : xAxisInterval}
+              tickFormatter={formatXAxisTick}
               tick={{
-                fontSize: containerWidth < 500 ? 8 : containerWidth < 768 ? 10 : 12, 
+                fontSize: containerWidth < 500 ? 8 : isLongRange ? 10 : containerWidth < 768 ? 10 : 12, 
                 fill: theme.mode === 'dark' ? '#fff' : '#333',
                 fontWeight: 500
               }} 
-              interval={(() => {
-                const dataLength = data.length;
-                if (containerWidth < 500) return 'preserveStartEnd';
-                if (dataLength <= 3) return 0;
-                if (dataLength <= 6) return 0;
-                if (dataLength === 12) return containerWidth < 800 ? 1 : 0;
-                return 0;
-              })()} 
-              angle={containerWidth < 500 ? -35 : 0}
-              textAnchor={containerWidth < 500 ? 'end' : 'middle'}
-              height={containerWidth < 500 ? 50 : 50}
+              angle={containerWidth < 500 || isLongRange ? -35 : 0}
+              textAnchor={containerWidth < 500 || isLongRange ? 'end' : 'middle'}
+              height={containerWidth < 500 || isLongRange ? 58 : 46}
               axisLine={{ 
                 stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
                 strokeWidth: 1
@@ -692,12 +767,15 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 backgroundColor: 'rgba(255,255,255,0.95)',
                 border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
                 borderRadius: '8px',
-                padding: '12px',
-                fontSize: '14px',
+                padding: isMobile ? '8px 10px' : '10px 12px',
+                fontSize: isMobile ? '12px' : '13px',
                 fontWeight: '500',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                color: '#333'
+                color: '#333',
+                maxHeight: isMobile ? 220 : 280,
+                overflowY: 'auto'
               }}
+              wrapperStyle={{ zIndex: 20 }}
               labelStyle={{
                 color: '#333',
                 fontWeight: 'bold',
@@ -748,9 +826,9 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
+                  r: isLongRange ? 0 : (isMobile ? 3 : 5),
                   fill: isHidden ? greyColor1 : "#079164", 
-                  strokeWidth: isMobile ? 1 : 2, 
-                  r: isMobile ? 3 : 5 
+                  strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
                 }}
                 activeDot={{ 
                   r: isMobile ? 6 : 10, 
@@ -774,9 +852,9 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
+                  r: isLongRange ? 0 : (isMobile ? 3 : 5),
                   fill: isHidden ? greyColor2 : "#ff3838", 
-                  strokeWidth: isMobile ? 1 : 2, 
-                  r: isMobile ? 3 : 5 
+                  strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
                 }}
                 activeDot={{ 
                   r: isMobile ? 6 : 10, 
@@ -800,9 +878,9 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
+                  r: isLongRange ? 0 : (isMobile ? 3 : 5),
                   fill: isHidden ? greyColor1 : "#06b6d4", 
-                  strokeWidth: isMobile ? 1 : 2, 
-                  r: isMobile ? 3 : 5 
+                  strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
                 }}
                 activeDot={{ 
                   r: isMobile ? 6 : 10, 
@@ -825,13 +903,15 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                 strokeDasharray="8 4"
                 strokeWidth={2}
                 label={{ 
-                  value: `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`,
-                  position: "top",
-                  offset: isMobile ? 10 : 25,
+                  value: data.length > 18
+                    ? `${language === 'it' ? 'Limite' : 'Limit'} ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`
+                    : `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`,
+                  position: data.length > 18 ? "insideTopRight" : "top",
+                  offset: isMobile ? 8 : 16,
                   fill: "#ff6b35",
-                  fontSize: isMobile ? 8 : 12,
+                  fontSize: isMobile ? 8 : data.length > 18 ? 10 : 12,
                   fontWeight: 600,
-                  textAnchor: 'middle'
+                  textAnchor: data.length > 18 ? 'end' : 'middle'
                 }}
               />
             )}
@@ -851,17 +931,29 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
                     strokeDasharray="6 6"
                     strokeWidth={2}
                     label={{ 
-                      value: `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
-                      position: "bottom",
-                      offset: isMobile ? 10 : 25,
+                      value: data.length > 18
+                        ? `${language === 'it' ? 'Obiettivo' : 'Goal'} ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)}`
+                        : `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
+                      position: data.length > 18 ? "insideBottomRight" : "bottom",
+                      offset: isMobile ? 8 : 16,
                       fill: "#10b981",
-                      fontSize: isMobile ? 8 : 12,
+                      fontSize: isMobile ? 8 : data.length > 18 ? 10 : 12,
                       fontWeight: 600,
-                      textAnchor: 'middle'
+                      textAnchor: data.length > 18 ? 'end' : 'middle'
                     }}
                   />
                 ) : null;
               })()
+            )}
+            {data.length > 18 && (
+              <Brush
+                dataKey="name"
+                height={22}
+                travellerWidth={8}
+                stroke={theme.buttonBackgroundColor || '#079164'}
+                fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}
+                tickFormatter={formatXAxisTick}
+              />
             )}
           </LineChart>
           </ResponsiveContainer>

@@ -7,7 +7,6 @@ import { BarChart } from "recharts/lib/chart/BarChart";
 import { Bar } from "recharts/lib/cartesian/Bar";
 import { AreaChart } from "recharts/lib/chart/AreaChart";
 import { Area } from "recharts/lib/cartesian/Area";
-import { Legend } from "recharts/lib/component/Legend";
 import { ResponsiveContainer } from "recharts/lib/component/ResponsiveContainer";
 import { SectionBalancesCharts } from '../styles/MyStyled';
 import { Brush } from "recharts/lib/cartesian/Brush";
@@ -37,43 +36,60 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const [last12MonthsData, setLast12MonthsData] = useState([]);
   const [containerWidth, setContainerWidth] = useState(800);
   const [selectedPeriod, setSelectedPeriod] = useState('6m');
+  const [customStartMonth, setCustomStartMonth] = useState('');
+  const [customEndMonth, setCustomEndMonth] = useState('');
   const [isLoadingFullHistory, setIsLoadingFullHistory] = useState(false);
   const [hasFullHistory, setHasFullHistory] = useState(false);
 
-  // "ALL" richiede lo storico completo (oltre i 24 mesi già disponibili di
-  // default): lo richiediamo una sola volta, on-demand, per non gravare
-  // sull'egress ad ogni caricamento pagina.
-  const handlePeriodSelect = async (period) => {
-    if (period === 'all' && !hasFullHistory && fetchAllTimeBalances) {
+  const buildAllData = () => last12MonthsData.map((monthData) => {
+    const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0) + (monthData.emergencyFundReal || 0);
+    return {
+      name: monthData.month,
+      cash: monthData.cashReal,
+      digitalServices: monthData.digitalServicesReal,
+      stocks: monthData.stocksReal,
+      bank: monthData.bankReal,
+      crypto: monthData.cryptoReal,
+      etf: monthData.etfReal,
+      bitcoin: monthData.bitcoinReal,
+      bonds: monthData.bondsReal || 0,
+      funds: monthData.fundsReal || 0,
+      gold: monthData.goldReal || 0,
+      emergencyFund: monthData.emergencyFundReal || 0,
+      total,
+      amt: 2400,
+    };
+  });
+
+  const ensureFullHistory = async () => {
+    if (!hasFullHistory && fetchAllTimeBalances) {
       setIsLoadingFullHistory(true);
       await fetchAllTimeBalances();
       setHasFullHistory(true);
       setIsLoadingFullHistory(false);
     }
+  };
+
+  // "ALL" richiede lo storico completo (oltre i 24 mesi già disponibili di
+  // default): lo richiediamo una sola volta, on-demand, per non gravare
+  // sull'egress ad ogni caricamento pagina.
+  const handlePeriodSelect = async (period) => {
+    if (period === 'all') {
+      await ensureFullHistory();
+    }
     setSelectedPeriod(period);
+  };
+
+  const handleCustomRangeChange = async (field, value) => {
+    if (field === 'start') setCustomStartMonth(value);
+    if (field === 'end') setCustomEndMonth(value);
+    setSelectedPeriod('custom');
+    await ensureFullHistory();
   };
 
   // Funzione per filtrare i dati in base al periodo selezionato
   const getFilteredData = () => {
-    const allData = last12MonthsData.map((monthData) => {
-      const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0) + (monthData.emergencyFundReal || 0);
-      return {
-        name: monthData.month,
-        cash: monthData.cashReal,
-        digitalServices: monthData.digitalServicesReal,
-        stocks: monthData.stocksReal,
-        bank: monthData.bankReal,
-        crypto: monthData.cryptoReal,
-        etf: monthData.etfReal,
-        bitcoin: monthData.bitcoinReal,
-        bonds: monthData.bondsReal || 0,
-        funds: monthData.fundsReal || 0,
-        gold: monthData.goldReal || 0,
-        emergencyFund: monthData.emergencyFundReal || 0,
-        total: total,
-        amt: 2400, 
-      };
-    });
+    const allData = buildAllData();
 
     // Filtra in base al periodo selezionato
     switch(selectedPeriod) {
@@ -87,6 +103,13 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
         return allData.slice(-24); // Ultimi 24 mesi (già disponibili di default)
       case 'all':
         return allData; // Intero storico (richiesto on-demand, vedi handlePeriodSelect)
+      case 'custom': {
+        const start = customStartMonth || allData[0]?.name;
+        const end = customEndMonth || allData[allData.length - 1]?.name;
+        if (!start || !end) return allData;
+        const [from, to] = start <= end ? [start, end] : [end, start];
+        return allData.filter((item) => item.name >= from && item.name <= to);
+      }
       default:
         return allData;
     }
@@ -164,6 +187,20 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const data = getFilteredData();
 
   const isMobile = containerWidth < 500;
+  const allData = buildAllData();
+  const minMonth = allData[0]?.name || '';
+  const maxMonth = allData[allData.length - 1]?.name || '';
+  const isLongRange = data.length > 18;
+  const xAxisInterval = data.length > 60 ? Math.ceil(data.length / 8) : data.length > 36 ? 5 : data.length > 24 ? 3 : data.length > 12 ? 1 : 0;
+  const formatXAxisTick = (value, index) => {
+    if (!value || isHidden) return isHidden ? '****' : value;
+    const [year, month] = String(value).split('-');
+    if (!year || !month) return value;
+    if (data.length > 18) {
+      return month === '01' || index === 0 || index === data.length - 1 ? `${month}/${year.slice(2)}` : month;
+    }
+    return `${month}/${year.slice(2)}`;
+  };
 
   // Componente Tooltip condiviso
   const renderTooltip = () => (
@@ -173,13 +210,16 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       contentStyle={{
         backgroundColor: 'rgba(255,255,255,0.95)',
         border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-        borderRadius: '8px',
-        padding: '12px',
-        fontSize: '14px',
+        borderRadius: '10px',
+        padding: isMobile ? '8px 10px' : '10px 12px',
+        fontSize: isMobile ? '12px' : '13px',
         fontWeight: '500',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-        color: '#333'
+        color: '#333',
+        maxHeight: isMobile ? 220 : 280,
+        overflowY: 'auto'
       }}
+      wrapperStyle={{ zIndex: 20 }}
       labelStyle={{
         color: '#333',
         fontWeight: 'bold',
@@ -270,19 +310,19 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
       <XAxis 
         dataKey="name" 
-        interval={isMobile ? 1 : 0}
+        interval={isMobile ? Math.max(1, xAxisInterval) : xAxisInterval}
+        tickFormatter={formatXAxisTick}
         tick={(props) => <CustomTick 
           {...props} 
           theme={theme} 
-          fontSize={isMobile ? 9 : containerWidth < 768 ? 11 : 13}
-          maxWidth={isMobile ? 40 : 70}
-          fill="#ffffff"
+          fontSize={isMobile ? 9 : isLongRange ? 10 : containerWidth < 768 ? 11 : 12}
+          fill={theme.textColor}
           dy={8}
-          dx={-3}
-          angle={isMobile ? -30 : -15}
+          dx={isLongRange ? -5 : -3}
+          angle={isMobile || isLongRange ? -35 : -15}
           textAnchor="end"
         />}
-        height={isMobile ? 40 : 55}
+        height={isMobile || isLongRange ? 52 : 46}
         axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
         tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
       />
@@ -331,6 +371,16 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       <Bar dataKey="total" fill="transparent" strokeWidth={0} />
       
       {/* <Brush dataKey='name' height={containerWidth < 500 ? 80 : 60} stroke={theme.textColor} fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} /> */}
+      {data.length > 18 && (
+        <Brush
+          dataKey="name"
+          height={22}
+          travellerWidth={8}
+          stroke={theme.buttonBackgroundColor || '#079164'}
+          fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}
+          tickFormatter={formatXAxisTick}
+        />
+      )}
     </BarChart>
   );
 
@@ -353,19 +403,19 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       
       <XAxis 
         dataKey="name" 
-        interval={isMobile ? 1 : 0}
+        interval={isMobile ? Math.max(1, xAxisInterval) : xAxisInterval}
+        tickFormatter={formatXAxisTick}
         tick={(props) => <CustomTick 
           {...props} 
           theme={theme} 
-          fontSize={isMobile ? 9 : containerWidth < 768 ? 11 : 13}
-          maxWidth={isMobile ? 40 : 70}
-          fill="#ffffff"
+          fontSize={isMobile ? 9 : isLongRange ? 10 : containerWidth < 768 ? 11 : 12}
+          fill={theme.textColor}
           dy={8}
-          dx={-3}
-          angle={isMobile ? -30 : -15}
+          dx={isLongRange ? -5 : -3}
+          angle={isMobile || isLongRange ? -35 : -15}
           textAnchor="end"
         />}
-        height={isMobile ? 40 : 55}
+        height={isMobile || isLongRange ? 52 : 46}
         axisLine={{ stroke: theme.textColor, strokeWidth: 1 }}
         tickLine={{ stroke: theme.textColor, strokeWidth: 1 }}
       />
@@ -412,6 +462,16 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('funds', theme.mode)} />}
       {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
       {data.every(item => item['emergencyFund'] === 0) || <Area type="monotone" dataKey={'emergencyFund'} stroke={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('emergencyFund', theme.mode)} />}
+      {data.length > 18 && (
+        <Brush
+          dataKey="name"
+          height={22}
+          travellerWidth={8}
+          stroke={theme.buttonBackgroundColor || '#079164'}
+          fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}
+          tickFormatter={formatXAxisTick}
+        />
+      )}
     </AreaChart>
   );
 
@@ -422,12 +482,14 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: '0.75rem',
         width: '100%',
         padding: isMobile ? '0 0.25rem' : '0 0.5rem',
-        marginBottom: isMobile ? '0.25rem' : '0'
+        marginBottom: '0.75rem',
+        flexWrap: 'wrap'
       }}>
       {/* Time Period Selector */}
-      <div className="flex gap-1 z-10">
+      <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap' }}>
         {['3m', '6m', '1y', '2y', 'all'].map((period) => {
           const isActive = selectedPeriod === period;
           const isBusy = period === 'all' && isLoadingFullHistory;
@@ -457,6 +519,41 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
             </button>
           );
         })}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', fontSize: '0.75rem', color: theme.textColor }}>
+        <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
+        <input
+          type="month"
+          value={customStartMonth}
+          min={minMonth}
+          max={maxMonth}
+          onChange={(e) => handleCustomRangeChange('start', e.target.value)}
+          style={{
+            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
+            borderRadius: 8,
+            padding: '0.34rem 0.45rem',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+            color: theme.textColor,
+            colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+          }}
+        />
+        <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
+        <input
+          type="month"
+          value={customEndMonth}
+          min={minMonth}
+          max={maxMonth}
+          onChange={(e) => handleCustomRangeChange('end', e.target.value)}
+          style={{
+            border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)')}`,
+            borderRadius: 8,
+            padding: '0.34rem 0.45rem',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)',
+            color: theme.textColor,
+            colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+          }}
+        />
       </div>
 
       {/* Export buttons */}
@@ -491,7 +588,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
       <div style={{ 
         width: '100%', 
-        height: isMobile ? '280px' : '420px',
+        height: isMobile ? '320px' : '460px',
         padding: isMobile ? '0' : '0 0.5rem',
       }}>
         <ResponsiveContainer width="100%" height="100%">

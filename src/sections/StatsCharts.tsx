@@ -279,7 +279,7 @@ const ChartCard = styled.div`
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   
   &:hover {
     transform: translateY(-2px);

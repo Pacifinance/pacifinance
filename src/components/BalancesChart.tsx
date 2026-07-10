@@ -9,7 +9,6 @@ import { AreaChart } from "recharts/lib/chart/AreaChart";
 import { Area } from "recharts/lib/cartesian/Area";
 import { ResponsiveContainer } from "recharts/lib/component/ResponsiveContainer";
 import { SectionBalancesCharts } from '../styles/MyStyled';
-import { Brush } from "recharts/lib/cartesian/Brush";
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
@@ -381,17 +380,6 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
 
       {/* Barra invisibile per il total - serve solo per mostrarlo nel tooltip */}
       <Bar dataKey="total" fill="transparent" strokeWidth={0} />
-      
-      {!isMobile && data.length > 18 && (
-        <Brush
-          dataKey="name"
-          height={22}
-          travellerWidth={8}
-          stroke={theme.buttonBackgroundColor || '#079164'}
-          fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}
-          tickFormatter={formatXAxisTick}
-        />
-      )}
     </BarChart>
   );
 
@@ -473,16 +461,6 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
       {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={'bitcoin'} stroke={isHidden ? '#E8E8E8' : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('bitcoin', theme.mode)} />}
       {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={'crypto'} stroke={isHidden ? '#F8F8F8' : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('crypto', theme.mode)} />}
-      {!isMobile && data.length > 18 && (
-        <Brush
-          dataKey="name"
-          height={22}
-          travellerWidth={8}
-          stroke={theme.buttonBackgroundColor || '#079164'}
-          fill={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}
-          tickFormatter={formatXAxisTick}
-        />
-      )}
     </AreaChart>
   );
 
@@ -530,6 +508,28 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
               </button>
             );
           })}
+
+          {/* Custom date range toggle — aligned with the period buttons */}
+          <button
+            type="button"
+            onClick={() => setShowCustomRange((prev) => !prev)}
+            title={translations.general.filterByDate || 'Filtra per data'}
+            aria-label={translations.general.filterByDate || 'Filtra per data'}
+            className="flex items-center justify-center rounded-md transition-all duration-200 hover:scale-105"
+            style={{
+              padding: isMobile ? '0.3rem 0.5rem' : '0.35rem 0.65rem',
+              backgroundColor: selectedPeriod === 'custom'
+                ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
+                : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
+              color: selectedPeriod === 'custom' ? '#ffffff' : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
+              border: `1px solid ${selectedPeriod === 'custom'
+                ? 'rgba(7, 145, 100, 0.8)'
+                : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            <BsCalendarRange />
+          </button>
         </div>
 
         {/* Export buttons — small, top-right */}
@@ -564,34 +564,6 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
             <RiFileExcel2Line className="text-paciGreen text-sm" />
           </button>
         </div>
-      </div>
-
-      {/* Custom date range — collapsed behind a toggle button, secondary/de-emphasized */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          onClick={() => setShowCustomRange((prev) => !prev)}
-          title={translations.general.filterByDate || 'Filtra per data'}
-          aria-label={translations.general.filterByDate || 'Filtra per data'}
-          className="flex items-center justify-center gap-1 rounded-md transition-all duration-200 hover:scale-105"
-          style={{
-            padding: isMobile ? '0.25rem 0.5rem' : '0.3rem 0.6rem',
-            fontSize: isMobile ? '0.62rem' : '0.68rem',
-            backgroundColor: selectedPeriod === 'custom'
-              ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
-              : (theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)'),
-            color: selectedPeriod === 'custom' ? '#ffffff' : theme.textColor,
-            opacity: selectedPeriod === 'custom' ? 1 : 0.75,
-            border: `1px solid ${selectedPeriod === 'custom'
-              ? 'rgba(7, 145, 100, 0.8)'
-              : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-          }}
-        >
-          <BsCalendarRange />
-          {selectedPeriod === 'custom' && !isMobile && (
-            <span>{customStartMonth || minMonth} → {customEndMonth || maxMonth}</span>
-          )}
-        </button>
       </div>
 
       {showCustomRange && (

@@ -105,9 +105,12 @@ const FieldsGrid = styled.div`
     font-size: 0.72rem;
     color: ${(p) => p.theme.textColor};
     opacity: 0.65;
+    min-width: 0;
   }
 
   input {
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.5rem 0.6rem;
     border-radius: 8px;
     border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
@@ -117,6 +120,10 @@ const FieldsGrid = styled.div`
     outline: none;
 
     &:focus { border-color: ${(p) => p.theme.buttonBackgroundColor}; }
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
   }
 `;
 

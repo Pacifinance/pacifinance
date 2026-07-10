@@ -14,14 +14,17 @@
 import { useMemo } from 'react';
 import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
-import type { InvestmentInstrumentDto, InvestmentHoldingDto, LiquidityAccountDto } from '../types/api';
+import type {
+  InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
+  LiquidityAccountDto, LiquidityAccountHistoryDto,
+} from '../types/api';
 
 const FAKE_SUCCESS = { status: 200, data: { success: true } };
 
 /** Small static catalog so the instrument search works offline in demo mode (no backend session exists). */
 const DEMO_INSTRUMENTS: InvestmentInstrumentDto[] = [
   { id: -1, kind: 'stock', symbol: 'AAPL', exchange: 'NASDAQ', name: 'Apple Inc', currency: 'USD', country: 'US', sector: null, industry: null, figi: 'BBG000B9XRY4', isin: null, coingeckoId: null, provider: 'openfigi', verified: true, active: true, metadata: {} },
-  { id: -2, kind: 'etf', symbol: 'SWDA', exchange: 'LSE', name: 'iShares Core MSCI World UCITS ETF', currency: 'USD', country: null, sector: null, industry: null, figi: 'BBG00B3TQBJ6', isin: null, coingeckoId: null, provider: 'openfigi', verified: true, active: true, metadata: {} },
+  { id: -2, kind: 'etf', symbol: 'SWDA', exchange: 'LSE', name: 'iShares Core MSCI World UCITS ETF', currency: 'USD', country: null, sector: null, industry: null, figi: 'BBG00B3TQBJ6', isin: 'IE00B4L5Y983', coingeckoId: null, provider: 'openfigi', verified: true, active: true, metadata: {} },
   { id: -3, kind: 'crypto', symbol: 'BTC', exchange: null, name: 'Bitcoin', currency: null, country: null, sector: null, industry: null, figi: null, isin: null, coingeckoId: 'bitcoin', provider: 'coingecko', verified: true, active: true, metadata: {} },
   { id: -4, kind: 'crypto', symbol: 'ETH', exchange: null, name: 'Ethereum', currency: null, country: null, sector: null, industry: null, figi: null, isin: null, coingeckoId: 'ethereum', provider: 'coingecko', verified: true, active: true, metadata: {} },
 ];
@@ -59,10 +62,14 @@ export const useDemoServices = () => {
         searchInstruments: async ({ query, kind }: { query: string; kind?: string }) => {
           const q = query.trim().toLowerCase();
           if (q.length < 2) return [];
-          return DEMO_INSTRUMENTS.filter((instrument) =>
-            (!kind || instrument.kind === kind) &&
-            (instrument.symbol.toLowerCase().includes(q) || instrument.name.toLowerCase().includes(q))
-          );
+          const queryWords = q.split(/\s+/).filter(Boolean);
+          return DEMO_INSTRUMENTS.filter((instrument) => {
+            if (kind && instrument.kind !== kind) return false;
+            const name = instrument.name.toLowerCase();
+            const symbol = instrument.symbol.toLowerCase();
+            const isin = instrument.isin?.toLowerCase() ?? '';
+            return symbol.includes(q) || isin === q || queryWords.every((word) => name.includes(word));
+          });
         },
         getHoldings: async (): Promise<InvestmentHoldingDto[]> => [],
         saveHolding: async (data: {
@@ -85,6 +92,24 @@ export const useDemoServices = () => {
         }),
         deleteHolding: async () => FAKE_SUCCESS,
         getHoldingHistory: async () => [],
+        // Demo mode's getHoldings() always returns [] (no session-backed live holdings
+        // to backfill), so this is never actually reachable from the UI - it only
+        // needs to satisfy the interface.
+        saveHoldingHistory: async (data): Promise<InvestmentHoldingHistoryDto> => ({
+          id: -Date.now(),
+          holdingId: data.holding_id,
+          instrumentId: 0,
+          assetKey: 'stocks',
+          symbol: '',
+          name: '',
+          quantity: null,
+          averagePrice: null,
+          currentValue: data.current_value,
+          investedAmount: data.invested_amount,
+          currency: 'EUR',
+          userDate: data.user_date,
+          recordedAt: new Date().toISOString(),
+        }),
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,
@@ -103,6 +128,17 @@ export const useDemoServices = () => {
         }),
         deleteAccount: async () => FAKE_SUCCESS,
         getAccountHistory: async () => [],
+        // Demo mode's getAccounts() always returns [] - see saveHoldingHistory above.
+        saveAccountHistory: async (data): Promise<LiquidityAccountHistoryDto> => ({
+          id: -Date.now(),
+          accountId: data.account_id,
+          assetKey: 'bank',
+          label: '',
+          currentValue: data.current_value,
+          currency: 'EUR',
+          userDate: data.user_date,
+          recordedAt: new Date().toISOString(),
+        }),
       },
     };
   }, [isDemoMode, services]);

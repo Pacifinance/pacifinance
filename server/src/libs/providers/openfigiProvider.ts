@@ -4,8 +4,14 @@ import type { InvestmentKind } from "../../db/models/investments"
 import type { UpsertInstrumentInput } from "../../db/models/investments"
 
 const OPENFIGI_SEARCH_URL = "https://api.openfigi.com/v3/search"
+const OPENFIGI_MAPPING_URL = "https://api.openfigi.com/v3/mapping"
 const OPENFIGI_SEARCH_LIMIT_PER_MIN = 4 // stays under the public 5/min search limit; higher once OPENFIGI_KEY is set
 const MAX_RESULTS = 8 // bounds the upsertInstrument() fan-out — keep well under Vercel's function timeout
+
+// 2-letter country code + 9 alphanumeric + 1 check digit. OpenFIGI's free-text
+// /v3/search endpoint doesn't reliably match ISINs - exact identifier lookups
+// need /v3/mapping instead (see searchOpenFigiByIsin).
+const ISIN_PATTERN = /^[A-Z]{2}[A-Z0-9]{9}\d$/
 
 type OpenFigiSearchResult = {
     figi: string
@@ -39,7 +45,7 @@ function mapToKind(marketSector: string | undefined, securityType: string | unde
     return "other"
 }
 
-function toUpsertInput(result: OpenFigiSearchResult): UpsertInstrumentInput | null {
+function toUpsertInput(result: OpenFigiSearchResult, isin: string | null = null): UpsertInstrumentInput | null {
     const figi = result.compositeFIGI || result.figi
     if (!figi || !result.ticker || !result.name) return null
 
@@ -51,7 +57,7 @@ function toUpsertInput(result: OpenFigiSearchResult): UpsertInstrumentInput | nu
         currency: null,
         country: null,
         figi,
-        isin: null,
+        isin,
         coingeckoId: null,
         provider: "openfigi",
         metadata: {
@@ -60,6 +66,15 @@ function toUpsertInput(result: OpenFigiSearchResult): UpsertInstrumentInput | nu
             marketSector: result.marketSector ?? null,
         },
     }
+}
+
+/**
+ * True if `query` is shaped like an ISIN (not a guarantee it exists) - used to
+ * route the search to the exact-match /v3/mapping endpoint instead of the
+ * free-text /v3/search one.
+ */
+export function isIsin(query: string): boolean {
+    return ISIN_PATTERN.test(query.toUpperCase())
 }
 
 /**
@@ -91,7 +106,8 @@ export async function searchOpenFigi(query: string): Promise<UpsertInstrumentInp
         )
 
         if (response.status !== 200) {
-            console.error(`openfigiProvider.searchOpenFigi: request failed with status ${response.status}`)
+            const bodyText = await response.text().catch(() => "")
+            console.error(`openfigiProvider.searchOpenFigi: request failed with status ${response.status}: ${bodyText}`)
             return []
         }
 
@@ -100,7 +116,7 @@ export async function searchOpenFigi(query: string): Promise<UpsertInstrumentInp
 
         return body.data
             .slice(0, MAX_RESULTS)
-            .map(toUpsertInput)
+            .map((result) => toUpsertInput(result))
             .filter((candidate): candidate is UpsertInstrumentInput => candidate !== null)
     } catch (error) {
         console.error("openfigiProvider.searchOpenFigi: request failed", error)
@@ -110,4 +126,60 @@ export async function searchOpenFigi(query: string): Promise<UpsertInstrumentInp
     }
 }
 
-export default { searchOpenFigi }
+type OpenFigiMappingJobResult = {
+    data?: OpenFigiSearchResult[]
+    error?: string
+}
+
+/**
+ * Exact-match lookup by ISIN via OpenFIGI's /v3/mapping endpoint - unlike
+ * /v3/search (free-text), this reliably resolves a specific identifier.
+ * Same rate-limit/timeout/error-swallowing behavior as searchOpenFigi.
+ */
+export async function searchOpenFigiByIsin(isin: string): Promise<UpsertInstrumentInput[]> {
+    const allowed = await checkAndConsumeRateLimit("openfigi", OPENFIGI_SEARCH_LIMIT_PER_MIN)
+    if (!allowed) return []
+
+    const headers: Record<string, string> = { "Content-Type": "application/json" }
+    if (process.env.OPENFIGI_KEY) headers["X-OPENFIGI-APIKEY"] = process.env.OPENFIGI_KEY
+
+    const controller = new AbortController()
+    const timeoutMs = getTimeoutMs("OPENFIGI_TIMEOUT_MS", 6000)
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+    const normalizedIsin = isin.toUpperCase()
+
+    try {
+        const response = await withTimeout(
+            fetch(OPENFIGI_MAPPING_URL, {
+                method: "POST",
+                headers,
+                body: JSON.stringify([{ idType: "ID_ISIN", idValue: normalizedIsin }]),
+                signal: controller.signal,
+            }),
+            timeoutMs,
+            "OpenFIGI mapping request",
+        )
+
+        if (response.status !== 200) {
+            const bodyText = await response.text().catch(() => "")
+            console.error(`openfigiProvider.searchOpenFigiByIsin: request failed with status ${response.status}: ${bodyText}`)
+            return []
+        }
+
+        const body = await response.json() as OpenFigiMappingJobResult[]
+        const job = body[0]
+        if (!job || job.error || !Array.isArray(job.data)) return []
+
+        return job.data
+            .slice(0, MAX_RESULTS)
+            .map((result) => toUpsertInput(result, normalizedIsin))
+            .filter((candidate): candidate is UpsertInstrumentInput => candidate !== null)
+    } catch (error) {
+        console.error("openfigiProvider.searchOpenFigiByIsin: request failed", error)
+        return []
+    } finally {
+        clearTimeout(timeout)
+    }
+}
+
+export default { searchOpenFigi, searchOpenFigiByIsin, isIsin }

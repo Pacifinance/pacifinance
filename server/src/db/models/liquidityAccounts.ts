@@ -140,8 +140,9 @@ async function snapshotAccountsForUser(user_id: string, user_date: Date) {
         user_date: toDateOnly(user_date),
     }))
 
-    const {error} = await supabase.from("user_liquidity_account_history").insert(rows)
-    if (error) console.error("liquidityAccounts.snapshotAccountsForUser: failed to insert history rows", error)
+    const {error} = await supabase.from("user_liquidity_account_history")
+        .upsert(rows, {onConflict: "user_id,account_id,user_date"})
+    if (error) console.error("liquidityAccounts.snapshotAccountsForUser: failed to upsert history rows", error)
 }
 
 type AccountHistoryRow = {
@@ -173,18 +174,22 @@ function toAccountHistory(row: AccountHistoryRow) {
 }
 
 /**
- * Reads the user's liquidity account history, newest first. `months`
- * optionally limits how far back to look (by user_date). No per-month dedup
- * RPC yet — no chart/analysis consumer exists for this data yet.
+ * Reads the user's liquidity account history, newest first. `userDate` (exact
+ * match) takes precedence over `months` (a lookback window) when both are
+ * given. No per-month dedup needed beyond that - the unique
+ * (user_id, account_id, user_date) index guarantees at most one row per
+ * account per month.
  */
-async function getAccountHistoryByUserId(user_id: string, months?: number) {
+async function getAccountHistoryByUserId(user_id: string, months?: number, userDate?: Date) {
     let request = supabase.from("user_liquidity_account_history")
         .select(ACCOUNT_HISTORY_SELECT)
         .eq("user_id", user_id)
         .order("user_date", {ascending: false})
         .order("recorded_at", {ascending: false})
 
-    if (months !== undefined) {
+    if (userDate !== undefined) {
+        request = request.eq("user_date", toDateOnly(userDate))
+    } else if (months !== undefined) {
         const cutoff = ExtDate.fromNow()
         cutoff.moveByMonths(-months)
         request = request.gte("user_date", toDateOnly(cutoff))
@@ -196,6 +201,40 @@ async function getAccountHistoryByUserId(user_id: string, months?: number) {
     return (data as unknown as AccountHistoryRow[]).map(toAccountHistory)
 }
 
+export type AccountHistoryEntryInput = { currentValue: number }
+
+/**
+ * Backfills/updates a single liquidity account's value for a specific month,
+ * scoped to the owning user. Denormalizes the live account's label/asset_key
+ * (same shape snapshotAccountsForUser already writes). Returns null if the
+ * account isn't found/owned.
+ */
+async function upsertAccountHistoryEntry(user_id: string, account_id: number, user_date: Date, input: AccountHistoryEntryInput) {
+    const {data: accountRow, error: accountErr} = await supabase.from("user_liquidity_accounts")
+        .select(ACCOUNT_SELECT).eq("user_id", user_id).eq("id", account_id).maybeSingle()
+    if (accountErr) console.error("liquidityAccounts.upsertAccountHistoryEntry: failed to read account", accountErr)
+    if (accountErr || !accountRow) return null
+
+    const account = toAccount(accountRow as unknown as AccountRow)
+    const row = {
+        user_id,
+        account_id,
+        asset_key: account.assetKey,
+        label: account.label,
+        current_value: input.currentValue,
+        currency: account.currency,
+        user_date: toDateOnly(user_date),
+    }
+
+    const {data, error} = await supabase.from("user_liquidity_account_history")
+        .upsert(row, {onConflict: "user_id,account_id,user_date"})
+        .select(ACCOUNT_HISTORY_SELECT)
+        .single()
+    if (error) console.error("liquidityAccounts.upsertAccountHistoryEntry: failed to upsert history row", error)
+    if (error || !data) return null
+    return toAccountHistory(data as unknown as AccountHistoryRow)
+}
+
 export default {
     LIQUIDITY_ACCOUNT_ASSET_KEYS,
     getAccountsByUserId,
@@ -204,4 +243,5 @@ export default {
     deleteAccount,
     snapshotAccountsForUser,
     getAccountHistoryByUserId,
+    upsertAccountHistoryEntry,
 }

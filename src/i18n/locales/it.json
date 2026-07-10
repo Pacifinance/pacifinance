@@ -2535,7 +2535,8 @@
             "deleteButton": "Elimina",
             "manageLink": "Gestisci holding verificati",
             "calculatedFromN": "Calcolato da {count} holding",
-            "defaultInstrumentHint": "BTC è precompilato come istanza di riferimento. Rimuovilo per cercare un altro (es. un wallet separato o un'altra blockchain)."
+            "defaultInstrumentHint": "BTC è precompilato come istanza di riferimento. Rimuovilo per cercare un altro (es. un wallet separato o un'altra blockchain).",
+            "noValueForMonth": "Nessun valore per questo mese"
         },
         "attribution": {
             "coingecko": "Dati forniti da CoinGecko"
@@ -2553,6 +2554,7 @@
         "cancelEdit": "Annulla",
         "deleteButton": "Elimina",
         "manageLink": "Gestisci conti",
-        "calculatedFromN": "Calcolato da {count} conti"
+        "calculatedFromN": "Calcolato da {count} conti",
+        "noValueForMonth": "Nessun valore per questo mese"
     }
 }

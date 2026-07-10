@@ -81,11 +81,52 @@ liquidityAccountsRouter.post("/delete", async (req, res) => {
 
 liquidityAccountsRouter.post("/history", async (req, res) => {
     const months = Number(req.body.months)
+    const userDate = req.body.user_date ? new Date(req.body.user_date) : undefined
     const history = await db.liquidityAccounts.getAccountHistoryByUserId(
         req.userId as string,
         Number.isFinite(months) && months > 0 ? months : undefined,
+        userDate && !isNaN(userDate.getTime()) ? userDate : undefined,
     )
     res.status(200).json(history)
+})
+
+function parseAccountHistoryPayload(body: Record<string, unknown>) {
+    const accountId = Number(body.account_id ?? body.accountId)
+    const userDate = new Date(String(body.user_date ?? body.userDate ?? ""))
+    const currentValue = Number(body.current_value ?? body.currentValue)
+    const now = new Date()
+
+    if (
+        !Number.isFinite(accountId) ||
+        isNaN(userDate.getTime()) ||
+        userDate > now ||
+        !Number.isFinite(currentValue) ||
+        currentValue < 0
+    ) {
+        return null
+    }
+
+    return {accountId, userDate, currentValue}
+}
+
+liquidityAccountsRouter.post("/history/save", async (req, res) => {
+    const payload = parseAccountHistoryPayload(req.body)
+    if (payload === null) {
+        res.status(400).send()
+        return
+    }
+
+    const entry = await db.liquidityAccounts.upsertAccountHistoryEntry(
+        req.userId as string,
+        payload.accountId,
+        payload.userDate,
+        {currentValue: payload.currentValue},
+    )
+    if (entry === null) {
+        res.status(400).send() // account not found, or not owned by this user
+        return
+    }
+    res.status(200).json(entry)
 })
 
 export default liquidityAccountsRouter

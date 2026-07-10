@@ -2535,7 +2535,8 @@
             "deleteButton": "Eliminar",
             "manageLink": "Gestionar posiciones verificadas",
             "calculatedFromN": "Calculado a partir de {count} posiciones",
-            "defaultInstrumentHint": "BTC está preseleccionado por defecto. Elimínalo para buscar otro (p. ej. una wallet distinta u otra blockchain)."
+            "defaultInstrumentHint": "BTC está preseleccionado por defecto. Elimínalo para buscar otro (p. ej. una wallet distinta u otra blockchain).",
+            "noValueForMonth": "Sin valor para este mes"
         },
         "attribution": {
             "coingecko": "Datos proporcionados por CoinGecko"
@@ -2553,6 +2554,7 @@
         "cancelEdit": "Cancelar",
         "deleteButton": "Eliminar",
         "manageLink": "Gestionar cuentas",
-        "calculatedFromN": "Calculado a partir de {count} cuentas"
+        "calculatedFromN": "Calculado a partir de {count} cuentas",
+        "noValueForMonth": "Sin valor para este mes"
     }
 }

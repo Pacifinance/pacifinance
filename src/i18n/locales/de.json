@@ -2533,7 +2533,8 @@
             "deleteButton": "Löschen",
             "manageLink": "Verifizierte Bestände verwalten",
             "calculatedFromN": "Berechnet aus {count} Beständen",
-            "defaultInstrumentHint": "BTC ist standardmäßig vorausgewählt. Entferne es, um ein anderes zu suchen (z. B. eine separate Wallet oder eine andere Blockchain)."
+            "defaultInstrumentHint": "BTC ist standardmäßig vorausgewählt. Entferne es, um ein anderes zu suchen (z. B. eine separate Wallet oder eine andere Blockchain).",
+            "noValueForMonth": "Kein Wert für diesen Monat"
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko"
@@ -2551,6 +2552,7 @@
         "cancelEdit": "Abbrechen",
         "deleteButton": "Löschen",
         "manageLink": "Konten verwalten",
-        "calculatedFromN": "Berechnet aus {count} Konten"
+        "calculatedFromN": "Berechnet aus {count} Konten",
+        "noValueForMonth": "Kein Wert für diesen Monat"
     }
 }

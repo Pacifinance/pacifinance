@@ -435,6 +435,8 @@ export default function InsertValue({
   const [goldValue, setGoldValue] = useState(0);
   const [investmentHoldings, setInvestmentHoldings] = useState([]);
   const [liquidityAccounts, setLiquidityAccounts] = useState([]);
+  const [investmentHoldingHistory, setInvestmentHoldingHistory] = useState([]);
+  const [liquidityAccountHistory, setLiquidityAccountHistory] = useState([]);
   const [balanceInputs, setBalanceInputs] = useState(createEmptyBalanceInputs);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
@@ -528,6 +530,39 @@ export default function InsertValue({
     refreshLiquidityAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Backfilled per-month holdings/accounts history for whichever month is
+  // currently being viewed in "aggiorna bilancio" — empty for the current
+  // month (nothing to backfill there, the live portfolio already drives it).
+  const refreshInvestmentHoldingHistory = async () => {
+    const now = new Date();
+    const isCurrent = balanceDate.month === now.getMonth() + 1 && balanceDate.year === now.getFullYear();
+    if (isCurrent) {
+      setInvestmentHoldingHistory([]);
+      return;
+    }
+    const user_date = `${balanceDate.year}-${String(balanceDate.month).padStart(2, '0')}-01`;
+    const history = await investmentService.getHoldingHistory({ user_date });
+    setInvestmentHoldingHistory(Array.isArray(history) ? history : []);
+  };
+
+  const refreshLiquidityAccountHistory = async () => {
+    const now = new Date();
+    const isCurrent = balanceDate.month === now.getMonth() + 1 && balanceDate.year === now.getFullYear();
+    if (isCurrent) {
+      setLiquidityAccountHistory([]);
+      return;
+    }
+    const user_date = `${balanceDate.year}-${String(balanceDate.month).padStart(2, '0')}-01`;
+    const history = await liquidityAccountService.getAccountHistory({ user_date });
+    setLiquidityAccountHistory(Array.isArray(history) ? history : []);
+  };
+
+  useEffect(() => {
+    refreshInvestmentHoldingHistory();
+    refreshLiquidityAccountHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balanceDate.month, balanceDate.year]);
 
   const getBalanceFieldValue = (assetKey) => {
     const draftValue = balanceInputs[assetKey];
@@ -1860,10 +1895,12 @@ export default function InsertValue({
             language={language}
             translations={translations}
             investmentHoldings={investmentHoldings}
-            onHoldingsChanged={refreshInvestmentHoldings}
+            onHoldingsChanged={async () => { await refreshInvestmentHoldings(); await refreshInvestmentHoldingHistory(); }}
             liquidityAccounts={liquidityAccounts}
-            onLiquidityAccountsChanged={refreshLiquidityAccounts}
+            onLiquidityAccountsChanged={async () => { await refreshLiquidityAccounts(); await refreshLiquidityAccountHistory(); }}
             onAssetBaseValueChange={handleAssetBaseValueOverride}
+            investmentHoldingHistory={investmentHoldingHistory}
+            liquidityAccountHistory={liquidityAccountHistory}
           />
         </SectionCard>
       );

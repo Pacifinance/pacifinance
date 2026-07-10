@@ -418,8 +418,15 @@ export interface InvestmentHoldingHistoryDto {
   recordedAt: string;
 }
 
-export interface InvestmentHoldingHistoryRequest { months?: number; }
+export interface InvestmentHoldingHistoryRequest { months?: number; user_date?: string; }
 export type InvestmentHoldingHistoryResponse = InvestmentHoldingHistoryDto[];
+
+export interface InvestmentHoldingHistorySaveRequest {
+  holding_id: number;
+  user_date: string;
+  current_value: number | null;
+  invested_amount: number | null;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * /liquidity-accounts
@@ -461,5 +468,11 @@ export interface LiquidityAccountHistoryDto {
   recordedAt: string;
 }
 
-export interface LiquidityAccountHistoryRequest { months?: number; }
+export interface LiquidityAccountHistoryRequest { months?: number; user_date?: string; }
 export type LiquidityAccountHistoryResponse = LiquidityAccountHistoryDto[];
+
+export interface LiquidityAccountHistorySaveRequest {
+  account_id: number;
+  user_date: string;
+  current_value: number;
+}

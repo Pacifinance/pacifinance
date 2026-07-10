@@ -131,11 +131,53 @@ investmentsRouter.post("/holdings/delete", async (req, res) => {
 
 investmentsRouter.post("/holdings/history", async (req, res) => {
     const months = Number(req.body.months)
+    const userDate = req.body.user_date ? new Date(req.body.user_date) : undefined
     const history = await db.investments.getHoldingHistoryByUserId(
         req.userId as string,
         Number.isFinite(months) && months > 0 ? months : undefined,
+        userDate && !isNaN(userDate.getTime()) ? userDate : undefined,
     )
     res.status(200).json(history)
+})
+
+function parseHoldingHistoryPayload(body: any) {
+    const holdingId = Number(body.holding_id ?? body.holdingId)
+    const userDate = new Date(body.user_date ?? body.userDate)
+    const currentValue = optionalNumber(body.current_value ?? body.currentValue)
+    const investedAmount = optionalNumber(body.invested_amount ?? body.investedAmount)
+    const now = new Date()
+
+    if (
+        !Number.isFinite(holdingId) ||
+        isNaN(userDate.getTime()) ||
+        userDate > now ||
+        currentValue === undefined ||
+        investedAmount === undefined
+    ) {
+        return null
+    }
+
+    return {holdingId, userDate, currentValue, investedAmount}
+}
+
+investmentsRouter.post("/holdings/history/save", async (req, res) => {
+    const payload = parseHoldingHistoryPayload(req.body)
+    if (payload === null) {
+        res.status(400).send()
+        return
+    }
+
+    const entry = await db.investments.upsertHoldingHistoryEntry(
+        req.userId as string,
+        payload.holdingId,
+        payload.userDate,
+        {currentValue: payload.currentValue, investedAmount: payload.investedAmount},
+    )
+    if (entry === null) {
+        res.status(400).send() // holding not found, or not owned by this user
+        return
+    }
+    res.status(200).json(entry)
 })
 
 export default investmentsRouter

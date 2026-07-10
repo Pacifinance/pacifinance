@@ -197,6 +197,14 @@ create table public.user_investment_holding_history (
 create index user_investment_holding_history_user_idx
   on public.user_investment_holding_history (user_id, asset_key, user_date desc, recorded_at desc);
 
+-- Un solo valore per (holding, mese): rende possibile l'upsert sia per lo
+-- snapshot automatico sia per il backfill manuale di un mese passato. Parziale
+-- perché holding_id diventa null quando l'holding live viene eliminato (on
+-- delete set null) — quelle righe orfane non devono mai collidere tra loro.
+create unique index user_investment_holding_history_uidx
+  on public.user_investment_holding_history (user_id, holding_id, user_date)
+  where holding_id is not null;
+
 create table public.user_liquidity_account_history (
   id bigint generated always as identity primary key,
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -211,6 +219,10 @@ create table public.user_liquidity_account_history (
 
 create index user_liquidity_account_history_user_idx
   on public.user_liquidity_account_history (user_id, asset_key, user_date desc, recorded_at desc);
+
+create unique index user_liquidity_account_history_uidx
+  on public.user_liquidity_account_history (user_id, account_id, user_date)
+  where account_id is not null;
 
 -- ---------- expenses (outflows + incomes, discriminati da is_expense) ----------
 create table public.expenses (
@@ -277,8 +289,20 @@ create policy "user_liquidity_accounts_own_rows" on public.user_liquidity_accoun
 create policy "user_investment_holding_history_select_own" on public.user_investment_holding_history
   for select to authenticated using (auth.uid() = user_id);
 
+create policy "user_investment_holding_history_insert_own" on public.user_investment_holding_history
+  for insert to authenticated with check (auth.uid() = user_id);
+
+create policy "user_investment_holding_history_update_own" on public.user_investment_holding_history
+  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
 create policy "user_liquidity_account_history_select_own" on public.user_liquidity_account_history
   for select to authenticated using (auth.uid() = user_id);
+
+create policy "user_liquidity_account_history_insert_own" on public.user_liquidity_account_history
+  for insert to authenticated with check (auth.uid() = user_id);
+
+create policy "user_liquidity_account_history_update_own" on public.user_liquidity_account_history
+  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "deletions_own_row" on public.deletions
   for select to authenticated using (auth.uid() = user_id);

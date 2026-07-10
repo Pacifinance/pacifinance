@@ -335,6 +335,8 @@ export default function BalanceSection({
   liquidityAccounts = [],
   onLiquidityAccountsChanged,
   onAssetBaseValueChange,
+  investmentHoldingHistory = [],
+  liquidityAccountHistory = [],
 }) {
   const { currencySymbol, fromEUR } = React.useContext(CurrencyContext);
   const [openSubAccountsAssetKey, setOpenSubAccountsAssetKey] = useState(null);
@@ -355,6 +357,44 @@ export default function BalanceSection({
     return map;
   }, [liquidityAccounts]);
 
+  // Month-scoped backfilled history for the CURRENTLY VIEWED month (empty when
+  // viewing the current month - see InsertValues.tsx, which only fetches this
+  // for past months). Grouped by assetKey like the live maps above (to drive
+  // the past-month aggregate/sub-entries the same way live holdings drive the
+  // current month's), plus keyed by entity id (to hand a single history row
+  // straight to the relevant panel row).
+  const holdingHistoryByAssetKey = useMemo(() => {
+    const map = {};
+    for (const entry of investmentHoldingHistory) {
+      (map[entry.assetKey] ||= []).push(entry);
+    }
+    return map;
+  }, [investmentHoldingHistory]);
+
+  const liquidityAccountHistoryByAssetKey = useMemo(() => {
+    const map = {};
+    for (const entry of liquidityAccountHistory) {
+      (map[entry.assetKey] ||= []).push(entry);
+    }
+    return map;
+  }, [liquidityAccountHistory]);
+
+  const holdingHistoryByHoldingId = useMemo(() => {
+    const map = {};
+    for (const entry of investmentHoldingHistory) {
+      if (entry.holdingId !== null) map[entry.holdingId] = entry;
+    }
+    return map;
+  }, [investmentHoldingHistory]);
+
+  const accountHistoryByAccountId = useMemo(() => {
+    const map = {};
+    for (const entry of liquidityAccountHistory) {
+      if (entry.accountId !== null) map[entry.accountId] = entry;
+    }
+    return map;
+  }, [liquidityAccountHistory]);
+
   const handleBalanceDateChange = (event) => {
     const [month, year] = event.target.value.split('-').map(Number);
     setBalanceDate({ month, year });
@@ -368,28 +408,35 @@ export default function BalanceSection({
   const isCurrentMonth =
     balanceDate.month === currentMonth && balanceDate.year === currentYear;
 
+  /** The viewed month as "YYYY-MM-01", the granularity backfilled history is keyed at. */
+  const viewedUserDate = `${balanceDate.year}-${String(balanceDate.month).padStart(2, '0')}-01`;
+
   // Reconciliation: whenever an asset has verified holdings or detailed liquidity
   // sub-accounts, its aggregate value is derived from them instead of the free-text
-  // input — see plan decisions in constants/investmentSchema.ts. Sub-accounts only
-  // represent the CURRENT portfolio (no historical snapshots exist per month), so
-  // this override only applies while editing the current month — past months stay
-  // fully manual, exactly like before this feature existed.
+  // input — see plan decisions in constants/investmentSchema.ts. For the current
+  // month that's the live portfolio; for a past month it's the backfilled history
+  // for that exact month (InvestmentHoldingHistoryDto/LiquidityAccountHistoryDto
+  // share the same currentValue/investedAmount shape, so the same sum works
+  // unchanged). A past month with no backfilled entries falls back to the plain
+  // manual input, exactly like before this feature existed.
   useEffect(() => {
-    if (!onAssetBaseValueChange || !isCurrentMonth) return;
-    for (const assetKey of Object.keys(holdingsByAssetKey)) {
-      const assetHoldings = holdingsByAssetKey[assetKey];
+    if (!onAssetBaseValueChange) return;
+    const holdingsSource = isCurrentMonth ? holdingsByAssetKey : holdingHistoryByAssetKey;
+    const accountsSource = isCurrentMonth ? liquidityAccountsByAssetKey : liquidityAccountHistoryByAssetKey;
+    for (const assetKey of Object.keys(holdingsSource)) {
+      const assetHoldings = holdingsSource[assetKey];
       if (!assetHoldings || assetHoldings.length === 0) continue;
       const sumEur = assetHoldings.reduce((sum, h) => sum + (h.currentValue ?? h.investedAmount ?? 0), 0);
       onAssetBaseValueChange(assetKey, sumEur);
     }
-    for (const assetKey of Object.keys(liquidityAccountsByAssetKey)) {
-      const assetAccounts = liquidityAccountsByAssetKey[assetKey];
+    for (const assetKey of Object.keys(accountsSource)) {
+      const assetAccounts = accountsSource[assetKey];
       if (!assetAccounts || assetAccounts.length === 0) continue;
       const sumEur = assetAccounts.reduce((sum, a) => sum + (a.currentValue ?? 0), 0);
       onAssetBaseValueChange(assetKey, sumEur);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [holdingsByAssetKey, liquidityAccountsByAssetKey, isCurrentMonth]);
+  }, [holdingsByAssetKey, liquidityAccountsByAssetKey, holdingHistoryByAssetKey, liquidityAccountHistoryByAssetKey, isCurrentMonth]);
 
   const monthNames = {
     1: translations.months.january,
@@ -447,14 +494,15 @@ export default function BalanceSection({
 
     const isLiquidityKey = LIQUIDITY_KEYS.includes(asset.key);
     const isInvestmentKey = isVerifiableAssetKey(asset.key);
+    // Current month sources from the live portfolio; a past month sources from
+    // whatever's been backfilled for that exact month (falls back to the plain
+    // manual input below when nothing has been backfilled yet).
     const subEntries = isLiquidityKey
-      ? (liquidityAccountsByAssetKey[asset.key] || [])
+      ? (isCurrentMonth ? liquidityAccountsByAssetKey[asset.key] : liquidityAccountHistoryByAssetKey[asset.key]) || []
       : isInvestmentKey
-        ? (holdingsByAssetKey[asset.key] || [])
+        ? (isCurrentMonth ? holdingsByAssetKey[asset.key] : holdingHistoryByAssetKey[asset.key]) || []
         : [];
-    // Sub-accounts only drive the aggregate for the current month — there are no
-    // historical per-holding snapshots, so past months stay fully editable/manual.
-    const hasHoldings = subEntries.length > 0 && isCurrentMonth;
+    const hasHoldings = subEntries.length > 0;
     const t = isLiquidityKey ? translations.liquidityAccounts : translations.investments?.holdings;
 
     return (
@@ -607,6 +655,9 @@ export default function BalanceSection({
           accounts={liquidityAccountsByAssetKey[openSubAccountsAssetKey] || []}
           onClose={() => setOpenSubAccountsAssetKey(null)}
           onChanged={async () => { if (onLiquidityAccountsChanged) await onLiquidityAccountsChanged(); }}
+          isCurrentMonth={isCurrentMonth}
+          userDate={viewedUserDate}
+          historyByEntityId={accountHistoryByAccountId}
         />
       )}
 
@@ -616,6 +667,9 @@ export default function BalanceSection({
           holdings={holdingsByAssetKey[openSubAccountsAssetKey] || []}
           onClose={() => setOpenSubAccountsAssetKey(null)}
           onChanged={async () => { if (onHoldingsChanged) await onHoldingsChanged(); }}
+          isCurrentMonth={isCurrentMonth}
+          userDate={viewedUserDate}
+          historyByEntityId={holdingHistoryByHoldingId}
         />
       )}
     </SectionWrapper>

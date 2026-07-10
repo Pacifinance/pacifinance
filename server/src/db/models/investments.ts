@@ -260,7 +260,9 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     if (!sourceHint || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
 
     const candidates = sourceHint === "figi"
-        ? await openfigiProvider.searchOpenFigi(cleanQuery)
+        ? (openfigiProvider.isIsin(cleanQuery)
+            ? await openfigiProvider.searchOpenFigiByIsin(cleanQuery)
+            : await openfigiProvider.searchOpenFigi(cleanQuery))
         : await coingeckoProvider.searchCoingecko(cleanQuery)
 
     if (candidates.length === 0) return localResults
@@ -392,8 +394,9 @@ async function snapshotHoldingsForUser(user_id: string, user_date: Date) {
         }))
     if (rows.length === 0) return
 
-    const {error} = await supabase.from("user_investment_holding_history").insert(rows)
-    if (error) console.error("investments.snapshotHoldingsForUser: failed to insert history rows", error)
+    const {error} = await supabase.from("user_investment_holding_history")
+        .upsert(rows, {onConflict: "user_id,holding_id,user_date"})
+    if (error) console.error("investments.snapshotHoldingsForUser: failed to upsert history rows", error)
 }
 
 type HoldingHistoryRow = {
@@ -437,19 +440,21 @@ function toHoldingHistory(row: HoldingHistoryRow) {
 }
 
 /**
- * Reads the user's holding history, newest first. `months` optionally limits
- * how far back to look (by user_date). No per-month dedup RPC yet — there is no
- * chart/analysis consumer for this data yet; add one (mirroring get_balance_history)
- * when a real consumer needs it.
+ * Reads the user's holding history, newest first. `userDate` (exact match) takes
+ * precedence over `months` (a lookback window) when both are given. No per-month
+ * dedup RPC needed beyond that — the unique (user_id, holding_id, user_date) index
+ * guarantees at most one row per holding per month.
  */
-async function getHoldingHistoryByUserId(user_id: string, months?: number) {
+async function getHoldingHistoryByUserId(user_id: string, months?: number, userDate?: Date) {
     let request = supabase.from("user_investment_holding_history")
         .select(HOLDING_HISTORY_SELECT)
         .eq("user_id", user_id)
         .order("user_date", {ascending: false})
         .order("recorded_at", {ascending: false})
 
-    if (months !== undefined) {
+    if (userDate !== undefined) {
+        request = request.eq("user_date", toDateOnly(userDate))
+    } else if (months !== undefined) {
         const cutoff = ExtDate.fromNow()
         cutoff.moveByMonths(-months)
         request = request.gte("user_date", toDateOnly(cutoff))
@@ -459,6 +464,47 @@ async function getHoldingHistoryByUserId(user_id: string, months?: number) {
     if (error) console.error("investments.getHoldingHistoryByUserId: failed to read history", error)
     if (error || !data) return []
     return (data as unknown as HoldingHistoryRow[]).map(toHoldingHistory)
+}
+
+export type HoldingHistoryEntryInput = { currentValue: number | null, investedAmount: number | null }
+
+/**
+ * Backfills/updates a single holding's value for a specific month, scoped to
+ * the owning user. Denormalizes the current live holding's instrument/quantity
+ * fields (same shape snapshotHoldingsForUser already writes), only the value
+ * fields are user-authored. Returns null if the holding isn't found/owned.
+ */
+async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, user_date: Date, input: HoldingHistoryEntryInput) {
+    const {data: holdingRow, error: holdingErr} = await supabase.from("user_investment_holdings")
+        .select(HOLDING_SELECT).eq("user_id", user_id).eq("id", holding_id).maybeSingle()
+    if (holdingErr) console.error("investments.upsertHoldingHistoryEntry: failed to read holding", holdingErr)
+    if (holdingErr || !holdingRow) return null
+
+    const holding = toHolding(holdingRow as unknown as HoldingRow)
+    if (holding.instrument === null) return null
+
+    const row = {
+        user_id,
+        holding_id,
+        instrument_id: holding.instrument.id,
+        asset_key: holding.assetKey,
+        symbol: holding.instrument.symbol,
+        name: holding.instrument.name,
+        quantity: holding.quantity,
+        average_price: holding.averagePrice,
+        current_value: input.currentValue,
+        invested_amount: input.investedAmount,
+        currency: holding.currency,
+        user_date: toDateOnly(user_date),
+    }
+
+    const {data, error} = await supabase.from("user_investment_holding_history")
+        .upsert(row, {onConflict: "user_id,holding_id,user_date"})
+        .select(HOLDING_HISTORY_SELECT)
+        .single()
+    if (error) console.error("investments.upsertHoldingHistoryEntry: failed to upsert history row", error)
+    if (error || !data) return null
+    return toHoldingHistory(data as unknown as HoldingHistoryRow)
 }
 
 export default {
@@ -475,4 +521,5 @@ export default {
     deleteHolding,
     snapshotHoldingsForUser,
     getHoldingHistoryByUserId,
+    upsertHoldingHistoryEntry,
 }

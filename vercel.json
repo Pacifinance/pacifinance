@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "crons": [

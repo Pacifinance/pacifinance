@@ -46,9 +46,10 @@ app.use("/api", rootRouter)
 
 /* ========================= Local dev server start ========================= */
 
-// On Vercel, this module is only imported by api/[...path].ts (wrapped with
-// serverless-http) and never listens on a port itself. Locally (npm run dev
-// / tsx), it runs as a normal standalone Express server.
+// On Vercel, this module is only imported by api/index.ts - the single
+// serverless function every /api/* request is rewritten to (see vercel.json)
+// - and never listens on a port itself. Locally (npm run dev / tsx), it runs
+// as a normal standalone Express server.
 if (!process.env.VERCEL) {
     app.listen(process.env.PORT || 3000, () => {
         console.log("Server is listening...")

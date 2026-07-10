@@ -44,3 +44,15 @@ export const KIND_TO_SEARCH_SOURCE: Readonly<Record<InvestmentKind, InvestmentSe
 export function isVerifiableAssetKey(assetKey: string): boolean {
   return Boolean(ASSET_KEY_TO_KIND[assetKey as InvestmentAssetKey]);
 }
+
+/**
+ * Asset keys with one obvious canonical instrument, used to pre-fill the
+ * instrument search when a user adds their first holding for that key (still
+ * changeable — e.g. for a separate wallet or another chain's version).
+ * Deliberately not populated for every VERIFIABLE_ASSET_KEYS entry: `crypto`,
+ * `stocks`, `etf`, `bonds`, `funds` are broad categories with no single
+ * canonical instrument, unlike `bitcoin`.
+ */
+export const DEFAULT_INSTRUMENT_HINTS: Partial<Record<InvestmentAssetKey, { query: string; symbol: string }>> = {
+  bitcoin: { query: 'BTC', symbol: 'BTC' },
+};

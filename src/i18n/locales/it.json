@@ -739,6 +739,8 @@
             "successFullUpdate": "Aggiornamento del bilancio e dell'entrata/uscita avvenuto con successo",
             "pastMonthBannerTitle": "Stai modificando un mese passato",
             "pastMonthBannerBody": "I valori mostrati sono lo snapshot di {month}. Qualunque modifica sovrascriverà il bilancio di quel mese.",
+            "expandDetails": "Mostra dettaglio",
+            "collapseDetails": "Nascondi dettaglio",
             "multiInsert": {
                 "toggle": "Multi-inserimento",
                 "title": "Aggiornamento multiplo bilanci",
@@ -2532,7 +2534,8 @@
             "cancelEdit": "Annulla",
             "deleteButton": "Elimina",
             "manageLink": "Gestisci holding verificati",
-            "calculatedFromN": "Calcolato da {count} holding"
+            "calculatedFromN": "Calcolato da {count} holding",
+            "defaultInstrumentHint": "BTC è precompilato come istanza di riferimento. Rimuovilo per cercare un altro (es. un wallet separato o un'altra blockchain)."
         },
         "attribution": {
             "coingecko": "Dati forniti da CoinGecko"

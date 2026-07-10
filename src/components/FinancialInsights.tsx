@@ -27,8 +27,8 @@ const InsightsContainer = styled.div`
     ? `linear-gradient(135deg, ${props.theme.secondaryColor}10 0%, ${props.theme.backgroundColor} 100%)`
     : `linear-gradient(135deg, ${props.theme.secondaryColor}08 0%, rgba(255,255,255,0.9) 100%)`};
   border-radius: 16px;
-  padding: 2rem;
-  margin: 2rem 0;
+  padding: 1.5rem;
+  margin: 1.25rem 0;
   border: 1px solid ${props => `${props.theme.secondaryColor}30`};
   backdrop-filter: blur(10px);
   position: relative;
@@ -45,8 +45,8 @@ const InsightsContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
-    margin: 1rem 0;
+    padding: 1rem;
+    margin: 0.75rem 0;
   }
 `;
 

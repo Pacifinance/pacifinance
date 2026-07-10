@@ -737,6 +737,8 @@
             "successFullUpdate": "Guthaben- und Einnahmen-/Ausgabenaktualisierung erfolgreich",
             "pastMonthBannerTitle": "You are editing a past month",
             "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
+            "expandDetails": "Details anzeigen",
+            "collapseDetails": "Details ausblenden",
             "multiInsert": {
                 "toggle": "Mehrfacheingabe",
                 "title": "Mehrere Guthaben aktualisieren",
@@ -2530,7 +2532,8 @@
             "cancelEdit": "Abbrechen",
             "deleteButton": "Löschen",
             "manageLink": "Verifizierte Bestände verwalten",
-            "calculatedFromN": "Berechnet aus {count} Beständen"
+            "calculatedFromN": "Berechnet aus {count} Beständen",
+            "defaultInstrumentHint": "BTC ist standardmäßig vorausgewählt. Entferne es, um ein anderes zu suchen (z. B. eine separate Wallet oder eine andere Blockchain)."
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko"

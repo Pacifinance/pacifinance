@@ -255,7 +255,7 @@ function InOutStats({ theme, userData, isHidden }) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   const { fetchMonthDetail } = useContext(UserContext) || {};
-  const fmt = (val) => formatAmount(val, { maximumFractionDigits: 0 });
+  const fmt = (val) => formatAmount(val);
 
   const [selectedMonth, setSelectedMonth] = useState(() => indexToMonthKey(0));
   const [isLoadingMonth, setIsLoadingMonth] = useState(false);

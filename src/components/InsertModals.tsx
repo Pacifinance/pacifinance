@@ -1,6 +1,8 @@
 
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -155,6 +157,51 @@ const AssetValue = styled.span`
   letter-spacing: -0.01em;
 `;
 
+const ExpandButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.45;
+  cursor: pointer;
+  font-size: 0.7rem;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  transform: rotate(${(p) => (p.$expanded ? '180deg' : '0deg')});
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const SubItemList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.1rem 0.75rem 0.4rem 2.4rem;
+`;
+
+const SubItemRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.65;
+
+  span:last-child {
+    white-space: nowrap;
+    font-weight: 500;
+  }
+`;
+
 const DateRow = styled.div`
   display: flex;
   align-items: center;
@@ -234,20 +281,46 @@ const CancelButton = styled.button`
 `;
 
 /* ─── Balance Confirm Asset Row Renderer ─── */
-function BalanceAssetRow({ assetKey, label, value, currencySymbol, theme }) {
+function BalanceAssetRow({ assetKey, label, value, currencySymbol, theme, items, formatAmount, translations, isInvestment }) {
   const IconComponent = getAssetIcon(assetKey);
   const colorData = getAssetColor(assetKey);
   const color = typeof colorData === 'object' ? colorData.primary : colorData;
   const formattedValue = parseFormattedAmount(value ?? 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const [expanded, setExpanded] = React.useState(false);
+  const hasItems = Array.isArray(items) && items.length > 0;
+  const t = translations.insert.balanceSection;
 
   return (
-    <AssetRow theme={theme}>
-      <AssetIconBubble $color={color}>
-        <IconComponent />
-      </AssetIconBubble>
-      <AssetName theme={theme}>{label}</AssetName>
-      <AssetValue theme={theme}>{formattedValue} {currencySymbol}</AssetValue>
-    </AssetRow>
+    <>
+      <AssetRow theme={theme}>
+        <AssetIconBubble $color={color}>
+          <IconComponent />
+        </AssetIconBubble>
+        <AssetName theme={theme}>{label}</AssetName>
+        <AssetValue theme={theme}>{formattedValue} {currencySymbol}</AssetValue>
+        {hasItems && (
+          <ExpandButton
+            type="button"
+            theme={theme}
+            $expanded={expanded}
+            onClick={() => setExpanded((e) => !e)}
+            aria-label={expanded ? t.collapseDetails : t.expandDetails}
+          >
+            <FontAwesomeIcon icon={faChevronDown} />
+          </ExpandButton>
+        )}
+      </AssetRow>
+      {hasItems && expanded && (
+        <SubItemList theme={theme}>
+          {items.map((item) => (
+            <SubItemRow key={item.id} theme={theme}>
+              <span>{isInvestment ? (item.instrument?.symbol || item.instrument?.name || label) : item.label}</span>
+              <span>{formatAmount(item.currentValue ?? item.investedAmount ?? 0)}</span>
+            </SubItemRow>
+          ))}
+        </SubItemList>
+      )}
+    </>
   );
 }
 
@@ -280,10 +353,28 @@ export default function InsertModals({
   deleteIncomeAmount,
   deleteOutflowDate,
   deleteOutflowAmount,
+  investmentHoldings = [],
+  liquidityAccounts = [],
 }) {
   const { language, translations } = React.useContext(LanguageContext);
-  const { currencySymbol } = React.useContext(CurrencyContext);
+  const { currencySymbol, formatAmount } = React.useContext(CurrencyContext);
   const { theme } = React.useContext(ThemeContext);
+
+  const holdingsByAssetKey = React.useMemo(() => {
+    const map = {};
+    for (const holding of investmentHoldings) {
+      (map[holding.assetKey] ||= []).push(holding);
+    }
+    return map;
+  }, [investmentHoldings]);
+
+  const liquidityAccountsByAssetKey = React.useMemo(() => {
+    const map = {};
+    for (const account of liquidityAccounts) {
+      (map[account.assetKey] ||= []).push(account);
+    }
+    return map;
+  }, [liquidityAccounts]);
 
   // Function to convert month/year selection to display date for popup
   const getDisplayDateForBalance = (monthYearObj) => {
@@ -348,6 +439,10 @@ export default function InsertModals({
                       value={asset.value}
                       currencySymbol={currencySymbol}
                       theme={theme}
+                      items={liquidityAccountsByAssetKey[asset.key]}
+                      formatAmount={formatAmount}
+                      translations={translations}
+                      isInvestment={false}
                     />
                   ))}
                 </AssetList>
@@ -367,6 +462,10 @@ export default function InsertModals({
                       value={asset.value}
                       currencySymbol={currencySymbol}
                       theme={theme}
+                      items={holdingsByAssetKey[asset.key]}
+                      formatAmount={formatAmount}
+                      translations={translations}
+                      isInvestment={true}
                     />
                   ))}
                 </AssetList>

@@ -737,6 +737,8 @@
             "successFullUpdate": "Mise à jour du solde et des revenus/sorties réussie",
             "pastMonthBannerTitle": "You are editing a past month",
             "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
+            "expandDetails": "Afficher les détails",
+            "collapseDetails": "Masquer les détails",
             "multiInsert": {
                 "toggle": "Multi-insertion",
                 "title": "Mise à jour multiple des soldes",
@@ -2530,7 +2532,8 @@
             "cancelEdit": "Annuler",
             "deleteButton": "Supprimer",
             "manageLink": "Gérer les positions vérifiées",
-            "calculatedFromN": "Calculé à partir de {count} positions"
+            "calculatedFromN": "Calculé à partir de {count} positions",
+            "defaultInstrumentHint": "BTC est présélectionné par défaut. Supprimez-le pour en rechercher un autre (par ex. un portefeuille séparé ou une autre blockchain)."
         },
         "attribution": {
             "coingecko": "Données fournies par CoinGecko"

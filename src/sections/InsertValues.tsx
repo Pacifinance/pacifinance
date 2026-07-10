@@ -2150,6 +2150,8 @@ export default function InsertValue({
           deleteIncomeAmount={deleteIncomeAmount}
           deleteOutflowDate={deleteOutflowDate}
           deleteOutflowAmount={deleteOutflowAmount}
+          investmentHoldings={investmentHoldings}
+          liquidityAccounts={liquidityAccounts}
         />
 
         {pastDateModal.isOpen && (

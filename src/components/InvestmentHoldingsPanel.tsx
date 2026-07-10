@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPen, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from './multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
+import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
 import type { InvestmentAssetKey, InvestmentHoldingDto, InvestmentInstrumentDto } from '../types/api';
 
 interface InvestmentHoldingsPanelProps {
@@ -121,6 +122,13 @@ const SelectedInstrument = styled.div`
   }
 `;
 
+const DefaultInstrumentHint = styled.p`
+  margin: 0.4rem 0 0;
+  font-size: 0.72rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.6;
+`;
+
 const FieldsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -191,9 +199,41 @@ export default function InvestmentHoldingsPanel({ assetKey, holdings, onClose, o
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [isDefaultPrefilled, setIsDefaultPrefilled] = useState(false);
+
+  // Pre-fill the obvious instrument (e.g. BTC for `bitcoin`) on a user's very
+  // first holding for this asset key, so they aren't forced to search for it -
+  // see DEFAULT_INSTRUMENT_HINTS. Still fully overridable (the existing "clear
+  // selection" button below re-opens the search box), and silently does
+  // nothing if the search fails or finds no exact match.
+  useEffect(() => {
+    if (holdings.length > 0) return;
+    const hint = DEFAULT_INSTRUMENT_HINTS[assetKey];
+    const kind = ASSET_KEY_TO_KIND[assetKey];
+    const source = kind ? KIND_TO_SEARCH_SOURCE[kind] : null;
+    if (!hint || !kind || !source) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const results = await investmentService.searchInstruments({ query: hint.query, kind, source, limit: 5 });
+        const match = results.find((i) => i.symbol?.toUpperCase() === hint.symbol.toUpperCase());
+        if (!cancelled && match) {
+          setForm((f) => (f.instrument ? f : { ...f, instrument: match }));
+          setIsDefaultPrefilled(true);
+        }
+      } catch (error) {
+        console.error('InvestmentHoldingsPanel: default instrument prefill failed', error);
+      }
+    })();
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startEdit = (holding: InvestmentHoldingDto) => {
     setEditingId(holding.id);
+    setIsDefaultPrefilled(false);
     setForm({
       instrument: holding.instrument,
       quantity: holding.quantity != null ? String(holding.quantity) : '',
@@ -206,6 +246,7 @@ export default function InvestmentHoldingsPanel({ assetKey, holdings, onClose, o
 
   const resetForm = () => {
     setEditingId(null);
+    setIsDefaultPrefilled(false);
     setForm(emptyForm);
   };
 
@@ -274,12 +315,23 @@ export default function InvestmentHoldingsPanel({ assetKey, holdings, onClose, o
             <FormTitle theme={theme}>{editingId ? t.editTitle : t.addTitle}</FormTitle>
 
             {form.instrument ? (
-              <SelectedInstrument theme={theme}>
-                <span>{form.instrument.symbol} — {form.instrument.name}</span>
-                <button type="button" onClick={() => setForm((f) => ({ ...f, instrument: null }))}>
-                  <FontAwesomeIcon icon={faTimes} />
-                </button>
-              </SelectedInstrument>
+              <>
+                <SelectedInstrument theme={theme}>
+                  <span>{form.instrument.symbol} — {form.instrument.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((f) => ({ ...f, instrument: null }));
+                      setIsDefaultPrefilled(false);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </SelectedInstrument>
+                {isDefaultPrefilled && (
+                  <DefaultInstrumentHint theme={theme}>{t.defaultInstrumentHint}</DefaultInstrumentHint>
+                )}
+              </>
             ) : (
               <InstrumentSearchAutocomplete
                 assetKey={assetKey}

@@ -739,6 +739,8 @@
             "successFullUpdate": "Balance and income/outflow update successful",
             "pastMonthBannerTitle": "You are editing a past month",
             "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
+            "expandDetails": "Show details",
+            "collapseDetails": "Hide details",
             "multiInsert": {
                 "toggle": "Multi-insert",
                 "title": "Batch Update Balances",
@@ -2532,7 +2534,8 @@
             "cancelEdit": "Cancel",
             "deleteButton": "Delete",
             "manageLink": "Manage verified holdings",
-            "calculatedFromN": "Calculated from {count} holdings"
+            "calculatedFromN": "Calculated from {count} holdings",
+            "defaultInstrumentHint": "BTC is pre-filled by default. Remove it to search for a different one (e.g. a separate wallet or another blockchain)."
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko"

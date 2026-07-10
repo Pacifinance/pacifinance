@@ -739,6 +739,8 @@
             "successFullUpdate": "Actualización de balance e ingresos/gastos exitosa",
             "pastMonthBannerTitle": "You are editing a past month",
             "pastMonthBannerBody": "The values shown are the snapshot of {month}. Any change will overwrite that month's balance.",
+            "expandDetails": "Mostrar detalles",
+            "collapseDetails": "Ocultar detalles",
             "multiInsert": {
                 "toggle": "Multi-inserción",
                 "title": "Actualización múltiple de balances",
@@ -2532,7 +2534,8 @@
             "cancelEdit": "Cancelar",
             "deleteButton": "Eliminar",
             "manageLink": "Gestionar posiciones verificadas",
-            "calculatedFromN": "Calculado a partir de {count} posiciones"
+            "calculatedFromN": "Calculado a partir de {count} posiciones",
+            "defaultInstrumentHint": "BTC está preseleccionado por defecto. Elimínalo para buscar otro (p. ej. una wallet distinta u otra blockchain)."
         },
         "attribution": {
             "coingecko": "Datos proporcionados por CoinGecko"

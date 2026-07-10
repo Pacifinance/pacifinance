@@ -38,7 +38,6 @@ import {
     getFundsValue, getGoldValue, getTotalValue, getOutflowsArray, getIncomesArray
 } from '../utils/userDataSelectors';
 import {
-    ModernDashboardContainer,
     ModernDashboardHeader,
     ModernBalanceOverview,
     ModernAssetsGrid,
@@ -47,7 +46,6 @@ import {
     ModernInvestmentCard,
     ModernChartsSection,
     ModernChartContainer,
-    GradientBackground,
     FloatingElement,
     ModernMetricCard,
     ModernDashboardTitle,
@@ -58,7 +56,6 @@ import {
     InvestmentCardWrapper,
     InvestmentRowWrapper,
     AssetCardWrapper,
-    AssetRowWrapper,
     SubEntriesList,
     SubEntryRow,
     SubEntriesMore
@@ -366,7 +363,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const { formatAmount: ctxFormatAmount } = React.useContext(CurrencyContext);
     const formatCurrency = (value) => {
         if (isHidden) return '****';
-        return ctxFormatAmount(value, { maximumFractionDigits: 0 });
+        return ctxFormatAmount(value);
     };
 
     const formatPercentage = (value, total) => {
@@ -506,12 +503,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 <>
 
                 {isSectionVisible('liquidity-investments') && (
-                <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '1rem' : '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '0.75rem' : '1.25rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
-                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '1rem' : '2rem' }}>
+                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '0.75rem' : '1.25rem' }}>
                         {/* Sezione Bilanci Tradizionali - Layout intelligente */}
                         <div>
-                            <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1.5rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
+                            <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.5rem' : '0.75rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
                                 <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
                                 {translations.dashboard.liquidityAvailability}
                             </h3>
@@ -606,7 +603,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         {/* Sezione Fondo di Emergenza - Layout intelligente */}
                         {emergencyFundAsset.value > 0 && (
                             <div>
-                                <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1.5rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
+                                <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.5rem' : '0.75rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
                                     <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
                                     {translations.dashboard.emergencySecurity}
                                 </h3>
@@ -687,7 +684,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
                     {/* Colonna Destra - Investimenti */}
                     <div style={{ flex: '1' }}>
-                        <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1.5rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
+                        <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.5rem' : '0.75rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
                             <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
                             {translations.dashboard.portfolioInvestments}
                         </h3>
@@ -738,14 +735,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                     <h4 className="investment-name">{isHidden ? '****' : investment.name}</h4>
                                                     <div className="investment-value">{formatCurrency(investment.value)}</div>
                                                     <div className="investment-stats">
-                                                        <div className="stat">
-                                                            <span className="stat-label">{translations.dashboard.ofPortfolio}</span>
-                                                            <span className="stat-value">{formatPercentage(investment.value, totalInvestments)}</span>
-                                                        </div>
-                                                        <div className="stat">
-                                                            <span className="stat-label">{translations.dashboard.ofTotal}</span>
-                                                            <span className="stat-value">{formatPercentage(investment.value, totalBalance)}</span>
-                                                        </div>
+                                                        {formatPercentage(investment.value, totalInvestments)} {translations.dashboard.ofPortfolio} · {formatPercentage(investment.value, totalBalance)} {translations.dashboard.ofTotal}
                                                     </div>
                                                     {!isHidden && subEntries.length > 0 && (
                                                         <SubEntriesList $color={theme.textColor}>
@@ -851,16 +841,16 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 {/* Sezione Entrate e Uscite */}
                 {isSectionVisible('income-expense') && (
                 <ModernIncomeExpenseSection theme={theme}>
-                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '1rem' : '2rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
+                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <FaEuroSign style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
                         {translations.dashboard.titleGraph3}
                     </h3>
-                    
+
                     {/* Card principali: Entrate, Uscite, Risparmiato */}
-                    <div style={{ 
-                        display: 'flex', 
-                        flexDirection: isMobileScreen ? 'column' : 'row', 
-                        gap: '2rem',
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: isMobileScreen ? 'column' : 'row',
+                        gap: isMobileScreen ? '0.75rem' : '1.25rem',
                         justifyContent: 'space-around'
                     }}>
                         {incExpData.map((item, index) => (
@@ -900,14 +890,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                     {/* Obiettivi e Limiti - Card più piccole sotto */}
                     {(userData?.limits?.notificationsEnabled && !isHidden && 
                       (userData?.limits?.monthlySpendingLimit || userData?.limits?.savingsGoalPercentage)) && (
-                        <div style={{ 
-                            display: 'flex', 
+                        <div style={{
+                            display: 'flex',
                             flexDirection: isMobileScreen ? 'column' : 'row',
                             gap: '0.75rem',
                             justifyContent: 'center',
-                            marginTop: '1.5rem',
                             maxWidth: '500px',
-                            margin: '1.5rem auto 0 auto'
+                            margin: '1rem auto 0 auto'
                         }}>
                             {/* Card Limite Spesa - più piccola */}
                             {userData.limits.monthlySpendingLimit && (
@@ -1060,21 +1049,21 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 {/* Sezione Grafici */}
                 {isSectionVisible('charts') && (
                 <ModernChartsSection theme={theme}>
-                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '1rem' : '2rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
+                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.6rem' : '1rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <BsGraphUpArrow style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
                         {translations.dashboard.patrimonialAnalysis}
                     </h3>
-                    
-                    <div style={{ 
+
+                    <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobileScreen ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))',
-                        gap: isMobileScreen ? '1rem' : '2rem',
+                        gap: isMobileScreen ? '0.75rem' : '1.25rem',
                         width: '100%'
                     }}>
                         {/* Grafico Distribuzione Patrimonio Completa */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
                             <h4>{translations.dashboard.titleGraph2}</h4>
-                            <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 350}>
+                            <ResponsiveContainer width="100%" height={isMobileScreen ? 200 : 300}>
                                 <PieChart>
                                     <Pie
                                         data={isHidden ? detailedPieDataShuffle : detailedPieData}
@@ -1118,7 +1107,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         {/* Grafico Solo Investimenti */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
                             <h4>Portfolio {translations.general.investments}</h4>
-                            <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 350}>
+                            <ResponsiveContainer width="100%" height={isMobileScreen ? 200 : 300}>
                                 <PieChart>
                                     <Pie
                                         data={isHidden ? investmentsShuffle?.filter(inv => inv?.value > 0) || [] : investments?.filter(inv => inv?.value > 0) || []}
@@ -1162,7 +1151,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         {/* Grafico Distribuzione Patrimonio */}
                         <ModernChartContainer theme={theme} style={{ minWidth: isMobileScreen ? 'auto' : '450px' }}>
                             <h4>{translations.dashboard.titleGraph}</h4>
-                            <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 350}>
+                            <ResponsiveContainer width="100%" height={isMobileScreen ? 200 : 300}>
                                 <PieChart>
                                     <Pie
                                         data={isHidden ? pieDataShuffle : pieData}
@@ -1228,7 +1217,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)',
                     border: `1.5px dashed ${theme.mode === 'dark' ? 'rgba(245,158,11,0.4)' : 'rgba(245,158,11,0.5)'}`,
                     borderRadius: '16px',
-                    padding: isMobileScreen ? '1.5rem 1rem' : '2rem',
+                    padding: isMobileScreen ? '1rem 0.85rem' : '1.25rem',
                     textAlign: 'center',
                     margin: '0 auto',
                     maxWidth: '600px'

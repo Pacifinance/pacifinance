@@ -264,7 +264,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
             <span style={{ color: isHidden ? undefined : getAssetColor(key, 'light'), fontWeight: 600 }}>
               {translations.assets[key]}
             </span>
-            <span>{isHidden ? '****' : formatAmount(row[key], { maximumFractionDigits: 0 })}</span>
+            <span>{isHidden ? '****' : formatAmount(row[key])}</span>
           </div>
         ))}
         <div style={{
@@ -272,7 +272,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
           fontWeight: 'bold', marginTop: 4, paddingTop: 4, borderTop: `1px solid ${borderColor}`
         }}>
           <span>{translations.assets.total}</span>
-          <span>{isHidden ? '****' : formatAmount(row.total, { maximumFractionDigits: 0 })}</span>
+          <span>{isHidden ? '****' : formatAmount(row.total)}</span>
         </div>
       </div>
     );

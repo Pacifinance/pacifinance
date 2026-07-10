@@ -365,7 +365,7 @@ function BalancesStats({ theme, userData, isHidden }) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
     const { investmentService, liquidityAccountService } = useDemoServices();
-    const fmt = (val) => formatAmount(val, { maximumFractionDigits: 0 });
+    const fmt = (val) => formatAmount(val);
 
     const [current, setCurrent] = useState({});
     const [prevMonth, setPrevMonth] = useState({});

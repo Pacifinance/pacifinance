@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
 import styled from 'styled-components';
 import {
   Repeat,
@@ -16,9 +16,13 @@ import {
   PieChart
 } from 'lucide-react';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
-import { getAllOutflows, getAllIncomes, getTotalOutflowsCategoryBreakdownPerMonth, getTotalIncomesCategoryBreakdownPerMonth } from '../utils/userDataSelectors';
+import {
+  getAllOutflows, getAllIncomes, getTotalOutflowsCategoryBreakdownPerMonth, getTotalIncomesCategoryBreakdownPerMonth,
+  getEntriesForMonthKey, getCategoryBreakdownForEntries, indexToMonthKey, monthKeyToIndex,
+} from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { UserContext } from '../contexts/UserContext';
 import { translateTag, resolveTagKeyFromLocalized } from '../data/tagTranslations';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -314,7 +318,9 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   const t = translations.graphs.statsOutflows.outflowAnalysis;
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
+  const { fetchMonthDetail } = useContext(UserContext) || {};
+  const [selectedMonth, setSelectedMonth] = useState(() => indexToMonthKey(0));
+  const [isLoadingMonth, setIsLoadingMonth] = useState(false);
   const [selectedFlow, setSelectedFlow] = useState('expense');
   const [showCategories, setShowCategories] = useState(true);
   const [showPayments, setShowPayments] = useState(false);
@@ -323,27 +329,37 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
 
   const fmt = (val) => formatAmount(val, { maximumFractionDigits: 0 });
 
-  const monthOptions = useMemo(() => {
-    const options = [];
-    const now = new Date();
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const label = d.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' });
-      options.push({ value: i, label: i === 0 ? t.currentMonth : label.charAt(0).toUpperCase() + label.slice(1) });
-    }
-    return options;
-  }, [language, t]);
+  const maxMonth = indexToMonthKey(0);
+  const minMonth = indexToMonthKey(-120);
+  const prevMonthKey = indexToMonthKey(monthKeyToIndex(selectedMonth) + 1);
+
+  // Fetches the selected month and its predecessor on demand if either falls
+  // outside the already-loaded window (see fetchMonthDetail in UserContext).
+  useEffect(() => {
+    if (!userData || !fetchMonthDetail) return;
+    const flow = selectedFlow === 'income' ? 'incomes' : 'outflows';
+    const keys = [...new Set([selectedMonth, prevMonthKey])]
+      .filter((key) => getEntriesForMonthKey(userData, key, flow) === null);
+    if (keys.length === 0) return;
+    setIsLoadingMonth(true);
+    Promise.all(keys.map((key) => {
+      const [y, m] = key.split('-').map(Number);
+      return fetchMonthDetail(y, m);
+    })).finally(() => setIsLoadingMonth(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData, selectedMonth, prevMonthKey, selectedFlow]);
 
   const analysis = useMemo(() => {
     const isIncomeFlow = selectedFlow === 'income';
+    const flow = isIncomeFlow ? 'incomes' : 'outflows';
     const allEntries = isIncomeFlow ? getAllIncomes(userData) : getAllOutflows(userData);
     const catPerMonth = isIncomeFlow
       ? getTotalIncomesCategoryBreakdownPerMonth(userData)
       : getTotalOutflowsCategoryBreakdownPerMonth(userData);
     if (!allEntries || allEntries.length === 0 || !catPerMonth) return null;
 
-    const current = allEntries[selectedMonthIndex] || [];
-    const previous = allEntries[selectedMonthIndex + 1] || [];
+    const current = getEntriesForMonthKey(userData, selectedMonth, flow) || [];
+    const previous = getEntriesForMonthKey(userData, prevMonthKey, flow) || [];
     const last12 = allEntries.slice(0, 12) || [];
 
     const currentTotal = current.reduce((s, e) => s + e.amount, 0);
@@ -353,10 +369,11 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
     const monthlyChange = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
 
     const cats = {};
-    const currentCats = catPerMonth[selectedMonthIndex] || {};
+    const currentCats = getCategoryBreakdownForEntries(current, isIncomeFlow ? 'income' : 'expense');
+    const previousCats = getCategoryBreakdownForEntries(previous, isIncomeFlow ? 'income' : 'expense');
     Object.entries(currentCats).forEach(([cat, categoryData]) => {
       const amount = Number(categoryData?.amount) || 0;
-      const prevAmt = Number(catPerMonth[selectedMonthIndex + 1]?.[cat]?.amount) || 0;
+      const prevAmt = Number(previousCats[cat]?.amount) || 0;
       let avg12 = 0, months = 0;
       for (let i = 0; i < 12; i++) {
         const monthlyAmount = Number(catPerMonth[i]?.[cat]?.amount) || 0;
@@ -419,7 +436,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       payments,
       recurring: recurring.sort((a, b) => b.amount - a.amount)
     };
-  }, [userData, selectedMonthIndex, language, selectedFlow]);
+  }, [userData, selectedMonth, prevMonthKey, language, selectedFlow]);
 
   const recurring12M = useMemo(() => {
     const allOutflows = getAllOutflows(userData);
@@ -524,9 +541,25 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
       </div>
 
       <MonthSelect theme={theme}>
-        <select value={selectedMonthIndex} onChange={e => setSelectedMonthIndex(Number(e.target.value))}>
-          {monthOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+        <input
+          type="month"
+          value={selectedMonth}
+          min={minMonth}
+          max={maxMonth}
+          onChange={(e) => e.target.value && setSelectedMonth(e.target.value)}
+          style={{
+            padding: '0.35rem 0.75rem',
+            borderRadius: 8,
+            fontSize: '0.78rem',
+            fontWeight: 500,
+            cursor: 'pointer',
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)',
+            color: theme.textColor,
+            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+            colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            opacity: isLoadingMonth ? 0.6 : 1,
+          }}
+        />
       </MonthSelect>
 
       <OverviewStrip theme={theme}>

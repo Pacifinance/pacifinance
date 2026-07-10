@@ -291,6 +291,25 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // Lazy-loaded single arbitrary month (tagged transactions, mixed incomes+
+  // outflows), for viewing/comparing history beyond the already-loaded
+  // 13-month window (pie chart month picker, Panoramica Finanziaria,
+  // Analisi Dettagliata Uscite). Cached by calendar key so re-selecting an
+  // already-fetched month doesn't refetch it.
+  const fetchMonthDetail = async (year, month) => {
+    if (isDemoMode || isDemoSession()) return;
+    const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+    try {
+      const transactions = await financeService.getMonthDetail(year, month);
+      setUserData(prev => prev ? {
+        ...prev,
+        extraMonths: { ...(prev.extraMonths || {}), [monthKey]: transactions },
+      } : prev);
+    } catch (error) {
+      console.error('Errore durante il caricamento del mese richiesto:', error);
+    }
+  };
+
   // Creates a custom sub-category (child of an official tag) and appends it
   // to userData.customCategories on success.
   const addCustomCategory = async ({ label, parent_index, is_expense }) => {
@@ -346,6 +365,7 @@ export const UserProvider = ({ children }) => {
       retryFetch,
       fetchAllTimeBalances,
       fetchAllTimeMonthlyTotals,
+      fetchMonthDetail,
       addCustomCategory,
       renameCustomCategory,
       deleteCustomCategory

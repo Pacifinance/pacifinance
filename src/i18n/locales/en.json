@@ -596,12 +596,24 @@
         },
         "statsOutflows": {
             "title": "Income and Outflows statistics",
-            "titleGraph": "Trend of your incomes and outflows in the last 12 months",
+            "titleGraph": "Trend of your incomes and outflows",
             "titleGraph2": "Distribution of your outflows by category",
             "detailedVision": "Financial Overview",
             "titleDetailsMonth": "Your income, outflows and savings compared to last month ",
             "variation": "Variation ",
             "titleDetailsYear": "Your income, outflows and savings compared to last year ",
+            "compareMonths": "Compare months",
+            "compareMonthsModal": {
+                "title": "Month comparison",
+                "subtitle": "Compare the categories of two different months",
+                "monthA": "Month A",
+                "monthB": "Month B",
+                "category": "Category",
+                "delta": "Change",
+                "total": "Total",
+                "noData": "No data for the selected months",
+                "close": "Close"
+            },
             "outflowAnalysis": {
                 "title": "Detailed Outflow Analysis",
                 "subtitle": "In-depth analysis of your outflows by category, payment methods and recurring patterns",

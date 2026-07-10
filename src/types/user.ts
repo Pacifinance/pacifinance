@@ -8,7 +8,7 @@
  * @module types/user
  */
 
-import type { BalanceMonthDto, ExpenseDto, TagDto } from './api';
+import type { BalanceMonthDto, ExpenseDto, TagDto, TransactionDto } from './api';
 import type { KeyValue } from './common';
 
 // ─── Profile ─────────────────────────────────────────────────────────
@@ -131,4 +131,6 @@ export interface UserData {
     all: Record<string, unknown>;
     similar: Record<string, unknown>;
   };
+  /** On-demand-fetched single months beyond the loaded window, keyed by 'YYYY-MM' — see fetchMonthDetail in UserContext. */
+  extraMonths?: Record<string, TransactionDto[]>;
 }

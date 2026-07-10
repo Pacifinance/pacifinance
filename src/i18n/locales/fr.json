@@ -594,12 +594,24 @@
         },
         "statsOutflows": {
             "title": "Statistiques des revenus et dépenses",
-            "titleGraph": "Tendance de vos revenus et dépenses au cours des 12 derniers mois",
+            "titleGraph": "Tendance de vos revenus et dépenses",
             "titleGraph2": "Distribution de vos dépenses par catégorie",
             "detailedVision": "Aperçu financier",
             "titleDetailsMonth": "Vos revenus, dépenses et épargne par rapport au mois dernier ",
             "variation": "Variation ",
             "titleDetailsYear": "Vos revenus, dépenses et épargne par rapport à l'année dernière ",
+            "compareMonths": "Comparer les mois",
+            "compareMonthsModal": {
+                "title": "Comparaison des mois",
+                "subtitle": "Comparez les catégories de deux mois différents",
+                "monthA": "Mois A",
+                "monthB": "Mois B",
+                "category": "Catégorie",
+                "delta": "Variation",
+                "total": "Total",
+                "noData": "Aucune donnée pour les mois sélectionnés",
+                "close": "Fermer"
+            },
             "outflowAnalysis": {
                 "title": "Analyse détaillée des dépenses",
                 "subtitle": "Analyse approfondie de vos dépenses par catégorie, méthodes de paiement et schémas récurrents",

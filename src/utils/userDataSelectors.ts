@@ -5,7 +5,7 @@
  */
 
 import type { UserData } from '../types/user';
-import type { TagDto, ExpenseDto } from '../types/api';
+import type { TagDto, ExpenseDto, TransactionDto } from '../types/api';
 import {
   DEFAULT_MONTHLY_SPENDING_LIMIT,
   DEFAULT_SAVINGS_GOAL_PERCENTAGE,
@@ -206,7 +206,7 @@ export const getAllOutflows = (userData: UserDataLike): any[] => userData?.expen
 export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.expenses?.outflowsArray || [];
 export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, any> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
 
-type CategoryBreakdown = Record<string, {
+export type CategoryBreakdown = Record<string, {
   amount: number;
   subcategories: Record<string, number>;
 }>;
@@ -322,6 +322,48 @@ export const getIncomesArray = (userData: UserDataLike): number[] => userData?.i
  * aggregated server-side — empty until the "2Y"/"ALL" period selector triggers the fetch. */
 export const getMonthlyTotalsAllTime = (userData: UserDataLike): Array<{ monthStart: string; totalOutflows: number; totalIncomes: number }> =>
   userData?.monthlyTotalsAllTime || [];
+
+// ─── Arbitrary month lookup (on-demand history beyond the loaded window) ──
+// See fetchMonthDetail in UserContext.tsx: a single calendar month's tagged
+// transactions, fetched on demand and cached in userData.extraMonths keyed by
+// 'YYYY-MM', for viewing/comparing history the initial 13-month load doesn't cover.
+
+/** "Months back from now" for a calendar month key ('YYYY-MM'). 0 = current month, negative = future. */
+export const monthKeyToIndex = (monthKey: string): number => {
+  const [y, m] = monthKey.split('-').map(Number);
+  const now = new Date();
+  return (now.getFullYear() - y) * 12 + (now.getMonth() - (m - 1));
+};
+
+/** Calendar month key ('YYYY-MM') for a given "months back from now" index (may be negative to look forward). */
+export const indexToMonthKey = (index: number): string => {
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth() - index);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
+/**
+ * Gets a month's raw transactions for one flow, by calendar key, from the
+ * already-loaded recent window if present, else the on-demand `extraMonths`
+ * cache. Returns null if neither has it — the caller should call
+ * `fetchMonthDetail(year, month)` (from UserContext) and re-render once it resolves.
+ */
+export const getEntriesForMonthKey = (
+  userData: UserDataLike, monthKey: string, flow: 'outflows' | 'incomes'
+): TransactionDto[] | null => {
+  const index = monthKeyToIndex(monthKey);
+  const loaded = flow === 'outflows' ? getAllOutflows(userData) : getAllIncomes(userData);
+  if (index >= 0 && index < loaded.length) return (loaded[index] || []) as TransactionDto[];
+
+  const cached = userData?.extraMonths?.[monthKey];
+  if (!cached) return null;
+  return cached.filter((entry) => (flow === 'outflows' ? !!entry?.isExpense : !entry?.isExpense));
+};
+
+/** Category breakdown (same per-parent shape as getTotal*CategoryBreakdownPerMonth) for a flat transaction list. */
+export const getCategoryBreakdownForEntries = (entries: TransactionDto[], type: 'expense' | 'income'): CategoryBreakdown =>
+  aggregateTransactionsByCategory([entries], type)[0] || {};
 
 // Totale spese/income/saved del mese corrente
 export const getTotalOutflowsCurrentMonth = (userData: UserDataLike): number => {

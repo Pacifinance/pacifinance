@@ -143,6 +143,28 @@ export interface ExpensesMonthDto {
 
 export type ExpensesGetResponse = ExpensesMonthDto[];
 
+/** One transaction as returned by the server's toExpense() shape (/expenses/get, /expenses/month). */
+export interface TransactionDto {
+  date: string;
+  amount: number;
+  isExpense: boolean;
+  notes: string;
+  paymentType: { label: string; index: number; type: number } | null;
+  categoryTag: { label: string; index: number; type: number } | null;
+  userCategory: { id: number; label: string } | null;
+}
+
+/** Body of POST /expenses/month. `month` is 1-12. */
+export interface MonthDetailRequest {
+  year: number;
+  month: number;
+}
+
+/** Response of POST /expenses/month — one arbitrary month's tagged transactions
+ * (mixed incomes+outflows), for on-demand history beyond the 13-month window
+ * loaded by /expenses/get. */
+export type MonthDetailResponse = TransactionDto[];
+
 export interface ExpenseDeleteRequest {
   expense: Pick<ExpenseDto, 'date' | 'amount' | 'is_expense'>;
 }

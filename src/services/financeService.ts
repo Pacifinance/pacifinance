@@ -13,6 +13,7 @@ import type {
   ExpenseDeleteRequest,
   ExpensesGetResponse,
   MonthlyTotalsResponse,
+  MonthDetailResponse,
   CategoriesGetResponse,
   CategoryAddRequest,
   CategoryDeleteRequest,
@@ -29,6 +30,8 @@ export interface FinanceService {
   getExpensesAndIncomes(): Promise<ExpensesGetResponse>;
   /** GET-style POST to /expenses/monthly-totals — aggregated sums only, for multi-year charts. */
   getMonthlyTotals(months?: number | 'all'): Promise<MonthlyTotalsResponse>;
+  /** POST /expenses/month — one arbitrary month's tagged transactions, on demand. */
+  getMonthDetail(year: number, month: number): Promise<MonthDetailResponse>;
   /** POST /expenses/add. */
   addExpenseOrIncome(data: ExpenseAddRequest): Promise<AxiosResponse>;
   /** POST /expenses/delete. */
@@ -64,6 +67,11 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
 
   async getMonthlyTotals(months) {
     const res = await apiClient.post<MonthlyTotalsResponse>('/api/expenses/monthly-totals', months !== undefined ? { months } : {});
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async getMonthDetail(year, month) {
+    const res = await apiClient.post<MonthDetailResponse>('/api/expenses/month', { year, month });
     return Array.isArray(res.data) ? res.data : [];
   },
 

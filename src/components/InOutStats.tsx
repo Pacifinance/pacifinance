@@ -1,9 +1,10 @@
 ﻿import React, { useEffect, useState, useContext, useMemo } from 'react'
 import { ArrowUpRight, ArrowDownRight, Minus, ArrowRightLeft } from 'lucide-react';
 import styled from 'styled-components';
-import { getTotalOutflowsCurrentMonth, getTotalIncomesCurrentMonth, getTotalSavedCurrentMonth } from '../utils/userDataSelectors';
+import { getEntriesForMonthKey, indexToMonthKey, monthKeyToIndex } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { UserContext } from '../contexts/UserContext';
 
 /* ─── Styled Components ─── */
 
@@ -64,16 +65,6 @@ const HeaderTitle = styled.h3`
 
   @media (max-width: 768px) {
     font-size: 0.88rem;
-  }
-`;
-
-const PeriodLabel = styled.span`
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'};
-  
-  @media (max-width: 768px) {
-    font-size: 0.7rem;
   }
 `;
 
@@ -290,56 +281,72 @@ function isPositiveChange(current, comparison, type) {
 
 /* ─── Component ─── */
 
+const sumEntries = (userData, monthKey, flow) => {
+  const entries = getEntriesForMonthKey(userData, monthKey, flow);
+  return entries === null ? null : entries.reduce((s, e) => s + (Number(e?.amount) || 0), 0);
+};
+
 function InOutStats({ theme, userData, isHidden }) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
+  const { fetchMonthDetail } = useContext(UserContext) || {};
   const fmt = (val) => formatAmount(val, { maximumFractionDigits: 0 });
 
-  const [data, setData] = useState({
-    incomesCurrent: 0, outflowsCurrent: 0, savedCurrent: 0,
-    incomesMonth: 0, outflowsMonth: 0, savedMonth: 0,
-    incomesYear: 0, outflowsYear: 0, savedYear: 0,
-  });
+  const [selectedMonth, setSelectedMonth] = useState(() => indexToMonthKey(0));
+  const [isLoadingMonth, setIsLoadingMonth] = useState(false);
+  const maxMonth = indexToMonthKey(0);
+  const minMonth = indexToMonthKey(-120);
 
+  const prevMonthKey = indexToMonthKey(monthKeyToIndex(selectedMonth) + 1);
+  const prevYearKey = indexToMonthKey(monthKeyToIndex(selectedMonth) + 12);
+
+  // Fetches whichever of the three months (selected / -1 / -12) isn't already
+  // loaded, on demand (see fetchMonthDetail in UserContext).
   useEffect(() => {
-    if (!userData) return;
-    try {
-      const ic = getTotalIncomesCurrentMonth(userData);
-      const oc = getTotalOutflowsCurrentMonth(userData);
-      const sc = getTotalSavedCurrentMonth(userData);
-      
-      const im = userData?.incomesArray?.[1] || 0;
-      const om = userData?.outflowsArray?.[1] || 0;
-      const sm = im - om;
+    if (!userData || !fetchMonthDetail) return;
+    const keys = [...new Set([selectedMonth, prevMonthKey, prevYearKey])]
+      .filter((key) => getEntriesForMonthKey(userData, key, 'incomes') === null || getEntriesForMonthKey(userData, key, 'outflows') === null);
+    if (keys.length === 0) return;
+    setIsLoadingMonth(true);
+    Promise.all(keys.map((key) => {
+      const [y, m] = key.split('-').map(Number);
+      return fetchMonthDetail(y, m);
+    })).finally(() => setIsLoadingMonth(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData, selectedMonth, prevMonthKey, prevYearKey]);
 
-      const iy = userData?.incomesArray?.[12] || 0;
-      const oy = userData?.outflowsArray?.[12] || 0;
-      const sy = iy - oy;
-      
-      setData({
-        incomesCurrent: ic, outflowsCurrent: oc, savedCurrent: sc,
-        incomesMonth: im, outflowsMonth: om, savedMonth: sm,
-        incomesYear: iy, outflowsYear: oy, savedYear: sy,
-      });
-    } catch (e) {
-      console.error("Error computing stats:", e);
-    }
-  }, [userData]);
+  const data = useMemo(() => {
+    if (!userData) return null;
+    const ic = sumEntries(userData, selectedMonth, 'incomes');
+    const oc = sumEntries(userData, selectedMonth, 'outflows');
+    const im = sumEntries(userData, prevMonthKey, 'incomes');
+    const om = sumEntries(userData, prevMonthKey, 'outflows');
+    const iy = sumEntries(userData, prevYearKey, 'incomes');
+    const oy = sumEntries(userData, prevYearKey, 'outflows');
+    return {
+      incomesCurrent: ic ?? 0, outflowsCurrent: oc ?? 0, savedCurrent: (ic ?? 0) - (oc ?? 0),
+      incomesMonth: im, outflowsMonth: om, savedMonth: im !== null && om !== null ? im - om : null,
+      incomesYear: iy, outflowsYear: oy, savedYear: iy !== null && oy !== null ? iy - oy : null,
+    };
+  }, [userData, selectedMonth, prevMonthKey, prevYearKey]);
 
   const t = translations?.graphs?.financialOverview || {};
   const tGeneral = translations?.general || {};
 
   // Period labels
   const periodLabels = useMemo(() => {
-    const now = new Date();
-    const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const prevYear = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+    const monthKeyToDate = (key) => {
+      const [y, m] = key.split('-').map(Number);
+      return new Date(y, m - 1, 1);
+    };
     const locale = language === 'it' ? 'it-IT' : 'en-US';
     return {
-      month: `vs ${prevMonth.toLocaleDateString(locale, { month: 'short', year: '2-digit' })}`,
-      year: `vs ${prevYear.toLocaleDateString(locale, { month: 'short', year: '2-digit' })}`,
+      month: `vs ${monthKeyToDate(prevMonthKey).toLocaleDateString(locale, { month: 'short', year: '2-digit' })}`,
+      year: `vs ${monthKeyToDate(prevYearKey).toLocaleDateString(locale, { month: 'short', year: '2-digit' })}`,
     };
-  }, [language]);
+  }, [language, prevMonthKey, prevYearKey]);
+
+  if (!data) return null;
 
   const metrics = [
     {
@@ -404,9 +411,24 @@ function InOutStats({ theme, userData, isHidden }) {
           <ArrowRightLeft />
           {t.title || 'Financial Overview'}
         </HeaderTitle>
-        <PeriodLabel theme={theme}>
-          {t.currentMonth || 'Current month'}
-        </PeriodLabel>
+        <input
+          type="month"
+          value={selectedMonth}
+          min={minMonth}
+          max={maxMonth}
+          onChange={(e) => e.target.value && setSelectedMonth(e.target.value)}
+          style={{
+            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)'}`,
+            borderRadius: 6,
+            padding: '0.2rem 0.4rem',
+            fontSize: '0.72rem',
+            fontWeight: 500,
+            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
+            color: theme.textColor,
+            colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
+            opacity: isLoadingMonth ? 0.6 : 1,
+          }}
+        />
       </Header>
 
       {/* Summary: current values */}

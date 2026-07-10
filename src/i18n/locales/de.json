@@ -594,12 +594,24 @@
         },
         "statsOutflows": {
             "title": "Einnahmen- und Ausgaben-Statistiken",
-            "titleGraph": "Trend Ihrer Einnahmen und Ausgaben in den letzten 12 Monaten",
+            "titleGraph": "Trend Ihrer Einnahmen und Ausgaben",
             "titleGraph2": "Verteilung Ihrer Ausgaben nach Kategorie",
             "detailedVision": "Finanzübersicht",
             "titleDetailsMonth": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum letzten Monat ",
             "variation": "Veränderung ",
             "titleDetailsYear": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum Vorjahr ",
+            "compareMonths": "Monate vergleichen",
+            "compareMonthsModal": {
+                "title": "Monatsvergleich",
+                "subtitle": "Vergleichen Sie die Kategorien zweier verschiedener Monate",
+                "monthA": "Monat A",
+                "monthB": "Monat B",
+                "category": "Kategorie",
+                "delta": "Änderung",
+                "total": "Gesamt",
+                "noData": "Keine Daten für die ausgewählten Monate",
+                "close": "Schließen"
+            },
             "outflowAnalysis": {
                 "title": "Detaillierte Ausgabenanalyse",
                 "subtitle": "Eingehende Analyse Ihrer Ausgaben nach Kategorie, Zahlungsmethoden und wiederkehrenden Mustern",

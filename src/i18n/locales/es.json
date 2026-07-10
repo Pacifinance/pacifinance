@@ -596,12 +596,24 @@
         },
         "statsOutflows": {
             "title": "Estadísticas de ingresos y gastos",
-            "titleGraph": "Tendencia de tus ingresos y gastos en los últimos 12 meses",
+            "titleGraph": "Tendencia de tus ingresos y gastos",
             "titleGraph2": "Distribución de tus gastos por categoría",
             "detailedVision": "Resumen financiero",
             "titleDetailsMonth": "Tus ingresos, gastos y ahorros comparados con el mes pasado ",
             "variation": "Variación ",
             "titleDetailsYear": "Tus ingresos, gastos y ahorros comparados con el año pasado ",
+            "compareMonths": "Comparar meses",
+            "compareMonthsModal": {
+                "title": "Comparación entre meses",
+                "subtitle": "Compara las categorías de dos meses diferentes",
+                "monthA": "Mes A",
+                "monthB": "Mes B",
+                "category": "Categoría",
+                "delta": "Variación",
+                "total": "Total",
+                "noData": "No hay datos para los meses seleccionados",
+                "close": "Cerrar"
+            },
             "outflowAnalysis": {
                 "title": "Análisis detallado de gastos",
                 "subtitle": "Análisis profundo de tus gastos por categoría, métodos de pago y patrones recurrentes",

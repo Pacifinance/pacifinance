@@ -21,9 +21,10 @@ import { UserContext } from '../contexts/UserContext';
 import {
   getIncomesArray,
   getOutflowsArray,
-  getTotalIncomesCategoryBreakdownPerMonth,
-  getTotalOutflowsCategoryBreakdownPerMonth,
   getMonthlyTotalsAllTime,
+  getEntriesForMonthKey,
+  getCategoryBreakdownForEntries,
+  indexToMonthKey,
 } from '../utils/userDataSelectors';
 import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
@@ -32,10 +33,11 @@ import { getCategoryColor } from '../data/categoryColors';
 import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslations';
+import MonthComparisonModal from './MonthComparisonModal.jsx';
 function InOutChart({theme, userData, isHidden, type = "line"}) {
   const { language, translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
-  const { fetchAllTimeMonthlyTotals } = useContext(UserContext) || {};
+  const { fetchAllTimeMonthlyTotals, fetchMonthDetail } = useContext(UserContext) || {};
 
   // Line chart state
   const [incomesArray, setIncomesArray] = useState([]);
@@ -45,10 +47,10 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   const [hasFullHistory, setHasFullHistory] = useState(false);
 
   // Pie chart state
-  const [totalOutflowsCategoryBreakdownPerMonth, setTotalOutflowsCategoryBreakdownPerMonth] = useState([]);
-  const [totalIncomesCategoryBreakdownPerMonth, setTotalIncomesCategoryBreakdownPerMonth] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(indexToMonthKey(0)); // 'YYYY-MM', defaults to current month
   const [selectedPieFlow, setSelectedPieFlow] = useState('outflows');
+  const [isLoadingMonth, setIsLoadingMonth] = useState(false);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
   
   // Common state
   const [containerWidth, setContainerWidth] = useState(800);
@@ -133,25 +135,28 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
 
   //impostare i dati presi dell'utente per le spese e le entrate
   useEffect(() => {
-    const fetchData = async () => {
-      if (userData) {
-        try {
-          if (type === "line") {
-            setIncomesArray(getIncomesArray(userData) ? [...getIncomesArray(userData)] : []);
-            setOutflowsArray(getOutflowsArray(userData) ? [...getOutflowsArray(userData)] : []);
-            setMonthlyTotalsAllTime(getMonthlyTotalsAllTime(userData));
-          } else {
-            setTotalOutflowsCategoryBreakdownPerMonth(getTotalOutflowsCategoryBreakdownPerMonth(userData) || []);
-            setTotalIncomesCategoryBreakdownPerMonth(getTotalIncomesCategoryBreakdownPerMonth(userData) || []);
-          }
-        } catch (error) {
-          console.error('Error during operations:', error);
-        }
-      }
-    };
-
-    fetchData();
+    if (!userData || type !== "line") return;
+    try {
+      setIncomesArray(getIncomesArray(userData) ? [...getIncomesArray(userData)] : []);
+      setOutflowsArray(getOutflowsArray(userData) ? [...getOutflowsArray(userData)] : []);
+      setMonthlyTotalsAllTime(getMonthlyTotalsAllTime(userData));
+    } catch (error) {
+      console.error('Error during operations:', error);
+    }
   }, [userData, type]);
+
+  // Fetches the selected month's data on demand if it falls outside the
+  // already-loaded window (see fetchMonthDetail in UserContext).
+  useEffect(() => {
+    if (type !== "pie" || !userData || !fetchMonthDetail) return;
+    const flow = selectedPieFlow === 'incomes' ? 'incomes' : 'outflows';
+    if (getEntriesForMonthKey(userData, selectedMonth, flow) !== null) return;
+
+    const [year, month] = selectedMonth.split('-').map(Number);
+    setIsLoadingMonth(true);
+    fetchMonthDetail(year, month).finally(() => setIsLoadingMonth(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, userData, selectedMonth, selectedPieFlow]);
 
   const headers = [
     { label: translations?.graphs?.statsOutflows?.titleGraph || 'Month', key: 'name' },
@@ -298,13 +303,12 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   // Pie Chart Functions
   const renderPieChart = () => {
     let pieData = [];
-    const activeBreakdown = selectedPieFlow === 'incomes'
-      ? totalIncomesCategoryBreakdownPerMonth
-      : totalOutflowsCategoryBreakdownPerMonth;
     const categoryType = selectedPieFlow === 'incomes' ? 'income' : 'expense';
-    
-    if (activeBreakdown[selectedMonth]) {
-      pieData = Object.entries(activeBreakdown[selectedMonth])
+    const monthEntries = getEntriesForMonthKey(userData, selectedMonth, selectedPieFlow === 'incomes' ? 'incomes' : 'outflows');
+    const monthBreakdown = monthEntries ? getCategoryBreakdownForEntries(monthEntries, categoryType) : null;
+
+    if (monthBreakdown) {
+      pieData = Object.entries(monthBreakdown)
         .filter(([, data]) => data?.amount > 0)
         .map(([key, data], index) => {
           const tagLabel = resolveTagKeyFromLocalized(key, 'en', categoryType);
@@ -461,83 +465,61 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   };
 
   const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
+    if (event.target.value) setSelectedMonth(event.target.value);
   };
 
-  const renderMonthSelector = () => {
-    const monthNames = {
-      1: [translations.months.january],
-      2: [translations.months.february],
-      3: [translations.months.march],
-      4: [translations.months.april],
-      5: [translations.months.may],
-      6: [translations.months.june],
-      7: [translations.months.july],
-      8: [translations.months.august],
-      9: [translations.months.september],
-      10: [translations.months.october],
-      11: [translations.months.november],
-      12: [translations.months.december],
-    };
+  // Bounds for the month picker: any month up to the current one, generous
+  // 10-year floor (older months just return an empty state if there's no data).
+  const pieMonthMax = indexToMonthKey(0);
+  const pieMonthMin = indexToMonthKey(-120);
 
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    const monthOptions = [];
-    let year = currentYear;
-
-    const activeBreakdown = selectedPieFlow === 'incomes'
-      ? totalIncomesCategoryBreakdownPerMonth
-      : totalOutflowsCategoryBreakdownPerMonth;
-
-    for (let i = 0; i < Object.keys(activeBreakdown).length; i++) {
-      const month = ((currentMonth - i - 1 + 12) % 12) + 1;
-      if (month === 12 && i !== 0) {
-        year--;
-      }
-      monthOptions.push({ value: i, label: `${monthNames[month]} ${year}` });
-    }
-
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span style={{ 
-          color: theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+  const renderMonthSelector = () => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <input
+        type="month"
+        value={selectedMonth}
+        min={pieMonthMin}
+        max={pieMonthMax}
+        onChange={handleMonthChange}
+        style={{
+          padding: '0.4rem 0.75rem',
+          borderRadius: '8px',
+          border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+          background: 'rgba(255,255,255,0.95)',
+          color: '#333',
+          fontSize: '0.85rem',
           fontWeight: '500',
-          fontSize: '0.9rem'
-        }}>
-          {language === 'it' ? 'Mese:' : 'Month:'}
-        </span>
-        <select 
-          value={selectedMonth} 
-          onChange={handleMonthChange} 
-          style={{ 
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-            background: 'rgba(255,255,255,0.95)',
-            color: '#333',
-            fontSize: '0.9rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            outline: 'none'
-          }}
-        >
-          {monthOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  };
+          cursor: 'pointer',
+          outline: 'none',
+          colorScheme: 'light',
+        }}
+      />
+      <button
+        type="button"
+        onClick={() => setShowComparisonModal(true)}
+        style={{
+          border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)'}`,
+          borderRadius: 999,
+          padding: '0.35rem 0.75rem',
+          cursor: 'pointer',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          background: 'transparent',
+          color: theme.textColor,
+        }}
+      >
+        {translations?.graphs?.statsOutflows?.compareMonths || 'Confronta mesi'}
+      </button>
+    </div>
+  );
 
   // Conditional rendering based on type
   if (type === "pie") {
     return (
       <PercentageOutflowsChartContainer style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ 
-          padding: isMobile ? '0.5rem' : '0.75rem', 
-          textAlign: 'center', 
+        <div style={{
+          padding: isMobile ? '0.5rem' : '0.75rem',
+          textAlign: 'center',
           borderBottom: theme.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 8 }}>
@@ -569,9 +551,22 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           </div>
           {renderMonthSelector()}
         </div>
-        <div style={{ flex: 1, minHeight: 0 }}>
-          {renderPieChart()}
+        <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+          {isLoadingMonth ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: theme.textColor, opacity: 0.6, fontSize: '0.85rem' }}>
+              {translations?.graphs?.loading?.incomeOutflow || 'Caricamento...'}
+            </div>
+          ) : renderPieChart()}
         </div>
+        {showComparisonModal && (
+          <MonthComparisonModal
+            theme={theme}
+            userData={userData}
+            isHidden={isHidden}
+            initialFlow={selectedPieFlow}
+            onClose={() => setShowComparisonModal(false)}
+          />
+        )}
       </PercentageOutflowsChartContainer>
     );
   }

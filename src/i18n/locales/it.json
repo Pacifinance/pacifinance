@@ -596,12 +596,24 @@
         },
         "statsOutflows": {
             "title": "Statistiche Entrate e Uscite",
-            "titleGraph": "Andamento delle tue entrate negli ultimi 12 mesi",
+            "titleGraph": "Andamento delle tue entrate e uscite",
             "titleGraph2": "Distribuzione delle tue uscite per categoria",
             "detailedVision": "Panoramica Finanziaria",
             "titleDetailsMonth": "Variazione entrate, uscite e risparmi rispetto al mese scorso: ",
             "variation": "Variazione ",
             "titleDetailsYear": "Variazione entrate, uscite e risparmi rispetto all'anno scorso: ",
+            "compareMonths": "Confronta mesi",
+            "compareMonthsModal": {
+                "title": "Confronto tra mesi",
+                "subtitle": "Confronta le categorie di due mesi diversi",
+                "monthA": "Mese A",
+                "monthB": "Mese B",
+                "category": "Categoria",
+                "delta": "Variazione",
+                "total": "Totale",
+                "noData": "Nessun dato per i mesi selezionati",
+                "close": "Chiudi"
+            },
             "outflowAnalysis": {
                 "title": "Analisi Dettagliata Uscite",
                 "subtitle": "Analisi approfondita delle tue uscite per categoria, metodi di pagamento e pattern ricorrenti",

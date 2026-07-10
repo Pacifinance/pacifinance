@@ -102,6 +102,26 @@ expensesRouter.post("/monthly-totals", async (req, res) => {
     res.status(200).json(totals)
 })
 
+expensesRouter.post("/month", async (req, res) => {
+    // On-demand fetch of a single arbitrary month's tagged transactions (both
+    // incomes and expenses), so the stats UI can view/compare history beyond
+    // the 13-month window loaded by /get without fetching years of
+    // transactions up front. Bounded to exactly one month per call.
+    const year = Number(req.body?.year)
+    const month = Number(req.body?.month) // 1-12
+    if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
+        res.status(400).send()
+        return
+    }
+    const reference_date = new ExtDate(ExtDate.UTC(year, month - 1, 1))
+    if (reference_date > ExtDate.fromNow()) {
+        res.status(400).send()
+        return
+    }
+    const transactions = await db.expenses.getMonthlyExpensesByUserId(req.userId as string, reference_date)
+    res.status(200).json(transactions)
+})
+
 expensesRouter.post("/delete", async (req, res) => {
     // Delete the requested expense
     const expense = req.body.expense;

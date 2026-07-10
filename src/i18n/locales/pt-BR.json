@@ -594,12 +594,24 @@
         },
         "statsOutflows": {
             "title": "Estatísticas de receitas e despesas",
-            "titleGraph": "Tendência das suas receitas e despesas nos últimos 12 meses",
+            "titleGraph": "Tendência das suas receitas e despesas",
             "titleGraph2": "Distribuição das suas despesas por categoria",
             "detailedVision": "Visão geral financeira",
             "titleDetailsMonth": "Suas receitas, despesas e economias comparadas ao mês passado ",
             "variation": "Variação ",
             "titleDetailsYear": "Suas receitas, despesas e economias comparadas ao ano passado ",
+            "compareMonths": "Comparar meses",
+            "compareMonthsModal": {
+                "title": "Comparação entre meses",
+                "subtitle": "Compare as categorias de dois meses diferentes",
+                "monthA": "Mês A",
+                "monthB": "Mês B",
+                "category": "Categoria",
+                "delta": "Variação",
+                "total": "Total",
+                "noData": "Nenhum dado para os meses selecionados",
+                "close": "Fechar"
+            },
             "outflowAnalysis": {
                 "title": "Análise detalhada de despesas",
                 "subtitle": "Análise aprofundada das suas despesas por categoria, métodos de pagamento e padrões recorrentes",

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useContext } from 'react';
 import styled from 'styled-components';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, Tooltip } from 'recharts';
 import {
   Repeat,
   CreditCard,
@@ -16,6 +17,7 @@ import {
   PieChart
 } from 'lucide-react';
 import { getCategoryIcon, getCategoryColor } from '../data/categoryIcons';
+import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import {
   getAllOutflows, getAllIncomes, getTotalOutflowsCategoryBreakdownPerMonth, getTotalIncomesCategoryBreakdownPerMonth,
   getEntriesForMonthKey, getCategoryBreakdownForEntries, indexToMonthKey, monthKeyToIndex,
@@ -174,6 +176,43 @@ const SectionBadge = styled.span`
   padding: 0.15rem 0.4rem; border-radius: 6px;
 `;
 
+const FilterChipsRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.6rem 1rem 0;
+  @media (max-width: 768px) { padding: 0.5rem 0.75rem 0; }
+`;
+
+const FilterChip = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid ${p => p.$active ? p.$color : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)')};
+  background: ${p => p.$active ? `${p.$color}18` : 'transparent'};
+  color: ${p => p.$active ? p.$color : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)')};
+  text-decoration: ${p => p.$active ? 'none' : 'line-through'};
+  transition: all 0.15s ease;
+
+  &::before {
+    content: '';
+    width: 7px; height: 7px; border-radius: 50%;
+    background: ${p => p.$color};
+    opacity: ${p => p.$active ? 1 : 0.4};
+    flex-shrink: 0;
+  }
+`;
+
+const ChartWrap = styled.div`
+  padding: 0.5rem 1rem 0.25rem;
+  @media (max-width: 768px) { padding: 0.4rem 0.5rem 0.1rem; }
+`;
+
 const CatRow = styled.div`
   display: grid;
   grid-template-columns: 2fr 1fr 0.8fr 0.8fr;
@@ -326,11 +365,30 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   const [showPayments, setShowPayments] = useState(false);
   const [showRecurringMonth, setShowRecurringMonth] = useState(false);
   const [showRecurring12M, setShowRecurring12M] = useState(false);
+  const [hiddenCategories, setHiddenCategories] = useState(() => new Set());
+  const [hiddenPaymentMethods, setHiddenPaymentMethods] = useState(() => new Set());
 
   const fmt = (val) => formatAmount(val, { maximumFractionDigits: 0 });
 
+  // A new month/flow means a fresh breakdown - don't carry over filters from
+  // a previous view where they might not even apply to the same categories.
+  useEffect(() => {
+    setHiddenCategories(new Set());
+    setHiddenPaymentMethods(new Set());
+  }, [selectedMonth, selectedFlow]);
+
+  const toggleHidden = (setFn) => (key) => {
+    setFn((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+  const toggleCategory = toggleHidden(setHiddenCategories);
+  const togglePaymentMethod = toggleHidden(setHiddenPaymentMethods);
+
   const maxMonth = indexToMonthKey(0);
-  const minMonth = indexToMonthKey(-120);
+  const minMonth = indexToMonthKey(120);
   const prevMonthKey = indexToMonthKey(monthKeyToIndex(selectedMonth) + 1);
 
   // Fetches the selected month and its predecessor on demand if either falls
@@ -490,11 +548,34 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
     }
   };
 
+  // Payment types aren't expense/income categories, so getCategoryColor() (which
+  // falls back to a single green for anything it doesn't recognize) isn't right
+  // here - a small fixed palette for the handful of known payment types instead.
+  const getPaymentColor = (key) => ({
+    subscription: '#6c5ce7',
+    'single payment': '#079164',
+    cash: '#f39c12',
+    installment: '#3498db',
+    'periodic payment': '#e74c3c',
+  }[key] || '#95a5a6');
+
   const getTrend = (ch) => ch > 5 ? 'up' : ch < -5 ? 'down' : 'neutral';
   const formatPct = (p) => `${p > 0 ? '+' : ''}${p.toFixed(1)}%`;
 
   const sortedCats = Object.entries(categories).filter(([c, d]) => c && d && typeof d === 'object').sort((a, b) => b[1].amount - a[1].amount);
   const sortedPayments = Object.entries(payments).filter(([k, d]) => k && d).sort((a, b) => b[1].total - a[1].total);
+  const visibleCats = sortedCats.filter(([cat]) => !hiddenCategories.has(cat));
+  const visiblePayments = sortedPayments.filter(([key]) => !hiddenPaymentMethods.has(key));
+
+  // Resolved once for both the filter chips and the bar chart below.
+  const catMetaList = sortedCats.map(([cat, data]) => {
+    const dbKey = resolveTagKeyFromLocalized(cat, null, selectedFlow) || cat;
+    const displayName = translateTag(dbKey, language, selectedFlow) || cat;
+    return { cat, amount: data.amount, dbKey, displayName, color: getCategoryColor(dbKey) };
+  });
+  const paymentMetaList = sortedPayments.map(([key, data]) => ({
+    key, total: data.total, displayName: data.name || key, color: getPaymentColor(key),
+  }));
 
   const overviewTrendPositive = selectedFlow === 'income' ? overview.monthlyChange >= 5 : overview.monthlyChange <= -5;
   const overviewTrendNeutral = Math.abs(overview.monthlyChange) < 5;
@@ -596,13 +677,67 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
 
       {showCategories && (
         <div>
+          <FilterChipsRow theme={theme}>
+            {catMetaList.map(({ cat, displayName, color }) => (
+              <FilterChip
+                key={cat}
+                type="button"
+                theme={theme}
+                $active={!hiddenCategories.has(cat)}
+                $color={color}
+                onClick={() => toggleCategory(cat)}
+              >
+                {displayName}
+              </FilterChip>
+            ))}
+          </FilterChipsRow>
+
+          {visibleCats.length > 0 && (
+            <ChartWrap>
+              <div style={{ width: '100%', height: Math.max(140, visibleCats.length * 30) }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={catMetaList.filter(({ cat }) => !hiddenCategories.has(cat))}
+                    margin={{ top: 4, right: 28, left: 4, bottom: 4 }}
+                  >
+                    <XAxis type="number" hide />
+                    <YAxis
+                      type="category"
+                      dataKey="displayName"
+                      width={100}
+                      tick={{ fill: theme.textColor, fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      formatter={(value) => [isHidden ? '****' : formatAmount(value, { maximumFractionDigits: 0 }), '']}
+                      contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, fontSize: 12, color: '#333' }}
+                    />
+                    <Bar dataKey="amount" radius={[0, 4, 4, 0]} isAnimationActive={false}>
+                      {catMetaList.filter(({ cat }) => !hiddenCategories.has(cat)).map((entry) => (
+                        <Cell key={entry.cat} fill={entry.color} />
+                      ))}
+                      <LabelList
+                        dataKey="amount"
+                        position="right"
+                        formatter={(v) => (isHidden ? '****' : compactNumber(v))}
+                        style={{ fontSize: 10, fill: theme.textColor, opacity: 0.8 }}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartWrap>
+          )}
+
           <CatHeaderRow theme={theme}>
             <CatHeaderText theme={theme}>{language === 'it' ? 'Categoria' : 'Category'}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">{language === 'it' ? 'Importo' : 'Amount'}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">{t.vsPrevMonth}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">{t.vs12MAvg}</CatHeaderText>
           </CatHeaderRow>
-          {sortedCats.map(([cat, data]) => {
+          {visibleCats.map(([cat, data]) => {
             const pct = overview.currentTotal > 0 ? (data.amount / overview.currentTotal * 100) : 0;
             const dbKey = resolveTagKeyFromLocalized(cat, null, selectedFlow) || cat;
             const displayName = translateTag(dbKey, language, selectedFlow) || cat;
@@ -692,13 +827,68 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
               <OverviewCell theme={theme} />
             </OverviewStrip>
           )}
+
+          <FilterChipsRow theme={theme}>
+            {paymentMetaList.map(({ key, displayName, color }) => (
+              <FilterChip
+                key={key}
+                type="button"
+                theme={theme}
+                $active={!hiddenPaymentMethods.has(key)}
+                $color={color}
+                onClick={() => togglePaymentMethod(key)}
+              >
+                {displayName}
+              </FilterChip>
+            ))}
+          </FilterChipsRow>
+
+          {visiblePayments.length > 0 && (
+            <ChartWrap>
+              <div style={{ width: '100%', height: Math.max(120, visiblePayments.length * 30) }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={paymentMetaList.filter(({ key }) => !hiddenPaymentMethods.has(key))}
+                    margin={{ top: 4, right: 28, left: 4, bottom: 4 }}
+                  >
+                    <XAxis type="number" hide />
+                    <YAxis
+                      type="category"
+                      dataKey="displayName"
+                      width={100}
+                      tick={{ fill: theme.textColor, fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      formatter={(value) => [isHidden ? '****' : formatAmount(value, { maximumFractionDigits: 0 }), '']}
+                      contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, fontSize: 12, color: '#333' }}
+                    />
+                    <Bar dataKey="total" radius={[0, 4, 4, 0]} isAnimationActive={false}>
+                      {paymentMetaList.filter(({ key }) => !hiddenPaymentMethods.has(key)).map((entry) => (
+                        <Cell key={entry.key} fill={entry.color} />
+                      ))}
+                      <LabelList
+                        dataKey="total"
+                        position="right"
+                        formatter={(v) => (isHidden ? '****' : compactNumber(v))}
+                        style={{ fontSize: 10, fill: theme.textColor, opacity: 0.8 }}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartWrap>
+          )}
+
           <CatHeaderRow theme={theme}>
             <CatHeaderText theme={theme}>{language === 'it' ? 'Metodo' : 'Method'}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">{t.total}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">% {t.ofTotal}</CatHeaderText>
             <CatHeaderText theme={theme} $align="right">{t.transactions}</CatHeaderText>
           </CatHeaderRow>
-          {sortedPayments.map(([key, data]) => {
+          {visiblePayments.map(([key, data]) => {
             const pct = overview.currentTotal > 0 ? (data.total / overview.currentTotal * 100) : 0;
             return (
               <PaymentRow key={key} theme={theme}>

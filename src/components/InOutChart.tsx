@@ -471,7 +471,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
   // Bounds for the month picker: any month up to the current one, generous
   // 10-year floor (older months just return an empty state if there's no data).
   const pieMonthMax = indexToMonthKey(0);
-  const pieMonthMin = indexToMonthKey(-120);
+  const pieMonthMin = indexToMonthKey(120);
 
   const renderMonthSelector = () => (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>

@@ -36,7 +36,7 @@ function MonthComparisonModal({ theme, userData, isHidden, initialFlow = 'outflo
   const [isLoading, setIsLoading] = useState(false);
 
   const maxMonth = indexToMonthKey(0);
-  const minMonth = indexToMonthKey(-120);
+  const minMonth = indexToMonthKey(120);
   const monthBHex = monthBColor(theme);
 
   const entriesA = getEntriesForMonthKey(userData, monthA, flow);

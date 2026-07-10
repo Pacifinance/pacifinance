@@ -1,10 +1,12 @@
 ﻿import React, { useEffect, useState, useContext, useMemo } from 'react'
 import { ArrowUpRight, ArrowDownRight, Minus, ArrowRightLeft } from 'lucide-react';
 import styled from 'styled-components';
+import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { getEntriesForMonthKey, indexToMonthKey, monthKeyToIndex } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
+import { compactNumber } from '../utils/customGraphsInfo.jsx';
 
 /* ─── Styled Components ─── */
 
@@ -131,66 +133,24 @@ const SummaryCellValue = styled.div`
   }
 `;
 
-/* ─── Comparison Table ─── */
+const MetricChartCell = styled.div`
+  padding: 0.6rem 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 
-const ComparisonTable = styled.div`
-  padding: 0;
-`;
-
-const TableHeader = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  padding: 0.4rem 0.75rem;
-  background: ${p => p.theme.mode === 'dark'
-    ? 'rgba(255, 255, 255, 0.02)'
-    : 'rgba(0, 0, 0, 0.015)'
-  };
-  border-bottom: 1px solid ${p => p.theme.mode === 'dark'
-    ? 'rgba(255, 255, 255, 0.04)'
-    : 'rgba(0, 0, 0, 0.03)'
-  };
-
-  @media (max-width: 768px) {
-    padding: 0.35rem 0.5rem;
-  }
-`;
-
-const TableHeaderCell = styled.div`
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'};
-  text-align: ${p => p.$align || 'left'};
-
-  @media (max-width: 768px) {
-    font-size: 0.6rem;
-  }
-`;
-
-const ComparisonRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  padding: 0.5rem 0.75rem;
-  align-items: center;
-  transition: background 0.15s ease;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${p => p.theme.mode === 'dark'
-      ? 'rgba(255, 255, 255, 0.03)'
-      : 'rgba(0, 0, 0, 0.02)'
-    };
-  }
-
-  &:hover {
-    background: ${p => p.theme.mode === 'dark'
-      ? 'rgba(255, 255, 255, 0.03)'
-      : 'rgba(0, 0, 0, 0.015)'
-    };
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'};
   }
 
   @media (max-width: 768px) {
-    padding: 0.45rem 0.5rem;
+    padding: 0.5rem 0.4rem 0.6rem;
   }
 `;
 
@@ -216,40 +176,35 @@ const ColorDot = styled.span`
   flex-shrink: 0;
 `;
 
-const ChangeCell = styled.div`
-  text-align: right;
+const CaptionStack = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.1rem;
+  gap: 0.2rem;
+  margin-top: 0.5rem;
 `;
 
 const ChangeAmount = styled.span`
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: ${p => p.$isPositive ? '#27ae60' : p.$isNeutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)') : '#e74c3c'};
   display: flex;
   align-items: center;
-  gap: 0.15rem;
+  gap: 0.2rem;
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
     flex-shrink: 0;
   }
 
-  @media (max-width: 768px) {
-    font-size: 0.72rem;
+  span {
+    font-weight: 400;
+    opacity: 0.55;
+    color: ${p => p.theme.textColor};
   }
-`;
-
-const ChangePercent = styled.span`
-  font-size: 0.68rem;
-  font-weight: 500;
-  color: ${p => p.$isPositive ? 'rgba(39, 174, 96, 0.7)' : p.$isNeutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)') : 'rgba(231, 76, 60, 0.7)'};
 
   @media (max-width: 768px) {
-    font-size: 0.6rem;
+    font-size: 0.64rem;
   }
 `;
 
@@ -279,6 +234,16 @@ function isPositiveChange(current, comparison, type) {
   return current < comparison; // outflows: less is better
 }
 
+/** hex -> rgba string, so the same metric color can fade in across the three bars. */
+function hexToRgba(hex, alpha) {
+  const clean = hex.replace('#', '');
+  const value = parseInt(clean, 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 /* ─── Component ─── */
 
 const sumEntries = (userData, monthKey, flow) => {
@@ -295,7 +260,7 @@ function InOutStats({ theme, userData, isHidden }) {
   const [selectedMonth, setSelectedMonth] = useState(() => indexToMonthKey(0));
   const [isLoadingMonth, setIsLoadingMonth] = useState(false);
   const maxMonth = indexToMonthKey(0);
-  const minMonth = indexToMonthKey(-120);
+  const minMonth = indexToMonthKey(120);
 
   const prevMonthKey = indexToMonthKey(monthKeyToIndex(selectedMonth) + 1);
   const prevYearKey = indexToMonthKey(monthKeyToIndex(selectedMonth) + 12);
@@ -330,23 +295,31 @@ function InOutStats({ theme, userData, isHidden }) {
     };
   }, [userData, selectedMonth, prevMonthKey, prevYearKey]);
 
-  const t = translations?.graphs?.financialOverview || {};
   const tGeneral = translations?.general || {};
 
-  // Period labels
-  const periodLabels = useMemo(() => {
-    const monthKeyToDate = (key) => {
+  // Short, locale-aware labels for each of the three periods shown per metric
+  // (mini bar chart x-axis + "vs X" captions).
+  const monthShortLabels = useMemo(() => {
+    const shortLabel = (key) => {
       const [y, m] = key.split('-').map(Number);
-      return new Date(y, m - 1, 1);
+      const locale = language === 'it' ? 'it-IT' : 'en-US';
+      return new Date(y, m - 1, 1).toLocaleDateString(locale, { month: 'short', year: '2-digit' });
     };
-    const locale = language === 'it' ? 'it-IT' : 'en-US';
     return {
-      month: `vs ${monthKeyToDate(prevMonthKey).toLocaleDateString(locale, { month: 'short', year: '2-digit' })}`,
-      year: `vs ${monthKeyToDate(prevYearKey).toLocaleDateString(locale, { month: 'short', year: '2-digit' })}`,
+      year: shortLabel(prevYearKey),
+      month: shortLabel(prevMonthKey),
+      current: shortLabel(selectedMonth),
     };
-  }, [language, prevMonthKey, prevYearKey]);
+  }, [language, selectedMonth, prevMonthKey, prevYearKey]);
 
   if (!data) return null;
+
+  const selectedMonthLabel = (() => {
+    const [y, m] = selectedMonth.split('-').map(Number);
+    const locale = language === 'it' ? 'it-IT' : 'en-US';
+    const label = new Date(y, m - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  })();
 
   const metrics = [
     {
@@ -378,28 +351,20 @@ function InOutStats({ theme, userData, isHidden }) {
     },
   ];
 
-  const renderChange = (current, comparison, type) => {
-    const diff = current - comparison;
+  const renderCaption = (current, comparison, type, label) => {
+    if (comparison === null) return null; // that period hasn't loaded yet
     const positive = isPositiveChange(current, comparison, type);
     const pct = getCleanPercentage(current, comparison, type);
     const isNeutral = positive === null;
-
-    const sign = diff >= 0 ? '+' : '';
-    const formattedDiff = `${sign}${fmt(Math.abs(diff))}`;
-    const formattedPct = pct !== null ? `${pct > 0 ? '+' : ''}${pct}%` : 'N/A';
-    
     const TrendIcon = isNeutral ? Minus : positive ? ArrowUpRight : ArrowDownRight;
+    const formattedPct = pct !== null ? `${pct > 0 ? '+' : ''}${pct}%` : 'N/A';
 
     return (
-      <ChangeCell>
-        <ChangeAmount $isPositive={positive} $isNeutral={isNeutral} theme={theme}>
-          <TrendIcon />
-          {isHidden ? '••••' : formattedDiff}
-        </ChangeAmount>
-        <ChangePercent $isPositive={positive} $isNeutral={isNeutral} theme={theme}>
-          {isHidden ? '••••' : formattedPct}
-        </ChangePercent>
-      </ChangeCell>
+      <ChangeAmount $isPositive={positive} $isNeutral={isNeutral} theme={theme}>
+        <TrendIcon />
+        {isHidden ? '••••' : formattedPct}
+        <span>vs {label}</span>
+      </ChangeAmount>
     );
   };
 
@@ -407,9 +372,12 @@ function InOutStats({ theme, userData, isHidden }) {
     <Container theme={theme}>
       {/* Header */}
       <Header theme={theme}>
+        {/* The section title ("Panoramica Finanziaria") is already shown by the
+            page above this card - repeating it here would be redundant, so this
+            shows the actually-useful bit: which month is being viewed. */}
         <HeaderTitle theme={theme}>
           <ArrowRightLeft />
-          {t.title || 'Financial Overview'}
+          {selectedMonthLabel}
         </HeaderTitle>
         <input
           type="month"
@@ -445,29 +413,51 @@ function InOutStats({ theme, userData, isHidden }) {
         ))}
       </SummaryRow>
 
-      {/* Comparison table */}
-      <ComparisonTable>
-        <TableHeader theme={theme}>
-          <TableHeaderCell theme={theme}></TableHeaderCell>
-          <TableHeaderCell theme={theme} $align="right">
-            {periodLabels.month}
-          </TableHeaderCell>
-          <TableHeaderCell theme={theme} $align="right">
-            {periodLabels.year}
-          </TableHeaderCell>
-        </TableHeader>
-
-        {metrics.map(m => (
-          <ComparisonRow key={m.key} theme={theme}>
-            <MetricName theme={theme}>
-              <ColorDot $color={m.color} />
-              {m.label}
-            </MetricName>
-            {renderChange(m.current, m.prevMonth, m.type)}
-            {renderChange(m.current, m.prevYear, m.type)}
-          </ComparisonRow>
-        ))}
-      </ComparisonTable>
+      {/* Per-metric mini bar chart: Anno prec. -> Mese prec. -> Mese selezionato */}
+      <SummaryRow theme={theme}>
+        {metrics.map(m => {
+          const chartData = [
+            { key: 'year', label: monthShortLabels.year, value: m.prevYear ?? 0 },
+            { key: 'month', label: monthShortLabels.month, value: m.prevMonth ?? 0 },
+            { key: 'current', label: monthShortLabels.current, value: m.current },
+          ];
+          return (
+            <MetricChartCell key={m.key} theme={theme}>
+              <MetricName theme={theme} style={{ fontSize: '0.72rem', marginBottom: 2 }}>
+                <ColorDot $color={m.color} />
+                {m.label}
+              </MetricName>
+              <div style={{ width: '100%', height: 90 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} margin={{ top: 16, right: 2, left: 2, bottom: 0 }}>
+                    <XAxis
+                      dataKey="label"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: theme.textColor, fontSize: 9, opacity: 0.6 }}
+                    />
+                    <Bar dataKey="value" radius={[3, 3, 0, 0]} isAnimationActive={false}>
+                      {chartData.map((entry, i) => (
+                        <Cell key={entry.key} fill={hexToRgba(m.color, [0.4, 0.7, 1][i])} />
+                      ))}
+                      <LabelList
+                        dataKey="value"
+                        position="top"
+                        formatter={(v) => (isHidden ? '••' : compactNumber(v))}
+                        style={{ fontSize: 9, fill: theme.textColor, opacity: 0.75 }}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <CaptionStack theme={theme}>
+                {renderCaption(m.current, m.prevMonth, m.type, monthShortLabels.month)}
+                {renderCaption(m.current, m.prevYear, m.type, monthShortLabels.year)}
+              </CaptionStack>
+            </MetricChartCell>
+          );
+        })}
+      </SummaryRow>
     </Container>
   );
 }

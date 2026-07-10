@@ -66,16 +66,12 @@ const options: any = {
 }
 
 /**
- * URL-encoded list of coin IDs
+ * How many coins to track, ranked by market cap. Kept small on purpose: fewer
+ * coins means the one-coin-per-call historic-sparkline backfill (see
+ * buildHistoricSparkline below) finishes faster, and fewer CoinGecko demo-tier
+ * calls overall.
  */
-const coins = [
-    "bitcoin", "solana", "ethereum", "polkadot", "crypto-com-chain", "binancecoin",
-    "usd-coin", "tether", "cardano", "okb", "uniswap", "ripple", "paypal-usd", 
-    "polygon-ecosystem-token", "dogecoin", "shiba-inu", "tron", "stellar",
-    "avalanche-2", "internet-computer", "pancakeswap-token", "bonk", "pepe",
-    "render-token", "algorand", "cosmos", "sui", "dai", "hedera-hashgraph",
-    "chainlink", "monero", "hyperliquid"
-].join("%2C")
+const TOP_N_COINS = 10
 
 // Sparkline parameters
 
@@ -132,8 +128,9 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
     // Retrieve from the cache the expired prices
     const expiredCachedPrices = await cache.get("crypto") as CoinCachedData | null
 
-    // Fetch the data of all coins
-    const currentDataUrl = cgApiUrl + `/coins/markets?vs_currency=eur&ids=${coins}&sparkline=true`
+    // Fetch the top coins by market cap
+    const currentDataUrl = cgApiUrl +
+        `/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=${TOP_N_COINS}&page=1&sparkline=true`
     const res = await fetch(currentDataUrl, options)
     if (res.status !== 200) {
         console.log("Error while fetching crypto current data")

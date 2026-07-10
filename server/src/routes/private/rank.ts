@@ -3,43 +3,22 @@ import express from "express"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
+import cache from "../../cache/cache"
 import similarUsers from "../../services/similarUsers"
-
-/**
- * Computes the rank of a user among other users
- * @param array Sorted array of objects (must have a 'user' field)
- * @param target_user Target user uuid whose position must be found
- * @returns Object containing the position (top=1, bottom=array.length) and the total number of users
- */
-function computeRankOfUser(array: any[], target_user: string) {
-    if (array.length === 0) return {position: 0}
-    let position = -1;
-    for (let i = 0; i < array.length; i++) {
-        if (array[i].user === target_user)
-            position = array.length - i;
-    }
-    if (position === -1) return {position: 0}
-    return {position: Math.floor(position / array.length * 100)};
-}
+import { computeRankOfUser, rankFromBalancePool, rankFromExpensePool } from "../../services/ranking"
+import type { RankingsCachedData } from "../../cache/items/rankings"
 
 /* === /rank/* === */
 
 const rankRouter = express.Router()
 
-function rankFromBalancePool(pool: Array<{userId: string, total: number}>, target_user: string) {
-    const balances = pool.map((p) => ({user: p.userId, balance: p.total}));
-    balances.sort((a, b) => a.balance - b.balance);
-    return computeRankOfUser(balances, target_user).position
-}
-
-function rankFromExpensePool(pool: Array<{userId: string, total: number}>, target_user: string, is_expense_filter: boolean) {
-    if (pool.length === 0) return 0
-    const expenses = pool.map((p) => ({user: p.userId, amount: p.total}));
-    expenses.sort((a, b) => a.amount - b.amount);
-    const rank = computeRankOfUser(expenses, target_user).position
-    return is_expense_filter ? 100 - rank : rank
-}
-
+/**
+ * Now a cache read instead of a live computation: rankings are precomputed
+ * once a month by the same cron that refreshes userAverages (see
+ * server/src/cache/items/rankings.ts), since a per-session live computation
+ * re-read the entire profiles table 3x per request - the single worst
+ * per-request cost driver found while auditing for Vercel Hobby-plan limits.
+ */
 rankRouter.post("/get", async (req, res) => {
     const target_user = req.userId as string;
     const user_type = await db.users.getTypeOfUserId(target_user);
@@ -56,36 +35,14 @@ rankRouter.post("/get", async (req, res) => {
         return;
     }
 
-    const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
-    const [balanceCohort, incomeCohort, expenseCohort] = await Promise.all([
-        similarUsers.getSimilarUserIds(target_user, "balance"),
-        similarUsers.getSimilarUserIds(target_user, "incomes"),
-        similarUsers.getSimilarUserIds(target_user, "outflows"),
-    ])
-    const [
-        balancePool,
-        balanceSimilarPool,
-        incomePool,
-        incomeSimilarPool,
-        expensePool,
-        expenseSimilarPool,
-    ] = await Promise.all([
-        db.balances.getRankingPool(undefined, true),
-        db.balances.getRankingPool(balanceCohort.userIds, true),
-        db.expenses.getExpenseRankingPool(undefined, false, reference_date),
-        db.expenses.getExpenseRankingPool(incomeCohort.userIds, false, reference_date),
-        db.expenses.getExpenseRankingPool(undefined, true, reference_date),
-        db.expenses.getExpenseRankingPool(expenseCohort.userIds, true, reference_date),
-    ])
+    const allRankings = await cache.get("userRankings") as RankingsCachedData | null
+    const userRankings = allRankings ? allRankings[target_user] : null
+    if (!userRankings) {
+        res.status(503).json({ error: "Rankings cache not yet initialized. Try again in a moment." })
+        return
+    }
 
-    res.status(200).json({
-        balance: rankFromBalancePool(balancePool, target_user),
-        incomes: rankFromExpensePool(incomePool, target_user, false),
-        outflows: rankFromExpensePool(expensePool, target_user, true),
-        balanceSimilar: rankFromBalancePool(balanceSimilarPool, target_user),
-        incomesSimilar: rankFromExpensePool(incomeSimilarPool, target_user, false),
-        outflowsSimilar: rankFromExpensePool(expenseSimilarPool, target_user, true),
-    })
+    res.status(200).json(userRankings)
 })
 
 rankRouter.post("/balances", async (req, res) => {

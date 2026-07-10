@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import app from "../src/index"
 import { authCookie, request } from "./helpers/http"
-import { mockDb, mockSupabase } from "./setup"
+import { mockDb, mockSupabase, mockCache } from "./setup"
 
 describe("private backend routes", () => {
     it("requires an access-token cookie for private routes", async () => {
@@ -163,15 +163,15 @@ describe("private backend routes", () => {
         expect(mockDb.categories.renameById).toHaveBeenCalledWith("user-uuid", 1, "Groceries")
     })
 
-    it("returns all rankings through one aggregate route", async () => {
-        mockDb.balances.getRankingPool
-            .mockResolvedValueOnce([{userId: "other", total: 50}, {userId: "user-uuid", total: 100}])
-            .mockResolvedValueOnce([{userId: "user-uuid", total: 100}])
-        mockDb.expenses.getExpenseRankingPool
-            .mockResolvedValueOnce([{userId: "user-uuid", total: 200}, {userId: "other", total: 100}])
-            .mockResolvedValueOnce([{userId: "user-uuid", total: 200}])
-            .mockResolvedValueOnce([{userId: "other", total: 100}, {userId: "user-uuid", total: 200}])
-            .mockResolvedValueOnce([{userId: "user-uuid", total: 200}])
+    it("returns all rankings through one aggregate route, read from the precomputed cache", async () => {
+        // Rankings are precomputed monthly by the cron (server/src/cache/items/rankings.ts)
+        // instead of live-queried per request - see server/src/routes/private/rank.ts.
+        mockCache.get.mockImplementation(async (key: string) => key === "userRankings" ? {
+            "user-uuid": {
+                balance: 50, incomes: 50, outflows: 50,
+                balanceSimilar: 100, incomesSimilar: 100, outflowsSimilar: 0
+            }
+        } : null)
 
         const response = await request(app, "/api/rank/get", {
             method: "POST",
@@ -189,8 +189,21 @@ describe("private backend routes", () => {
             outflowsSimilar: 0
         })
         expect(mockDb.users.getTypeOfUserId).toHaveBeenCalledTimes(1)
-        expect(mockDb.balances.getRankingPool).toHaveBeenCalledTimes(2)
-        expect(mockDb.expenses.getExpenseRankingPool).toHaveBeenCalledTimes(4)
+        expect(mockCache.get).toHaveBeenCalledWith("userRankings")
+        expect(mockDb.balances.getRankingPool).not.toHaveBeenCalled()
+        expect(mockDb.expenses.getExpenseRankingPool).not.toHaveBeenCalled()
+    })
+
+    it("returns 503 from the rankings route before the cache has been populated", async () => {
+        mockCache.get.mockResolvedValue(null)
+
+        const response = await request(app, "/api/rank/get", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(503)
     })
 
     it("searches canonical investment instruments from the verified catalog", async () => {

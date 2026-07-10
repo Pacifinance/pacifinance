@@ -28,7 +28,7 @@ describe("cron backend routes", () => {
         expect(mockDb.users.deleteUserById).toHaveBeenCalledWith("expired-user")
     })
 
-    it("invalidates user averages only when the cache item is expired", async () => {
+    it("invalidates user averages and rankings only when the cache item is expired", async () => {
         mockCache.valueExpired.mockResolvedValue(true)
 
         const response = await request(app, "/api/cron/refresh-user-averages", {
@@ -37,10 +37,12 @@ describe("cron backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(mockCache.valueExpired).toHaveBeenCalledWith("userAverages")
+        expect(mockCache.valueExpired).toHaveBeenCalledWith("userRankings")
         expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
+        expect(mockCache.invalidate).toHaveBeenCalledWith("userRankings")
     })
 
-    it("forces a user averages recompute via ?force=true even when the cache isn't expired yet", async () => {
+    it("forces a user averages and rankings recompute via ?force=true even when the cache isn't expired yet", async () => {
         mockCache.valueExpired.mockResolvedValue(false)
 
         const response = await request(app, "/api/cron/refresh-user-averages", {
@@ -50,5 +52,6 @@ describe("cron backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
+        expect(mockCache.invalidate).toHaveBeenCalledWith("userRankings")
     })
 })

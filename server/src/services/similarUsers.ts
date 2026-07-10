@@ -212,25 +212,43 @@ async function buildOrdinalTagMeta(): Promise<OrdinalTagMeta> {
     }
 }
 
+export type ProfilesSnapshot = { profiles: ProfileTagIds[], tagMeta: OrdinalTagMeta }
+
+/**
+ * Fetches the full profiles table + ordinal tag metadata once. Callers that
+ * need to resolve cohorts for many (user, metric) pairs in the same run (e.g.
+ * the monthly averages/rankings cron, which needs 7 cohorts per user) should
+ * fetch this once and reuse it via selectSimilarUserIds, instead of calling
+ * getSimilarUserIds per pair - each call otherwise re-fetches the entire
+ * profiles table from scratch.
+ */
+async function fetchProfilesSnapshot(): Promise<ProfilesSnapshot> {
+    const { data, error } = await supabase.from("profiles").select(PROFILE_COLUMNS)
+    if (error) console.error("similarUsers.fetchProfilesSnapshot: failed to read profiles", error)
+    const profiles = (data ?? []) as unknown as ProfileTagIds[]
+    const tagMeta = await buildOrdinalTagMeta()
+    return { profiles, tagMeta }
+}
+
 /**
  * Resolves the "similar users" cohort for a reference user and a given
- * comparison metric. Returns insufficientData=true (renders as the existing
+ * comparison metric, given an already-fetched profiles snapshot. Pure/in-memory:
+ * no DB access. Returns insufficientData=true (renders as the existing
  * "Prossimamente" state on the frontend) when there aren't enough eligible
  * users, or the population is too heterogeneous to reach the anonymity floor.
+ * @param snapshot Result of fetchProfilesSnapshot(), reusable across many calls
  * @param referenceUserId uuid of the user requesting the comparison
  * @param metric Which comparison this cohort is for (weights differ per metric)
  * @param opts.ignoreTestUsers Exclude test/demo accounts from the pool (default true)
  */
-async function getSimilarUserIds(
+function selectSimilarUserIds(
+    snapshot: ProfilesSnapshot,
     referenceUserId: string,
     metric: ComparisonMetric,
     opts: { ignoreTestUsers?: boolean } = {}
-): Promise<SimilarUsersResult> {
+): SimilarUsersResult {
     const ignoreTestUsers = opts.ignoreTestUsers ?? true
-
-    const { data, error } = await supabase.from("profiles").select(PROFILE_COLUMNS)
-    if (error) console.error("similarUsers.getSimilarUserIds: failed to read profiles", error)
-    const profiles = (data ?? []) as unknown as ProfileTagIds[]
+    const { profiles, tagMeta } = snapshot
 
     const reference = profiles.find((p) => p.id === referenceUserId)
     if (!reference) return { userIds: [], insufficientData: true }
@@ -240,10 +258,26 @@ async function getSimilarUserIds(
 
     if (eligible.length < MIN_COHORT) return { userIds: [], insufficientData: true }
 
-    const tagMeta = await buildOrdinalTagMeta()
     const scored = eligible.map((p) => ({ id: p.id, score: similarityScore(reference, p, metric, tagMeta) }))
 
     return selectCohort(scored, eligible.length)
 }
 
-export default { getSimilarUserIds, similarityScore, selectCohort }
+/**
+ * Convenience one-shot wrapper around fetchProfilesSnapshot + selectSimilarUserIds
+ * for callers resolving a single cohort (e.g. one-off scripts, tests). Callers
+ * resolving many cohorts in the same run should use those two functions directly
+ * to share one profiles fetch instead of paying for one per cohort.
+ */
+async function getSimilarUserIds(
+    referenceUserId: string,
+    metric: ComparisonMetric,
+    opts: { ignoreTestUsers?: boolean } = {}
+): Promise<SimilarUsersResult> {
+    const snapshot = await fetchProfilesSnapshot()
+    return selectSimilarUserIds(snapshot, referenceUserId, metric, opts)
+}
+
+export default {
+    getSimilarUserIds, fetchProfilesSnapshot, selectSimilarUserIds, similarityScore, selectCohort
+}

@@ -230,7 +230,7 @@ export function resetServerMocks() {
     mockRedis.set.mockResolvedValue("OK")
     mockRedis.ping.mockResolvedValue("PONG")
 
-    mockCache.getExpectedKeys.mockReturnValue(["userAverages", "crypto"])
+    mockCache.getExpectedKeys.mockReturnValue(["userAverages", "userRankings", "crypto"])
     mockCache.valueExpired.mockResolvedValue(false)
     mockCache.invalidate.mockResolvedValue(undefined)
     mockCache.get.mockResolvedValue(null)

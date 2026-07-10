@@ -5,7 +5,7 @@
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/cron/refresh-user-averages", "schedule": "0 3 * * *" },
+    { "path": "/api/cron/refresh-user-averages", "schedule": "0 3 1 * *" },
     { "path": "/api/cron/delete-users", "schedule": "0 2 * * *" }
   ]
 }

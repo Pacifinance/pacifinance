@@ -259,14 +259,16 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         { balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds }, now
     )
 
+    // Fetched once and reused for every user below, instead of once per
+    // (user, metric) pair - see similarUsers.fetchProfilesSnapshot.
+    const snapshot = await similarUsers.fetchProfilesSnapshot()
+
     for (const user of allUsersList) {
         const userRef = user.id
-        const [balanceCohort, incomesCohort, outflowsCohort, generalCohort] = await Promise.all([
-            similarUsers.getSimilarUserIds(userRef, "balance"),
-            similarUsers.getSimilarUserIds(userRef, "incomes"),
-            similarUsers.getSimilarUserIds(userRef, "outflows"),
-            similarUsers.getSimilarUserIds(userRef, "general"),
-        ])
+        const balanceCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "balance")
+        const incomesCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "incomes")
+        const outflowsCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "outflows")
+        const generalCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "general")
         averagesCachedData[userRef] = await computeAveragesForCohorts({
             balance: balanceCohort.userIds,
             incomes: incomesCohort.userIds,

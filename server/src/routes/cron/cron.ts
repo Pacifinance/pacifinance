@@ -56,15 +56,20 @@ cronRouter.get("/refresh-crypto-prices", async (_, res) => {
 })
 
 /**
- * Refreshes the user averages cache entry if expired. Vercel Cron always hits
- * this without ?force - the query param exists so a maintainer can trigger an
- * immediate recompute (e.g. right after a similarUsers.ts logic change)
- * instead of waiting for the entry's 24h TTL to lapse.
+ * Refreshes the user averages and rankings cache entries if expired. Both
+ * share this single monthly cron slot (Vercel Hobby caps cron jobs at 2, and
+ * disallows more-than-daily schedules anyway) since both need the same
+ * per-user "similar users" cohorts. Vercel Cron always hits this without
+ * ?force - the query param exists so a maintainer can trigger an immediate
+ * recompute (e.g. right after a similarUsers.ts logic change) instead of
+ * waiting for the entries' monthly TTL to lapse.
  */
 cronRouter.get("/refresh-user-averages", async (req, res) => {
     const force = req.query.force === "true"
     if (force || await cache.valueExpired("userAverages"))
         await cache.invalidate("userAverages")
+    if (force || await cache.valueExpired("userRankings"))
+        await cache.invalidate("userRankings")
     res.status(200).send()
 })
 

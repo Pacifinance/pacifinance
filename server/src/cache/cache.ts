@@ -2,6 +2,7 @@ import { ExtDate } from "../libs/datelib"
 
 import redis from "./redisClient"
 import averages from "./items/averages"
+import rankings from "./items/rankings"
 import prices from "./items/prices"
 
 interface CacheItemInfo {
@@ -14,11 +15,17 @@ type CacheItemData = {
     expiration: string
 }
 
+// A bit over 31 days: comfortably longer than any calendar month, so by the
+// time the monthly cron (vercel.json, 1st of the month) fires again, the
+// previous value is guaranteed expired and gets recomputed.
+const MONTHLY_DURATION_SEC = 32 * 86400
+
 /**
  * Dictionary of expected keys of the cache
  */
 const expectedItems: {[key: string]: CacheItemInfo} = {
-    "userAverages": { durationSec: 86400, fetch: averages.fetchUserAverages },
+    "userAverages": { durationSec: MONTHLY_DURATION_SEC, fetch: averages.fetchUserAverages },
+    "userRankings": { durationSec: MONTHLY_DURATION_SEC, fetch: rankings.fetchUserRankings },
     "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices }
 }
 

@@ -100,6 +100,7 @@
 - [ ] Audit segreti/credenziali nella history git prima di aprire il repo
 - [ ] Scegliere licenza (candidata: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche)
 - [ ] Trasferire il repo serverless nell'organizzazione GitHub PaciFinance (transfer, non copia: GitHub crea i redirect automatici); archiviare il repo legacy con README che punta al nuovo
+- [ ] Deploy Vercel da repo in org SENZA Vercel Pro: scollegare la Git integration e deployare via GitHub Actions + Vercel CLI (`vercel build` + `vercel deploy --prebuilt --prod --token`) — le Actions sono gratis sui repo pubblici; preview deploy su PR replicabile nello stesso workflow
 - [ ] Org GitHub: 2FA obbligatoria per i membri, branch protection su main (PR + review), CODEOWNERS, secrets SOLO negli env di deploy (Vercel/Supabase), mai nel repo
 - [ ] Co-owner: aggiungere il secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2); i deploy production restano collegati agli account personali finché non serve altro
 - [ ] FUNDING.yml: GitHub Sponsors come canale primario + BuyMeACoffee esistente come secondario
@@ -109,8 +110,10 @@
 - [ ] Lancio: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
 
 ### Fase 3b — Architettura hosted + self-hosted
-- [ ] Doppia distribuzione: web hosted (pacifinance.com, gratuita ora, eventuale tier Pro in futuro) + self-hosted gratuito (AGPL) — modello Plausible/Actual: il codice è lo stesso, l'hosted paga il progetto con la comodità
+- [ ] Doppia distribuzione: web hosted (pacifinance.com, gratuita) + self-hosted gratuito (AGPL) — il codice è lo stesso; la concorrenza NON è hosted-vs-self-hosted (chi self-hosta non avrebbe mai pagato: contribuisce con codice/bug/credibilità)
 - [ ] Confronto anonimo per self-hosted: servizio "community stats" opt-in — l'istanza self-hosted invia SOLO aggregati anonimi (bucket profilo: fascia età/lavoro/nazione + totali mensili arrotondati), MAI transazioni; riceve i percentili. Chi non aderisce ha tutto tranne il confronto. È il network effect che resta al progetto anche con codice aperto
+- [ ] Monetizzazione (SOLO quando ci sarà retention dimostrata, non prima): tier "Sostenitore" ~€2-3/mese = donazione strutturata con piccoli perk (badge, early access, voto priorità roadmap) — non un paywall su feature; eventuali feature Pro vere solo su cose che costano per-utente o richiedono lavoro dedicato: coorti di confronto personalizzate, spazi famiglia/condivisi, report email/push automatici
+- [ ] Nota Vercel: il piano Hobby vieta uso commerciale — il giorno in cui parte un tier a pagamento serve comunque Vercel Pro (o migrazione host); metterlo a budget in quel momento, non prima
 
 ### Fase 4 — Confronto anonimo (differenziante)
 - [ ] Checkbox di profilazione: l'utente sceglie come vengono calcolati gli utenti simili (già in server/todo.md)

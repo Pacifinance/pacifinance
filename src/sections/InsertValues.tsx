@@ -29,7 +29,7 @@ import { buildAddBalancePayload, buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
-    getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
+    getFundsValue, getCommoditiesValue, getOutflowsTags, getIncomesTags, getPaymentTags,
     getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth, getCustomCategories
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
@@ -432,7 +432,7 @@ export default function InsertValue({
   const [emergencyFundValue, setEmergencyFundValue] = useState(0);
   const [bondsValue, setBondsValue] = useState(0);
   const [fundsValue, setFundsValue] = useState(0);
-  const [goldValue, setGoldValue] = useState(0);
+  const [commoditiesValue, setCommoditiesValue] = useState(0);
   const [investmentHoldings, setInvestmentHoldings] = useState([]);
   const [liquidityAccounts, setLiquidityAccounts] = useState([]);
   const [investmentHoldingHistory, setInvestmentHoldingHistory] = useState([]);
@@ -485,7 +485,7 @@ export default function InsertValue({
     crypto: cryptoValue,
     bonds: bondsValue,
     funds: fundsValue,
-    gold: goldValue,
+    commodities: commoditiesValue,
   };
 
   const setBalanceInputValue = (assetKey) => (value) => {
@@ -580,7 +580,7 @@ export default function InsertValue({
     { label: translations.assets.crypto, assetKey: 'crypto' },
     { label: translations.assets.bonds, assetKey: 'bonds' },
     { label: translations.assets.funds, assetKey: 'funds' },
-    { label: translations.assets.gold, assetKey: 'gold' },
+    { label: translations.assets.commodities, assetKey: 'commodities' },
   ];
 
   const getHoldingValue = (holding) => Number(holding?.currentValue ?? holding?.investedAmount ?? 0) || 0;
@@ -691,7 +691,7 @@ export default function InsertValue({
       crypto: getValue('crypto'),
       bonds: getValue('bonds'),
       funds: getValue('funds'),
-      gold: getValue('gold'),
+      commodities: getValue('commodities'),
     });
   };
 
@@ -926,7 +926,7 @@ export default function InsertValue({
     crypto: [cryptoValue, setCryptoValue],
     bonds: [bondsValue, setBondsValue],
     funds: [fundsValue, setFundsValue],
-    gold: [goldValue, setGoldValue],
+    commodities: [commoditiesValue, setCommoditiesValue],
   };
 
   const options = Object.fromEntries(
@@ -946,7 +946,7 @@ export default function InsertValue({
         setEmergencyFundValue(userData ? getEmergencyFund(userData) : 0);
         setBondsValue(userData ? getBondsValue(userData) : 0);
         setFundsValue(userData ? getFundsValue(userData) : 0);
-        setGoldValue(userData ? getGoldValue(userData) : 0);
+        setCommoditiesValue(userData ? getCommoditiesValue(userData) : 0);
         setOutflowsTags(userData ? getOutflowsTags(userData) : []);
         setIncomesTags(userData ? getIncomesTags(userData) : []);
         setPaymentTags(userData ? getPaymentTags(userData) : []);
@@ -990,7 +990,7 @@ export default function InsertValue({
       setCryptoValue(getCryptoValue(userData));
       setBondsValue(getBondsValue(userData));
       setFundsValue(getFundsValue(userData));
-      setGoldValue(getGoldValue(userData));
+      setCommoditiesValue(getCommoditiesValue(userData));
       return;
     }
 
@@ -1008,7 +1008,7 @@ export default function InsertValue({
     setCryptoValue(Number(b.crypto) || 0);
     setBondsValue(Number(b.bonds) || 0);
     setFundsValue(Number(b.funds) || 0);
-    setGoldValue(Number(b.gold) || 0);
+    setCommoditiesValue(Number(b.commodities) || 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balanceDate.month, balanceDate.year, userData]);
 
@@ -1416,7 +1416,7 @@ export default function InsertValue({
       crypto: 'crypto',
       bonds: 'bonds',
       funds: 'funds',
-      gold: 'gold',
+      commodities: 'commodities',
     };
 
     for (let i = 0; i < total; i++) {
@@ -1885,8 +1885,8 @@ export default function InsertValue({
             setBondsValue={setBalanceInputValue('bonds')}
             fundsValue={balanceInputs.funds}
             setFundsValue={setBalanceInputValue('funds')}
-            goldValue={balanceInputs.gold}
-            setGoldValue={setBalanceInputValue('gold')}
+            commoditiesValue={balanceInputs.commodities}
+            setCommoditiesValue={setBalanceInputValue('commodities')}
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
             balancePlaceholders={balanceBaseValues}
@@ -2176,7 +2176,7 @@ export default function InsertValue({
           cryptoValue={getBalanceFieldValue('crypto')}
           bondsValue={getBalanceFieldValue('bonds')}
           fundsValue={getBalanceFieldValue('funds')}
-          goldValue={getBalanceFieldValue('gold')}
+          commoditiesValue={getBalanceFieldValue('commodities')}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           options={options}

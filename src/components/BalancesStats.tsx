@@ -8,14 +8,14 @@ import { assetColors } from '../data/assetColors';
 import { useDemoServices } from '../hooks/useDemoServices';
 import { 
   getStocksValue, getEtfValue, getBankValue, getCashValue, getCryptoValue, 
-  getBitcoinValue, getDigitalServicesValue, getBondsValue, getFundsValue, 
-  getGoldValue, getTotalValue, getEmergencyFund,
-  getStocksValuePreMonth, getEtfValuePreMonth, getBankValuePreMonth, getCashValuePreMonth, 
-  getCryptoValuePreMonth, getBitcoinValuePreMonth, getDigitalServicesValuePreMonth, 
-  getBondsValuePreMonth, getFundsValuePreMonth, getGoldValuePreMonth, getTotalValuePreMonth, getEmergencyFundPreMonth,
-  getStocksValuePreYearSameMonth, getEtfValuePreYearSameMonth, getBankValuePreYearSameMonth, getCashValuePreYearSameMonth, 
-  getCryptoValuePreYearSameMonth, getBitcoinValuePreYearSameMonth, getDigitalServicesValuePreYearSameMonth, 
-  getBondsValuePreYearSameMonth, getFundsValuePreYearSameMonth, getGoldValuePreYearSameMonth, getTotalValuePreYearSameMonth, getEmergencyFundPreYearSameMonth,
+  getBitcoinValue, getDigitalServicesValue, getBondsValue, getFundsValue,
+  getCommoditiesValue, getTotalValue, getEmergencyFund,
+  getStocksValuePreMonth, getEtfValuePreMonth, getBankValuePreMonth, getCashValuePreMonth,
+  getCryptoValuePreMonth, getBitcoinValuePreMonth, getDigitalServicesValuePreMonth,
+  getBondsValuePreMonth, getFundsValuePreMonth, getCommoditiesValuePreMonth, getTotalValuePreMonth, getEmergencyFundPreMonth,
+  getStocksValuePreYearSameMonth, getEtfValuePreYearSameMonth, getBankValuePreYearSameMonth, getCashValuePreYearSameMonth,
+  getCryptoValuePreYearSameMonth, getBitcoinValuePreYearSameMonth, getDigitalServicesValuePreYearSameMonth,
+  getBondsValuePreYearSameMonth, getFundsValuePreYearSameMonth, getCommoditiesValuePreYearSameMonth, getTotalValuePreYearSameMonth, getEmergencyFundPreYearSameMonth,
 } from '../utils/userDataSelectors';
 
 /* ─── Styled Components (matching InOutStats design) ─── */
@@ -387,7 +387,7 @@ function BalancesStats({ theme, userData, isHidden }) {
                 crypto: getCryptoValue(userData) || 0,
                 bonds: getBondsValue(userData) || 0,
                 funds: getFundsValue(userData) || 0,
-                gold: getGoldValue(userData) || 0,
+                commodities: getCommoditiesValue(userData) || 0,
                 total: getTotalValue(userData) || 0,
             });
             setPrevMonth({
@@ -401,7 +401,7 @@ function BalancesStats({ theme, userData, isHidden }) {
                 crypto: getCryptoValuePreMonth(userData) || 0,
                 bonds: getBondsValuePreMonth(userData) || 0,
                 funds: getFundsValuePreMonth(userData) || 0,
-                gold: getGoldValuePreMonth(userData) || 0,
+                commodities: getCommoditiesValuePreMonth(userData) || 0,
                 total: getTotalValuePreMonth(userData) || 0,
             });
             setPrevYear({
@@ -415,7 +415,7 @@ function BalancesStats({ theme, userData, isHidden }) {
                 crypto: getCryptoValuePreYearSameMonth(userData) || 0,
                 bonds: getBondsValuePreYearSameMonth(userData) || 0,
                 funds: getFundsValuePreYearSameMonth(userData) || 0,
-                gold: getGoldValuePreYearSameMonth(userData) || 0,
+                commodities: getCommoditiesValuePreYearSameMonth(userData) || 0,
                 total: getTotalValuePreYearSameMonth(userData) || 0,
             });
         } catch (e) {
@@ -491,7 +491,7 @@ function BalancesStats({ theme, userData, isHidden }) {
         { key: 'crypto', icon: assetIcons.crypto, color: assetColors.crypto.primary, label: translations.assets.crypto },
         { key: 'bonds', icon: assetIcons.bonds, color: assetColors.bonds.primary, label: translations.assets.bonds },
         { key: 'funds', icon: assetIcons.funds, color: assetColors.funds.primary, label: translations.assets.funds },
-        { key: 'gold', icon: assetIcons.gold, color: assetColors.gold.primary, label: translations.assets.gold },
+        { key: 'commodities', icon: assetIcons.commodities, color: assetColors.commodities.primary, label: translations.assets.commodities },
     ];
 
     // Only show assets with non-zero values

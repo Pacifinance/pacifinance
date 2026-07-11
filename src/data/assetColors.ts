@@ -65,7 +65,7 @@ export const assetColors = {
     light: '#00cec9',
     dark: '#00b894'
   },
-  gold: {
+  commodities: {
     primary: '#ffeaa7',
     gradient: 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)',
     light: '#ffeaa7',
@@ -115,7 +115,7 @@ export const assetOrder = [
   'bitcoin',
   'bonds',
   'funds',
-  'gold'
+  'commodities'
 ];
 
 // Mappa per tradurre le keys nei nomi visualizzati
@@ -130,5 +130,5 @@ export const assetNameMap = {
   bitcoin: 'bitcoin',
   bonds: 'bonds',
   funds: 'funds',
-  gold: 'gold'
+  commodities: 'commodities'
 };

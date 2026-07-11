@@ -3,13 +3,13 @@ import supabase from "../supabase"
 import { ExtDate } from "../../libs/datelib"
 import { addCurrency } from "../../libs/money"
 
-const BALANCE_COLUMNS = "recorded_at, user_date, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, gold, emergency_fund"
+const BALANCE_COLUMNS = "recorded_at, user_date, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, commodities, emergency_fund"
 
 type BalanceRow = {
     recorded_at: string
     user_date: string
     bank: number, cash: number, digital_services: number, stocks: number, etf: number,
-    bitcoin: number, crypto: number, bonds: number, funds: number, gold: number, emergency_fund: number
+    bitcoin: number, crypto: number, bonds: number, funds: number, commodities: number, emergency_fund: number
 }
 
 /**
@@ -30,7 +30,7 @@ function toBalance(row: BalanceRow) {
         userDate: row.user_date,
         bank: row.bank, cash: row.cash, digitalServices: row.digital_services,
         stocks: row.stocks, etf: row.etf, bitcoin: row.bitcoin, crypto: row.crypto,
-        bonds: row.bonds, funds: row.funds, gold: row.gold, emergencyFund: row.emergency_fund
+        bonds: row.bonds, funds: row.funds, commodities: row.commodities, emergencyFund: row.emergency_fund
     }
 }
 
@@ -49,20 +49,20 @@ function toBalance(row: BalanceRow) {
  * @param crypto Crypto amount
  * @param bonds Bonds amount
  * @param funds Funds amount
- * @param gold Gold amount
+ * @param commodities Commodities amount
  * @param emergency_fund Emergency fund amount
  * @returns Balance document, or null in case of error
  */
 async function insertNew(
     user_id: string, user_date: Date, bank: number, cash: number, digital_services: number,
     stocks: number, etf: number, bitcoin: number, crypto: number, bonds: number,
-    funds: number, gold: number, emergency_fund: number
+    funds: number, commodities: number, emergency_fund: number
 ) {
     const {data, error} = await supabase.from("balances").insert({
         user_id,
         user_date: toDateOnly(new ExtDate(user_date)),
         bank, cash, digital_services: digital_services, stocks, etf, bitcoin, crypto,
-        bonds, funds, gold, emergency_fund: emergency_fund
+        bonds, funds, commodities, emergency_fund: emergency_fund
     }).select(BALANCE_COLUMNS).single()
     if (error) console.error("balances.insertNew: failed to insert balance", error)
     if (error || !data) return null
@@ -128,7 +128,7 @@ async function getTotalLatestByUserId(user_id: string, limit_date: ExtDate | und
     return addCurrency(
         balance.bank, balance.cash, balance.digitalServices, balance.stocks,
         balance.etf, balance.bitcoin, balance.crypto, balance.bonds, balance.funds,
-        balance.gold
+        balance.commodities
     )
 }
 

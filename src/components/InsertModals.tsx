@@ -342,7 +342,7 @@ export default function InsertModals({
   cryptoValue,
   bondsValue,
   fundsValue,
-  goldValue,
+  commoditiesValue,
   selectedOption,
   setSelectedOption,
   options,
@@ -406,7 +406,7 @@ export default function InsertModals({
     { key: 'crypto', label: translations.assets.crypto, value: cryptoValue },
     { key: 'bonds', label: translations.assets.bonds, value: bondsValue },
     { key: 'funds', label: translations.assets.funds, value: fundsValue },
-    { key: 'gold', label: translations.assets.gold, value: goldValue },
+    { key: 'commodities', label: translations.assets.commodities, value: commoditiesValue },
   ];
 
   return (

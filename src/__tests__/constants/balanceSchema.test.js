@@ -85,7 +85,7 @@ describe('buildAddBalancePayload', () => {
         crypto: 0,
         bonds: 0,
         funds: 0,
-        gold: 0,
+        commodities: 0,
       },
     });
   });
@@ -116,7 +116,7 @@ describe('buildSnapshotWithDeltas', () => {
       crypto: 1955.82,
       bonds: 0,
       funds: 0,
-      gold: 0,
+      commodities: 0,
     };
     const { balance } = buildSnapshotWithDeltas('2026-02-28', snapshot, {
       bank: -1, // single outflow row of 1€ from the bank

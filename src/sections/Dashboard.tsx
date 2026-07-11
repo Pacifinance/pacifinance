@@ -35,7 +35,7 @@ import { assetColors } from '../data/assetColors.js';
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
-    getFundsValue, getGoldValue, getTotalValue, getOutflowsArray, getIncomesArray
+    getFundsValue, getCommoditiesValue, getTotalValue, getOutflowsArray, getIncomesArray
 } from '../utils/userDataSelectors';
 import {
     ModernDashboardHeader,
@@ -150,7 +150,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const [digitalServicesValue, setDigitalServicesValue] = useState(0);
     const [bondsValue, setBondsValue] = useState(0);
     const [fundsValue, setFundsValue] = useState(0);
-    const [goldValue, setGoldValue] = useState(0);
+    const [commoditiesValue, setCommoditiesValue] = useState(0);
     const [totalValue, setTotalValue] = useState(0);
     const [incomesMonth, setIncomesMonth] = useState(0);
     const [expensesMonth, setExpensesMonth] = useState(0);
@@ -171,7 +171,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                     setDigitalServicesValue(getDigitalServicesValue(userData));
                     setBondsValue(getBondsValue(userData));
                     setFundsValue(getFundsValue(userData));
-                    setGoldValue(getGoldValue(userData));
+                    setCommoditiesValue(getCommoditiesValue(userData));
                     setTotalValue(getTotalValue(userData));
                     
                     const outflowsArray = getOutflowsArray(userData);
@@ -231,7 +231,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- liveAssetValue only reads liquidityAccountsByAssetKey, already listed
     }), [translations, emergencyFund, liquidityAccountsByAssetKey]);
 
-    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Gold)
+    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Materie prime)
     const allInvestments = [
         {
             key: 'stocks',
@@ -288,13 +288,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
             description: translations.dashboard.fundsDescription,
         },
         {
-            key: 'gold',
-            name: translations.assets.gold,
-            value: goldValue >= 0 ? goldValue : 0,
-            icon: assetIcons.gold,
-            color: assetColors.gold.primary,
-            gradient: assetColors.gold.gradient,
-            description: translations.dashboard.goldDescription,
+            key: 'commodities',
+            name: translations.assets.commodities,
+            value: commoditiesValue >= 0 ? commoditiesValue : 0,
+            icon: assetIcons.commodities,
+            color: assetColors.commodities.primary,
+            gradient: assetColors.commodities.gradient,
+            description: translations.dashboard.commoditiesDescription,
         },
     ];
 
@@ -498,6 +498,8 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         totalEmergencySecurity={totalEmergencySecurity}
                         formatCurrency={formatCurrency}
                         formatPercentage={formatPercentage}
+                        holdingsByAssetKey={holdingsByAssetKey}
+                        liquidityAccountsByAssetKey={liquidityAccountsByAssetKey}
                     />
                 ) : (
                 <>

@@ -19,7 +19,7 @@ import {
   getCryptoValue,
   getBondsValue,
   getFundsValue,
-  getGoldValue,
+  getCommoditiesValue,
   getTotalValue,
   
   // Previous month selectors
@@ -116,7 +116,7 @@ const mockUserData = {
         crypto: 500,
         bonds: 15000,
         funds: 12500,
-        gold: 8000,
+        commodities: 8000,
         totalValue: 96150
       }
     },
@@ -134,7 +134,7 @@ const mockUserData = {
         crypto: 400,
         bonds: 14000,
         funds: 11800,
-        gold: 7500,
+        commodities: 7500,
         totalValue: 89950
       }
     },
@@ -152,7 +152,7 @@ const mockUserData = {
         crypto: 300,
         bonds: 13000,
         funds: 10000,
-        gold: 6500,
+        commodities: 6500,
         totalValue: 81250
       }
     })),
@@ -170,7 +170,7 @@ const mockUserData = {
         crypto: 200,
         bonds: 10000,
         funds: 8000,
-        gold: 5000,
+        commodities: 5000,
         totalValue: 65300
       }
     }
@@ -315,8 +315,8 @@ describe('userDataSelectors', () => {
         expect(getFundsValue(mockUserData)).toBe(12500);
       });
 
-      it('getGoldValue should return current gold', () => {
-        expect(getGoldValue(mockUserData)).toBe(8000);
+      it('getCommoditiesValue should return current commodities', () => {
+        expect(getCommoditiesValue(mockUserData)).toBe(8000);
       });
 
       it('getTotalValue should return total value', () => {
@@ -364,7 +364,7 @@ describe('userDataSelectors', () => {
         expect(getCryptoValue(null)).toBe(0);
         expect(getBondsValue(null)).toBe(0);
         expect(getFundsValue(null)).toBe(0);
-        expect(getGoldValue(null)).toBe(0);
+        expect(getCommoditiesValue(null)).toBe(0);
         expect(getTotalValue(null)).toBe(0);
       });
 
@@ -698,7 +698,7 @@ describe('userDataSelectors', () => {
           balance: {
             cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0,
             stocks: 0, etf: 0, bitcoin: 0, crypto: 0,
-            bonds: 0, funds: 0, gold: 0, totalValue: 0
+            bonds: 0, funds: 0, commodities: 0, totalValue: 0
           }
         }],
         expenses: { allOutflows: [[], [], []], outflowsArray: [0, 0, 0] },

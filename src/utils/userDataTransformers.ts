@@ -89,7 +89,7 @@ export interface BalanceSnapshot {
   crypto?: number;
   bonds?: number;
   funds?: number;
-  gold?: number;
+  commodities?: number;
   totalValue?: number;
 }
 
@@ -256,7 +256,7 @@ export const calculateTotal = (balance: BalanceSnapshot | null | undefined): num
     balance.crypto || 0,
     balance.bonds || 0,
     balance.funds || 0,
-    balance.gold || 0
+    balance.commodities || 0
   );
 };
 
@@ -383,7 +383,7 @@ export const buildAssetsFromBalance = (balance: BalanceSnapshot | null | undefin
     { typology: 'crypto', value: b.crypto || 0 },
     { typology: 'bonds', value: b.bonds || 0 },
     { typology: 'funds', value: b.funds || 0 },
-    { typology: 'gold', value: b.gold || 0 },
+    { typology: 'commodities', value: b.commodities || 0 },
   ].filter(asset => asset.value > 0);
 };
 

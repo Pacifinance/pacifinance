@@ -986,7 +986,7 @@ function Comparison({ theme, userData, isHidden}) {
         
         // Group assets into categories
         const liquid = (currentBalance.cash || 0) + (currentBalance.bank || 0) + (currentBalance.digitalServices || 0) + (currentBalance.emergencyFund || 0);
-        const investments = (currentBalance.stocks || 0) + (currentBalance.etf || 0) + (currentBalance.bonds || 0) + (currentBalance.funds || 0) + (currentBalance.gold || 0);
+        const investments = (currentBalance.stocks || 0) + (currentBalance.etf || 0) + (currentBalance.bonds || 0) + (currentBalance.funds || 0) + (currentBalance.commodities || 0);
         const crypto = (currentBalance.bitcoin || 0) + (currentBalance.crypto || 0);
         
         const allocations = [

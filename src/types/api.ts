@@ -34,7 +34,7 @@ export type AssetKey =
   | 'crypto'
   | 'bonds'
   | 'funds'
-  | 'gold';
+  | 'commodities';
 
 /** Snake-case keys accepted by POST /balances/add. */
 export type AssetDbKey =
@@ -48,7 +48,7 @@ export type AssetDbKey =
   | 'crypto'
   | 'bonds'
   | 'funds'
-  | 'gold';
+  | 'commodities';
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * /balances
@@ -96,7 +96,7 @@ export interface BalanceAddPayload {
   crypto: number;
   bonds: number;
   funds: number;
-  gold: number;
+  commodities: number;
 }
 
 export interface BalanceAddRequest {
@@ -339,7 +339,7 @@ export type PricesResponse = Record<string, PriceDto>;
  * ═══════════════════════════════════════════════════════════════════════════*/
 
 export type InvestmentKind = 'stock' | 'etf' | 'crypto' | 'bond' | 'fund' | 'commodity' | 'other';
-export type InvestmentAssetKey = 'stocks' | 'etf' | 'bitcoin' | 'crypto' | 'bonds' | 'funds' | 'gold';
+export type InvestmentAssetKey = 'stocks' | 'etf' | 'bitcoin' | 'crypto' | 'bonds' | 'funds' | 'commodities';
 export type InvestmentPositionType = 'single' | 'pac' | 'other';
 
 export interface InvestmentInstrumentDto {
@@ -375,7 +375,7 @@ export interface InvestmentHoldingDto {
   instrument: InvestmentInstrumentDto | null;
 }
 
-export type InvestmentSearchSource = 'figi' | 'coingecko';
+export type InvestmentSearchSource = 'figi' | 'coingecko' | 'internal';
 
 export interface InvestmentInstrumentSearchRequest {
   query: string;

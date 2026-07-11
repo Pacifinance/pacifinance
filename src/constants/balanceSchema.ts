@@ -36,7 +36,7 @@ export const ASSET_KEYS: readonly AssetKey[] = [
   'crypto',
   'bonds',
   'funds',
-  'gold',
+  'commodities',
 ] as const;
 
 /** "Wallet-like" assets (immediately spendable). */
@@ -55,7 +55,7 @@ export const INVESTMENT_KEYS: readonly AssetKey[] = [
   'crypto',
   'bonds',
   'funds',
-  'gold',
+  'commodities',
 ] as const;
 
 /**
@@ -73,7 +73,7 @@ export const ASSET_TO_DB_KEY: Readonly<Record<AssetKey, AssetDbKey>> = {
   crypto: 'crypto',
   bonds: 'bonds',
   funds: 'funds',
-  gold: 'gold',
+  commodities: 'commodities',
 };
 
 /**

@@ -45,7 +45,7 @@ export const assetIcons = {
   crypto: BsCoin,
   bonds: RiSecurePaymentLine, // Coming soon - backend update required
   funds: GiReceiveMoney, // Coming soon - backend update required
-  gold: GiGoldBar, // Coming soon - backend update required
+  commodities: GiGoldBar,
 };
 
 /**

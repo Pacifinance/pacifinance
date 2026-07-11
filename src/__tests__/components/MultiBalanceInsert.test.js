@@ -28,7 +28,7 @@ describe('MultiBalanceInsert helpers', () => {
 
     it('should have 7 investment keys', () => {
       expect(INVESTMENT_KEYS).toHaveLength(7);
-      expect(INVESTMENT_KEYS).toEqual(['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold']);
+      expect(INVESTMENT_KEYS).toEqual(['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities']);
     });
 
     it('should combine liquidity + investment = all keys', () => {

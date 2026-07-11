@@ -11,7 +11,7 @@
         "crypto": "Cripto",
         "bonds": "Bonos",
         "funds": "Fondos",
-        "gold": "Oro"
+        "commodities": "Materias primas"
     },
     "general": {
         "ok": "ok",
@@ -549,7 +549,7 @@
         "cryptoDescription": "Cripto",
         "bondsDescription": "Bonos",
         "fundsDescription": "Fondos",
-        "goldDescription": "Oro",
+        "commoditiesDescription": "Materias primas",
         "loading": "Cargando datos del panel...",
         "loadingError": "Error al cargar los datos. Por favor, inténtalo de nuevo.",
         "loadingTimeout": "La carga está tardando más de lo esperado...",
@@ -651,6 +651,22 @@
                 "previousMonth": "Mes anterior",
                 "showRecurringFor": "Mostrar recurrentes de:"
             }
+        },
+        "statsHoldings": {
+            "title": "Cartera de inversiones",
+            "description": "Analiza en detalle la composición y evolución de tus inversiones",
+            "categorySelector": {
+                "all": "Todas las inversiones"
+            },
+            "breakdownTitle": "Composición por posición",
+            "breakdownDescription": "Descubre si estás sobreexpuesto en una sola posición",
+            "overweightWarning": "Posición sobreponderada",
+            "historyTitle": "Evolución en el tiempo",
+            "historyDescription": "El valor de tus posiciones, mes a mes",
+            "sparseHistoryTitle": "Historial en construcción",
+            "sparseHistoryDescription": "Sigue actualizando tu balance cada mes para construir el historial de tus inversiones.",
+            "noHoldingsTitle": "Sin inversiones registradas",
+            "noHoldingsDescription": "Añade una posición detallada (acciones, ETFs, cripto, ...) para ver este análisis."
         },
         "dashboard": {
             "vsLastMonth": "vs mes anterior",
@@ -1779,9 +1795,9 @@
                 "name": "Explorador cripto",
                 "description": "Primera inversión en cripto"
             },
-            "goldHolder": {
+            "commoditiesHolder": {
                 "name": "Poseedor de oro",
-                "description": "Oro en tu portafolio"
+                "description": "Materias primas en tu portafolio"
             },
             "bondInvestor": {
                 "name": "Inversor en bonos",

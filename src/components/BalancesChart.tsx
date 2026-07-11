@@ -26,7 +26,7 @@ import { compactNumber, CustomTick } from '../utils/customGraphsInfo.jsx';
 // semantic blocks instead of an arbitrary color gradient.
 const ASSET_KEYS_BY_GROUP = [
   'bank', 'cash', 'digitalServices', 'emergencyFund', // Liquidità
-  'stocks', 'etf', 'bonds', 'funds', 'gold', // Investimenti
+  'stocks', 'etf', 'bonds', 'funds', 'commodities', // Investimenti
   'bitcoin', 'crypto', // Crypto
 ];
 
@@ -52,7 +52,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
   const [showCustomRange, setShowCustomRange] = useState(false);
 
   const buildAllData = () => last12MonthsData.map((monthData) => {
-    const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.goldReal || 0) + (monthData.emergencyFundReal || 0);
+    const total = monthData.cashReal + monthData.digitalServicesReal + monthData.stocksReal + monthData.bankReal + monthData.cryptoReal + monthData.etfReal + monthData.bitcoinReal + (monthData.bondsReal || 0) + (monthData.fundsReal || 0) + (monthData.commoditiesReal || 0) + (monthData.emergencyFundReal || 0);
     return {
       name: monthData.month,
       cash: monthData.cashReal,
@@ -64,7 +64,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       bitcoin: monthData.bitcoinReal,
       bonds: monthData.bondsReal || 0,
       funds: monthData.fundsReal || 0,
-      gold: monthData.goldReal || 0,
+      commodities: monthData.commoditiesReal || 0,
       emergencyFund: monthData.emergencyFundReal || 0,
       total,
       amt: 2400,
@@ -188,7 +188,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
     { label: translations.assets.bitcoin, key: 'bitcoin' },
     { label: translations.assets.bonds, key: 'bonds' },
     { label: translations.assets.funds, key: 'funds' },
-    { label: translations.assets.gold, key: 'gold' },
+    { label: translations.assets.commodities, key: 'commodities' },
     { label: translations.assets.total, key: 'total' },
   ];
 
@@ -374,7 +374,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       <Bar dataKey="etf" stackId="a" fill={isHidden ? '#D0D0D0' : getAssetColor('etf', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="bonds" stackId="a" fill={isHidden ? '#E0E0E0' : getAssetColor('bonds', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="funds" stackId="a" fill={isHidden ? '#F0F0F0' : getAssetColor('funds', theme.mode)} radius={[0, 0, 0, 0]} />
-      <Bar dataKey="gold" stackId="a" fill={isHidden ? '#E8E8E8' : getAssetColor('gold', theme.mode)} radius={[0, 0, 0, 0]} />
+      <Bar dataKey="commodities" stackId="a" fill={isHidden ? '#E8E8E8' : getAssetColor('commodities', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="bitcoin" stackId="a" fill={isHidden ? '#F8F8F8' : getAssetColor('bitcoin', theme.mode)} radius={[0, 0, 0, 0]} />
       <Bar dataKey="crypto" stackId="a" fill={isHidden ? '#E5E5E5' : getAssetColor('crypto', theme.mode)} radius={[4, 4, 0, 0]} />
 
@@ -458,7 +458,7 @@ function BalancesChart({ type = "bar", theme, userData, isHidden }) {
       {data.every(item => item['etf'] === 0) || <Area type="monotone" dataKey={'etf'} stroke={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#C0C0C0' : getAssetColor('etf', theme.mode)} />}
       {data.every(item => item['bonds'] === 0) || <Area type="monotone" dataKey={'bonds'} stroke={isHidden ? '#D0D0D0' : getAssetColor('bonds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#D0D0D0' : getAssetColor('bonds', theme.mode)} />}
       {data.every(item => item['funds'] === 0) || <Area type="monotone" dataKey={'funds'} stroke={isHidden ? '#E0E0E0' : getAssetColor('funds', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E0E0E0' : getAssetColor('funds', theme.mode)} />}
-      {data.every(item => item['gold'] === 0) || <Area type="monotone" dataKey={'gold'} stroke={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('gold', theme.mode)} />}
+      {data.every(item => item['commodities'] === 0) || <Area type="monotone" dataKey={'commodities'} stroke={isHidden ? '#F0F0F0' : getAssetColor('commodities', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F0F0F0' : getAssetColor('commodities', theme.mode)} />}
       {data.every(item => item['bitcoin'] === 0) || <Area type="monotone" dataKey={'bitcoin'} stroke={isHidden ? '#E8E8E8' : getAssetColor('bitcoin', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#E8E8E8' : getAssetColor('bitcoin', theme.mode)} />}
       {data.every(item => item['crypto'] === 0) || <Area type="monotone" dataKey={'crypto'} stroke={isHidden ? '#F8F8F8' : getAssetColor('crypto', theme.mode)} fillOpacity={0.3} fill={isHidden ? '#F8F8F8' : getAssetColor('crypto', theme.mode)} />}
     </AreaChart>

@@ -244,7 +244,7 @@ describe('calculateTotal', () => {
     const balance = {
       cash: 100, bank: 200, emergencyFund: 300, digitalServices: 50,
       stocks: 400, etf: 500, bitcoin: 600, crypto: 700,
-      bonds: 800, funds: 900, gold: 1000,
+      bonds: 800, funds: 900, commodities: 1000,
     };
     expect(calculateTotal(balance)).toBe(5550);
   });
@@ -464,7 +464,7 @@ describe('buildAssetsFromBalance', () => {
   it('includes all 10 asset types when all are non-zero', () => {
     const balance = {
       cash: 1, bank: 2, digitalServices: 3, stocks: 4,
-      etf: 5, bitcoin: 6, crypto: 7, bonds: 8, funds: 9, gold: 10,
+      etf: 5, bitcoin: 6, crypto: 7, bonds: 8, funds: 9, commodities: 10,
     };
     expect(buildAssetsFromBalance(balance)).toHaveLength(10);
   });

@@ -3,6 +3,7 @@ import BalancesStats from '../components/BalancesStats';
 import BalancesChart from '../components/BalancesChart';
 import InOutCharts from '../components/InOutChart';
 import { useAuth } from '../hooks/useAuth';
+import { useDemoServices } from '../hooks/useDemoServices';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { StandardPageTitle, StyledSectionStats, SecondaryTitle } from '../styles/MyStyled';
 import styled from 'styled-components';
@@ -13,7 +14,12 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
 import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
+import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
+import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData } from '../utils/userDataSelectors';
+
+/** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
+const HOLDING_ASSET_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
 
 const StatsContainer = styled.div`
   background: ${props => props.theme.mode === 'dark' 
@@ -301,6 +307,30 @@ const ChartCard = styled.div`
   }
 `;
 
+const CategoryPillsRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+const CategoryPill = styled.button`
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: ${(props) => (props.active ? props.theme.buttonBackgroundColor : 'transparent')};
+  color: ${(props) => (props.active ? 'white' : props.theme.textColor)};
+  border: 1px solid ${(props) => (props.active ? 'transparent' : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'))};
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -414,9 +444,37 @@ export default function StatsCharts() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);
+    const { investmentService } = useDemoServices();
     const [activePage, setActivePage] = useState("statsBilancio");
     const [isLoading, setIsLoading] = useState(true);
-    
+    const [investmentHoldings, setInvestmentHoldings] = useState([]);
+    const [holdingHistory, setHoldingHistory] = useState([]);
+    const [holdingsLoaded, setHoldingsLoaded] = useState(false);
+    const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
+
+    // Lazy fetch: only pulled once the Portfolio Holdings tab is actually opened,
+    // so users who never visit it never pay for the extra requests.
+    useEffect(() => {
+        if (activePage !== "holdingsBreakdown" || holdingsLoaded) return;
+        let cancelled = false;
+        (async () => {
+            try {
+                const [holdings, history] = await Promise.all([
+                    investmentService.getHoldings(),
+                    investmentService.getHoldingHistory(),
+                ]);
+                if (!cancelled) {
+                    setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
+                    setHoldingHistory(Array.isArray(history) ? history : []);
+                    setHoldingsLoaded(true);
+                }
+            } catch (error) {
+                console.error('StatsCharts: failed to load holdings breakdown data', error);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [activePage, holdingsLoaded, investmentService]);
+
     // Simula il caricamento dei dati
     useEffect(() => {
         if (userData) {
@@ -607,6 +665,94 @@ export default function StatsCharts() {
         );
     };
 
+    const renderHoldingsContent = () => {
+        const t = translations.graphs.statsHoldings;
+        const availableAssetKeys = HOLDING_ASSET_KEYS.filter((key) =>
+            investmentHoldings.some((h) => h.assetKey === key)
+        );
+
+        if (!holdingsLoaded) {
+            return (
+                <LoadingContainer theme={theme}>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{
+                            width: '40px',
+                            height: '40px',
+                            border: `3px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+                            borderTop: `3px solid ${theme.buttonBackgroundColor}`,
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                            margin: '0 auto 1rem auto'
+                        }}></div>
+                        <p>{translations.graphs.loading.balance}</p>
+                    </div>
+                </LoadingContainer>
+            );
+        }
+
+        if (availableAssetKeys.length === 0) {
+            return (
+                <EmptyStateContainer theme={theme}>
+                    <h3>{t.noHoldingsTitle}</h3>
+                    <p>{t.noHoldingsDescription}</p>
+                </EmptyStateContainer>
+            );
+        }
+
+        return (
+            <>
+                <SectionContainer>
+                    <SectionHeader>
+                        <SectionTitle theme={theme}>{t.title}</SectionTitle>
+                        <SectionDescription theme={theme}>{t.description}</SectionDescription>
+                    </SectionHeader>
+
+                    {availableAssetKeys.length > 1 && (
+                        <CategoryPillsRow>
+                            <CategoryPill
+                                theme={theme}
+                                active={selectedHoldingAssetKey === null}
+                                onClick={() => setSelectedHoldingAssetKey(null)}
+                            >
+                                {t.categorySelector.all}
+                            </CategoryPill>
+                            {availableAssetKeys.map((key) => (
+                                <CategoryPill
+                                    key={key}
+                                    theme={theme}
+                                    active={selectedHoldingAssetKey === key}
+                                    onClick={() => setSelectedHoldingAssetKey(key)}
+                                >
+                                    {translations.assets[key]}
+                                </CategoryPill>
+                            ))}
+                        </CategoryPillsRow>
+                    )}
+
+                    <ChartGrid columns={2}>
+                        <ChartCard theme={theme} className="slide-in-left">
+                            <HoldingsBreakdownChart
+                                theme={theme}
+                                holdings={investmentHoldings}
+                                assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
+                                isHidden={isHidden}
+                            />
+                        </ChartCard>
+                        <ChartCard theme={theme} className="slide-in-right">
+                            <HoldingsHistoryChart
+                                theme={theme}
+                                history={holdingHistory}
+                                assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
+                                isHidden={isHidden}
+                                type="area"
+                            />
+                        </ChartCard>
+                    </ChartGrid>
+                </SectionContainer>
+            </>
+        );
+    };
+
     const renderInsightsContent = () => {
         return <AdvancedInsightsSection theme={theme} userData={userData} isHidden={isHidden} />;
     };
@@ -640,6 +786,14 @@ export default function StatsCharts() {
                         <TrendingUp />
                         <span>{translations.graphs.statsOutflows.title}</span>
                     </TabButton>
+                    <TabButton
+                        theme={theme}
+                        active={activePage === "holdingsBreakdown"}
+                        onClick={() => handlePageChange("holdingsBreakdown")}
+                    >
+                        <PieChart />
+                        <span>{translations.graphs.statsHoldings.title}</span>
+                    </TabButton>
                     {/* AI Insights tab — hidden for now, to be re-evaluated later
                     <TabButton
                         theme={theme}
@@ -656,6 +810,7 @@ export default function StatsCharts() {
             <MainContent>
                 {activePage === "statsBilancio" && renderBalanceContent()}
                 {activePage === "statsIncomesOutflows" && renderIncomeOutflowContent()}
+                {activePage === "holdingsBreakdown" && renderHoldingsContent()}
                 {/* activePage === "insights" && renderInsightsContent() */}
             </MainContent>
         </StatsContainer>

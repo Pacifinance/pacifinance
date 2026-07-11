@@ -27,7 +27,7 @@ export interface BalanceSnapshotLike {
   crypto?: number;
   bonds?: number;
   funds?: number;
-  gold?: number;
+  commodities?: number;
   totalValue?: number;
 }
 
@@ -88,7 +88,7 @@ export const getBitcoinValue = (userData: UserDataLike): number => getCurrentBal
 export const getCryptoValue = (userData: UserDataLike): number => getCurrentBalance(userData).crypto || 0;
 export const getBondsValue = (userData: UserDataLike): number => getCurrentBalance(userData).bonds || 0;
 export const getFundsValue = (userData: UserDataLike): number => getCurrentBalance(userData).funds || 0;
-export const getGoldValue = (userData: UserDataLike): number => getCurrentBalance(userData).gold || 0;
+export const getCommoditiesValue = (userData: UserDataLike): number => getCurrentBalance(userData).commodities || 0;
 export const getTotalValue = (userData: UserDataLike): number => getCurrentBalance(userData).totalValue || 0;
 
 // Previous month balance selectors
@@ -102,7 +102,7 @@ export const getBitcoinValuePreMonth = (userData: UserDataLike): number => getPr
 export const getCryptoValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).crypto || 0;
 export const getBondsValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).bonds || 0;
 export const getFundsValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).funds || 0;
-export const getGoldValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).gold || 0;
+export const getCommoditiesValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).commodities || 0;
 export const getTotalValuePreMonth = (userData: UserDataLike): number => getPreviousMonthBalance(userData).totalValue || 0;
 
 // Previous year same month balance selectors
@@ -116,7 +116,7 @@ export const getBitcoinValuePreYearSameMonth = (userData: UserDataLike): number 
 export const getCryptoValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).crypto || 0;
 export const getBondsValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).bonds || 0;
 export const getFundsValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).funds || 0;
-export const getGoldValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).gold || 0;
+export const getCommoditiesValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).commodities || 0;
 export const getTotalValuePreYearSameMonth = (userData: UserDataLike): number => getPreviousYearSameMonthBalance(userData).totalValue || 0;
 
 // Legacy format creators for backward compatibility
@@ -137,7 +137,7 @@ export const createLegacyBalanceData = (userData: UserDataLike) => {
     cryptoValue: currentBalance.crypto || 0,
     bondsValue: currentBalance.bonds || 0,
     fundsValue: currentBalance.funds || 0,
-    goldValue: currentBalance.gold || 0,
+    commoditiesValue: currentBalance.commodities || 0,
     totalValue: currentBalance.totalValue || 0,
 
     // Previous month individual values
@@ -151,7 +151,7 @@ export const createLegacyBalanceData = (userData: UserDataLike) => {
     cryptoValuePreMonth: preMonthBalance.crypto || 0,
     bondsValuePreMonth: preMonthBalance.bonds || 0,
     fundsValuePreMonth: preMonthBalance.funds || 0,
-    goldValuePreMonth: preMonthBalance.gold || 0,
+    commoditiesValuePreMonth: preMonthBalance.commodities || 0,
     totalValuePreMonth: preMonthBalance.totalValue || 0,
 
     // Previous year same month individual values
@@ -165,7 +165,7 @@ export const createLegacyBalanceData = (userData: UserDataLike) => {
     cryptoValuePreYearSameMonth: preYearSameMonthBalance.crypto || 0,
     bondsValuePreYearSameMonth: preYearSameMonthBalance.bonds || 0,
     fundsValuePreYearSameMonth: preYearSameMonthBalance.funds || 0,
-    goldValuePreYearSameMonth: preYearSameMonthBalance.gold || 0,
+    commoditiesValuePreYearSameMonth: preYearSameMonthBalance.commodities || 0,
     totalValuePreYearSameMonth: preYearSameMonthBalance.totalValue || 0,
 
     // Formatted dates
@@ -529,7 +529,7 @@ export interface BalanceChartDatum {
   bitcoin: number;
   bonds: number;
   funds: number;
-  gold: number;
+  commodities: number;
   emergencyFund: number;
   total: number;
   amt: number;
@@ -542,7 +542,7 @@ export interface BalanceChartDatum {
   bitcoinReal: number;
   bondsReal: number;
   fundsReal: number;
-  goldReal: number;
+  commoditiesReal: number;
   emergencyFundReal: number;
   month: string;
 }
@@ -586,7 +586,7 @@ export const getBalanceChartData = (userData: UserDataLike, monthsBack: number =
     const total = (balance.cash || 0) + (balance.digitalServices || 0) + (balance.stocks || 0) +
                   (balance.bank || 0) + (balance.crypto || 0) + (balance.etf || 0) +
                   (balance.bitcoin || 0) + (balance.bonds || 0) + (balance.funds || 0) +
-                  (balance.gold || 0) + (balance.emergencyFund || 0);
+                  (balance.commodities || 0) + (balance.emergencyFund || 0);
 
     result.push({
       name: monthString,
@@ -599,7 +599,7 @@ export const getBalanceChartData = (userData: UserDataLike, monthsBack: number =
       bitcoin: balance.bitcoin || 0,
       bonds: balance.bonds || 0,
       funds: balance.funds || 0,
-      gold: balance.gold || 0,
+      commodities: balance.commodities || 0,
       emergencyFund: balance.emergencyFund || 0,
       total,
       amt: 2400, // Legacy property for compatibility
@@ -613,7 +613,7 @@ export const getBalanceChartData = (userData: UserDataLike, monthsBack: number =
       bitcoinReal: balance.bitcoin || 0,
       bondsReal: balance.bonds || 0,
       fundsReal: balance.funds || 0,
-      goldReal: balance.gold || 0,
+      commoditiesReal: balance.commodities || 0,
       emergencyFundReal: balance.emergencyFund || 0,
       month: monthString, // Legacy property for compatibility
     });

@@ -44,7 +44,7 @@ export interface BalanceSnapshot {
   crypto?: number;
   bonds?: number;
   funds?: number;
-  gold?: number;
+  commodities?: number;
   /** Computed sum of all assets; attached by `calculateTotal`. */
   totalValue?: number;
 }

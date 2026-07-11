@@ -389,10 +389,10 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
     crypto: balance.crypto || 0,
     bonds: balance.bonds || 0,
     funds: balance.funds || 0,
-    gold: balance.gold || 0,
-    total: (balance.bank || 0) + (balance.cash || 0) + (balance.digitalServices || 0) + 
+    commodities: balance.commodities || 0,
+    total: (balance.bank || 0) + (balance.cash || 0) + (balance.digitalServices || 0) +
            (balance.stocks || 0) + (balance.etf || 0) + (balance.bitcoin || 0) + (balance.crypto || 0) +
-           (balance.bonds || 0) + (balance.funds || 0) + (balance.gold || 0)
+           (balance.bonds || 0) + (balance.funds || 0) + (balance.commodities || 0)
   })) : [];
 
   const expenses = Array.isArray(userData.expenses) ? userData.expenses : [];
@@ -465,8 +465,8 @@ function generateMockDetailedBalances() {
     const crypto = 500 + (Math.random() - 0.5) * 200;
     const bonds = 3000 + (Math.random() - 0.5) * 500;
     const funds = 2000 + (Math.random() - 0.5) * 300;
-    const gold = 1000 + (Math.random() - 0.5) * 200;
-    
+    const commodities = 1000 + (Math.random() - 0.5) * 200;
+
     balances.push({
       month: date.toLocaleDateString('en', { month: 'long', year: 'numeric' }),
       date: date.toLocaleDateString(),
@@ -479,8 +479,8 @@ function generateMockDetailedBalances() {
       crypto: Number(crypto).toFixed(2),
       bonds: Number(bonds).toFixed(2),
       funds: Number(funds).toFixed(2),
-      gold: Number(gold).toFixed(2),
-      total: Number(bank + cash + digitalServices + stocks + etf + bitcoin + crypto + bonds + funds + gold).toFixed(2)
+      commodities: Number(commodities).toFixed(2),
+      total: Number(bank + cash + digitalServices + stocks + etf + bitcoin + crypto + bonds + funds + commodities).toFixed(2)
     });
   }
   

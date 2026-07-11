@@ -143,7 +143,7 @@ describe('Mock Data Integration', () => {
         (balance.crypto || 0) +
         (balance.bonds || 0) +
         (balance.funds || 0) +
-        (balance.gold || 0);
+        (balance.commodities || 0);
       
       expect(balance.totalValue).toBe(sum);
     });
@@ -223,7 +223,7 @@ describe('Mock Data Integration', () => {
     });
 
     it('assets should have valid typology', () => {
-      const validTypologies = ['bank', 'cash', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold', 'emergencyFund', 'digitalServices'];
+      const validTypologies = ['bank', 'cash', 'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities', 'emergencyFund', 'digitalServices'];
       
       mockUserData.assets.forEach(asset => {
         expect(validTypologies).toContain(asset.typology);

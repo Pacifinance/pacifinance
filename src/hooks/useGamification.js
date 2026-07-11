@@ -258,11 +258,11 @@ export const BADGE_DEFINITIONS = {
       return (balance?.bitcoin || 0) > 0 || (balance?.crypto || 0) > 0;
     },
   },
-  goldHolder: {
-    id: 'goldHolder',
+  commoditiesHolder: {
+    id: 'commoditiesHolder',
     icon: '🥇',
     category: BADGE_CATEGORIES.diversification,
-    check: (data) => (data.balances?.[0]?.balance?.gold || 0) > 0,
+    check: (data) => (data.balances?.[0]?.balance?.commodities || 0) > 0,
   },
   bondInvestor: {
     id: 'bondInvestor',

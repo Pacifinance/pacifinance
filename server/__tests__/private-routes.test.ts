@@ -69,7 +69,7 @@ describe("private backend routes", () => {
                     crypto: "7",
                     bonds: "8",
                     funds: "9",
-                    gold: "10",
+                    commodities: "10",
                     emergency_fund: 99
                 }
             }

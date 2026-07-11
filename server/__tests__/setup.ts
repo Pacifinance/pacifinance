@@ -75,7 +75,7 @@ const mocks = vi.hoisted(() => {
         },
         investments: {
             INVESTMENT_KINDS: ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"],
-            INVESTMENT_ASSET_KEYS: ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "gold"],
+            INVESTMENT_ASSET_KEYS: ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"],
             INVESTMENT_POSITION_TYPES: ["single", "pac", "other"],
             searchInstruments: vi.fn(),
             getInstrumentById: vi.fn(),

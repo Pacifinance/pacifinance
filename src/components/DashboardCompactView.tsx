@@ -5,14 +5,16 @@
  * Alternative to the card-based layout.
  */
 
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { assetColors } from '../data/assetColors';
-import { BsArrowUpRight, BsArrowDownLeft, BsWallet2 } from 'react-icons/bs';
+import { BsArrowUpRight, BsArrowDownLeft, BsWallet2, BsChevronDown } from 'react-icons/bs';
 import { GiUmbrella } from 'react-icons/gi';
+import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
+import { isVerifiableAssetKey } from '../constants/investmentSchema';
 
 const CompactContainer = styled.div`
   margin-bottom: 2rem;
@@ -153,10 +155,54 @@ const PercentageCell = styled.span`
   background: ${props => props.$color ? `${props.$color}15` : 'transparent'};
   color: ${props => props.$color || 'inherit'};
   font-weight: 500;
-  
+
   @media (max-width: 768px) {
     font-size: 0.65rem;
     padding: 0.1rem 0.35rem;
+  }
+`;
+
+const ExpandButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 0.4rem;
+  border: none;
+  background: transparent;
+  color: ${props => props.theme.textColor};
+  opacity: 0.5;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  transform: rotate(${props => (props.$expanded ? '180deg' : '0deg')});
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const SubRow = styled(Tr)`
+  background: ${props => (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)')};
+
+  &:hover {
+    background: ${props => (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)')};
+  }
+`;
+
+const SubAssetNameCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 1.6rem;
+  font-size: 0.82rem;
+  opacity: 0.8;
+
+  @media (max-width: 768px) {
+    padding-left: 1.1rem;
+    font-size: 0.7rem;
   }
 `;
 
@@ -173,9 +219,12 @@ const DashboardCompactView = ({
   totalEmergencySecurity,
   formatCurrency,
   formatPercentage,
+  holdingsByAssetKey = {},
+  liquidityAccountsByAssetKey = {},
 }) => {
   const { translations } = useContext(LanguageContext);
   useContext(MediaQueryContext);
+  const [expandedKeys, setExpandedKeys] = useState(() => new Set());
 
   const t = translations?.dashboardLayout || {};
 
@@ -195,6 +244,23 @@ const DashboardCompactView = ({
     })),
   ];
 
+  const getSubItemsForAsset = (assetKey) => (
+    LIQUIDITY_KEYS.includes(assetKey)
+      ? (liquidityAccountsByAssetKey[assetKey] || [])
+      : isVerifiableAssetKey(assetKey)
+        ? (holdingsByAssetKey[assetKey] || [])
+        : []
+  );
+
+  const toggleExpanded = (assetKey) => {
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(assetKey)) next.delete(assetKey);
+      else next.add(assetKey);
+      return next;
+    });
+  };
+
   return (
     <CompactContainer>
       {/* Assets Overview Table */}
@@ -212,29 +278,61 @@ const DashboardCompactView = ({
             </tr>
           </Thead>
           <tbody>
-            {allAssetRows.map((asset, index) => {
+            {allAssetRows.map((asset) => {
               const IconComponent = asset.icon;
+              const subItems = isHidden ? [] : getSubItemsForAsset(asset.key);
+              const hasSubItems = subItems.length > 0;
+              const expanded = expandedKeys.has(asset.key);
               return (
-                <Tr key={index} theme={theme}>
-                  <Td theme={theme}>
-                    <AssetNameCell>
-                      <div className="icon-dot" style={{ backgroundColor: asset.color }} />
-                      {IconComponent && <IconComponent className="asset-icon" style={{ color: asset.color }} />}
-                      <span>{isHidden ? '****' : asset.name}</span>
-                    </AssetNameCell>
-                  </Td>
-                  <Td theme={theme}>
-                    <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>{asset.category}</span>
-                  </Td>
-                  <Td theme={theme} $align="right">
-                    <ValueCell theme={theme}>{formatCurrency(asset.value)}</ValueCell>
-                  </Td>
-                  <Td theme={theme} $align="right">
-                    <PercentageCell $color={asset.color}>
-                      {formatPercentage(asset.value, totalBalance)}
-                    </PercentageCell>
-                  </Td>
-                </Tr>
+                <React.Fragment key={asset.key}>
+                  <Tr theme={theme}>
+                    <Td theme={theme}>
+                      <AssetNameCell>
+                        <div className="icon-dot" style={{ backgroundColor: asset.color }} />
+                        {IconComponent && <IconComponent className="asset-icon" style={{ color: asset.color }} />}
+                        <span>{isHidden ? '****' : asset.name}</span>
+                        {hasSubItems && (
+                          <ExpandButton
+                            type="button"
+                            theme={theme}
+                            $expanded={expanded}
+                            onClick={() => toggleExpanded(asset.key)}
+                            aria-label={expanded
+                              ? translations?.insert?.balanceSection?.collapseDetails
+                              : translations?.insert?.balanceSection?.expandDetails}
+                          >
+                            <BsChevronDown />
+                          </ExpandButton>
+                        )}
+                      </AssetNameCell>
+                    </Td>
+                    <Td theme={theme}>
+                      <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>{asset.category}</span>
+                    </Td>
+                    <Td theme={theme} $align="right">
+                      <ValueCell theme={theme}>{formatCurrency(asset.value)}</ValueCell>
+                    </Td>
+                    <Td theme={theme} $align="right">
+                      <PercentageCell $color={asset.color}>
+                        {formatPercentage(asset.value, totalBalance)}
+                      </PercentageCell>
+                    </Td>
+                  </Tr>
+                  {hasSubItems && expanded && subItems.map((item) => (
+                    <SubRow key={item.id} theme={theme}>
+                      <Td theme={theme} colSpan={3}>
+                        <SubAssetNameCell>
+                          {item.instrument?.symbol || item.instrument?.name || item.label}
+                        </SubAssetNameCell>
+                      </Td>
+                      <Td theme={theme} $align="right">
+                        <ValueCell theme={theme}>
+                          {formatCurrency(item.currentValue ?? item.investedAmount ?? 0)}
+                        </ValueCell>
+                      </Td>
+                    </SubRow>
+                  ))}
+                </React.Fragment>
               );
             })}
             {/* Total Row */}

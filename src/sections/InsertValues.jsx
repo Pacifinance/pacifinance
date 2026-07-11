@@ -28,7 +28,7 @@ import { buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from "../constants/balanceSc
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
-    getFundsValue, getGoldValue, getOutflowsTags, getIncomesTags, getPaymentTags,
+    getFundsValue, getCommoditiesValue, getOutflowsTags, getIncomesTags, getPaymentTags,
     getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
@@ -432,7 +432,7 @@ export default function InsertValue({
   const [emergencyFundValue, setEmergencyFundValue] = useState(0);
   const [bondsValue, setBondsValue] = useState(0);
   const [fundsValue, setFundsValue] = useState(0);
-  const [goldValue, setGoldValue] = useState(0);
+  const [commoditiesValue, setCommoditiesValue] = useState(0);
   const [categoryIncome, setCategoryIncome] = useState({ key: "", value: "" });
   const [categoryOutflow, setCategoryOutflow] = useState({ key: "", value: "" });
   const [typoOutflow, setTypoOutflow] = useState({ key: "", value: "" });
@@ -497,7 +497,7 @@ export default function InsertValue({
         crypto: getValue('crypto', cryptoValue),
         bonds: getValue('bonds', bondsValue),
         funds: getValue('funds', fundsValue),
-        gold: getValue('gold', goldValue),
+        commodities:getValue('commodities', commoditiesValue),
       }
     };
   };
@@ -516,19 +516,19 @@ export default function InsertValue({
       crypto: translations.assets.crypto,
       bonds: translations.assets.bonds,
       funds: translations.assets.funds,
-      gold: translations.assets.gold,
+      commodities:translations.assets.commodities,
     };
     const stateValues = {
       bank: bankValue, cash: cashValue, digitalServices: digitalServicesValue,
       emergencyFund: emergencyFundValue, stocks: stocksValue, etf: etfValue,
       bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
-      funds: fundsValue, gold: goldValue,
+      funds: fundsValue, commodities:commoditiesValue,
     };
     const dbKeys = {
       bank: 'bank', cash: 'cash', digitalServices: 'digital_services',
       emergencyFund: 'emergency_fund', stocks: 'stocks', etf: 'etf',
       bitcoin: 'bitcoin', crypto: 'crypto', bonds: 'bonds',
-      funds: 'funds', gold: 'gold',
+      funds: 'funds', commodities:'commodities',
     };
 
     const balance = { date };
@@ -566,7 +566,7 @@ export default function InsertValue({
       [translations.assets.crypto]: 'crypto',
       [translations.assets.bonds]: 'bonds',
       [translations.assets.funds]: 'funds',
-      [translations.assets.gold]: 'gold',
+      [translations.assets.commodities]: 'commodities',
     };
     return { translatedToAsset, assetToDbKey: ASSET_TO_DB_KEY };
   };
@@ -690,7 +690,7 @@ export default function InsertValue({
         bank: bankValue, cash: cashValue, digitalServices: digitalServicesValue,
         emergencyFund: emergencyFundValue, stocks: stocksValue, etf: etfValue,
         bitcoin: bitcoinValue, crypto: cryptoValue, bonds: bondsValue,
-        funds: fundsValue, gold: goldValue,
+        funds: fundsValue, commodities:commoditiesValue,
       };
       const currentVal = parseFloat(currentMap[assetKey]) || 0;
       const newVal = currentVal + deltaEUR;
@@ -763,7 +763,7 @@ export default function InsertValue({
     [translations.assets.crypto]: [cryptoValue, setCryptoValue],
     [translations.assets.bonds]: [bondsValue, setBondsValue],
     [translations.assets.funds]: [fundsValue, setFundsValue],
-    [translations.assets.gold]: [goldValue, setGoldValue],
+    [translations.assets.commodities]: [commoditiesValue, setCommoditiesValue],
   };
 
   const fetchData = async () => {
@@ -779,7 +779,7 @@ export default function InsertValue({
         setEmergencyFundValue(userData ? getEmergencyFund(userData) : 0);
         setBondsValue(userData ? getBondsValue(userData) : 0);
         setFundsValue(userData ? getFundsValue(userData) : 0);
-        setGoldValue(userData ? getGoldValue(userData) : 0);
+        setCommoditiesValue(userData ? getCommoditiesValue(userData) : 0);
         setOutflowsTags(userData ? getOutflowsTags(userData) : []);
         setIncomesTags(userData ? getIncomesTags(userData) : []);
         setPaymentTags(userData ? getPaymentTags(userData) : []);
@@ -823,7 +823,7 @@ export default function InsertValue({
       setCryptoValue(getCryptoValue(userData));
       setBondsValue(getBondsValue(userData));
       setFundsValue(getFundsValue(userData));
-      setGoldValue(getGoldValue(userData));
+      setCommoditiesValue(getCommoditiesValue(userData));
       return;
     }
 
@@ -841,7 +841,7 @@ export default function InsertValue({
     setCryptoValue(Number(b.crypto) || 0);
     setBondsValue(Number(b.bonds) || 0);
     setFundsValue(Number(b.funds) || 0);
-    setGoldValue(Number(b.gold) || 0);
+    setCommoditiesValue(Number(b.commodities) || 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balanceDate.month, balanceDate.year, userData]);
 
@@ -1084,7 +1084,7 @@ export default function InsertValue({
             [translations.assets.crypto]: cryptoValue,
             [translations.assets.bonds]: bondsValue,
             [translations.assets.funds]: fundsValue,
-            [translations.assets.gold]: goldValue,
+            [translations.assets.commodities]: commoditiesValue,
           };
           for (const [source, totalAmount] of sources) {
             const currentVal = parseFloat(balanceOptionsMap[source]);
@@ -1190,7 +1190,7 @@ export default function InsertValue({
             [translations.assets.crypto]: cryptoValue,
             [translations.assets.bonds]: bondsValue,
             [translations.assets.funds]: fundsValue,
-            [translations.assets.gold]: goldValue,
+            [translations.assets.commodities]: commoditiesValue,
           };
           for (const [source, totalAmount] of sources) {
             const currentVal = parseFloat(balanceOptionsMap[source]);
@@ -1259,7 +1259,7 @@ export default function InsertValue({
       crypto: 'crypto',
       bonds: 'bonds',
       funds: 'funds',
-      gold: 'gold',
+      commodities:'commodities',
     };
 
     for (let i = 0; i < total; i++) {
@@ -1497,7 +1497,7 @@ export default function InsertValue({
         [translations.assets.crypto]: cryptoValue,
         [translations.assets.bonds]: bondsValue,
         [translations.assets.funds]: fundsValue,
-        [translations.assets.gold]: goldValue,
+        [translations.assets.commodities]: commoditiesValue,
       };
       if (inExAdd.status === 200) {
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
@@ -1632,7 +1632,7 @@ export default function InsertValue({
               [translations.assets.crypto]: cryptoValue,
               [translations.assets.bonds]: bondsValue,
               [translations.assets.funds]: fundsValue,
-              [translations.assets.gold]: goldValue,
+              [translations.assets.commodities]: commoditiesValue,
             };
             const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
             const incomeNumber = parseFloat(deleteIncomeAmount);
@@ -1698,7 +1698,7 @@ export default function InsertValue({
               [translations.assets.crypto]: cryptoValue,
               [translations.assets.bonds]: bondsValue,
               [translations.assets.funds]: fundsValue,
-              [translations.assets.gold]: goldValue,
+              [translations.assets.commodities]: commoditiesValue,
             };
             const valueBalanceSelected = parseFloat(balanceOptions[selectedOption]);
             const outflowNumber = parseFloat(deleteOutflowAmount);
@@ -1752,8 +1752,8 @@ export default function InsertValue({
             setBondsValue={setBondsValue}
             fundsValue={fundsValue}
             setFundsValue={setFundsValue}
-            goldValue={goldValue}
-            setGoldValue={setGoldValue}
+            commoditiesValue={commoditiesValue}
+            setCommoditiesValue={setCommoditiesValue}
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
             onUpdateBalance={handleUpdateBalance}
@@ -2023,7 +2023,7 @@ export default function InsertValue({
           cryptoValue={cryptoValue}
           bondsValue={bondsValue}
           fundsValue={fundsValue}
-          goldValue={goldValue}
+          commoditiesValue={commoditiesValue}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           options={options}

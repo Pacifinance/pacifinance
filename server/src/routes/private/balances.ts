@@ -21,7 +21,7 @@ function isBalanceValid(data: any) {
     data.crypto = common.roundCurrency(Number(data.crypto));
     data.bonds = common.roundCurrency(Number(data.bonds));
     data.funds = common.roundCurrency(Number(data.funds));
-    data.gold = common.roundCurrency(Number(data.gold));
+    data.commodities = common.roundCurrency(Number(data.commodities));
     data.emergency_fund = common.roundCurrency(Number(data.emergency_fund));
     // If the date field is not set or invalid, set it to now
     const now = ExtDate.fromNow()
@@ -32,7 +32,7 @@ function isBalanceValid(data: any) {
         !isNaN(data.bank) && !isNaN(data.cash) && !isNaN(data.digital_services) &&
         !isNaN(data.stocks) && !isNaN(data.etf) && !isNaN(data.bitcoin) &&
         !isNaN(data.crypto) && !isNaN(data.bonds) && !isNaN(data.funds) &&
-        !isNaN(data.gold) && !isNaN(data.emergency_fund)
+        !isNaN(data.commodities) && !isNaN(data.emergency_fund)
     );
 }
 
@@ -54,7 +54,7 @@ balancesRouter.post("/add", async (req, res) => {
     const doc = await db.balances.insertNew(
         req.userId as string, balance.date, balance.bank, balance.cash, balance.digital_services,
         balance.stocks, balance.etf, balance.bitcoin, balance.crypto,
-        balance.bonds, balance.funds, balance.gold, balance.emergency_fund
+        balance.bonds, balance.funds, balance.commodities, balance.emergency_fund
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

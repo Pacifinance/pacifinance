@@ -31,7 +31,9 @@ type OpenFigiSearchResponse = {
 
 /**
  * Maps OpenFIGI's marketSector/securityType taxonomy onto our internal InvestmentKind.
- * Commodities are intentionally never produced here: gold/commodity stays manual-only.
+ * Commodities are intentionally never produced here: OpenFIGI doesn't cover them well
+ * enough to verify, so the 'commodity' kind is only ever populated from the internal
+ * curated catalog (see seed-commodity-instruments.sql), never from this provider.
  */
 function mapToKind(marketSector: string | undefined, securityType: string | undefined, securityType2: string | undefined): InvestmentKind {
     const combinedType = `${securityType ?? ""} ${securityType2 ?? ""}`.toLowerCase()

@@ -1,10 +1,13 @@
 /**
  * Investment instrument schema — maps the balance-level `AssetKey`s that support
  * provider-verified instrument search (OpenFIGI for stocks/ETFs/bonds/funds,
- * CoinGecko for crypto) onto the backend's `InvestmentKind`/`InvestmentSearchSource`.
+ * CoinGecko for crypto, an internal curated catalog for commodities) onto the
+ * backend's `InvestmentKind`/`InvestmentSearchSource`.
  *
- * `gold` is intentionally absent: neither OpenFIGI nor CoinGecko cover physical
- * gold/commodities well enough to verify, so it stays a manual-only asset.
+ * `commodities` (gold, silver, oil, ...) uses the 'internal' search source: OpenFIGI/
+ * CoinGecko don't cover physical commodities well enough to verify live, so instead
+ * it searches a fixed, curated catalog seeded once (see
+ * supabase/migrations/seed-commodity-instruments.sql) rather than an external API.
  *
  * @module constants/investmentSchema
  */
@@ -18,6 +21,7 @@ export const VERIFIABLE_ASSET_KEYS: readonly InvestmentAssetKey[] = [
   'crypto',
   'bonds',
   'funds',
+  'commodities',
 ] as const;
 
 export const ASSET_KEY_TO_KIND: Readonly<Record<InvestmentAssetKey, InvestmentKind | null>> = {
@@ -27,7 +31,7 @@ export const ASSET_KEY_TO_KIND: Readonly<Record<InvestmentAssetKey, InvestmentKi
   crypto: 'crypto',
   bonds: 'bond',
   funds: 'fund',
-  gold: null,
+  commodities: 'commodity',
 };
 
 export const KIND_TO_SEARCH_SOURCE: Readonly<Record<InvestmentKind, InvestmentSearchSource | null>> = {
@@ -36,7 +40,7 @@ export const KIND_TO_SEARCH_SOURCE: Readonly<Record<InvestmentKind, InvestmentSe
   bond: 'figi',
   fund: 'figi',
   crypto: 'coingecko',
-  commodity: null,
+  commodity: 'internal',
   other: null,
 };
 

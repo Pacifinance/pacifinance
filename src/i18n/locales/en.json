@@ -11,7 +11,7 @@
         "crypto": "Crypto",
         "bonds": "Bonds",
         "funds": "Funds",
-        "gold": "Gold"
+        "commodities": "Commodities"
     },
     "general": {
         "ok": "ok",
@@ -549,7 +549,7 @@
         "cryptoDescription": "Crypto",
         "bondsDescription": "Bonds",
         "fundsDescription": "Funds",
-        "goldDescription": "Gold",
+        "commoditiesDescription": "Commodities",
         "loading": "Loading dashboard data...",
         "loadingError": "Error loading data. Please try again.",
         "loadingTimeout": "Loading is taking longer than expected...",
@@ -651,6 +651,22 @@
                 "previousMonth": "Previous Month",
                 "showRecurringFor": "Show recurring for:"
             }
+        },
+        "statsHoldings": {
+            "title": "Investment Portfolio",
+            "description": "Analyze the composition and performance of your investments in detail",
+            "categorySelector": {
+                "all": "All investments"
+            },
+            "breakdownTitle": "Breakdown by holding",
+            "breakdownDescription": "See if you're overweight in a single position",
+            "overweightWarning": "Overweight position",
+            "historyTitle": "Value over time",
+            "historyDescription": "Your holdings' value, month by month",
+            "sparseHistoryTitle": "Building your history",
+            "sparseHistoryDescription": "Keep updating your balance every month to build your holdings' history.",
+            "noHoldingsTitle": "No investments recorded",
+            "noHoldingsDescription": "Add a detailed holding (stocks, ETFs, crypto, ...) to see this analysis."
         },
         "dashboard": {
             "vsLastMonth": "vs previous month",
@@ -1779,9 +1795,9 @@
                 "name": "Crypto Explorer",
                 "description": "First crypto investment"
             },
-            "goldHolder": {
+            "commoditiesHolder": {
                 "name": "Gold Holder",
-                "description": "Gold in your portfolio"
+                "description": "Commodities in your portfolio"
             },
             "bondInvestor": {
                 "name": "Bond Investor",

@@ -78,14 +78,14 @@ const generateBalances = () => {
   const baseValues = {
     cash: 350, bank: 12000, digitalServices: 50, emergencyFund: 2500,
     stocks: 3500, etf: 15000, bitcoin: 800, crypto: 200,
-    bonds: 8000, funds: 7000, gold: 4000,
+    bonds: 8000, funds: 7000, commodities: 4000,
   };
 
   // Monthly growth factors (show positive trend)
   const growth = {
     cash: 15, bank: 650, digitalServices: 2, emergencyFund: 200,
     stocks: 380, etf: 850, bitcoin: 50, crypto: 15,
-    bonds: 550, funds: 460, gold: 340,
+    bonds: 550, funds: 460, commodities: 340,
   };
 
   // Slight variation per month (deterministic based on month index)

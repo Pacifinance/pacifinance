@@ -11,7 +11,7 @@
         "crypto": "Criptovalute",
         "bonds": "Obbligazioni",
         "funds": "Fondi",
-        "gold": "Oro"
+        "commodities": "Materie prime"
     },
     "general": {
         "ok": "ok",
@@ -549,7 +549,7 @@
         "cryptoDescription": "Crypto",
         "bondsDescription": "Obbligazioni",
         "fundsDescription": "Fondi",
-        "goldDescription": "Oro",
+        "commoditiesDescription": "Materie prime",
         "loading": "Caricamento dati dashboard...",
         "loadingError": "Errore nel caricamento dei dati. Riprova.",
         "loadingTimeout": "Il caricamento sta impiegando più tempo del previsto...",
@@ -651,6 +651,22 @@
                 "previousMonth": "Mese Precedente",
                 "showRecurringFor": "Mostra ricorrenti per:"
             }
+        },
+        "statsHoldings": {
+            "title": "Portafoglio Investimenti",
+            "description": "Analizza la composizione e l'andamento dei tuoi investimenti nel dettaglio",
+            "categorySelector": {
+                "all": "Tutti gli investimenti"
+            },
+            "breakdownTitle": "Composizione per posizione",
+            "breakdownDescription": "Scopri se sei troppo esposto su una singola posizione",
+            "overweightWarning": "Posizione sovrappesata",
+            "historyTitle": "Andamento nel tempo",
+            "historyDescription": "Valore dei tuoi holding mese per mese",
+            "sparseHistoryTitle": "Storico in costruzione",
+            "sparseHistoryDescription": "Continua ad aggiornare il bilancio ogni mese per costruire lo storico dei tuoi investimenti.",
+            "noHoldingsTitle": "Nessun investimento registrato",
+            "noHoldingsDescription": "Aggiungi un holding dettagliato (azioni, ETF, crypto, ...) per vedere questa analisi."
         },
         "dashboard": {
             "vsLastMonth": "vs mese precedente",
@@ -1779,9 +1795,9 @@
                 "name": "Crypto Explorer",
                 "description": "Primo investimento in crypto"
             },
-            "goldHolder": {
+            "commoditiesHolder": {
                 "name": "Mani d'Oro",
-                "description": "Oro nel portafoglio"
+                "description": "Materie prime nel portafoglio"
             },
             "bondInvestor": {
                 "name": "Obbligazionista",

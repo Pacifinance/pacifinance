@@ -20,7 +20,7 @@ import { BADGE_DEFINITIONS, BADGE_CATEGORIES, BADGE_CATEGORY_ORDER } from '../..
 const emptyUser = () => ({
   balances: Array.from({ length: 13 }, (_, i) => ({
     date: new Date(2026, 1 - i, 1).toISOString(),
-    balance: { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, gold: 0, totalValue: 0 },
+    balance: { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, commodities: 0, totalValue: 0 },
   })),
   incomes: { incomesArray: Array(13).fill(0), allIncomes: [] },
   expenses: { outflowsArray: Array(13).fill(0), allOutflows: [], totalOutflowsPerCategoryPerMonth: {} },
@@ -43,8 +43,8 @@ const activeUser = (months = 6) => {
   const balances = Array.from({ length: 13 }, (_, i) => ({
     date: new Date(now.getFullYear(), now.getMonth() - i, 1).toISOString(),
     balance: i < months
-      ? { cash: 500, bank: 20000, digitalServices: 0, emergencyFund: 5000, stocks: 8000, etf: 25000, bitcoin: 0, crypto: 0, bonds: 15000, funds: 12500, gold: 8000, totalValue: 94000 }
-      : { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, gold: 0, totalValue: 0 },
+      ? { cash: 500, bank: 20000, digitalServices: 0, emergencyFund: 5000, stocks: 8000, etf: 25000, bitcoin: 0, crypto: 0, bonds: 15000, funds: 12500, commodities: 8000, totalValue: 94000 }
+      : { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, commodities: 0, totalValue: 0 },
   }));
   
   const incomesArray = Array.from({ length: 13 }, (_, i) => i < months ? 2800 : 0);
@@ -196,7 +196,7 @@ describe('Data Consistency Badges', () => {
 
   it('dataStreak6 — locked when middle month is empty', () => {
     const data = activeUser(6);
-    data.balances[2].balance = { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, gold: 0, totalValue: 0 };
+    data.balances[2].balance = { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, commodities: 0, totalValue: 0 };
     // Streak broken at month 2 → only 2 consecutive months
     expect(BADGE_DEFINITIONS.dataStreak6.check(data)).toBe(false);
   });
@@ -366,7 +366,7 @@ describe('Diversification Badges', () => {
 
   it('diversified7 — needs 7+ types', () => {
     const data = emptyUser();
-    data.balances[0].balance = { ...data.balances[0].balance, bank: 1, cash: 1, stocks: 1, etf: 1, bonds: 1, funds: 1, gold: 1 };
+    data.balances[0].balance = { ...data.balances[0].balance, bank: 1, cash: 1, stocks: 1, etf: 1, bonds: 1, funds: 1, commodities: 1 };
     expect(BADGE_DEFINITIONS.diversified7.check(data)).toBe(true);
   });
 
@@ -393,14 +393,14 @@ describe('Diversification Badges', () => {
     expect(BADGE_DEFINITIONS.cryptoExplorer.check(data)).toBe(false);
   });
 
-  it('goldHolder — unlocks with gold > 0', () => {
+  it('commoditiesHolder — unlocks with commodities > 0', () => {
     const data = emptyUser();
-    data.balances[0].balance.gold = 1000;
-    expect(BADGE_DEFINITIONS.goldHolder.check(data)).toBe(true);
+    data.balances[0].balance.commodities = 1000;
+    expect(BADGE_DEFINITIONS.commoditiesHolder.check(data)).toBe(true);
   });
 
-  it('goldHolder — locked with gold = 0', () => {
-    expect(BADGE_DEFINITIONS.goldHolder.check(emptyUser())).toBe(false);
+  it('commoditiesHolder — locked with commodities = 0', () => {
+    expect(BADGE_DEFINITIONS.commoditiesHolder.check(emptyUser())).toBe(false);
   });
 
   it('bondInvestor — unlocks with bonds > 0', () => {

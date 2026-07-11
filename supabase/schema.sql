@@ -70,7 +70,7 @@ create table public.balances (
   crypto numeric not null default 0,
   bonds numeric not null default 0,
   funds numeric not null default 0,
-  gold numeric not null default 0,
+  commodities numeric not null default 0,
   emergency_fund numeric not null default 0
 );
 
@@ -135,7 +135,7 @@ create table public.user_investment_holdings (
   id bigint generated always as identity primary key,
   user_id uuid not null references auth.users(id) on delete cascade,
   instrument_id bigint not null references public.investment_instruments(id),
-  asset_key text not null check (asset_key in ('stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'gold')),
+  asset_key text not null check (asset_key in ('stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities')),
   position_type text not null default 'single' check (position_type in ('single', 'pac', 'other')),
   quantity numeric,
   average_price numeric,
@@ -320,14 +320,14 @@ create or replace function public.get_balance_history(p_user_id uuid, p_months i
 returns table(
   month_start date,
   bank numeric, cash numeric, digital_services numeric, stocks numeric, etf numeric,
-  bitcoin numeric, crypto numeric, bonds numeric, funds numeric, gold numeric, emergency_fund numeric,
+  bitcoin numeric, crypto numeric, bonds numeric, funds numeric, commodities numeric, emergency_fund numeric,
   recorded_at timestamptz
 )
 language sql stable as $$
   with monthly as (
     select
       date_trunc('month', user_date)::date as month_start,
-      bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, gold, emergency_fund,
+      bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, commodities, emergency_fund,
       recorded_at,
       row_number() over (
         partition by date_trunc('month', user_date)
@@ -337,7 +337,7 @@ language sql stable as $$
     where user_id = p_user_id
       and (p_months is null or user_date >= (date_trunc('month', now()) - (p_months || ' months')::interval)::date)
   )
-  select month_start, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, gold, emergency_fund, recorded_at
+  select month_start, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, commodities, emergency_fund, recorded_at
   from monthly
   where rn = 1
   order by month_start desc;
@@ -380,7 +380,7 @@ language sql stable as $$
       and (p_user_ids is null or p.id = any(p_user_ids))
   )
   select distinct on (b.user_id) b.user_id,
-    (b.bank + b.cash + b.digital_services + b.stocks + b.etf + b.bitcoin + b.crypto + b.bonds + b.funds + b.gold) as total_balance
+    (b.bank + b.cash + b.digital_services + b.stocks + b.etf + b.bitcoin + b.crypto + b.bonds + b.funds + b.commodities) as total_balance
   from public.balances b
   join eligible e on e.id = b.user_id
   where b.user_date < date_trunc('month', now())::date

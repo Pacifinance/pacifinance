@@ -322,8 +322,8 @@ export default function BalanceSection({
   setBondsValue,
   fundsValue,
   setFundsValue,
-  goldValue,
-  setGoldValue,
+  commoditiesValue,
+  setCommoditiesValue,
   balanceDate,
   setBalanceDate,
   balancePlaceholders,
@@ -482,7 +482,7 @@ export default function BalanceSection({
     { key: 'crypto', label: translations.assets.crypto, value: cryptoValue, setter: setCryptoValue },
     { key: 'bonds', label: translations.assets.bonds, value: bondsValue, setter: setBondsValue },
     { key: 'funds', label: translations.assets.funds, value: fundsValue, setter: setFundsValue },
-    { key: 'gold', label: translations.assets.gold, value: goldValue, setter: setGoldValue },
+    { key: 'commodities', label: translations.assets.commodities, value: commoditiesValue, setter: setCommoditiesValue },
   ];
 
   const renderAssetInput = (asset) => {

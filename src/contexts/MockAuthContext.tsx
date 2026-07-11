@@ -97,7 +97,7 @@ export const mockUserData = {
                 crypto: 0,
                 bonds: 15000,
                 funds: 12500,
-                gold: 8000,
+                commodities: 8000,
                 totalValue: 94000
             }
         },
@@ -115,7 +115,7 @@ export const mockUserData = {
                 crypto: 0,
                 bonds: 14000,
                 funds: 11800,
-                gold: 7500,
+                commodities: 7500,
                 totalValue: 88250
             }
         },
@@ -136,7 +136,7 @@ export const mockUserData = {
                     crypto: Math.random() * 500,
                     bonds: 10000 + Math.random() * 3000,
                     funds: 9000 + Math.random() * 2000,
-                    gold: 6000 + Math.random() * 1500,
+                    commodities: 6000 + Math.random() * 1500,
                     totalValue: 68300 + Math.random() * 10000
                 }
             };
@@ -302,7 +302,7 @@ export const mockUserData = {
             digitalServicesValue: isCurrentMonth ? 0 : Math.random() * 100,
             bondsValue: isCurrentMonth ? 15000 : Math.max(0, 8000 + (i * 800) + Math.random() * 1000),
             fundsValue: isCurrentMonth ? 12500 : Math.max(0, 6000 + (i * 600) + Math.random() * 800),
-            goldValue: isCurrentMonth ? 8000 : Math.max(0, 3000 + (i * 450) + Math.random() * 600),
+            commoditiesValue: isCurrentMonth ? 8000 : Math.max(0, 3000 + (i * 450) + Math.random() * 600),
             emergencyFund: isCurrentMonth ? 5000 : Math.max(2000, 4000 - (i * 100) + Math.random() * 500)
         };
     }),
@@ -360,7 +360,7 @@ export const mockUserData = {
         { typology: 'etf', value: 25000, date: new Date().toISOString().split('T')[0] },
         { typology: 'bonds', value: 15000, date: new Date().toISOString().split('T')[0] },
         { typology: 'funds', value: 12500, date: new Date().toISOString().split('T')[0] },
-        { typology: 'gold', value: 8000, date: new Date().toISOString().split('T')[0] }
+        { typology: 'commodities', value: 8000, date: new Date().toISOString().split('T')[0] }
     ],
     
     // Averages data from /stats/averages API

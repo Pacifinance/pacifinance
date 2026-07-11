@@ -11,7 +11,7 @@
         "crypto": "Krypto",
         "bonds": "Anleihen",
         "funds": "Fonds",
-        "gold": "Gold"
+        "commodities": "Rohstoffe"
     },
     "general": {
         "ok": "ok",
@@ -547,7 +547,7 @@
         "cryptoDescription": "Krypto",
         "bondsDescription": "Anleihen",
         "fundsDescription": "Fonds",
-        "goldDescription": "Gold",
+        "commoditiesDescription": "Rohstoffe",
         "loading": "Dashboard-Daten werden geladen...",
         "loadingError": "Fehler beim Laden der Daten. Bitte versuchen Sie es erneut.",
         "loadingTimeout": "Das Laden dauert länger als erwartet...",
@@ -649,6 +649,22 @@
                 "previousMonth": "Vorheriger Monat",
                 "showRecurringFor": "Wiederkehrende anzeigen für:"
             }
+        },
+        "statsHoldings": {
+            "title": "Anlageportfolio",
+            "description": "Analysiere die Zusammensetzung und Entwicklung deiner Investitionen im Detail",
+            "categorySelector": {
+                "all": "Alle Investitionen"
+            },
+            "breakdownTitle": "Zusammensetzung nach Position",
+            "breakdownDescription": "Finde heraus, ob du in einer einzelnen Position übergewichtet bist",
+            "overweightWarning": "Übergewichtete Position",
+            "historyTitle": "Wertentwicklung im Zeitverlauf",
+            "historyDescription": "Der Wert deiner Positionen, Monat für Monat",
+            "sparseHistoryTitle": "Verlauf wird aufgebaut",
+            "sparseHistoryDescription": "Aktualisiere dein Guthaben weiterhin jeden Monat, um den Verlauf deiner Investitionen aufzubauen.",
+            "noHoldingsTitle": "Keine Investitionen erfasst",
+            "noHoldingsDescription": "Füge eine detaillierte Position (Aktien, ETFs, Krypto, ...) hinzu, um diese Analyse zu sehen."
         },
         "dashboard": {
             "vsLastMonth": "vs. Vormonat",
@@ -1777,9 +1793,9 @@
                 "name": "Krypto-Entdecker",
                 "description": "Erste Krypto-Investition"
             },
-            "goldHolder": {
+            "commoditiesHolder": {
                 "name": "Goldbesitzer",
-                "description": "Gold im Portfolio"
+                "description": "Rohstoffe im Portfolio"
             },
             "bondInvestor": {
                 "name": "Anleihen-Investor",

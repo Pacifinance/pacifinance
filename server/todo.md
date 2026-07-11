@@ -38,7 +38,7 @@
 - [ ] Permettere per gli abbonamenti di attivare la ricorrenza e scalare in automatico delle spese ogni mese
 
 ### Investimenti
-- [ ] Fare categorie degli investimenti (BTC, Crypto, Stocks, Gold, ecc...)
+- [x] Fare categorie degli investimenti (BTC, Crypto, Stocks, Commodities, ecc...)
 
 ### API Prices Data
 - [ ] Settare una o più route alla quale richiedere i dati crypto, stocks e etf ★

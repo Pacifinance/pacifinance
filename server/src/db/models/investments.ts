@@ -4,7 +4,7 @@ import coingeckoProvider from "../../libs/providers/coingeckoProvider"
 import { ExtDate } from "../../libs/datelib"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
-export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "gold"] as const
+export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"] as const
 export const INVESTMENT_POSITION_TYPES = ["single", "pac", "other"] as const
 
 export type InvestmentKind = typeof INVESTMENT_KINDS[number]
@@ -56,7 +56,10 @@ export type HoldingInput = {
     notes: string
 }
 
-export const INVESTMENT_SEARCH_SOURCES = ["figi", "coingecko"] as const
+// 'internal' means "search the local curated catalog only, never call an external
+// provider" - used for commodities (see searchInstruments below), which are seeded
+// once via seed-commodity-instruments.sql rather than verified live against an API.
+export const INVESTMENT_SEARCH_SOURCES = ["figi", "coingecko", "internal"] as const
 export type InvestmentSearchSource = typeof INVESTMENT_SEARCH_SOURCES[number]
 
 /** Candidate produced by a provider (OpenFIGI/CoinGecko), ready to be persisted into the shared catalog. */
@@ -257,7 +260,9 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     if (cleanQuery.length < 2) return []
 
     const localResults = await searchLocalInstruments(cleanQuery, kind, limit)
-    if (!sourceHint || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
+    // 'internal' (commodities) never consults an external provider - the catalog is
+    // fixed/curated (seed-commodity-instruments.sql), so local results are final.
+    if (!sourceHint || sourceHint === "internal" || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
 
     const candidates = sourceHint === "figi"
         ? (openfigiProvider.isIsin(cleanQuery)

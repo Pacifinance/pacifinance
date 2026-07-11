@@ -525,6 +525,16 @@
     },
 
     "dashboard": {
+        "quickAdd": {
+            "title": "Añadir rápido",
+            "outflow": "Salida",
+            "income": "Ingreso",
+            "amountLabel": "Importe",
+            "note": "nota",
+            "notePlaceholder": "Nota (opcional)",
+            "add": "Añadir",
+            "added": "¡Añadido!"
+        },
         "title": "Panel",
         "totalBalance": "Tu balance total es: ",
         "titleGraph": "Distribución del capital",

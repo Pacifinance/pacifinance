@@ -523,6 +523,16 @@
         "viewRoadmap": "Vollständige Roadmap ansehen →"
     },
     "dashboard": {
+        "quickAdd": {
+            "title": "Schnell hinzufügen",
+            "outflow": "Ausgabe",
+            "income": "Einnahme",
+            "amountLabel": "Betrag",
+            "note": "Notiz",
+            "notePlaceholder": "Notiz (optional)",
+            "add": "Hinzufügen",
+            "added": "Hinzugefügt!"
+        },
         "title": "Dashboard",
         "totalBalance": "Ihr Gesamtsaldo beträgt: ",
         "titleGraph": "Kapitalverteilung",

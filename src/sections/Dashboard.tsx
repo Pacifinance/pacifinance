@@ -75,6 +75,7 @@ const OnboardingWelcome = lazy(() => import('../components/OnboardingWelcome'));
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import DashboardToolbar from '../components/DashboardToolbar';
 import DashboardCompactView from '../components/DashboardCompactView';
+import QuickAddTransaction from '../components/QuickAddTransaction';
 import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { BsPercent } from 'react-icons/bs';
@@ -505,6 +506,9 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         </div>
                     </ModernBalanceOverview>
                 </ModernDashboardHeader>}
+
+                {/* Quick add: record an outflow/income in seconds, both view modes */}
+                <QuickAddTransaction theme={theme} />
 
                 {/* View Mode: Compact (table) vs Cards (detailed sections) */}
                 {viewMode === 'compact' ? (

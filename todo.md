@@ -81,10 +81,13 @@
 > Metrica guida: utenti che inseriscono dati per 3+ mesi consecutivi (retention), non iscritti.
 
 ### Fase 1 — Frizione di inserimento (priorità massima)
-- [ ] Quick-add veloce da dashboard/PWA: inserire un'uscita in <10 secondi (importo + categoria, il resto opzionale)
+- [x] Quick-add veloce da dashboard/PWA: inserire un'uscita in <10 secondi (importo + categoria, il resto opzionale) <!-- roadmap:quick-add -->
 - [ ] Spese ricorrenti/abbonamenti: ricorrenza automatica mensile end-to-end (DB + backend + UI gestione)
 - [ ] Template di mappatura per banca nell'import (Fineco, Intesa, Revolut, N26) — sostituto privacy-friendly dell'open banking
-- [ ] Incolla-e-riconosci: parsing intelligente di testo incollato (SMS banca, notifica, riga estratto conto) in transazione precompilata
+- [ ] Incolla-e-riconosci: parsing intelligente di testo incollato (SMS banca, notifica, riga estratto conto) in transazione precompilata — 100% client-side, zero server
+- [ ] Input vocale = dettatura OS nel campo incolla-e-riconosci (il microfono di tastiera del telefono trascrive, il nostro parser riconosce; l'audio non passa MAI dai nostri server)
+- [ ] Foto scontrino: OCR client-side con tesseract.js (WASM nel browser) → precompila quick-add; l'immagine non lascia mai il dispositivo
+- [ ] NO bot Telegram/WhatsApp per inserimento (i dati finanziari passerebbero da server terzi — contro il posizionamento privacy; riaprire solo come bridge opzionale esplicito in futuro)
 
 ### Fase 2 — Coerenza dati (richieste luglio 2026)
 - [ ] Uscite/entrate: selezione della fonte a livello di sotto-conto, con dropdown annidato (sotto-conti indentati sotto il conto madre, non voci piatte "Banca / Revolut")
@@ -96,10 +99,18 @@
 ### Fase 3 — Apertura (open source)
 - [ ] Audit segreti/credenziali nella history git prima di aprire il repo
 - [ ] Scegliere licenza (candidata: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche)
-- [ ] README + CONTRIBUTING in inglese, CI pubblica
-- [ ] Landing "self-host in 10 minuti" con Docker
+- [ ] Trasferire il repo serverless nell'organizzazione GitHub PaciFinance (transfer, non copia: GitHub crea i redirect automatici); archiviare il repo legacy con README che punta al nuovo
+- [ ] Org GitHub: 2FA obbligatoria per i membri, branch protection su main (PR + review), CODEOWNERS, secrets SOLO negli env di deploy (Vercel/Supabase), mai nel repo
+- [ ] Co-owner: aggiungere il secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2); i deploy production restano collegati agli account personali finché non serve altro
+- [ ] FUNDING.yml: GitHub Sponsors come canale primario + BuyMeACoffee esistente come secondario
+- [ ] README + CONTRIBUTING in inglese, CI pubblica (GitHub Actions: lint+test+build su PR — gratis per repo pubblici)
+- [ ] Landing "self-host in 10 minuti" con Docker (docker-compose: frontend statico + server Express + Postgres; Redis opzionale)
 - [ ] Demo account con mock data senza richieste DB (già pianificato sotto, diventa prerequisito del lancio)
 - [ ] Lancio: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
+
+### Fase 3b — Architettura hosted + self-hosted
+- [ ] Doppia distribuzione: web hosted (pacifinance.com, gratuita ora, eventuale tier Pro in futuro) + self-hosted gratuito (AGPL) — modello Plausible/Actual: il codice è lo stesso, l'hosted paga il progetto con la comodità
+- [ ] Confronto anonimo per self-hosted: servizio "community stats" opt-in — l'istanza self-hosted invia SOLO aggregati anonimi (bucket profilo: fascia età/lavoro/nazione + totali mensili arrotondati), MAI transazioni; riceve i percentili. Chi non aderisce ha tutto tranne il confronto. È il network effect che resta al progetto anche con codice aperto
 
 ### Fase 4 — Confronto anonimo (differenziante)
 - [ ] Checkbox di profilazione: l'utente sceglie come vengono calcolati gli utenti simili (già in server/todo.md)

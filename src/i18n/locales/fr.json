@@ -523,6 +523,16 @@
         "viewRoadmap": "Voir la feuille de route complète →"
     },
     "dashboard": {
+        "quickAdd": {
+            "title": "Ajout rapide",
+            "outflow": "Sortie",
+            "income": "Revenu",
+            "amountLabel": "Montant",
+            "note": "note",
+            "notePlaceholder": "Note (facultatif)",
+            "add": "Ajouter",
+            "added": "Ajouté !"
+        },
         "title": "Tableau de bord",
         "totalBalance": "Solde total",
         "titleGraph": "Distribution du capital",

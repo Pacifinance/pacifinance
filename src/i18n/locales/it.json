@@ -525,6 +525,16 @@
     },
 
     "dashboard": {
+        "quickAdd": {
+            "title": "Aggiunta rapida",
+            "outflow": "Uscita",
+            "income": "Entrata",
+            "amountLabel": "Importo",
+            "note": "nota",
+            "notePlaceholder": "Nota (opzionale)",
+            "add": "Aggiungi",
+            "added": "Aggiunta!"
+        },
         "title": "Dashboard",
         "totalBalance": "Il tuo patrimonio totale è: ",
         "titleGraph": "Distribuzione Capitale",

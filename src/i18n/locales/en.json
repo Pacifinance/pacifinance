@@ -525,6 +525,16 @@
     },
 
     "dashboard": {
+        "quickAdd": {
+            "title": "Quick add",
+            "outflow": "Outflow",
+            "income": "Income",
+            "amountLabel": "Amount",
+            "note": "note",
+            "notePlaceholder": "Note (optional)",
+            "add": "Add",
+            "added": "Added!"
+        },
         "title": "Dashboard",
         "totalBalance": "Your total balance is: ",
         "titleGraph": "Capital Distribution",

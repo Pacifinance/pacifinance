@@ -523,6 +523,16 @@
         "viewRoadmap": "Ver roadmap completo →"
     },
     "dashboard": {
+        "quickAdd": {
+            "title": "Adição rápida",
+            "outflow": "Saída",
+            "income": "Receita",
+            "amountLabel": "Valor",
+            "note": "nota",
+            "notePlaceholder": "Nota (opcional)",
+            "add": "Adicionar",
+            "added": "Adicionado!"
+        },
         "title": "Painel",
         "totalBalance": "Saldo total",
         "titleGraph": "Distribuição de capital",

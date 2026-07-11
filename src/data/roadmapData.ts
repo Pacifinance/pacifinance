@@ -21,6 +21,18 @@ export interface RoadmapItem {
 const roadmapData: RoadmapItem[] = [
   /* ──────────── COMPLETED ──────────── */
   {
+    id: 'quick-add',
+    title: { it: 'Aggiunta Rapida', en: 'Quick Add' },
+    description: {
+      it: 'Registra un\'uscita o un\'entrata in pochi secondi direttamente dalla dashboard: importo + categoria, il resto è opzionale.',
+      en: 'Record an outflow or income in seconds right from the dashboard: amount + category, everything else optional.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '⚡',
+    completedDate: '2026-07',
+  },
+  {
     id: 'dashboard-custom',
     title: { it: 'Dashboard Personalizzabile', en: 'Customizable Dashboard' },
     description: {

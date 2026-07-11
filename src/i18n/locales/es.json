@@ -924,6 +924,7 @@
             "noBalanceChange": "If you don't pick a balance, the entry will be deleted without changing any balance snapshot.",
             "balanceSourceLabel": "Balance to update (optional)",
             "balanceSourceNone": "None (don't change balances)",
+            "sourceFromTransaction": "Fuente sugerida automáticamente: es la registrada al añadir esta transacción.",
             "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped; transaction was still deleted.",
             "confirm": "Delete",
             "cancel": "Cancel"
@@ -1896,7 +1897,9 @@
         "ofTotal": "% del total",
         "categoryBreakdown": "Desglose por categoría",
         "type": "Tipo",
-        "amount": "Importe"
+        "amount": "Importe",
+        "vsPrevMonth": "vs mes ant.",
+        "ofIncomes": "% Ingresos"
     },
     "categories": {
         "Casa": "Hogar",
@@ -2416,6 +2419,7 @@
         "searchPlaceholder": "Buscar por nombre o símbolo...",
         "assetsFound": "activos encontrados",
         "updatedAutomatically": "Actualizado automáticamente cada hora",
+        "topByMarketCap": "Mostramos los primeros {count} activos por capitalización de mercado",
         "comingSoon": "Próximamente",
         "lockedDescription": "Esta sección estará disponible pronto con datos en tiempo real.",
         "categories": {

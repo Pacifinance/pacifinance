@@ -38,6 +38,7 @@ import {
   ModalBody, ModalFooter, getSelectSx,
 } from './multiInsert/SharedStyles';
 import { getMuiSelectMenuProps } from './ThemedSelect';
+import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
 const Subtitle = styled.p`
   margin: 0 0 0.75rem 0;
@@ -214,6 +215,7 @@ export default function EditTransactionModal({
   editedDate,
   editedAmount,
   balanceOptions,
+  balanceSourceMeta = null,
   selectedSource,
   onChangeSelectedSource,
   onConfirm,
@@ -333,9 +335,7 @@ export default function EditTransactionModal({
             <MenuItem value="" disabled>
               <em>{t.balanceSourcePlaceholder}</em>
             </MenuItem>
-            {balanceOptions && Object.keys(balanceOptions).map((option) => (
-              <MenuItem key={option} value={option}>{option}</MenuItem>
-            ))}
+            {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
             <MenuItem value={SKIP_VALUE}>
               <em>{t.balanceSourceNone}</em>
             </MenuItem>

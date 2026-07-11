@@ -922,6 +922,7 @@
             "noBalanceChange": "If you don't pick a balance, the entry will be deleted without changing any balance snapshot.",
             "balanceSourceLabel": "Balance to update (optional)",
             "balanceSourceNone": "None (don't change balances)",
+            "sourceFromTransaction": "Fonte sugerida automaticamente: é a registrada quando você adicionou esta transação.",
             "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped; transaction was still deleted.",
             "confirm": "Delete",
             "cancel": "Cancel"
@@ -1894,7 +1895,9 @@
         "ofTotal": "% do Total",
         "categoryBreakdown": "Detalhamento por categoria",
         "type": "Tipo",
-        "amount": "Valor"
+        "amount": "Valor",
+        "vsPrevMonth": "vs mês ant.",
+        "ofIncomes": "% Receitas"
     },
     "categories": {
         "Casa": "Moradia",
@@ -2414,6 +2417,7 @@
         "searchPlaceholder": "Buscar por nome ou símbolo...",
         "assetsFound": "ativos encontrados",
         "updatedAutomatically": "Atualizado automaticamente a cada hora",
+        "topByMarketCap": "Mostrando os {count} principais ativos por capitalização de mercado",
         "comingSoon": "Em breve",
         "lockedDescription": "Esta seção estará disponível em breve com dados em tempo real.",
         "categories": {

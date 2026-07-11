@@ -221,12 +221,28 @@ const DashboardCompactView = ({
   formatPercentage,
   holdingsByAssetKey = {},
   liquidityAccountsByAssetKey = {},
+  categoryPreMonthTotals = null,
 }) => {
   const { translations } = useContext(LanguageContext);
   useContext(MediaQueryContext);
   const [expandedKeys, setExpandedKeys] = useState(() => new Set());
 
   const t = translations?.dashboardLayout || {};
+
+  // Signed percentage change vs previous month, or null when not computable
+  // (no previous snapshot). Percent-only: safe to show in privacy mode too.
+  const renderPrevMonthDelta = (current, previous) => {
+    if (!categoryPreMonthTotals || !previous || previous <= 0) {
+      return <span style={{ opacity: 0.4 }}>—</span>;
+    }
+    const pct = ((current - previous) / previous) * 100;
+    const color = pct >= 0 ? '#22c55e' : '#ef4444';
+    return (
+      <PercentageCell $color={color}>
+        {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
+      </PercentageCell>
+    );
+  };
 
   // All assets for the overview table
   const allAssetRows = [
@@ -318,20 +334,29 @@ const DashboardCompactView = ({
                       </PercentageCell>
                     </Td>
                   </Tr>
-                  {hasSubItems && expanded && subItems.map((item) => (
-                    <SubRow key={item.id} theme={theme}>
-                      <Td theme={theme} colSpan={3}>
-                        <SubAssetNameCell>
-                          {item.instrument?.symbol || item.instrument?.name || item.label}
-                        </SubAssetNameCell>
-                      </Td>
-                      <Td theme={theme} $align="right">
-                        <ValueCell theme={theme}>
-                          {formatCurrency(item.currentValue ?? item.investedAmount ?? 0)}
-                        </ValueCell>
-                      </Td>
-                    </SubRow>
-                  ))}
+                  {hasSubItems && expanded && subItems.map((item) => {
+                    const itemValue = item.currentValue ?? item.investedAmount ?? 0;
+                    return (
+                      <SubRow key={item.id} theme={theme}>
+                        <Td theme={theme} colSpan={2}>
+                          <SubAssetNameCell>
+                            {item.instrument?.symbol || item.instrument?.name || item.label}
+                          </SubAssetNameCell>
+                        </Td>
+                        <Td theme={theme} $align="right">
+                          <ValueCell theme={theme}>
+                            {formatCurrency(itemValue)}
+                          </ValueCell>
+                        </Td>
+                        <Td theme={theme} $align="right">
+                          {/* Share of the PARENT asset, not of the total */}
+                          <PercentageCell $color={asset.color} style={{ opacity: 0.85 }}>
+                            {formatPercentage(itemValue, asset.value)}
+                          </PercentageCell>
+                        </Td>
+                      </SubRow>
+                    );
+                  })}
                 </React.Fragment>
               );
             })}
@@ -363,59 +388,53 @@ const DashboardCompactView = ({
               <Th theme={theme}>{t.category || 'Categoria'}</Th>
               <Th theme={theme} $align="right">{t.value || translations?.general?.value || 'Valore'}</Th>
               <Th theme={theme} $align="right">{t.ofTotal || '% Totale'}</Th>
+              <Th theme={theme} $align="right">{t.vsPrevMonth || 'vs mese prec.'}</Th>
             </tr>
           </Thead>
           <tbody>
-            <Tr theme={theme}>
-              <Td theme={theme}>
-                <AssetNameCell>
-                  <div className="icon-dot" style={{ backgroundColor: assetColors.totalLiquidity }} />
-                  {translations?.dashboard?.liquidity || 'Liquidità'}
-                </AssetNameCell>
-              </Td>
-              <Td theme={theme} $align="right">
-                <ValueCell theme={theme}>{formatCurrency(totalTraditional)}</ValueCell>
-              </Td>
-              <Td theme={theme} $align="right">
-                <PercentageCell $color={assetColors.totalLiquidity}>
-                  {formatPercentage(totalTraditional, totalBalance)}
-                </PercentageCell>
-              </Td>
-            </Tr>
-            {totalEmergencySecurity > 0 && (
-              <Tr theme={theme}>
+            {[
+              {
+                key: 'liquidity',
+                label: translations?.dashboard?.liquidity || 'Liquidità',
+                color: assetColors.totalLiquidity,
+                value: totalTraditional,
+                preMonth: categoryPreMonthTotals?.liquidity,
+              },
+              ...(totalEmergencySecurity > 0 ? [{
+                key: 'emergency',
+                label: translations?.dashboard?.emergencySecurity || 'Emergenza & Sicurezza',
+                color: emergencyFundAsset.color,
+                value: totalEmergencySecurity,
+                preMonth: categoryPreMonthTotals?.emergency,
+              }] : []),
+              {
+                key: 'investments',
+                label: translations?.general?.investments || 'Investimenti',
+                color: assetColors.totalInvestments,
+                value: totalInvestments,
+                preMonth: categoryPreMonthTotals?.investments,
+              },
+            ].map((row) => (
+              <Tr key={row.key} theme={theme}>
                 <Td theme={theme}>
                   <AssetNameCell>
-                    <div className="icon-dot" style={{ backgroundColor: emergencyFundAsset.color }} />
-                    {translations?.dashboard?.emergencySecurity || 'Emergenza & Sicurezza'}
+                    <div className="icon-dot" style={{ backgroundColor: row.color }} />
+                    {row.label}
                   </AssetNameCell>
                 </Td>
                 <Td theme={theme} $align="right">
-                  <ValueCell theme={theme}>{formatCurrency(totalEmergencySecurity)}</ValueCell>
+                  <ValueCell theme={theme}>{formatCurrency(row.value)}</ValueCell>
                 </Td>
                 <Td theme={theme} $align="right">
-                  <PercentageCell $color={emergencyFundAsset.color}>
-                    {formatPercentage(totalEmergencySecurity, totalBalance)}
+                  <PercentageCell $color={row.color}>
+                    {formatPercentage(row.value, totalBalance)}
                   </PercentageCell>
                 </Td>
+                <Td theme={theme} $align="right">
+                  {renderPrevMonthDelta(row.value, row.preMonth)}
+                </Td>
               </Tr>
-            )}
-            <Tr theme={theme}>
-              <Td theme={theme}>
-                <AssetNameCell>
-                  <div className="icon-dot" style={{ backgroundColor: assetColors.totalInvestments }} />
-                  {translations?.general?.investments || 'Investimenti'}
-                </AssetNameCell>
-              </Td>
-              <Td theme={theme} $align="right">
-                <ValueCell theme={theme}>{formatCurrency(totalInvestments)}</ValueCell>
-              </Td>
-              <Td theme={theme} $align="right">
-                <PercentageCell $color={assetColors.totalInvestments}>
-                  {formatPercentage(totalInvestments, totalBalance)}
-                </PercentageCell>
-              </Td>
-            </Tr>
+            ))}
           </tbody>
         </Table>
       </TableWrapper>
@@ -430,25 +449,39 @@ const DashboardCompactView = ({
             <tr>
               <Th theme={theme}>{t.type || 'Tipo'}</Th>
               <Th theme={theme} $align="right">{t.amount || 'Importo'}</Th>
+              <Th theme={theme} $align="right">{t.ofIncomes || '% Entrate'}</Th>
             </tr>
           </Thead>
           <tbody>
-            {incExpData.map((item, index) => (
-              <Tr key={index} theme={theme}>
-                <Td theme={theme}>
-                  <AssetNameCell>
-                    <div className="icon-dot" style={{ backgroundColor: item.color }} />
-                    {item.name === translations?.general?.incomes && <BsArrowUpRight style={{ color: item.color }} />}
-                    {item.name === translations?.general?.outflows && <BsArrowDownLeft style={{ color: item.color }} />}
-                    {item.name === translations?.general?.saved && <BsWallet2 style={{ color: item.color }} />}
-                    <span>{isHidden ? '****' : item.name}</span>
-                  </AssetNameCell>
-                </Td>
-                <Td theme={theme} $align="right">
-                  <ValueCell theme={theme} $color={item.color}>{formatCurrency(item.value)}</ValueCell>
-                </Td>
-              </Tr>
-            ))}
+            {(() => {
+              const incomesValue = incExpData.find((item) => item.name === translations?.general?.incomes)?.value || 0;
+              return incExpData.map((item, index) => (
+                <Tr key={index} theme={theme}>
+                  <Td theme={theme}>
+                    <AssetNameCell>
+                      <div className="icon-dot" style={{ backgroundColor: item.color }} />
+                      {item.name === translations?.general?.incomes && <BsArrowUpRight style={{ color: item.color }} />}
+                      {item.name === translations?.general?.outflows && <BsArrowDownLeft style={{ color: item.color }} />}
+                      {item.name === translations?.general?.saved && <BsWallet2 style={{ color: item.color }} />}
+                      <span>{isHidden ? '****' : item.name}</span>
+                    </AssetNameCell>
+                  </Td>
+                  <Td theme={theme} $align="right">
+                    <ValueCell theme={theme} $color={item.color}>{formatCurrency(item.value)}</ValueCell>
+                  </Td>
+                  <Td theme={theme} $align="right">
+                    {/* Outflows as share of incomes; the "saved" row's share IS the saving rate */}
+                    {incomesValue > 0 ? (
+                      <PercentageCell $color={item.color}>
+                        {formatPercentage(item.value, incomesValue)}
+                      </PercentageCell>
+                    ) : (
+                      <span style={{ opacity: 0.4 }}>—</span>
+                    )}
+                  </Td>
+                </Tr>
+              ));
+            })()}
           </tbody>
         </Table>
       </TableWrapper>

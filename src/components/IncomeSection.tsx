@@ -14,6 +14,7 @@ import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 import CategoryPicker from './CategoryPicker';
+import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
@@ -342,6 +343,7 @@ export default function IncomeSection({
   selectedOption,
   setSelectedOption,
   balanceOptions,
+  balanceSourceMeta = null,
   incomeDateFilterStart,
   setIncomeDateFilterStart,
   incomeDateFilterEnd,
@@ -790,7 +792,7 @@ export default function IncomeSection({
                 <ActionBtn
                   className="delete"
                   data-umami-event="deleteIncome"
-                  onClick={() => onDeleteIncome(add.date, add.amount)}
+                  onClick={() => onDeleteIncome(add.date, add.amount, add)}
                 >
                   <FontAwesomeIcon icon={faTimes} />
                 </ActionBtn>
@@ -924,9 +926,7 @@ export default function IncomeSection({
             <MenuItem value="">
               <em>{translations.general.selectAnOption || 'Nessuno (opzionale)'}</em>
             </MenuItem>
-            {balanceOptions && Object.keys(balanceOptions).map((option) => (
-              <MenuItem key={option} value={option}>{option}</MenuItem>
-            ))}
+            {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
           </Select>
         </FormField>
 

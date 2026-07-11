@@ -234,7 +234,13 @@ create table public.expenses (
   notes text,                                       -- cifrato app-side (AES-256-GCM, vedi server/src/db/crypto.ts) — mai testo in chiaro nel DB
   payment_type_tag_id bigint not null references public.tags(id),
   category_tag_id bigint not null references public.tags(id),  -- categoria "ufficiale": SEMPRE valorizzata, usata per stats/rank
-  user_category_id bigint references public.user_categories(id) on delete set null  -- etichetta personalizzata opzionale (solo visualizzazione)
+  user_category_id bigint references public.user_categories(id) on delete set null,  -- etichetta personalizzata opzionale (solo visualizzazione)
+  -- fonte di bilancio scelta all'inserimento (opzionale): permette a eliminazione/modifica
+  -- di proporre in automatico lo storno/ri-accredito sul campo esatto
+  balance_asset_key text check (balance_asset_key in ('bank', 'cash', 'digitalServices', 'emergencyFund',
+    'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities')),
+  balance_detail_type text check (balance_detail_type in ('liquidity', 'investment')),  -- valorizzato solo se è stato scelto un sotto-conto specifico
+  balance_detail_id bigint  -- soft reference a user_liquidity_accounts / user_investment_holdings (nessuna FK: il sotto-conto può essere eliminato)
 );
 
 create index expenses_user_date_idx on public.expenses (user_id, occurred_at desc);

@@ -7,17 +7,17 @@
 ## 🔧 Da Fare
 
 ### Urgente
-- [ ] Aggiungere fattore 100 per convertire i valori inseriti dall'utente in centesimi così non ne perdiamo per Error floating point (ovunque) ★
+- [x] Aggiungere fattore 100 per convertire i valori inseriti dall'utente in centesimi così non ne perdiamo per Error floating point (ovunque) ★
 
-- [ ] Permettere agli utenti di crearsi e salvare a db delle categorie personalizzate, figlie di quelle principali. Statistiche lato client su categorie utente, statiche globali che mi mandi te su categorie madre. (farlo prima di passaggio a PostgreSQL) ★
+- [x] Permettere agli utenti di crearsi e salvare a db delle categorie personalizzate, figlie di quelle principali. Statistiche lato client su categorie utente, statiche globali che mi mandi te su categorie madre. (farlo prima di passaggio a PostgreSQL) ★
 
-- [ ] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
+- [x] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
 
 - [ ] un utente potrebbe voler e dovrebbe poter dire come gli utenti simili a lui devono essere calcolati, nel client dei checkbox e tramite quei 0 e 1 te profili l'utente ★
  
 ### Valute & Moneta
 - [ ] Aggiungere richiesta API e sistema di cache per le valute (mettine più possibili) ★
-- [ ] Aggiungere alla route del profilo un campo currency, per permettere all'utente di scegliere la sua moneta di riferimento e salvarla a db (ora salvata in locale ) ★
+- [x] Aggiungere alla route del profilo un campo currency, per permettere all'utente di scegliere la sua moneta di riferimento e salvarla a db (ora salvata in locale ) ★
 
 ### Rankings & Confronti
 
@@ -30,10 +30,10 @@
   - [x] Job type (employee/freelance, full/part time, office/hybrid/remote)
 
 ### Spese & Entrate
-- [ ] Permettere all'utente di modificare una sua spesa o entrata inserita ★
-- [ ] Permettere agli utenti di creare delle sottocategorie delle spese personalizzate (per visualizzazione utente vedrà le sue, per le statistiche generali vedrà i raggruppamenti per macrocategoria) (potremmo anche pensare delle sottocategorie di default per aumentarne il numero e limitare quelle personalizzate. Maggiori ne abbiamo di Default migliori statistiche avremo) ★
-- [ ] Permettere di vedere tutte le spese e le entrate inserite all'utente anche oltre l'anno (guardare filtri grafici) ★
-- [ ] Aggiungere limite di spesa per utente mensile a db (ora salvato in locale) ★
+- [x] Permettere all'utente di modificare una sua spesa o entrata inserita ★
+- [x] Permettere agli utenti di creare delle sottocategorie delle spese personalizzate (per visualizzazione utente vedrà le sue, per le statistiche generali vedrà i raggruppamenti per macrocategoria) (potremmo anche pensare delle sottocategorie di default per aumentarne il numero e limitare quelle personalizzate. Maggiori ne abbiamo di Default migliori statistiche avremo) ★
+- [x] Permettere di vedere tutte le spese e le entrate inserite all'utente anche oltre l'anno (guardare filtri grafici) ★
+- [x] Aggiungere limite di spesa per utente mensile a db (ora salvato in locale) ★
 - [ ] Aggiungere obbiettivo di income mensile a db (ragioniamoci)
 - [ ] Permettere per gli abbonamenti di attivare la ricorrenza e scalare in automatico delle spese ogni mese
 

@@ -20,6 +20,10 @@
  *   - transactionDate: ISO date string (YYYY-MM-DD)
  *   - transactionAmount: number | string (EUR)
  *   - balanceOptions: object { translatedLabel: [value, setter] }  (same shape as InsertValues `options`)
+ *   - balanceSourceMeta: optional { label: {assetKey, detailType?, detailId?} } map — enables the
+ *     nested sub-account presentation in the dropdown (see multiInsert/balanceSourceMenu)
+ *   - sourcePrefilled: true when selectedOption was auto-filled from the source stored with the
+ *     transaction at insert time (shows an explanatory note, user still confirms)
  *   - selectedOption: string (currently selected balance source label, or '')
  *   - onChangeSelectedOption: (newValue) => void
  *   - onConfirm: () => void
@@ -37,6 +41,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton,
   ModalBody, ModalFooter, getSelectSx,
 } from './multiInsert/SharedStyles';
+import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 import { getMuiSelectMenuProps } from './ThemedSelect';
 
 const Subtitle = styled.p`
@@ -189,6 +194,8 @@ export default function DeleteTransactionModal({
   transactionDate,
   transactionAmount,
   balanceOptions,
+  balanceSourceMeta = null,
+  sourcePrefilled = false,
   selectedOption,
   onChangeSelectedOption,
   onConfirm,
@@ -268,12 +275,15 @@ export default function DeleteTransactionModal({
             <MenuItem value="">
               <em>{t.balanceSourceNone}</em>
             </MenuItem>
-            {balanceOptions && Object.keys(balanceOptions).map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
+            {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
           </Select>
+
+          {sourcePrefilled && selectedOption && (
+            <HintNote theme={theme} style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+              <FontAwesomeIcon icon={faInfoCircle} style={{ marginRight: '0.35rem' }} />
+              {t.sourceFromTransaction}
+            </HintNote>
+          )}
 
           <HintNote theme={theme}>{t.noBalanceChange}</HintNote>
         </ModalBody>

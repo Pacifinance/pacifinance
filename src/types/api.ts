@@ -107,6 +107,15 @@ export interface BalanceAddRequest {
  * /expenses
  * ═══════════════════════════════════════════════════════════════════════════*/
 
+/** Optional balance source attached to a transaction at insert time: the
+ * balance field (and optionally the specific sub-account) the money was taken
+ * from / added to. Lets delete/edit flows propose the exact field to restore. */
+export interface ExpenseBalanceSourceDto {
+  asset_key: AssetKey;
+  detail_type: 'liquidity' | 'investment' | null;
+  detail_id: number | null;
+}
+
 export interface ExpenseDto {
   date: string;         // ISO
   amount: number;       // in EUR, already rounded server-side
@@ -116,6 +125,7 @@ export interface ExpenseDto {
   category_tag: number; // index into tags.outflowsTags / tags.incomesTags
   /** Optional custom sub-category id (from /categories/get), display-only — stats stay on category_tag. */
   user_category_id?: number | null;
+  balance_source?: ExpenseBalanceSourceDto | null;
 }
 
 export interface ExpenseAddRequest { expense: ExpenseDto; }
@@ -152,6 +162,9 @@ export interface TransactionDto {
   paymentType: { label: string; index: number; type: number } | null;
   categoryTag: { label: string; index: number; type: number } | null;
   userCategory: { id: number; label: string } | null;
+  balanceAssetKey: AssetKey | null;
+  balanceDetailType: 'liquidity' | 'investment' | null;
+  balanceDetailId: number | null;
 }
 
 /** Body of POST /expenses/month. `month` is 1-12. */

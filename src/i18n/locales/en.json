@@ -924,6 +924,7 @@
             "noBalanceChange": "If you don't pick a balance, the entry will be deleted without changing any balance snapshot.",
             "balanceSourceLabel": "Balance to update (optional)",
             "balanceSourceNone": "None (don't change balances)",
+            "sourceFromTransaction": "Source suggested automatically: it's the one recorded when you added this transaction.",
             "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped; transaction was still deleted.",
             "confirm": "Delete",
             "cancel": "Cancel"
@@ -1896,7 +1897,9 @@
         "ofTotal": "% of Total",
         "categoryBreakdown": "Category Breakdown",
         "type": "Type",
-        "amount": "Amount"
+        "amount": "Amount",
+        "vsPrevMonth": "vs prev. month",
+        "ofIncomes": "% of Income"
     },
     "categories": {
         "Casa": "Home",
@@ -2416,6 +2419,7 @@
         "searchPlaceholder": "Search by name or symbol...",
         "assetsFound": "assets found",
         "updatedAutomatically": "Updated automatically every hour",
+        "topByMarketCap": "Showing the top {count} assets by market cap",
         "comingSoon": "Coming Soon",
         "lockedDescription": "This section will be available soon with real-time data.",
         "categories": {

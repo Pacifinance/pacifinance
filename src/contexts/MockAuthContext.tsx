@@ -188,7 +188,11 @@ export const mockUserData = {
                         categoryTag: tpl.category,
                         paymentType: tpl.payment,
                         notes: tpl.notes,
-                        isExpense: true
+                        isExpense: true,
+                        // Balance source recorded at insert time (mirrors server toExpense shape)
+                        balanceAssetKey: 'bank',
+                        balanceDetailType: null,
+                        balanceDetailId: null
                     });
                 });
                 // Add 10-18 random one-off transactions
@@ -199,7 +203,11 @@ export const mockUserData = {
                         amount: Math.floor(Math.random() * 200) + 15,
                         categoryTag: categories[Math.floor(Math.random() * categories.length)],
                         paymentType: pmtTypes[Math.floor(Math.random() * pmtTypes.length)],
-                        isExpense: true
+                        isExpense: true,
+                        // No source recorded — exercises the "no prefill" delete path
+                        balanceAssetKey: null,
+                        balanceDetailType: null,
+                        balanceDetailId: null
                     });
                 }
                 months.push(txs);
@@ -244,7 +252,10 @@ export const mockUserData = {
                     date: new Date().toISOString().split('T')[0],
                     amount: 2800,
                     categoryTag: incomesTags.find(t => t.label === 'salary') || incomesTags[0],
-                    isExpense: false
+                    isExpense: false,
+                    balanceAssetKey: 'bank',
+                    balanceDetailType: null,
+                    balanceDetailId: null
                 }
             ]
         ],

@@ -15,6 +15,7 @@ import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 import CategoryPicker from './CategoryPicker';
+import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
 
@@ -329,6 +330,7 @@ export default function OutflowSection({
   selectedOption,
   setSelectedOption,
   balanceOptions,
+  balanceSourceMeta = null,
   outflowDateFilterStart,
   setOutflowDateFilterStart,
   outflowDateFilterEnd,
@@ -824,7 +826,7 @@ export default function OutflowSection({
                 <ActionBtn
                   className="delete"
                   data-umami-event="deleteOutflow"
-                  onClick={() => onDeleteOutflow(add.date, add.amount)}
+                  onClick={() => onDeleteOutflow(add.date, add.amount, add)}
                 >
                   <FontAwesomeIcon icon={faTimes} />
                 </ActionBtn>
@@ -990,9 +992,7 @@ export default function OutflowSection({
             <MenuItem value="">
               <em>{translations.general.selectAnOption || 'Nessuno (opzionale)'}</em>
             </MenuItem>
-            {balanceOptions && Object.keys(balanceOptions).map((option) => (
-              <MenuItem key={option} value={option}>{option}</MenuItem>
-            ))}
+            {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
           </Select>
         </FormField>
 

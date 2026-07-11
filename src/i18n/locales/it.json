@@ -924,6 +924,7 @@
             "noBalanceChange": "Se non scegli alcun bilancio, la voce verrà eliminata senza modificare nessuno snapshot di bilancio.",
             "balanceSourceLabel": "Bilancio da aggiornare (opzionale)",
             "balanceSourceNone": "Nessuno (non modificare i bilanci)",
+            "sourceFromTransaction": "Fonte proposta automaticamente: è quella registrata quando hai inserito questa transazione.",
             "missingSnapshotWarning": "Nessun bilancio trovato per {month}/{year}. Aggiornamento bilancio saltato, la transazione è stata comunque eliminata.",
             "confirm": "Elimina",
             "cancel": "Annulla"
@@ -1896,7 +1897,9 @@
         "ofTotal": "% Totale",
         "categoryBreakdown": "Riepilogo per Categoria",
         "type": "Tipo",
-        "amount": "Importo"
+        "amount": "Importo",
+        "vsPrevMonth": "vs mese prec.",
+        "ofIncomes": "% Entrate"
     },
     "categories": {
         "Casa": "Casa",
@@ -2416,6 +2419,7 @@
         "searchPlaceholder": "Cerca per nome o simbolo...",
         "assetsFound": "asset trovati",
         "updatedAutomatically": "Aggiornato automaticamente ogni ora",
+        "topByMarketCap": "Mostriamo i primi {count} asset per capitalizzazione di mercato",
         "comingSoon": "In arrivo",
         "lockedDescription": "Questa sezione sarà disponibile a breve con dati aggiornati in tempo reale.",
         "categories": {

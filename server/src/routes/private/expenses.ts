@@ -3,7 +3,26 @@ import express from "express"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
+import { EXPENSE_BALANCE_ASSET_KEYS, EXPENSE_BALANCE_DETAIL_TYPES, ExpenseBalanceSource } from "../../db/models/expenses"
 import common from "../common"
+
+/**
+ * Sanitizes the optional balance source attached to a transaction. Returns a
+ * valid ExpenseBalanceSource or null (invalid/missing sources are dropped
+ * silently: the source is an optional enrichment, never a reason to reject
+ * the transaction itself).
+ */
+function sanitizeBalanceSource(raw: any): ExpenseBalanceSource | null {
+    if (!raw || typeof raw !== "object") return null
+    const asset_key = raw.asset_key
+    if (!EXPENSE_BALANCE_ASSET_KEYS.includes(asset_key)) return null
+    const detail_type = EXPENSE_BALANCE_DETAIL_TYPES.includes(raw.detail_type) ? raw.detail_type : null
+    const detail_id_num = Number(raw.detail_id)
+    const detail_id = (detail_type !== null && Number.isFinite(detail_id_num)) ? detail_id_num : null
+    // A detail type without an id (or vice versa) is meaningless — keep only the parent key
+    if (detail_type === null || detail_id === null) return {asset_key, detail_type: null, detail_id: null}
+    return {asset_key, detail_type, detail_id}
+}
 
 /**
  * Checks if an expense is valid
@@ -60,7 +79,8 @@ expensesRouter.post("/add", async (req, res) => {
         ? Number(raw_user_category_id) : null
     const doc = await db.expenses.insertNew(
         req.userId as string, expense.date, expense.amount, expense.is_expense,
-        expense.notes, expense.payment_type, expense.category_tag, user_category_id
+        expense.notes, expense.payment_type, expense.category_tag, user_category_id,
+        sanitizeBalanceSource(expense.balance_source)
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

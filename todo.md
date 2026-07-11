@@ -73,6 +73,46 @@
 - [x] Scelta utente su impatto bilancio per inserimenti datati in mesi passati (past date balance choice) con modale, preferenza persistente e toggle in Impostazioni <!-- roadmap:past-date-balance-choice -->
 ---
 
+## Piano strategico (luglio 2026)
+
+> Direzione decisa: progetto open source privacy-first per la nicchia europea/italiana,
+> con opzione hosted. Non startup che compete su open banking. Il confronto anonimo
+> tra utenti simili è il differenziante di lungo termine (nessun self-hosted può copiarlo).
+> Metrica guida: utenti che inseriscono dati per 3+ mesi consecutivi (retention), non iscritti.
+
+### Fase 1 — Frizione di inserimento (priorità massima)
+- [ ] Quick-add veloce da dashboard/PWA: inserire un'uscita in <10 secondi (importo + categoria, il resto opzionale)
+- [ ] Spese ricorrenti/abbonamenti: ricorrenza automatica mensile end-to-end (DB + backend + UI gestione)
+- [ ] Template di mappatura per banca nell'import (Fineco, Intesa, Revolut, N26) — sostituto privacy-friendly dell'open banking
+- [ ] Incolla-e-riconosci: parsing intelligente di testo incollato (SMS banca, notifica, riga estratto conto) in transazione precompilata
+
+### Fase 2 — Coerenza dati (richieste luglio 2026)
+- [ ] Uscite/entrate: selezione della fonte a livello di sotto-conto, con dropdown annidato (sotto-conti indentati sotto il conto madre, non voci piatte "Banca / Revolut")
+- [ ] Collegamento transazione→fonte persistito a DB: eliminando un'uscita (o entrata) con fonte specificata, proporre in automatico il ri-accredito/storno su quel campo esatto, con conferma utente
+- [ ] Vista compatta dashboard: % di ogni sotto-conto rispetto al conto madre
+- [ ] Vista compatta: espandere "Riepilogo per Categoria" e "Entrate|Uscite" con più dettagli (%, variazione vs mese precedente, saving rate — una fotografia rapida della situazione finanziaria)
+- [ ] Market Prices: fix valori a 0 (media 7g, in rialzo/ribasso), disclaimer "mostriamo i primi N per capitalizzazione", aumentare N oltre 10, ricerca on-demand di coin non in cache (fetch singolo via CoinGecko /search + /coins/{id}) — fix minimo, non investire oltre
+
+### Fase 3 — Apertura (open source)
+- [ ] Audit segreti/credenziali nella history git prima di aprire il repo
+- [ ] Scegliere licenza (candidata: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche)
+- [ ] README + CONTRIBUTING in inglese, CI pubblica
+- [ ] Landing "self-host in 10 minuti" con Docker
+- [ ] Demo account con mock data senza richieste DB (già pianificato sotto, diventa prerequisito del lancio)
+- [ ] Lancio: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
+
+### Fase 4 — Confronto anonimo (differenziante)
+- [ ] Checkbox di profilazione: l'utente sceglie come vengono calcolati gli utenti simili (già in server/todo.md)
+- [ ] Insight derivati: "persone simili a te spendono X in meno in Y"
+- [ ] Referral e badge per inviti (già in server/todo.md)
+
+### Fuori scope (deciso, non riaprire senza motivo forte)
+- Offerte di lavoro in piattaforma (two-sided market, fuori focus, rischio privacy)
+- Espansione Market Prices oltre il fix minimo (commodity, non differenziante)
+- Nuove lingue oltre le 6 attuali / asset esotici
+
+---
+
 ## Da Fare
 
 ### Bug Noti

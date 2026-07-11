@@ -35,7 +35,11 @@ import { assetColors } from '../data/assetColors.js';
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
-    getFundsValue, getCommoditiesValue, getTotalValue, getOutflowsArray, getIncomesArray
+    getFundsValue, getCommoditiesValue, getTotalValue, getOutflowsArray, getIncomesArray,
+    getCashValuePreMonth, getBankValuePreMonth, getDigitalServicesValuePreMonth,
+    getEmergencyFundPreMonth, getStocksValuePreMonth, getEtfValuePreMonth,
+    getBitcoinValuePreMonth, getCryptoValuePreMonth, getBondsValuePreMonth,
+    getFundsValuePreMonth, getCommoditiesValuePreMonth
 } from '../utils/userDataSelectors';
 import {
     ModernDashboardHeader,
@@ -306,6 +310,25 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const totalEmergencySecurity = emergencyFundAsset.value; // For now only emergency fund, but prepared for future additions
     const totalBalance = totalValue;
 
+    // Previous-month totals per category, for the compact view's "vs previous month" deltas
+    const categoryPreMonthTotals = useMemo(() => (userData ? {
+        liquidity: addCurrency(
+            getBankValuePreMonth(userData) || 0,
+            getCashValuePreMonth(userData) || 0,
+            getDigitalServicesValuePreMonth(userData) || 0,
+        ),
+        emergency: getEmergencyFundPreMonth(userData) || 0,
+        investments: addCurrency(
+            getStocksValuePreMonth(userData) || 0,
+            getEtfValuePreMonth(userData) || 0,
+            getBitcoinValuePreMonth(userData) || 0,
+            getCryptoValuePreMonth(userData) || 0,
+            getBondsValuePreMonth(userData) || 0,
+            getFundsValuePreMonth(userData) || 0,
+            getCommoditiesValuePreMonth(userData) || 0,
+        ),
+    } : null), [userData]);
+
     // Calcola percentuale obiettivo emergency fund
     const emergencyFundGoal = userData?.goals?.find(goal => goal.type === 'emergencyFund');
     const emergencyFundTarget = emergencyFundGoal?.target || userData?.limits?.emergencyFundTarget;
@@ -500,6 +523,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         formatPercentage={formatPercentage}
                         holdingsByAssetKey={holdingsByAssetKey}
                         liquidityAccountsByAssetKey={liquidityAccountsByAssetKey}
+                        categoryPreMonthTotals={categoryPreMonthTotals}
                     />
                 ) : (
                 <>

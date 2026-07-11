@@ -419,6 +419,9 @@ export default function InsertValue({
   const [deleteIncomeAmount, setDeleteIncomeAmount] = useState("");
   const [deleteOutflowDate, setDeleteOutflowDate] = useState("");
   const [deleteOutflowAmount, setDeleteOutflowAmount] = useState("");
+  // True when the delete modal's source was auto-filled from the source stored
+  // with the transaction at insert time (shows an explanatory note in the modal)
+  const [deleteSourcePrefilled, setDeleteSourcePrefilled] = useState(false);
 
   // Form states
   const [selectedOption, setSelectedOption] = useState("");
@@ -897,7 +900,7 @@ export default function InsertValue({
    *                                            touching any balance
    *   - { cancelled: false, source: '<label>' } → user picked a balance source
    */
-  const openEditConfirmationModal = ({ isOutflow, originalDate, originalAmount, editedDate, editedAmount }) => {
+  const openEditConfirmationModal = ({ isOutflow, originalDate, originalAmount, editedDate, editedAmount, initialSource = '' }) => {
     return new Promise((resolve) => {
       setEditModal({
         isOpen: true,
@@ -906,7 +909,7 @@ export default function InsertValue({
         originalAmount,
         editedDate,
         editedAmount,
-        selectedSource: '',
+        selectedSource: initialSource || '',
         onResolve: (result) => {
           setEditModal((m) => ({ ...m, isOpen: false, onResolve: null }));
           resolve(result);
@@ -1213,6 +1216,7 @@ export default function InsertValue({
           row.typoKey,
           row.categoryKey,
           row.userCategoryId,
+          row.balanceSource,
         );
         return financeService.addExpenseOrIncome(inExJson)
           .then((res) => { if (res.status === 200) success++; else failed++; })
@@ -1316,6 +1320,7 @@ export default function InsertValue({
           0,
           row.categoryKey,
           row.userCategoryId,
+          row.balanceSource,
         );
         return financeService.addExpenseOrIncome(inExJson)
           .then((res) => { if (res.status === 200) success++; else failed++; })
@@ -1455,15 +1460,42 @@ export default function InsertValue({
     setShowMultiBalanceInsert(false);
   };
 
-  const handleDeleteIncome = (date, amount) => {
+  /**
+   * Resolves the translated source label matching the balance source stored
+   * with a transaction at insert time (balanceAssetKey / balanceDetailType /
+   * balanceDetailId), so delete/edit can propose the exact field to restore.
+   * Falls back from the specific sub-account (it may have been deleted since)
+   * to the parent asset field; returns '' when nothing was stored.
+   */
+  const findSourceLabelForTransaction = (row) => {
+    if (!row?.balanceAssetKey) return '';
+    const entries = getBalanceSourceEntries();
+    if (row.balanceDetailType && row.balanceDetailId != null) {
+      const detail = entries.find((entry) =>
+        entry.detailType === row.balanceDetailType &&
+        entry.detailId === row.balanceDetailId &&
+        entry.assetKey === row.balanceAssetKey);
+      if (detail) return detail.label;
+    }
+    const base = entries.find((entry) => !entry.detailType && entry.assetKey === row.balanceAssetKey);
+    return base?.label || '';
+  };
+
+  const handleDeleteIncome = (date, amount, row = null) => {
     setDeleteIncomeAmount(amount);
     setDeleteIncomeDate(date);
+    const storedLabel = findSourceLabelForTransaction(row);
+    setSelectedOption(storedLabel || '');
+    setDeleteSourcePrefilled(Boolean(storedLabel));
     setShowConfirmationDeleteIncome(true);
   };
 
-  const handleDeleteOutflow = (date, amount) => {
+  const handleDeleteOutflow = (date, amount, row = null) => {
     setDeleteOutflowDate(date);
     setDeleteOutflowAmount(amount);
+    const storedLabel = findSourceLabelForTransaction(row);
+    setSelectedOption(storedLabel || '');
+    setDeleteSourcePrefilled(Boolean(storedLabel));
     setShowConfirmationDeleteOutflow(true);
   };
 
@@ -1507,6 +1539,7 @@ export default function InsertValue({
         originalAmount: oldAmountEUR,
         editedDate: newDate,
         editedAmount: newAmountEUR,
+        initialSource: findSourceLabelForTransaction(originalAdd),
       });
       if (!result || result.cancelled) return false; // user dismissed the modal
       balanceSource = result.source; // null means: save edit, don't touch balances
@@ -1527,7 +1560,9 @@ export default function InsertValue({
         return false;
       }
 
-      // 3. Insert edited.
+      // 3. Insert edited. Keep the source chosen in the edit modal, or carry
+      // over the source stored with the original transaction when the edit
+      // didn't ask for one (no balance impact).
       const inExJson = createInExJson(
         isOutflow,
         editedValues.date,
@@ -1536,7 +1571,15 @@ export default function InsertValue({
         isOutflow ? editedValues.typologyKey : 0,
         editedValues.categoryKey,
         editedValues.userCategoryId ?? null,
+        balanceSource,
       );
+      if (!inExJson.expense.balance_source && originalAdd?.balanceAssetKey) {
+        inExJson.expense.balance_source = {
+          asset_key: originalAdd.balanceAssetKey,
+          detail_type: originalAdd.balanceDetailType ?? null,
+          detail_id: originalAdd.balanceDetailId ?? null,
+        };
+      }
       const insertResult = await financeService.addExpenseOrIncome(inExJson);
       if (insertResult.status !== 200) {
         showError(translations.insert[sectionKey].editFailed);
@@ -1600,7 +1643,21 @@ export default function InsertValue({
     }
   };
 
-  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null) => {
+  // Canonical balance-source payload for a translated source label (or null).
+  // Persisted with the transaction so delete/edit can later propose the exact
+  // balance field (and sub-account) to restore, in any UI language.
+  const buildBalanceSourcePayload = (balanceSourceLabel) => {
+    if (!balanceSourceLabel) return null;
+    const meta = getBalanceSourceMeta()[balanceSourceLabel];
+    if (!meta?.assetKey) return null;
+    return {
+      asset_key: meta.assetKey,
+      detail_type: meta.detailType ?? null,
+      detail_id: meta.detailId ?? null,
+    };
+  };
+
+  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null, balanceSourceLabel = null) => {
     const numericAmount = Number(amount) || 0;
     return {
       expense: {
@@ -1611,6 +1668,7 @@ export default function InsertValue({
         category_tag: category_tag,
         user_category_id: user_category_id,
         notes: notes,
+        balance_source: buildBalanceSourcePayload(balanceSourceLabel),
       },
     };
   };
@@ -1629,6 +1687,7 @@ export default function InsertValue({
         typoOutflow.key,
         categoryOutflow.key,
         categoryOutflow.userCategoryId ?? null,
+        selectedOption,
       );
       // Only reset note and value - keep category, typology, date and balance source for quick re-entry
       setNoteOutflowAreaValue("");
@@ -1642,6 +1701,7 @@ export default function InsertValue({
         0,
         categoryIncome.key,
         categoryIncome.userCategoryId ?? null,
+        selectedOption,
       );
       // Only reset note and value - keep category, date and balance destination for quick re-entry
       setNoteIncomeAreaValue("");
@@ -1945,6 +2005,7 @@ export default function InsertValue({
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
+            balanceSourceMeta={getBalanceSourceMeta()}
           />
         </SectionCard>
       );
@@ -1994,6 +2055,7 @@ export default function InsertValue({
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
+            balanceSourceMeta={getBalanceSourceMeta()}
           />
         </SectionCard>
       );
@@ -2075,6 +2137,7 @@ export default function InsertValue({
               OutflowsTags={OutflowsTags}
               paymentTags={paymentTags}
               balanceOptions={options}
+              balanceSourceMeta={getBalanceSourceMeta()}
               customCategories={getCustomCategories(userData)}
               onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: true })}
               onSubmitBatch={handleBatchOutflowSubmit}
@@ -2102,6 +2165,7 @@ export default function InsertValue({
               theme={theme}
               incomesTags={incomesTags}
               balanceOptions={options}
+              balanceSourceMeta={getBalanceSourceMeta()}
               customCategories={getCustomCategories(userData)}
               onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: false })}
               onSubmitBatch={handleBatchIncomeSubmit}
@@ -2187,6 +2251,8 @@ export default function InsertValue({
           deleteIncomeAmount={deleteIncomeAmount}
           deleteOutflowDate={deleteOutflowDate}
           deleteOutflowAmount={deleteOutflowAmount}
+          balanceSourceMeta={getBalanceSourceMeta()}
+          deleteSourcePrefilled={deleteSourcePrefilled}
           investmentHoldings={investmentHoldings}
           liquidityAccounts={liquidityAccounts}
         />
@@ -2220,6 +2286,7 @@ export default function InsertValue({
               editedDate={editModal.editedDate}
               editedAmount={editModal.editedAmount}
               balanceOptions={options}
+              balanceSourceMeta={getBalanceSourceMeta()}
               selectedSource={editModal.selectedSource}
               onChangeSelectedSource={(src) =>
                 setEditModal((m) => ({ ...m, selectedSource: src }))

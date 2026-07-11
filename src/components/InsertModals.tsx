@@ -353,6 +353,8 @@ export default function InsertModals({
   deleteIncomeAmount,
   deleteOutflowDate,
   deleteOutflowAmount,
+  balanceSourceMeta = null,
+  deleteSourcePrefilled = false,
   investmentHoldings = [],
   liquidityAccounts = [],
 }) {
@@ -499,6 +501,8 @@ export default function InsertModals({
           transactionDate={deleteIncomeDate}
           transactionAmount={deleteIncomeAmount}
           balanceOptions={options}
+          balanceSourceMeta={balanceSourceMeta}
+          sourcePrefilled={deleteSourcePrefilled}
           selectedOption={selectedOption}
           onChangeSelectedOption={setSelectedOption}
           onConfirm={onConfirmDeleteIncome}
@@ -514,6 +518,8 @@ export default function InsertModals({
           transactionDate={deleteOutflowDate}
           transactionAmount={deleteOutflowAmount}
           balanceOptions={options}
+          balanceSourceMeta={balanceSourceMeta}
+          sourcePrefilled={deleteSourcePrefilled}
           selectedOption={selectedOption}
           onChangeSelectedOption={setSelectedOption}
           onConfirm={onConfirmDeleteOutflow}

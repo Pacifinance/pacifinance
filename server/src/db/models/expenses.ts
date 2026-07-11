@@ -7,10 +7,29 @@ import { encryptField, decryptField } from "../crypto"
 
 const EXPENSE_SELECT = `
     occurred_at, amount, is_expense, notes,
+    balance_asset_key, balance_detail_type, balance_detail_id,
     payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type),
     user_category:user_categories(id, label)
 `
+
+/** Balance-source asset keys accepted by the expenses table CHECK constraint. */
+export const EXPENSE_BALANCE_ASSET_KEYS = [
+    "bank", "cash", "digitalServices", "emergencyFund",
+    "stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"
+] as const
+
+export const EXPENSE_BALANCE_DETAIL_TYPES = ["liquidity", "investment"] as const
+
+/**
+ * Optional balance source recorded with a transaction: the balance field (and
+ * optionally the specific sub-account) the money was taken from / added to.
+ */
+export type ExpenseBalanceSource = {
+    asset_key: typeof EXPENSE_BALANCE_ASSET_KEYS[number],
+    detail_type: typeof EXPENSE_BALANCE_DETAIL_TYPES[number] | null,
+    detail_id: number | null
+}
 
 function mapTagJoin(row: any) {
     if (!row) return null
@@ -25,7 +44,10 @@ function toExpense(row: any) {
         notes: decryptField(row.notes),
         paymentType: mapTagJoin(row.payment_type),
         categoryTag: mapTagJoin(row.category_tag),
-        userCategory: row.user_category ? {id: row.user_category.id as number, label: row.user_category.label as string} : null
+        userCategory: row.user_category ? {id: row.user_category.id as number, label: row.user_category.label as string} : null,
+        balanceAssetKey: (row.balance_asset_key as string | null) ?? null,
+        balanceDetailType: (row.balance_detail_type as string | null) ?? null,
+        balanceDetailId: (row.balance_detail_id as number | null) ?? null
     }
 }
 
@@ -41,10 +63,12 @@ function toExpense(row: any) {
  * @param payment_type Type of payment (None, Single, Subscription or Installment)
  * @param category_tag Category tag of the expense
  * @param user_category_id Optional custom sub-category (child of category_tag), display-only
+ * @param balance_source Optional balance source the transaction was paid from / credited to
  * @returns Expense document, or null in case of error
  */
 async function insertNew(user_id: string, date: Date, amount: number, is_expense: boolean,
-    notes: string, payment_type: number, category_tag: number, user_category_id: number | null = null) {
+    notes: string, payment_type: number, category_tag: number, user_category_id: number | null = null,
+    balance_source: ExpenseBalanceSource | null = null) {
     let payment_type_ref = null
     let category_tag_ref = null
     if (is_expense) {
@@ -67,7 +91,10 @@ async function insertNew(user_id: string, date: Date, amount: number, is_expense
         notes: encryptField(notes),
         payment_type_tag_id: payment_type_ref.id,
         category_tag_id: category_tag_ref.id,
-        user_category_id
+        user_category_id,
+        balance_asset_key: balance_source?.asset_key ?? null,
+        balance_detail_type: balance_source?.detail_type ?? null,
+        balance_detail_id: balance_source?.detail_id ?? null
     }).select(EXPENSE_SELECT).single()
     if (error) console.error("expenses.insertNew: failed to insert expense", error)
     if (error || !data) return null

@@ -66,12 +66,15 @@ const options: any = {
 }
 
 /**
- * How many coins to track, ranked by market cap. Kept small on purpose: fewer
- * coins means the one-coin-per-call historic-sparkline backfill (see
- * buildHistoricSparkline below) finishes faster, and fewer CoinGecko demo-tier
- * calls overall.
+ * How many coins to track, ranked by market cap. Current prices for all N
+ * coins cost a SINGLE /coins/markets call regardless of N — the only cost of
+ * a bigger N is the historic-sparkline warm-up: the backfill fetches one
+ * coin's 1-year history per hourly run (see buildHistoricSparkline below) to
+ * stay inside the CoinGecko demo-tier rate limits, so a fresh cache takes
+ * TOP_N_COINS hours to fill every historic chart. Coins without historic
+ * data yet still show price/24h/7d normally.
  */
-const TOP_N_COINS = 10
+const TOP_N_COINS = 50
 
 // Sparkline parameters
 

@@ -1691,7 +1691,8 @@ export default function MarketPrices() {
     const toEurVal = (v) => (v != null ? v * usdToEur : null);
 
     const list = Object.entries(cryptoData).map(([id, coin]) => {
-      const rawSparkline = coin.sparkline_in_7d?.price ?? coin.sparkline ?? [];
+      // sparkline_in_7d.price = CoinGecko direct; sparkline7D = backend cache shape (see server prices.ts)
+      const rawSparkline = coin.sparkline_in_7d?.price ?? coin.sparkline7D ?? coin.sparkline ?? [];
       // Convert sparkline from USD to EUR (CoinGecko sparkline is always in USD)
       const sparkline = rawSparkline.map(p => p * usdToEur);
 
@@ -2859,6 +2860,9 @@ export default function MarketPrices() {
           <LastUpdated theme={theme}>
             <RefreshCw />
             {t.updatedAutomatically || 'Updated automatically every hour'}
+            {' · '}
+            {(t.topByMarketCap || 'Showing the top {count} assets by market cap')
+              .replace('{count}', String(Object.keys(cryptoData).length))}
           </LastUpdated>
         )}
 

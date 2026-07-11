@@ -132,7 +132,49 @@ describe("private backend routes", () => {
             "monthly salary",
             0,
             3,
-            null
+            null,
+            null // balance_source: not provided in the payload
+        )
+    })
+
+    it("persists a valid balance source and drops an invalid one", async () => {
+        const addExpense = (balance_source: any) => request(app, "/api/expenses/add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                expense: {
+                    date: "2024-05-20T00:00:00.000Z",
+                    amount: "10",
+                    is_expense: true,
+                    payment_type: 1,
+                    category_tag: 3,
+                    notes: "",
+                    balance_source
+                }
+            }
+        })
+
+        // Valid: parent asset + liquidity sub-account
+        let response = await addExpense({asset_key: "bank", detail_type: "liquidity", detail_id: 7})
+        expect(response.status).toBe(200)
+        expect(mockDb.expenses.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
+            {asset_key: "bank", detail_type: "liquidity", detail_id: 7}
+        )
+
+        // Invalid asset key: the source is dropped, the transaction still inserts
+        response = await addExpense({asset_key: "not-an-asset", detail_type: "liquidity", detail_id: 7})
+        expect(response.status).toBe(200)
+        expect(mockDb.expenses.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null, null
+        )
+
+        // Detail type without id: only the parent key survives
+        response = await addExpense({asset_key: "cash", detail_type: "liquidity", detail_id: "abc"})
+        expect(response.status).toBe(200)
+        expect(mockDb.expenses.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
+            {asset_key: "cash", detail_type: null, detail_id: null}
         )
     })
 

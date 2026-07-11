@@ -15,6 +15,7 @@ import {
   CountBadge, SubmitButton, ProgressBar, getSelectSx,
 } from './multiInsert/SharedStyles';
 import { handleAmountInput, formatAmountBlur, groupAmountsByBalanceSource } from './multiInsert/helpers';
+import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
 // Re-export helpers so existing imports from this file keep working
 export { handleAmountInput, formatAmountBlur, groupAmountsByBalanceSource };
@@ -40,6 +41,7 @@ export default function MultiIncomeInsert({
   theme,
   incomesTags,
   balanceOptions,
+  balanceSourceMeta = null,
   customCategories,
   onCreateCategory,
   onSubmitBatch,
@@ -237,9 +239,7 @@ export default function MultiIncomeInsert({
                           <MenuItem value="">
                             <em>{translations.general.selectAnOption}</em>
                           </MenuItem>
-                          {Object.keys(balanceOptions).map((option) => (
-                            <MenuItem key={option} value={option}>{option}</MenuItem>
-                          ))}
+                          {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
                         </Select>
                     </div>
                   );
@@ -306,9 +306,7 @@ export default function MultiIncomeInsert({
               <MenuItem value="">
                 <em>{translations.general.selectAnOption}</em>
               </MenuItem>
-              {Object.keys(balanceOptions).map((option) => (
-                <MenuItem key={option} value={option}>{option}</MenuItem>
-              ))}
+              {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
             </Select>
           )}
           <SubmitButton

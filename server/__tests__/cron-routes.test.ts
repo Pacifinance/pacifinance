@@ -66,4 +66,26 @@ describe("cron backend routes", () => {
         expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
         expect(mockCache.invalidate).toHaveBeenCalledWith("userRankings")
     })
+
+    it("restricts the recompute to just one cache entry via ?target= (splitting the work across two smaller requests)", async () => {
+        mockCache.valueExpired.mockResolvedValue(false)
+
+        const averagesOnly = await request(app, "/api/cron/refresh-user-averages", {
+            headers: {authorization: "Bearer test-cron-secret"},
+            query: {force: "true", target: "averages"}
+        })
+        expect(averagesOnly.status).toBe(200)
+        expect(mockCache.invalidate).toHaveBeenCalledWith("userAverages")
+        expect(mockCache.invalidate).not.toHaveBeenCalledWith("userRankings")
+
+        mockCache.invalidate.mockClear()
+
+        const rankingsOnly = await request(app, "/api/cron/refresh-user-averages", {
+            headers: {authorization: "Bearer test-cron-secret"},
+            query: {force: "true", target: "rankings"}
+        })
+        expect(rankingsOnly.status).toBe(200)
+        expect(mockCache.invalidate).toHaveBeenCalledWith("userRankings")
+        expect(mockCache.invalidate).not.toHaveBeenCalledWith("userAverages")
+    })
 })

@@ -72,13 +72,37 @@ cronRouter.get("/refresh-crypto-prices", async (_, res) => {
  * ?force - the query param exists so a maintainer can trigger an immediate
  * recompute (e.g. right after a similarUsers.ts logic change) instead of
  * waiting for the entries' monthly TTL to lapse.
+ *
+ * The two invalidations run concurrently (not one after the other) so the
+ * combined wall time is the slower of the two, not their sum - both are
+ * still expensive per-user computations even with their own internal
+ * concurrency (see server/src/cache/items/{averages,rankings}.ts), so this
+ * matters for staying inside Vercel's function timeout.
+ *
+ * ?target=averages|rankings restricts the run to just one of the two - useful
+ * to manually force-populate a cold cache in two smaller, faster requests
+ * instead of one combined one when the user count makes even the parallel
+ * version tight against the timeout.
  */
 cronRouter.get("/refresh-user-averages", async (req, res) => {
     const force = req.query.force === "true"
-    if (force || await cache.valueExpired("userAverages"))
-        await cache.invalidate("userAverages")
-    if (force || await cache.valueExpired("userRankings"))
-        await cache.invalidate("userRankings")
+    const target = req.query.target // "averages" | "rankings" | undefined (both)
+
+    const jobs: Promise<void>[] = []
+    if (target !== "rankings") {
+        jobs.push((async () => {
+            if (force || await cache.valueExpired("userAverages"))
+                await cache.invalidate("userAverages")
+        })())
+    }
+    if (target !== "averages") {
+        jobs.push((async () => {
+            if (force || await cache.valueExpired("userRankings"))
+                await cache.invalidate("userRankings")
+        })())
+    }
+    await Promise.all(jobs)
+
     res.status(200).send()
 })
 

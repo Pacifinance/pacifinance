@@ -63,7 +63,10 @@ const Fab = styled.button`
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  /* Matches every other modal's Overlay (multiInsert/SharedStyles.js) — the
+   * mobile BottomNavBar renders via a portal at z-index 9999, so anything
+   * lower gets its bottom edge (here, the submit button) covered by it. */
+  z-index: 10002;
   background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: flex-end;

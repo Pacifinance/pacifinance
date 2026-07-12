@@ -43,18 +43,23 @@ export type RankingsCachedData = {
  * @returns Object to store in the database and cache
  */
 async function fetchUserRankings(): Promise<RankingsCachedData> {
+    const t0 = Date.now()
     console.log("Started computation of user rankings")
 
     const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
 
     const allUsersList = await users.getAllUsersIds() // test users included
+    console.log(`[rankings] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
+
     const snapshot = await similarUsers.fetchProfilesSnapshot()
+    console.log(`[rankings] profiles snapshot fetched (+${Date.now() - t0}ms)`)
 
     const [balancePool, incomePool, expensePool] = await Promise.all([
         balances.getRankingPool(undefined, true),
         expenses.getExpenseRankingPool(undefined, false, reference_date),
         expenses.getExpenseRankingPool(undefined, true, reference_date),
     ])
+    console.log(`[rankings] population-wide pools fetched (+${Date.now() - t0}ms)`)
 
     const rankingsCachedData: RankingsCachedData = {}
 
@@ -81,6 +86,7 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
         }
     })
 
+    console.log(`[rankings] per-user rankings computed (+${Date.now() - t0}ms)`)
     console.log("Finished computation of user rankings")
 
     return rankingsCachedData

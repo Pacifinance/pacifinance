@@ -256,6 +256,12 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     // For each user, get its total balance, total expenses and total incomes of the last month
     // Then, compute the average of all balances, expenses and incomes
 
+    // Stage timings (elapsed ms since function start) - deliberately kept
+    // permanent rather than stripped after debugging: this computation's cost
+    // depends on data shape (how many months of history each user has, cohort
+    // sizes), not just user count, so a future slow-down is easier to diagnose
+    // from a log line than by re-instrumenting on demand.
+    const t0 = Date.now()
     console.log("Started computation of users averages")
 
     const averagesCachedData: AveragesCachedData = {
@@ -272,13 +278,17 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
 
     const allUsersList = await users.getAllUsersIds() // test users included
     const allUserIds = allUsersList.map((user) => user.id)
+    console.log(`[averages] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
+
     averagesCachedData.all = await computeAveragesForCohorts(
         { balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds }, now
     )
+    console.log(`[averages] "all" cohort computed (+${Date.now() - t0}ms)`)
 
     // Fetched once and reused for every user below, instead of once per
     // (user, metric) pair - see similarUsers.fetchProfilesSnapshot.
     const snapshot = await similarUsers.fetchProfilesSnapshot()
+    console.log(`[averages] profiles snapshot fetched (+${Date.now() - t0}ms)`)
 
     await mapWithConcurrency(allUsersList, OUTER_CONCURRENCY, async (user) => {
         const userRef = user.id
@@ -294,6 +304,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         }, now)
     })
 
+    console.log(`[averages] per-user averages computed (+${Date.now() - t0}ms)`)
     console.log("Finished computation of users averages")
 
     return averagesCachedData

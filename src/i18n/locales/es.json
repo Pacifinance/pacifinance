@@ -540,7 +540,9 @@
             "pastePlaceholder": "Ej. \"40 euros gasolina\" o dicta con el micrófono del teclado...",
             "recognizeButton": "Reconocer",
             "pasteFound": "¡Encontrado! Revisa los campos y confirma.",
-            "pasteNotFound": "No encontré importe ni categoría — introdúcelos abajo."
+            "pasteNotFound": "No encontré importe ni categoría — introdúcelos abajo.",
+            "pasteHintDesktop": "Escribe o pega una frase, o usa el dictado por voz de tu sistema (Win+H en Windows, doble toque en Fn en Mac). Ej. \"24,90 compra en el supermercado\". Todo permanece en tu dispositivo, no enviamos nada.",
+            "pastePlaceholderDesktop": "Ej. \"40 euros gasolina\" o dicta con el dictado por voz del sistema..."
         },
         "title": "Panel",
         "totalBalance": "Tu balance total es: ",
@@ -857,6 +859,7 @@
             "successDelete": "Gasto eliminado con éxito",
             "deleteBalanceRestore": "Puedes elegir restaurar uno de los balances, o simplemente eliminar la entrada sin modificar los balances.",
             "decreaseWhichBalance": "Restar de",
+            "makeRecurring": "Hacer que se repita cada mes",
             "multiInsert": {
                 "toggle": "Multi-inserción",
                 "title": "Inserción múltiple de gastos",

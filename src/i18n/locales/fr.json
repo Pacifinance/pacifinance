@@ -538,7 +538,9 @@
             "pastePlaceholder": "Ex. « 40 euros essence » ou dictez avec le micro du clavier...",
             "recognizeButton": "Reconnaître",
             "pasteFound": "Trouvé ! Vérifiez les champs et confirmez.",
-            "pasteNotFound": "Montant ou catégorie introuvable — saisissez-les ci-dessous."
+            "pasteNotFound": "Montant ou catégorie introuvable — saisissez-les ci-dessous.",
+            "pasteHintDesktop": "Écrivez ou collez une phrase, ou utilisez la dictée vocale de votre système (Win+H sous Windows, double appui sur Fn sur Mac). Ex. « 24,90 courses au supermarché ». Tout reste sur votre appareil, rien n'est envoyé.",
+            "pastePlaceholderDesktop": "Ex. « 40 euros essence » ou dictez avec la dictée vocale du système..."
         },
         "title": "Tableau de bord",
         "totalBalance": "Solde total",
@@ -855,6 +857,7 @@
             "successDelete": "Sortie supprimée avec succès",
             "deleteBalanceRestore": "Tu peux choisir de restaurer l'un des soldes, ou simplement supprimer l'entrée sans modifier les soldes.",
             "decreaseWhichBalance": "Soustraire de",
+            "makeRecurring": "Rendre récurrent chaque mois",
             "multiInsert": {
                 "toggle": "Multi-insertion",
                 "title": "Insertion multiple de sorties",

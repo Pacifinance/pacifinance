@@ -1,10 +1,16 @@
 import { ExtDate } from "../../libs/datelib"
+import { mapWithConcurrency } from "../../libs/concurrency"
 
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
 import expenses from "../../db/models/expenses"
 import similarUsers from "../../services/similarUsers"
 import { rankFromBalancePool, rankFromExpensePool } from "../../services/ranking"
+
+// See server/src/cache/items/averages.ts for why this exists: running every
+// user's cohort queries fully sequentially made this scale linearly with the
+// user count until it exceeded Vercel's function timeout.
+const USER_CONCURRENCY = 6
 
 /**
  * Rank percentiles for a single user, both among all users and among their
@@ -52,7 +58,7 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
 
     const rankingsCachedData: RankingsCachedData = {}
 
-    for (const user of allUsersList) {
+    await mapWithConcurrency(allUsersList, USER_CONCURRENCY, async (user) => {
         const userRef = user.id
 
         const balanceCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "balance")
@@ -73,7 +79,7 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
             incomesSimilar: rankFromExpensePool(incomeSimilarPool, userRef, false),
             outflowsSimilar: rankFromExpensePool(expenseSimilarPool, userRef, true),
         }
-    }
+    })
 
     console.log("Finished computation of user rankings")
 

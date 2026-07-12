@@ -8,5 +8,10 @@
   "crons": [
     { "path": "/api/cron/refresh-user-averages", "schedule": "0 3 1 * *" },
     { "path": "/api/cron/delete-users", "schedule": "0 2 * * *" }
-  ]
+  ],
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 60
+    }
+  }
 }

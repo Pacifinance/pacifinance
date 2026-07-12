@@ -3,17 +3,7 @@ import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { BsPhone, BsLaptop, BsApple, BsAndroid2 } from 'react-icons/bs';
-
-/* ─── Platform detection ─── */
-function detectPlatform() {
-    if (typeof navigator === 'undefined') return 'desktop';
-    const ua = navigator.userAgent || '';
-    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-        return 'ios';
-    }
-    if (/android/i.test(ua)) return 'android';
-    return 'desktop';
-}
+import { detectPlatform } from '../utils/platformDetection';
 
 /* ─── Styled components ─── */
 const GuideContainer = styled.div`

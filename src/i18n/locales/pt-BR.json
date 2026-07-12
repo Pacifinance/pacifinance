@@ -538,7 +538,9 @@
             "pastePlaceholder": "Ex. \"40 reais gasolina\" ou dite com o microfone do teclado...",
             "recognizeButton": "Reconhecer",
             "pasteFound": "Encontrado! Confira os campos e confirme.",
-            "pasteNotFound": "Não encontrei valor ou categoria — insira-os abaixo."
+            "pasteNotFound": "Não encontrei valor ou categoria — insira-os abaixo.",
+            "pasteHintDesktop": "Escreva ou cole uma frase, ou use o ditado por voz do seu sistema (Win+H no Windows, toque duas vezes em Fn no Mac). Ex. \"24,90 compras no supermercado\". Tudo fica no seu dispositivo, não enviamos nada.",
+            "pastePlaceholderDesktop": "Ex. \"40 reais gasolina\" ou dite com o ditado por voz do sistema..."
         },
         "title": "Painel",
         "totalBalance": "Saldo total",
@@ -855,6 +857,7 @@
             "successDelete": "Saída excluída com sucesso",
             "deleteBalanceRestore": "Você pode escolher restaurar um dos saldos, ou apenas excluir o registro sem modificar os saldos.",
             "decreaseWhichBalance": "Subtrair de",
+            "makeRecurring": "Tornar recorrente todo mês",
             "multiInsert": {
                 "toggle": "Multi-inserção",
                 "title": "Inserção múltipla de saídas",

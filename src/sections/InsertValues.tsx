@@ -388,6 +388,7 @@ export default function InsertValue({
   const [showMultiBalanceInsert, setShowMultiBalanceInsert] = useState(false);
   const [showRecurringPanel, setShowRecurringPanel] = useState(false);
   const [recurringItems, setRecurringItems] = useState([]);
+  const [makeOutflowRecurring, setMakeOutflowRecurring] = useState(false);
 
   const refreshRecurringItems = async () => {
     const items = await recurringTransactionService.getRecurring();
@@ -1719,6 +1720,29 @@ export default function InsertValue({
     try {
       const inExAdd = await financeService.addExpenseOrIncome(inExJson);
       if (inExAdd.status === 200) {
+        // If the user checked "make recurring" (see OutflowSection's
+        // subscription/periodic-payment auto-flag), also create a template so
+        // this transaction gets re-inserted automatically every month. Day of
+        // month is read from the "YYYY-MM-DD" string directly, NOT via
+        // `new Date(...).getDate()` (UTC-midnight/local-timezone bug).
+        if (isOutflow && makeOutflowRecurring) {
+          const dayOfMonth = Math.min(28, Math.max(1, Number(outflowDate.split('-')[2]) || 1));
+          try {
+            await recurringTransactionService.saveRecurring({
+              is_expense: true,
+              amount: inExJson.expense.amount,
+              notes: inExJson.expense.notes,
+              payment_type: inExJson.expense.payment_type,
+              category_tag: inExJson.expense.category_tag,
+              user_category_id: inExJson.expense.user_category_id,
+              day_of_month: dayOfMonth,
+            });
+          } catch (recurringError) {
+            console.error('Failed to create recurring template:', recurringError);
+          }
+          setMakeOutflowRecurring(false);
+        }
+
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
           // L'indice 0 corrisponde al mese corrente nell'array outflowsArray
@@ -2065,6 +2089,8 @@ export default function InsertValue({
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
             balanceSourceMeta={getBalanceSourceMeta()}
+            makeRecurring={makeOutflowRecurring}
+            setMakeRecurring={setMakeOutflowRecurring}
           />
         </SectionCard>
       );

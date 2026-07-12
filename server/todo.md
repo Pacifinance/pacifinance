@@ -63,6 +63,8 @@
 ### Performance
 - [ ] Enable text compression Server Side
   - [ ] https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression/?utm_source=lighthouse&utm_medium=lr
+- [x] Fix FUNCTION_INVOCATION_TIMEOUT su /api/cron/refresh-user-averages: fetchUserAverages/fetchUserRankings giravano completamente sequenziali (una query alla volta per utente), tempo O(n) utenti — ora parallelizzati con concorrenza limitata (server/src/libs/concurrency.ts) + maxDuration:60 in vercel.json come rete di sicurezza
+- [x] Bug trovato durante il fix sopra: in computeAveragesForCohorts (averages.ts) il ciclo per-utente riusava e MUTAVA la stessa istanza `thisMonthStart` condivisa (ExtDate.moveByMonths muta in place) — dopo il primo utente che entrava nel loop dei 12 mesi, "questo mese" scivolava indietro per tutti gli utenti successivi nello stesso calcolo, probabilmente corrompendo silenziosamente userAverages per gran parte degli utenti ad ogni run mensile. Risolto passando una copia per utente
 
 ## Idea
 - [ ] 

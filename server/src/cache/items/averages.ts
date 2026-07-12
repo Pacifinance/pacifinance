@@ -1,11 +1,22 @@
 import { ExtDate } from "../../libs/datelib"
 import { addCurrency, roundCurrency, toCents, fromCents } from "../../libs/money"
+import { mapWithConcurrency } from "../../libs/concurrency"
 
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
 import expenses from "../../db/models/expenses"
 import tags from "../../db/models/tags"
 import similarUsers from "../../services/similarUsers"
+
+// How many users' worth of DB round trips run concurrently. Two separate
+// knobs because fetchUserAverages nests one under the other (each of the
+// OUTER_CONCURRENCY per-user cohort computations internally runs up to
+// USER_CONCURRENCY queries of its own) - the product of the two is the real
+// ceiling on concurrent Postgres connections, kept modest to not overwhelm
+// the connection pool while still comfortably clearing Vercel's function
+// timeout (this used to run every user fully sequentially).
+const USER_CONCURRENCY = 6
+const OUTER_CONCURRENCY = 2
 
 /**
  * Contains all the relevant averages of a user. A null field means there was
@@ -159,7 +170,10 @@ async function computeAveragesForCohorts(cohorts: MetricCohorts, now: ExtDate): 
     const generalSet = new Set(cohorts.general)
     const allUserIds = new Set([...balanceSet, ...incomesSet, ...outflowsSet, ...generalSet])
 
-    for (const userId of allUserIds) {
+    // Each user's DB round trips are independent; only the final accumulate()
+    // calls touch shared state, and those are synchronous (no await between
+    // read and write) so interleaving concurrent iterations can't race on them.
+    await mapWithConcurrency(Array.from(allUserIds), USER_CONCURRENCY, async (userId) => {
         // User balance up to last month
         if (balanceSet.has(userId)) {
             const balanceTotal = await balances.getTotalLatestByUserId(userId, thisMonthStart)
@@ -185,12 +199,15 @@ async function computeAveragesForCohorts(cohorts: MetricCohorts, now: ExtDate): 
         // cohort membership. Both need a 12-month lookup, run once if either applies.
         const needsCategoryBreakdown = outflowsSet.has(userId)
         const needsSavingsRate = generalSet.has(userId)
-        if (!needsCategoryBreakdown && !needsSavingsRate) continue
+        if (!needsCategoryBreakdown && !needsSavingsRate) return
 
         let yearlyExpenses: Expense[] = []
         let expensesYearlyTotal = 0
         let incomesYearlyTotal = 0
-        const month = thisMonthStart
+        // Each user gets its own month cursor (not the shared thisMonthStart
+        // instance) - ExtDate.moveByMonths mutates in place, and this now runs
+        // concurrently across users.
+        const month = new ExtDate(thisMonthStart)
         let countedMonths = 0
         while (countedMonths < 12) {
             countedMonths++
@@ -226,7 +243,7 @@ async function computeAveragesForCohorts(cohorts: MetricCohorts, now: ExtDate): 
                 averagesData.addExpenseByCategory(categoryIndex, yearlyTotalExpensesByCategory[categoryIndex])
             }
         }
-    }
+    })
 
     return averagesData.getAverages()
 }
@@ -263,7 +280,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     // (user, metric) pair - see similarUsers.fetchProfilesSnapshot.
     const snapshot = await similarUsers.fetchProfilesSnapshot()
 
-    for (const user of allUsersList) {
+    await mapWithConcurrency(allUsersList, OUTER_CONCURRENCY, async (user) => {
         const userRef = user.id
         const balanceCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "balance")
         const incomesCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "incomes")
@@ -275,7 +292,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
             outflows: outflowsCohort.userIds,
             general: generalCohort.userIds
         }, now)
-    }
+    })
 
     console.log("Finished computation of users averages")
 

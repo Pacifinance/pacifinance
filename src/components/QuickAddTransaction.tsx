@@ -2,7 +2,8 @@
  * QuickAddTransaction — floating action button that opens a popup to record
  * an outflow or income in seconds: amount + category, everything else
  * optional. Two entry modes inside the popup:
- *   - Manuale: the same minimal fields (category pills + amount) as before.
+ *   - Manuale: amount + category (via the shared CategoryPicker, including
+ *     the user's own custom sub-categories) + optional note.
  *   - Testo o voce: paste free text, or dictate it via the device keyboard's
  *     own microphone button, and a client-side parser (smartPasteParser.ts)
  *     guesses the amount + category. Nothing is ever sent anywhere for this —
@@ -23,17 +24,16 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
-import { getOutflowsTags, getIncomesTags, getPaymentTags } from '../utils/userDataSelectors';
-import { translateTag } from '../data/tagTranslations';
-import { getCategoryColor } from '../data/categoryColors';
+import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
+import { detectPlatform } from '../utils/platformDetection';
+import CategoryPicker from './CategoryPicker';
 
-/* Sits above the BuyMeACoffee floating widget (#bmc-wbtn, see src/index.css)
- * and the mobile BottomNavBar — offsets are hand-tuned, not pixel-derived. */
+/* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
 const Fab = styled.button`
   position: fixed;
-  right: 1.25rem;
-  bottom: 5.6rem;
+  right: 1.5rem;
+  bottom: 1.75rem;
   z-index: 950;
   width: 3.4rem;
   height: 3.4rem;
@@ -52,7 +52,7 @@ const Fab = styled.button`
   &:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(7, 145, 100, 0.5); }
 
   @media (max-width: 839px) {
-    bottom: 8.8rem;
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px) + 0.75rem);
     right: 1rem;
     width: 3.1rem;
     height: 3.1rem;
@@ -77,6 +77,8 @@ const Overlay = styled.div`
 const Popup = styled.div`
   width: 100%;
   max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
   background: ${p => p.theme.componentBackground || (p.theme.mode === 'dark' ? '#15171c' : '#fff')};
   border-radius: 1.25rem 1.25rem 0 0;
   padding: 1.1rem 1.25rem 1.4rem;
@@ -85,6 +87,7 @@ const Popup = styled.div`
   @media (min-width: 640px) {
     border-radius: 1.25rem;
     margin-bottom: 2rem;
+    max-height: 80vh;
     box-shadow: 0 12px 40px rgba(0,0,0,0.3);
   }
 `;
@@ -190,27 +193,8 @@ const AmountWrap = styled.div`
   }
 `;
 
-const CategoryGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+const CategoryFieldWrap = styled.div`
   margin-bottom: 0.9rem;
-`;
-
-const CategoryPill = styled.button`
-  border-radius: 999px;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.78rem;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  border: 1.5px solid ${p => p.$active ? p.$color : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)')};
-  background: ${p => p.$active ? `${p.$color}22` : 'transparent'};
-  color: ${p => p.$active ? p.$color : p.theme.textColor};
-  opacity: ${p => p.$active ? 1 : 0.75};
-  transition: all 0.12s ease;
-
-  &:hover { opacity: 1; }
 `;
 
 const NoteToggle = styled.button`
@@ -330,9 +314,9 @@ const todayLocalISO = () => {
 };
 
 export default function QuickAddTransaction({ theme }) {
-  const { language, translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
-  const { userData, handleSetIsUpdated } = useContext(UserContext) || {};
+  const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
   const { showError } = useToast();
   const { financeService } = useDemoServices();
 
@@ -345,7 +329,8 @@ export default function QuickAddTransaction({ theme }) {
 
   const [isOutflow, setIsOutflow] = useState(true);
   const [amount, setAmount] = useState('');
-  const [categoryIndex, setCategoryIndex] = useState(null);
+  const [categoryIndex, setCategoryIndex] = useState('');
+  const [userCategoryId, setUserCategoryId] = useState(null);
   const [note, setNote] = useState('');
   const [showNote, setShowNote] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -355,14 +340,22 @@ export default function QuickAddTransaction({ theme }) {
     () => (isOutflow ? getOutflowsTags(userData) : getIncomesTags(userData)),
     [userData, isOutflow],
   );
+  const customCategories = useMemo(() => getCustomCategories(userData), [userData]);
   const singlePaymentIndex = useMemo(() => {
     const paymentTags = getPaymentTags(userData);
     return paymentTags.find((tag) => tag.label === 'single payment')?.index ?? 1;
   }, [userData]);
 
   const amountNumber = Number(amount) || 0;
-  const canSubmit = amountNumber > 0 && categoryIndex !== null && !submitting;
-  const tagType = isOutflow ? 'expense' : 'income';
+  const canSubmit = amountNumber > 0 && categoryIndex !== '' && !submitting;
+  // Mobile keyboards show their own mic button next to any text field; desktop
+  // needs a different hint (OS-level dictation shortcut) since there's no such button.
+  const isMobilePlatform = useMemo(() => {
+    const platform = detectPlatform();
+    return platform === 'ios' || platform === 'android';
+  }, []);
+
+  const resetCategory = () => { setCategoryIndex(''); setUserCategoryId(null); };
 
   const resetAndClose = () => {
     setOpen(false);
@@ -376,7 +369,7 @@ export default function QuickAddTransaction({ theme }) {
     const result = parseSmartPasteText(pasteText);
     if (result.isIncome !== null) setIsOutflow(!result.isIncome);
     if (result.amount !== null) setAmount(String(result.amount));
-    if (result.categoryIndex !== null) setCategoryIndex(result.categoryIndex);
+    if (result.categoryIndex !== null) { setCategoryIndex(result.categoryIndex); setUserCategoryId(null); }
 
     if (result.amount === null && result.categoryIndex === null) {
       setParseFeedback({ found: false, message: t.pasteNotFound || 'Non ho trovato importo o categoria — inseriscili qui sotto.' });
@@ -397,7 +390,7 @@ export default function QuickAddTransaction({ theme }) {
           is_expense: isOutflow,
           payment_type: isOutflow ? singlePaymentIndex : 0,
           category_tag: categoryIndex,
-          user_category_id: null,
+          user_category_id: userCategoryId,
           notes: note,
           balance_source: null,
         },
@@ -409,7 +402,7 @@ export default function QuickAddTransaction({ theme }) {
           setJustAdded(false);
           resetAndClose();
           setAmount('');
-          setCategoryIndex(null);
+          resetCategory();
           setNote('');
         }, 900);
       } else {
@@ -468,14 +461,18 @@ export default function QuickAddTransaction({ theme }) {
             {entryMode === 'paste' ? (
               <>
                 <PasteHint theme={theme}>
-                  {t.pasteHint || 'Scrivi o incolla una frase, oppure usa il microfono della tastiera del telefono per dettarla. Es. "24,90 spesa al supermercato". Tutto resta sul tuo dispositivo.'}
+                  {isMobilePlatform
+                    ? (t.pasteHint || 'Scrivi o incolla una frase, oppure usa il microfono della tastiera del telefono per dettarla. Es. "24,90 spesa al supermercato". Tutto resta sul tuo dispositivo.')
+                    : (t.pasteHintDesktop || 'Scrivi o incolla una frase, oppure usa la dettatura vocale del tuo sistema (Win+H su Windows, doppio tap su Fn su Mac). Es. "24,90 spesa al supermercato". Tutto resta sul tuo dispositivo.')}
                 </PasteHint>
                 <PasteTextarea
                   theme={theme}
                   autoFocus
                   value={pasteText}
                   onChange={(e) => setPasteText(e.target.value)}
-                  placeholder={t.pastePlaceholder || 'Es. "40 euro benzina" oppure detta col microfono della tastiera...'}
+                  placeholder={isMobilePlatform
+                    ? (t.pastePlaceholder || 'Es. "40 euro benzina" oppure detta col microfono della tastiera...')
+                    : (t.pastePlaceholderDesktop || 'Es. "40 euro benzina" oppure detta con la dettatura vocale del sistema...')}
                 />
                 <RecognizeButton
                   type="button"
@@ -498,7 +495,7 @@ export default function QuickAddTransaction({ theme }) {
                     type="button"
                     theme={theme}
                     $active={isOutflow}
-                    onClick={() => { setIsOutflow(true); setCategoryIndex(null); }}
+                    onClick={() => { setIsOutflow(true); resetCategory(); }}
                   >
                     {t.outflow || translations?.general?.outflows || 'Uscita'}
                   </TypeButton>
@@ -507,7 +504,7 @@ export default function QuickAddTransaction({ theme }) {
                     theme={theme}
                     $active={!isOutflow}
                     $income
-                    onClick={() => { setIsOutflow(false); setCategoryIndex(null); }}
+                    onClick={() => { setIsOutflow(false); resetCategory(); }}
                   >
                     {t.income || translations?.general?.incomes || 'Entrata'}
                   </TypeButton>
@@ -528,24 +525,24 @@ export default function QuickAddTransaction({ theme }) {
                 </AmountWrap>
 
                 <FieldLabel theme={theme}>{translations?.general?.category || 'Categoria'}</FieldLabel>
-                <CategoryGrid>
-                  {tags.map((tag) => {
-                    const label = translateTag(tag.label, language, tagType);
-                    const color = getCategoryColor(label, language);
-                    return (
-                      <CategoryPill
-                        key={tag.index}
-                        type="button"
-                        theme={theme}
-                        $active={categoryIndex === tag.index}
-                        $color={color}
-                        onClick={() => setCategoryIndex(tag.index)}
-                      >
-                        {label}
-                      </CategoryPill>
-                    );
-                  })}
-                </CategoryGrid>
+                <CategoryFieldWrap>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={tags}
+                    customCategories={customCategories}
+                    categoryType={isOutflow ? 'expense' : 'income'}
+                    categoryKey={categoryIndex}
+                    userCategoryId={userCategoryId}
+                    onSelect={({ categoryKey, userCategoryId: selectedUserCategoryId }) => {
+                      setCategoryIndex(categoryKey);
+                      setUserCategoryId(selectedUserCategoryId);
+                    }}
+                    onCreateCategory={(parentIndex, label) =>
+                      addCustomCategory({ label, parent_index: parentIndex, is_expense: isOutflow })
+                    }
+                    placeholder={translations?.insert?.outflowSection?.placeholderCategory || 'Seleziona una categoria'}
+                  />
+                </CategoryFieldWrap>
 
                 <NoteToggle type="button" theme={theme} onClick={() => setShowNote((v) => !v)}>
                   + {t.note || 'nota'}

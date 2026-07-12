@@ -104,7 +104,8 @@
 - [ ] Deploy Vercel da repo in org SENZA Vercel Pro: scollegare la Git integration e deployare via GitHub Actions + Vercel CLI (`vercel build` + `vercel deploy --prebuilt --prod --token`) — le Actions sono gratis sui repo pubblici; preview deploy su PR replicabile nello stesso workflow
 - [ ] Org GitHub: 2FA obbligatoria per i membri, branch protection su main (PR + review), CODEOWNERS, secrets SOLO negli env di deploy (Vercel/Supabase), mai nel repo
 - [ ] Co-owner: aggiungere il secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2); i deploy production restano collegati agli account personali finché non serve altro
-- [ ] FUNDING.yml: GitHub Sponsors come canale primario + BuyMeACoffee esistente come secondario
+- [x] Rimosso il widget BuyMeACoffee floating globale (script iniettato fuori dall'albero React, restava visibile su ogni pagina inclusa l'app autenticata dopo la prima visita a Landing/Pricing/Info — invasivo e incoerente col posizionamento privacy-first); sostituito con un link statico "☕ Support PaciFinance" solo dove c'è già una sezione di supporto dedicata
+- [ ] FUNDING.yml: GitHub Sponsors come canale primario + link BuyMeACoffee esistente come secondario
 - [ ] README + CONTRIBUTING in inglese, CI pubblica (GitHub Actions: lint+test+build su PR — gratis per repo pubblici)
 - [ ] Landing "self-host in 10 minuti" con Docker (docker-compose: frontend statico + server Express + Postgres; Redis opzionale)
 - [ ] Demo account con mock data senza richieste DB (già pianificato sotto, diventa prerequisito del lancio)

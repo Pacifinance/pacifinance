@@ -598,7 +598,7 @@ export default function NewLandingContent({ theme }) {
             {translations.landing.new.donation.description}
           </p>
           <Suspense fallback={<div></div>}>
-            <BuyMeACoffeeWidget showLink={true} />
+            <BuyMeACoffeeWidget />
           </Suspense>
         </div>
       </section>

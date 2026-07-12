@@ -3,7 +3,6 @@ import { APP_VERSION } from '../data/appVersion';
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { LocalizedLink } from "../components/LocalizedLink";
-import BuyMeACoffeeWidget from "../components/BuyMeACoffeeWidget";
 import {
     ModernInfoContainer,
     ModernInfoContent,
@@ -242,7 +241,6 @@ function Info({ theme }) {
                                 }}>
                                     ☕ Support PaciFinance
                                 </div>
-                                <BuyMeACoffeeWidget showLink={false} />
                             </ModernCoffeeButton>
                         </a>
                     </ModernSupportSection>

@@ -1,62 +1,40 @@
-import React, { useEffect } from "react";
+/**
+ * BuyMeACoffeeWidget — plain static "support us" link.
+ *
+ * Deliberately NOT the Buy Me a Coffee floating widget script anymore: that
+ * script injects a persistent `#bmc-wbtn` button directly into the page
+ * outside React's tree, so once loaded on any page (footer, pricing, info)
+ * it kept floating on every subsequent page for the rest of the session —
+ * including inside the authenticated app. For a privacy-first product that's
+ * the wrong kind of persistent, so this is now a normal contextual link
+ * placed only where a "support us" section actually appears, with GitHub
+ * Sponsors as the primary channel once the project is open source (see
+ * todo.md) and this as the secondary one.
+ */
+import React from "react";
 
-export default function Buymeacoffee({ showLink = false }) {
-  useEffect(() => {
-    const div = document.getElementById("supportByBMC");
-    // Check if the script is already there
-    const existingScript = div.querySelector('script[data-name="BMC-Widget"]');
-    if (existingScript) {
-      // if the script is already there, doing nothing
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.setAttribute(
-      "src",
-      "https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
-    );
-    script.setAttribute("data-name", "BMC-Widget");
-    script.setAttribute("data-cfasync", "false");
-    script.setAttribute("data-id", "pacifinance");
-    script.setAttribute("data-description", "Support me on Buy me a coffee!");
-    script.setAttribute(
-      "data-message",
-      ""
-    );
-    script.setAttribute("data-color", "#079164");
-    script.setAttribute("data-position", "Right");
-    script.setAttribute("data-x_margin", "18");
-    script.setAttribute("data-y_margin", "18");
-
-    script.onload = function () {
-      const evt = document.createEvent("Event");
-      evt.initEvent("DOMContentLoaded", false, false);
-      window.dispatchEvent(evt);
-    };
-
-    div.appendChild(script);
-  }, []);
-
+export default function BuyMeACoffeeWidget() {
   return (
-    <>
-      <div id="supportByBMC"></div>
-      {showLink && (
-        <a 
-          href="https://www.buymeacoffee.com/pacifinance" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-flex items-center px-6 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-          style={{
-            background: 'linear-gradient(135deg, #079164 0%, #0ba374 100%)',
-            color: 'white',
-            border: '2px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: '0 8px 25px rgba(7, 145, 100, 0.4)',
-          }}
-          data-umami-event="landing-support-pacifinance"
-        >
-          ☕ Support PaciFinance
-        </a>
-      )}
-    </>
+    <a
+      href="https://www.buymeacoffee.com/pacifinance"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.75rem 1.5rem',
+        borderRadius: '0.75rem',
+        fontWeight: 700,
+        fontSize: '1.05rem',
+        textDecoration: 'none',
+        color: 'white',
+        background: 'linear-gradient(135deg, #079164 0%, #0ba374 100%)',
+        boxShadow: '0 8px 25px rgba(7, 145, 100, 0.35)',
+      }}
+      data-umami-event="support-pacifinance-bmc"
+    >
+      ☕ Support PaciFinance
+    </a>
   );
 }

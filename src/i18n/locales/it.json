@@ -540,7 +540,9 @@
             "pastePlaceholder": "Es. \"40 euro benzina\" oppure detta col microfono della tastiera...",
             "recognizeButton": "Riconosci",
             "pasteFound": "Trovato! Controlla i campi e conferma.",
-            "pasteNotFound": "Non ho trovato importo o categoria — inseriscili qui sotto."
+            "pasteNotFound": "Non ho trovato importo o categoria — inseriscili qui sotto.",
+            "pasteHintDesktop": "Scrivi o incolla una frase, oppure usa la dettatura vocale del tuo sistema (Win+H su Windows, doppio tap su Fn su Mac). Es. \"24,90 spesa al supermercato\". Tutto resta sul tuo dispositivo, non inviamo nulla.",
+            "pastePlaceholderDesktop": "Es. \"40 euro benzina\" oppure detta con la dettatura vocale del sistema..."
         },
         "title": "Dashboard",
         "totalBalance": "Il tuo patrimonio totale è: ",
@@ -857,6 +859,7 @@
             "successDelete": "Uscita eliminata con successo",
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
             "decreaseWhichBalance": "Sottrai da",
+            "makeRecurring": "Rendi ricorrente ogni mese",
             "multiInsert": {
                 "toggle": "Multi-inserimento",
                 "title": "Inserimento multiplo uscite",

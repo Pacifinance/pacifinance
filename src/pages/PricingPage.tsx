@@ -218,7 +218,6 @@ export default function PricingPage() {
                 : "Your support helps us keep PaciFinance free for everyone. Every donation, no matter how small, makes a difference!"}
             </p>
           </div>
-          <BuyMeACoffeeWidget showLink={true} />
           <p className="text-xs mt-4 opacity-60" style={{ color: theme.textColor }}>
             {translations.pricing.donation.disclaimer}
           </p>

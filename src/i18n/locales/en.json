@@ -540,7 +540,9 @@
             "pastePlaceholder": "E.g. \"40 euros gas\" or dictate with your keyboard's mic...",
             "recognizeButton": "Recognize",
             "pasteFound": "Found it! Check the fields and confirm.",
-            "pasteNotFound": "Couldn't find an amount or category — enter them below."
+            "pasteNotFound": "Couldn't find an amount or category — enter them below.",
+            "pasteHintDesktop": "Type or paste a sentence, or use your system's own voice dictation (Win+H on Windows, double-tap Fn on Mac). E.g. \"24.90 groceries at the supermarket\". Everything stays on your device — nothing is sent anywhere.",
+            "pastePlaceholderDesktop": "E.g. \"40 euros gas\" or dictate with your system's voice typing..."
         },
         "title": "Dashboard",
         "totalBalance": "Your total balance is: ",
@@ -857,6 +859,7 @@
             "successDelete": "Outflow deleted successfully",
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
             "decreaseWhichBalance": "Subtract from",
+            "makeRecurring": "Make it recurring every month",
             "multiInsert": {
                 "toggle": "Multi-insert",
                 "title": "Batch Insert Outflows",

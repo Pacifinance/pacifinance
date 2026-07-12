@@ -19,6 +19,9 @@ import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
 
+// Raw (untranslated) payment-tag labels that suggest a recurring template
+const RECURRING_PAYMENT_LABELS = ['subscription', 'periodic payment'];
+
 /* ─── Styled Components ─── */
 const SectionWrapper = styled.div`
   display: flex;
@@ -57,6 +60,23 @@ const FieldLabel = styled.label`
   letter-spacing: 0.04em;
   color: ${p => p.theme.textColor};
   opacity: 0.7;
+`;
+
+const RecurringCheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: ${p => p.theme.textColor};
+  cursor: pointer;
+
+  input {
+    width: 1.05rem;
+    height: 1.05rem;
+    cursor: pointer;
+    accent-color: ${p => p.theme.buttonBackgroundColor};
+  }
 `;
 
 const FieldInput = styled.input`
@@ -331,6 +351,8 @@ export default function OutflowSection({
   setSelectedOption,
   balanceOptions,
   balanceSourceMeta = null,
+  makeRecurring = false,
+  setMakeRecurring,
   outflowDateFilterStart,
   setOutflowDateFilterStart,
   outflowDateFilterEnd,
@@ -341,7 +363,11 @@ export default function OutflowSection({
   const pad = (n: number) => String(n).padStart(2, '0');
   const _now = new Date();
   const currentDate = `${_now.getFullYear()}-${pad(_now.getMonth() + 1)}-${pad(_now.getDate())}`;
-  
+
+  const isRecurringEligibleTypology = RECURRING_PAYMENT_LABELS.includes(
+    paymentTags.find((item) => item.index === typoOutflow.key)?.label
+  );
+
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
 
@@ -924,6 +950,10 @@ export default function OutflowSection({
               const selectedItem = paymentTags.find((item) => item.index === selectedKey);
               if (selectedItem) {
                 setTypoOutflow({ key: selectedKey, value: translateTag(selectedItem.label, language, 'payment') });
+                // Subscriptions/periodic payments default to "make it recurring" —
+                // any other typology switches it back off. The user can still
+                // uncheck it manually before submitting.
+                setMakeRecurring?.(RECURRING_PAYMENT_LABELS.includes(selectedItem.label));
               }
             }}
             sx={selectSx}
@@ -945,6 +975,19 @@ export default function OutflowSection({
             )}
           </Select>
         </FormField>
+
+        {isRecurringEligibleTypology && (
+          <FormField style={{ gridColumn: '1 / -1' }}>
+            <RecurringCheckboxLabel theme={theme}>
+              <input
+                type="checkbox"
+                checked={makeRecurring}
+                onChange={(e) => setMakeRecurring?.(e.target.checked)}
+              />
+              {translations.insert.outflowSection.makeRecurring || 'Rendi ricorrente ogni mese'}
+            </RecurringCheckboxLabel>
+          </FormField>
+        )}
 
         {/* Amount */}
         <FormField>

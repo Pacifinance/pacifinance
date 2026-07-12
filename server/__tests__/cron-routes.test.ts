@@ -23,9 +23,21 @@ describe("cron backend routes", () => {
         })
 
         expect(response.status).toBe(200)
-        expect(response.json).toEqual({deleted: 1})
+        expect(response.json).toEqual({deleted: 1, recurring: {due: 0, ran: 0}})
         expect(mockDb.users.deleteUserById).toHaveBeenCalledTimes(1)
         expect(mockDb.users.deleteUserById).toHaveBeenCalledWith("expired-user")
+    })
+
+    it("also runs due recurring transactions on the same daily slot", async () => {
+        mockDb.recurringTransactions.runAllDue.mockResolvedValue({due: 3, ran: 3})
+
+        const response = await request(app, "/api/cron/delete-users", {
+            headers: {authorization: "Bearer test-cron-secret"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({deleted: 0, recurring: {due: 3, ran: 3}})
+        expect(mockDb.recurringTransactions.runAllDue).toHaveBeenCalledTimes(1)
     })
 
     it("invalidates user averages and rankings only when the cache item is expired", async () => {

@@ -42,6 +42,7 @@ import { createRankingService } from '../services/rankingService';
 import { createStatsService } from '../services/statsService';
 import { createInvestmentService } from '../services/investmentService';
 import { createLiquidityAccountService } from '../services/liquidityAccountService';
+import { createRecurringTransactionService } from '../services/recurringTransactionService';
 
 const ServiceContext = createContext(null);
 
@@ -78,6 +79,7 @@ export const createServices = (client) => {
     statsService: createStatsService(apiClient),
     investmentService: createInvestmentService(apiClient),
     liquidityAccountService: createLiquidityAccountService(apiClient),
+    recurringTransactionService: createRecurringTransactionService(apiClient),
   };
 };
 

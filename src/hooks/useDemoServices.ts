@@ -16,7 +16,7 @@ import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
 import type {
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
-  LiquidityAccountDto, LiquidityAccountHistoryDto,
+  LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
 } from '../types/api';
 
 const FAKE_SUCCESS = { status: 200, data: { success: true } };
@@ -139,6 +139,35 @@ export const useDemoServices = () => {
           userDate: data.user_date,
           recordedAt: new Date().toISOString(),
         }),
+      },
+      recurringTransactionService: {
+        ...services.recurringTransactionService,
+        getRecurring: async (): Promise<RecurringTransactionDto[]> => [],
+        saveRecurring: async (data): Promise<RecurringTransactionDto> => ({
+          id: data.id ?? -Date.now(),
+          isExpense: data.is_expense,
+          amount: data.amount,
+          notes: data.notes ?? '',
+          paymentType: null,
+          categoryTag: null,
+          userCategory: null,
+          dayOfMonth: data.day_of_month,
+          active: true,
+          nextRunDate: new Date().toISOString().slice(0, 10),
+        }),
+        setRecurringActive: async (data): Promise<RecurringTransactionDto> => ({
+          id: data.id,
+          isExpense: true,
+          amount: 0,
+          notes: '',
+          paymentType: null,
+          categoryTag: null,
+          userCategory: null,
+          dayOfMonth: 1,
+          active: data.active,
+          nextRunDate: new Date().toISOString().slice(0, 10),
+        }),
+        deleteRecurring: async () => FAKE_SUCCESS,
       },
     };
   }, [isDemoMode, services]);

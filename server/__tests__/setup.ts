@@ -8,6 +8,7 @@ type MockDb = {
     categories: Record<string, any>
     investments: Record<string, any>
     delqueue: Record<string, any>
+    recurringTransactions: Record<string, any>
 }
 
 const mocks = vi.hoisted(() => {
@@ -88,6 +89,14 @@ const mocks = vi.hoisted(() => {
             removeFromQueueByUserId: vi.fn(),
             getAllAccountsInQueue: vi.fn(),
             insertNew: vi.fn()
+        },
+        recurringTransactions: {
+            getAllByUserId: vi.fn(),
+            insertRecurring: vi.fn(),
+            updateRecurring: vi.fn(),
+            setActive: vi.fn(),
+            deleteRecurring: vi.fn(),
+            runAllDue: vi.fn()
         }
     }
 
@@ -225,6 +234,13 @@ export function resetServerMocks() {
     mockDb.delqueue.removeFromQueueByUserId.mockResolvedValue({})
     mockDb.delqueue.getAllAccountsInQueue.mockResolvedValue([])
     mockDb.delqueue.insertNew.mockResolvedValue({id: 1})
+
+    mockDb.recurringTransactions.getAllByUserId.mockResolvedValue([])
+    mockDb.recurringTransactions.insertRecurring.mockResolvedValue({id: 1})
+    mockDb.recurringTransactions.updateRecurring.mockResolvedValue({id: 1})
+    mockDb.recurringTransactions.setActive.mockResolvedValue({id: 1})
+    mockDb.recurringTransactions.deleteRecurring.mockResolvedValue({deletedCount: 1})
+    mockDb.recurringTransactions.runAllDue.mockResolvedValue({due: 0, ran: 0})
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")

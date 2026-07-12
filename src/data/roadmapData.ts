@@ -21,6 +21,18 @@ export interface RoadmapItem {
 const roadmapData: RoadmapItem[] = [
   /* ──────────── COMPLETED ──────────── */
   {
+    id: 'recurring-transactions',
+    title: { it: 'Transazioni Ricorrenti', en: 'Recurring Transactions' },
+    description: {
+      it: 'Abbonamenti, affitto, stipendio: crea un modello e verrà inserito automaticamente ogni mese, senza bisogno di ricordarsene.',
+      en: 'Subscriptions, rent, salary: create a template once and it gets inserted automatically every month, no need to remember.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🔁',
+    completedDate: '2026-07',
+  },
+  {
     id: 'quick-add',
     title: { it: 'Aggiunta Rapida', en: 'Quick Add' },
     description: {

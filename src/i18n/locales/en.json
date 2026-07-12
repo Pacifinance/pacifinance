@@ -533,7 +533,14 @@
             "note": "note",
             "notePlaceholder": "Note (optional)",
             "add": "Add",
-            "added": "Added!"
+            "added": "Added!",
+            "manualMode": "Manual",
+            "pasteMode": "Text or voice",
+            "pasteHint": "Type or paste a sentence, or use your phone keyboard's own microphone to dictate it. E.g. \"24.90 groceries at the supermarket\". Everything stays on your device — nothing is sent anywhere.",
+            "pastePlaceholder": "E.g. \"40 euros gas\" or dictate with your keyboard's mic...",
+            "recognizeButton": "Recognize",
+            "pasteFound": "Found it! Check the fields and confirm.",
+            "pasteNotFound": "Couldn't find an amount or category — enter them below."
         },
         "title": "Dashboard",
         "totalBalance": "Your total balance is: ",
@@ -2586,5 +2593,23 @@
         "manageLink": "Manage accounts",
         "calculatedFromN": "Calculated from {count} accounts",
         "noValueForMonth": "No value set for this month"
+    },
+    "recurringTransactions": {
+        "navLabel": "Recurring",
+        "title": "Recurring transactions",
+        "subtitle": "Subscriptions, rent, salary — inserted automatically every month",
+        "emptyState": "No recurring transactions yet.",
+        "addTitle": "New recurring transaction",
+        "editTitle": "Edit",
+        "addButton": "Add",
+        "saveButton": "Save",
+        "deleteButton": "Delete",
+        "dayOfMonth": "Day of month",
+        "everyDay": "Every day {day}",
+        "nextRun": "Next",
+        "paused": "Paused",
+        "pause": "Pause",
+        "resume": "Resume",
+        "autoInsertNote": "It will be inserted automatically every month without touching your balances — you can always link it to a source when you edit it."
     }
 }

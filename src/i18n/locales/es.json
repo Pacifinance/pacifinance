@@ -533,7 +533,14 @@
             "note": "nota",
             "notePlaceholder": "Nota (opcional)",
             "add": "Añadir",
-            "added": "¡Añadido!"
+            "added": "¡Añadido!",
+            "manualMode": "Manual",
+            "pasteMode": "Texto o voz",
+            "pasteHint": "Escribe o pega una frase, o usa el micrófono del teclado de tu teléfono para dictarla. Ej. \"24,90 compra en el supermercado\". Todo permanece en tu dispositivo, no enviamos nada.",
+            "pastePlaceholder": "Ej. \"40 euros gasolina\" o dicta con el micrófono del teclado...",
+            "recognizeButton": "Reconocer",
+            "pasteFound": "¡Encontrado! Revisa los campos y confirma.",
+            "pasteNotFound": "No encontré importe ni categoría — introdúcelos abajo."
         },
         "title": "Panel",
         "totalBalance": "Tu balance total es: ",
@@ -2586,5 +2593,23 @@
         "manageLink": "Gestionar cuentas",
         "calculatedFromN": "Calculado a partir de {count} cuentas",
         "noValueForMonth": "Sin valor para este mes"
+    },
+    "recurringTransactions": {
+        "navLabel": "Recurrentes",
+        "title": "Transacciones recurrentes",
+        "subtitle": "Suscripciones, alquiler, salario — se registran automáticamente cada mes",
+        "emptyState": "Aún no hay transacciones recurrentes.",
+        "addTitle": "Nueva transacción recurrente",
+        "editTitle": "Editar",
+        "addButton": "Añadir",
+        "saveButton": "Guardar",
+        "deleteButton": "Eliminar",
+        "dayOfMonth": "Día del mes",
+        "everyDay": "Cada día {day}",
+        "nextRun": "Próxima",
+        "paused": "En pausa",
+        "pause": "Pausar",
+        "resume": "Reanudar",
+        "autoInsertNote": "Se registrará automáticamente cada mes sin modificar tus saldos — siempre podrás vincularla a una fuente al editarla."
     }
 }

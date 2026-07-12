@@ -533,7 +533,14 @@
             "note": "nota",
             "notePlaceholder": "Nota (opzionale)",
             "add": "Aggiungi",
-            "added": "Aggiunta!"
+            "added": "Aggiunta!",
+            "manualMode": "Manuale",
+            "pasteMode": "Testo o voce",
+            "pasteHint": "Scrivi o incolla una frase, oppure usa il microfono della tastiera del telefono per dettarla. Es. \"24,90 spesa al supermercato\". Tutto resta sul tuo dispositivo, non inviamo nulla.",
+            "pastePlaceholder": "Es. \"40 euro benzina\" oppure detta col microfono della tastiera...",
+            "recognizeButton": "Riconosci",
+            "pasteFound": "Trovato! Controlla i campi e conferma.",
+            "pasteNotFound": "Non ho trovato importo o categoria — inseriscili qui sotto."
         },
         "title": "Dashboard",
         "totalBalance": "Il tuo patrimonio totale è: ",
@@ -2586,5 +2593,23 @@
         "manageLink": "Gestisci conti",
         "calculatedFromN": "Calcolato da {count} conti",
         "noValueForMonth": "Nessun valore per questo mese"
+    },
+    "recurringTransactions": {
+        "navLabel": "Ricorrenti",
+        "title": "Transazioni ricorrenti",
+        "subtitle": "Abbonamenti, affitto, stipendio — inserite automaticamente ogni mese",
+        "emptyState": "Nessuna transazione ricorrente ancora.",
+        "addTitle": "Nuova transazione ricorrente",
+        "editTitle": "Modifica",
+        "addButton": "Aggiungi",
+        "saveButton": "Salva",
+        "deleteButton": "Elimina",
+        "dayOfMonth": "Giorno del mese",
+        "everyDay": "Ogni giorno {day}",
+        "nextRun": "Prossima",
+        "paused": "In pausa",
+        "pause": "Pausa",
+        "resume": "Riprendi",
+        "autoInsertNote": "Verrà inserita automaticamente ogni mese, senza toccare i tuoi bilanci: potrai sempre collegarla a una fonte quando la modifichi."
     }
 }

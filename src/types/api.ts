@@ -183,6 +183,45 @@ export interface ExpenseDeleteRequest {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+ * /recurring-transactions
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+/** A recurring outflow/income template (subscription, rent, salary...). A daily
+ * cron turns each due template into a real expenses row — see server/src/db/models/recurringTransactions.ts. */
+export interface RecurringTransactionDto {
+  id: number;
+  isExpense: boolean;
+  amount: number;
+  notes: string;
+  paymentType: { label: string; index: number; type: number } | null;
+  categoryTag: { label: string; index: number; type: number } | null;
+  userCategory: { id: number; label: string } | null;
+  dayOfMonth: number;
+  active: boolean;
+  nextRunDate: string; // "YYYY-MM-DD"
+}
+
+export type RecurringTransactionsGetResponse = RecurringTransactionDto[];
+
+export interface RecurringTransactionSaveRequest {
+  id?: number;
+  is_expense: boolean;
+  amount: number;
+  notes?: string;
+  payment_type: number; // client index, ignored for incomes
+  category_tag: number; // client index
+  user_category_id?: number | null;
+  day_of_month: number; // 1-28
+}
+
+export interface RecurringTransactionSetActiveRequest {
+  id: number;
+  active: boolean;
+}
+
+export interface RecurringTransactionDeleteRequest { id: number; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
  * /user
  * ═══════════════════════════════════════════════════════════════════════════*/
 

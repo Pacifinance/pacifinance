@@ -31,6 +31,12 @@ cronRouter.use((req, res, next) => {
  * Deleting the Supabase Auth user cascades to profile/balances/expenses/queue
  * rows automatically (all foreign keys are ON DELETE CASCADE), so there's no
  * need to delete them one by one as the previous MongoDB job did.
+ *
+ * Also runs due recurring transactions (subscriptions, rent, salary...),
+ * turning each due template into a real expenses row. Piggybacks on this
+ * daily slot rather than getting its own cron entry: Vercel Hobby caps cron
+ * jobs at 2 (see refresh-user-averages below for the same constraint), and
+ * this task is daily anyway.
  */
 cronRouter.get("/delete-users", async (_, res) => {
     const queued = await db.delqueue.getAllAccountsInQueue()
@@ -43,7 +49,10 @@ cronRouter.get("/delete-users", async (_, res) => {
         if (result !== null)
             deleted++
     }
-    res.status(200).json({deleted})
+
+    const recurring = await db.recurringTransactions.runAllDue(now)
+
+    res.status(200).json({deleted, recurring})
 })
 
 /**

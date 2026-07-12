@@ -531,7 +531,14 @@
             "note": "nota",
             "notePlaceholder": "Nota (opcional)",
             "add": "Adicionar",
-            "added": "Adicionado!"
+            "added": "Adicionado!",
+            "manualMode": "Manual",
+            "pasteMode": "Texto ou voz",
+            "pasteHint": "Escreva ou cole uma frase, ou use o microfone do teclado do seu celular para ditá-la. Ex. \"24,90 compras no supermercado\". Tudo fica no seu dispositivo, não enviamos nada.",
+            "pastePlaceholder": "Ex. \"40 reais gasolina\" ou dite com o microfone do teclado...",
+            "recognizeButton": "Reconhecer",
+            "pasteFound": "Encontrado! Confira os campos e confirme.",
+            "pasteNotFound": "Não encontrei valor ou categoria — insira-os abaixo."
         },
         "title": "Painel",
         "totalBalance": "Saldo total",
@@ -2584,5 +2591,23 @@
         "manageLink": "Gerenciar contas",
         "calculatedFromN": "Calculado a partir de {count} contas",
         "noValueForMonth": "Sem valor definido para este mês"
+    },
+    "recurringTransactions": {
+        "navLabel": "Recorrentes",
+        "title": "Transações recorrentes",
+        "subtitle": "Assinaturas, aluguel, salário — lançadas automaticamente todo mês",
+        "emptyState": "Ainda não há transações recorrentes.",
+        "addTitle": "Nova transação recorrente",
+        "editTitle": "Editar",
+        "addButton": "Adicionar",
+        "saveButton": "Salvar",
+        "deleteButton": "Excluir",
+        "dayOfMonth": "Dia do mês",
+        "everyDay": "Todo dia {day}",
+        "nextRun": "Próxima",
+        "paused": "Pausada",
+        "pause": "Pausar",
+        "resume": "Retomar",
+        "autoInsertNote": "Será lançada automaticamente todo mês sem alterar seus saldos — você sempre poderá vinculá-la a uma fonte ao editá-la."
     }
 }

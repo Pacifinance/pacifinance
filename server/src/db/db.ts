@@ -5,6 +5,7 @@ import tags from "./models/tags"
 import categories from "./models/categories"
 import investments from "./models/investments"
 import liquidityAccounts from "./models/liquidityAccounts"
+import recurringTransactions from "./models/recurringTransactions"
 import delqueue from "./models/delqueue"
 
-export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, delqueue}
+export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, recurringTransactions, delqueue}

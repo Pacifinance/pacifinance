@@ -16,12 +16,14 @@ import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
+  Repeat as RepeatIcon,
 } from "@mui/icons-material";
 
 const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
 const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));
+const RecurringTransactionsPanel = lazy(() => import("../components/RecurringTransactionsPanel"));
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "../components/MultiBalanceInsert";
@@ -372,7 +374,7 @@ export default function InsertValue({
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory } = useContext(UserContext) || {};
   const { showSuccess, showError } = useToast();
-  const { financeService, investmentService, liquidityAccountService } = useDemoServices();
+  const { financeService, investmentService, liquidityAccountService, recurringTransactionService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -384,6 +386,13 @@ export default function InsertValue({
   const [showMultiInsert, setShowMultiInsert] = useState(false);
   const [showMultiIncomeInsert, setShowMultiIncomeInsert] = useState(false);
   const [showMultiBalanceInsert, setShowMultiBalanceInsert] = useState(false);
+  const [showRecurringPanel, setShowRecurringPanel] = useState(false);
+  const [recurringItems, setRecurringItems] = useState([]);
+
+  const refreshRecurringItems = async () => {
+    const items = await recurringTransactionService.getRecurring();
+    setRecurringItems(Array.isArray(items) ? items : []);
+  };
 
   // Past-date balance decision modal (for single & multi insert past-month flows)
   const { pref: pastDatePref, setPref: setPastDatePref } = usePastDateBalancePref();
@@ -2102,29 +2111,49 @@ export default function InsertValue({
             </TabButton>
           </TabGroup>
           
-          {/* Import button — desktop: inline next to tabs */}
+          {/* Import + recurring buttons — desktop: inline next to tabs */}
           {activePage !== "bilancio" && (
-            <ImportLink
-              theme={theme}
-              onClick={() => setShowImportWizard(true)}
-              data-umami-event="insert-import-csv-open"
-            >
-              <UploadFileIcon />
-              {translations.insert.importFromFile || 'CSV / Excel'}
-            </ImportLink>
+            <>
+              <ImportLink
+                theme={theme}
+                onClick={() => setShowImportWizard(true)}
+                data-umami-event="insert-import-csv-open"
+              >
+                <UploadFileIcon />
+                {translations.insert.importFromFile || 'CSV / Excel'}
+              </ImportLink>
+              <ImportLink
+                theme={theme}
+                onClick={() => { setShowRecurringPanel(true); refreshRecurringItems(); }}
+                data-umami-event="insert-recurring-open"
+              >
+                <RepeatIcon />
+                {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
+              </ImportLink>
+            </>
           )}
         </TabBar>
 
-        {/* Import button — mobile: full-width below tabs */}
+        {/* Import + recurring buttons — mobile: full-width below tabs */}
         {activePage !== "bilancio" && (
-          <ImportLinkMobile
-            theme={theme}
-            onClick={() => setShowImportWizard(true)}
-            data-umami-event="insert-import-csv-open-mobile"
-          >
-            <UploadFileIcon />
-            {translations.insert.importFromFile || (language === 'it' ? 'Importa da CSV / Excel' : 'Import from CSV / Excel')}
-          </ImportLinkMobile>
+          <>
+            <ImportLinkMobile
+              theme={theme}
+              onClick={() => setShowImportWizard(true)}
+              data-umami-event="insert-import-csv-open-mobile"
+            >
+              <UploadFileIcon />
+              {translations.insert.importFromFile || (language === 'it' ? 'Importa da CSV / Excel' : 'Import from CSV / Excel')}
+            </ImportLinkMobile>
+            <ImportLinkMobile
+              theme={theme}
+              onClick={() => { setShowRecurringPanel(true); refreshRecurringItems(); }}
+              data-umami-event="insert-recurring-open-mobile"
+            >
+              <RepeatIcon />
+              {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
+            </ImportLinkMobile>
+          </>
         )}
 
         {renderPage()}
@@ -2191,6 +2220,21 @@ export default function InsertValue({
               theme={theme}
               onSubmitBatch={handleBatchBalanceSubmit}
               onClose={() => setShowMultiBalanceInsert(false)}
+            />
+          </Suspense>
+        )}
+
+        {/* Recurring transactions panel */}
+        {showRecurringPanel && (
+          <Suspense fallback={null}>
+            <RecurringTransactionsPanel
+              theme={theme}
+              items={recurringItems}
+              outflowsTags={OutflowsTags}
+              incomesTags={incomesTags}
+              paymentTags={paymentTags}
+              onClose={() => setShowRecurringPanel(false)}
+              onChanged={refreshRecurringItems}
             />
           </Suspense>
         )}

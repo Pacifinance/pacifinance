@@ -531,7 +531,14 @@
             "note": "note",
             "notePlaceholder": "Note (facultatif)",
             "add": "Ajouter",
-            "added": "Ajouté !"
+            "added": "Ajouté !",
+            "manualMode": "Manuel",
+            "pasteMode": "Texte ou voix",
+            "pasteHint": "Écrivez ou collez une phrase, ou utilisez le microphone du clavier de votre téléphone pour la dicter. Ex. « 24,90 courses au supermarché ». Tout reste sur votre appareil, rien n'est envoyé.",
+            "pastePlaceholder": "Ex. « 40 euros essence » ou dictez avec le micro du clavier...",
+            "recognizeButton": "Reconnaître",
+            "pasteFound": "Trouvé ! Vérifiez les champs et confirmez.",
+            "pasteNotFound": "Montant ou catégorie introuvable — saisissez-les ci-dessous."
         },
         "title": "Tableau de bord",
         "totalBalance": "Solde total",
@@ -2584,5 +2591,23 @@
         "manageLink": "Gérer les comptes",
         "calculatedFromN": "Calculé à partir de {count} comptes",
         "noValueForMonth": "Aucune valeur pour ce mois"
+    },
+    "recurringTransactions": {
+        "navLabel": "Récurrentes",
+        "title": "Transactions récurrentes",
+        "subtitle": "Abonnements, loyer, salaire — enregistrés automatiquement chaque mois",
+        "emptyState": "Aucune transaction récurrente pour le moment.",
+        "addTitle": "Nouvelle transaction récurrente",
+        "editTitle": "Modifier",
+        "addButton": "Ajouter",
+        "saveButton": "Enregistrer",
+        "deleteButton": "Supprimer",
+        "dayOfMonth": "Jour du mois",
+        "everyDay": "Chaque jour {day}",
+        "nextRun": "Prochaine",
+        "paused": "En pause",
+        "pause": "Suspendre",
+        "resume": "Reprendre",
+        "autoInsertNote": "Elle sera ajoutée automatiquement chaque mois sans toucher à vos soldes — vous pourrez toujours la lier à une source en la modifiant."
     }
 }

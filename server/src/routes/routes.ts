@@ -12,6 +12,7 @@ import statsRouter from "./private/stats"
 import pricesRouter from "./private/prices"
 import investmentsRouter from "./private/investments"
 import liquidityAccountsRouter from "./private/liquidityAccounts"
+import recurringTransactionsRouter from "./private/recurringTransactions"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
@@ -78,5 +79,6 @@ rootRouter.use("/stats", statsRouter)
 rootRouter.use("/prices", pricesRouter)
 rootRouter.use("/investments", investmentsRouter)
 rootRouter.use("/liquidity-accounts", liquidityAccountsRouter)
+rootRouter.use("/recurring-transactions", recurringTransactionsRouter)
 
 export default rootRouter

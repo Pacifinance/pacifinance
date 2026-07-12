@@ -531,7 +531,14 @@
             "note": "Notiz",
             "notePlaceholder": "Notiz (optional)",
             "add": "Hinzufügen",
-            "added": "Hinzugefügt!"
+            "added": "Hinzugefügt!",
+            "manualMode": "Manuell",
+            "pasteMode": "Text oder Sprache",
+            "pasteHint": "Schreibe oder füge einen Satz ein, oder diktiere ihn über das Mikrofon deiner Telefontastatur. Z. B. „24,90 Einkauf im Supermarkt“. Alles bleibt auf deinem Gerät, wir senden nichts.",
+            "pastePlaceholder": "Z. B. „40 Euro Benzin“ oder mit dem Tastatur-Mikrofon diktieren...",
+            "recognizeButton": "Erkennen",
+            "pasteFound": "Gefunden! Felder prüfen und bestätigen.",
+            "pasteNotFound": "Kein Betrag oder Kategorie gefunden — bitte unten eintragen."
         },
         "title": "Dashboard",
         "totalBalance": "Ihr Gesamtsaldo beträgt: ",
@@ -2584,5 +2591,23 @@
         "manageLink": "Konten verwalten",
         "calculatedFromN": "Berechnet aus {count} Konten",
         "noValueForMonth": "Kein Wert für diesen Monat"
+    },
+    "recurringTransactions": {
+        "navLabel": "Wiederkehrend",
+        "title": "Wiederkehrende Transaktionen",
+        "subtitle": "Abonnements, Miete, Gehalt — jeden Monat automatisch erfasst",
+        "emptyState": "Noch keine wiederkehrenden Transaktionen.",
+        "addTitle": "Neue wiederkehrende Transaktion",
+        "editTitle": "Bearbeiten",
+        "addButton": "Hinzufügen",
+        "saveButton": "Speichern",
+        "deleteButton": "Löschen",
+        "dayOfMonth": "Tag des Monats",
+        "everyDay": "Jeden Tag {day}",
+        "nextRun": "Nächste",
+        "paused": "Pausiert",
+        "pause": "Pausieren",
+        "resume": "Fortsetzen",
+        "autoInsertNote": "Wird jeden Monat automatisch erfasst, ohne deine Bilanzen zu ändern — du kannst sie beim Bearbeiten jederzeit mit einer Quelle verknüpfen."
     }
 }

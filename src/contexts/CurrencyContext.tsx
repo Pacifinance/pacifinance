@@ -11,7 +11,7 @@ const RATES_TIMESTAMP_KEY = 'pacifinance-exchange-rates-ts';
 const RATES_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
 export const CurrencyProvider = ({ children }) => {
-  const { userData } = useContext(UserContext);
+  const { userData, isAuthenticated } = useContext(UserContext);
   const { language } = useContext(LanguageContext);
 
   // Priority: DB (userData.currency) > localStorage > default EUR
@@ -40,8 +40,13 @@ export const CurrencyProvider = ({ children }) => {
     }
   }, [userData?.currency]);
 
-  // Fetch exchange rates (once per day, cached in localStorage)
+  // Fetch exchange rates (once per day, cached in localStorage). Deferred until
+  // the user is authenticated — the landing/marketing pages show no converted
+  // amounts, so there's no reason to fire this (and its console noise) for
+  // anonymous visitors.
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const fetchRates = async () => {
       try {
         const timestamp = localStorage.getItem(RATES_TIMESTAMP_KEY);
@@ -61,7 +66,7 @@ export const CurrencyProvider = ({ children }) => {
       }
     };
     fetchRates();
-  }, []);
+  }, [isAuthenticated]);
 
   // setCurrency: display-only, session-only (does NOT persist to localStorage or DB)
   // Used by Settings page for quick currency conversion

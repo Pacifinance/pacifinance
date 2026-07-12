@@ -246,6 +246,29 @@ create table public.expenses (
 create index expenses_user_date_idx on public.expenses (user_id, occurred_at desc);
 create index expenses_user_isexpense_idx on public.expenses (user_id, is_expense, occurred_at desc);
 
+-- ---------- recurring_transactions (abbonamenti, affitto, stipendio ...) ----------
+-- Template che un cron giornaliero trasforma in una riga expenses reale quando dovuto.
+-- Non tocca mai automaticamente un bilancio (nessun utente presente per confermare
+-- in un cron run, e l'importo potrebbe essere cambiato dall'ultima esecuzione).
+create table public.recurring_transactions (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  is_expense boolean not null,
+  amount numeric not null,
+  notes text,                                       -- cifrato app-side (AES-256-GCM)
+  payment_type_tag_id bigint references public.tags(id),   -- null per le entrate
+  category_tag_id bigint not null references public.tags(id),
+  user_category_id bigint references public.user_categories(id) on delete set null,
+  day_of_month smallint not null check (day_of_month between 1 and 28),
+  active boolean not null default true,
+  next_run_date date not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index recurring_transactions_user_idx on public.recurring_transactions (user_id);
+create index recurring_transactions_due_idx on public.recurring_transactions (next_run_date) where active;
+
 -- ---------- deletions (coda cancellazione differita GDPR) ----------
 create table public.deletions (
   user_id uuid primary key references auth.users(id) on delete cascade,

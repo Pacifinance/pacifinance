@@ -81,12 +81,13 @@
 > Metrica guida: utenti che inseriscono dati per 3+ mesi consecutivi (retention), non iscritti.
 
 ### Fase 1 — Frizione di inserimento (priorità massima)
-- [x] Quick-add veloce da dashboard/PWA: inserire un'uscita in <10 secondi (importo + categoria, il resto opzionale) <!-- roadmap:quick-add -->
-- [ ] Spese ricorrenti/abbonamenti: ricorrenza automatica mensile end-to-end (DB + backend + UI gestione)
+- [x] Quick-add veloce da dashboard/PWA: floating action button + popup, inserire un'uscita in <10 secondi (importo + categoria, il resto opzionale) <!-- roadmap:quick-add -->
+- [x] Spese ricorrenti/abbonamenti: ricorrenza automatica mensile end-to-end (DB + backend + UI gestione) <!-- roadmap:recurring-transactions -->
+- [x] Incolla-e-riconosci: parsing client-side (smartPasteParser.ts) di testo libero in importo+categoria, dentro il quick-add — 100% client-side, zero server
+- [x] Input vocale = dettatura OS nel campo incolla-e-riconosci (il microfono di tastiera del telefono trascrive, il nostro parser riconosce; l'audio non passa MAI dai nostri server)
+- [ ] Collegare automaticamente le uscite ricorrenti create dal payment type "abbonamento/pagamento periodico" (prompt "rendi ricorrente" al salvataggio) — non fatto in questo round, per ora si creano solo dal pannello dedicato
 - [ ] Template di mappatura per banca nell'import (Fineco, Intesa, Revolut, N26) — sostituto privacy-friendly dell'open banking
-- [ ] Incolla-e-riconosci: parsing intelligente di testo incollato (SMS banca, notifica, riga estratto conto) in transazione precompilata — 100% client-side, zero server
-- [ ] Input vocale = dettatura OS nel campo incolla-e-riconosci (il microfono di tastiera del telefono trascrive, il nostro parser riconosce; l'audio non passa MAI dai nostri server)
-- [ ] Foto scontrino: OCR client-side con tesseract.js (WASM nel browser) → precompila quick-add; l'immagine non lascia mai il dispositivo
+- [ ] Foto scontrino: OCR client-side con tesseract.js (WASM nel browser) → precompila quick-add; l'immagine non lascia mai il dispositivo. NON fatto in questo round: richiede una nuova dipendenza pesante (tesseract.js, alcuni MB di WASM+traineddata) — merita un round dedicato per valutare l'impatto sul bundle, non un'aggiunta improvvisata
 - [ ] NO bot Telegram/WhatsApp per inserimento (i dati finanziari passerebbero da server terzi — contro il posizionamento privacy; riaprire solo come bridge opzionale esplicito in futuro)
 
 ### Fase 2 — Coerenza dati (richieste luglio 2026)

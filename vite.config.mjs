@@ -86,6 +86,8 @@ export default defineConfig({
           'styled': ['styled-components'],
           // Chunk per le utility UI
           'ui-utils': ['react-calendar', 'react-csv', 'dom-to-image'],
+          // ExcelJS è caricato con import() solo quando serve export/import Excel.
+          'excel': ['exceljs'],
           // Chunk per Emotion (se usato)
           'emotion': ['@emotion/react', '@emotion/styled']
         }

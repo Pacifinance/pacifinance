@@ -1,20 +1,11 @@
 import express from "express"
 
 import db from "../../db/db"
-import common from "../common"
+import common, { isOneOf, normalizeCurrency } from "../common"
 
 /* === /liquidity-accounts/* === */
 
 const liquidityAccountsRouter = express.Router()
-
-function isOneOf<T extends readonly string[]>(value: string, allowed: T): value is T[number] {
-    return (allowed as readonly string[]).includes(value)
-}
-
-function normalizeCurrency(value: unknown) {
-    const currency = common.sanitizeInput(String(value ?? "EUR")).toUpperCase()
-    return /^[A-Z]{3}$/.test(currency) ? currency : "EUR"
-}
 
 function parseAccountPayload(body: Record<string, unknown>) {
     const assetKey = common.sanitizeInput(String(body.asset_key ?? body.assetKey ?? ""))

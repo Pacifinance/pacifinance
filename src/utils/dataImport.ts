@@ -8,7 +8,6 @@
  */
 
 import Papa from 'papaparse';
-import ExcelJS from 'exceljs';
 import { matchCategory } from './categoryMatcher';
 
 // ═══════════════════════════════════════════
@@ -49,6 +48,8 @@ export const parseCSV = (file) => {
  */
 export const parseExcel = async (file) => {
   const buffer = await file.arrayBuffer();
+  // exceljs is ~1.4MB: loaded on demand so it never lands in the page chunks.
+  const { default: ExcelJS } = await import('exceljs');
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(buffer);
 

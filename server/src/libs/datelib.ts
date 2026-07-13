@@ -90,3 +90,15 @@ export class ExtDate extends Date {
         this.setUTCMonth(this.getUTCMonth() + months)
     }
 }
+
+/**
+ * Formats a date as a UTC "YYYY-MM-DD" string, matching the granularity of
+ * `date`-type columns. Built from explicit UTC getters (not toISOString().split)
+ * to avoid the UTC-midnight/local-timezone shift bug.
+ */
+export function toDateOnly(d: Date) {
+    const y = d.getUTCFullYear()
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(d.getUTCDate()).padStart(2, "0")
+    return `${y}-${m}-${day}`
+}

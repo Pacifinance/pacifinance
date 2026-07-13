@@ -1,7 +1,7 @@
 import supabase from "../supabase"
 import openfigiProvider from "../../libs/providers/openfigiProvider"
 import coingeckoProvider from "../../libs/providers/coingeckoProvider"
-import { ExtDate } from "../../libs/datelib"
+import { ExtDate, toDateOnly } from "../../libs/datelib"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
 export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"] as const
@@ -358,17 +358,6 @@ async function deleteHolding(user_id: string, holding_id: number) {
     if (error) console.error("investments.deleteHolding: failed to delete holding", error)
     if (error) return null
     return {deletedCount: count ?? 0}
-}
-
-/**
- * Formats a date as a UTC "YYYY-MM-DD" string, matching the "user_date" column
- * granularity (same helper as server/src/db/models/balances.ts::toDateOnly).
- */
-function toDateOnly(d: Date) {
-    const y = d.getUTCFullYear()
-    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
-    const day = String(d.getUTCDate()).padStart(2, "0")
-    return `${y}-${m}-${day}`
 }
 
 /**

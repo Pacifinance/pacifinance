@@ -1,25 +1,16 @@
 import express from "express"
 
 import db from "../../db/db"
-import common from "../common"
+import common, { isOneOf, normalizeCurrency } from "../common"
 
 /* === /investments/* === */
 
 const investmentsRouter = express.Router()
 
-function isOneOf<T extends readonly string[]>(value: string, allowed: T): value is T[number] {
-    return (allowed as readonly string[]).includes(value)
-}
-
 function optionalNumber(value: unknown) {
     if (value === undefined || value === null || value === "") return null
     const n = Number(value)
     return Number.isFinite(n) && n >= 0 ? n : undefined
-}
-
-function normalizeCurrency(value: unknown) {
-    const currency = common.sanitizeInput(String(value ?? "EUR")).toUpperCase()
-    return /^[A-Z]{3}$/.test(currency) ? currency : "EUR"
 }
 
 async function parseHoldingPayload(body: any) {

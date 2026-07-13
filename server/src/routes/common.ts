@@ -22,6 +22,27 @@ function sanitizeInput(data: string) {
 }
 
 /**
+ * Type-narrowing membership check against a readonly list of allowed values.
+ * @param value Value to check
+ * @param allowed Readonly tuple of allowed string values
+ * @returns true (narrowing `value` to the tuple's union type) if allowed
+ */
+export function isOneOf<T extends readonly string[]>(value: string, allowed: T): value is T[number] {
+    return (allowed as readonly string[]).includes(value)
+}
+
+/**
+ * Normalizes a user-provided currency code to a 3-letter uppercase ISO code,
+ * falling back to EUR for anything malformed.
+ * @param value Raw currency input
+ * @returns Normalized 3-letter currency code
+ */
+export function normalizeCurrency(value: unknown) {
+    const currency = sanitizeInput(String(value ?? "EUR")).toUpperCase()
+    return /^[A-Z]{3}$/.test(currency) ? currency : "EUR"
+}
+
+/**
  * Adds zeros to the left of a string until the desired string length is reached
  * @param s The string to pad
  * @param nCharacters Desired total length of the string after padding
@@ -55,5 +76,7 @@ export default {
     fromCents,
     addCurrency,
     sanitizeInput,
+    isOneOf,
+    normalizeCurrency,
     generateUserId,
 }

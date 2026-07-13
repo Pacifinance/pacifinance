@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useContext, useMemo, lazy, Suspense } from 'react';
 import { LocalizedLink } from '../components/LocalizedLink';
 import styled from 'styled-components';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+// Granular recharts imports: Dashboard is on the critical path (non-lazy in
+// AppRouter), so pulling the whole 'recharts' barrel here would drag the full
+// charts chunk into the first load. Same pattern as BalancesChart.tsx.
+import { PieChart } from 'recharts/lib/chart/PieChart';
+import { Pie } from 'recharts/lib/polar/Pie';
+import { Cell } from 'recharts/lib/component/Cell';
+import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
+import { Tooltip } from 'recharts/lib/component/Tooltip';
 import { 
     BsGraphUpArrow,
     BsWallet2,
@@ -1239,49 +1246,11 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 </Suspense>
                 )}
 
-                {/* Goal Tracking Section — in development, show coming-soon notice */}
+                {/* Goal Tracking Section */}
                 {isSectionVisible('goal-tracker') && (
-                <div style={{
-                    background: theme.mode === 'dark'
-                        ? 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)'
-                        : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)',
-                    border: `1.5px dashed ${theme.mode === 'dark' ? 'rgba(245,158,11,0.4)' : 'rgba(245,158,11,0.5)'}`,
-                    borderRadius: '16px',
-                    padding: isMobileScreen ? '1rem 0.85rem' : '1.25rem',
-                    textAlign: 'center',
-                    margin: '0 auto',
-                    maxWidth: '600px'
-                }}>
-                    <span style={{
-                        display: 'inline-block',
-                        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                        color: 'white',
-                        fontSize: '0.7rem',
-                        fontWeight: '600',
-                        padding: '0.2rem 0.6rem',
-                        borderRadius: '12px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        marginBottom: '0.75rem'
-                    }}>
-                        {translations?.general?.inDevelopment || 'In development'}
-                    </span>
-                    <div style={{
-                        color: theme.textColor,
-                        fontSize: isMobileScreen ? '1rem' : '1.1rem',
-                        fontWeight: '600',
-                        marginBottom: '0.4rem'
-                    }}>
-                        <FaBullseye style={{ marginRight: '8px', color: '#f59e0b' }} />
-                        {translations?.general?.goalsComingSoonDashboard || 'Goals & Limits coming soon'}
-                    </div>
-                    <div style={{
-                        color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-                        fontSize: '0.85rem'
-                    }}>
-                        {translations?.general?.featureComingSoon || 'This feature is under development and will be available soon!'}
-                    </div>
-                </div>
+                <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
+                    <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
+                </Suspense>
                 )}
 
                 </>

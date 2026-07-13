@@ -263,7 +263,7 @@ describe("private backend routes", () => {
         expect(response.json).toEqual([
             {id: 1, kind: "stock", symbol: "AAPL", exchange: "NASDAQ", name: "Apple Inc.", verified: true}
         ])
-        expect(mockDb.investments.searchInstruments).toHaveBeenCalledWith("apple", "stock", 30)
+        expect(mockDb.investments.searchInstruments).toHaveBeenCalledWith("apple", "stock", 30, undefined)
     })
 
     it("saves detailed investment holdings only for existing instruments", async () => {

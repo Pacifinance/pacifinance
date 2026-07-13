@@ -8,10 +8,13 @@ import apiClient from '../services/apiClient';
 import mockCryptoData from '../data/mockCryptoData';
 import TradingViewWidget, { LazyTradingViewWidget } from '../components/TradingViewWidget';
 import { preloadTradingViewScripts } from '../components/TradingViewWidget';
-import {
-  AreaChart, Area, XAxis, YAxis, Tooltip as ReTooltip,
-  ResponsiveContainer, CartesianGrid
-} from 'recharts';
+import { AreaChart } from 'recharts/lib/chart/AreaChart';
+import { Area } from 'recharts/lib/cartesian/Area';
+import { XAxis } from 'recharts/lib/cartesian/XAxis';
+import { YAxis } from 'recharts/lib/cartesian/YAxis';
+import { Tooltip as ReTooltip } from 'recharts/lib/component/Tooltip';
+import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
+import { CartesianGrid } from 'recharts/lib/cartesian/CartesianGrid';
 import {
   TrendingUp, TrendingDown, Minus, Search, RefreshCw,
   BarChart3, Bitcoin, Landmark, Gem, Briefcase, Lock,

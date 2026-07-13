@@ -1,6 +1,13 @@
 import React, { useEffect, useMemo, useState, useContext } from 'react';
 import styled from 'styled-components';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, Tooltip } from 'recharts';
+import { BarChart } from 'recharts/lib/chart/BarChart';
+import { Bar } from 'recharts/lib/cartesian/Bar';
+import { XAxis } from 'recharts/lib/cartesian/XAxis';
+import { YAxis } from 'recharts/lib/cartesian/YAxis';
+import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
+import { Cell } from 'recharts/lib/component/Cell';
+import { LabelList } from 'recharts/lib/component/LabelList';
+import { Tooltip } from 'recharts/lib/component/Tooltip';
 import {
   Repeat,
   CreditCard,

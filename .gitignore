@@ -23,6 +23,8 @@ backupMongo/
 server/scripts
 .DS_Store
 *.sh
+*.backup
+*.bak
 .env
 .env.local
 .env.development.local

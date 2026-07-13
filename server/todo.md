@@ -78,10 +78,7 @@
 - [x] Permettere all'utente di scaricare tutti i suoi dati, quindi fare una route che invia tutti i dati anche quelli storici ★
 - [x] Aggiungere lavori: logistica e trasporti, Artigiano (lo ha richiesto un fabbro), Trader, per chi lavora nei bar o nei ristoranti cosa c'é?, commercialista? ★
 - [x] Documentazione Backend ★
-- [x] Cancella questi utenti, è stato un mio test (SPERA): 176545, 849316 e 611604 ★
-- [x] Togliere Matomo database, dati e il codice dal server
-  - [x] Disabilitare Apache
-  - [ ] Cancellare dati
+- [x] Pulizia utenti di test dal database ★
 - [x] Cookie login per Backend ★
 - [x] capire perché gli url variabilizzati con le lingue non funzionano (per ora l'url che funziona per browser senza cache è solo pacifinance.com)
 - [x] Modificare la response di tutti i rank e mandare solo il rapporto tra data.position e data.total moltiplicato * 100 ★

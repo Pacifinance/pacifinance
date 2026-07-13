@@ -1,15 +1,11 @@
 import express from "express"
 
 import db from "../../db/db"
-import common from "../common"
+import common, { isOneOf } from "../common"
 
 /* === /goals/* === */
 
 const goalsRouter = express.Router()
-
-function isOneOf<T extends readonly string[]>(value: string, allowed: T): value is T[number] {
-    return (allowed as readonly string[]).includes(value)
-}
 
 function parseGoalPayload(body: Record<string, unknown>) {
     const name = common.sanitizeInput(String(body.name ?? "")).slice(0, 80)

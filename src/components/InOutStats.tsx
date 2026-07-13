@@ -1,7 +1,12 @@
 ﻿import React, { useEffect, useState, useContext, useMemo } from 'react'
 import { ArrowUpRight, ArrowDownRight, Minus, ArrowRightLeft } from 'lucide-react';
 import styled from 'styled-components';
-import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, LabelList } from 'recharts';
+import { BarChart } from 'recharts/lib/chart/BarChart';
+import { Bar } from 'recharts/lib/cartesian/Bar';
+import { XAxis } from 'recharts/lib/cartesian/XAxis';
+import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
+import { Cell } from 'recharts/lib/component/Cell';
+import { LabelList } from 'recharts/lib/component/LabelList';
 import { getEntriesForMonthKey, indexToMonthKey, monthKeyToIndex } from '../utils/userDataSelectors';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';

@@ -1,4 +1,5 @@
-import ExcelJS from 'exceljs';
+// exceljs is ~1.4MB: loaded on demand inside the export function so it never
+// lands in the page chunks (SettingsPage/StatsCharts/DataImportWizard).
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
 import { getIncomesArray, getOutflowsArray } from './userDataSelectors';
@@ -694,6 +695,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     }
   
   // Crea workbook
+  const { default: ExcelJS } = await import('exceljs');
   const workbook = new ExcelJS.Workbook();
   
   // Foglio 1: Informazioni Utente

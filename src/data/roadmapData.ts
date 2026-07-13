@@ -117,6 +117,18 @@ const roadmapData: RoadmapItem[] = [
     completedDate: '2024-10',
   },
   {
+    id: 'goals-limits',
+    title: { it: 'Obiettivi e Limiti di Spesa', en: 'Goals & Spending Limits' },
+    description: {
+      it: 'Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.',
+      en: 'Set custom savings goals and monthly spending limits with notifications.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🎯',
+    completedDate: '2025-01',
+  },
+  {
     id: 'multi-currency',
     title: { it: 'Supporto Multi-Valuta', en: 'Multi-Currency Support' },
     description: {
@@ -249,17 +261,6 @@ const roadmapData: RoadmapItem[] = [
     completedDate: '2026-04',
   },
   /* ──────────── IN PROGRESS ──────────── */
-  {
-    id: 'goals-limits',
-    title: { it: 'Obiettivi e Limiti di Spesa', en: 'Goals & Spending Limits' },
-    description: {
-      it: 'Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.',
-      en: 'Set custom savings goals and monthly spending limits with notifications.'
-    },
-    status: 'in-progress',
-    category: 'feature',
-    icon: '🎯',
-  },
   {
     id: 'onboarding',
     title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },

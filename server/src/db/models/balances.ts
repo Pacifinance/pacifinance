@@ -1,6 +1,6 @@
 import supabase from "../supabase"
 
-import { ExtDate } from "../../libs/datelib"
+import { ExtDate, toDateOnly } from "../../libs/datelib"
 import { addCurrency } from "../../libs/money"
 
 const BALANCE_COLUMNS = "recorded_at, user_date, bank, cash, digital_services, stocks, etf, bitcoin, crypto, bonds, funds, commodities, emergency_fund"
@@ -10,18 +10,6 @@ type BalanceRow = {
     user_date: string
     bank: number, cash: number, digital_services: number, stocks: number, etf: number,
     bitcoin: number, crypto: number, bonds: number, funds: number, commodities: number, emergency_fund: number
-}
-
-/**
- * Formats a date as a UTC "YYYY-MM-DD" string, matching the "date" column
- * granularity. Built from explicit UTC getters (not toISOString().split)
- * to avoid the UTC-midnight/local-timezone shift bug.
- */
-function toDateOnly(d: Date) {
-    const y = d.getUTCFullYear()
-    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
-    const day = String(d.getUTCDate()).padStart(2, "0")
-    return `${y}-${m}-${day}`
 }
 
 function toBalance(row: BalanceRow) {

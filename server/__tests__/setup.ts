@@ -7,6 +7,8 @@ type MockDb = {
     tags: Record<string, any>
     categories: Record<string, any>
     investments: Record<string, any>
+    liquidityAccounts: Record<string, any>
+    goals: Record<string, any>
     delqueue: Record<string, any>
     recurringTransactions: Record<string, any>
 }
@@ -78,12 +80,32 @@ const mocks = vi.hoisted(() => {
             INVESTMENT_KINDS: ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"],
             INVESTMENT_ASSET_KEYS: ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"],
             INVESTMENT_POSITION_TYPES: ["single", "pac", "other"],
+            INVESTMENT_SEARCH_SOURCES: ["figi", "coingecko"],
             searchInstruments: vi.fn(),
             getInstrumentById: vi.fn(),
             getHoldingsByUserId: vi.fn(),
             insertHolding: vi.fn(),
             updateHolding: vi.fn(),
-            deleteHolding: vi.fn()
+            deleteHolding: vi.fn(),
+            snapshotHoldingsForUser: vi.fn(),
+            getHoldingHistoryByUserId: vi.fn()
+        },
+        liquidityAccounts: {
+            LIQUIDITY_ACCOUNT_ASSET_KEYS: ["bank", "cash", "digitalServices", "emergencyFund"],
+            getAccountsByUserId: vi.fn(),
+            insertAccount: vi.fn(),
+            updateAccount: vi.fn(),
+            deleteAccount: vi.fn(),
+            snapshotAccountsForUser: vi.fn(),
+            getAccountHistoryByUserId: vi.fn()
+        },
+        goals: {
+            GOAL_TYPES: ["savings", "purchase", "investment", "debt"],
+            GOAL_LINKED_ASSET_KEYS: ["bank", "cash", "digitalServices", "emergencyFund", "stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"],
+            getGoalsByUserId: vi.fn(),
+            insertGoal: vi.fn(),
+            updateGoal: vi.fn(),
+            deleteGoal: vi.fn()
         },
         delqueue: {
             removeFromQueueByUserId: vi.fn(),
@@ -231,6 +253,20 @@ export function resetServerMocks() {
     mockDb.investments.insertHolding.mockResolvedValue({id: 1})
     mockDb.investments.updateHolding.mockResolvedValue({id: 1})
     mockDb.investments.deleteHolding.mockResolvedValue({deletedCount: 1})
+    mockDb.investments.snapshotHoldingsForUser.mockResolvedValue(undefined)
+    mockDb.investments.getHoldingHistoryByUserId.mockResolvedValue([])
+
+    mockDb.liquidityAccounts.getAccountsByUserId.mockResolvedValue([])
+    mockDb.liquidityAccounts.insertAccount.mockResolvedValue({id: 1})
+    mockDb.liquidityAccounts.updateAccount.mockResolvedValue({id: 1})
+    mockDb.liquidityAccounts.deleteAccount.mockResolvedValue({deletedCount: 1})
+    mockDb.liquidityAccounts.snapshotAccountsForUser.mockResolvedValue(undefined)
+    mockDb.liquidityAccounts.getAccountHistoryByUserId.mockResolvedValue([])
+
+    mockDb.goals.getGoalsByUserId.mockResolvedValue([])
+    mockDb.goals.insertGoal.mockResolvedValue({id: 1})
+    mockDb.goals.updateGoal.mockResolvedValue({id: 1})
+    mockDb.goals.deleteGoal.mockResolvedValue({deletedCount: 1})
     mockDb.delqueue.removeFromQueueByUserId.mockResolvedValue({})
     mockDb.delqueue.getAllAccountsInQueue.mockResolvedValue([])
     mockDb.delqueue.insertNew.mockResolvedValue({id: 1})

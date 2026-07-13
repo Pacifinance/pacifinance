@@ -213,6 +213,33 @@ const LinkedBadge = styled.span`
   vertical-align: middle;
 `;
 
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)'};
+  border: 1px dashed ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.14)'};
+  color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.62)'};
+
+  .empty-icon {
+    color: ${props => props.theme.secondaryColor};
+    font-size: 1.4rem;
+    opacity: 0.85;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+`;
+
 const ActionButton = styled.button`
   background: ${props => props.variant === 'danger' 
     ? 'rgba(239, 68, 68, 0.1)' 

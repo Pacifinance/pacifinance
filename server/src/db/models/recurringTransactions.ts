@@ -1,6 +1,6 @@
 import supabase from "../supabase"
 
-import { ExtDate } from "../../libs/datelib"
+import { ExtDate, toDateOnly } from "../../libs/datelib"
 
 import tags from "./tags"
 import { encryptField, decryptField } from "../crypto"
@@ -71,13 +71,6 @@ function computeInitialNextRunDate(dayOfMonth: number): Date {
     next.setUTCDate(dayOfMonth)
     next.setUTCHours(0, 0, 0, 0)
     return next
-}
-
-function toDateOnly(d: Date) {
-    const y = d.getUTCFullYear()
-    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
-    const day = String(d.getUTCDate()).padStart(2, "0")
-    return `${y}-${m}-${day}`
 }
 
 /**

@@ -1,6 +1,3 @@
-// import React, { useContext } from "react";
-// import { PrivacyContext } from "../contexts/PrivacyContext";
-import ExcelJS from 'exceljs';
 import domtoimage from 'dom-to-image';
 
 export const downloadPNG = () => {
@@ -15,6 +12,8 @@ export const downloadPNG = () => {
   };
 
   export const downloadExcel = async (data, headers, fileName = 'report.xlsx') => {
+    // exceljs is ~1.4MB: loaded on demand so it never lands in the page chunks.
+    const { default: ExcelJS } = await import('exceljs');
     // Create a new workbook and worksheet
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Report');

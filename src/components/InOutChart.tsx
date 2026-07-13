@@ -1,17 +1,15 @@
 import React, {useState, useEffect, useContext} from "react";
-import { 
-  CartesianGrid, 
-  Tooltip, 
-  XAxis, 
-  YAxis, 
-  LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
-  Cell,
-  ReferenceLine,
-  ResponsiveContainer
-} from 'recharts';
+import { CartesianGrid } from 'recharts/lib/cartesian/CartesianGrid';
+import { Tooltip } from 'recharts/lib/component/Tooltip';
+import { XAxis } from 'recharts/lib/cartesian/XAxis';
+import { YAxis } from 'recharts/lib/cartesian/YAxis';
+import { LineChart } from 'recharts/lib/chart/LineChart';
+import { Line } from 'recharts/lib/cartesian/Line';
+import { PieChart } from 'recharts/lib/chart/PieChart';
+import { Pie } from 'recharts/lib/polar/Pie';
+import { Cell } from 'recharts/lib/component/Cell';
+import { ReferenceLine } from 'recharts/lib/cartesian/ReferenceLine';
+import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
 import { SectionInOut, PercentageOutflowsChartContainer } from '../styles/MyStyled';
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv, BsCalendarRange } from "react-icons/bs";

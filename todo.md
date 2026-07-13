@@ -99,14 +99,14 @@
 
 ### Fase 3 — Apertura (open source)
 - [ ] Audit segreti/credenziali nella history git prima di aprire il repo
-- [ ] Scegliere licenza (candidata: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche)
+- [x] Scegliere licenza: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche
 - [ ] Trasferire il repo serverless nell'organizzazione GitHub PaciFinance (transfer, non copia: GitHub crea i redirect automatici); archiviare il repo legacy con README che punta al nuovo
 - [ ] Deploy Vercel da repo in org SENZA Vercel Pro: scollegare la Git integration e deployare via GitHub Actions + Vercel CLI (`vercel build` + `vercel deploy --prebuilt --prod --token`) — le Actions sono gratis sui repo pubblici; preview deploy su PR replicabile nello stesso workflow
 - [ ] Org GitHub: 2FA obbligatoria per i membri, branch protection su main (PR + review), CODEOWNERS, secrets SOLO negli env di deploy (Vercel/Supabase), mai nel repo
-- [ ] Co-owner: aggiungere il secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2); i deploy production restano collegati agli account personali finché non serve altro
+- [ ] Co-owner: aggiungere un secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2)
 - [x] Rimosso il widget BuyMeACoffee floating globale (script iniettato fuori dall'albero React, restava visibile su ogni pagina inclusa l'app autenticata dopo la prima visita a Landing/Pricing/Info — invasivo e incoerente col posizionamento privacy-first); sostituito con un link statico "☕ Support PaciFinance" solo dove c'è già una sezione di supporto dedicata
-- [ ] FUNDING.yml: GitHub Sponsors come canale primario + link BuyMeACoffee esistente come secondario
-- [ ] README + CONTRIBUTING in inglese, CI pubblica (GitHub Actions: lint+test+build su PR — gratis per repo pubblici)
+- [x] FUNDING.yml: link BuyMeACoffee come canale statico iniziale; GitHub Sponsors aggiungibile quando attivo
+- [x] README + CONTRIBUTING in inglese, CI pubblica (GitHub Actions: lint+test+build su PR — gratis per repo pubblici)
 - [ ] Landing "self-host in 10 minuti" con Docker (docker-compose: frontend statico + server Express + Postgres; Redis opzionale)
 - [ ] Demo account con mock data senza richieste DB (già pianificato sotto, diventa prerequisito del lancio)
 - [ ] Lancio: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
@@ -155,7 +155,7 @@
 - [ ] Widget riepilogo rapido home: patrimonio + variazione mese precedente
 - [ ] Grafici trend storico patrimonio (linea temporale) <!-- roadmap:trend-charts -->
 - [ ] Export PDF: migliorare layout con grafici inclusi <!-- roadmap:pdf-reports -->
-- [~] Obiettivi e limiti (Goals & Limits con monitoraggio dedicato) (solo frontend fatto manca backend) <!-- roadmap:goals-limits -->
+- [x] Obiettivi e limiti (Goals & Limits con monitoraggio dedicato, backend + UI) <!-- roadmap:goals-limits -->
 - [~] Onboarding guidato per nuovi utenti: wizard 4 step con progress bar <!-- roadmap:onboarding -->
 - [ ] Rendere l'account demo che non faccia richieste al db e usi dei mockData in modo da mostrare rapidamente tutte le funzionalità dell'applicazione e convincere l'utente a registrarsi (ora è un account che fa richieste al db ma non è scalabile con tanti utenti)
 

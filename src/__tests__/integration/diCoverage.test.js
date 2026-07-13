@@ -117,15 +117,36 @@ describe('DI Coverage — Architecture Health', () => {
     });
   });
 
-  describe('Barrel export completeness', () => {
-    it('services/index.js should export all service factories', async () => {
-      const barrel = await import('../../services/index');
+  describe('Direct service module completeness', () => {
+    it('should expose all service factories from their direct modules', async () => {
+      const [
+        apiClient,
+        userService,
+        financeService,
+        rankingService,
+        statsService,
+        goalService,
+        investmentService,
+        liquidityAccountService,
+      ] = await Promise.all([
+        import('../../services/apiClient'),
+        import('../../services/userService'),
+        import('../../services/financeService'),
+        import('../../services/rankingService'),
+        import('../../services/statsService'),
+        import('../../services/goalService'),
+        import('../../services/investmentService'),
+        import('../../services/liquidityAccountService'),
+      ]);
 
-      expect(barrel.createApiClient).toBeDefined();
-      expect(barrel.createUserService).toBeDefined();
-      expect(barrel.createFinanceService).toBeDefined();
-      expect(barrel.createRankingService).toBeDefined();
-      expect(barrel.createStatsService).toBeDefined();
+      expect(apiClient.createApiClient).toBeDefined();
+      expect(userService.createUserService).toBeDefined();
+      expect(financeService.createFinanceService).toBeDefined();
+      expect(rankingService.createRankingService).toBeDefined();
+      expect(statsService.createStatsService).toBeDefined();
+      expect(goalService.createGoalService).toBeDefined();
+      expect(investmentService.createInvestmentService).toBeDefined();
+      expect(liquidityAccountService.createLiquidityAccountService).toBeDefined();
     });
   });
 

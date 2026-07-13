@@ -1,5 +1,5 @@
 import supabase from "../supabase"
-import { ExtDate } from "../../libs/datelib"
+import { ExtDate, toDateOnly } from "../../libs/datelib"
 
 export const LIQUIDITY_ACCOUNT_ASSET_KEYS = ["bank", "cash", "digitalServices", "emergencyFund"] as const
 
@@ -107,17 +107,6 @@ async function deleteAccount(user_id: string, account_id: number) {
     if (error) console.error("liquidityAccounts.deleteAccount: failed to delete account", error)
     if (error) return null
     return {deletedCount: count ?? 0}
-}
-
-/**
- * Formats a date as a UTC "YYYY-MM-DD" string, matching the "user_date" column
- * granularity (same helper as server/src/db/models/balances.ts::toDateOnly).
- */
-function toDateOnly(d: Date) {
-    const y = d.getUTCFullYear()
-    const m = String(d.getUTCMonth() + 1).padStart(2, "0")
-    const day = String(d.getUTCDate()).padStart(2, "0")
-    return `${y}-${m}-${day}`
 }
 
 /**

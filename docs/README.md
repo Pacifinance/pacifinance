@@ -89,6 +89,16 @@ docs/
 
 ## 📊 Documenti per Obiettivo
 
+### 🌱 Preparare l'apertura Open Source
+1. **[Open Source Operations Runbook](./OPEN_SOURCE_OPERATIONS.md)**  
+   → Audit segreti, transfer GitHub org, branch protection, Vercel via Actions,
+   Docker self-host e gestione del dominio Web3 `pacifinance.x`
+
+**Risultato atteso:** repo pubblicabile senza segreti, governance minima e percorso
+self-host chiaro.
+
+---
+
 ### 🎯 Migliorare il Ranking SEO
 1. **[SEO Keywords Map](./SEO_KEYWORDS_MAP.md)**  
    → Keyword primarie, secondarie, long-tail per ogni pagina

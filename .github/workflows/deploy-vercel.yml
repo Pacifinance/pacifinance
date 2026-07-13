@@ -33,7 +33,10 @@ env:
 
 jobs:
   deploy-production:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # A push must be on main; a manual workflow_dispatch run (e.g. testing the
+    # pipeline itself, or triggered from a non-main branch) always counts as a
+    # deliberate production deploy regardless of which branch it's run from.
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: Production

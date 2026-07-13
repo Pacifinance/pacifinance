@@ -3,6 +3,7 @@ import styled, { keyframes, css } from 'styled-components';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { ServiceContext } from '../contexts/ServiceContext';
 import { getProfileCompletionPercentage } from '../utils/userDataSelectors';
 import {
   AccountBalance as BankIcon,
@@ -217,10 +218,14 @@ const DismissButton = styled.button`
 `;
 
 const OnboardingWelcome = ({ userData, theme }) => {
-  const { translations } = useContext(LanguageContext);
+  const { translations, language } = useContext(LanguageContext);
   const { currencySymbol } = useContext(CurrencyContext);
+  const services = useContext(ServiceContext);
+  const userService = services?.userService;
   const navigate = useLocalizedNavigate();
   const [dismissed, setDismissed] = useState(false);
+  const [benchmarkConsent, setBenchmarkConsent] = useState(userData?.benchmarkConsent === true);
+  const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
   
   const t = translations?.onboarding || {};
   const isDark = theme?.mode === 'dark';
@@ -259,6 +264,20 @@ const OnboardingWelcome = ({ userData, theme }) => {
   const handleDismiss = () => {
     localStorage.setItem('onboarding_dismissed', 'true');
     setDismissed(true);
+  };
+
+  const handleBenchmarkConsent = async () => {
+    if (isSavingBenchmarkConsent || !userService?.setBenchmarkConsent) return;
+    setIsSavingBenchmarkConsent(true);
+    try {
+      const result = await userService.setBenchmarkConsent(true);
+      setBenchmarkConsent(result?.benchmarkConsent === true);
+    } catch {
+      // Keep the onboarding card actionable; the profile page exposes retry
+      // and the full consent status when the request fails.
+    } finally {
+      setIsSavingBenchmarkConsent(false);
+    }
   };
   
   const steps = [
@@ -354,6 +373,30 @@ const OnboardingWelcome = ({ userData, theme }) => {
           {t.quickTip || 'Tip: Start with your balance — once you add at least one month of data, your dashboard will come alive with charts and analytics!'}
         </span>
       </QuickTip>
+
+      {!benchmarkConsent && (
+        <QuickTip $isDark={isDark} $subtextColor={subtextColor} style={{ borderColor: '#079164', marginTop: '0.75rem' }}>
+          <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>📊</span>
+          <span style={{ flex: 1 }}>
+            <strong style={{ color: textColor, display: 'block', marginBottom: '0.25rem' }}>
+              {language === 'it' ? 'Confrontati con utenti simili' : 'Compare with similar users'}
+            </strong>
+            {language === 'it'
+              ? 'Attiva il consenso per ricevere benchmark anonimi su patrimonio, entrate e uscite. Condividiamo solo dati aggregati, mai transazioni o note.'
+              : 'Opt in to receive anonymous benchmarks for net worth, income and outflows. We share aggregated data only, never transactions or notes.'}
+            <button
+              type="button"
+              onClick={handleBenchmarkConsent}
+              disabled={isSavingBenchmarkConsent}
+              style={{ background: '#079164', border: 0, borderRadius: 6, color: '#fff', cursor: 'pointer', display: 'block', fontWeight: 700, marginTop: '0.65rem', padding: '0.5rem 0.75rem' }}
+            >
+              {isSavingBenchmarkConsent
+                ? (language === 'it' ? 'Attivazione...' : 'Activating...')
+                : (language === 'it' ? 'Attiva confronto community' : 'Enable community comparison')}
+            </button>
+          </span>
+        </QuickTip>
+      )}
       
       <div style={{ textAlign: 'center' }}>
         <DismissButton 

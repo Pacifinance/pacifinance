@@ -233,8 +233,11 @@ async function getPublicInfoByUserId(user_id: string) {
     const d = data as any
     return {
         userId: d.user_code as string,
+        // Keep wire aliases for older clients during the profile migration.
+        user_code: d.user_code as string,
         creationDate: d.created_at,
         type: d.account_type as number,
+        account_type: d.account_type as number,
         nickname: d.nickname as string,
         age: mapTagRow(d.age),
         livingSituation: mapTagRow(d.living_situation),

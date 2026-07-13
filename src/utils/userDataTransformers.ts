@@ -29,8 +29,11 @@ interface RawTagObject {
 /** Shape of the user info object as received from GET /user/get. */
 interface RawUserInfoData {
   userId?: unknown;
+  user_code?: unknown;
   nickname?: unknown;
   type?: unknown;
+  account_type?: unknown;
+  userType?: unknown;
   preferredCurrency?: unknown;
   benchmarkConsent?: unknown;
   country?: RawTagObject | null;
@@ -159,8 +162,14 @@ export const transformUserProfile = (
   currencyTags: unknown[],
   language: string,
 ): TransformedProfile => {
-  const userId = String(infoData.userId || '00000');
-  const userType = USER_TYPE_DICT[Number(infoData.type)] || 'regular';
+  const rawUserId = infoData.userId ?? infoData.user_code;
+  const userId = rawUserId === null || rawUserId === undefined || rawUserId === ''
+    ? ''
+    : String(rawUserId);
+  const rawUserType = infoData.type ?? infoData.account_type ?? infoData.userType;
+  const numericUserType = Number(rawUserType);
+  const userType = USER_TYPE_DICT[numericUserType]
+    || (typeof rawUserType === 'string' && rawUserType ? rawUserType : 'regular');
   const username = String(infoData.nickname ?? 'Username non impostato');
 
   // Resolve preferred currency

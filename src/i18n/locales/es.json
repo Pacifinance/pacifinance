@@ -991,6 +991,7 @@
             "show": "Ver comparación",
             "hide": "Reducir",
             "groupHelp": "El grupo de comparación reúne usuarios con perfiles similares y muestra solo resultados agregados cuando hay suficientes participantes.",
+            "optInTitle": "Desbloquea la comparación con usuarios similares", "optInDescription": "Activa el consentimiento para recibir benchmarks agregados. Nunca compartimos transacciones, notas ni identidad.", "optInAction": "Activar comparación", "optInSaving": "Activando...",
             "basedOn": "Comparación basada en",
             "waiting": "Cohorte en preparación",
             "privacy": "Solo datos agregados. Cohortes: {count} usuarios; umbral mínimo de privacidad: {minimum}. Actualizado: {updated}.",

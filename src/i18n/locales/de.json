@@ -989,6 +989,7 @@
             "show": "Vergleich anzeigen",
             "hide": "Einklappen",
             "groupHelp": "Die Vergleichsgruppe umfasst Nutzer mit ähnlichen Profilmerkmalen und zeigt nur aggregierte Ergebnisse bei ausreichender Größe.",
+            "optInTitle": "Vergleiche mit ähnlichen Nutzern freischalten", "optInDescription": "Aktiviere die Einwilligung für aggregierte Benchmarks. Transaktionen, Notizen und Identität werden nie geteilt.", "optInAction": "Vergleich aktivieren", "optInSaving": "Wird aktiviert...",
             "basedOn": "Vergleich basiert auf",
             "waiting": "Vergleichsgruppe wird vorbereitet",
             "privacy": "Nur aggregierte Daten. Gruppen: {count} Nutzer; Mindestgröße zum Datenschutz: {minimum}. Aktualisiert: {updated}.",

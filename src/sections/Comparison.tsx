@@ -288,6 +288,24 @@ const LongitudinalGrid = styled.div`
   @media (max-width: 600px) { grid-template-columns: 1fr; }
 `;
 
+const BenchmarkOptInCard = styled.div`
+  align-items: center;
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(7,145,100,0.10)' : '#effaf5'};
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(52,211,153,0.28)' : '#b7ead2'};
+  border-radius: 8px;
+  display: flex;
+  gap: 0.8rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding: 0.85rem;
+
+  strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.86rem; margin-bottom: 0.2rem; }
+  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : '#475569'}; font-size: 0.76rem; margin: 0; }
+  button { background: ${props => props.theme.buttonBackgroundColor}; border: 0; border-radius: 6px; color: white; cursor: pointer; flex: 0 0 auto; font-weight: 700; padding: 0.55rem 0.7rem; }
+  button:disabled { cursor: wait; opacity: 0.65; }
+  @media (max-width: 600px) { align-items: stretch; flex-direction: column; button { width: 100%; } }
+`;
+
 const CohortDetails = styled.div`
   border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
   display: grid;
@@ -991,7 +1009,7 @@ const PopupOverlay = styled.div`
 function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
-    const { rankingService } = useServices();
+    const { rankingService, userService } = useServices();
     const [activeTab, setActiveTab] = useState('insights');
     const [expandedCards, setExpandedCards] = useState({});
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
@@ -1002,6 +1020,8 @@ function Comparison({ theme, userData, isHidden}) {
     const [customBenchmarkError, setCustomBenchmarkError] = useState('');
     const [cohortPreview, setCohortPreview] = useState(null);
     const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
+    const [hasBenchmarkConsent, setHasBenchmarkConsent] = useState(userData?.benchmarkConsent === true);
+    const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
     const navigate = useLocalizedNavigate();
 
     const toggleFactorGroup = (group) => {
@@ -1042,6 +1062,18 @@ function Comparison({ theme, userData, isHidden}) {
             setCustomBenchmarkError(translations.comparison.benchmarkOverview?.customError || 'Unable to refresh the comparison. Try again.');
         } finally {
             setIsCustomBenchmarkLoading(false);
+        }
+    };
+
+    const enableCommunityComparison = async () => {
+        if (!userService?.setBenchmarkConsent || isSavingBenchmarkConsent) return;
+        setIsSavingBenchmarkConsent(true);
+        try {
+            const result = await userService.setBenchmarkConsent(true);
+            setHasBenchmarkConsent(result?.benchmarkConsent === true);
+            setIsBenchmarkExpanded(true);
+        } finally {
+            setIsSavingBenchmarkConsent(false);
         }
     };
 
@@ -1420,6 +1452,20 @@ function Comparison({ theme, userData, isHidden}) {
                         </button>
                     </div>
                 </div>
+
+                {!hasBenchmarkConsent && (
+                    <BenchmarkOptInCard theme={theme}>
+                        <div>
+                            <strong>{translations.comparison.benchmarkOverview?.optInTitle || 'Sblocca il confronto con utenti simili'}</strong>
+                            <p>{translations.comparison.benchmarkOverview?.optInDescription || 'Attiva il consenso per ricevere benchmark aggregati. Non condividiamo transazioni, note o identità.'}</p>
+                        </div>
+                        <button type="button" onClick={enableCommunityComparison} disabled={isSavingBenchmarkConsent}>
+                            {isSavingBenchmarkConsent
+                                ? (translations.comparison.benchmarkOverview?.optInSaving || 'Attivazione...')
+                                : (translations.comparison.benchmarkOverview?.optInAction || 'Attiva confronto')}
+                        </button>
+                    </BenchmarkOptInCard>
+                )}
 
                 {isBenchmarkExpanded && <>
                 <BenchmarkRankGrid>

@@ -170,9 +170,15 @@ describe('transformUserProfile', () => {
     expect(result.profile.job.value).toBe('Ingegnere');
   });
 
-  it('defaults userId to 00000 when missing', () => {
+  it('does not invent a fake user id when the API omits it', () => {
     const result = transformUserProfile({}, currencyTags, 'en');
-    expect(result.userId).toBe('00000');
+    expect(result.userId).toBe('');
+  });
+
+  it('accepts legacy profile identity aliases during the API migration', () => {
+    const result = transformUserProfile({ user_code: '654321', account_type: 1 }, currencyTags, 'en');
+    expect(result.userId).toBe('654321');
+    expect(result.userType).toBe('premium');
   });
 
   it('defaults userType to regular for unknown type', () => {

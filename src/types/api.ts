@@ -227,9 +227,11 @@ export interface RecurringTransactionDeleteRequest { id: number; }
 
 /** GET /user/get — the public information stored on a user. */
 export interface UserGetResponse {
-  userId: string;
+  userId?: string;
+  user_code?: string;
   username?: string;
   type?: number;
+  account_type?: number;
   age?: number | null;
   livingSituation?: number | null;
   housingType?: number | null;

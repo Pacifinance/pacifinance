@@ -585,8 +585,8 @@ const ProfilePage = () => {
 
     useEffect(() => {
         if (userData) {
-            setUserId(userData.userId || '00000');
-            setUserType(userData.userType || 'mockUser');
+            setUserId(userData.userId || userData.profile?.userId || '');
+            setUserType(userData.userType || userData.profile?.userType || '');
             setUserNationality(getUserNationality(userData));
             setUserWhereWorks(getUserWhereWorks(userData));
             setUserJob(getUserJob(userData));
@@ -614,8 +614,8 @@ const ProfilePage = () => {
             setHasChildrenTags(getChildrenTags(userData) || mockHasChildrenTags);
             setCurrencyTagsList(getCurrencyTags(userData) || mockCurrencyTags);
         } else {
-            setUserId('00000');
-            setUserType('mockUser');
+            setUserId('');
+            setUserType('');
             setNationalityTags(mockNationalityTags);
             setJobTags(mockJobTags);
             setJobTypeTags(mockJobTypeTags);

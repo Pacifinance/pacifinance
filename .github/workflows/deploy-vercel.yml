@@ -1,0 +1,99 @@
+name: Deploy to Vercel
+
+# Deploys via the Vercel CLI instead of Vercel's native Git integration, so
+# this keeps working on the Hobby plan even after the repo moves into the
+# PaciFinance GitHub organization (Vercel's dashboard "Import" flow nudges
+# org-owned repos toward a paid Team; deploying by CLI with a personal
+# account token sidesteps that entirely - the deploy is authenticated by the
+# Vercel token/project, not by which GitHub entity owns the source repo).
+#
+# Required repo secrets (Settings > Secrets and variables > Actions):
+#   VERCEL_TOKEN      Personal token: vercel.com/account/tokens
+#   VERCEL_ORG_ID     From .vercel/project.json after running `vercel link` locally once
+#   VERCEL_PROJECT_ID From .vercel/project.json after running `vercel link` locally once
+#
+# One-time local setup to obtain the two IDs above:
+#   npx vercel login
+#   npx vercel link            # select the existing pacifinance-serverless project
+#   cat .vercel/project.json   # copy orgId -> VERCEL_ORG_ID, projectId -> VERCEL_PROJECT_ID
+#
+# Once these secrets exist, disconnect the GitHub integration in the Vercel
+# project's Settings > Git page (otherwise both it and this workflow would
+# deploy every push, doubling up).
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch: {}
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL on the PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🔗 Preview deploy: ${{ steps.deploy.outputs.url }}`
+            })

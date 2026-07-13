@@ -46,7 +46,8 @@ export default function SignUpForm() {
     const [turnstileToken, setTurnstileToken] = useState("");
     const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const turnstileRef = useRef(null);
+    const turnstileRef = useRef<any>(null);
+    const turnstileWidgetIdRef = useRef<any>(null);
 
     const navigate = useLocalizedNavigate();
 
@@ -56,15 +57,25 @@ export default function SignUpForm() {
         setIsTurnstileLoaded(true);
     };
 
-    const onTurnstileError = () => {
+    const onTurnstileError = (errorCode) => {
+        const isDomainError = String(errorCode) === "110200";
+        const message = isDomainError
+            ? "Dominio non autorizzato per questa chiave Cloudflare Turnstile. Controlla sitekey e Hostname Management."
+            : "Si e' verificato un errore nella verifica di sicurezza. Riprova." + (errorCode ? " Codice: " + errorCode : "");
+
+        console.error("Turnstile error", {
+            code: errorCode,
+            hostname: window.location.hostname,
+            sitekeyPrefix: TURNSTILE_SITE_KEY ? String(TURNSTILE_SITE_KEY).slice(0, 8) + "..." : "missing",
+        });
         showError(
             `
             <div>
                 <strong>Errore di Sicurezza</strong><br/>
-                Si è verificato un errore nella verifica di sicurezza. Riprova.
+                ${message}
             </div>
         `,
-            3000,
+            isDomainError ? 7000 : 3000,
         );
         setTurnstileToken("");
         setIsTurnstileLoaded(false);
@@ -74,8 +85,8 @@ export default function SignUpForm() {
         setTurnstileToken("");
         setIsTurnstileLoaded(false);
         // Automatically refresh the challenge
-        if (window.turnstile && turnstileRef.current) {
-            window.turnstile.reset(turnstileRef.current);
+        if (window.turnstile && turnstileWidgetIdRef.current) {
+            window.turnstile.reset(turnstileWidgetIdRef.current);
         }
     };
 
@@ -91,7 +102,16 @@ export default function SignUpForm() {
 
         const initTurnstile = () => {
             if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
-                window.turnstile.render(turnstileRef.current, {
+                if (turnstileWidgetIdRef.current) {
+                    try {
+                        window.turnstile.remove(turnstileWidgetIdRef.current);
+                    } catch (error) {
+                        console.warn("Error removing previous Turnstile widget:", error);
+                    }
+                    turnstileWidgetIdRef.current = null;
+                }
+
+                turnstileWidgetIdRef.current = window.turnstile.render(turnstileRef.current, {
                     sitekey: TURNSTILE_SITE_KEY,
                     callback: onTurnstileSuccess,
                     "error-callback": onTurnstileError,
@@ -130,12 +150,12 @@ export default function SignUpForm() {
             }, 10000);
         }
 
-        const widgetId = turnstileRef.current;
         return () => {
             // Cleanup on unmount
-            if (window.turnstile && widgetId) {
+            if (window.turnstile && turnstileWidgetIdRef.current) {
                 try {
-                    window.turnstile.remove(widgetId);
+                    window.turnstile.remove(turnstileWidgetIdRef.current);
+                    turnstileWidgetIdRef.current = null;
                 } catch (error) {
                     console.warn("Error removing Turnstile widget:", error);
                 }
@@ -209,8 +229,8 @@ export default function SignUpForm() {
             );
 
             // Try to execute the challenge if not already done
-            if (window.turnstile && turnstileRef.current) {
-                window.turnstile.execute(turnstileRef.current);
+            if (window.turnstile && turnstileWidgetIdRef.current) {
+                window.turnstile.execute(turnstileWidgetIdRef.current);
             }
             return;
         }
@@ -242,8 +262,8 @@ export default function SignUpForm() {
             setIsTurnstileLoaded(false);
 
             // Reset Turnstile widget
-            if (window.turnstile && turnstileRef.current) {
-                window.turnstile.reset(turnstileRef.current);
+            if (window.turnstile && turnstileWidgetIdRef.current) {
+                window.turnstile.reset(turnstileWidgetIdRef.current);
             }
 
             showError(

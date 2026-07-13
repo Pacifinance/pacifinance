@@ -16,6 +16,8 @@ import type {
   UserSetIdResponse,
   UserSetPasswordRequest,
   UserSetRequest,
+  BenchmarkConsentRequest,
+  BenchmarkConsentResponse,
 } from '../types/api';
 
 export interface UserService {
@@ -23,6 +25,7 @@ export interface UserService {
   getTags(): Promise<TagsGetResponse>;
   getUserInfo(): Promise<UserGetResponse | Record<string, never>>;
   updateProfile(data: UserSetRequest): Promise<AxiosResponse>;
+  setBenchmarkConsent(contribute: boolean): Promise<BenchmarkConsentResponse>;
   login(userId: string, password: string, turnstileToken?: string): Promise<AxiosResponse>;
   register(password: string, repeatedPassword: string, turnstileToken?: string): Promise<AxiosResponse>;
   logout(): Promise<void>;
@@ -58,6 +61,12 @@ export const createUserService = (apiClient: AxiosInstance): UserService => ({
   async updateProfile(data) {
     const res = await apiClient.post('/api/user/set', data);
     return res;
+  },
+
+  async setBenchmarkConsent(contribute) {
+    const payload: BenchmarkConsentRequest = { contribute };
+    const res = await apiClient.post<BenchmarkConsentResponse>('/api/user/benchmark-consent', payload);
+    return res.data;
   },
 
   async login(userId, password, turnstileToken) {

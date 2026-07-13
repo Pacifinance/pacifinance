@@ -29,6 +29,15 @@ export type BenchmarkMetadata = {
     }
 }
 
+/** Robust, metric-specific distribution summary. Values are rounded only at
+ * the API boundary; the raw sample is never cached or returned to clients. */
+export type DistributionSummary = {
+    count: number,
+    median: number | null,
+    firstQuartile: number | null,
+    thirdQuartile: number | null
+}
+
 export type Averages = {
     balances: number | null,
     expenses: number | null,
@@ -36,6 +45,12 @@ export type Averages = {
     savingsRates: number | null,
     expensesByCategory: {
         [categoryIndex: number]: number
+    },
+    distributions: {
+        balances: DistributionSummary,
+        expenses: DistributionSummary,
+        incomes: DistributionSummary,
+        savingsRates: DistributionSummary
     },
     benchmark?: BenchmarkMetadata
 }
@@ -49,15 +64,18 @@ export type Averages = {
 class Accumulator {
     private sumScaled: number
     private count: number
+    private values: number[]
 
     public constructor() {
         this.sumScaled = 0
         this.count = 0
+        this.values = []
     }
 
     public accumulate(value: number) {
         this.sumScaled += toCents(value)
         this.count++
+        this.values.push(value)
     }
 
     /** Returns null (no data) rather than a misleading 0 when nothing was accumulated. */
@@ -65,6 +83,19 @@ class Accumulator {
         if (this.count === 0)
             return null
         return roundCurrency(fromCents(this.sumScaled) / this.count)
+    }
+
+    public getDistribution(): DistributionSummary {
+        if (this.values.length === 0) return {count: 0, median: null, firstQuartile: null, thirdQuartile: null}
+        const sorted = [...this.values].sort((a, b) => a - b)
+        const percentile = (p: number) => {
+            const index = (sorted.length - 1) * p
+            const lower = Math.floor(index)
+            const upper = Math.ceil(index)
+            const value = lower === upper ? sorted[lower] : sorted[lower] + (sorted[upper] - sorted[lower]) * (index - lower)
+            return roundCurrency(value)
+        }
+        return {count: sorted.length, median: percentile(0.5), firstQuartile: percentile(0.25), thirdQuartile: percentile(0.75)}
     }
 }
 
@@ -122,7 +153,13 @@ class AveragesData {
             expensesByCategory: Object.entries(this.expensesByCategory).reduce((obj, [categoryIndex, acc]) => {
                 const average = acc.getAverage()
                 return average === null ? obj : {...obj, [Number(categoryIndex)]: average}
-            }, {} as { [categoryIndex: number]: number })
+            }, {} as { [categoryIndex: number]: number }),
+            distributions: {
+                balances: this.balances.getDistribution(),
+                expenses: this.expenses.getDistribution(),
+                incomes: this.incomes.getDistribution(),
+                savingsRates: this.savingRates.getDistribution()
+            }
         }
     }
 }
@@ -208,14 +245,20 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
             expenses: null,
             incomes: null,
             savingsRates: null,
-            expensesByCategory: {}
+            expensesByCategory: {},
+            distributions: {
+                balances: {count: 0, median: null, firstQuartile: null, thirdQuartile: null},
+                expenses: {count: 0, median: null, firstQuartile: null, thirdQuartile: null},
+                incomes: {count: 0, median: null, firstQuartile: null, thirdQuartile: null},
+                savingsRates: {count: 0, median: null, firstQuartile: null, thirdQuartile: null}
+            }
         }
     }
 
     const now = ExtDate.fromNow()
 
     // Demo and test accounts must never influence real community benchmarks.
-    const allUsersList = await users.getAllUsersIds(true)
+    const allUsersList = await users.getAllBenchmarkUserIds()
     const allUserIds = allUsersList.map((user) => user.id)
     console.log(`[averages] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
 
@@ -245,7 +288,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
 
     // Fetched once and reused for every user below. No financial values are
     // read again while building cohorts.
-    const snapshot = await similarUsers.fetchProfilesSnapshot()
+    const snapshot = await similarUsers.fetchMonthlyProfilesSnapshot(now)
     console.log(`[averages] profiles snapshot fetched (+${Date.now() - t0}ms)`)
 
     for (const user of allUsersList) {

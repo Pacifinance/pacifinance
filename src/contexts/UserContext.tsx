@@ -189,6 +189,7 @@ export const UserProvider = ({ children }) => {
               },
               goals, limits, assets, averages: defaultAverages,
               currency: userProfile.preferredCurrencyCode,
+              benchmarkConsent: userProfile.benchmarkConsent,
             });
             setSessionUserInfo(null);
             setIsUpdated(true);

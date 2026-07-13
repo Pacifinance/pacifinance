@@ -120,10 +120,10 @@
 ### Fase 4 — Confronto anonimo (differenziante)
 - [x] Trasparenza benchmark v1: dimensione coorte, fattori usati, soglia privacy e percentili reali visibili nella pagina confronto
 - [x] Escludere account demo/test da medie e ranking della community
-- [ ] Consenso esplicito separato per contribuire ai benchmark hosted e possibilità di revoca/cancellazione
-- [ ] Mediana, quartili e numero effettivo di contribuenti per metrica (non affidarsi solo alla media)
-- [~] Personalizzazione coorte: selezione dinamica di lavoro/carriera, area geografica, fase di vita e nucleo familiare; cache Redis breve, calcolo aggregato on-demand e blocco rigoroso sotto soglia privacy. Da completare: anteprima live della numerosità prima del ricalcolo.
-- [ ] Snapshot mensile delle coorti standard: salvare i bucket profilo e la versione dell'algoritmo al refresh mensile, così ogni benchmark resta riproducibile per tutto il mese senza reagire a modifiche successive del profilo. Non includere mai saldi, entrate o uscite nella definizione di similarità.
+- [x] Consenso esplicito separato per contribuire ai benchmark hosted e possibilità di revoca/cancellazione <!-- roadmap:benchmark-consent -->
+- [x] Mediana, quartili e numero effettivo di contribuenti per metrica (non affidarsi solo alla media) <!-- roadmap:benchmark-distributions -->
+- [x] Personalizzazione coorte: selezione dinamica di lavoro/carriera, area geografica, fase di vita e nucleo familiare; cache Redis breve, calcolo aggregato on-demand, anteprima live della numerosità e blocco rigoroso sotto soglia privacy <!-- roadmap:custom-cohort -->
+- [x] Snapshot mensile delle coorti standard: salvare i bucket profilo e la versione dell'algoritmo al refresh mensile, così ogni benchmark resta riproducibile per tutto il mese senza reagire a modifiche successive del profilo. Non includere mai saldi, entrate o uscite nella definizione di similarità. <!-- roadmap:benchmark-snapshots -->
 - [~] Insight derivati: evidenziare la categoria madre con il maggiore scostamento economico dalla coorte; aggiungere trend e contributo percentuale al gap
 - [ ] Benchmark longitudinali 3/6/12 mesi usando una coorte stabile, con data di aggiornamento e indicatore di affidabilità
 - [ ] Benchmark runway emergenza, costi fissi/reddito, saving rate e diversificazione patrimoniale

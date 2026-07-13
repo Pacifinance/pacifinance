@@ -142,11 +142,17 @@ const FormGroup = styled.div`
     background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)'};
     color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
     font-size: 0.9rem;
+    color-scheme: ${props => props.theme.mode === 'dark' ? 'dark' : 'light'};
     
     &:focus {
       outline: none;
       border-color: ${props => props.theme.secondaryColor};
     }
+  }
+
+  select option {
+    background: ${props => props.theme.mode === 'dark' ? '#1f2937' : '#ffffff'};
+    color: ${props => props.theme.mode === 'dark' ? '#f8fafc' : '#111827'};
   }
 `;
 
@@ -316,8 +322,10 @@ const Modal = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 11000;
   backdrop-filter: blur(5px);
+  padding: 1rem;
+  box-sizing: border-box;
 `;
 
 const ModalContent = styled.div`
@@ -327,12 +335,22 @@ const ModalContent = styled.div`
   padding: 2rem;
   max-width: 500px;
   width: 90%;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
   backdrop-filter: blur(10px);
   
   h3 {
     color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
     margin-bottom: 1.5rem;
     text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    border-radius: 12px;
+    padding: 1.25rem;
+    width: 100%;
   }
 `;
 
@@ -341,6 +359,14 @@ const ModalActions = styled.div`
   gap: 1rem;
   justify-content: flex-end;
   margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(30,30,30,0.98)' : 'rgba(255,255,255,0.98)'};
+    bottom: 0;
+    margin: 1.5rem -1.25rem -1.25rem;
+    padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    position: sticky;
+  }
 `;
 
 const CancelButton = styled.button`
@@ -355,6 +381,10 @@ const CancelButton = styled.button`
   
   &:hover {
     background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+  }
+
+  @media (max-width: 420px) {
+    padding: 0.75rem 1.1rem;
   }
 `;
 

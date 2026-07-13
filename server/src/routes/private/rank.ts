@@ -61,6 +61,17 @@ rankRouter.post("/custom", async (req, res) => {
     }
 })
 
+/** Lightweight live cohort preview for the comparison-factor selector. */
+rankRouter.post("/custom-preview", async (req, res) => {
+    try {
+        const preview = await customBenchmark.previewCustomBenchmark(req.userId as string, req.body?.factors)
+        res.status(200).json(preview)
+    } catch (error) {
+        console.error("rank.custom-preview: failed to compute cohort preview", error)
+        res.status(503).json({error: "Cohort preview is temporarily unavailable."})
+    }
+})
+
 rankRouter.post("/balances", async (req, res) => {
     // If the user is of test/demo type, assign some random values
     const target_user = req.userId as string;

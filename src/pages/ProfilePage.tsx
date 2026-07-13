@@ -17,7 +17,8 @@ import {
     Trophy,
     User,
     RefreshCw,
-    Coins
+    Coins,
+    ShieldCheck
 } from 'lucide-react';
 import styled from 'styled-components';
 
@@ -416,6 +417,21 @@ const ButtonGroup = styled.div`
   margin-top: 2rem;
 `;
 
+const BenchmarkConsentPanel = styled.div`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(7,145,100,0.10)' : '#f0fdf7'};
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(52,211,153,0.22)' : '#bbf7d0'};
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+
+  .consent-row { align-items: flex-start; display: flex; gap: 0.75rem; }
+  h3 { color: ${props => props.theme.textColor}; font-size: 0.95rem; margin: 0 0 0.3rem; }
+  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.72)' : '#475569'}; font-size: 0.82rem; line-height: 1.45; margin: 0; }
+  label { align-items: center; color: ${props => props.theme.textColor}; cursor: pointer; display: flex; font-size: 0.84rem; font-weight: 700; gap: 0.5rem; margin-top: 0.8rem; }
+  input { accent-color: ${props => props.theme.buttonBackgroundColor}; height: 1rem; width: 1rem; }
+  .consent-status { color: ${props => props.theme.mode === 'dark' ? '#86efac' : '#15803d'}; font-size: 0.75rem; margin-top: 0.5rem; }
+`;
+
 // ─── Main Component ──────────────────────────────────────────────────
 
 const ProfilePage = () => {
@@ -461,6 +477,8 @@ const ProfilePage = () => {
     const [hasChildrenTags, setHasChildrenTags] = useState([]);
     const [currencyTagsList, setCurrencyTagsList] = useState([]);
     const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
+    const [benchmarkConsent, setBenchmarkConsent] = useState(false);
+    const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
 
     const handleRegenerateAvatar = () => {
         if (!canRegenerateAvatar()) {
@@ -582,6 +600,7 @@ const ProfilePage = () => {
             setUserHasChildren(getUserChildren(userData));
             setUserPreferredCurrency(getUserPreferredCurrency(userData));
             setProfileCompletionPercentage(getProfileCompletionPercentage(userData));
+            setBenchmarkConsent(userData.benchmarkConsent === true);
             
             setNationalityTags(getNationalityTags(userData) || mockNationalityTags);
             setJobTags(getJobTags(userData) || mockJobTags);
@@ -611,6 +630,25 @@ const ProfilePage = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userData]);
+
+    const handleBenchmarkConsentChange = async (event) => {
+        const contribute = event.target.checked;
+        if (!userService?.setBenchmarkConsent) return;
+        setIsSavingBenchmarkConsent(true);
+        try {
+            const result = await userService.setBenchmarkConsent(contribute);
+            setBenchmarkConsent(result.benchmarkConsent);
+            if (typeof retryFetch === 'function') retryFetch();
+            showSuccess(contribute
+                ? (translations.profile?.benchmark?.enabled || 'You are contributing anonymous aggregate data to community benchmarks.')
+                : (translations.profile?.benchmark?.disabled || 'Community benchmark contribution has been revoked.'));
+        } catch {
+            setBenchmarkConsent(!contribute);
+            showError(translations.profile?.benchmark?.error || 'Unable to update benchmark consent.');
+        } finally {
+            setIsSavingBenchmarkConsent(false);
+        }
+    };
 
     const handleUpdateProfile = async (event) => {
         event.preventDefault();
@@ -820,6 +858,26 @@ const ProfilePage = () => {
                     </div>
                 )}
             </BenefitsToggle>
+
+            <BenchmarkConsentPanel theme={theme}>
+                <div className="consent-row">
+                    <ShieldCheck size={20} color={theme.buttonBackgroundColor} />
+                    <div>
+                        <h3>{translations.profile?.benchmark?.title || 'Anonymous community benchmarks'}</h3>
+                        <p>{translations.profile?.benchmark?.description || 'Optionally contribute only aggregated, bucketed financial metrics. Transaction details, notes and your identity are never shared.'}</p>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={benchmarkConsent}
+                                onChange={handleBenchmarkConsentChange}
+                                disabled={isSavingBenchmarkConsent}
+                            />
+                            {translations.profile?.benchmark?.toggle || 'Contribute to hosted benchmarks'}
+                        </label>
+                        {benchmarkConsent && <div className="consent-status">{translations.profile?.benchmark?.active || 'Contribution active. You can revoke it here at any time.'}</div>}
+                    </div>
+                </div>
+            </BenchmarkConsentPanel>
 
             {/* View / Edit Mode */}
             {!isEditMode ? (

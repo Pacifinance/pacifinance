@@ -9,6 +9,18 @@ import similarUsers, {
 } from "./similarUsers"
 
 const CACHE_TTL_SECONDS = 300
+const PREVIEW_CACHE_TTL_SECONDS = 60
+
+export type CustomBenchmarkPreview = {
+    factors: ComparisonFactorGroup[],
+    available: boolean,
+    cohort: {
+        size: number,
+        populationSize: number,
+        minimumSize: number,
+        averageSimilarity: number | null
+    }
+}
 
 export type CustomBenchmark = {
     available: boolean,
@@ -40,6 +52,41 @@ function averagePool(pool: Array<{ userId: string, total: number }>, excludedUse
 
 function cacheKey(userId: string, factors: ComparisonFactorGroup[]) {
     return `comparison:custom:v1:${userId}:${factors.join(",")}`
+}
+
+function previewCacheKey(userId: string, factors: ComparisonFactorGroup[]) {
+    return `comparison:preview:v1:${userId}:${factors.join(",")}`
+}
+
+/** Returns cohort size and quality without fetching financial metrics. */
+async function previewCustomBenchmark(userId: string, rawFactors: unknown): Promise<CustomBenchmarkPreview> {
+    const factors = normalizeComparisonFactorGroups(rawFactors)
+    const key = previewCacheKey(userId, factors)
+    try {
+        const cached = await redis.get<CustomBenchmarkPreview>(key)
+        if (cached) return cached
+    } catch (error) {
+        console.warn("customBenchmark: Redis preview read failed", error)
+    }
+
+    const snapshot = await similarUsers.fetchProfilesSnapshot()
+    const cohort = similarUsers.selectCustomSimilarUserIds(snapshot, userId, factors)
+    const result: CustomBenchmarkPreview = {
+        factors,
+        available: !cohort.insufficientData && cohort.userIds.length >= MIN_COHORT,
+        cohort: {
+            size: cohort.userIds.length,
+            populationSize: cohort.populationSize,
+            minimumSize: MIN_COHORT,
+            averageSimilarity: cohort.averageSimilarity
+        }
+    }
+    try {
+        await redis.set(key, result, {ex: PREVIEW_CACHE_TTL_SECONDS})
+    } catch (error) {
+        console.warn("customBenchmark: Redis preview write failed", error)
+    }
+    return result
 }
 
 /**
@@ -120,4 +167,4 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
     return result
 }
 
-export default { getCustomBenchmark }
+export default { getCustomBenchmark, previewCustomBenchmark }

@@ -38,9 +38,16 @@ export interface CustomBenchmark {
   };
 }
 
+export interface CustomBenchmarkPreview {
+  factors: ComparisonFactorGroup[];
+  available: boolean;
+  cohort: CustomBenchmark['cohort'];
+}
+
 export interface RankingService {
   getAllRankings(): Promise<RankingSnapshot>;
   getCustomBenchmark(factors: ComparisonFactorGroup[]): Promise<CustomBenchmark>;
+  previewCustomBenchmark(factors: ComparisonFactorGroup[]): Promise<CustomBenchmarkPreview>;
 }
 
 /** Creates a ranking-service bound to the given HTTP client. */
@@ -75,6 +82,11 @@ export const createRankingService = (apiClient: AxiosInstance): RankingService =
 
   async getCustomBenchmark(factors) {
     const res = await apiClient.post<CustomBenchmark>('/api/rank/custom', { factors });
+    return res.data;
+  },
+
+  async previewCustomBenchmark(factors) {
+    const res = await apiClient.post<CustomBenchmarkPreview>('/api/rank/custom-preview', { factors });
     return res.data;
   },
 });

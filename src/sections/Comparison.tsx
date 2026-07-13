@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { Section } from '../styles/MyStyled';
 import { 
@@ -257,6 +257,19 @@ const BenchmarkRank = styled.div`
   strong { color: ${props => props.theme.textColor}; display: block; font-size: 1.15rem; margin-top: 0.2rem; }
 `;
 
+const DistributionGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+
+  .distribution-card { background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#fbfcfd'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : '#e5e7eb'}; border-radius: 6px; padding: 0.75rem; }
+  span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; display: block; font-size: 0.74rem; }
+  strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.92rem; margin-top: 0.2rem; }
+  small { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.52)' : '#64748b'}; display: block; font-size: 0.7rem; margin-top: 0.25rem; }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+`;
+
 const CohortDetails = styled.div`
   border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
   display: grid;
@@ -297,6 +310,8 @@ const CohortCustomizer = styled.div`
   .apply-factors:disabled { cursor: wait; opacity: 0.65; }
   .reset-factors { background: transparent; border: 0; color: ${props => props.theme.buttonBackgroundColor}; cursor: pointer; font-size: 0.78rem; font-weight: 600; padding: 0.35rem; }
   .customizer-error { color: #dc2626; font-size: 0.78rem; }
+  .cohort-preview { color: ${props => props.theme.mode === 'dark' ? '#fbbf24' : '#a16207'}; font-size: 0.78rem; }
+  .cohort-preview.ready { color: ${props => props.theme.mode === 'dark' ? '#86efac' : '#15803d'}; }
 `;
 
 const DEFAULT_FACTOR_GROUPS = ['career', 'location', 'lifeStage', 'household'];
@@ -967,6 +982,7 @@ function Comparison({ theme, userData, isHidden}) {
     const [customBenchmark, setCustomBenchmark] = useState(null);
     const [isCustomBenchmarkLoading, setIsCustomBenchmarkLoading] = useState(false);
     const [customBenchmarkError, setCustomBenchmarkError] = useState('');
+    const [cohortPreview, setCohortPreview] = useState(null);
     const navigate = useLocalizedNavigate();
 
     const toggleFactorGroup = (group) => {
@@ -975,6 +991,23 @@ function Comparison({ theme, userData, isHidden}) {
             ? current.filter((item) => item !== group)
             : [...current, group]);
     };
+
+    useEffect(() => {
+        if (!rankingService?.previewCustomBenchmark || selectedFactorGroups.length === 0) {
+            setCohortPreview(null);
+            return undefined;
+        }
+        let active = true;
+        const timer = setTimeout(async () => {
+            try {
+                const preview = await rankingService.previewCustomBenchmark(selectedFactorGroups);
+                if (active) setCohortPreview(preview);
+            } catch {
+                if (active) setCohortPreview(null);
+            }
+        }, 250);
+        return () => { active = false; clearTimeout(timer); };
+    }, [rankingService, selectedFactorGroups]);
 
     const applyCustomBenchmark = async () => {
         if (selectedFactorGroups.length === 0 || !rankingService?.getCustomBenchmark) return;
@@ -1285,12 +1318,15 @@ function Comparison({ theme, userData, isHidden}) {
 
         if (categoryOpportunities.length > 0) {
             const opportunity = categoryOpportunities[0];
+            const totalGap = categoryOpportunities.reduce((sum, category) => sum + category.difference, 0);
+            const contribution = totalGap > 0 ? Math.round((opportunity.difference / totalGap) * 100) : 0;
             insights.push({
                 type: 'warning',
                 title: (translations.comparison.actionableInsights?.categoryTitle || 'Approfondisci: {category}')
                     .replace('{category}', opportunity.displayName),
-                description: (translations.comparison.actionableInsights?.categoryDescription || 'Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre.')
+                description: (translations.comparison.actionableInsights?.categoryDescription || 'Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre: rappresenta il {contribution}% degli scostamenti rilevati.')
                     .replace('{difference}', formatCurrency(opportunity.difference))
+                    .replace('{contribution}', contribution)
             });
         }
 
@@ -1335,6 +1371,12 @@ function Comparison({ theme, userData, isHidden}) {
             { label: translations.leaderboard.rankings.income, value: similarRanks.incomes },
             { label: translations.leaderboard.rankings.outflows, value: similarRanks.outflows }
         ];
+        const distributions = customBenchmark?.available ? null : userAverages.similar?.distributions;
+        const distributionCards = [
+            {key: 'balances', label: translations.comparison.cards.avgBalance.title},
+            {key: 'incomes', label: translations.comparison.cards.avgIncome.title},
+            {key: 'expenses', label: translations.comparison.cards.avgOutflows.title}
+        ].map(({key, label}) => ({key, label, summary: distributions?.[key]})).filter(({summary}) => summary?.count > 0);
 
         return (
             <BenchmarkOverview theme={theme}>
@@ -1357,6 +1399,18 @@ function Comparison({ theme, userData, isHidden}) {
                         </BenchmarkRank>
                     ))}
                 </BenchmarkRankGrid>
+
+                {distributionCards.length > 0 && (
+                    <DistributionGrid theme={theme}>
+                        {distributionCards.map(({key, label, summary}) => (
+                            <div className="distribution-card" key={key}>
+                                <span>{label}</span>
+                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Mediana')}: {formatCurrency(summary.median)}</strong>
+                                <small>{(translations.comparison.benchmarkOverview?.interquartileRange || 'Intervallo centrale')}: {formatCurrency(summary.firstQuartile)} - {formatCurrency(summary.thirdQuartile)} · n={summary.count}</small>
+                            </div>
+                        ))}
+                    </DistributionGrid>
+                )}
 
                 <CohortDetails theme={theme}>
                     <div className="cohort-line">
@@ -1413,6 +1467,13 @@ function Comparison({ theme, userData, isHidden}) {
                             </button>
                         )}
                         {customBenchmarkError && <span className="customizer-error">{customBenchmarkError}</span>}
+                        {cohortPreview && (
+                            <span className={`cohort-preview ${cohortPreview.available ? 'ready' : ''}`}>
+                                {(translations.comparison.benchmarkOverview?.preview || 'Anteprima: {count} profili comparabili (minimo {minimum}).')
+                                    .replace('{count}', cohortPreview.cohort.size)
+                                    .replace('{minimum}', cohortPreview.cohort.minimumSize)}
+                            </span>
+                        )}
                     </div>
                 </CohortCustomizer>
             </BenchmarkOverview>

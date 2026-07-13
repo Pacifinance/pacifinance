@@ -48,11 +48,40 @@ create table public.profiles (
   remote_type_tag_id bigint references public.tags(id),
   years_of_experience_tag_id bigint references public.tags(id),
   preferred_currency_tag_id bigint references public.tags(id),
+  benchmark_consent boolean not null default false,
+  benchmark_consent_at timestamptz,
+  benchmark_consent_revoked_at timestamptz,
 
   expenses_limit numeric not null default -1,
   savings_percent numeric not null default -1,
   emergency_fund_goal numeric not null default -1
 );
+
+create index profiles_benchmark_consent_idx on public.profiles (benchmark_consent) where benchmark_consent;
+
+-- Monthly, versioned profile buckets used by community benchmarks. These
+-- snapshots intentionally exclude every financial value and free-text field.
+create table public.benchmark_runs (
+  month_start date primary key,
+  algorithm_version text not null,
+  generated_at timestamptz not null default now(),
+  contributor_count integer not null default 0
+);
+
+create table public.benchmark_profile_snapshots (
+  month_start date not null references public.benchmark_runs(month_start) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  account_type smallint not null,
+  job_country_tag_id bigint references public.tags(id), job_tag_id bigint references public.tags(id),
+  job_type_tag_id bigint references public.tags(id), work_time_tag_id bigint references public.tags(id),
+  remote_type_tag_id bigint references public.tags(id), living_situation_tag_id bigint references public.tags(id),
+  housing_type_tag_id bigint references public.tags(id), children_tag_id bigint references public.tags(id),
+  country_tag_id bigint references public.tags(id), age_tag_id bigint references public.tags(id),
+  years_of_experience_tag_id bigint references public.tags(id),
+  primary key (month_start, user_id)
+);
+
+create index benchmark_profile_snapshots_month_idx on public.benchmark_profile_snapshots (month_start, account_type);
 
 -- ---------- balances ----------
 create table public.balances (

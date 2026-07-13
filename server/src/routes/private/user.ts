@@ -174,6 +174,27 @@ userRouter.post("/set", async(req, res) => {
     res.send()
 })
 
+/** Opt in or revoke participation in hosted anonymous community benchmarks. */
+userRouter.post("/benchmark-consent", async (req, res) => {
+    if (typeof req.body?.contribute !== "boolean") {
+        res.status(400).send()
+        return
+    }
+    const userId = req.userId as string
+    const result = await db.users.setBenchmarkConsentByUserId(userId, req.body.contribute)
+    if (result === null) {
+        res.status(500).send()
+        return
+    }
+
+    // Revocation deletes the user's persisted profile buckets immediately.
+    // Cached aggregates expire naturally; no transaction or note is stored in
+    // this benchmark layer at any point.
+    if (!req.body.contribute)
+        await db.benchmarkSnapshots.deleteProfilesByUserId(userId)
+    res.status(200).json(result)
+})
+
 userRouter.post("/goals", async (req, res) => {
     // Set the users's goals and limits
     let expensesLimit = req.body.expenses_limit

@@ -151,6 +151,20 @@ async function getAllUsersIds(ignore_test_users: boolean = false) {
 }
 
 /**
+ * Gets exactly the accounts that explicitly opted in to hosted community
+ * benchmarks. Test/demo accounts and non-consenting users are deliberately
+ * excluded before any financial metric is read.
+ */
+async function getAllBenchmarkUserIds() {
+    const {data, error} = await supabase.from("profiles")
+        .select("id, user_code")
+        .lt("account_type", UserType.test.value)
+        .eq("benchmark_consent", true)
+    if (error || !data) return []
+    return data.map((row) => ({id: row.id as string, userId: row.user_code as string}))
+}
+
+/**
  * Updates the public 6-digit ID of a user. Also updates the internal synthetic
  * email in Supabase Auth so that future logins with the new ID keep working.
  * @param user_id uuid of the user
@@ -208,7 +222,7 @@ async function getPublicInfoByUserId(user_id: string) {
     const {data, error} = await supabase.from("profiles")
         .select(`
             user_code, nickname, account_type, created_at,
-            expenses_limit, savings_percent, emergency_fund_goal,
+            expenses_limit, savings_percent, emergency_fund_goal, benchmark_consent,
             ${TAG_JOIN_FIELDS}
         `)
         .eq("id", user_id)
@@ -234,12 +248,26 @@ async function getPublicInfoByUserId(user_id: string) {
         remoteType: mapTagRow(d.remote_type),
         yearsOfExperience: mapTagRow(d.years_of_experience),
         preferredCurrency: mapTagRow(d.preferred_currency),
+        benchmarkConsent: d.benchmark_consent as boolean,
         goals: {
             expensesLimit: d.expenses_limit as number,
             savingsPercent: d.savings_percent as number,
             emergencyFundGoal: d.emergency_fund_goal as number
         }
     }
+}
+
+/** Records explicit hosted-community-benchmark consent or its revocation. */
+async function setBenchmarkConsentByUserId(user_id: string, consent: boolean) {
+    const now = new Date().toISOString()
+    const update = consent
+        ? {benchmark_consent: true, benchmark_consent_at: now, benchmark_consent_revoked_at: null}
+        : {benchmark_consent: false, benchmark_consent_revoked_at: now}
+    const {data, error} = await supabase.from("profiles").update(update).eq("id", user_id)
+        .select("id, benchmark_consent").maybeSingle()
+    if (error) console.error("users.setBenchmarkConsentByUserId: update failed", error)
+    if (error || !data) return null
+    return {benchmarkConsent: data.benchmark_consent as boolean}
 }
 
 /**
@@ -337,10 +365,12 @@ export default {
     userCodeExists,
     verifyPassword,
     getAllUsersIds,
+    getAllBenchmarkUserIds,
     setUserIdByUserId,
     setPasswordOfUserId,
     getTypeOfUserId,
     getPublicInfoByUserId,
+    setBenchmarkConsentByUserId,
     setPublicInfoOfUserId,
     setGoalsOfUserId,
     deleteUserById

@@ -1,6 +1,8 @@
 import supabase from "../db/supabase"
 import users from "../db/models/users"
 import tagsModel from "../db/models/tags"
+import benchmarkSnapshots from "../db/models/benchmarkSnapshots"
+import { ExtDate } from "../libs/datelib"
 
 /**
  * Single source of truth for "similar users" cohort selection, replacing the
@@ -66,11 +68,11 @@ const FIELD_COLUMN = {
     yearsOfExperience: "years_of_experience_tag_id",
 } as const satisfies Record<Field, string>
 
-export const PROFILE_COLUMNS = `id, account_type, ${Object.values(FIELD_COLUMN).join(", ")}`
+export const PROFILE_COLUMNS = `id, account_type, benchmark_consent, ${Object.values(FIELD_COLUMN).join(", ")}`
 
 type ColumnName = typeof FIELD_COLUMN[Field]
 
-export type ProfileTagIds = { id: string, account_type: number } & {
+export type ProfileTagIds = { id: string, account_type: number, benchmark_consent?: boolean } & {
     [column in ColumnName]?: number | null
 }
 
@@ -271,10 +273,28 @@ export type ProfilesSnapshot = { profiles: ProfileTagIds[], tagMeta: OrdinalTagM
  */
 async function fetchProfilesSnapshot(): Promise<ProfilesSnapshot> {
     const { data, error } = await supabase.from("profiles").select(PROFILE_COLUMNS)
+        .eq("benchmark_consent", true)
     if (error) console.error("similarUsers.fetchProfilesSnapshot: failed to read profiles", error)
     const profiles = (data ?? []) as unknown as ProfileTagIds[]
     const tagMeta = await buildOrdinalTagMeta()
     return { profiles, tagMeta }
+}
+
+/**
+ * Uses one immutable profile-bucket snapshot per month for cached community
+ * benchmarks. A profile edit or salary change during the month therefore
+ * cannot silently rewrite an already published comparison.
+ */
+async function fetchMonthlyProfilesSnapshot(now: ExtDate): Promise<ProfilesSnapshot> {
+    const savedProfiles = await benchmarkSnapshots.getProfiles(now)
+    if (savedProfiles.length > 0) {
+        const tagMeta = await buildOrdinalTagMeta()
+        return {profiles: savedProfiles as ProfileTagIds[], tagMeta}
+    }
+
+    const snapshot = await fetchProfilesSnapshot()
+    await benchmarkSnapshots.saveProfiles(now, snapshot.profiles)
+    return snapshot
 }
 
 /**
@@ -359,5 +379,5 @@ async function getSimilarUserIds(
 }
 
 export default {
-    getSimilarUserIds, fetchProfilesSnapshot, selectSimilarUserIds, selectCustomSimilarUserIds, similarityScore, selectCohort
+    getSimilarUserIds, fetchProfilesSnapshot, fetchMonthlyProfilesSnapshot, selectSimilarUserIds, selectCustomSimilarUserIds, similarityScore, selectCohort
 }

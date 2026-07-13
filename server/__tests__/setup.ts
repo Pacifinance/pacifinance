@@ -12,6 +12,7 @@ type MockDb = {
     delqueue: Record<string, any>
     recurringTransactions: Record<string, any>
     benchmarks: Record<string, any>
+    benchmarkSnapshots: Record<string, any>
 }
 
 const mocks = vi.hoisted(() => {
@@ -29,9 +30,11 @@ const mocks = vi.hoisted(() => {
             insertNew: vi.fn(),
             getTypeOfUserId: vi.fn(),
             verifyPassword: vi.fn(),
+            getAllBenchmarkUserIds: vi.fn(),
             setUserIdByUserId: vi.fn(),
             setPasswordOfUserId: vi.fn(),
             getPublicInfoByUserId: vi.fn(),
+            setBenchmarkConsentByUserId: vi.fn(),
             setPublicInfoOfUserId: vi.fn(),
             setGoalsOfUserId: vi.fn(),
             deleteUserById: vi.fn()
@@ -123,6 +126,11 @@ const mocks = vi.hoisted(() => {
         },
         benchmarks: {
             getMetricRows: vi.fn()
+        },
+        benchmarkSnapshots: {
+            getProfiles: vi.fn(),
+            saveProfiles: vi.fn(),
+            deleteProfilesByUserId: vi.fn()
         }
     }
 
@@ -217,7 +225,9 @@ export function resetServerMocks() {
     mockDb.users.insertNew.mockResolvedValue({id: "user-uuid", userId: "123456"})
     mockDb.users.getTypeOfUserId.mockResolvedValue({type: mockDb.users.UserType.regular.value})
     mockDb.users.verifyPassword.mockResolvedValue(true)
+    mockDb.users.getAllBenchmarkUserIds.mockResolvedValue([])
     mockDb.users.getPublicInfoByUserId.mockResolvedValue({userId: "123456"})
+    mockDb.users.setBenchmarkConsentByUserId.mockResolvedValue({benchmarkConsent: false})
     mockDb.users.setPublicInfoOfUserId.mockResolvedValue({id: "user-uuid"})
     mockDb.users.setGoalsOfUserId.mockResolvedValue({id: "user-uuid"})
     mockDb.users.deleteUserById.mockResolvedValue({id: "user-uuid"})
@@ -282,6 +292,9 @@ export function resetServerMocks() {
     mockDb.recurringTransactions.deleteRecurring.mockResolvedValue({deletedCount: 1})
     mockDb.recurringTransactions.runAllDue.mockResolvedValue({due: 0, ran: 0})
     mockDb.benchmarks.getMetricRows.mockResolvedValue([])
+    mockDb.benchmarkSnapshots.getProfiles.mockResolvedValue([])
+    mockDb.benchmarkSnapshots.saveProfiles.mockResolvedValue(undefined)
+    mockDb.benchmarkSnapshots.deleteProfilesByUserId.mockResolvedValue(undefined)
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")

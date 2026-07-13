@@ -75,6 +75,15 @@ export default function PrivacyPolicyPage() {
 
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                {translations.legal.privacy.benchmarkParticipation?.title || 'Community benchmarks'}
+              </h2>
+              <p className="mb-4 leading-relaxed">
+                {translations.legal.privacy.benchmarkParticipation?.content || 'Participation in hosted community benchmarks is optional and can be revoked from your profile at any time.'}
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
                 {translations.legal.privacy.anonymity.title}
               </h2>
               <p className="mb-4 leading-relaxed">

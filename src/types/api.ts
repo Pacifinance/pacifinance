@@ -242,6 +242,7 @@ export interface UserGetResponse {
   remoteType?: number | null;
   yearsOfExperience?: number | null;
   preferredCurrency?: number | null;
+  benchmarkConsent?: boolean;
 }
 
 /** POST /user/set — profile update payload. */
@@ -259,6 +260,9 @@ export interface UserSetRequest {
   years_of_experience?: number | null;
   preferred_currency?: number | null;
 }
+
+export interface BenchmarkConsentRequest { contribute: boolean; }
+export interface BenchmarkConsentResponse { benchmarkConsent: boolean; }
 
 export interface UserSetIdRequest { password: string; }
 export interface UserSetIdResponse { new_id: string; }

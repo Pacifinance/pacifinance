@@ -26,6 +26,27 @@ describe("private backend routes", () => {
         expect(mockDb.users.getPublicInfoByUserId).toHaveBeenCalledWith("user-uuid")
     })
 
+    it("records and revokes explicit hosted benchmark consent", async () => {
+        mockDb.users.setBenchmarkConsentByUserId.mockResolvedValue({benchmarkConsent: true})
+
+        const optIn = await request(app, "/api/user/benchmark-consent", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {contribute: true}
+        })
+        expect(optIn.status).toBe(200)
+        expect(optIn.json).toEqual({benchmarkConsent: true})
+
+        mockDb.users.setBenchmarkConsentByUserId.mockResolvedValue({benchmarkConsent: false})
+        const revoke = await request(app, "/api/user/benchmark-consent", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {contribute: false}
+        })
+        expect(revoke.status).toBe(200)
+        expect(mockDb.benchmarkSnapshots.deleteProfilesByUserId).toHaveBeenCalledWith("user-uuid")
+    })
+
     it("refreshes expired sessions and sets replacement cookies", async () => {
         mockSupabase.auth.getClaims.mockResolvedValue({data: null, error: {message: "expired"}})
         mockSupabase.auth.refreshSession.mockResolvedValue({

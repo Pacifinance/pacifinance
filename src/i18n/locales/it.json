@@ -999,6 +999,9 @@
             "noCohort": "Non ci sono ancora abbastanza profili comparabili per questa selezione.",
             "customError": "Non è stato possibile aggiornare il confronto. Riprova.",
             "factorUnavailable": "Completa questa parte del profilo per usarla nel confronto.",
+            "preview": "Anteprima: {count} profili comparabili (minimo {minimum}).",
+            "median": "Mediana",
+            "interquartileRange": "Intervallo centrale",
             "factors": {
                 "career": "Lavoro e carriera",
                 "location": "Area geografica",
@@ -1090,7 +1093,7 @@
             "percentileTitle": "Patrimonio: top {rank}% tra profili simili",
             "percentileDescription": "Il percentile usa la coorte specifica per il patrimonio, non la media indistinta di tutti gli utenti.",
             "categoryTitle": "Approfondisci: {category}",
-            "categoryDescription": "Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre.",
+            "categoryDescription": "Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre: rappresenta il {contribution}% degli scostamenti rilevati.",
             "savingsTitle": "Margine sul tasso di risparmio",
             "savingsDescription": "La coorte risparmia in media {gap} punti percentuali in più. Le categorie sopra media possono indicare da dove iniziare.",
             "balancedTitle": "Profilo in equilibrio con la coorte",
@@ -1627,18 +1630,22 @@
                 "title": "Raccolta Dati",
                 "content": "Raccogliamo solo i dati essenziali per il funzionamento del servizio:",
                 "items": [
-                    "Dati finanziari inseriti volontariamente (sempre anonimi)",
+                    "Dati finanziari e di profilo inseriti volontariamente per erogare il servizio",
                     "Cookie tecnici necessari per il funzionamento",
                     "Dati di utilizzo aggregati e anonimi"
                 ]
             },
             "dataUsage": {
                 "title": "Utilizzo dei Dati",
-                "content": "I tuoi dati vengono utilizzati esclusivamente per fornire le funzionalità della piattaforma e per confronti anonimi. Non vendiamo, condividiamo o utilizziamo i tuoi dati per scopi commerciali."
+                "content": "I tuoi dati vengono utilizzati esclusivamente per fornire le funzionalità della piattaforma. Non vendiamo i dati finanziari né li utilizziamo per pubblicità o profilazione commerciale."
+            },
+            "benchmarkParticipation": {
+                "title": "Benchmark della community",
+                "content": "La partecipazione ai benchmark hosted è facoltativa e richiede un consenso separato nel profilo. Se attiva, usiamo solo metriche aggregate e bucket di profilo per calcolare statistiche di gruppo soggette a soglie minime di riservatezza; transazioni, note e identificativo pubblico non sono condivisi. Puoi revocare il consenso in qualsiasi momento: i bucket di profilo salvati per i benchmark vengono eliminati."
             },
             "anonymity": {
                 "title": "Anonimato",
-                "content": "Tutti i confronti e le statistiche sono completamente anonimi. I tuoi dati personali non vengono mai associati ai dati finanziari utilizzati per i confronti."
+                "content": "Le statistiche mostrate ai partecipanti sono aggregate e non espongono transazioni, note o identità. I dati del tuo account restano pseudonimi all'interno dell'infrastruttura necessaria a fornire il servizio."
             },
             "contact": {
                 "title": "Contatti",
@@ -1976,7 +1983,16 @@
         "detailsTab": "Dettagli Account",
         "achievementsTab": "Traguardi",
         "notSpecified": "Non specificato",
-        "updateSuccess": "Profilo aggiornato con successo!"
+        "updateSuccess": "Profilo aggiornato con successo!",
+        "benchmark": {
+            "title": "Benchmark anonimi della community",
+            "description": "Scegli se contribuire con sole metriche finanziarie aggregate e in fasce. Il consenso abilita anche i confronti della community. Dettagli delle transazioni, note e identità non vengono mai condivisi.",
+            "toggle": "Contribuisci ai benchmark hosted",
+            "active": "Contributo attivo. Puoi revocarlo qui in qualsiasi momento.",
+            "enabled": "Ora contribuisci ai benchmark della community con dati aggregati anonimi.",
+            "disabled": "Il contributo ai benchmark della community è stato revocato.",
+            "error": "Non è stato possibile aggiornare il consenso ai benchmark."
+        }
     },
     "avatar": {
         "regenerate": "Genera nuovo avatar",

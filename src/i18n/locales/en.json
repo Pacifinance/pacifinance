@@ -999,6 +999,9 @@
             "noCohort": "There are not enough comparable profiles for this selection yet.",
             "customError": "Unable to update the comparison. Try again.",
             "factorUnavailable": "Complete this part of your profile to use it in the comparison.",
+            "preview": "Preview: {count} comparable profiles (minimum {minimum}).",
+            "median": "Median",
+            "interquartileRange": "Middle range",
             "factors": {
                 "career": "Work and career",
                 "location": "Geographic area",
@@ -1090,7 +1093,7 @@
             "percentileTitle": "Net worth: top {rank}% among similar profiles",
             "percentileDescription": "This percentile uses the net-worth-specific cohort, rather than an undifferentiated average of all users.",
             "categoryTitle": "Review: {category}",
-            "categoryDescription": "Over the last 12 months you spent {difference} more than your cohort average in this parent category.",
+            "categoryDescription": "Over the last 12 months you spent {difference} more than your cohort average in this parent category: this accounts for {contribution}% of the detected gaps.",
             "savingsTitle": "Savings-rate opportunity",
             "savingsDescription": "Your cohort saves {gap} percentage points more on average. Categories above the benchmark may show where to start.",
             "balancedTitle": "In line with your cohort",
@@ -1196,18 +1199,22 @@
                 "title": "Data Collection",
                 "content": "We only collect data essential for the service to function:",
                 "items": [
-                    "Financial data voluntarily entered (always anonymous)",
+                    "Financial and profile data voluntarily entered to provide the service",
                     "Technical cookies necessary for operation",
                     "Aggregated and anonymous usage data"
                 ]
             },
             "dataUsage": {
                 "title": "Data Usage",
-                "content": "Your data is used exclusively to provide platform functionality and for anonymous comparisons. We do not sell, share, or use your data for commercial purposes."
+                "content": "Your data is used exclusively to provide platform functionality. We do not sell financial data or use it for advertising or commercial profiling."
+            },
+            "benchmarkParticipation": {
+                "title": "Community benchmarks",
+                "content": "Participation in hosted benchmarks is optional and requires separate consent in your profile. When enabled, we use only aggregated metrics and profile buckets to calculate group statistics subject to minimum privacy thresholds; transactions, notes and the public identifier are not shared. You can revoke consent at any time: stored benchmark profile buckets are deleted."
             },
             "anonymity": {
                 "title": "Anonymity",
-                "content": "All comparisons and statistics are completely anonymous. Your personal data is never associated with financial data used for comparisons."
+                "content": "Statistics shown to participants are aggregated and never expose transactions, notes or identity. Your account data remains pseudonymous within the infrastructure needed to provide the service."
             },
             "contact": {
                 "title": "Contact",
@@ -1976,7 +1983,16 @@
         "detailsTab": "Account Details",
         "achievementsTab": "Achievements",
         "notSpecified": "Not specified",
-        "updateSuccess": "Profile updated successfully!"
+        "updateSuccess": "Profile updated successfully!",
+        "benchmark": {
+            "title": "Anonymous community benchmarks",
+            "description": "Choose whether to contribute only aggregated, bucketed financial metrics. Consent also enables community comparisons. Transaction details, notes and your identity are never shared.",
+            "toggle": "Contribute to hosted benchmarks",
+            "active": "Contribution active. You can revoke it here at any time.",
+            "enabled": "You are now contributing anonymous aggregate data to community benchmarks.",
+            "disabled": "Community benchmark contribution has been revoked.",
+            "error": "Unable to update benchmark consent."
+        }
     },
     "avatar": {
         "regenerate": "Generate new avatar",

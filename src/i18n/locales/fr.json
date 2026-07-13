@@ -540,7 +540,9 @@
             "pasteFound": "Trouvé ! Vérifiez les champs et confirmez.",
             "pasteNotFound": "Montant ou catégorie introuvable — saisissez-les ci-dessous.",
             "pasteHintDesktop": "Écrivez ou collez une phrase, ou utilisez la dictée vocale de votre système (Win+H sous Windows, double appui sur Fn sur Mac). Ex. « 24,90 courses au supermarché ». Tout reste sur votre appareil, rien n'est envoyé.",
-            "pastePlaceholderDesktop": "Ex. « 40 euros essence » ou dictez avec la dictée vocale du système..."
+            "pastePlaceholderDesktop": "Ex. « 40 euros essence » ou dictez avec la dictée vocale du système...",
+            "sourceLabel": "Compte (facultatif)",
+            "sourceNone": "Aucun"
         },
         "title": "Tableau de bord",
         "totalBalance": "Solde total",
@@ -2612,5 +2614,11 @@
         "pause": "Suspendre",
         "resume": "Reprendre",
         "autoInsertNote": "Elle sera ajoutée automatiquement chaque mois sans toucher à vos soldes — vous pourrez toujours la lier à une source en la modifiant."
+    },
+    "goals": {
+        "sourceLabel": "Source de la valeur",
+        "manualOption": "Manuel",
+        "linkedCurrentHint": "Calculé automatiquement à partir du solde actuel — non modifiable.",
+        "linkedHint": "Objectif lié : la valeur se met à jour automatiquement"
     }
 }

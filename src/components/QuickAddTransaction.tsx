@@ -12,10 +12,14 @@
  *     manual fields for the user to confirm before saving.
  *
  * Deliberately minimal (Fase 1 — insertion friction): date is always today,
- * payment type defaults to "single payment" for outflows, no balance source.
- * Anything richer belongs to the full insert page, linked contextually.
+ * payment type defaults to "single payment" for outflows. An optional balance
+ * source (which account/holding the money came from or went to) can be picked
+ * too — same concept as InsertValues.tsx, reimplemented independently here
+ * for the "current month only" case (no past-month handling needed since the
+ * date is always today), to avoid touching InsertValues' larger, more fragile
+ * balance-delta logic.
  */
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic } from '@fortawesome/free-solid-svg-icons';
@@ -24,9 +28,10 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
-import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories } from '../utils/userDataSelectors';
+import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories, getCurrentBalance } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
 import { detectPlatform } from '../utils/platformDetection';
+import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
 import CategoryPicker from './CategoryPicker';
 
 /* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
@@ -200,6 +205,21 @@ const CategoryFieldWrap = styled.div`
   margin-bottom: 0.9rem;
 `;
 
+const SourceSelect = styled.select`
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.9rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)'};
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)'};
+  color: ${p => p.theme.textColor};
+  outline: none;
+
+  &:focus { border-color: ${p => p.theme.buttonBackgroundColor}; }
+`;
+
 const NoteToggle = styled.button`
   border: none;
   background: transparent;
@@ -321,7 +341,7 @@ export default function QuickAddTransaction({ theme }) {
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
   const { showError } = useToast();
-  const { financeService } = useDemoServices();
+  const { financeService, investmentService, liquidityAccountService } = useDemoServices();
 
   const t = translations?.dashboard?.quickAdd || {};
 
@@ -338,6 +358,53 @@ export default function QuickAddTransaction({ theme }) {
   const [showNote, setShowNote] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [sourceLabel, setSourceLabel] = useState('');
+  const [investmentHoldings, setInvestmentHoldings] = useState([]);
+  const [liquidityAccounts, setLiquidityAccounts] = useState([]);
+
+  useEffect(() => {
+    investmentService.getHoldings().then((holdings) => setInvestmentHoldings(Array.isArray(holdings) ? holdings : []));
+    liquidityAccountService.getAccounts().then((accounts) => setLiquidityAccounts(Array.isArray(accounts) ? accounts : []));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Optional "which account" selector — same concept as InsertValues.tsx's
+  // getBalanceSourceEntries, reimplemented independently (see file doc comment).
+  const sourceEntries = useMemo(() => {
+    const entries = ASSET_KEYS
+      .map((key) => ({ label: translations?.assets?.[key] || key, assetKey: key, detailType: null, detailId: null }));
+    const seen = new Set(entries.map((e) => e.label));
+    const addEntry = (entry) => {
+      if (!entry.label || seen.has(entry.label)) return;
+      seen.add(entry.label);
+      entries.push(entry);
+    };
+    liquidityAccounts.forEach((account) => {
+      if (!account?.assetKey || !account?.label) return;
+      addEntry({
+        label: `${translations?.assets?.[account.assetKey] || account.assetKey} / ${account.label}`,
+        assetKey: account.assetKey,
+        detailType: 'liquidity',
+        detailId: account.id,
+      });
+    });
+    investmentHoldings.forEach((holding) => {
+      if (!holding?.assetKey) return;
+      const detailLabel = holding?.instrument?.symbol || holding?.instrument?.name || holding?.notes || `#${holding?.id}`;
+      addEntry({
+        label: `${translations?.assets?.[holding.assetKey] || holding.assetKey} / ${detailLabel}`,
+        assetKey: holding.assetKey,
+        detailType: 'investment',
+        detailId: holding.id,
+      });
+    });
+    return entries;
+  }, [translations, liquidityAccounts, investmentHoldings]);
+
+  const sourceMeta = useMemo(
+    () => Object.fromEntries(sourceEntries.map((entry) => [entry.label, entry])),
+    [sourceEntries],
+  );
 
   const tags = useMemo(
     () => (isOutflow ? getOutflowsTags(userData) : getIncomesTags(userData)),
@@ -382,10 +449,56 @@ export default function QuickAddTransaction({ theme }) {
     setEntryMode('manual');
   };
 
+  // Applies the signed EUR delta (current month only, quick-add is always "today")
+  // to whichever balance source was picked — base asset, a liquidity sub-account,
+  // or an investment holding. Best-effort: logged but never blocks the already-
+  // successful transaction insert.
+  const applySourceDelta = async (source, deltaEUR) => {
+    if (!source || !deltaEUR) return;
+    try {
+      if (source.detailType === 'liquidity') {
+        const account = liquidityAccounts.find((item) => item.id === source.detailId);
+        if (!account) return;
+        await liquidityAccountService.saveAccount({
+          id: account.id,
+          asset_key: account.assetKey,
+          label: account.label,
+          current_value: (Number(account.currentValue) || 0) + deltaEUR,
+          currency: account.currency,
+          notes: account.notes,
+        });
+        return;
+      }
+      if (source.detailType === 'investment') {
+        const holding = investmentHoldings.find((item) => item.id === source.detailId);
+        if (!holding?.instrument?.id) return;
+        const holdingValue = holding.currentValue ?? holding.investedAmount ?? 0;
+        await investmentService.saveHolding({
+          id: holding.id,
+          instrument_id: holding.instrument.id,
+          asset_key: holding.assetKey,
+          position_type: holding.positionType,
+          quantity: holding.quantity,
+          average_price: holding.averagePrice,
+          current_value: holdingValue + deltaEUR,
+          invested_amount: holding.investedAmount,
+          currency: holding.currency,
+          notes: holding.notes,
+        });
+        return;
+      }
+      const balancePayload = buildSnapshotWithDeltas(todayLocalISO(), getCurrentBalance(userData), { [source.assetKey]: deltaEUR });
+      await financeService.addBalance(balancePayload);
+    } catch (error) {
+      console.error('Quick add: failed to apply balance source delta', error);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
+      const source = sourceMeta[sourceLabel] || null;
       const response = await financeService.addExpenseOrIncome({
         expense: {
           date: todayLocalISO(),
@@ -395,10 +508,14 @@ export default function QuickAddTransaction({ theme }) {
           category_tag: categoryIndex,
           user_category_id: userCategoryId,
           notes: note,
-          balance_source: null,
+          balance_source: source ? { asset_key: source.assetKey, detail_type: source.detailType, detail_id: source.detailId } : null,
         },
       });
       if (response.status === 200) {
+        if (source) {
+          const deltaEUR = toEUR(amountNumber) * (isOutflow ? -1 : 1);
+          await applySourceDelta(source, deltaEUR);
+        }
         setJustAdded(true);
         handleSetIsUpdated?.(false); // triggers the userData refetch
         setTimeout(() => {
@@ -546,6 +663,18 @@ export default function QuickAddTransaction({ theme }) {
                     placeholder={translations?.insert?.outflowSection?.placeholderCategory || 'Seleziona una categoria'}
                   />
                 </CategoryFieldWrap>
+
+                <FieldLabel theme={theme}>{t.sourceLabel || 'Conto (opzionale)'}</FieldLabel>
+                <SourceSelect
+                  theme={theme}
+                  value={sourceLabel}
+                  onChange={(e) => setSourceLabel(e.target.value)}
+                >
+                  <option value="">{t.sourceNone || 'Nessuno'}</option>
+                  {sourceEntries.map((entry) => (
+                    <option key={entry.label} value={entry.label}>{entry.label}</option>
+                  ))}
+                </SourceSelect>
 
                 <NoteToggle type="button" theme={theme} onClick={() => setShowNote((v) => !v)}>
                   + {t.note || 'nota'}

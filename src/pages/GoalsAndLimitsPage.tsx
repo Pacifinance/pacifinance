@@ -42,7 +42,7 @@ function GoalsAndLimitsPage() {
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       
       <ContentWrapper theme={theme}>
-        <GoalsAndLimits theme={theme} userData={userData} goalsInDevelopment={true} />
+        <GoalsAndLimits theme={theme} userData={userData} />
       </ContentWrapper>
     </ProfilePageContainer>
   );

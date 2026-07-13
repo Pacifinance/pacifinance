@@ -540,7 +540,9 @@
             "pasteFound": "Encontrado! Confira os campos e confirme.",
             "pasteNotFound": "Não encontrei valor ou categoria — insira-os abaixo.",
             "pasteHintDesktop": "Escreva ou cole uma frase, ou use o ditado por voz do seu sistema (Win+H no Windows, toque duas vezes em Fn no Mac). Ex. \"24,90 compras no supermercado\". Tudo fica no seu dispositivo, não enviamos nada.",
-            "pastePlaceholderDesktop": "Ex. \"40 reais gasolina\" ou dite com o ditado por voz do sistema..."
+            "pastePlaceholderDesktop": "Ex. \"40 reais gasolina\" ou dite com o ditado por voz do sistema...",
+            "sourceLabel": "Conta (opcional)",
+            "sourceNone": "Nenhuma"
         },
         "title": "Painel",
         "totalBalance": "Saldo total",
@@ -2612,5 +2614,11 @@
         "pause": "Pausar",
         "resume": "Retomar",
         "autoInsertNote": "Será lançada automaticamente todo mês sem alterar seus saldos — você sempre poderá vinculá-la a uma fonte ao editá-la."
+    },
+    "goals": {
+        "sourceLabel": "Origem do valor",
+        "manualOption": "Manual",
+        "linkedCurrentHint": "Calculado automaticamente a partir do saldo atual — não editável.",
+        "linkedHint": "Objetivo vinculado: o valor é atualizado automaticamente"
     }
 }

@@ -4,6 +4,7 @@ import { LocalizedLink } from './LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import { useDemoServices } from '../hooks/useDemoServices';
 import { 
     FaBullseye, 
     FaPiggyBank, 
@@ -213,20 +214,30 @@ const EmptyState = styled.div`
   }
 `;
 
-const GoalTracker = ({ theme, userData, isHidden = false }) => {
+const GoalTracker = ({ theme, isHidden = false }) => {
   const { language } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
+  const { goalService } = useDemoServices();
   const [goals, setGoals] = useState([]);
 
   useEffect(() => {
-    // Usa i goals dal UserContext se disponibili, altrimenti array vuoto
-    if (userData && userData.goals) {
-      setGoals(userData.goals);
-    } else {
-      setGoals([]);
-    }
-  }, [userData]);
+    let cancelled = false;
+    goalService.getGoals().then((fetched) => {
+      if (cancelled) return;
+      setGoals((fetched || []).map((goal) => ({
+        id: goal.id,
+        name: goal.name,
+        type: goal.goalType,
+        current: goal.currentValue,
+        target: goal.targetValue,
+        deadline: goal.deadline,
+        linkedAssetKey: goal.linkedAssetKey,
+      })));
+    });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const calculateProgress = (current, target) => {
     if (!target || target === 0) return 0;
@@ -310,8 +321,9 @@ const GoalTracker = ({ theme, userData, isHidden = false }) => {
           const progress = calculateProgress(goal.current, goal.target);
           const IconComponent = getGoalIcon(goal.type);
           const goalTypeLabel = getGoalTypeLabel(goal.type);
-          const deadlineDate = new Date(goal.deadline);
-          const isOverdue = deadlineDate < new Date();
+          const deadlineDate = goal.deadline ? new Date(goal.deadline) : null;
+          const isOverdue = deadlineDate !== null && deadlineDate < new Date();
+          const deadlineLabel = deadlineDate ? deadlineDate.toLocaleDateString('it-IT') : (language === 'it' ? 'Nessuna scadenza' : 'No deadline');
           
           return (
             <GoalCard key={goal.id} theme={theme}>
@@ -321,14 +333,14 @@ const GoalTracker = ({ theme, userData, isHidden = false }) => {
                   <div className="goal-type">{goalTypeLabel}</div>
                 </div>
                 <div style={{ fontSize: '0.7rem', color: isOverdue ? '#ef4444' : '#6b7280' }}>
-                  {deadlineDate.toLocaleDateString('it-IT')}
+                  {deadlineLabel}
                 </div>
               </GoalHeader>
-              
+
               <GoalContent theme={theme}>
                 <div className="goal-title">{isHidden ? '****' : goal.name}</div>
                 <div className="goal-description" style={{ marginBottom: '1rem', fontSize: '0.8rem', opacity: '0.8' }}>
-                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {deadlineDate.toLocaleDateString('it-IT')}
+                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {deadlineLabel}
                 </div>
                 
                 <ProgressBar theme={theme} progress={progress}>

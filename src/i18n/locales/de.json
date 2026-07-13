@@ -540,7 +540,9 @@
             "pasteFound": "Gefunden! Felder prüfen und bestätigen.",
             "pasteNotFound": "Kein Betrag oder Kategorie gefunden — bitte unten eintragen.",
             "pasteHintDesktop": "Schreibe oder füge einen Satz ein, oder nutze die Spracherkennung deines Systems (Win+H unter Windows, zweimal Fn drücken auf dem Mac). Z. B. „24,90 Einkauf im Supermarkt“. Alles bleibt auf deinem Gerät, wir senden nichts.",
-            "pastePlaceholderDesktop": "Z. B. „40 Euro Benzin“ oder mit der Spracherkennung des Systems diktieren..."
+            "pastePlaceholderDesktop": "Z. B. „40 Euro Benzin“ oder mit der Spracherkennung des Systems diktieren...",
+            "sourceLabel": "Konto (optional)",
+            "sourceNone": "Keines"
         },
         "title": "Dashboard",
         "totalBalance": "Ihr Gesamtsaldo beträgt: ",
@@ -2612,5 +2614,11 @@
         "pause": "Pausieren",
         "resume": "Fortsetzen",
         "autoInsertNote": "Wird jeden Monat automatisch erfasst, ohne deine Bilanzen zu ändern — du kannst sie beim Bearbeiten jederzeit mit einer Quelle verknüpfen."
+    },
+    "goals": {
+        "sourceLabel": "Wertquelle",
+        "manualOption": "Manuell",
+        "linkedCurrentHint": "Automatisch aus dem aktuellen Kontostand berechnet — nicht bearbeitbar.",
+        "linkedHint": "Verknüpftes Ziel: der Wert aktualisiert sich automatisch"
     }
 }

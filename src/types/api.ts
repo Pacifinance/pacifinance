@@ -528,3 +528,34 @@ export interface LiquidityAccountHistorySaveRequest {
   user_date: string;
   current_value: number;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * /goals
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+export type GoalType = 'savings' | 'purchase' | 'investment' | 'debt';
+
+export interface GoalDto {
+  id: number;
+  name: string;
+  goalType: GoalType;
+  targetValue: number;
+  currentValue: number;
+  linkedAssetKey: AssetKey | null;
+  deadline: string | null;
+  updatedAt: string;
+}
+
+export type GoalsGetResponse = GoalDto[];
+
+export interface GoalSaveRequest {
+  id?: number;
+  name: string;
+  goal_type: GoalType;
+  target_value: number;
+  current_value?: number;
+  linked_asset_key?: AssetKey | null;
+  deadline?: string | null;
+}
+
+export interface GoalDeleteRequest { id: number; }

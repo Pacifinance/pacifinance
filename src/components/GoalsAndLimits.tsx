@@ -19,10 +19,10 @@ import {
     FaEdit,
     FaTrash,
     FaPlus,
-    FaBell,
-    FaHardHat
+    FaBell
 } from 'react-icons/fa';
 import { BsPercent, BsCalendar3 } from 'react-icons/bs';
+import { ASSET_KEYS } from '../constants/balanceSchema';
 
 // Styled Components
 const ProfileContainer = styled.div`
@@ -199,6 +199,20 @@ const GoalItem = styled.div`
   }
 `;
 
+const LinkedBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 20px;
+  background: ${props => props.theme.secondaryColor}18;
+  color: ${props => props.theme.secondaryColor};
+  vertical-align: middle;
+`;
+
 const ActionButton = styled.button`
   background: ${props => props.variant === 'danger' 
     ? 'rgba(239, 68, 68, 0.1)' 
@@ -317,73 +331,13 @@ const CancelButton = styled.button`
   }
 `;
 
-const DevelopmentOverlayWrapper = styled.div`
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: ${props => props.theme.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)'};
-    border-radius: 16px;
-    z-index: 1;
-    pointer-events: all;
-  }
-`;
-
-const DevelopmentBadge = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;
-  pointer-events: none;
-
-  .dev-icon {
-    font-size: 2rem;
-    color: #f59e0b;
-    animation: bounce 2s ease-in-out infinite;
-  }
-
-  .dev-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .dev-text {
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  @keyframes bounce {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-    50% { transform: translate(-50%, -50%) translateY(-6px); }
-  }
-`;
-
-const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
+const ProfileSettings = ({ theme }) => {
   const { language, translations } = useContext(LanguageContext);
   const { currencySymbol } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
-  const { userService } = useDemoServices();
+  const { userService, goalService } = useDemoServices();
   
   // Stati per i limiti e controlli
   const [settings, setSettings] = useState({
@@ -404,8 +358,23 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
     target: 0,
     current: 0,
     deadline: '',
-    type: 'savings'
+    type: 'savings',
+    linkedAssetKey: null
   });
+
+  const refreshGoals = () => {
+    goalService.getGoals().then((fetched) => {
+      setGoals((fetched || []).map((goal) => ({
+        id: goal.id,
+        name: goal.name,
+        type: goal.goalType,
+        current: goal.currentValue,
+        target: goal.targetValue,
+        deadline: goal.deadline || '',
+        linkedAssetKey: goal.linkedAssetKey,
+      })));
+    });
+  };
 
   // Carica i dati dal UserContext al montaggio del componente
   useEffect(() => {
@@ -417,20 +386,23 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
         emergencyFundTarget: getEmergencyFundTarget(userData),
         notificationsEnabled: true // Questo potrebbe venire dal backend in futuro
       });
-      
-      // Carica i goals
-      setGoals(userData.goals || []);
     }
   }, [userData]);
 
-  // Funzione per aggiornare i dati nel UserContext (preparazione per DB)
+  // Carica i goal reali dal backend (indipendente da userData, stesso pattern
+  // già usato per holding/conti dettagliati).
+  useEffect(() => {
+    refreshGoals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Aggiorna i "limits" (expenses_limit/savings_percent/emergency_fund_goal) nel
+  // UserContext locale dopo il salvataggio — invariato, non riguarda i goals.
   const updateUserContextData = (newData) => {
     setUserData(prev => ({
       ...prev,
       ...newData
     }));
-    // TODO: Quando il backend sarà pronto, qui andrà chiamata l'API per salvare nel DB
-    // await axios.post('/user/updateGoalsAndLimits', newData, { withCredentials: true });
   };
 
   const handleSettingChange = (key, value) => {
@@ -473,22 +445,27 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
 
   const handleAddGoal = () => {
     const newGoal = {
-      id: Date.now(),
+      id: null,
       name: language === 'it' ? 'Nuovo Obiettivo' : 'New Goal',
       target: 1000,
       current: 0,
-      deadline: '2025-12-31',
-      type: 'savings'
+      deadline: '2026-12-31',
+      type: 'savings',
+      linkedAssetKey: null
     };
     setModalGoalData(newGoal);
     setEditingGoal(null);
     setIsModalOpen(true);
   };
 
-  const handleDeleteGoal = (goalId) => {
-    const newGoals = goals.filter(goal => goal.id !== goalId);
-    setGoals(newGoals);
-    updateUserContextData({ goals: newGoals });
+  const handleDeleteGoal = async (goalId) => {
+    try {
+      await goalService.deleteGoal({ id: goalId });
+      refreshGoals();
+    } catch (error) {
+      console.error('Errore eliminazione obiettivo:', error);
+      showError(language === 'it' ? 'Errore nell\'eliminazione dell\'obiettivo' : 'Error deleting goal');
+    }
   };
 
   const handleEditGoal = (goal) => {
@@ -497,22 +474,23 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
     setIsModalOpen(true);
   };
 
-  const handleSaveGoal = () => {
-    let newGoals;
-    if (editingGoal) {
-      // Modifica obiettivo esistente
-      newGoals = goals.map(goal => 
-        goal.id === editingGoal.id ? modalGoalData : goal
-      );
-    } else {
-      // Nuovo obiettivo - assicurati che abbia un ID unico
-      const goalWithId = { ...modalGoalData, id: modalGoalData.id || Date.now() };
-      newGoals = [...goals, goalWithId];
+  const handleSaveGoal = async () => {
+    try {
+      await goalService.saveGoal({
+        id: editingGoal ? editingGoal.id : undefined,
+        name: modalGoalData.name,
+        goal_type: modalGoalData.type,
+        target_value: Number(modalGoalData.target) || 0,
+        current_value: modalGoalData.linkedAssetKey ? 0 : (Number(modalGoalData.current) || 0),
+        linked_asset_key: modalGoalData.linkedAssetKey || null,
+        deadline: modalGoalData.deadline || null,
+      });
+      refreshGoals();
+      closeModal();
+    } catch (error) {
+      console.error('Errore salvataggio obiettivo:', error);
+      showError(language === 'it' ? 'Errore nel salvataggio dell\'obiettivo' : 'Error saving goal');
     }
-    
-    setGoals(newGoals);
-    updateUserContextData({ goals: newGoals });
-    closeModal();
   };
 
   const closeModal = () => {
@@ -523,7 +501,8 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
       target: 0,
       current: 0,
       deadline: '',
-      type: 'savings'
+      type: 'savings',
+      linkedAssetKey: null
     });
   };
 
@@ -613,54 +592,6 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
         </Section>
 
         {/* Sezione Obiettivi Personalizzati */}
-        {goalsInDevelopment ? (
-        <DevelopmentOverlayWrapper theme={theme}>
-        <DevelopmentBadge theme={theme}>
-          <FaHardHat className="dev-icon" />
-          <span className="dev-badge">{translations?.general?.inDevelopment || 'In development'}</span>
-          <span className="dev-text">{translations?.general?.featureComingSoon || 'Coming soon!'}</span>
-        </DevelopmentBadge>
-        <Section theme={theme} style={{ pointerEvents: 'none', userSelect: 'none' }}>
-          <SectionHeader theme={theme}>
-            <FaBullseye className="section-icon" />
-            <h3>{language === 'it' ? 'Obiettivi Personalizzati' : 'Custom Goals'}</h3>
-          </SectionHeader>
-
-          {goals.map(goal => {
-            const progress = (goal.current / goal.target) * 100;
-            return (
-              <GoalItem key={goal.id} theme={theme}>
-                <div className="goal-header">
-                  <h4>{goal.name}</h4>
-                  <div className="goal-actions">
-                    <ActionButton theme={theme} onClick={() => handleEditGoal(goal)}>
-                      <FaEdit />
-                    </ActionButton>
-                    <ActionButton 
-                      theme={theme} 
-                      variant="danger"
-                      onClick={() => handleDeleteGoal(goal.id)}
-                    >
-                      <FaTrash />
-                    </ActionButton>
-                  </div>
-                </div>
-                <div className="goal-progress">
-                  {currencySymbol}{goal.current.toLocaleString()} / {currencySymbol}{goal.target.toLocaleString()} ({progress.toFixed(1)}%)
-                  <br />
-                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {new Date(goal.deadline).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}
-                </div>
-              </GoalItem>
-            );
-          })}
-
-          <AddGoalButton theme={theme} onClick={handleAddGoal}>
-            <FaPlus />
-            {language === 'it' ? 'Aggiungi Nuovo Obiettivo' : 'Add New Goal'}
-          </AddGoalButton>
-        </Section>
-        </DevelopmentOverlayWrapper>
-        ) : (
         <Section theme={theme}>
           <SectionHeader theme={theme}>
             <FaBullseye className="section-icon" />
@@ -674,10 +605,20 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
           )}
           {goals.map(goal => {
             const progress = (goal.current / goal.target) * 100;
+            const deadlineLabel = goal.deadline
+              ? new Date(goal.deadline).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')
+              : (language === 'it' ? 'Nessuna scadenza' : 'No deadline');
             return (
               <GoalItem key={goal.id} theme={theme}>
                 <div className="goal-header">
-                  <h4>{goal.name}</h4>
+                  <h4>
+                    {goal.name}
+                    {goal.linkedAssetKey && (
+                      <LinkedBadge theme={theme} title={translations?.goals?.linkedHint}>
+                        🔗 {translations?.assets?.[goal.linkedAssetKey] || goal.linkedAssetKey}
+                      </LinkedBadge>
+                    )}
+                  </h4>
                   <div className="goal-actions">
                     <ActionButton theme={theme} onClick={() => handleEditGoal(goal)}>
                       <FaEdit />
@@ -690,7 +631,7 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
                 <div className="goal-progress">
                   {currencySymbol}{goal.current.toLocaleString()} / {currencySymbol}{goal.target.toLocaleString()} ({progress.toFixed(1)}%)
                   <br />
-                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {new Date(goal.deadline).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}
+                  {language === 'it' ? 'Scadenza' : 'Deadline'}: {deadlineLabel}
                 </div>
               </GoalItem>
             );
@@ -700,7 +641,6 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
             {language === 'it' ? 'Aggiungi Nuovo Obiettivo' : 'Add New Goal'}
           </AddGoalButton>
         </Section>
-        )}
       </SectionsGrid>
 
       {/* Modal per modifica obiettivo */}
@@ -725,6 +665,19 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
             </FormGroup>
 
             <FormGroup theme={theme}>
+              <label>{translations?.goals?.sourceLabel || (language === 'it' ? 'Origine del valore' : 'Value source')}</label>
+              <select
+                value={modalGoalData.linkedAssetKey || ''}
+                onChange={(e) => handleModalInputChange('linkedAssetKey', e.target.value || null)}
+              >
+                <option value="">{translations?.goals?.manualOption || (language === 'it' ? 'Manuale' : 'Manual')}</option>
+                {ASSET_KEYS.map((key) => (
+                  <option key={key} value={key}>{translations?.assets?.[key] || key}</option>
+                ))}
+              </select>
+            </FormGroup>
+
+            <FormGroup theme={theme}>
               <label>{language === 'it' ? `Importo target (${currencySymbol})` : `Target amount (${currencySymbol})`}</label>
               <InputWithIcon theme={theme}>
                 <span className="input-icon">{currencySymbol}</span>
@@ -746,8 +699,18 @@ const ProfileSettings = ({ theme, goalsInDevelopment = false }) => {
                   value={modalGoalData.current}
                   onChange={(e) => handleModalInputChange('current', parseInt(e.target.value) || 0)}
                   min="0"
+                  disabled={Boolean(modalGoalData.linkedAssetKey)}
+                  readOnly={Boolean(modalGoalData.linkedAssetKey)}
                 />
               </InputWithIcon>
+              {modalGoalData.linkedAssetKey && (
+                <small style={{ opacity: 0.65, fontSize: '0.72rem' }}>
+                  {translations?.goals?.linkedCurrentHint
+                    || (language === 'it'
+                      ? 'Calcolato automaticamente dal saldo attuale — non modificabile.'
+                      : 'Calculated automatically from the current balance — not editable.')}
+                </small>
+              )}
             </FormGroup>
 
             <FormGroup theme={theme}>

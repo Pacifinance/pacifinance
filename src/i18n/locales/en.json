@@ -542,7 +542,9 @@
             "pasteFound": "Found it! Check the fields and confirm.",
             "pasteNotFound": "Couldn't find an amount or category — enter them below.",
             "pasteHintDesktop": "Type or paste a sentence, or use your system's own voice dictation (Win+H on Windows, double-tap Fn on Mac). E.g. \"24.90 groceries at the supermarket\". Everything stays on your device — nothing is sent anywhere.",
-            "pastePlaceholderDesktop": "E.g. \"40 euros gas\" or dictate with your system's voice typing..."
+            "pastePlaceholderDesktop": "E.g. \"40 euros gas\" or dictate with your system's voice typing...",
+            "sourceLabel": "Account (optional)",
+            "sourceNone": "None"
         },
         "title": "Dashboard",
         "totalBalance": "Your total balance is: ",
@@ -2614,5 +2616,11 @@
         "pause": "Pause",
         "resume": "Resume",
         "autoInsertNote": "It will be inserted automatically every month without touching your balances — you can always link it to a source when you edit it."
+    },
+    "goals": {
+        "sourceLabel": "Value source",
+        "manualOption": "Manual",
+        "linkedCurrentHint": "Calculated automatically from the current balance — not editable.",
+        "linkedHint": "Linked goal: the value updates automatically"
     }
 }

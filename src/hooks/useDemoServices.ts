@@ -17,9 +17,17 @@ import { useAuth } from './useAuth';
 import type {
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
+  GoalDto,
 } from '../types/api';
 
 const FAKE_SUCCESS = { status: 200, data: { success: true } };
+
+/** Sample goals so the feature is visible in demo mode (no real backend session to fetch from). */
+const DEMO_GOALS: GoalDto[] = [
+  { id: -1, name: 'Fondo Emergenza', goalType: 'savings', targetValue: 15000, currentValue: 5000, linkedAssetKey: 'emergencyFund', deadline: '2026-12-31', updatedAt: new Date().toISOString() },
+  { id: -2, name: 'Vacanze Estate 2026', goalType: 'savings', targetValue: 4000, currentValue: 2200, linkedAssetKey: null, deadline: '2026-06-30', updatedAt: new Date().toISOString() },
+  { id: -3, name: 'Nuovo MacBook Pro', goalType: 'purchase', targetValue: 3500, currentValue: 1800, linkedAssetKey: null, deadline: '2026-04-15', updatedAt: new Date().toISOString() },
+];
 
 /** Small static catalog so the instrument search works offline in demo mode (no backend session exists). */
 const DEMO_INSTRUMENTS: InvestmentInstrumentDto[] = [
@@ -168,6 +176,25 @@ export const useDemoServices = () => {
           nextRunDate: new Date().toISOString().slice(0, 10),
         }),
         deleteRecurring: async () => FAKE_SUCCESS,
+      },
+      goalService: {
+        ...services.goalService,
+        getGoals: async (): Promise<GoalDto[]> => DEMO_GOALS,
+        saveGoal: async (data: {
+          id?: number; name: string; goal_type: GoalDto['goalType'];
+          target_value: number; current_value?: number; linked_asset_key?: GoalDto['linkedAssetKey'];
+          deadline?: string | null;
+        }): Promise<GoalDto> => ({
+          id: data.id ?? -Date.now(),
+          name: data.name,
+          goalType: data.goal_type,
+          targetValue: data.target_value,
+          currentValue: data.current_value ?? 0,
+          linkedAssetKey: data.linked_asset_key ?? null,
+          deadline: data.deadline ?? null,
+          updatedAt: new Date().toISOString(),
+        }),
+        deleteGoal: async () => FAKE_SUCCESS,
       },
     };
   }, [isDemoMode, services]);

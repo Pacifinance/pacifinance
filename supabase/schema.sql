@@ -224,6 +224,32 @@ create unique index user_liquidity_account_history_uidx
   on public.user_liquidity_account_history (user_id, account_id, user_date)
   where account_id is not null;
 
+-- ---------- user_goals (obiettivi personalizzati) ----------
+-- goal_type è solo la categoria/icona mostrata in UI (invariata rispetto al modal
+-- già esistente lato frontend). linked_asset_key è la parte nuova: se valorizzato,
+-- il goal è "collegato" e current_value viene ricalcolato lato server dal saldo
+-- corrente (vedi server/src/db/models/goals.ts) invece di essere letto dalla
+-- colonna; se null, resta un goal manuale (l'utente scrive current_value a mano —
+-- utile per risparmi "accantonati mentalmente" che non corrispondono a un conto
+-- tracciato, es. una parte di un conto bancario non suddiviso in sotto-conti).
+create table public.user_goals (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  goal_type text not null default 'savings' check (goal_type in ('savings', 'purchase', 'investment', 'debt')),
+  target_value numeric not null,
+  current_value numeric not null default 0,
+  linked_asset_key text check (linked_asset_key is null or linked_asset_key in (
+    'bank', 'cash', 'digitalServices', 'emergencyFund',
+    'stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'
+  )),
+  deadline date,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index user_goals_user_idx on public.user_goals (user_id, updated_at desc);
+
 -- ---------- expenses (outflows + incomes, discriminati da is_expense) ----------
 create table public.expenses (
   id bigint generated always as identity primary key,
@@ -289,6 +315,7 @@ alter table public.user_investment_holdings enable row level security;
 alter table public.user_liquidity_accounts enable row level security;
 alter table public.user_investment_holding_history enable row level security;
 alter table public.user_liquidity_account_history enable row level security;
+alter table public.user_goals enable row level security;
 alter table public.deletions enable row level security;
 
 create policy "tags_select_authenticated" on public.tags
@@ -332,6 +359,9 @@ create policy "user_liquidity_account_history_insert_own" on public.user_liquidi
 
 create policy "user_liquidity_account_history_update_own" on public.user_liquidity_account_history
   for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "user_goals_own_rows" on public.user_goals
+  for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "deletions_own_row" on public.deletions
   for select to authenticated using (auth.uid() = user_id);

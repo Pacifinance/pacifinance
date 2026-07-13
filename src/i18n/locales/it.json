@@ -542,7 +542,9 @@
             "pasteFound": "Trovato! Controlla i campi e conferma.",
             "pasteNotFound": "Non ho trovato importo o categoria — inseriscili qui sotto.",
             "pasteHintDesktop": "Scrivi o incolla una frase, oppure usa la dettatura vocale del tuo sistema (Win+H su Windows, doppio tap su Fn su Mac). Es. \"24,90 spesa al supermercato\". Tutto resta sul tuo dispositivo, non inviamo nulla.",
-            "pastePlaceholderDesktop": "Es. \"40 euro benzina\" oppure detta con la dettatura vocale del sistema..."
+            "pastePlaceholderDesktop": "Es. \"40 euro benzina\" oppure detta con la dettatura vocale del sistema...",
+            "sourceLabel": "Conto (opzionale)",
+            "sourceNone": "Nessuno"
         },
         "title": "Dashboard",
         "totalBalance": "Il tuo patrimonio totale è: ",
@@ -2614,5 +2616,11 @@
         "pause": "Pausa",
         "resume": "Riprendi",
         "autoInsertNote": "Verrà inserita automaticamente ogni mese, senza toccare i tuoi bilanci: potrai sempre collegarla a una fonte quando la modifichi."
+    },
+    "goals": {
+        "sourceLabel": "Origine del valore",
+        "manualOption": "Manuale",
+        "linkedCurrentHint": "Calcolato automaticamente dal saldo attuale — non modificabile.",
+        "linkedHint": "Obiettivo collegato: il valore si aggiorna da solo"
     }
 }

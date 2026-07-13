@@ -6,7 +6,7 @@ import users from "../../db/models/users"
 import balances from "../../db/models/balances"
 import expenses from "../../db/models/expenses"
 import tags from "../../db/models/tags"
-import similarUsers from "../../services/similarUsers"
+import similarUsers, { MIN_COHORT } from "../../services/similarUsers"
 
 // How many users' worth of DB round trips run concurrently. Two separate
 // knobs because fetchUserAverages nests one under the other (each of the
@@ -24,14 +24,33 @@ const OUTER_CONCURRENCY = 2
  * server/src/services/similarUsers.ts), which the frontend renders as
  * "Prossimamente" rather than a misleading zero.
  */
-type Averages = {
+export type BenchmarkMetadata = {
+    generatedAt: string,
+    populationSize: number,
+    minimumCohortSize: number,
+    cohortSizes: {
+        balances: number,
+        incomes: number,
+        expenses: number,
+        savingsRates: number
+    },
+    averageSimilarity: {
+        balances: number | null,
+        incomes: number | null,
+        expenses: number | null,
+        savingsRates: number | null
+    }
+}
+
+export type Averages = {
     balances: number | null,
     expenses: number | null,
     incomes: number | null,
     savingsRates: number | null,
     expensesByCategory: {
         [categoryIndex: number]: number
-    }
+    },
+    benchmark?: BenchmarkMetadata
 }
 
 /**
@@ -159,7 +178,8 @@ type MetricCohorts = {
  */
 async function computeAveragesForCohorts(cohorts: MetricCohorts, now: ExtDate): Promise<Averages> {
     const thisMonthStart = ExtDate.fromReferenceMonthStart(now)
-    const lastMonthStart = ExtDate.fromReferenceMonthEnd(now)
+    const lastMonth = new ExtDate(now)
+    lastMonth.moveByMonths(-1)
 
     const expenseTags = await tags.getAllTagsByType(tags.TagType.expense.value)
     const averagesData = new AveragesData(expenseTags)
@@ -183,14 +203,14 @@ async function computeAveragesForCohorts(cohorts: MetricCohorts, now: ExtDate): 
 
         // User total incomes of the last month
         if (incomesSet.has(userId)) {
-            const incomesTotal = await expenses.getTotalMonthlyExpensesByUserId(userId, lastMonthStart, false)
+            const incomesTotal = await expenses.getTotalMonthlyExpensesByUserId(userId, lastMonth, false)
             if (incomesTotal !== null)
                 averagesData.addIncome(incomesTotal)
         }
 
         // User total expenses of the last month
         if (outflowsSet.has(userId)) {
-            const expensesTotal = await expenses.getTotalMonthlyExpensesByUserId(userId, lastMonthStart, true)
+            const expensesTotal = await expenses.getTotalMonthlyExpensesByUserId(userId, lastMonth, true)
             if (expensesTotal !== null)
                 averagesData.addExpense(expensesTotal)
         }
@@ -276,13 +296,28 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
 
     const now = ExtDate.fromNow()
 
-    const allUsersList = await users.getAllUsersIds() // test users included
+    // Demo and test accounts must never influence real community benchmarks.
+    const allUsersList = await users.getAllUsersIds(true)
     const allUserIds = allUsersList.map((user) => user.id)
     console.log(`[averages] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
 
     averagesCachedData.all = await computeAveragesForCohorts(
         { balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds }, now
     )
+    averagesCachedData.all.benchmark = {
+        generatedAt: now.toISOString(),
+        populationSize: allUserIds.length,
+        minimumCohortSize: MIN_COHORT,
+        cohortSizes: {
+            balances: allUserIds.length,
+            incomes: allUserIds.length,
+            expenses: allUserIds.length,
+            savingsRates: allUserIds.length
+        },
+        averageSimilarity: {
+            balances: null, incomes: null, expenses: null, savingsRates: null
+        }
+    }
     console.log(`[averages] "all" cohort computed (+${Date.now() - t0}ms)`)
 
     // Fetched once and reused for every user below, instead of once per
@@ -296,12 +331,35 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         const incomesCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "incomes")
         const outflowsCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "outflows")
         const generalCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "general")
-        averagesCachedData[userRef] = await computeAveragesForCohorts({
+        const userAverages = await computeAveragesForCohorts({
             balance: balanceCohort.userIds,
             incomes: incomesCohort.userIds,
             outflows: outflowsCohort.userIds,
             general: generalCohort.userIds
         }, now)
+        userAverages.benchmark = {
+            generatedAt: now.toISOString(),
+            populationSize: Math.max(
+                balanceCohort.populationSize,
+                incomesCohort.populationSize,
+                outflowsCohort.populationSize,
+                generalCohort.populationSize
+            ),
+            minimumCohortSize: MIN_COHORT,
+            cohortSizes: {
+                balances: balanceCohort.userIds.length,
+                incomes: incomesCohort.userIds.length,
+                expenses: outflowsCohort.userIds.length,
+                savingsRates: generalCohort.userIds.length
+            },
+            averageSimilarity: {
+                balances: balanceCohort.averageSimilarity,
+                incomes: incomesCohort.averageSimilarity,
+                expenses: outflowsCohort.averageSimilarity,
+                savingsRates: generalCohort.averageSimilarity
+            }
+        }
+        averagesCachedData[userRef] = userAverages
     })
 
     console.log(`[averages] per-user averages computed (+${Date.now() - t0}ms)`)

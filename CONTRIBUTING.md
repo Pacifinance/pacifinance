@@ -34,6 +34,8 @@ npm run lint && npm test && npm run build
 npm run test:server        # if you touched server/
 ```
 
+When you use an AI assistant to help with the change, ask it to finish every update with a short commit message in English. That keeps the history readable for open source reviews and future maintainers.
+
 ## Project structure
 
 ```

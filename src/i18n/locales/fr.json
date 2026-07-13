@@ -982,6 +982,15 @@
     "comparison": {
         "title": "Comparaison anonyme",
         "subtitle": "Compare tes performances financières avec des utilisateurs similaires de manière anonyme",
+        "benchmarkOverview": {
+            "title": "Ton benchmark personnel",
+            "description": "Le patrimoine, les revenus et les dépenses utilisent des cohortes dédiées, car des revenus similaires n'impliquent pas les mêmes dépenses ou la même étape de vie.",
+            "editProfile": "Modifier le profil",
+            "basedOn": "Comparaison basée sur",
+            "waiting": "Cohorte en préparation",
+            "privacy": "Données agrégées uniquement. Cohortes : {count} utilisateurs ; seuil minimal de confidentialité : {minimum}. Mis à jour : {updated}.",
+            "factors": { "career": "Travail et carrière", "location": "Zone géographique", "lifeStage": "Étape de vie", "household": "Logement et famille" }
+        },
         "sections": {
             "rankings": {
                 "title": "Classements",
@@ -1012,15 +1021,15 @@
             },
             "avgIncome": {
                 "title": "Revenus mensuels",
-                "description": "Compare tes revenus mensuels moyens sur les 12 derniers mois",
-                "yourIncome": "Ton revenu moyen",
+                "description": "Compare les revenus du dernier mois complet",
+                "yourIncome": "Tes revenus",
                 "avgSimilar": "Moy. utilisateurs similaires",
                 "avgAll": "Moy. tous les utilisateurs"
             },
             "avgOutflows": {
                 "title": "Sorties mensuelles",
-                "description": "Compare tes sorties mensuelles moyennes sur les 12 derniers mois",
-                "yourOutflows": "Tes sorties moyennes",
+                "description": "Compare les sorties du dernier mois complet",
+                "yourOutflows": "Tes sorties",
                 "avgSimilar": "Moy. utilisateurs similaires",
                 "avgAll": "Moy. tous les utilisateurs"
             },
@@ -1061,6 +1070,16 @@
             "average": "Tu es dans la moyenne",
             "ofUsers": "des utilisateurs",
             "inCategory": "dans ta catégorie"
+        },
+        "actionableInsights": {
+            "percentileTitle": "Patrimoine : top {rank}% parmi les profils similaires",
+            "percentileDescription": "Ce percentile utilise la cohorte dédiée au patrimoine, pas la moyenne indifférenciée de tous les utilisateurs.",
+            "categoryTitle": "À examiner : {category}",
+            "categoryDescription": "Sur les 12 derniers mois, tu as dépensé {difference} de plus que la moyenne de ta cohorte dans cette catégorie principale.",
+            "savingsTitle": "Marge sur le taux d'épargne",
+            "savingsDescription": "Ta cohorte épargne en moyenne {gap} points de pourcentage de plus. Les catégories au-dessus du benchmark peuvent indiquer où commencer.",
+            "balancedTitle": "En ligne avec ta cohorte",
+            "balancedDescription": "Aucun écart important ne ressort. Continue à suivre la tendance, plus utile qu'un seul mois."
         },
         "profileBanner": {
             "title": "🚀 Débloque les comparaisons personnalisées !",

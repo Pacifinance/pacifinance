@@ -94,8 +94,12 @@ docs/
    → Audit segreti, transfer GitHub org, branch protection, Vercel via Actions,
    Docker self-host e gestione del dominio Web3 `pacifinance.x`
 
+2. **[Community Benchmark Strategy](./COMMUNITY_BENCHMARK_STRATEGY.md)**
+   → Differenziazione di prodotto, privacy delle coorti e architettura dei
+   confronti per installazioni hosted e self-hosted
+
 **Risultato atteso:** repo pubblicabile senza segreti, governance minima e percorso
-self-host chiaro.
+self-host chiaro e strategia verificabile per il confronto anonimo.
 
 ---
 

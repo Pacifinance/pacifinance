@@ -48,16 +48,18 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
 
     const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
 
-    const allUsersList = await users.getAllUsersIds() // test users included
+    // Demo and test accounts must never affect real users' percentile ranks.
+    const allUsersList = await users.getAllUsersIds(true)
+    const allUserIds = allUsersList.map((user) => user.id)
     console.log(`[rankings] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
 
     const snapshot = await similarUsers.fetchProfilesSnapshot()
     console.log(`[rankings] profiles snapshot fetched (+${Date.now() - t0}ms)`)
 
     const [balancePool, incomePool, expensePool] = await Promise.all([
-        balances.getRankingPool(undefined, true),
-        expenses.getExpenseRankingPool(undefined, false, reference_date),
-        expenses.getExpenseRankingPool(undefined, true, reference_date),
+        balances.getRankingPool(allUserIds, true),
+        expenses.getExpenseRankingPool(allUserIds, false, reference_date),
+        expenses.getExpenseRankingPool(allUserIds, true, reference_date),
     ])
     console.log(`[rankings] population-wide pools fetched (+${Date.now() - t0}ms)`)
 

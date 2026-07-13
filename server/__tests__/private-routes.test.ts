@@ -248,6 +248,30 @@ describe("private backend routes", () => {
         expect(response.status).toBe(503)
     })
 
+    it("returns benchmark metadata without exposing cohort members", async () => {
+        const benchmark = {
+            generatedAt: "2026-07-01T00:00:00.000Z",
+            populationSize: 120,
+            minimumCohortSize: 20,
+            cohortSizes: {balances: 24, incomes: 20, expenses: 22, savingsRates: 21},
+            averageSimilarity: {balances: 0.8, incomes: 0.7, expenses: 0.75, savingsRates: 0.72}
+        }
+        mockCache.get.mockResolvedValue({
+            all: {balances: 50000, expenses: 2000, incomes: 3000, savingsRates: 30, expensesByCategory: {}},
+            "user-uuid": {balances: 45000, expenses: 1800, incomes: 2800, savingsRates: 32, expensesByCategory: {}, benchmark}
+        })
+
+        const response = await request(app, "/api/stats/averages", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json.similar.benchmark).toEqual(benchmark)
+        expect(JSON.stringify(response.json)).not.toContain("userIds")
+    })
+
     it("searches canonical investment instruments from the verified catalog", async () => {
         mockDb.investments.searchInstruments.mockResolvedValue([
             {id: 1, kind: "stock", symbol: "AAPL", exchange: "NASDAQ", name: "Apple Inc.", verified: true}

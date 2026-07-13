@@ -984,6 +984,20 @@
     "comparison": {
         "title": "Anonymous Comparison",
         "subtitle": "Compare your financial performance with similar users anonymously",
+        "benchmarkOverview": {
+            "title": "Your personal benchmark",
+            "description": "Net worth, income and outflows use dedicated cohorts, because people with similar income are not necessarily similar in spending or life stage.",
+            "editProfile": "Edit profile",
+            "basedOn": "Comparison based on",
+            "waiting": "Cohort being prepared",
+            "privacy": "Aggregated data only. Cohorts: {count} users; minimum privacy threshold: {minimum}. Updated: {updated}.",
+            "factors": {
+                "career": "Work and career",
+                "location": "Geographic area",
+                "lifeStage": "Life stage",
+                "household": "Home and family"
+            }
+        },
         "sections": {
             "rankings": {
                 "title": "Rankings",
@@ -1014,15 +1028,15 @@
             },
             "avgIncome": {
                 "title": "Monthly Income",
-                "description": "Compare your average monthly income over the last 12 months",
-                "yourIncome": "Your Average Income",
+                "description": "Compare income from the last complete month",
+                "yourIncome": "Your Income",
                 "avgSimilar": "Similar Users Avg",
                 "avgAll": "All Users Avg"
             },
             "avgOutflows": {
                 "title": "Monthly Outflows",
-                "description": "Compare your average monthly outflows over the last 12 months",
-                "yourOutflows": "Your Average Outflows",
+                "description": "Compare outflows from the last complete month",
+                "yourOutflows": "Your Outflows",
                 "avgSimilar": "Similar Users Avg",
                 "avgAll": "All Users Avg"
             },
@@ -1063,6 +1077,16 @@
             "average": "You're performing around average",
             "ofUsers": "of users",
             "inCategory": "in your category"
+        },
+        "actionableInsights": {
+            "percentileTitle": "Net worth: top {rank}% among similar profiles",
+            "percentileDescription": "This percentile uses the net-worth-specific cohort, rather than an undifferentiated average of all users.",
+            "categoryTitle": "Review: {category}",
+            "categoryDescription": "Over the last 12 months you spent {difference} more than your cohort average in this parent category.",
+            "savingsTitle": "Savings-rate opportunity",
+            "savingsDescription": "Your cohort saves {gap} percentage points more on average. Categories above the benchmark may show where to start.",
+            "balancedTitle": "In line with your cohort",
+            "balancedDescription": "No material gaps stand out. Keep watching the trend, which is more useful than a single month."
         },
         "profileBanner": {
             "title": "🚀 Unlock personalized comparisons!",

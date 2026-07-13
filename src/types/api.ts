@@ -364,6 +364,25 @@ export interface StatsAverageBucket {
   incomes: number | null;
   savingsRates: number | null;
   expensesByCategory: Record<string, number> | null;
+  benchmark?: BenchmarkMetadata;
+}
+
+export interface BenchmarkMetadata {
+  generatedAt: string;
+  populationSize: number;
+  minimumCohortSize: number;
+  cohortSizes: {
+    balances: number;
+    incomes: number;
+    expenses: number;
+    savingsRates: number;
+  };
+  averageSimilarity: {
+    balances: number | null;
+    incomes: number | null;
+    expenses: number | null;
+    savingsRates: number | null;
+  };
 }
 
 export interface StatsAveragesResponse {

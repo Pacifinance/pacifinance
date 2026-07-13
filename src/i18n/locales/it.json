@@ -984,6 +984,20 @@
     "comparison": {
         "title": "Confronto Anonimo",
         "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
+        "benchmarkOverview": {
+            "title": "Il tuo benchmark personale",
+            "description": "Patrimonio, entrate e uscite usano coorti dedicate, perché persone simili per reddito non sono necessariamente simili per spese o fase di vita.",
+            "editProfile": "Modifica profilo",
+            "basedOn": "Confronto basato su",
+            "waiting": "Coorte in preparazione",
+            "privacy": "Solo dati aggregati. Coorti: {count} utenti; soglia privacy minima: {minimum}. Aggiornato: {updated}.",
+            "factors": {
+                "career": "Lavoro e carriera",
+                "location": "Area geografica",
+                "lifeStage": "Fase di vita",
+                "household": "Casa e famiglia"
+            }
+        },
         "sections": {
             "rankings": {
                 "title": "Classifiche",
@@ -1014,15 +1028,15 @@
             },
             "avgIncome": {
                 "title": "Entrate Mensili",
-                "description": "Confronta le tue entrate mensili medie degli ultimi 12 mesi",
-                "yourIncome": "Media tue entrate",
+                "description": "Confronta le entrate dell'ultimo mese completo",
+                "yourIncome": "Le tue entrate",
                 "avgSimilar": "Media Utenti Simili",
                 "avgAll": "Media Tutti gli Utenti"
             },
             "avgOutflows": {
                 "title": "Uscite Mensili",
-                "description": "Confronta le tue uscite mensili medie degli ultimi 12 mesi",
-                "yourOutflows": "Media tue uscite",
+                "description": "Confronta le uscite dell'ultimo mese completo",
+                "yourOutflows": "Le tue uscite",
                 "avgSimilar": "Media Utenti Simili",
                 "avgAll": "Media Tutti gli Utenti"
             },
@@ -1063,6 +1077,16 @@
             "average": "Stai performando nella media",
             "ofUsers": "degli utenti",
             "inCategory": "nella tua categoria"
+        },
+        "actionableInsights": {
+            "percentileTitle": "Patrimonio: top {rank}% tra profili simili",
+            "percentileDescription": "Il percentile usa la coorte specifica per il patrimonio, non la media indistinta di tutti gli utenti.",
+            "categoryTitle": "Approfondisci: {category}",
+            "categoryDescription": "Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre.",
+            "savingsTitle": "Margine sul tasso di risparmio",
+            "savingsDescription": "La coorte risparmia in media {gap} punti percentuali in più. Le categorie sopra media possono indicare da dove iniziare.",
+            "balancedTitle": "Profilo in equilibrio con la coorte",
+            "balancedDescription": "Non emergono scostamenti rilevanti. Continua a monitorare il trend, che è più utile del singolo mese."
         },
         "profileBanner": {
             "title": "🚀 Sblocca confronti personalizzati!",

@@ -133,6 +133,7 @@ Reusable templates invoked with `Ctrl+Shift+P → Chat: Run Prompt File` (Copilo
 **`pre-commit.prompt.md`** — Gate before every commit:
 - `npm test && npm run build`
 - Self-review checklist (i18n, dates, navigation, tests, CHANGELOG)
+- Final response rule: when an AI finishes an update, it must append a short commit message in English as the very last line.
 
 **`add-i18n-key.prompt.md`** — Batch-add translation keys across all locales
 **`new-page.prompt.md`** — Scaffold a new page with layout, SEO, i18n, route
@@ -287,6 +288,7 @@ These never change regardless of who writes the code (human or AI):
 - **Toasts only for errors** — No success toasts for normal operations.
 - **Optimistic updates** — After mutations, update local state. Don't re-fetch.
 - **Select columns explicitly** — Never `select('*')` on any DB query.
+- **Commit messages** — Every assistant that helps with code should end the update with an English commit message, so the repo stays clear for open source collaboration.
 
 ---
 

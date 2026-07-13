@@ -110,6 +110,8 @@ describe("selectCohort", () => {
         const result = selectCohort(candidates, populationSize)
         expect(result.insufficientData).toBe(false)
         expect(result.userIds.length).toBe(populationSize)
+        expect(result.populationSize).toBe(populationSize)
+        expect(result.averageSimilarity).toBeCloseTo(0.4)
     })
 
     it("caps the cohort at MAX_COHORT even with a huge, uniformly similar population", () => {

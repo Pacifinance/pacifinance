@@ -23,6 +23,15 @@ const emptyBucket = (): StatsAverageBucket => ({
   expensesByCategory: null,
 });
 
+const normalizeBucket = (bucket?: StatsAverageBucket): StatsAverageBucket => ({
+  balances: bucket?.balances ?? null,
+  expenses: bucket?.expenses ?? null,
+  incomes: bucket?.incomes ?? null,
+  savingsRates: bucket?.savingsRates ?? null,
+  expensesByCategory: bucket?.expensesByCategory ?? null,
+  benchmark: bucket?.benchmark,
+});
+
 /** Creates a stats-service bound to the given HTTP client. */
 export const createStatsService = (apiClient: AxiosInstance): StatsService => ({
   async getAverages() {
@@ -36,20 +45,8 @@ export const createStatsService = (apiClient: AxiosInstance): StatsService => ({
       const data = res.data;
 
       return {
-        all: {
-          balances: data.all?.balances ?? data.general?.balances ?? null,
-          expenses: data.all?.expenses ?? data.general?.expenses ?? null,
-          incomes: data.all?.incomes ?? data.general?.incomes ?? null,
-          savingsRates: data.all?.savingsRates ?? null,
-          expensesByCategory: data.all?.expensesByCategory ?? null,
-        },
-        similar: {
-          balances: data.similar?.balances ?? null,
-          expenses: data.similar?.expenses ?? null,
-          incomes: data.similar?.incomes ?? null,
-          savingsRates: data.similar?.savingsRates ?? null,
-          expensesByCategory: data.similar?.expensesByCategory ?? null,
-        },
+        all: normalizeBucket(data.all ?? data.general),
+        similar: normalizeBucket(data.similar),
       };
     } catch {
       console.warn('/api/stats/averages endpoint not available, using defaults');

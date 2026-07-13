@@ -44,4 +44,8 @@ Prima di committare, verifica ogni punto di questo gate:
 - [ ] Nessun `any` — usa tipi espliciti o `unknown` + type guard
 - [ ] Props dei componenti definite come `interface`
 
+## 9. Commit Message
+- [ ] L'ultima riga della risposta dell'IA contiene una commit message breve in inglese, pronta per il repository open source
+- [ ] La commit message è chiara, imperativa e descrive il risultato dell'update
+
 Se tutti i punti sono ✅, sei pronto per il commit.

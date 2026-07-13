@@ -51,6 +51,9 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import TuneIcon from '@mui/icons-material/Tune';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -185,6 +188,94 @@ const BottomGrid = styled.div`
   }
 `;
 
+const BenchmarkOverview = styled.section`
+  background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : '#ffffff'};
+  border: 1px solid ${props => props.theme.borderColor || 'rgba(15, 23, 42, 0.1)'};
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  .overview-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    color: ${props => props.theme.textColor};
+    font-size: 1.15rem;
+    margin: 0 0 0.25rem;
+  }
+
+  p {
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(15,23,42,0.65)'};
+    font-size: 0.86rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .profile-action {
+    align-items: center;
+    background: transparent;
+    border: 1px solid ${props => props.theme.borderColor || 'rgba(15, 23, 42, 0.16)'};
+    border-radius: 6px;
+    color: ${props => props.theme.textColor};
+    cursor: pointer;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.35rem;
+    padding: 0.5rem 0.7rem;
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+    .overview-heading { align-items: stretch; flex-direction: column; }
+    .profile-action { justify-content: center; }
+  }
+`;
+
+const BenchmarkRankGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const BenchmarkRank = styled.div`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#f6f8fa'};
+  border-radius: 6px;
+  padding: 0.8rem;
+
+  span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; font-size: 0.76rem; }
+  strong { color: ${props => props.theme.textColor}; display: block; font-size: 1.15rem; margin-top: 0.2rem; }
+`;
+
+const CohortDetails = styled.div`
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.9rem;
+
+  .cohort-line { align-items: center; display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .cohort-line > svg { color: ${props => props.theme.buttonBackgroundColor}; font-size: 1.05rem; }
+  .cohort-label { color: ${props => props.theme.textColor}; font-size: 0.8rem; font-weight: 600; margin-right: 0.2rem; }
+  .factor-chip {
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(7,145,100,0.15)' : '#e8f7f1'};
+    border-radius: 999px;
+    color: ${props => props.theme.mode === 'dark' ? '#65d6ae' : '#087554'};
+    font-size: 0.74rem;
+    padding: 0.28rem 0.55rem;
+  }
+  .privacy-note { align-items: center; display: flex; gap: 0.45rem; }
+  .privacy-note svg { color: ${props => props.theme.mode === 'dark' ? '#94a3b8' : '#64748b'}; font-size: 1rem; }
+`;
+
 const ExpandableCardContent = styled.div`
   max-height: ${props => props.expanded ? 'none' : '280px'};
   overflow: hidden;
@@ -229,7 +320,7 @@ const ExpandToggle = styled.button`
 
 const ComparisonCard = styled.div`
   background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'};
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 1.25rem;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   border: 1px solid ${props => props.theme.borderColor || 'transparent'};
@@ -916,20 +1007,44 @@ function Comparison({ theme, userData, isHidden}) {
         return `${monthName} ${year}`;
     };
 
-    // Mock data for comparisons - in a real app, this would come from API
-    // Calculate 12-month averages for user
+    // Index 0 is the partial current month. Community monthly benchmarks use
+    // the last complete month, so compare the user's index 1 to the same period.
     const userIncomesArray = getIncomesArray(userData) || [];
     const userOutflowsArray = getOutflowsArray(userData) || [];
 
     const ProfileCompletionPercentage = getProfileCompletionPercentage(userData);
     
-    const calculateAverage = (array) => {
-        const validValues = array.slice(0, 12).filter(val => val && val > 0);
-        return validValues.length > 0 ? validValues.reduce((sum, val) => sum + val, 0) / validValues.length : 0;
-    };
+    const getLastCompleteMonth = (array) => Number(array?.[1]) || 0;
 
     // Get averages from userData (fetched from /stats/averages API)
     const userAverages = userData?.averages || { all: {}, similar: {} };
+    const benchmarkMetadata = userAverages.similar?.benchmark;
+
+    const hasProfileValue = (field) => field && field.key !== -1 && Boolean(field.value);
+    const profileFactorGroups = [
+        {
+            label: translations.comparison.benchmarkOverview?.factors?.career || 'Lavoro e carriera',
+            fields: ['job', 'jobType', 'workTime', 'yearsOfExperience']
+        },
+        {
+            label: translations.comparison.benchmarkOverview?.factors?.location || 'Area geografica',
+            fields: ['whereWorks', 'nationality']
+        },
+        {
+            label: translations.comparison.benchmarkOverview?.factors?.lifeStage || 'Fase di vita',
+            fields: ['age']
+        },
+        {
+            label: translations.comparison.benchmarkOverview?.factors?.household || 'Casa e famiglia',
+            fields: ['livingSituation', 'housingType', 'children']
+        }
+    ].filter(group => group.fields.some(field => hasProfileValue(userData?.profile?.[field])));
+
+    const similarRanks = {
+        balance: getPercentageRankOnBalanceSimilar(userData),
+        incomes: getPercentageRankOnIncomesSimilar(userData),
+        outflows: getPercentageRankOnOutflowsSimilar(userData)
+    };
     
     const comparisonData = {
         avgBalance: {
@@ -947,12 +1062,12 @@ function Comparison({ theme, userData, isHidden}) {
             }
         },
         avgIncome: {
-            user: calculateAverage(userIncomesArray),
+            user: getLastCompleteMonth(userIncomesArray),
             similarUsers: userAverages.similar?.incomes ?? null,
             allUsers: userAverages.all?.incomes ?? 0
         },
         avgOutflows: {
-            user: calculateAverage(userOutflowsArray),
+            user: getLastCompleteMonth(userOutflowsArray),
             similarUsers: userAverages.similar?.expenses ?? null,
             allUsers: userAverages.all?.expenses ?? 0
         }
@@ -1069,27 +1184,122 @@ function Comparison({ theme, userData, isHidden}) {
 
     const generateInsights = () => {
         const insights = [];
-        const { avgBalance, avgIncome, avgOutflows } = comparisonData;
+        const { avgOutflows } = comparisonData;
         
-        // Only generate insight if similarUsers data is available
-        if (avgBalance.similarUsers.current !== null && avgBalance.user.current > avgBalance.similarUsers.current) {
+        if (similarRanks.balance > 0) {
             insights.push({
                 type: 'positive',
-                title: translations.comparison.insights.betterThan + ' 70% ' + translations.comparison.insights.ofUsers,
-                description: translations.comparison.tips.goodBalance
+                title: (translations.comparison.actionableInsights?.percentileTitle || 'Patrimonio: top {rank}% tra profili simili')
+                    .replace('{rank}', Math.min(similarRanks.balance, 100)),
+                description: translations.comparison.actionableInsights?.percentileDescription || 'Il percentile usa la coorte specifica per il patrimonio, non la media indistinta di tutti gli utenti.'
             });
         }
-        
-        if (avgOutflows.user > avgIncome.user * 0.8) {
+
+        const categoryOpportunities = spendingByCategory.map(category => {
+            const categoryIndex = userData?.tags?.outflowsTags?.find(
+                tag => tag.label === category.tagKey || translateTag(tag.label, 'en', 'expense') === category.name
+            )?.index;
+            const peerAverage = categoryIndex !== undefined
+                ? similarUsersExpensesByCategory?.[categoryIndex]
+                : null;
+            return { ...category, peerAverage, difference: peerAverage == null ? 0 : category.value - peerAverage };
+        }).filter(category => category.peerAverage > 0 && category.difference > Math.max(50, category.peerAverage * 0.1))
+          .sort((a, b) => b.difference - a.difference);
+
+        if (categoryOpportunities.length > 0) {
+            const opportunity = categoryOpportunities[0];
             insights.push({
                 type: 'warning',
-                title: translations.comparison.tips.title,
-                description: translations.comparison.tips.highOutflows
+                title: (translations.comparison.actionableInsights?.categoryTitle || 'Approfondisci: {category}')
+                    .replace('{category}', opportunity.displayName),
+                description: (translations.comparison.actionableInsights?.categoryDescription || 'Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre.')
+                    .replace('{difference}', formatCurrency(opportunity.difference))
+            });
+        }
+
+        if (userSavingsRate !== null && similarUsersSavingsRate !== null && userSavingsRate + 2 < similarUsersSavingsRate) {
+            const gap = similarUsersSavingsRate - userSavingsRate;
+            insights.push({
+                type: 'warning',
+                title: translations.comparison.actionableInsights?.savingsTitle || 'Margine sul tasso di risparmio',
+                description: (translations.comparison.actionableInsights?.savingsDescription || 'La coorte risparmia in media {gap} punti percentuali in più. Le categorie sopra media possono indicare da dove iniziare.')
+                    .replace('{gap}', gap.toFixed(1))
+            });
+        } else if (insights.length === 0 && avgOutflows.similarUsers !== null) {
+            insights.push({
+                type: 'positive',
+                title: translations.comparison.actionableInsights?.balancedTitle || 'Profilo in equilibrio con la coorte',
+                description: translations.comparison.actionableInsights?.balancedDescription || 'Non emergono scostamenti rilevanti. Continua a monitorare il trend, che è più utile del singolo mese.'
             });
         }
         
         return insights;
-    };    const renderProfileBanner = () => (
+    };
+
+    const renderBenchmarkOverview = () => {
+        const cohortSizes = benchmarkMetadata?.cohortSizes
+            ? Object.values(benchmarkMetadata.cohortSizes).filter(size => size > 0)
+            : [];
+        const minCohortSize = cohortSizes.length > 0 ? Math.min(...cohortSizes) : null;
+        const maxCohortSize = cohortSizes.length > 0 ? Math.max(...cohortSizes) : null;
+        const cohortLabel = minCohortSize === null
+            ? (translations.comparison.benchmarkOverview?.waiting || 'Coorte in preparazione')
+            : minCohortSize === maxCohortSize
+                ? `${minCohortSize}`
+                : `${minCohortSize}-${maxCohortSize}`;
+        const updatedAt = benchmarkMetadata?.generatedAt
+            ? new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            }).format(new Date(benchmarkMetadata.generatedAt))
+            : '--';
+
+        const rankCards = [
+            { label: translations.leaderboard.rankings.balance, value: similarRanks.balance },
+            { label: translations.leaderboard.rankings.income, value: similarRanks.incomes },
+            { label: translations.leaderboard.rankings.outflows, value: similarRanks.outflows }
+        ];
+
+        return (
+            <BenchmarkOverview theme={theme}>
+                <div className="overview-heading">
+                    <div>
+                        <h2>{translations.comparison.benchmarkOverview?.title || 'Il tuo benchmark personale'}</h2>
+                        <p>{translations.comparison.benchmarkOverview?.description || 'Percentili e medie sono calcolati su coorti diverse per patrimonio, entrate e uscite.'}</p>
+                    </div>
+                    <button className="profile-action" onClick={() => navigate('/profile')}>
+                        <TuneIcon fontSize="small" />
+                        {translations.comparison.benchmarkOverview?.editProfile || 'Modifica profilo'}
+                    </button>
+                </div>
+
+                <BenchmarkRankGrid>
+                    {rankCards.map(card => (
+                        <BenchmarkRank key={card.label} theme={theme}>
+                            <span>{card.label}</span>
+                            <strong>{card.value > 0 ? `Top ${Math.min(card.value, 100)}%` : '--'}</strong>
+                        </BenchmarkRank>
+                    ))}
+                </BenchmarkRankGrid>
+
+                <CohortDetails theme={theme}>
+                    <div className="cohort-line">
+                        <QueryStatsIcon />
+                        <span className="cohort-label">{translations.comparison.benchmarkOverview?.basedOn || 'Confronto basato su'}</span>
+                        {profileFactorGroups.map(group => <span className="factor-chip" key={group.label}>{group.label}</span>)}
+                    </div>
+                    <div className="privacy-note">
+                        <ShieldOutlinedIcon />
+                        <p>{(translations.comparison.benchmarkOverview?.privacy || 'Solo dati aggregati. Coorti: {count} utenti; soglia privacy minima: {minimum}. Aggiornato: {updated}.')
+                            .replace('{count}', cohortLabel)
+                            .replace('{minimum}', benchmarkMetadata?.minimumCohortSize || 20)
+                            .replace('{updated}', updatedAt)}</p>
+                    </div>
+                </CohortDetails>
+            </BenchmarkOverview>
+        );
+    };
+
+    const renderProfileBanner = () => (
         <ProfileBanner 
             theme={theme} 
             onClick={() => navigate('/profile')}
@@ -1118,6 +1328,7 @@ function Comparison({ theme, userData, isHidden}) {
     const renderInsightsTab = () => (
         <>
             {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
+            {renderBenchmarkOverview()}
             <TopGrid>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
@@ -1362,8 +1573,8 @@ function Comparison({ theme, userData, isHidden}) {
                                     t => t.label === category.tagKey || translateTag(t.label, 'en', 'expense') === category.name
                                 )?.index;
                                 
-                                const similarAvg = categoryIndex && similarUsersExpensesByCategory ? similarUsersExpensesByCategory[categoryIndex] : null;
-                                const allAvg = categoryIndex && allUsersExpensesByCategory ? allUsersExpensesByCategory[categoryIndex] : null;
+                                const similarAvg = categoryIndex !== undefined && similarUsersExpensesByCategory ? similarUsersExpensesByCategory[categoryIndex] : null;
+                                const allAvg = categoryIndex !== undefined && allUsersExpensesByCategory ? allUsersExpensesByCategory[categoryIndex] : null;
                                 
                                 return (
                                     <div key={index} style={{ marginBottom: '0.75rem' }}>

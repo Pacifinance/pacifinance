@@ -20,7 +20,10 @@ export function computeRankOfUser(array: any[], target_user: string) {
             position = array.length - i;
     }
     if (position === -1) return {position: 0}
-    return {position: Math.floor(position / array.length * 100)};
+    // Map the best and worst observed values to the stable [1,100] endpoints.
+    // Reserve 0 for "not ranked" throughout the API/UI contract.
+    if (array.length === 1) return {position: 1}
+    return {position: Math.ceil((position - 1) / (array.length - 1) * 99) + 1};
 }
 
 export function rankFromBalancePool(pool: Array<{userId: string, total: number}>, target_user: string) {
@@ -34,7 +37,10 @@ export function rankFromExpensePool(pool: Array<{userId: string, total: number}>
     const expenses = pool.map((p) => ({user: p.userId, amount: p.total}));
     expenses.sort((a, b) => a.amount - b.amount);
     const rank = computeRankOfUser(expenses, target_user).position
-    return is_expense_filter ? 100 - rank : rank
+    if (rank === 0) return 0
+    // Lower outflows are better. Keep the percentile in [1,100], as 0 means
+    // "no data" to API consumers.
+    return is_expense_filter ? 101 - rank : rank
 }
 
 export default { computeRankOfUser, rankFromBalancePool, rankFromExpensePool }

@@ -982,6 +982,15 @@
     "comparison": {
         "title": "Anonymer Vergleich",
         "subtitle": "Vergleiche deine finanzielle Leistung anonym mit ähnlichen Nutzern",
+        "benchmarkOverview": {
+            "title": "Dein persönlicher Benchmark",
+            "description": "Vermögen, Einnahmen und Ausgaben verwenden eigene Vergleichsgruppen, da ähnliches Einkommen nicht automatisch ähnliche Ausgaben oder Lebensphasen bedeutet.",
+            "editProfile": "Profil bearbeiten",
+            "basedOn": "Vergleich basiert auf",
+            "waiting": "Vergleichsgruppe wird vorbereitet",
+            "privacy": "Nur aggregierte Daten. Gruppen: {count} Nutzer; Mindestgröße zum Datenschutz: {minimum}. Aktualisiert: {updated}.",
+            "factors": { "career": "Arbeit und Karriere", "location": "Region", "lifeStage": "Lebensphase", "household": "Wohnen und Familie" }
+        },
         "sections": {
             "rankings": {
                 "title": "Ranglisten",
@@ -1012,15 +1021,15 @@
             },
             "avgIncome": {
                 "title": "Monatliche Einnahmen",
-                "description": "Vergleiche deine durchschnittlichen monatlichen Einnahmen der letzten 12 Monate",
-                "yourIncome": "Deine durchschnittlichen Einnahmen",
+                "description": "Vergleiche die Einnahmen des letzten vollständigen Monats",
+                "yourIncome": "Deine Einnahmen",
                 "avgSimilar": "Durchschn. ähnlicher Nutzer",
                 "avgAll": "Durchschn. aller Nutzer"
             },
             "avgOutflows": {
                 "title": "Monatliche Ausgaben",
-                "description": "Vergleiche deine durchschnittlichen monatlichen Ausgaben der letzten 12 Monate",
-                "yourOutflows": "Deine durchschnittlichen Ausgaben",
+                "description": "Vergleiche die Ausgaben des letzten vollständigen Monats",
+                "yourOutflows": "Deine Ausgaben",
                 "avgSimilar": "Durchschn. ähnlicher Nutzer",
                 "avgAll": "Durchschn. aller Nutzer"
             },
@@ -1061,6 +1070,16 @@
             "average": "Du liegst ungefähr im Durchschnitt",
             "ofUsers": "der Nutzer",
             "inCategory": "in deiner Kategorie"
+        },
+        "actionableInsights": {
+            "percentileTitle": "Vermögen: Top {rank}% unter ähnlichen Profilen",
+            "percentileDescription": "Dieses Perzentil nutzt die Vergleichsgruppe für Vermögen und nicht den undifferenzierten Durchschnitt aller Nutzer.",
+            "categoryTitle": "Prüfen: {category}",
+            "categoryDescription": "In den letzten 12 Monaten hast du in dieser Hauptkategorie {difference} mehr als deine Vergleichsgruppe ausgegeben.",
+            "savingsTitle": "Potenzial bei der Sparquote",
+            "savingsDescription": "Deine Vergleichsgruppe spart im Schnitt {gap} Prozentpunkte mehr. Kategorien über dem Benchmark können einen Ansatzpunkt zeigen.",
+            "balancedTitle": "Im Einklang mit deiner Vergleichsgruppe",
+            "balancedDescription": "Es gibt keine wesentlichen Abweichungen. Beobachte weiterhin den Trend, der aussagekräftiger als ein einzelner Monat ist."
         },
         "profileBanner": {
             "title": "🚀 Schalte personalisierte Vergleiche frei!",

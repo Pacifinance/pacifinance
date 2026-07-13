@@ -118,8 +118,20 @@
 - [ ] Nota Vercel: il piano Hobby vieta uso commerciale — il giorno in cui parte un tier a pagamento serve comunque Vercel Pro (o migrazione host); metterlo a budget in quel momento, non prima
 
 ### Fase 4 — Confronto anonimo (differenziante)
-- [ ] Checkbox di profilazione: l'utente sceglie come vengono calcolati gli utenti simili (già in server/todo.md)
-- [ ] Insight derivati: "persone simili a te spendono X in meno in Y"
+- [x] Trasparenza benchmark v1: dimensione coorte, fattori usati, soglia privacy e percentili reali visibili nella pagina confronto
+- [x] Escludere account demo/test da medie e ranking della community
+- [ ] Consenso esplicito separato per contribuire ai benchmark hosted e possibilità di revoca/cancellazione
+- [ ] Mediana, quartili e numero effettivo di contribuenti per metrica (non affidarsi solo alla media)
+- [ ] Checkbox di profilazione: l'utente sceglie come vengono calcolati gli utenti simili, con anteprima live della numerosità e blocco sotto soglia privacy
+- [~] Insight derivati: evidenziare la categoria madre con il maggiore scostamento economico dalla coorte; aggiungere trend e contributo percentuale al gap
+- [ ] Benchmark longitudinali 3/6/12 mesi usando una coorte stabile, con data di aggiornamento e indicatore di affidabilità
+- [ ] Benchmark runway emergenza, costi fissi/reddito, saving rate e diversificazione patrimoniale
+- [ ] Confronti per lavoro, esperienza, regione di lavoro, lavoro remoto e composizione familiare; mostrare sempre range e numerosità
+- [ ] Normalizzazione costo della vita per area geografica, mantenendo visibile anche il confronto nominale
+- [ ] Simulatore cambio lavoro/luogo come scenario osservazionale con assunzioni esplicite, senza presentarlo come consiglio o causalità
+- [ ] Protocollo community stats opt-in per self-host: invio di soli bucket e aggregati mensili arrotondati, mai transazioni
+- [ ] Snapshot benchmark firmati/versionati per istanze self-hosted, retention breve dei contributi e revoca verificabile
+- [ ] Protezioni anti-differencing/Sybil, quality score dei contributi e audit bias per coorti rare
 - [ ] Referral e badge per inviti (già in server/todo.md)
 
 ### Fuori scope (deciso, non riaprire senza motivo forte)

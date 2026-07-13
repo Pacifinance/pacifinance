@@ -34,6 +34,13 @@ describe('statsService', () => {
           incomes: 2800,
           savingsRates: 0.35,
           expensesByCategory: { Food: 480 },
+          benchmark: {
+            generatedAt: '2026-07-01T00:00:00.000Z',
+            populationSize: 120,
+            minimumCohortSize: 20,
+            cohortSizes: { balances: 24, incomes: 20, expenses: 22, savingsRates: 21 },
+            averageSimilarity: { balances: 0.8, incomes: 0.7, expenses: 0.75, savingsRates: 0.72 },
+          },
         },
       };
       mockClient.post.mockResolvedValue({ data: mockData });
@@ -43,6 +50,7 @@ describe('statsService', () => {
       expect(mockClient.post).toHaveBeenCalledWith('/api/stats/averages', {});
       expect(result.all.balances).toBe(50000);
       expect(result.similar.incomes).toBe(2800);
+      expect(result.similar.benchmark.cohortSizes.expenses).toBe(22);
     });
 
     it('should handle legacy "general" field fallback', async () => {

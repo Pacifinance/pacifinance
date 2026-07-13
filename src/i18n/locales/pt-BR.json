@@ -982,6 +982,15 @@
     "comparison": {
         "title": "Comparação anônima",
         "subtitle": "Compare seu desempenho financeiro com usuários semelhantes de forma anônima",
+        "benchmarkOverview": {
+            "title": "Seu benchmark pessoal",
+            "description": "Patrimônio, receitas e saídas usam coortes específicas, pois renda semelhante não significa necessariamente gastos ou fase de vida semelhantes.",
+            "editProfile": "Editar perfil",
+            "basedOn": "Comparação baseada em",
+            "waiting": "Coorte em preparação",
+            "privacy": "Somente dados agregados. Coortes: {count} usuários; limite mínimo de privacidade: {minimum}. Atualizado: {updated}.",
+            "factors": { "career": "Trabalho e carreira", "location": "Área geográfica", "lifeStage": "Fase da vida", "household": "Casa e família" }
+        },
         "sections": {
             "rankings": {
                 "title": "Rankings",
@@ -1012,15 +1021,15 @@
             },
             "avgIncome": {
                 "title": "Receita mensal",
-                "description": "Compare sua receita mensal média nos últimos 12 meses",
-                "yourIncome": "Sua receita média",
+                "description": "Compare a receita do último mês completo",
+                "yourIncome": "Sua receita",
                 "avgSimilar": "Média de usuários semelhantes",
                 "avgAll": "Média de todos os usuários"
             },
             "avgOutflows": {
                 "title": "Saídas mensais",
-                "description": "Compare suas saídas mensais médias nos últimos 12 meses",
-                "yourOutflows": "Suas saídas médias",
+                "description": "Compare as saídas do último mês completo",
+                "yourOutflows": "Suas saídas",
                 "avgSimilar": "Média de usuários semelhantes",
                 "avgAll": "Média de todos os usuários"
             },
@@ -1061,6 +1070,16 @@
             "average": "Você está na média",
             "ofUsers": "dos usuários",
             "inCategory": "na sua categoria"
+        },
+        "actionableInsights": {
+            "percentileTitle": "Patrimônio: top {rank}% entre perfis semelhantes",
+            "percentileDescription": "Este percentil usa a coorte específica de patrimônio, não a média indiferenciada de todos os usuários.",
+            "categoryTitle": "Revise: {category}",
+            "categoryDescription": "Nos últimos 12 meses você gastou {difference} a mais que a média da sua coorte nesta categoria principal.",
+            "savingsTitle": "Margem na taxa de economia",
+            "savingsDescription": "Sua coorte economiza em média {gap} pontos percentuais a mais. Categorias acima do benchmark podem indicar por onde começar.",
+            "balancedTitle": "Em linha com sua coorte",
+            "balancedDescription": "Nenhuma diferença relevante se destaca. Continue acompanhando a tendência, mais útil que um único mês."
         },
         "profileBanner": {
             "title": "🚀 Desbloqueie comparações personalizadas!",

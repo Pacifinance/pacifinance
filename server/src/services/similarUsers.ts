@@ -151,7 +151,13 @@ function clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value))
 }
 
-export type SimilarUsersResult = { userIds: string[], insufficientData: boolean }
+export type SimilarUsersResult = {
+    userIds: string[],
+    insufficientData: boolean,
+    populationSize: number,
+    /** Mean similarity of the selected cohort, in the [0,1] range. */
+    averageSimilarity: number | null
+}
 
 /**
  * Given every eligible candidate already scored against the reference user,
@@ -166,7 +172,9 @@ export function selectCohort(scoredCandidates: Array<{ id: string, score: number
     // matches: an approximate comparison beats none. MIN_COHORT/the similarity
     // floor still shape target size and quality once the population is large
     // enough to support them.
-    if (populationSize === 0) return { userIds: [], insufficientData: true }
+    if (populationSize === 0) return {
+        userIds: [], insufficientData: true, populationSize: 0, averageSimilarity: null
+    }
 
     const sorted = [...scoredCandidates].sort((a, b) => b.score - a.score)
     const targetSize = Math.min(populationSize, clamp(Math.round(populationSize * TARGET_FRACTION), MIN_COHORT, MAX_COHORT))
@@ -182,7 +190,16 @@ export function selectCohort(scoredCandidates: Array<{ id: string, score: number
     // use the best-available candidates regardless of score instead of nothing.
     if (cohort.length === 0) cohort = sorted.slice(0, targetSize)
 
-    return { userIds: cohort.map((c) => c.id), insufficientData: false }
+    const averageSimilarity = cohort.length > 0
+        ? cohort.reduce((sum, candidate) => sum + candidate.score, 0) / cohort.length
+        : null
+
+    return {
+        userIds: cohort.map((c) => c.id),
+        insufficientData: false,
+        populationSize,
+        averageSimilarity
+    }
 }
 
 function spanOf(values: number[]) {
@@ -251,12 +268,16 @@ function selectSimilarUserIds(
     const { profiles, tagMeta } = snapshot
 
     const reference = profiles.find((p) => p.id === referenceUserId)
-    if (!reference) return { userIds: [], insufficientData: true }
+    if (!reference) return {
+        userIds: [], insufficientData: true, populationSize: 0, averageSimilarity: null
+    }
 
     let eligible = profiles.filter((p) => p.id !== referenceUserId)
     if (ignoreTestUsers) eligible = eligible.filter((p) => p.account_type < users.UserType.test.value)
 
-    if (eligible.length < MIN_COHORT) return { userIds: [], insufficientData: true }
+    if (eligible.length < MIN_COHORT) return {
+        userIds: [], insufficientData: true, populationSize: eligible.length, averageSimilarity: null
+    }
 
     const scored = eligible.map((p) => ({ id: p.id, score: similarityScore(reference, p, metric, tagMeta) }))
 

@@ -8,7 +8,7 @@
  * @module types/user
  */
 
-import type { BalanceMonthDto, ExpenseDto, TagDto, TransactionDto } from './api';
+import type { BalanceMonthDto, ExpenseDto, StatsAverageBucket, TagDto, TransactionDto } from './api';
 import type { KeyValue } from './common';
 
 // ─── Profile ─────────────────────────────────────────────────────────
@@ -128,8 +128,8 @@ export interface UserData {
   limits: Limits;
   assets: Array<{ typology: string; value: number }>;
   averages: {
-    all: Record<string, unknown>;
-    similar: Record<string, unknown>;
+    all: StatsAverageBucket;
+    similar: StatsAverageBucket;
   };
   /** On-demand-fetched single months beyond the loaded window, keyed by 'YYYY-MM' — see fetchMonthDetail in UserContext. */
   extraMonths?: Record<string, TransactionDto[]>;

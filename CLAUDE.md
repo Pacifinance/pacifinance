@@ -38,6 +38,7 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 7. **Outflows not expenses** — "outflows/uscite" sempre. "expenses" solo se investimenti esclusi.
 8. **Roadmap** — feature user-facing completata → `roadmap-items.json` + `todo.md` + `npm run roadmap`
 9. **No `any`** — TypeScript strict. Props come `interface`.
+10. **Commit messages** — after each finished update, include a short commit message in English as the very last line of the assistant response. Keep it concise, imperative, and open-source friendly.
 
 ## Key Files
 | File | Scopo |
@@ -71,3 +72,4 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 - Fare chiamate API fuori da `UserContext.tsx`
 - Aggiungere toast di successo per operazioni normali
 - Usare `.toISOString().split('T')[0]` (UTC midnight bug)
+- Chiudere un update senza una commit message finale in inglese

@@ -989,7 +989,7 @@
             "show": "Voir la comparaison",
             "hide": "Réduire",
             "groupHelp": "Le groupe de comparaison rassemble des utilisateurs aux profils similaires et affiche seulement des résultats agrégés lorsqu'il est assez grand.",
-            "optInTitle": "Débloquer la comparaison avec des utilisateurs similaires", "optInDescription": "Active ton consentement pour recevoir des benchmarks agrégés. Les transactions, notes et identités ne sont jamais partagées.", "optInAction": "Activer la comparaison", "optInSaving": "Activation...",
+            "optInTitle": "Débloquer la comparaison avec des utilisateurs similaires", "optInDescription": "Active ton consentement pour recevoir des benchmarks agrégés. Les transactions, notes et identités ne sont jamais partagées.", "optInAction": "Activer la comparaison", "optInSaving": "Activation...", "optInError": "Impossible d'activer la comparaison communautaire. Réessayez.",
             "basedOn": "Comparaison basée sur",
             "waiting": "Cohorte en préparation",
             "privacy": "Données agrégées uniquement. Cohortes : {count} utilisateurs ; seuil minimal de confidentialité : {minimum}. Mis à jour : {updated}.",

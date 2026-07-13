@@ -1072,6 +1072,11 @@ function Comparison({ theme, userData, isHidden}) {
             const result = await userService.setBenchmarkConsent(true);
             setHasBenchmarkConsent(result?.benchmarkConsent === true);
             setIsBenchmarkExpanded(true);
+        } catch {
+            setCustomBenchmarkError(
+                translations.comparison.benchmarkOverview?.optInError
+                || 'Unable to activate community comparison. Please try again.'
+            );
         } finally {
             setIsSavingBenchmarkConsent(false);
         }

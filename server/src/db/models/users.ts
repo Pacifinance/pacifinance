@@ -263,13 +263,25 @@ async function getPublicInfoByUserId(user_id: string) {
 /** Records explicit hosted-community-benchmark consent or its revocation. */
 async function setBenchmarkConsentByUserId(user_id: string, consent: boolean) {
     const now = new Date().toISOString()
-    const update = consent
-        ? {benchmark_consent: true, benchmark_consent_at: now, benchmark_consent_revoked_at: null}
-        : {benchmark_consent: false, benchmark_consent_revoked_at: now}
-    const {data, error} = await supabase.from("profiles").update(update).eq("id", user_id)
+    // Persist the feature flag separately from audit timestamps. This keeps
+    // consent changes working during a rolling migration when production has
+    // the flag but not yet the optional audit columns.
+    const {data, error} = await supabase.from("profiles")
+        .update({benchmark_consent: consent})
+        .eq("id", user_id)
         .select("id, benchmark_consent").maybeSingle()
     if (error) console.error("users.setBenchmarkConsentByUserId: update failed", error)
     if (error || !data) return null
+
+    const auditUpdate = consent
+        ? {benchmark_consent_at: now, benchmark_consent_revoked_at: null}
+        : {benchmark_consent_revoked_at: now}
+    const {error: auditError} = await supabase.from("profiles")
+        .update(auditUpdate)
+        .eq("id", user_id)
+    if (auditError)
+        console.warn("users.setBenchmarkConsentByUserId: audit timestamp update skipped", auditError)
+
     return {benchmarkConsent: data.benchmark_consent as boolean}
 }
 

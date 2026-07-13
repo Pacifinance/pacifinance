@@ -995,6 +995,7 @@
             "optInDescription": "Attiva il consenso per ricevere benchmark aggregati. Non condividiamo transazioni, note o identità.",
             "optInAction": "Attiva confronto",
             "optInSaving": "Attivazione...",
+            "optInError": "Non è stato possibile attivare il confronto community. Riprova.",
             "basedOn": "Gruppo basato su",
             "waiting": "Gruppo in preparazione",
             "privacy": "Solo dati aggregati. Gruppo: {count} utenti; soglia privacy minima: {minimum}. Aggiornato: {updated}.",

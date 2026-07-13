@@ -995,6 +995,7 @@
             "optInDescription": "Opt in to receive aggregated benchmarks. We never share transactions, notes or identity.",
             "optInAction": "Enable comparison",
             "optInSaving": "Activating...",
+            "optInError": "Unable to activate community comparison. Please try again.",
             "basedOn": "Group based on",
             "waiting": "Group being prepared",
             "privacy": "Aggregated data only. Group: {count} users; minimum privacy threshold: {minimum}. Updated: {updated}.",

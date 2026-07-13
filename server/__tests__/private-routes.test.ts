@@ -269,6 +269,25 @@ describe("private backend routes", () => {
         expect(response.status).toBe(503)
     })
 
+    it("serves rankings and averages through one benchmark summary request", async () => {
+        const rankings = {balance: 10, incomes: 20, outflows: 30, balanceSimilar: 15, incomesSimilar: 25, outflowsSimilar: 35}
+        const averages = {balances: 1000, expenses: 300, incomes: 2000, savingsRates: 40, expensesByCategory: {}, distributions: {}}
+        mockCache.get.mockImplementation(async (key) => key === "userRankings"
+            ? {"user-uuid": rankings}
+            : {all: averages, "user-uuid": averages})
+
+        const response = await request(app, "/api/benchmarks/summary", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({rankings, averages: {all: averages, similar: averages}})
+        expect(mockCache.get).toHaveBeenCalledWith("userRankings")
+        expect(mockCache.get).toHaveBeenCalledWith("userAverages")
+    })
+
     it("returns benchmark metadata without exposing cohort members", async () => {
         const benchmark = {
             generatedAt: "2026-07-01T00:00:00.000Z",

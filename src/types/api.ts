@@ -368,7 +368,32 @@ export interface StatsAverageBucket {
   incomes: number | null;
   savingsRates: number | null;
   expensesByCategory: Record<string, number> | null;
+  distributions?: {
+    balances: DistributionSummary;
+    expenses: DistributionSummary;
+    incomes: DistributionSummary;
+    savingsRates: DistributionSummary;
+  };
+  longitudinal?: LongitudinalBenchmarkPoint[];
   benchmark?: BenchmarkMetadata;
+}
+
+export interface DistributionSummary {
+  count: number;
+  median: number | null;
+  firstQuartile: number | null;
+  thirdQuartile: number | null;
+}
+
+export interface LongitudinalBenchmarkPoint {
+  monthsAgo: 3 | 6 | 12;
+  asOf: string;
+  reliability: 'low' | 'medium' | 'high';
+  contributorCount: number;
+  balances: number | null;
+  incomes: number | null;
+  expenses: number | null;
+  savingsRates: number | null;
 }
 
 export interface BenchmarkMetadata {

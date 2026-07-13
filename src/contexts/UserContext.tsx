@@ -53,7 +53,7 @@ export const UserProvider = ({ children }) => {
   const isAuthenticatedRef = useRef(isAuthenticated);
 
   // Inject services from DI container
-  const { apiClient, userService, financeService, rankingService, statsService } = useServices();
+  const { apiClient, userService, financeService, rankingService, statsService, communityBenchmarkService } = useServices();
 
   // Keep ref in sync with state for use in interceptor
   useEffect(() => {
@@ -194,19 +194,26 @@ export const UserProvider = ({ children }) => {
             setSessionUserInfo(null);
             setIsUpdated(true);
 
-            Promise.allSettled([
-              rankingService.getAllRankings(),
-              statsService.getAverages(),
-            ]).then(([rankingsResult, averagesResult]) => {
+            const loadBenchmarkSnapshot = communityBenchmarkService?.getSnapshot
+              ? communityBenchmarkService.getSnapshot()
+              : Promise.allSettled([
+                  rankingService.getAllRankings(),
+                  statsService.getAverages(),
+                ]).then(([rankingsResult, averagesResult]) => ({
+                  rankings: rankingsResult.status === 'fulfilled' ? rankingsResult.value : null,
+                  averages: averagesResult.status === 'fulfilled' ? averagesResult.value : null,
+                }));
+
+            loadBenchmarkSnapshot.then((snapshot) => {
               setUserData(prev => {
                 if (!prev) return prev;
                 return {
                   ...prev,
-                  rankings: rankingsResult.status === 'fulfilled' ? rankingsResult.value : prev.rankings,
-                  averages: averagesResult.status === 'fulfilled' ? averagesResult.value : prev.averages,
+                  rankings: snapshot.rankings ?? prev.rankings,
+                  averages: snapshot.averages ?? prev.averages,
                 };
               });
-            });
+            }).catch(() => {});
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);
@@ -214,7 +221,7 @@ export const UserProvider = ({ children }) => {
       }
     };
     fetchUserData();
-  }, [isAuthenticated, isUpdated, retryCounter, isDemoMode, sessionUserInfo, userService, financeService, rankingService, statsService]);
+  }, [isAuthenticated, isUpdated, retryCounter, isDemoMode, sessionUserInfo, userService, financeService, rankingService, statsService, communityBenchmarkService]);
 
   // Retry function: reset error and trigger re-fetch
   const retryFetch = () => {

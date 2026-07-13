@@ -38,6 +38,17 @@ export type DistributionSummary = {
     thirdQuartile: number | null
 }
 
+export type LongitudinalBenchmarkPoint = {
+    monthsAgo: 3 | 6 | 12,
+    asOf: string,
+    reliability: "low" | "medium" | "high",
+    contributorCount: number,
+    balances: number | null,
+    incomes: number | null,
+    expenses: number | null,
+    savingsRates: number | null
+}
+
 export type Averages = {
     balances: number | null,
     expenses: number | null,
@@ -52,6 +63,7 @@ export type Averages = {
         incomes: DistributionSummary,
         savingsRates: DistributionSummary
     },
+    longitudinal?: LongitudinalBenchmarkPoint[],
     benchmark?: BenchmarkMetadata
 }
 
@@ -229,6 +241,31 @@ function computeAveragesForCohorts(cohorts: MetricCohorts, rowsByUserId: Map<str
     return averagesData.getAverages()
 }
 
+function reliabilityFor(count: number): LongitudinalBenchmarkPoint["reliability"] {
+    if (count >= MIN_COHORT * 2) return "high"
+    if (count >= MIN_COHORT) return "medium"
+    return "low"
+}
+
+function longitudinalPoint(monthsAgo: 3 | 6 | 12, asOf: ExtDate, cohorts: MetricCohorts, rows: BenchmarkMetricRow[]): LongitudinalBenchmarkPoint {
+    const averages = computeAveragesForCohorts(cohorts, new Map(rows.map((row) => [row.userId, row])))
+    const contributorCount = Math.min(
+        averages.distributions.balances.count,
+        averages.distributions.incomes.count,
+        averages.distributions.expenses.count
+    )
+    return {
+        monthsAgo,
+        asOf: asOf.toISOString(),
+        reliability: reliabilityFor(contributorCount),
+        contributorCount,
+        balances: averages.balances,
+        incomes: averages.incomes,
+        expenses: averages.expenses,
+        savingsRates: averages.savingsRates
+    }
+}
+
 /**
  * Computes the averages for the last month among all users and for each user
  * @returns Object to store in the database and cache
@@ -265,7 +302,19 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     const currentMonth = ExtDate.fromReferenceMonthStart(now)
     const metricRows = await benchmarks.getMetricRows(allUserIds, currentMonth)
     const rowsByUserId = new Map(metricRows.map((row) => [row.userId, row]))
-    console.log(`[averages] source metrics fetched in one RPC (+${Date.now() - t0}ms)`)
+    console.log(`[averages] current source metrics fetched (+${Date.now() - t0}ms)`)
+
+    const historyDates = ([3, 6, 12] as const).map((monthsAgo) => {
+        const date = currentMonth.copy()
+        date.moveByMonths(-monthsAgo)
+        return {monthsAgo, date}
+    })
+    const historicalRows = await Promise.all(historyDates.map(async ({monthsAgo, date}) => ({
+        monthsAgo,
+        date,
+        rows: await benchmarks.getMetricRows(allUserIds, date)
+    })))
+    console.log(`[averages] 3/6/12-month source metrics fetched (+${Date.now() - t0}ms)`)
 
     averagesCachedData.all = computeAveragesForCohorts(
         { balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds }, rowsByUserId
@@ -284,6 +333,11 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
             balances: null, incomes: null, expenses: null, savingsRates: null
         }
     }
+    averagesCachedData.all.longitudinal = historicalRows.map(({monthsAgo, date, rows}) => longitudinalPoint(
+        monthsAgo, date,
+        {balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds},
+        rows
+    ))
     console.log(`[averages] "all" cohort computed (+${Date.now() - t0}ms)`)
 
     // Fetched once and reused for every user below. No financial values are
@@ -325,6 +379,13 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
                 savingsRates: generalCohort.averageSimilarity
             }
         }
+        const cohorts = {
+            balance: balanceCohort.userIds,
+            incomes: incomesCohort.userIds,
+            outflows: outflowsCohort.userIds,
+            general: generalCohort.userIds
+        }
+        userAverages.longitudinal = historicalRows.map(({monthsAgo, date, rows}) => longitudinalPoint(monthsAgo, date, cohorts, rows))
         averagesCachedData[userRef] = userAverages
     }
 

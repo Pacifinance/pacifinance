@@ -986,6 +986,9 @@
             "title": "Dein persönlicher Benchmark",
             "description": "Vermögen, Einnahmen und Ausgaben verwenden eigene Vergleichsgruppen, da ähnliches Einkommen nicht automatisch ähnliche Ausgaben oder Lebensphasen bedeutet.",
             "editProfile": "Profil bearbeiten",
+            "show": "Vergleich anzeigen",
+            "hide": "Einklappen",
+            "groupHelp": "Die Vergleichsgruppe umfasst Nutzer mit ähnlichen Profilmerkmalen und zeigt nur aggregierte Ergebnisse bei ausreichender Größe.",
             "basedOn": "Vergleich basiert auf",
             "waiting": "Vergleichsgruppe wird vorbereitet",
             "privacy": "Nur aggregierte Daten. Gruppen: {count} Nutzer; Mindestgröße zum Datenschutz: {minimum}. Aktualisiert: {updated}.",
@@ -997,6 +1000,11 @@
             "noCohort": "Für diese Auswahl gibt es noch nicht genügend vergleichbare Profile.",
             "customError": "Der Vergleich konnte nicht aktualisiert werden. Bitte versuche es erneut.",
             "factorUnavailable": "Vervollständige diesen Teil deines Profils, um ihn im Vergleich zu verwenden.",
+            "preview": "Vorschau: {count} vergleichbare Profile (mindestens {minimum}).",
+            "median": "Median",
+            "interquartileRange": "Mittlerer Bereich",
+            "monthsAgo": "vor {months} Monaten",
+            "reliability": {"low": "Anfängliche Zuverlässigkeit", "medium": "Mittlere Zuverlässigkeit", "high": "Hohe Zuverlässigkeit"},
             "factors": { "career": "Arbeit und Karriere", "location": "Region", "lifeStage": "Lebensphase", "household": "Wohnen und Familie" }
         },
         "sections": {
@@ -1198,6 +1206,7 @@
                 "title": "Datennutzung",
                 "content": "Ihre Daten werden ausschließlich zur Bereitstellung der Plattformfunktionalität und für anonyme Vergleiche verwendet. Wir verkaufen, teilen oder verwenden Ihre Daten nicht für kommerzielle Zwecke."
             },
+            "benchmarkParticipation": {"title": "Community-Benchmarks", "content": "Die Teilnahme an gehosteten Benchmarks ist optional, erfordert eine separate Einwilligung und kann im Profil widerrufen werden."},
             "anonymity": {
                 "title": "Anonymität",
                 "content": "Alle Vergleiche und Statistiken sind vollständig anonym. Ihre persönlichen Daten werden niemals mit Finanzdaten verknüpft, die für Vergleiche verwendet werden."
@@ -1969,7 +1978,8 @@
         "detailsTab": "Kontodetails",
         "achievementsTab": "Erfolge",
         "notSpecified": "Nicht angegeben",
-        "updateSuccess": "Profil erfolgreich aktualisiert!"
+        "updateSuccess": "Profil erfolgreich aktualisiert!",
+        "benchmark": {"title": "Anonyme Community-Benchmarks", "description": "Trage optional nur aggregierte, gruppierte Kennzahlen bei; Transaktionen, Notizen und Identität werden nicht geteilt.", "toggle": "Zu gehosteten Benchmarks beitragen", "active": "Beitrag aktiv und jederzeit widerrufbar.", "enabled": "Du trägst jetzt anonyme aggregierte Daten bei.", "disabled": "Der Benchmark-Beitrag wurde widerrufen.", "error": "Die Einwilligung konnte nicht aktualisiert werden."}
     },
     "avatar": {
         "regenerate": "Neuen Avatar generieren",

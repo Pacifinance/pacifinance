@@ -21,6 +21,8 @@ const emptyBucket = (): StatsAverageBucket => ({
   incomes: null,
   savingsRates: null,
   expensesByCategory: null,
+  distributions: undefined,
+  longitudinal: undefined,
 });
 
 const normalizeBucket = (bucket?: StatsAverageBucket): StatsAverageBucket => ({
@@ -29,6 +31,8 @@ const normalizeBucket = (bucket?: StatsAverageBucket): StatsAverageBucket => ({
   incomes: bucket?.incomes ?? null,
   savingsRates: bucket?.savingsRates ?? null,
   expensesByCategory: bucket?.expensesByCategory ?? null,
+  distributions: bucket?.distributions,
+  longitudinal: bucket?.longitudinal,
   benchmark: bucket?.benchmark,
 });
 

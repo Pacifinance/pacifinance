@@ -988,6 +988,9 @@
             "title": "Tu benchmark personal",
             "description": "Patrimonio, ingresos y gastos usan cohortes específicas, porque tener ingresos similares no implica compartir gastos o etapa vital.",
             "editProfile": "Editar perfil",
+            "show": "Ver comparación",
+            "hide": "Reducir",
+            "groupHelp": "El grupo de comparación reúne usuarios con perfiles similares y muestra solo resultados agregados cuando hay suficientes participantes.",
             "basedOn": "Comparación basada en",
             "waiting": "Cohorte en preparación",
             "privacy": "Solo datos agregados. Cohortes: {count} usuarios; umbral mínimo de privacidad: {minimum}. Actualizado: {updated}.",
@@ -999,6 +1002,11 @@
             "noCohort": "Aún no hay suficientes perfiles comparables para esta selección.",
             "customError": "No se pudo actualizar la comparación. Inténtalo de nuevo.",
             "factorUnavailable": "Completa esta parte de tu perfil para usarla en la comparación.",
+            "preview": "Vista previa: {count} perfiles comparables (mínimo {minimum}).",
+            "median": "Mediana",
+            "interquartileRange": "Rango central",
+            "monthsAgo": "Hace {months} meses",
+            "reliability": {"low": "Fiabilidad inicial", "medium": "Fiabilidad media", "high": "Fiabilidad alta"},
             "factors": { "career": "Trabajo y carrera", "location": "Área geográfica", "lifeStage": "Etapa vital", "household": "Hogar y familia" }
         },
         "sections": {
@@ -1200,6 +1208,7 @@
                 "title": "Uso de datos",
                 "content": "Tus datos se utilizan exclusivamente para proporcionar las funcionalidades de la plataforma y para comparaciones anónimas. No vendemos, compartimos ni utilizamos tus datos con fines comerciales."
             },
+            "benchmarkParticipation": {"title": "Benchmarks de la comunidad", "content": "La participación en benchmarks alojados es opcional, requiere consentimiento separado y puede revocarse desde el perfil."},
             "anonymity": {
                 "title": "Anonimato",
                 "content": "Todas las comparaciones y estadísticas son completamente anónimas. Tus datos personales nunca se asocian con los datos financieros utilizados para las comparaciones."
@@ -1971,7 +1980,8 @@
         "detailsTab": "Detalles de la cuenta",
         "achievementsTab": "Logros",
         "notSpecified": "No especificado",
-        "updateSuccess": "¡Perfil actualizado correctamente!"
+        "updateSuccess": "¡Perfil actualizado correctamente!",
+        "benchmark": {"title": "Benchmarks anónimos de la comunidad", "description": "Contribuye opcionalmente con métricas agregadas y por rangos; las transacciones, notas e identidad no se comparten.", "toggle": "Contribuir a benchmarks alojados", "active": "Contribución activa y revocable en cualquier momento.", "enabled": "Ahora contribuyes con datos agregados anónimos.", "disabled": "La contribución a benchmarks se ha revocado.", "error": "No se pudo actualizar el consentimiento."}
     },
     "avatar": {
         "regenerate": "Generar nuevo avatar",

@@ -125,12 +125,12 @@
 - [x] Personalizzazione coorte: selezione dinamica di lavoro/carriera, area geografica, fase di vita e nucleo familiare; cache Redis breve, calcolo aggregato on-demand, anteprima live della numerosità e blocco rigoroso sotto soglia privacy <!-- roadmap:custom-cohort -->
 - [x] Snapshot mensile delle coorti standard: salvare i bucket profilo e la versione dell'algoritmo al refresh mensile, così ogni benchmark resta riproducibile per tutto il mese senza reagire a modifiche successive del profilo. Non includere mai saldi, entrate o uscite nella definizione di similarità. <!-- roadmap:benchmark-snapshots -->
 - [~] Insight derivati: evidenziare la categoria madre con il maggiore scostamento economico dalla coorte; aggiungere trend e contributo percentuale al gap
-- [ ] Benchmark longitudinali 3/6/12 mesi usando una coorte stabile, con data di aggiornamento e indicatore di affidabilità
+- [x] Benchmark longitudinali 3/6/12 mesi usando un gruppo stabile, con data di aggiornamento, numerosità e indicatore di affidabilità <!-- roadmap:benchmark-longitudinal -->
 - [ ] Benchmark runway emergenza, costi fissi/reddito, saving rate e diversificazione patrimoniale
 - [ ] Confronti per lavoro, esperienza, regione di lavoro, lavoro remoto e composizione familiare; mostrare sempre range e numerosità
 - [ ] Normalizzazione costo della vita per area geografica, mantenendo visibile anche il confronto nominale
 - [ ] Simulatore cambio lavoro/luogo come scenario osservazionale con assunzioni esplicite, senza presentarlo come consiglio o causalità
-- [ ] Protocollo community stats opt-in per self-host: invio di soli bucket e aggregati mensili arrotondati, mai transazioni
+- [~] Protocollo community stats opt-in per self-host: invio di soli bucket e aggregati mensili arrotondati, mai transazioni — specifica v1 in `docs/COMMUNITY_STATS_PROTOCOL.md`; endpoint e firma da implementare
 - [ ] Snapshot benchmark firmati/versionati per istanze self-hosted, retention breve dei contributi e revoca verificabile
 - [ ] Protezioni anti-differencing/Sybil, quality score dei contributi e audit bias per coorti rare
 - [ ] Referral e badge per inviti (già in server/todo.md)

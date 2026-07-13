@@ -230,10 +230,14 @@ const BenchmarkOverview = styled.section`
     padding: 0.5rem 0.7rem;
   }
 
+  .overview-actions { display: flex; flex: 0 0 auto; gap: 0.45rem; }
+  .benchmark-toggle { background: ${props => props.theme.buttonBackgroundColor}; border: 1px solid ${props => props.theme.buttonBackgroundColor}; border-radius: 6px; color: white; cursor: pointer; font-weight: 700; padding: 0.5rem 0.7rem; }
+
   @media (max-width: 600px) {
     padding: 1rem;
     .overview-heading { align-items: stretch; flex-direction: column; }
-    .profile-action { justify-content: center; }
+    .overview-actions { align-items: center; display: grid; grid-template-columns: auto 1fr 1fr; }
+    .profile-action, .benchmark-toggle { justify-content: center; }
   }
 `;
 
@@ -267,6 +271,20 @@ const DistributionGrid = styled.div`
   span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; display: block; font-size: 0.74rem; }
   strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.92rem; margin-top: 0.2rem; }
   small { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.52)' : '#64748b'}; display: block; font-size: 0.7rem; margin-top: 0.25rem; }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+`;
+
+const LongitudinalGrid = styled.div`
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 1rem 0;
+  padding-top: 1rem;
+  .trend-card { background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#fbfcfd'}; border-radius: 6px; padding: 0.75rem; }
+  span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; display: block; font-size: 0.74rem; }
+  strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.92rem; margin-top: 0.25rem; }
+  small { color: ${props => props.theme.mode === 'dark' ? '#86efac' : '#15803d'}; display: block; font-size: 0.7rem; margin-top: 0.25rem; }
   @media (max-width: 600px) { grid-template-columns: 1fr; }
 `;
 
@@ -983,6 +1001,7 @@ function Comparison({ theme, userData, isHidden}) {
     const [isCustomBenchmarkLoading, setIsCustomBenchmarkLoading] = useState(false);
     const [customBenchmarkError, setCustomBenchmarkError] = useState('');
     const [cohortPreview, setCohortPreview] = useState(null);
+    const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
     const navigate = useLocalizedNavigate();
 
     const toggleFactorGroup = (group) => {
@@ -1377,20 +1396,32 @@ function Comparison({ theme, userData, isHidden}) {
             {key: 'incomes', label: translations.comparison.cards.avgIncome.title},
             {key: 'expenses', label: translations.comparison.cards.avgOutflows.title}
         ].map(({key, label}) => ({key, label, summary: distributions?.[key]})).filter(({summary}) => summary?.count > 0);
+        const longitudinal = customBenchmark?.available ? [] : (userAverages.similar?.longitudinal || []);
 
         return (
             <BenchmarkOverview theme={theme}>
                 <div className="overview-heading">
                     <div>
-                        <h2>{translations.comparison.benchmarkOverview?.title || 'Il tuo benchmark personale'}</h2>
-                        <p>{translations.comparison.benchmarkOverview?.description || 'Percentili e medie sono calcolati su coorti diverse per patrimonio, entrate e uscite.'}</p>
+                        <h2>{translations.comparison.benchmarkOverview?.title || 'Il tuo confronto personale'}</h2>
+                        <p>{translations.comparison.benchmarkOverview?.description || 'Confronta patrimonio, entrate e uscite con un gruppo di utenti dal profilo simile.'}</p>
                     </div>
-                    <button className="profile-action" onClick={() => navigate('/profile')}>
-                        <TuneIcon fontSize="small" />
-                        {translations.comparison.benchmarkOverview?.editProfile || 'Modifica profilo'}
-                    </button>
+                    <div className="overview-actions">
+                        <Tooltip title={translations.comparison.benchmarkOverview?.groupHelp || 'Il gruppo di confronto riunisce utenti con caratteristiche di profilo simili. Mostriamo solo risultati aggregati e quando la numerosità è sufficiente.'}>
+                            <span><InfoIcon fontSize="small" /></span>
+                        </Tooltip>
+                        <button className="benchmark-toggle" type="button" onClick={() => setIsBenchmarkExpanded((open) => !open)} aria-expanded={isBenchmarkExpanded}>
+                            {isBenchmarkExpanded
+                                ? (translations.comparison.benchmarkOverview?.hide || 'Riduci')
+                                : (translations.comparison.benchmarkOverview?.show || 'Vedi confronto')}
+                        </button>
+                        <button className="profile-action" onClick={() => navigate('/profile')}>
+                            <TuneIcon fontSize="small" />
+                            {translations.comparison.benchmarkOverview?.editProfile || 'Profilo'}
+                        </button>
+                    </div>
                 </div>
 
+                {isBenchmarkExpanded && <>
                 <BenchmarkRankGrid>
                     {rankCards.map(card => (
                         <BenchmarkRank key={card.label} theme={theme}>
@@ -1410,6 +1441,18 @@ function Comparison({ theme, userData, isHidden}) {
                             </div>
                         ))}
                     </DistributionGrid>
+                )}
+
+                {longitudinal.length > 0 && (
+                    <LongitudinalGrid theme={theme}>
+                        {longitudinal.map((point) => (
+                            <div className="trend-card" key={point.monthsAgo}>
+                                <span>{(translations.comparison.benchmarkOverview?.monthsAgo || '{months} mesi fa').replace('{months}', point.monthsAgo)}</span>
+                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Mediana')}: {formatCurrency(point.balances)}</strong>
+                                <small>{(translations.comparison.benchmarkOverview?.reliability?.[point.reliability] || 'Affidabilità in aggiornamento')} · n={point.contributorCount}</small>
+                            </div>
+                        ))}
+                    </LongitudinalGrid>
                 )}
 
                 <CohortDetails theme={theme}>
@@ -1476,6 +1519,7 @@ function Comparison({ theme, userData, isHidden}) {
                         )}
                     </div>
                 </CohortCustomizer>
+                </>}
             </BenchmarkOverview>
         );
     };

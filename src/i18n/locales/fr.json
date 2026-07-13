@@ -986,9 +986,25 @@
             "title": "Ton benchmark personnel",
             "description": "Le patrimoine, les revenus et les dépenses utilisent des cohortes dédiées, car des revenus similaires n'impliquent pas les mêmes dépenses ou la même étape de vie.",
             "editProfile": "Modifier le profil",
+            "show": "Voir la comparaison",
+            "hide": "Réduire",
+            "groupHelp": "Le groupe de comparaison rassemble des utilisateurs aux profils similaires et affiche seulement des résultats agrégés lorsqu'il est assez grand.",
             "basedOn": "Comparaison basée sur",
             "waiting": "Cohorte en préparation",
             "privacy": "Données agrégées uniquement. Cohortes : {count} utilisateurs ; seuil minimal de confidentialité : {minimum}. Mis à jour : {updated}.",
+            "customizeTitle": "Personnaliser les utilisateurs similaires",
+            "customizeDescription": "Choisis quelles parties de ton profil comptent dans la comparaison. Les données restent agrégées et anonymes.",
+            "applyFactors": "Mettre à jour la comparaison",
+            "resetFactors": "Utiliser la comparaison recommandée",
+            "calculating": "Calcul en cours...",
+            "noCohort": "Il n'y a pas encore assez de profils comparables pour cette sélection.",
+            "customError": "Impossible de mettre à jour la comparaison. Réessaie.",
+            "factorUnavailable": "Complète cette partie de ton profil pour l'utiliser dans la comparaison.",
+            "preview": "Aperçu : {count} profils comparables (minimum {minimum}).",
+            "median": "Médiane",
+            "interquartileRange": "Plage centrale",
+            "monthsAgo": "Il y a {months} mois",
+            "reliability": {"low": "Fiabilité initiale", "medium": "Fiabilité moyenne", "high": "Fiabilité élevée"},
             "factors": { "career": "Travail et carrière", "location": "Zone géographique", "lifeStage": "Étape de vie", "household": "Logement et famille" }
         },
         "sections": {
@@ -1190,6 +1206,7 @@
                 "title": "Utilisation des données",
                 "content": "Vos données sont utilisées exclusivement pour fournir les fonctionnalités de la plateforme et pour des comparaisons anonymes. Nous ne vendons, partageons ni n'utilisons vos données à des fins commerciales."
             },
+            "benchmarkParticipation": {"title": "Benchmarks communautaires", "content": "La participation aux benchmarks hébergés est facultative, requiert un consentement distinct et peut être révoquée depuis le profil."},
             "anonymity": {
                 "title": "Anonymat",
                 "content": "Toutes les comparaisons et statistiques sont entièrement anonymes. Vos données personnelles ne sont jamais associées aux données financières utilisées pour les comparaisons."
@@ -1961,7 +1978,8 @@
         "detailsTab": "Détails du compte",
         "achievementsTab": "Succès",
         "notSpecified": "Non spécifié",
-        "updateSuccess": "Profil mis à jour avec succès !"
+        "updateSuccess": "Profil mis à jour avec succès !",
+        "benchmark": {"title": "Benchmarks anonymes de la communauté", "description": "Contribue facultativement avec des métriques agrégées et regroupées ; transactions, notes et identité ne sont pas partagées.", "toggle": "Contribuer aux benchmarks hébergés", "active": "Contribution active et révocable à tout moment.", "enabled": "Tu contribues désormais avec des données agrégées anonymes.", "disabled": "La contribution aux benchmarks a été révoquée.", "error": "Impossible de mettre à jour le consentement."}
     },
     "avatar": {
         "regenerate": "Générer un nouvel avatar",

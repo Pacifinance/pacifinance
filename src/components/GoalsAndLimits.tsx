@@ -795,7 +795,7 @@ const ProfileSettings = ({ theme }) => {
               </select>
             </FormGroup>
 
-            <ModalActions>
+            <ModalActions theme={theme}>
               <CancelButton theme={theme} onClick={closeModal}>
                 {language === 'it' ? 'Annulla' : 'Cancel'}
               </CancelButton>

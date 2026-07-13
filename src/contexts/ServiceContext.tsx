@@ -44,6 +44,7 @@ import { createInvestmentService } from '../services/investmentService';
 import { createLiquidityAccountService } from '../services/liquidityAccountService';
 import { createRecurringTransactionService } from '../services/recurringTransactionService';
 import { createGoalService } from '../services/goalService';
+import { createCommunityBenchmarkService } from '../services/communityBenchmarkService';
 
 const ServiceContext = createContext(null);
 
@@ -82,6 +83,7 @@ export const createServices = (client) => {
     liquidityAccountService: createLiquidityAccountService(apiClient),
     recurringTransactionService: createRecurringTransactionService(apiClient),
     goalService: createGoalService(apiClient),
+    communityBenchmarkService: createCommunityBenchmarkService(apiClient),
   };
 };
 

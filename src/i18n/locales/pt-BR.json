@@ -989,6 +989,14 @@
             "basedOn": "Comparação baseada em",
             "waiting": "Coorte em preparação",
             "privacy": "Somente dados agregados. Coortes: {count} usuários; limite mínimo de privacidade: {minimum}. Atualizado: {updated}.",
+            "customizeTitle": "Personalizar usuários semelhantes",
+            "customizeDescription": "Escolha quais partes do seu perfil contam na comparação. Os dados permanecem agregados e anônimos.",
+            "applyFactors": "Atualizar comparação",
+            "resetFactors": "Usar comparação recomendada",
+            "calculating": "Calculando...",
+            "noCohort": "Ainda não há perfis comparáveis suficientes para esta seleção.",
+            "customError": "Não foi possível atualizar a comparação. Tente novamente.",
+            "factorUnavailable": "Complete esta parte do seu perfil para usá-la na comparação.",
             "factors": { "career": "Trabalho e carreira", "location": "Área geográfica", "lifeStage": "Fase da vida", "household": "Casa e família" }
         },
         "sections": {

@@ -989,6 +989,14 @@
             "basedOn": "Vergleich basiert auf",
             "waiting": "Vergleichsgruppe wird vorbereitet",
             "privacy": "Nur aggregierte Daten. Gruppen: {count} Nutzer; Mindestgröße zum Datenschutz: {minimum}. Aktualisiert: {updated}.",
+            "customizeTitle": "Ähnliche Nutzer anpassen",
+            "customizeDescription": "Wähle, welche Teile deines Profils im Vergleich zählen. Die Daten bleiben aggregiert und anonym.",
+            "applyFactors": "Vergleich aktualisieren",
+            "resetFactors": "Empfohlenen Vergleich verwenden",
+            "calculating": "Wird berechnet...",
+            "noCohort": "Für diese Auswahl gibt es noch nicht genügend vergleichbare Profile.",
+            "customError": "Der Vergleich konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+            "factorUnavailable": "Vervollständige diesen Teil deines Profils, um ihn im Vergleich zu verwenden.",
             "factors": { "career": "Arbeit und Karriere", "location": "Region", "lifeStage": "Lebensphase", "household": "Wohnen und Familie" }
         },
         "sections": {

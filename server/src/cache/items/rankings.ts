@@ -73,9 +73,9 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
         const expenseCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "outflows")
 
         const [balanceSimilarPool, incomeSimilarPool, expenseSimilarPool] = await Promise.all([
-            balances.getRankingPool(balanceCohort.userIds, true),
-            expenses.getExpenseRankingPool(incomeCohort.userIds, false, reference_date),
-            expenses.getExpenseRankingPool(expenseCohort.userIds, true, reference_date),
+            balances.getRankingPool([...balanceCohort.userIds, userRef], true),
+            expenses.getExpenseRankingPool([...incomeCohort.userIds, userRef], false, reference_date),
+            expenses.getExpenseRankingPool([...expenseCohort.userIds, userRef], true, reference_date),
         ])
 
         rankingsCachedData[userRef] = {

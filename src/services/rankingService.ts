@@ -14,8 +14,33 @@ export interface RankingSnapshot {
   outflowsSimilar: number;
 }
 
+export type ComparisonFactorGroup = 'career' | 'location' | 'lifeStage' | 'household';
+
+export interface CustomBenchmark {
+  available: boolean;
+  factors: ComparisonFactorGroup[];
+  generatedAt: string;
+  cohort: {
+    size: number;
+    populationSize: number;
+    minimumSize: number;
+    averageSimilarity: number | null;
+  };
+  averages: {
+    balances: number | null;
+    incomes: number | null;
+    expenses: number | null;
+  };
+  rankings: {
+    balance: number;
+    incomes: number;
+    outflows: number;
+  };
+}
+
 export interface RankingService {
   getAllRankings(): Promise<RankingSnapshot>;
+  getCustomBenchmark(factors: ComparisonFactorGroup[]): Promise<CustomBenchmark>;
 }
 
 /** Creates a ranking-service bound to the given HTTP client. */
@@ -46,6 +71,11 @@ export const createRankingService = (apiClient: AxiosInstance): RankingService =
       console.warn('Ranking endpoints error, using defaults');
       return defaults;
     }
+  },
+
+  async getCustomBenchmark(factors) {
+    const res = await apiClient.post<CustomBenchmark>('/api/rank/custom', { factors });
+    return res.data;
   },
 });
 

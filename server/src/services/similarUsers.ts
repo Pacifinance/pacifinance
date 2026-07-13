@@ -16,13 +16,39 @@ type CategoricalField =
     "jobCountry" | "job" | "jobType" | "workTime" | "remoteType" |
     "livingSituation" | "housingType" | "children" | "country"
 type OrdinalField = "age" | "yearsOfExperience"
-type Field = CategoricalField | OrdinalField
+export type SimilarityField = CategoricalField | OrdinalField
+type Field = SimilarityField
+
+/**
+ * User-facing groups for the configurable comparison. The client sends group
+ * names only: profile tag values never leave the server while building a
+ * cohort.
+ */
+export const COMPARISON_FACTOR_GROUPS = {
+    career: ["job", "jobType", "workTime", "yearsOfExperience"],
+    location: ["jobCountry", "country", "remoteType"],
+    lifeStage: ["age"],
+    household: ["livingSituation", "housingType", "children"]
+} as const satisfies Record<string, readonly SimilarityField[]>
+
+export type ComparisonFactorGroup = keyof typeof COMPARISON_FACTOR_GROUPS
 
 export const CATEGORICAL_FIELDS: CategoricalField[] = [
     "jobCountry", "job", "jobType", "workTime", "remoteType",
     "livingSituation", "housingType", "children", "country"
 ]
 export const ORDINAL_FIELDS: OrdinalField[] = ["age", "yearsOfExperience"]
+
+const FACTOR_GROUP_NAMES = Object.keys(COMPARISON_FACTOR_GROUPS) as ComparisonFactorGroup[]
+
+/** Accept only known factor groups and keep a stable order for cache keys. */
+export function normalizeComparisonFactorGroups(value: unknown): ComparisonFactorGroup[] {
+    if (!Array.isArray(value)) return FACTOR_GROUP_NAMES
+    const requested = new Set(value.filter((group): group is ComparisonFactorGroup =>
+        typeof group === "string" && FACTOR_GROUP_NAMES.includes(group as ComparisonFactorGroup)
+    ))
+    return FACTOR_GROUP_NAMES.filter((group) => requested.has(group))
+}
 
 // `satisfies` both keeps the literal column-name types AND fails to compile
 // if a Field is missing/misspelled below.
@@ -111,13 +137,16 @@ export function similarityScore(
     reference: ProfileTagIds,
     candidate: ProfileTagIds,
     metric: ComparisonMetric,
-    tagMeta: OrdinalTagMeta
+    tagMeta: OrdinalTagMeta,
+    fields?: readonly SimilarityField[]
 ): number {
     const weights = WEIGHTS[metric]
+    const selectedFields = fields ?? [...CATEGORICAL_FIELDS, ...ORDINAL_FIELDS]
     let weightedSum = 0
     let weightTotal = 0
 
     for (const field of CATEGORICAL_FIELDS) {
+        if (!selectedFields.includes(field)) continue
         const column = FIELD_COLUMN[field]
         const refValue = reference[column]
         if (refValue === null || refValue === undefined) continue
@@ -127,6 +156,7 @@ export function similarityScore(
     }
 
     for (const field of ORDINAL_FIELDS) {
+        if (!selectedFields.includes(field)) continue
         const column = FIELD_COLUMN[field]
         const refTagId = reference[column]
         if (refTagId === null || refTagId === undefined) continue
@@ -285,6 +315,35 @@ function selectSimilarUserIds(
 }
 
 /**
+ * Builds one configurable cohort for all comparison metrics. It is intended
+ * for an explicit user action, while the monthly cache continues to use the
+ * metric-specific weights above for the default benchmark.
+ */
+export function selectCustomSimilarUserIds(
+    snapshot: ProfilesSnapshot,
+    referenceUserId: string,
+    factorGroups: ComparisonFactorGroup[],
+    opts: { ignoreTestUsers?: boolean } = {}
+): SimilarUsersResult {
+    const { profiles, tagMeta } = snapshot
+    const reference = profiles.find((profile) => profile.id === referenceUserId)
+    if (!reference || factorGroups.length === 0) return {
+        userIds: [], insufficientData: true, populationSize: 0, averageSimilarity: null
+    }
+
+    const ignoreTestUsers = opts.ignoreTestUsers ?? true
+    let eligible = profiles.filter((profile) => profile.id !== referenceUserId)
+    if (ignoreTestUsers) eligible = eligible.filter((profile) => profile.account_type < users.UserType.test.value)
+
+    const fields = factorGroups.flatMap((group) => COMPARISON_FACTOR_GROUPS[group])
+    const scored = eligible.map((profile) => ({
+        id: profile.id,
+        score: similarityScore(reference, profile, "general", tagMeta, fields)
+    }))
+    return selectCohort(scored, eligible.length)
+}
+
+/**
  * Convenience one-shot wrapper around fetchProfilesSnapshot + selectSimilarUserIds
  * for callers resolving a single cohort (e.g. one-off scripts, tests). Callers
  * resolving many cohorts in the same run should use those two functions directly
@@ -300,5 +359,5 @@ async function getSimilarUserIds(
 }
 
 export default {
-    getSimilarUserIds, fetchProfilesSnapshot, selectSimilarUserIds, similarityScore, selectCohort
+    getSimilarUserIds, fetchProfilesSnapshot, selectSimilarUserIds, selectCustomSimilarUserIds, similarityScore, selectCohort
 }

@@ -58,6 +58,7 @@ import Tooltip from '@mui/material/Tooltip';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { useServices } from '../contexts/ServiceContext';
 import { getCategoryColor } from '../data/categoryColors';
 import Leaderboard from './Leaderboard';
 
@@ -275,6 +276,30 @@ const CohortDetails = styled.div`
   .privacy-note { align-items: center; display: flex; gap: 0.45rem; }
   .privacy-note svg { color: ${props => props.theme.mode === 'dark' ? '#94a3b8' : '#64748b'}; font-size: 1rem; }
 `;
+
+const CohortCustomizer = styled.div`
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
+  margin-top: 1rem;
+  padding-top: 1rem;
+
+  .customizer-header { align-items: flex-start; display: flex; gap: 0.65rem; justify-content: space-between; }
+  h3 { color: ${props => props.theme.textColor}; font-size: 0.9rem; margin: 0 0 0.15rem; }
+  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; font-size: 0.78rem; margin: 0; }
+  .factor-options { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+  .factor-option {
+    align-items: center; background: transparent; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.16)' : '#dbe2ea'};
+    border-radius: 999px; color: ${props => props.theme.textColor}; cursor: pointer; display: inline-flex; font-size: 0.78rem; gap: 0.35rem; padding: 0.42rem 0.62rem;
+  }
+  .factor-option.selected { background: ${props => props.theme.buttonBackgroundColor}; border-color: ${props => props.theme.buttonBackgroundColor}; color: white; }
+  .factor-option:disabled { cursor: not-allowed; opacity: 0.42; }
+  .customizer-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.85rem; }
+  .apply-factors { background: ${props => props.theme.buttonBackgroundColor}; border: 0; border-radius: 6px; color: white; cursor: pointer; font-weight: 700; padding: 0.52rem 0.8rem; }
+  .apply-factors:disabled { cursor: wait; opacity: 0.65; }
+  .reset-factors { background: transparent; border: 0; color: ${props => props.theme.buttonBackgroundColor}; cursor: pointer; font-size: 0.78rem; font-weight: 600; padding: 0.35rem; }
+  .customizer-error { color: #dc2626; font-size: 0.78rem; }
+`;
+
+const DEFAULT_FACTOR_GROUPS = ['career', 'location', 'lifeStage', 'household'];
 
 const ExpandableCardContent = styled.div`
   max-height: ${props => props.expanded ? 'none' : '280px'};
@@ -933,11 +958,46 @@ const PopupOverlay = styled.div`
 function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
+    const { rankingService } = useServices();
     const [activeTab, setActiveTab] = useState('insights');
     const [expandedCards, setExpandedCards] = useState({});
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
     const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
+    const [selectedFactorGroups, setSelectedFactorGroups] = useState(DEFAULT_FACTOR_GROUPS);
+    const [customBenchmark, setCustomBenchmark] = useState(null);
+    const [isCustomBenchmarkLoading, setIsCustomBenchmarkLoading] = useState(false);
+    const [customBenchmarkError, setCustomBenchmarkError] = useState('');
     const navigate = useLocalizedNavigate();
+
+    const toggleFactorGroup = (group) => {
+        setCustomBenchmarkError('');
+        setSelectedFactorGroups((current) => current.includes(group)
+            ? current.filter((item) => item !== group)
+            : [...current, group]);
+    };
+
+    const applyCustomBenchmark = async () => {
+        if (selectedFactorGroups.length === 0 || !rankingService?.getCustomBenchmark) return;
+        setIsCustomBenchmarkLoading(true);
+        setCustomBenchmarkError('');
+        try {
+            const result = await rankingService.getCustomBenchmark(selectedFactorGroups);
+            setCustomBenchmark(result);
+            if (!result?.available) {
+                setCustomBenchmarkError(translations.comparison.benchmarkOverview?.noCohort || 'Not enough comparable profiles for this selection yet.');
+            }
+        } catch {
+            setCustomBenchmarkError(translations.comparison.benchmarkOverview?.customError || 'Unable to refresh the comparison. Try again.');
+        } finally {
+            setIsCustomBenchmarkLoading(false);
+        }
+    };
+
+    const resetCustomBenchmark = () => {
+        setSelectedFactorGroups(DEFAULT_FACTOR_GROUPS);
+        setCustomBenchmark(null);
+        setCustomBenchmarkError('');
+    };
 
     // Funzioni helper per Rankings
     const getRankLevel = (rank) => {
@@ -1018,32 +1078,49 @@ function Comparison({ theme, userData, isHidden}) {
 
     // Get averages from userData (fetched from /stats/averages API)
     const userAverages = userData?.averages || { all: {}, similar: {} };
-    const benchmarkMetadata = userAverages.similar?.benchmark;
+    const benchmarkMetadata = customBenchmark?.available ? {
+        generatedAt: customBenchmark.generatedAt,
+        minimumCohortSize: customBenchmark.cohort.minimumSize,
+        cohortSizes: {
+            balances: customBenchmark.cohort.size,
+            incomes: customBenchmark.cohort.size,
+            expenses: customBenchmark.cohort.size,
+            savingsRates: customBenchmark.cohort.size
+        }
+    } : userAverages.similar?.benchmark;
 
-    const hasProfileValue = (field) => field && field.key !== -1 && Boolean(field.value);
+    const hasProfileValue = (field) => field && field.index !== -1 && Boolean(field.label);
     const profileFactorGroups = [
         {
+            id: 'career',
             label: translations.comparison.benchmarkOverview?.factors?.career || 'Lavoro e carriera',
             fields: ['job', 'jobType', 'workTime', 'yearsOfExperience']
         },
         {
+            id: 'location',
             label: translations.comparison.benchmarkOverview?.factors?.location || 'Area geografica',
-            fields: ['whereWorks', 'nationality']
+            fields: ['jobCountry', 'country', 'remoteType']
         },
         {
+            id: 'lifeStage',
             label: translations.comparison.benchmarkOverview?.factors?.lifeStage || 'Fase di vita',
             fields: ['age']
         },
         {
+            id: 'household',
             label: translations.comparison.benchmarkOverview?.factors?.household || 'Casa e famiglia',
             fields: ['livingSituation', 'housingType', 'children']
         }
-    ].filter(group => group.fields.some(field => hasProfileValue(userData?.profile?.[field])));
+    ].map(group => ({ ...group, available: group.fields.some(field => hasProfileValue(userData?.profile?.[field])) }));
+
+    const displayedFactorGroups = customBenchmark?.available
+        ? profileFactorGroups.filter(group => customBenchmark.factors.includes(group.id))
+        : profileFactorGroups.filter(group => group.available);
 
     const similarRanks = {
-        balance: getPercentageRankOnBalanceSimilar(userData),
-        incomes: getPercentageRankOnIncomesSimilar(userData),
-        outflows: getPercentageRankOnOutflowsSimilar(userData)
+        balance: customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData),
+        incomes: customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData),
+        outflows: customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData)
     };
     
     const comparisonData = {
@@ -1053,7 +1130,7 @@ function Comparison({ theme, userData, isHidden}) {
                 growth12Months: getBalanceGrowth12Months(userData)
             },
             similarUsers: {
-                current: userAverages.similar?.balances ?? null,
+                current: customBenchmark?.available ? customBenchmark.averages.balances : userAverages.similar?.balances ?? null,
                 growth12Months: null // Will be added when API provides this data
             },
             allUsers: {
@@ -1063,12 +1140,12 @@ function Comparison({ theme, userData, isHidden}) {
         },
         avgIncome: {
             user: getLastCompleteMonth(userIncomesArray),
-            similarUsers: userAverages.similar?.incomes ?? null,
+            similarUsers: customBenchmark?.available ? customBenchmark.averages.incomes : userAverages.similar?.incomes ?? null,
             allUsers: userAverages.all?.incomes ?? 0
         },
         avgOutflows: {
             user: getLastCompleteMonth(userOutflowsArray),
-            similarUsers: userAverages.similar?.expenses ?? null,
+            similarUsers: customBenchmark?.available ? customBenchmark.averages.expenses : userAverages.similar?.expenses ?? null,
             allUsers: userAverages.all?.expenses ?? 0
         }
     };
@@ -1285,7 +1362,7 @@ function Comparison({ theme, userData, isHidden}) {
                     <div className="cohort-line">
                         <QueryStatsIcon />
                         <span className="cohort-label">{translations.comparison.benchmarkOverview?.basedOn || 'Confronto basato su'}</span>
-                        {profileFactorGroups.map(group => <span className="factor-chip" key={group.label}>{group.label}</span>)}
+                        {displayedFactorGroups.map(group => <span className="factor-chip" key={group.id}>{group.label}</span>)}
                     </div>
                     <div className="privacy-note">
                         <ShieldOutlinedIcon />
@@ -1295,6 +1372,49 @@ function Comparison({ theme, userData, isHidden}) {
                             .replace('{updated}', updatedAt)}</p>
                     </div>
                 </CohortDetails>
+
+                <CohortCustomizer theme={theme}>
+                    <div className="customizer-header">
+                        <div>
+                            <h3>{translations.comparison.benchmarkOverview?.customizeTitle || 'Personalizza utenti simili'}</h3>
+                            <p>{translations.comparison.benchmarkOverview?.customizeDescription || 'Scegli quali parti del profilo contano nel tuo confronto. I dati restano aggregati e anonimi.'}</p>
+                        </div>
+                        <TuneIcon fontSize="small" color="action" />
+                    </div>
+                    <div className="factor-options">
+                        {profileFactorGroups.map(group => (
+                            <button
+                                key={group.id}
+                                type="button"
+                                className={`factor-option ${group.available && selectedFactorGroups.includes(group.id) ? 'selected' : ''}`}
+                                onClick={() => toggleFactorGroup(group.id)}
+                                disabled={!group.available}
+                                aria-pressed={group.available && selectedFactorGroups.includes(group.id)}
+                                title={!group.available ? (translations.comparison.benchmarkOverview?.factorUnavailable || 'Complete this part of your profile to use it.') : undefined}
+                            >
+                                {group.label}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="customizer-actions">
+                        <button
+                            type="button"
+                            className="apply-factors"
+                            onClick={applyCustomBenchmark}
+                            disabled={isCustomBenchmarkLoading || !profileFactorGroups.some(group => group.available && selectedFactorGroups.includes(group.id))}
+                        >
+                            {isCustomBenchmarkLoading
+                                ? (translations.comparison.benchmarkOverview?.calculating || 'Calculating...')
+                                : (translations.comparison.benchmarkOverview?.applyFactors || 'Update comparison')}
+                        </button>
+                        {customBenchmark && (
+                            <button type="button" className="reset-factors" onClick={resetCustomBenchmark}>
+                                {translations.comparison.benchmarkOverview?.resetFactors || 'Use recommended comparison'}
+                            </button>
+                        )}
+                        {customBenchmarkError && <span className="customizer-error">{customBenchmarkError}</span>}
+                    </div>
+                </CohortCustomizer>
             </BenchmarkOverview>
         );
     };
@@ -1672,9 +1792,9 @@ function Comparison({ theme, userData, isHidden}) {
         const balanceRank = getPercentageRankOnBalance(userData);
         const incomeRank = getPercentageRankOnIncomes(userData);
         const expenseRank = getPercentageRankOnOutflows(userData);
-        const balanceSimilarRank = getPercentageRankOnBalanceSimilar(userData);
-        const incomeSimilarRank = getPercentageRankOnIncomesSimilar(userData);
-        const expenseSimilarRank = getPercentageRankOnOutflowsSimilar(userData);
+        const balanceSimilarRank = customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData);
+        const incomeSimilarRank = customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData);
+        const expenseSimilarRank = customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData);
 
         const RankCard = ({ title, rank, icon, isExpense = false, category }) => (
             <RankingCard 

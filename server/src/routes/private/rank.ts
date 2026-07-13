@@ -5,6 +5,7 @@ import { ExtDate } from "../../libs/datelib"
 import db from "../../db/db"
 import cache from "../../cache/cache"
 import similarUsers from "../../services/similarUsers"
+import customBenchmark from "../../services/customBenchmark"
 import { computeRankOfUser, rankFromBalancePool, rankFromExpensePool } from "../../services/ranking"
 import type { RankingsCachedData } from "../../cache/items/rankings"
 
@@ -45,6 +46,21 @@ rankRouter.post("/get", async (req, res) => {
     res.status(200).json(userRankings)
 })
 
+/**
+ * Recalculates a peer cohort after the user changes comparison factors. The
+ * result is cached briefly in Redis; it must never be called during initial
+ * dashboard loading.
+ */
+rankRouter.post("/custom", async (req, res) => {
+    try {
+        const benchmark = await customBenchmark.getCustomBenchmark(req.userId as string, req.body?.factors)
+        res.status(200).json(benchmark)
+    } catch (error) {
+        console.error("rank.custom: failed to compute custom benchmark", error)
+        res.status(503).json({ error: "Custom benchmark is temporarily unavailable." })
+    }
+})
+
 rankRouter.post("/balances", async (req, res) => {
     // If the user is of test/demo type, assign some random values
     const target_user = req.userId as string;
@@ -63,6 +79,7 @@ rankRouter.post("/balances", async (req, res) => {
     let user_ids = undefined;
     if (req.body && req.body.similar)
         user_ids = (await similarUsers.getSimilarUserIds(target_user, "balance")).userIds;
+    if (user_ids) user_ids = [...user_ids, target_user]
     // Get the latest-balance pool in a single aggregate query (RPC) instead
     // of one query per user
     const pool = await db.balances.getRankingPool(user_ids, true);
@@ -94,6 +111,7 @@ rankRouter.post("/expenses", async (req, res) => {
     let user_ids = undefined;
     if (req.body && req.body.similar)
         user_ids = (await similarUsers.getSimilarUserIds(target_user, is_expense_filter ? "outflows" : "incomes")).userIds;
+    if (user_ids) user_ids = [...user_ids, target_user]
     const pool = await db.expenses.getExpenseRankingPool(user_ids, is_expense_filter, reference_date);
     const rank = {position: rankFromExpensePool(pool, target_user, is_expense_filter)};
     // Send the data to the client with status code 200 (OK)

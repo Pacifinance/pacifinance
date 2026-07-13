@@ -122,7 +122,7 @@
 - [x] Escludere account demo/test da medie e ranking della community
 - [ ] Consenso esplicito separato per contribuire ai benchmark hosted e possibilità di revoca/cancellazione
 - [ ] Mediana, quartili e numero effettivo di contribuenti per metrica (non affidarsi solo alla media)
-- [ ] Checkbox di profilazione: l'utente sceglie come vengono calcolati gli utenti simili, con anteprima live della numerosità e blocco sotto soglia privacy
+- [~] Personalizzazione coorte: selezione dinamica di lavoro/carriera, area geografica, fase di vita e nucleo familiare; cache Redis breve, calcolo aggregato on-demand e blocco rigoroso sotto soglia privacy. Da completare: anteprima live della numerosità prima del ricalcolo.
 - [~] Insight derivati: evidenziare la categoria madre con il maggiore scostamento economico dalla coorte; aggiungere trend e contributo percentuale al gap
 - [ ] Benchmark longitudinali 3/6/12 mesi usando una coorte stabile, con data di aggiornamento e indicatore di affidabilità
 - [ ] Benchmark runway emergenza, costi fissi/reddito, saving rate e diversificazione patrimoniale

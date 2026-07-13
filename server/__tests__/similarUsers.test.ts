@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
-    similarityScore, selectCohort, MIN_COHORT, MAX_COHORT,
+    similarityScore, selectCohort, normalizeComparisonFactorGroups, MIN_COHORT, MAX_COHORT,
     type ProfileTagIds, type OrdinalTagMeta
 } from "../src/services/similarUsers"
 
@@ -92,6 +92,28 @@ describe("similarityScore", () => {
             children_tag_id: null, country_tag_id: null, age_tag_id: null, years_of_experience_tag_id: null
         })
         expect(similarityScore(reference, profile(), "general", tagMeta)).toBe(0)
+    })
+
+    it("uses only the profile factors selected for a custom comparison", () => {
+        const reference = profile()
+        const candidate = profile({ job_tag_id: 99, age_tag_id: 102 })
+
+        expect(similarityScore(reference, candidate, "general", tagMeta, ["age"])).toBe(1)
+        expect(similarityScore(reference, candidate, "general", tagMeta, ["job"])).toBe(0)
+    })
+})
+
+describe("custom comparison factor groups", () => {
+    it("keeps only supported groups and returns them in a stable order", () => {
+        expect(normalizeComparisonFactorGroups(["household", "invalid", "career", "career"])).toEqual([
+            "career", "household"
+        ])
+    })
+
+    it("uses all groups when the request body is missing or malformed", () => {
+        expect(normalizeComparisonFactorGroups(undefined)).toEqual([
+            "career", "location", "lifeStage", "household"
+        ])
     })
 })
 

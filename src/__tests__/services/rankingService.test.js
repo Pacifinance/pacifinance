@@ -103,4 +103,20 @@ describe('rankingService', () => {
       expect(result.outflowsSimilar).toBe(30);
     });
   });
+
+  it('requests a custom benchmark with only the selected factor groups', async () => {
+    const benchmark = {
+      available: true,
+      factors: ['career', 'lifeStage'],
+      cohort: { size: 24, populationSize: 140, minimumSize: 20, averageSimilarity: 0.72 },
+      averages: { balances: 1500, incomes: 2200, expenses: 1300 },
+      rankings: { balance: 42, incomes: 55, outflows: 31 },
+    };
+    mockClient.post.mockResolvedValue({ data: benchmark });
+
+    await expect(service.getCustomBenchmark(['career', 'lifeStage'])).resolves.toEqual(benchmark);
+    expect(mockClient.post).toHaveBeenCalledWith('/api/rank/custom', {
+      factors: ['career', 'lifeStage'],
+    });
+  });
 });

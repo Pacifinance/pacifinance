@@ -73,11 +73,10 @@ cronRouter.get("/refresh-crypto-prices", async (_, res) => {
  * recompute (e.g. right after a similarUsers.ts logic change) instead of
  * waiting for the entries' monthly TTL to lapse.
  *
- * The two invalidations run concurrently (not one after the other) so the
- * combined wall time is the slower of the two, not their sum - both are
- * still expensive per-user computations even with their own internal
- * concurrency (see server/src/cache/items/{averages,rankings}.ts), so this
- * matters for staying inside Vercel's function timeout.
+ * The two invalidations run concurrently (not one after the other), so the
+ * combined wall time is the slower of the two. Each job uses bulk Supabase
+ * aggregates and in-memory cohort selection; this keeps the path within the
+ * serverless timeout as the transaction history grows.
  *
  * ?target=averages|rankings restricts the run to just one of the two - useful
  * to manually force-populate a cold cache in two smaller, faster requests

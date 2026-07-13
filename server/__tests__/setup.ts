@@ -11,6 +11,7 @@ type MockDb = {
     goals: Record<string, any>
     delqueue: Record<string, any>
     recurringTransactions: Record<string, any>
+    benchmarks: Record<string, any>
 }
 
 const mocks = vi.hoisted(() => {
@@ -119,6 +120,9 @@ const mocks = vi.hoisted(() => {
             setActive: vi.fn(),
             deleteRecurring: vi.fn(),
             runAllDue: vi.fn()
+        },
+        benchmarks: {
+            getMetricRows: vi.fn()
         }
     }
 
@@ -277,6 +281,7 @@ export function resetServerMocks() {
     mockDb.recurringTransactions.setActive.mockResolvedValue({id: 1})
     mockDb.recurringTransactions.deleteRecurring.mockResolvedValue({deletedCount: 1})
     mockDb.recurringTransactions.runAllDue.mockResolvedValue({due: 0, ran: 0})
+    mockDb.benchmarks.getMetricRows.mockResolvedValue([])
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")

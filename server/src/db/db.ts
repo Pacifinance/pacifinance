@@ -8,5 +8,6 @@ import liquidityAccounts from "./models/liquidityAccounts"
 import recurringTransactions from "./models/recurringTransactions"
 import goals from "./models/goals"
 import delqueue from "./models/delqueue"
+import benchmarks from "./models/benchmarks"
 
-export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue}
+export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks}

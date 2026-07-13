@@ -1,16 +1,10 @@
 import { ExtDate } from "../../libs/datelib"
-import { mapWithConcurrency } from "../../libs/concurrency"
 
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
 import expenses from "../../db/models/expenses"
 import similarUsers from "../../services/similarUsers"
 import { rankFromBalancePool, rankFromExpensePool } from "../../services/ranking"
-
-// See server/src/cache/items/averages.ts for why this exists: running every
-// user's cohort queries fully sequentially made this scale linearly with the
-// user count until it exceeded Vercel's function timeout.
-const USER_CONCURRENCY = 6
 
 /**
  * Rank percentiles for a single user, both among all users and among their
@@ -65,18 +59,24 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
 
     const rankingsCachedData: RankingsCachedData = {}
 
-    await mapWithConcurrency(allUsersList, USER_CONCURRENCY, async (user) => {
+    // All three pools above already contain every eligible user. Cohort
+    // filtering is set membership in memory, rather than three extra SQL RPCs
+    // for every user. This keeps the monthly job at three database queries.
+    const filterPool = <T extends { userId: string }>(pool: T[], userIds: string[], userId: string) => {
+        const allowed = new Set([...userIds, userId])
+        return pool.filter((entry) => allowed.has(entry.userId))
+    }
+
+    for (const user of allUsersList) {
         const userRef = user.id
 
         const balanceCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "balance")
         const incomeCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "incomes")
         const expenseCohort = similarUsers.selectSimilarUserIds(snapshot, userRef, "outflows")
 
-        const [balanceSimilarPool, incomeSimilarPool, expenseSimilarPool] = await Promise.all([
-            balances.getRankingPool([...balanceCohort.userIds, userRef], true),
-            expenses.getExpenseRankingPool([...incomeCohort.userIds, userRef], false, reference_date),
-            expenses.getExpenseRankingPool([...expenseCohort.userIds, userRef], true, reference_date),
-        ])
+        const balanceSimilarPool = filterPool(balancePool, balanceCohort.userIds, userRef)
+        const incomeSimilarPool = filterPool(incomePool, incomeCohort.userIds, userRef)
+        const expenseSimilarPool = filterPool(expensePool, expenseCohort.userIds, userRef)
 
         rankingsCachedData[userRef] = {
             balance: rankFromBalancePool(balancePool, userRef),
@@ -86,7 +86,7 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
             incomesSimilar: rankFromExpensePool(incomeSimilarPool, userRef, false),
             outflowsSimilar: rankFromExpensePool(expenseSimilarPool, userRef, true),
         }
-    })
+    }
 
     console.log(`[rankings] per-user rankings computed (+${Date.now() - t0}ms)`)
     console.log("Finished computation of user rankings")

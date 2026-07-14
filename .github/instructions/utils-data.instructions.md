@@ -2,7 +2,7 @@
 applyTo: "src/utils/**,src/data/**"
 ---
 
-# Utils & Data — PaciFinance Rules
+# Utils & Data — Pacifinance Rules
 
 ## utils/ — Pure Functions Only
 - No React, no hooks, no context imports

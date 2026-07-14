@@ -18,9 +18,9 @@ export default function FAQPage() {
   return (
     <>
       <SEOHead 
-        title={language === 'it' ? 'FAQ - Domande Frequenti | PaciFinance' : 'FAQ - Frequently Asked Questions | PaciFinance'}
-        description={language === 'it' ? 'Trova le risposte alle domande più frequenti su PaciFinance, la piattaforma per la gestione delle finanze personali.' : 'Find answers to the most frequently asked questions about PaciFinance, the personal finance management platform.'}
-        keywords={language === 'it' ? 'FAQ, domande frequenti, aiuto, supporto, PaciFinance' : 'FAQ, frequently asked questions, help, support, PaciFinance'}
+        title={language === 'it' ? 'FAQ - Domande Frequenti | Pacifinance' : 'FAQ - Frequently Asked Questions | Pacifinance'}
+        description={language === 'it' ? 'Trova le risposte alle domande più frequenti su Pacifinance, la piattaforma per la gestione delle finanze personali.' : 'Find answers to the most frequently asked questions about Pacifinance, the personal finance management platform.'}
+        keywords={language === 'it' ? 'FAQ, domande frequenti, aiuto, supporto, Pacifinance' : 'FAQ, frequently asked questions, help, support, Pacifinance'}
         canonical="/faq"
       />
 

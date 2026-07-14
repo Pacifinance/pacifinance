@@ -1,4 +1,4 @@
-# ✅ SEO Implementation Checklist - PaciFinance
+# ✅ SEO Implementation Checklist - Pacifinance
 
 ## 📋 Completed Implementations
 
@@ -184,7 +184,7 @@ function MyPage() {
   return (
     <>
       <SEOHead 
-        title="My Page - PaciFinance"
+        title="My Page - Pacifinance"
         description="Page description here"
         keywords="keyword1, keyword2, keyword3"
         canonical="/my-page"
@@ -199,7 +199,7 @@ function MyPage() {
 #### Advanced Usage (Custom Hreflang)
 ```jsx
 <SEOHead 
-  title="Special Page - PaciFinance"
+  title="Special Page - Pacifinance"
   description="Description"
   canonical="/special-page"
   language={language}

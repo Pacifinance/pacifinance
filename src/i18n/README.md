@@ -1,4 +1,4 @@
-# Sistema i18n di PaciFinance
+# Sistema i18n di Pacifinance
 
 ## 📁 Struttura
 
@@ -14,7 +14,7 @@ src/i18n/
 
 ## 🌍 Sistema URL-based i18n
 
-PaciFinance implementa un sistema di internazionalizzazione basato su URL per migliorare SEO e UX.
+Pacifinance implementa un sistema di internazionalizzazione basato su URL per migliorare SEO e UX.
 
 ### URL Structure
 ```

@@ -16,8 +16,8 @@ function MarketPricesPage() {
   }, []);
 
   const seoTitle = language === 'it'
-    ? 'Prezzi di Mercato Crypto in Tempo Reale | PaciFinance'
-    : 'Real-Time Crypto Market Prices | PaciFinance';
+    ? 'Prezzi di Mercato Crypto in Tempo Reale | Pacifinance'
+    : 'Real-Time Crypto Market Prices | Pacifinance';
   const seoDescription = language === 'it'
     ? 'Monitora i prezzi in tempo reale di criptovalute, ETF, azioni e materie prime. Grafici interattivi, statistiche dettagliate e storico prezzi.'
     : 'Track real-time prices of cryptocurrencies, ETFs, stocks and commodities. Interactive charts, detailed statistics and price history.';

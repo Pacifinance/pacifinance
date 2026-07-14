@@ -27,7 +27,7 @@ export default function LogoPaci() {
     onClick={handleLogoClick}>
       <img
         src={LogoPacifinance}
-        alt="PaciFinance Logo"
+        alt="Pacifinance Logo"
         style={{
           height: '48px',
           width: '48px',

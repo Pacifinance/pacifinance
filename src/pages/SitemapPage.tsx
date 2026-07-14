@@ -32,9 +32,9 @@ export default function SitemapPage() {
   return (
     <>
       <SEOHead 
-        title={language === 'it' ? 'Mappa del Sito | PaciFinance' : 'Sitemap | PaciFinance'}
-        description={language === 'it' ? 'Naviga attraverso tutte le pagine di PaciFinance, la piattaforma per la gestione finanziaria privata e sicura.' : 'Navigate through all pages of PaciFinance, our privacy-focused personal finance platform.'}
-        keywords={language === 'it' ? 'mappa del sito, navigazione, pagine, PaciFinance' : 'sitemap, navigation, pages, PaciFinance'}
+        title={language === 'it' ? 'Mappa del Sito | Pacifinance' : 'Sitemap | Pacifinance'}
+        description={language === 'it' ? 'Naviga attraverso tutte le pagine di Pacifinance, la piattaforma per la gestione finanziaria privata e sicura.' : 'Navigate through all pages of Pacifinance, our privacy-focused personal finance platform.'}
+        keywords={language === 'it' ? 'mappa del sito, navigazione, pagine, Pacifinance' : 'sitemap, navigation, pages, Pacifinance'}
         canonical="/sitemap"
       />
 

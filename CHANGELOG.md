@@ -1,4 +1,4 @@
-# Changelog - PaciFinance
+# Changelog - Pacifinance
 
 Tutte le modifiche rilevanti al progetto sono documentate in questo file.
 Il formato segue [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) e il progetto aderisce a [Semantic Versioning](https://semver.org/).
@@ -130,7 +130,7 @@ Il formato segue [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) e il p
 ## [0.9.0] - 2024 (Early)
 
 ### Aggiunto
-- Lancio iniziale PaciFinance
+- Lancio iniziale Pacifinance
 - Registrazione anonima (solo password, userId auto-generato)
 - Tracking patrimonio multi-piattaforma (bank, stocks, ETF, crypto, cash, etc.)
 - Categorizzazione entrate e uscite

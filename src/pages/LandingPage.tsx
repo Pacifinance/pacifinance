@@ -21,7 +21,7 @@ export default function NewLandingPage() {
   const getMetadata = () => {
     if (language === 'it') {
       return {
-        title: "Unifica le Tue Finanze - Dashboard Multi-Piattaforma PaciFinance",
+        title: "Unifica le Tue Finanze - Dashboard Multi-Piattaforma Pacifinance",
         description: "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti. Supporto per 19 valute con tassi di cambio in tempo reale: EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY.",
         locale: "it_IT",
         languageCode: "it",
@@ -29,7 +29,7 @@ export default function NewLandingPage() {
       };
     }
     return {
-      title: "Unify Your Finances - PaciFinance Multi-Platform Dashboard",
+      title: "Unify Your Finances - Pacifinance Multi-Platform Dashboard",
       description: "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments. Support for 19 currencies with live exchange rates: EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY.",
       locale: "en_US",
       languageCode: "en", 
@@ -62,10 +62,10 @@ export default function NewLandingPage() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pacifinance.com/" />
         <meta property="og:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
-        <meta property="og:image:alt" content="PaciFinance - Unified Financial Dashboard" />
+        <meta property="og:image:alt" content="Pacifinance - Unified Financial Dashboard" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="PaciFinance" />
+        <meta property="og:site_name" content="Pacifinance" />
         <meta property="og:locale" content={metadata.locale} />
         
         {/* Twitter Card Meta Tags */}
@@ -75,14 +75,14 @@ export default function NewLandingPage() {
         <meta name="twitter:title" content={metadata.title} />
         <meta name="twitter:description" content={metadata.description} />
         <meta name="twitter:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
-        <meta name="twitter:image:alt" content="PaciFinance - Unified Financial Dashboard" />
+        <meta name="twitter:image:alt" content="Pacifinance - Unified Financial Dashboard" />
         
         {/* Schema.org Structured Data - Supporto Multilingua */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "PaciFinance",
+            "name": "Pacifinance",
             "description": metadata.description,
             "url": "https://pacifinance.com/",
             "applicationCategory": "FinanceApplication",
@@ -95,7 +95,7 @@ export default function NewLandingPage() {
             },
             "author": {
               "@type": "Organization",
-              "name": "PaciFinance",
+              "name": "Pacifinance",
               "url": "https://pacifinance.com",
               "sameAs": [
                 "https://twitter.com/pacifinance"
@@ -119,7 +119,7 @@ export default function NewLandingPage() {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "PaciFinance",
+            "name": "Pacifinance",
             "url": "https://pacifinance.com",
             "logo": "https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp",
             "sameAs": [

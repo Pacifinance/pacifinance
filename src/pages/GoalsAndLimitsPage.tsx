@@ -35,8 +35,8 @@ function GoalsAndLimitsPage() {
   return (
     <ProfilePageContainer>
       <SEOHead 
-        title={language === 'it' ? 'Obiettivi e Limiti | PaciFinance' : 'Goals & Limits | PaciFinance'}
-        description={language === 'it' ? 'Gestisci i tuoi obiettivi finanziari, limiti di spesa e preferenze personali su PaciFinance.' : 'Manage your financial goals, spending limits and personal preferences on PaciFinance.'}
+        title={language === 'it' ? 'Obiettivi e Limiti | Pacifinance' : 'Goals & Limits | Pacifinance'}
+        description={language === 'it' ? 'Gestisci i tuoi obiettivi finanziari, limiti di spesa e preferenze personali su Pacifinance.' : 'Manage your financial goals, spending limits and personal preferences on Pacifinance.'}
         noindex={true}
       />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />

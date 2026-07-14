@@ -90,7 +90,7 @@
             "hero": {
                 "title": "Vereinen Sie Ihre Finanzen",
                 "subtitle": "auf einer Plattform",
-                "description": "Konten bei verschiedenen Banken? Investitionen auf mehreren Plattformen? PaciFinance gibt Ihnen einen vollständigen Überblick über Ihre finanzielle Situation, alles an einem Ort.",
+                "description": "Konten bei verschiedenen Banken? Investitionen auf mehreren Plattformen? Pacifinance gibt Ihnen einen vollständigen Überblick über Ihre finanzielle Situation, alles an einem Ort.",
                 "getStarted": "Kostenlos starten",
                 "learnMore": "Mehr erfahren",
                 "socialProof": "Von datenschutzbewussten Nutzern weltweit vertraut"
@@ -101,8 +101,8 @@
                 "smartAnalytics": "Intelligente Analysen"
             },
             "features": {
-                "title": "Wie PaciFinance Ihre Probleme löst",
-                "subtitle": "Müde davon, mehrere Apps zu jonglieren, um Ihr vollständiges Finanzbild zu sehen? PaciFinance transformiert die Art, wie Sie Ihr Geld verwalten.",
+                "title": "Wie Pacifinance Ihre Probleme löst",
+                "subtitle": "Müde davon, mehrere Apps zu jonglieren, um Ihr vollständiges Finanzbild zu sehen? Pacifinance transformiert die Art, wie Sie Ihr Geld verwalten.",
                 "privacy": {
                     "title": "Intelligente anonyme Vergleiche",
                     "description": "Entdecken Sie, ob Sie zu viel ausgeben oder zu wenig sparen im Vergleich zu Personen in ähnlichen Situationen. Alle Vergleiche sind vollständig anonym.",
@@ -208,7 +208,7 @@
             "cta": {
                 "title": "Bereit, Ihr",
                 "subtitle": "Finanzleben zu vereinen",
-                "description": "Schließen Sie sich Nutzern an, die bereits die volle Kontrolle über ihre verstreuten Finanzen mit PaciFinance gewonnen haben. Sehen Sie Ihr vollständiges Finanzbild heute.",
+                "description": "Schließen Sie sich Nutzern an, die bereits die volle Kontrolle über ihre verstreuten Finanzen mit Pacifinance gewonnen haben. Sehen Sie Ihr vollständiges Finanzbild heute.",
                 "button": "Kostenloses Konto erstellen",
                 "disclaimer": "Keine Kreditkarte erforderlich • Dauert weniger als 2 Minuten • Sofort starten"
             },
@@ -218,7 +218,7 @@
                 "freeForever": "Für immer kostenlos"
             },
             "donation": {
-                "title": "Sie lieben PaciFinance? Helfen Sie, es kostenlos zu halten!",
+                "title": "Sie lieben Pacifinance? Helfen Sie, es kostenlos zu halten!",
                 "description": "Diese Plattform wird ausschließlich durch Community-Spenden unterhalten. Ihre Unterstützung hilft uns, uns weiter zu verbessern und neue Funktionen hinzuzufügen."
             }
         }
@@ -290,13 +290,13 @@
         },
         "community": {
             "title": "Community",
-            "donationText": "PaciFinance ist völlig kostenlos und lebt nur von Spenden.",
+            "donationText": "Pacifinance ist völlig kostenlos und lebt nur von Spenden.",
             "supportTitle": "Unterstützen Sie das Projekt",
             "supportDescription": "Ihr Beitrag hilft uns, die Plattform online zu halten und neue Funktionen zu entwickeln. Jede Spende wird sehr geschätzt!"
         },
         "languages": {
             "title": "Verfügbare Sprachen",
-            "description": "PaciFinance ist in mehreren Sprachen verfügbar"
+            "description": "Pacifinance ist in mehreren Sprachen verfügbar"
         },
         "madeWith": "Gemacht mit",
         "forPrivacy": "für Ihre Privatsphäre"
@@ -314,7 +314,7 @@
         "security": "Sicherheit",
         "noItems": "Noch keine Roadmap-Einträge.",
         "feedbackTitle": "Haben Sie eine Idee oder einen Bug gefunden?",
-        "feedbackDescription": "PaciFinance ist ein community-zentriertes Projekt. Ihr Feedback ist unverzichtbar!",
+        "feedbackDescription": "Pacifinance ist ein community-zentriertes Projekt. Ihr Feedback ist unverzichtbar!",
         "feedbackButton": "Feedback senden"
     },
     "sidebar": {
@@ -510,7 +510,7 @@
             "bugReport": "Fehler melden",
             "bugReportSubtitle": "Einen Bericht auf GitHub öffnen",
             "installApp": "Als App installieren",
-            "installAppSubtitle": "PaciFinance zu Ihrem Startbildschirm hinzufügen",
+            "installAppSubtitle": "Pacifinance zu Ihrem Startbildschirm hinzufügen",
             "pastDateBalance": "Past-date balance impact",
             "pastDateBalanceSubtitle": "Choose what happens when you insert outflows or incomes with dates in previous months",
             "pastDateBalanceAsk": "Ask every time",
@@ -1192,7 +1192,7 @@
             "title": "Datenschutzrichtlinie",
             "introduction": {
                 "title": "Einführung",
-                "content": "Ihre Privatsphäre ist unsere absolute Priorität. PaciFinance wurde von Grund auf mit Datenschutz im Kern entwickelt. Diese Richtlinie erklärt, wie wir mit Ihren Daten mit maximalem Respekt für Ihre Privatsphäre umgehen."
+                "content": "Ihre Privatsphäre ist unsere absolute Priorität. Pacifinance wurde von Grund auf mit Datenschutz im Kern entwickelt. Diese Richtlinie erklärt, wie wir mit Ihren Daten mit maximalem Respekt für Ihre Privatsphäre umgehen."
             },
             "dataCollection": {
                 "title": "Datenerfassung",
@@ -1223,11 +1223,11 @@
         "title": "Häufig gestellte Fragen",
         "questions": [
             {
-                "question": "Ist PaciFinance wirklich kostenlos?",
-                "answer": "Ja, PaciFinance ist vollständig kostenlos. Es gibt keine versteckten Kosten, Abonnements oder Einschränkungen. Die Plattform wird durch freiwillige Spenden finanziert."
+                "question": "Ist Pacifinance wirklich kostenlos?",
+                "answer": "Ja, Pacifinance ist vollständig kostenlos. Es gibt keine versteckten Kosten, Abonnements oder Einschränkungen. Die Plattform wird durch freiwillige Spenden finanziert."
             },
             {
-                "question": "Wie funktioniert der Datenschutz bei PaciFinance?",
+                "question": "Wie funktioniert der Datenschutz bei Pacifinance?",
                 "answer": "Datenschutz steht im Mittelpunkt von allem, was wir tun. Deine Daten sind immer anonym und werden niemals geteilt. Wir verwenden nur technische Cookies, die für den Betrieb notwendig sind."
             },
             {
@@ -1240,7 +1240,7 @@
             },
             {
                 "question": "Wie kann ich das Projekt unterstützen?",
-                "answer": "Der beste Weg, PaciFinance zu unterstützen, sind freiwillige Spenden über Buy Me a Coffee. Jeder Beitrag hilft uns, die Plattform am Laufen zu halten und neue Funktionen zu entwickeln."
+                "answer": "Der beste Weg, Pacifinance zu unterstützen, sind freiwillige Spenden über Buy Me a Coffee. Jeder Beitrag hilft uns, die Plattform am Laufen zu halten und neue Funktionen zu entwickeln."
             }
         ],
         "stillHaveQuestions": "Noch Fragen?",
@@ -1383,7 +1383,7 @@
                             "Analysiere 3 Monate Kontoauszüge für tatsächliche variable Ausgaben",
                             "Kategorisiere: Lebensmittel, Transport, Unterhaltung, Einkäufe, Gesundheit, Sonstiges",
                             "Weise einen realistischen Prozentsatz dem Sparen zu (beginne mit 10%)",
-                            "Nutze PaciFinance für automatische Überwachung",
+                            "Nutze Pacifinance für automatische Überwachung",
                             "Überprüfe das Budget monatlich und passe die Kategorien an",
                             "Feiere kleine Erfolge, um die Motivation aufrechtzuerhalten"
                         ]
@@ -1401,7 +1401,7 @@
                     "outflow_tracking": {
                         "title": "Intelligente Ausgabenverfolgung",
                         "tips": [
-                            "Nutze PaciFinance für eine einheitliche Ansicht aller Konten",
+                            "Nutze Pacifinance für eine einheitliche Ansicht aller Konten",
                             "Kategorisiere Ausgaben sofort - schiebe es nicht auf",
                             "Überprüfe dein Konto mindestens 2 Mal pro Woche",
                             "Identifiziere 'Phantomausgaben': kleine Käufe, die sich summieren",
@@ -1581,8 +1581,8 @@
     },
     "info": {
         "title": "Informationen und FAQ",
-        "title2": "Projekt PaciFinance",
-        "description": "PaciFinance ist eine Plattform für persönliche Finanzen und Vergleiche, die Datenschutz als Hauptziel hat und dir ermöglicht, deine finanzielle Situation zu verstehen.",
+        "title2": "Projekt Pacifinance",
+        "description": "Pacifinance ist eine Plattform für persönliche Finanzen und Vergleiche, die Datenschutz als Hauptziel hat und dir ermöglicht, deine finanzielle Situation zu verstehen.",
         "description2": "Der Vergleich mit anderen Nutzern ist anonym und nicht sensibel möglich.",
         "description3": "Die vom Nutzer eingegebenen Daten sind anonym, geschützt und nicht von Dritten zugänglich.",
         "description4": "Das Projekt ist werbefrei und gemeinnützig und wird ausschließlich durch freiwillige Spenden finanziert.",
@@ -1636,12 +1636,12 @@
             "answer6CallToAction": "Auf jeder Seite unten rechts findest du ein Pop-up zur Unterstützung des Projekts. Danke vom ganzen Team!",
             "question7": "Wie kann ich mein Konto löschen?",
             "answer7": "Um dein Konto zu löschen, gehe zum Bereich 'Dein Profil' und wähle den Abschnitt 'Konto löschen'. Bestätige die Löschung und fertig.",
-            "question8": "Kann ich PaciFinance als App installieren?",
-            "answer8": "Ja! PaciFinance ist eine Progressive Web App (PWA) und kann auf jedem Gerät installiert werden — iPhone, Android oder Desktop — direkt über deinen Browser. Gehe zu den Einstellungen für schrittweise Anleitungen für dein Gerät."
+            "question8": "Kann ich Pacifinance als App installieren?",
+            "answer8": "Ja! Pacifinance ist eine Progressive Web App (PWA) und kann auf jedem Gerät installiert werden — iPhone, Android oder Desktop — direkt über deinen Browser. Gehe zu den Einstellungen für schrittweise Anleitungen für dein Gerät."
         },
         "developers": {
             "title": "Team",
-            "description": "PaciFinance wird von einem Team leidenschaftlicher Entwickler aus den Bereichen Finanzen und Entwicklung erstellt, aktualisiert und gewartet.",
+            "description": "Pacifinance wird von einem Team leidenschaftlicher Entwickler aus den Bereichen Finanzen und Entwicklung erstellt, aktualisiert und gewartet.",
             "description2": "Das Entwicklungsteam ist stets bereit, Feedback und Verbesserungsvorschläge entgegenzunehmen.",
             "description3": "Die Plattform wurde mit dem Ziel geschaffen, einen nützlichen und kostenlosen Service für die Nutzer anzubieten.",
             "calltoaction": "Die Kosten für die Wartung der Server und des Dienstes werden vom Team getragen. Wenn du den angebotenen Dienst nützlich findest und beitragen möchtest, kannst du uns durch eine Spende unterstützen.",
@@ -1650,30 +1650,30 @@
     },
     "pwaInstall": {
         "title": "Als App installieren",
-        "subtitle": "Nutze PaciFinance wie eine native App",
+        "subtitle": "Nutze Pacifinance wie eine native App",
         "detected": "Dein Gerät",
-        "intro": "PaciFinance kann als App auf deinem Gerät installiert werden für schnellen Zugriff, Offline-Unterstützung und ein natives App-Erlebnis — kein App Store nötig.",
-        "tip": "Nach der Installation erscheint PaciFinance auf deinem Startbildschirm wie jede andere App, mit schnellerer Ladezeit und Vollbild-Erlebnis.",
+        "intro": "Pacifinance kann als App auf deinem Gerät installiert werden für schnellen Zugriff, Offline-Unterstützung und ein natives App-Erlebnis — kein App Store nötig.",
+        "tip": "Nach der Installation erscheint Pacifinance auf deinem Startbildschirm wie jede andere App, mit schnellerer Ladezeit und Vollbild-Erlebnis.",
         "steps": {
             "ios": [
-                "Öffne PaciFinance in Safari (erforderlich — funktioniert nicht über Chrome oder andere Browser auf iOS)",
+                "Öffne Pacifinance in Safari (erforderlich — funktioniert nicht über Chrome oder andere Browser auf iOS)",
                 "Tippe auf die Teilen-Schaltfläche (das Quadrat mit dem Pfeil nach oben) am unteren Bildschirmrand",
                 "Scrolle nach unten und tippe auf \"Zum Home-Bildschirm\"",
-                "Gib einen Namen ein (oder belasse PaciFinance) und tippe auf \"Hinzufügen\"",
-                "Fertig! Du findest PaciFinance auf deinem Home-Bildschirm"
+                "Gib einen Namen ein (oder belasse Pacifinance) und tippe auf \"Hinzufügen\"",
+                "Fertig! Du findest Pacifinance auf deinem Home-Bildschirm"
             ],
             "android": [
-                "Öffne PaciFinance in Chrome (oder einem anderen unterstützten Browser)",
+                "Öffne Pacifinance in Chrome (oder einem anderen unterstützten Browser)",
                 "Tippe auf das Drei-Punkte-Menü (⋮) oben rechts",
                 "Tippe auf \"Zum Startbildschirm hinzufügen\" oder \"App installieren\"",
                 "Bestätige mit \"Installieren\" im Pop-up",
-                "Fertig! PaciFinance ist jetzt installiert und über den Startbildschirm verfügbar"
+                "Fertig! Pacifinance ist jetzt installiert und über den Startbildschirm verfügbar"
             ],
             "desktop": [
-                "Öffne PaciFinance in Chrome, Edge oder einem anderen Chromium-basierten Browser",
-                "Klicke auf das Installations-Symbol (⊕) in der Adressleiste, oder öffne das Browser-Menü (⋮) und wähle \"PaciFinance installieren\"",
+                "Öffne Pacifinance in Chrome, Edge oder einem anderen Chromium-basierten Browser",
+                "Klicke auf das Installations-Symbol (⊕) in der Adressleiste, oder öffne das Browser-Menü (⋮) und wähle \"Pacifinance installieren\"",
                 "Bestätige mit \"Installieren\" im Dialog",
-                "Fertig! PaciFinance öffnet sich in einem eigenen Fenster und erscheint im App-Launcher"
+                "Fertig! Pacifinance öffnet sich in einem eigenen Fenster und erscheint im App-Launcher"
             ]
         }
     },
@@ -1720,8 +1720,8 @@
             "button": "Stattdessen spenden"
         },
         "donation": {
-            "title": "PaciFinance unterstützen",
-            "description": "Wenn PaciFinance für dich nützlich ist, erwäge eine Spende, um uns zu helfen, die Plattform online zu halten und neue Funktionen zu entwickeln. Jeder Beitrag wird sehr geschätzt!",
+            "title": "Pacifinance unterstützen",
+            "description": "Wenn Pacifinance für dich nützlich ist, erwäge eine Spende, um uns zu helfen, die Plattform online zu halten und neue Funktionen zu entwickeln. Jeder Beitrag wird sehr geschätzt!",
             "disclaimer": "Spenden sind vollständig freiwillig und schalten keine zusätzlichen Funktionen frei."
         }
     },
@@ -2088,7 +2088,7 @@
         "undoPartial": "⚠️ Teilweise rückgängig — {success} entfernt, {failed} fehlgeschlagen"
     },
     "onboarding": {
-        "welcomeTitle": "Willkommen bei PaciFinance!",
+        "welcomeTitle": "Willkommen bei Pacifinance!",
         "welcomeSubtitle": "Schließe diese 4 Schritte ab, um dein vollständiges Finanz-Dashboard mit Diagrammen, Vergleichen und Einblicken freizuschalten.",
         "stepsCompleted": "abgeschlossen",
         "step1Title": "Profil vervollständigen",
@@ -2554,7 +2554,7 @@
             "showTraderChart": "Erweitertes Diagramm",
             "hideTraderChart": "Erweitertes Diagramm ausblenden",
             "fundamentals": "Fundamentaldaten",
-            "analysisDisclaimer": "Die folgende Marktanalyse wird von TradingView nur zu Informationszwecken bereitgestellt. Sie stellt keine Finanzberatung dar. PaciFinance ist nicht verantwortlich für Entscheidungen, die auf diesen Daten basieren. Konsultiere immer einen qualifizierten Finanzfachmann.",
+            "analysisDisclaimer": "Die folgende Marktanalyse wird von TradingView nur zu Informationszwecken bereitgestellt. Sie stellt keine Finanzberatung dar. Pacifinance ist nicht verantwortlich für Entscheidungen, die auf diesen Daten basieren. Konsultiere immer einen qualifizierten Finanzfachmann.",
             "noMatchHint": "Keine Übereinstimmung in der kuratierten Liste. Drücke Enter, um dieses Symbol direkt auf TradingView zu suchen",
             "symbolDisclaimer": "Dieses Symbol ist nicht in unserer kuratierten Liste. Wenn die Diagramme nicht laden, stelle sicher, dass du das richtige TradingView-Symbol verwendet hast (z.B. NASDAQ:AAPL, nicht \"Apple\").",
             "clearSearch": "✕ Suche löschen",

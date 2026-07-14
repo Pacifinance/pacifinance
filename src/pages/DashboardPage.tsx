@@ -170,7 +170,7 @@ const DashboardPage = () => {
                             margin: 0,
                             animation: 'pulse 2s ease-in-out infinite',
                         }}>
-                            PaciFinance
+                            Pacifinance
                         </p>
                     </div>
                 )}
@@ -181,8 +181,8 @@ const DashboardPage = () => {
     return (
             <>
                 <SEOHead 
-                    title={language === 'it' ? 'Dashboard | PaciFinance' : 'Dashboard | PaciFinance'}
-                    description={language === 'it' ? 'Gestisci e monitora il tuo patrimonio finanziario con la dashboard di PaciFinance.' : 'Manage and monitor your financial portfolio with PaciFinance dashboard.'}
+                    title={language === 'it' ? 'Dashboard | Pacifinance' : 'Dashboard | Pacifinance'}
+                    description={language === 'it' ? 'Gestisci e monitora il tuo patrimonio finanziario con la dashboard di Pacifinance.' : 'Manage and monitor your financial portfolio with Pacifinance dashboard.'}
                     noindex={true}
                 />
                 <Sidebar 

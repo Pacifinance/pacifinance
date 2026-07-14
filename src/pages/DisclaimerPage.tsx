@@ -14,9 +14,9 @@ export default function DisclaimerPage() {
   return (
     <>
       <SEOHead 
-        title={language === 'it' ? 'Disclaimer | PaciFinance' : 'Disclaimer | PaciFinance'}
-        description={language === 'it' ? 'Disclaimer per PaciFinance - Informazioni importanti sull\'utilizzo della nostra piattaforma di gestione finanziaria.' : 'Disclaimer for PaciFinance - Important information about using our personal finance platform.'}
-        keywords={language === 'it' ? 'disclaimer, limitazioni, responsabilità, PaciFinance' : 'disclaimer, limitations, liability, PaciFinance'}
+        title={language === 'it' ? 'Disclaimer | Pacifinance' : 'Disclaimer | Pacifinance'}
+        description={language === 'it' ? 'Disclaimer per Pacifinance - Informazioni importanti sull\'utilizzo della nostra piattaforma di gestione finanziaria.' : 'Disclaimer for Pacifinance - Important information about using our personal finance platform.'}
+        keywords={language === 'it' ? 'disclaimer, limitazioni, responsabilità, Pacifinance' : 'disclaimer, limitations, liability, Pacifinance'}
         canonical="/disclaimer"
       />
 
@@ -47,8 +47,8 @@ export default function DisclaimerPage() {
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
                   {language === 'it'
-                    ? 'PaciFinance è uno strumento di gestione finanziaria personale fornito gratuitamente. Non costituisce consulenza finanziaria professionale.'
-                    : 'PaciFinance is a personal financial management tool provided free of charge. It does not constitute professional financial advice.'
+                    ? 'Pacifinance è uno strumento di gestione finanziaria personale fornito gratuitamente. Non costituisce consulenza finanziaria professionale.'
+                    : 'Pacifinance is a personal financial management tool provided free of charge. It does not constitute professional financial advice.'
                   }
                 </p>
               </section>
@@ -67,8 +67,8 @@ export default function DisclaimerPage() {
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
                   {language === 'it'
-                    ? 'L\'utilizzo di PaciFinance è a tuo rischio. Non siamo responsabili per eventuali perdite finanziarie derivanti dall\'uso della piattaforma.'
-                    : 'Use of PaciFinance is at your own risk. We are not responsible for any financial losses resulting from the use of the platform.'
+                    ? 'L\'utilizzo di Pacifinance è a tuo rischio. Non siamo responsabili per eventuali perdite finanziarie derivanti dall\'uso della piattaforma.'
+                    : 'Use of Pacifinance is at your own risk. We are not responsible for any financial losses resulting from the use of the platform.'
                   }
                 </p>
               </section>

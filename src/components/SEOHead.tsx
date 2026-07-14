@@ -55,7 +55,7 @@ const SEOHead = ({
       <meta property="og:image" content={ogImage || defaultImage} />
       <meta property="og:url" content={ogUrl || `${siteUrl}/${language}${canonical || ''}`} />
       <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="PaciFinance" />
+      <meta property="og:site_name" content="Pacifinance" />
       <meta property="og:locale" content={language === 'it' ? 'it_IT' : 'en_US'} />
       <meta property="og:locale:alternate" content={language === 'it' ? 'en_US' : 'it_IT'} />
       
@@ -69,7 +69,7 @@ const SEOHead = ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta httpEquiv="Content-Language" content={language} />
       <meta name="language" content={language} />
-      <meta name="author" content="PaciFinance" />
+      <meta name="author" content="Pacifinance" />
       <meta name="geo.region" content={language === 'it' ? 'IT' : 'US'} />
       
       {/* Schema.org structured data */}
@@ -77,7 +77,7 @@ const SEOHead = ({
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": "PaciFinance",
+          "name": "Pacifinance",
           "description": description,
           "url": `${siteUrl}/${language}${canonical || '/'}`,
           "applicationCategory": "FinanceApplication",

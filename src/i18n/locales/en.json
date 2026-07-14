@@ -90,7 +90,7 @@
             "hero": {
                 "title": "Unify Your Finances",
                 "subtitle": "in One Platform",
-                "description": "Accounts scattered across different banks? Investments on multiple platforms? PaciFinance gives you a complete bird's-eye view of your financial situation, all in one place.",
+                "description": "Accounts scattered across different banks? Investments on multiple platforms? Pacifinance gives you a complete bird's-eye view of your financial situation, all in one place.",
                 "getStarted": "Get Started Free",
                 "learnMore": "Learn More",
                 "socialProof": "Trusted by privacy-conscious users worldwide"
@@ -101,8 +101,8 @@
                 "smartAnalytics": "Smart Analytics"
             },
             "features": {
-                "title": "How PaciFinance Solves Your Problems",
-                "subtitle": "Tired of juggling multiple apps to see your complete financial picture? PaciFinance transforms the way you manage your money.",
+                "title": "How Pacifinance Solves Your Problems",
+                "subtitle": "Tired of juggling multiple apps to see your complete financial picture? Pacifinance transforms the way you manage your money.",
                 "privacy": {
                     "title": "Smart Anonymous Comparisons",
                     "description": "Discover if you're spending too much or saving too little compared to people in similar situations. All comparisons are completely anonymous.",
@@ -208,7 +208,7 @@
             "cta": {
                 "title": "Ready to Unify Your",
                 "subtitle": "Financial Life",
-                "description": "Join users who have already gained complete control over their scattered finances with PaciFinance. See your complete financial picture today.",
+                "description": "Join users who have already gained complete control over their scattered finances with Pacifinance. See your complete financial picture today.",
                 "button": "Start Your Free Account",
                 "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately"
             },
@@ -218,7 +218,7 @@
                 "freeForever": "Free Forever"
             },
             "donation": {
-                "title": "Love PaciFinance? Help Keep It Free!",
+                "title": "Love Pacifinance? Help Keep It Free!",
                 "description": "This platform is maintained entirely through community donations. Your support helps us keep improving and adding new features."
             }
         }
@@ -290,20 +290,20 @@
         },
         "community": {
             "title": "Community",
-            "donationText": "PaciFinance is completely free and lives only through donations.",
+            "donationText": "Pacifinance is completely free and lives only through donations.",
             "supportTitle": "Support the Project",
             "supportDescription": "Your contribution helps us keep the platform online and develop new features. Every donation is highly appreciated!"
         },
         "languages": {
             "title": "Available Languages",
-            "description": "PaciFinance is available in multiple languages"
+            "description": "Pacifinance is available in multiple languages"
         },
         "madeWith": "Made with",
         "forPrivacy": "for your privacy"
     },
     "roadmap": {
         "title": "Roadmap",
-        "subtitle": "Discover where PaciFinance is heading. Every feature is designed with the community in mind, also thanks to user feedback.",
+        "subtitle": "Discover where Pacifinance is heading. Every feature is designed with the community in mind, also thanks to user feedback.",
         "completed": "Completed",
         "inProgress": "In Progress",
         "planned": "Planned",
@@ -314,7 +314,7 @@
         "security": "Security",
         "noItems": "No items",
         "feedbackTitle": "Have an idea or found a bug?",
-        "feedbackDescription": "PaciFinance is a community-centric project. Your feedback is essential!",
+        "feedbackDescription": "Pacifinance is a community-centric project. Your feedback is essential!",
         "feedbackButton": "Send Feedback"
     },
     "sidebar": {
@@ -510,7 +510,7 @@
             "bugReport": "Report a bug",
             "bugReportSubtitle": "Open a report on GitHub",
             "installApp": "Install as App",
-            "installAppSubtitle": "Add PaciFinance to your home screen",
+            "installAppSubtitle": "Add Pacifinance to your home screen",
             "pastDateBalance": "Balance impact for past dates",
             "pastDateBalanceSubtitle": "Choose what happens when you insert outflows or incomes with dates in previous months",
             "pastDateBalanceAsk": "Ask every time",
@@ -1207,7 +1207,7 @@
             "title": "Privacy Policy",
             "introduction": {
                 "title": "Introduction",
-                "content": "Your privacy is our absolute priority. PaciFinance has been designed from the ground up with privacy at its core. This policy explains how we handle your data with maximum respect for your privacy."
+                "content": "Your privacy is our absolute priority. Pacifinance has been designed from the ground up with privacy at its core. This policy explains how we handle your data with maximum respect for your privacy."
             },
             "dataCollection": {
                 "title": "Data Collection",
@@ -1241,11 +1241,11 @@
         "title": "Frequently Asked Questions",
         "questions": [
             {
-                "question": "Is PaciFinance really free?",
-                "answer": "Yes, PaciFinance is completely free. There are no hidden costs, subscriptions, or limitations. The platform is supported by voluntary donations."
+                "question": "Is Pacifinance really free?",
+                "answer": "Yes, Pacifinance is completely free. There are no hidden costs, subscriptions, or limitations. The platform is supported by voluntary donations."
             },
             {
-                "question": "How does privacy work on PaciFinance?",
+                "question": "How does privacy work on Pacifinance?",
                 "answer": "Privacy is at the heart of everything we do. Your data is always anonymous and never shared. We only use technical cookies necessary for operation."
             },
             {
@@ -1258,7 +1258,7 @@
             },
             {
                 "question": "How can I support the project?",
-                "answer": "The best way to support PaciFinance is through voluntary donations via Buy Me a Coffee. Every contribution helps us keep the platform online and develop new features."
+                "answer": "The best way to support Pacifinance is through voluntary donations via Buy Me a Coffee. Every contribution helps us keep the platform online and develop new features."
             }
         ],
         "stillHaveQuestions": "Still have questions?",
@@ -1401,7 +1401,7 @@
                             "Analyze 3 months of bank statements for real variable expenses",
                             "Categorize: food, transport, entertainment, shopping, health, other",
                             "Assign a realistic percentage to savings (start with 10%)",
-                            "Use PaciFinance to monitor automatically",
+                            "Use Pacifinance to monitor automatically",
                             "Review the budget every month and adjust categories",
                             "Celebrate small wins to maintain motivation"
                         ]
@@ -1419,7 +1419,7 @@
                     "outflow_tracking": {
                         "title": "Smart Outflow Tracking",
                         "tips": [
-                            "Use PaciFinance for a unified view of all accounts",
+                            "Use Pacifinance for a unified view of all accounts",
                             "Categorize expenses immediately - don't procrastinate",
                             "Check your account at least 2 times per week",
                             "Identify 'phantom expenses': small purchases that add up",
@@ -1654,8 +1654,8 @@
             "answer6CallToAction": "On every page at the bottom right you will find a pop-up to support the project. Thanks from the whole team!.",
             "question7": "How can I delete my account?",
             "answer7": "To delete your account, go to the 'Your Profile' section and select the 'Delete account' section. Confirm the deletion and you're done. ",
-            "question8": "Can I install PaciFinance as an app?",
-            "answer8": "Yes! PaciFinance is a Progressive Web App (PWA) and can be installed on any device — iPhone, Android or desktop — directly from your browser. Go to Settings for step-by-step instructions for your device."
+            "question8": "Can I install Pacifinance as an app?",
+            "answer8": "Yes! Pacifinance is a Progressive Web App (PWA) and can be installed on any device — iPhone, Android or desktop — directly from your browser. Go to Settings for step-by-step instructions for your device."
         },
         "developers": {
             "title": "Team",
@@ -1668,30 +1668,30 @@
     },
     "pwaInstall": {
         "title": "Install as App",
-        "subtitle": "Use PaciFinance like a native app",
+        "subtitle": "Use Pacifinance like a native app",
         "detected": "Your device",
-        "intro": "PaciFinance can be installed as an app on your device for quick access, offline support, and a native-like experience — no app store needed.",
-        "tip": "Once installed, PaciFinance will appear on your home screen like any other app, with a faster loading time and full-screen experience.",
+        "intro": "Pacifinance can be installed as an app on your device for quick access, offline support, and a native-like experience — no app store needed.",
+        "tip": "Once installed, Pacifinance will appear on your home screen like any other app, with a faster loading time and full-screen experience.",
         "steps": {
             "ios": [
-                "Open PaciFinance in Safari (required — it doesn't work from Chrome or other browsers on iOS)",
+                "Open Pacifinance in Safari (required — it doesn't work from Chrome or other browsers on iOS)",
                 "Tap the Share button (the square with the upward arrow) at the bottom of the screen",
                 "Scroll down and tap \"Add to Home Screen\"",
-                "Give it a name (or leave PaciFinance) and tap \"Add\"",
-                "Done! You'll find PaciFinance on your home screen"
+                "Give it a name (or leave Pacifinance) and tap \"Add\"",
+                "Done! You'll find Pacifinance on your home screen"
             ],
             "android": [
-                "Open PaciFinance in Chrome (or another supported browser)",
+                "Open Pacifinance in Chrome (or another supported browser)",
                 "Tap the three-dot menu (⋮) in the top-right corner",
                 "Tap \"Add to Home screen\" or \"Install app\"",
                 "Confirm by tapping \"Install\" in the popup",
-                "Done! PaciFinance is now installed and available from your home screen"
+                "Done! Pacifinance is now installed and available from your home screen"
             ],
             "desktop": [
-                "Open PaciFinance in Chrome, Edge, or another Chromium-based browser",
-                "Click the install icon (⊕) in the address bar, or open the browser menu (⋮) and select \"Install PaciFinance\"",
+                "Open Pacifinance in Chrome, Edge, or another Chromium-based browser",
+                "Click the install icon (⊕) in the address bar, or open the browser menu (⋮) and select \"Install Pacifinance\"",
                 "Confirm by clicking \"Install\" in the dialog",
-                "Done! PaciFinance will open in its own window and appear in your app launcher"
+                "Done! Pacifinance will open in its own window and appear in your app launcher"
             ]
         }
     },
@@ -1738,8 +1738,8 @@
             "button": "Donate Instead"
         },
         "donation": {
-            "title": "Support PaciFinance",
-            "description": "If PaciFinance is useful to you, consider a donation to help us keep the platform online and develop new features. Every contribution is highly appreciated!",
+            "title": "Support Pacifinance",
+            "description": "If Pacifinance is useful to you, consider a donation to help us keep the platform online and develop new features. Every contribution is highly appreciated!",
             "disclaimer": "Donations are completely voluntary and do not unlock additional features."
         }
     },
@@ -2114,7 +2114,7 @@
         "undoPartial": "⚠️ Undo partial — {success} removed, {failed} failed"
     },
     "onboarding": {
-        "welcomeTitle": "Welcome to PaciFinance!",
+        "welcomeTitle": "Welcome to Pacifinance!",
         "welcomeSubtitle": "Complete these 4 steps to unlock your full financial dashboard with charts, comparisons, and insights.",
         "stepsCompleted": "completed",
         "step1Title": "Complete Profile",
@@ -2580,7 +2580,7 @@
             "showTraderChart": "Advanced Chart",
             "hideTraderChart": "Hide Advanced Chart",
             "fundamentals": "Fundamentals",
-            "analysisDisclaimer": "The following market analysis is provided by TradingView for informational purposes only. It does not constitute financial advice. PaciFinance is not responsible for any decisions based on this data. Always consult a qualified financial professional.",
+            "analysisDisclaimer": "The following market analysis is provided by TradingView for informational purposes only. It does not constitute financial advice. Pacifinance is not responsible for any decisions based on this data. Always consult a qualified financial professional.",
             "noMatchHint": "No match in the curated list. Press Enter to search this symbol directly on TradingView",
             "symbolDisclaimer": "This symbol is not in our curated list. If the charts don't load, make sure you used the correct TradingView symbol (e.g. NASDAQ:AAPL, not \"Apple\").",
             "clearSearch": "✕ Clear search",

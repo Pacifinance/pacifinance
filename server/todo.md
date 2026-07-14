@@ -1,4 +1,4 @@
-# PaciFinance Backend - TODO
+# Pacifinance Backend - TODO
 
 > Ultimo aggiornamento: 13/02/2026
 

@@ -2,7 +2,7 @@
 
 ## Product thesis
 
-PaciFinance should not try to win by adding one more budgeting dashboard. Its
+Pacifinance should not try to win by adding one more budgeting dashboard. Its
 distinctive product is a private, explainable financial benchmark: help people
 understand where they differ from genuinely comparable households and turn the
 largest differences into questions they can act on.
@@ -15,7 +15,7 @@ to the user.
 
 ## Competitive position
 
-| Product | Documented strength | Gap PaciFinance can own |
+| Product | Documented strength | Gap Pacifinance can own |
 | --- | --- | --- |
 | YNAB | Intentional budgeting, targets, spending/net-worth reports | No first-class community cohort benchmark |
 | Monarch Money | Polished account aggregation, flexible reports and Sankey cash flow | Reports explain the user's data, not their position among explainable peers |
@@ -99,7 +99,7 @@ implementation, not the product's permanent storage contract.
 
 - Frontend and API run locally through Docker; PostgreSQL stores all user data.
 - Redis is optional. A local in-process cache can cover single-user installs.
-- No PaciFinance account and no outbound traffic are required.
+- No Pacifinance account and no outbound traffic are required.
 - Comparison features remain disabled unless the owner explicitly joins the
   community network.
 

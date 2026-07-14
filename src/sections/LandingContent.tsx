@@ -162,7 +162,7 @@ export default function NewLandingContent({ theme }) {
                 <source srcSet="/hero.webp" type="image/webp"/>
                 <img 
                   src="/hero.webp"
-                  alt="PaciFinance Dashboard Preview"
+                  alt="Pacifinance Dashboard Preview"
                   className="w-full h-auto rounded-2xl shadow-2xl"
                   width={600}
                   height={400}
@@ -220,9 +220,9 @@ export default function NewLandingContent({ theme }) {
           {/* Section Header */}
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 md:mb-6">
-              {translations.landing.new.features.title.split('PaciFinance')[0]}
-              <span style={{ color: theme.secondaryColor }}>PaciFinance</span>
-              {translations.landing.new.features.title.split('PaciFinance')[1] || '?'}
+              {translations.landing.new.features.title.split('Pacifinance')[0]}
+              <span style={{ color: theme.secondaryColor }}>Pacifinance</span>
+              {translations.landing.new.features.title.split('Pacifinance')[1] || '?'}
             </h2>
             <p className="text-base md:text-xl opacity-80 max-w-3xl mx-auto">
               {translations.landing.new.features.subtitle}

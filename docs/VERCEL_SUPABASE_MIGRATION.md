@@ -1,8 +1,8 @@
-# Migrazione PaciFinance: Hetzner (Express+MongoDB+Redis) → Vercel + Supabase
+# Migrazione Pacifinance: Hetzner (Express+MongoDB+Redis) → Vercel + Supabase
 
 ## Context
 
-PaciFinance gira oggi su una VM Hetzner con `docker-compose` che orchestra tre servizi: `app` (Express monolitico, TS compilato, serve sia le API sia la build statica del frontend React), `mongo` (replica set singolo nodo) e `redis` (sessioni + cache). Questo documento valuta e pianifica il passaggio a **Vercel** (hosting frontend + funzioni serverless) e **Supabase** (Postgres gestito): parere motivato, mappatura schema Mongo→SQL, blocchi per il deploy serverless, cosa si perde/guadagna, istruzioni operative complete.
+Pacifinance gira oggi su una VM Hetzner con `docker-compose` che orchestra tre servizi: `app` (Express monolitico, TS compilato, serve sia le API sia la build statica del frontend React), `mongo` (replica set singolo nodo) e `redis` (sessioni + cache). Questo documento valuta e pianifica il passaggio a **Vercel** (hosting frontend + funzioni serverless) e **Supabase** (Postgres gestito): parere motivato, mappatura schema Mongo→SQL, blocchi per il deploy serverless, cosa si perde/guadagna, istruzioni operative complete.
 
 Analisi basata sull'esplorazione di `server/src/db/models/*` (5 modelli Mongoose: `users`, `balances`, `expenses`, `tags`, `delqueue`) e di tutta l'architettura Express (`index.ts`, `routes/`, `jobs/`, `cache/`). Punti chiave emersi:
 - **Nessuna vera aggregation pipeline MongoDB** — tutta la logica (rankings, medie) è fatta con loop N+1 in JavaScript applicativo. Buona notizia per la conversione a SQL, ma questi loop vanno riscritti come query aggregate per stare nei timeout serverless.

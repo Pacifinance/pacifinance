@@ -15,9 +15,9 @@ export default function ContactPage() {
   return (
     <>
       <SEOHead 
-        title={language === 'it' ? 'Contatti | PaciFinance' : 'Contact Us | PaciFinance'}
-        description={language === 'it' ? 'Contatta il team di PaciFinance per supporto, domande o suggerimenti sulla nostra piattaforma di gestione finanziaria.' : 'Contact the PaciFinance team for support, questions or suggestions about our financial management platform.'}
-        keywords={language === 'it' ? 'contatti, supporto, aiuto, PaciFinance' : 'contact, support, help, PaciFinance'}
+        title={language === 'it' ? 'Contatti | Pacifinance' : 'Contact Us | Pacifinance'}
+        description={language === 'it' ? 'Contatta il team di Pacifinance per supporto, domande o suggerimenti sulla nostra piattaforma di gestione finanziaria.' : 'Contact the Pacifinance team for support, questions or suggestions about our financial management platform.'}
+        keywords={language === 'it' ? 'contatti, supporto, aiuto, Pacifinance' : 'contact, support, help, Pacifinance'}
         canonical="/contact"
       />
 
@@ -42,8 +42,8 @@ export default function ContactPage() {
                 </h2>
                 <p className="mb-4 leading-relaxed">
                   {language === 'it'
-                    ? 'Per qualsiasi problema tecnico o domanda sul funzionamento di PaciFinance, contattaci:'
-                    : 'For any technical issues or questions about PaciFinance functionality, contact us:'
+                    ? 'Per qualsiasi problema tecnico o domanda sul funzionamento di Pacifinance, contattaci:'
+                    : 'For any technical issues or questions about Pacifinance functionality, contact us:'
                   }
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
@@ -84,8 +84,8 @@ export default function ContactPage() {
                 </h2>
                 <p className="mb-4 leading-relaxed">
                   {language === 'it'
-                    ? 'I tuoi feedback sono preziosi per migliorare PaciFinance. Condividi con noi le tue idee e suggerimenti.'
-                    : 'Your feedback is valuable for improving PaciFinance. Share your ideas and suggestions with us.'
+                    ? 'I tuoi feedback sono preziosi per migliorare Pacifinance. Condividi con noi le tue idee e suggerimenti.'
+                    : 'Your feedback is valuable for improving Pacifinance. Share your ideas and suggestions with us.'
                   }
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">

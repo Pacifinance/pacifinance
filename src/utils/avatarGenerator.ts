@@ -1,5 +1,5 @@
 /**
- * Avatar Generator for PaciFinance
+ * Avatar Generator for Pacifinance
  * 
  * Generates unique, cute but professional circular avatars with:
  * - Random background color from a curated palette that fits the platform
@@ -12,10 +12,10 @@
 const STORAGE_KEY = 'pacifinance-avatar';
 const REGEN_DATE_KEY = 'pacifinance-avatar-regen-date';
 
-// Curated colors that work well with PaciFinance's green (#079164) theme
+// Curated colors that work well with Pacifinance's green (#079164) theme
 // Mix of soft, professional colors that look good as avatar backgrounds
 const AVATAR_COLORS = [
-  '#079164', // PaciFinance green
+  '#079164', // Pacifinance green
   '#0D579B', // Bank blue
   '#2980b9', // Light blue
   '#8e44ad', // Purple

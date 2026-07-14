@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for PaciFinance
+about: Suggest an idea for Pacifinance
 title: ''
 labels: enhancement
 assignees: ''

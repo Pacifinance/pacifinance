@@ -2775,7 +2775,7 @@ export default function MarketPrices() {
         {/* Disclaimer + Technical Analysis Gauge */}
         <DisclaimerBanner theme={theme}>
           <AlertTriangle size={14} />
-          <span>{tv.analysisDisclaimer || 'The following market analysis is provided by TradingView for informational purposes only. It does not constitute financial advice. PaciFinance is not responsible for any decisions based on this data. Always consult a qualified professional.'}</span>
+          <span>{tv.analysisDisclaimer || 'The following market analysis is provided by TradingView for informational purposes only. It does not constitute financial advice. Pacifinance is not responsible for any decisions based on this data. Always consult a qualified professional.'}</span>
         </DisclaimerBanner>
         <DetailCard theme={theme} style={{ padding: 0, overflow: 'hidden' }}>
           <DetailSectionTitle theme={theme} style={{ padding: '1rem 1.5rem 0' }}>

@@ -168,7 +168,7 @@ describe('SEOHead Component', () => {
       });
     });
 
-    it('should set og:site_name as PaciFinance', async () => {
+    it('should set og:site_name as Pacifinance', async () => {
       render(
         <SEOHead 
           title="Title" 
@@ -179,7 +179,7 @@ describe('SEOHead Component', () => {
       await waitFor(() => {
         const helmet = Helmet.peek();
         const ogSiteName = helmet.metaTags.find(tag => tag.property === 'og:site_name');
-        expect(ogSiteName.content).toBe('PaciFinance');
+        expect(ogSiteName.content).toBe('Pacifinance');
       });
     });
   });
@@ -218,7 +218,7 @@ describe('SEOHead Component', () => {
   });
 
   describe('additional meta tags', () => {
-    it('should set author as PaciFinance', async () => {
+    it('should set author as Pacifinance', async () => {
       render(
         <SEOHead 
           title="Title" 
@@ -229,7 +229,7 @@ describe('SEOHead Component', () => {
       await waitFor(() => {
         const helmet = Helmet.peek();
         const author = helmet.metaTags.find(tag => tag.name === 'author');
-        expect(author.content).toBe('PaciFinance');
+        expect(author.content).toBe('Pacifinance');
       });
     });
 
@@ -266,7 +266,7 @@ describe('SEOHead Component', () => {
         const jsonContent = JSON.parse(script.innerHTML);
         expect(jsonContent['@context']).toBe('https://schema.org');
         expect(jsonContent['@type']).toBe('WebApplication');
-        expect(jsonContent.name).toBe('PaciFinance');
+        expect(jsonContent.name).toBe('Pacifinance');
         expect(jsonContent.description).toBe('Test Description');
         expect(jsonContent.applicationCategory).toBe('FinanceApplication');
       });

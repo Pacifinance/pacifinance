@@ -321,10 +321,10 @@ const RoadmapPage = () => {
   const roadmapContent = (
     <PageWrapper theme={theme} $withTopOffset={!isAuthenticated || isMobileScreen}>
       <SEOHead
-        title={isIt ? 'Roadmap - PaciFinance' : 'Roadmap - PaciFinance'}
+        title={isIt ? 'Roadmap - Pacifinance' : 'Roadmap - Pacifinance'}
         description={isIt
-          ? 'Scopri le funzionalità completate, in corso e pianificate di PaciFinance.'
-          : 'Discover the completed, in progress and planned features of PaciFinance.'}
+          ? 'Scopri le funzionalità completate, in corso e pianificate di Pacifinance.'
+          : 'Discover the completed, in progress and planned features of Pacifinance.'}
         path="/roadmap"
       />
 
@@ -332,8 +332,8 @@ const RoadmapPage = () => {
         <h1>🗺️ {t.title || (isIt ? 'Roadmap' : 'Roadmap')}</h1>
         <p>
           {t.subtitle || (isIt
-            ? 'Scopri dove sta andando PaciFinance. Ogni funzionalità nasce dal feedback della community.'
-            : 'Discover where PaciFinance is heading. Every feature is born from community feedback.')}
+            ? 'Scopri dove sta andando Pacifinance. Ogni funzionalità nasce dal feedback della community.'
+            : 'Discover where Pacifinance is heading. Every feature is born from community feedback.')}
         </p>
       </PageHeader>
 
@@ -413,8 +413,8 @@ const RoadmapPage = () => {
         </h3>
         <p>
           {isIt
-            ? 'PaciFinance è un progetto community-centrico. Il tuo feedback è fondamentale!'
-            : 'PaciFinance is a community-centric project. Your feedback is essential!'}
+            ? 'Pacifinance è un progetto community-centrico. Il tuo feedback è fondamentale!'
+            : 'Pacifinance is a community-centric project. Your feedback is essential!'}
         </p>
         <a
           href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"

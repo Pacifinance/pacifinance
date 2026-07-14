@@ -2,7 +2,7 @@
 applyTo: "src/components/**,src/pages/**,src/sections/**"
 ---
 
-# React Components — PaciFinance Rules
+# React Components — Pacifinance Rules
 
 ## Component Architecture
 

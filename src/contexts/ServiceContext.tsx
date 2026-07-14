@@ -1,5 +1,5 @@
 /**
- * ServiceContext — Dependency Injection container for PaciFinance services.
+ * ServiceContext — Dependency Injection container for Pacifinance services.
  *
  * This context provides all service instances to the React component tree.
  * Services are created with a shared API client, making it trivial to:

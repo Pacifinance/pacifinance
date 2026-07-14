@@ -1,9 +1,9 @@
 ---
 mode: agent
-description: Scaffolding completo di una nuova pagina PaciFinance
+description: Scaffolding completo di una nuova pagina Pacifinance
 ---
 
-Crea una nuova pagina PaciFinance seguendo questo checklist verticale (tutto in un'unica pass):
+Crea una nuova pagina Pacifinance seguendo questo checklist verticale (tutto in un'unica pass):
 
 ## Input richiesti
 - **Nome pagina**: (es. `AnalysisPage`)
@@ -35,7 +35,7 @@ const {NomePagina} = () => {
   return (
     <>
       <Helmet>
-        <title>{translations.{sezione}.pageTitle} — PaciFinance</title>
+        <title>{translations.{sezione}.pageTitle} — Pacifinance</title>
         <meta name="description" content={translations.{sezione}.pageDescription} />
       </Helmet>
       {/* contenuto */}

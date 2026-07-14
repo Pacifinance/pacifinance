@@ -1,6 +1,6 @@
 # Open Source Operations Runbook
 
-Questo documento raccoglie i passaggi operativi per aprire PaciFinance come
+Questo documento raccoglie i passaggi operativi per aprire Pacifinance come
 progetto open source e mantenere una versione hosted senza perdere controllo su
 segreti, deploy, governance e distribuzione self-hosted.
 
@@ -126,7 +126,7 @@ Usarla solo se vuoi mantenere la history. Dopo il rewrite:
 
 ## 2. Transfer del repository nell'organizzazione GitHub
 
-Obiettivo: spostare il repo sotto l'organizzazione `PaciFinance` mantenendo
+Obiettivo: spostare il repo sotto l'organizzazione `Pacifinance` mantenendo
 issues, PR, stars, watchers e redirect GitHub.
 
 GitHub documenta che il transfer conserva issues, PR, wiki, stars, watchers e
@@ -135,7 +135,7 @@ non viene ricreato un repo allo stesso vecchio path.
 
 ### 2.1 Prerequisiti
 
-- Creare o verificare l'organizzazione `PaciFinance`.
+- Creare o verificare l'organizzazione `Pacifinance`.
 - Avere almeno due Owner nell'organizzazione.
 - Abilitare 2FA obbligatoria per i membri.
 - Verificare che nell'organizzazione non esista già un repo con lo stesso nome.
@@ -147,7 +147,7 @@ non viene ricreato un repo allo stesso vecchio path.
 1. Aprire il repo sorgente su GitHub.
 2. `Settings` -> `General` -> `Danger Zone`.
 3. Cliccare `Transfer`.
-4. Inserire come owner l'organizzazione `PaciFinance`.
+4. Inserire come owner l'organizzazione `Pacifinance`.
 5. Confermare digitando il nome del repository.
 6. Accettare eventuale invito/confirm se richiesto.
 
@@ -157,7 +157,7 @@ Aggiornare tutti i cloni locali:
 
 ```bash
 git remote -v
-git remote set-url origin git@github.com:PaciFinance/pacifinance-serverless.git
+git remote set-url origin git@github.com:Pacifinance/pacifinance-serverless.git
 git remote -v
 ```
 
@@ -213,10 +213,10 @@ Owner, ma l'obiettivo finale è abilitarlo quando il flusso CI è stabile.
 Aggiungere `.github/CODEOWNERS` solo quando esiste un team reale:
 
 ```text
-* @PaciFinance/maintainers
-server/ @PaciFinance/backend
-src/i18n/ @PaciFinance/i18n
-supabase/ @PaciFinance/backend
+* @Pacifinance/maintainers
+server/ @Pacifinance/backend
+src/i18n/ @Pacifinance/i18n
+supabase/ @Pacifinance/backend
 ```
 
 Non aggiungere team inesistenti: GitHub li ignora o mostra errori.
@@ -373,7 +373,7 @@ jobs:
 
 ## 5. Docker self-host
 
-Obiettivo: permettere a un utente tecnico di provare PaciFinance localmente con
+Obiettivo: permettere a un utente tecnico di provare Pacifinance localmente con
 Postgres, app e Redis opzionale.
 
 ### 5.1 Target della prima versione

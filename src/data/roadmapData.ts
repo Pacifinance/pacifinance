@@ -192,8 +192,8 @@ const roadmapData: RoadmapItem[] = [
     id: 'pwa-install-guide',
     title: { it: 'Guida Installazione App', en: 'App Install Guide' },
     description: {
-      it: 'Istruzioni passo-passo per installare PaciFinance come app, con rilevamento automatico del dispositivo (iOS, Android, Desktop).',
-      en: 'Step-by-step instructions to install PaciFinance as an app, with automatic device detection (iOS, Android, Desktop).'
+      it: 'Istruzioni passo-passo per installare Pacifinance come app, con rilevamento automatico del dispositivo (iOS, Android, Desktop).',
+      en: 'Step-by-step instructions to install Pacifinance as an app, with automatic device detection (iOS, Android, Desktop).'
     },
     status: 'completed',
     category: 'ux',
@@ -287,8 +287,8 @@ const roadmapData: RoadmapItem[] = [
     id: 'contribute-section',
     title: { it: 'Sezione Contribuisci', en: 'Contribute Section' },
     description: {
-      it: 'Scopri come donare, segnalare bug e proporre nuove idee per migliorare PaciFinance.',
-      en: 'Learn how to donate, report bugs, and propose new ideas to improve PaciFinance.'
+      it: 'Scopri come donare, segnalare bug e proporre nuove idee per migliorare Pacifinance.',
+      en: 'Learn how to donate, report bugs, and propose new ideas to improve Pacifinance.'
     },
     status: 'in-progress',
     category: 'community',

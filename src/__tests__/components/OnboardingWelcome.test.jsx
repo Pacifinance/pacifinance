@@ -32,7 +32,7 @@ import OnboardingWelcome from '../../components/OnboardingWelcome';
 
 const mockTranslations = {
   onboarding: {
-    welcomeTitle: 'Welcome to PaciFinance!',
+    welcomeTitle: 'Welcome to Pacifinance!',
     welcomeSubtitle: 'Complete these 4 steps to unlock your full financial dashboard.',
     stepsCompleted: 'completed',
     step1Title: 'Complete Profile',
@@ -181,7 +181,7 @@ describe('OnboardingWelcome', () => {
   describe('Rendering', () => {
     it('should render welcome title and subtitle', () => {
       renderOnboarding();
-      expect(screen.getByText('Welcome to PaciFinance!')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to Pacifinance!')).toBeInTheDocument();
       expect(screen.getByText(/Complete these 4 steps/)).toBeInTheDocument();
     });
 
@@ -219,7 +219,7 @@ describe('OnboardingWelcome', () => {
 
     it('should render in light theme', () => {
       renderOnboarding({ theme: lightTheme });
-      expect(screen.getByText('Welcome to PaciFinance!')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to Pacifinance!')).toBeInTheDocument();
     });
   });
 
@@ -293,11 +293,11 @@ describe('OnboardingWelcome', () => {
   describe('Dismiss Behavior', () => {
     it('should dismiss when dismiss button is clicked', () => {
       renderOnboarding();
-      expect(screen.getByText('Welcome to PaciFinance!')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to Pacifinance!')).toBeInTheDocument();
 
       fireEvent.click(screen.getByText('Dismiss guide'));
 
-      expect(screen.queryByText('Welcome to PaciFinance!')).not.toBeInTheDocument();
+      expect(screen.queryByText('Welcome to Pacifinance!')).not.toBeInTheDocument();
     });
 
     it('should persist dismiss state in localStorage', () => {
@@ -310,7 +310,7 @@ describe('OnboardingWelcome', () => {
       localStorage.getItem.mockReturnValueOnce('true');
       renderOnboarding();
       await waitFor(() => {
-        expect(screen.queryByText('Welcome to PaciFinance!')).not.toBeInTheDocument();
+        expect(screen.queryByText('Welcome to Pacifinance!')).not.toBeInTheDocument();
       });
     });
   });
@@ -318,7 +318,7 @@ describe('OnboardingWelcome', () => {
   describe('Auto-dismiss on Completion', () => {
     it('should not render when all 4 steps are completed', () => {
       renderOnboarding({ userData: completeUser });
-      expect(screen.queryByText('Welcome to PaciFinance!')).not.toBeInTheDocument();
+      expect(screen.queryByText('Welcome to Pacifinance!')).not.toBeInTheDocument();
     });
 
     it('should save dismissed state to localStorage when all steps complete', () => {
@@ -346,7 +346,7 @@ describe('OnboardingWelcome', () => {
         </MemoryRouter>
       );
       // Fallback texts should be rendered
-      expect(screen.getByText('Welcome to PaciFinance!')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to Pacifinance!')).toBeInTheDocument();
       expect(screen.getByText('Complete Profile')).toBeInTheDocument();
       expect(screen.getByText('Add Your Balance')).toBeInTheDocument();
     });

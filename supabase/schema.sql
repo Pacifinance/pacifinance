@@ -1,5 +1,5 @@
 -- ============================================================
--- PaciFinance — Schema Postgres per Supabase
+-- Pacifinance — Schema Postgres per Supabase
 -- Sostituisce le 5 collection MongoDB: users, balances, expenses, tags, deletions
 -- Autenticazione gestita da Supabase Auth (auth.users) — email sintetica interna
 -- {user_code}@users.pacifinance.internal, mai esposta all'utente (login resta userId+password)

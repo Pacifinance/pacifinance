@@ -27,8 +27,8 @@ export default function AuthPage() {
     <>
       {/* SEO Meta Tags */}
       <SEOHead 
-        title={isSignUp ? 'Sign Up - PaciFinance | Secure Access' : 'Sign In - PaciFinance | Secure Access'}
-        description="Access your PaciFinance account securely. Sign in or sign up to manage your personal finances with complete privacy."
+        title={isSignUp ? 'Sign Up - Pacifinance | Secure Access' : 'Sign In - Pacifinance | Secure Access'}
+        description="Access your Pacifinance account securely. Sign in or sign up to manage your personal finances with complete privacy."
         keywords="sign in, sign up, secure access, personal finance, privacy"
         canonical="/auth"
         noindex={false}
@@ -51,7 +51,7 @@ export default function AuthPage() {
                     <>
                       <span style={{ color: theme.secondaryColor }}>
                         {language === 'it' ? 'Unisciti a' : 'Join'}
-                      </span> PaciFinance
+                      </span> Pacifinance
                     </>
                   ) : (
                     <>
@@ -154,7 +154,7 @@ export default function AuthPage() {
                     {isSignUp ? (
                       <>{language === 'it' ? 'Hai già un account? ' : 'Already have an account? '}</>
                     ) : (
-                      <>{language === 'it' ? 'Nuovo su PaciFinance? ' : 'New to PaciFinance? '}</>
+                      <>{language === 'it' ? 'Nuovo su Pacifinance? ' : 'New to Pacifinance? '}</>
                     )}
                     <button
                       onClick={toggleAuthMode}
@@ -258,7 +258,7 @@ export default function AuthPage() {
                       <>
                         <span style={{ color: theme.secondaryColor }}>
                           {language === 'it' ? 'Unisciti a' : 'Join'}
-                        </span> PaciFinance
+                        </span> Pacifinance
                       </>
                     ) : (
                       <>
@@ -464,7 +464,7 @@ export default function AuthPage() {
                       {isSignUp ? (
                         <>{language === 'it' ? 'Hai già un account? ' : 'Already have an account? '}</>
                       ) : (
-                        <>{language === 'it' ? 'Nuovo su PaciFinance? ' : 'New to PaciFinance? '}</>
+                        <>{language === 'it' ? 'Nuovo su Pacifinance? ' : 'New to Pacifinance? '}</>
                       )}
                       <button
                         onClick={toggleAuthMode}

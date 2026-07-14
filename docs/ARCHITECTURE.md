@@ -1,6 +1,6 @@
-# PaciFinance — Architecture Guide
+# Pacifinance — Architecture Guide
 
-> This document describes the high-level architecture, design patterns, and conventions used in PaciFinance. It is intended for contributors and maintainers.
+> This document describes the high-level architecture, design patterns, and conventions used in Pacifinance. It is intended for contributors and maintainers.
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## System Overview
 
-PaciFinance is a privacy-first personal finance management SPA built with **React 19**. Key architectural decisions:
+Pacifinance is a privacy-first personal finance management SPA built with **React 19**. Key architectural decisions:
 
 | Aspect | Choice | Rationale |
 |---|---|---|

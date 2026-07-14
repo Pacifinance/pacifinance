@@ -90,7 +90,7 @@
             "hero": {
                 "title": "Unifica le Tue Finanze",
                 "subtitle": "in Un'Unica Piattaforma",
-                "description": "Hai conti sparsi tra banche diverse? Investimenti su più piattaforme? PaciFinance ti offre una visione completa dall'alto della tua situazione finanziaria, tutto in un posto.",
+                "description": "Hai conti sparsi tra banche diverse? Investimenti su più piattaforme? Pacifinance ti offre una visione completa dall'alto della tua situazione finanziaria, tutto in un posto.",
                 "getStarted": "Inizia Gratis",
                 "learnMore": "Scopri di Più",
                 "socialProof": "Affidabile da utenti attenti alla privacy in tutto il mondo"
@@ -101,7 +101,7 @@
                 "smartAnalytics": "Visione Unificata"
             },
             "features": {
-                "title": "Perché Hai Bisogno di PaciFinance?",
+                "title": "Perché Hai Bisogno di Pacifinance?",
                 "subtitle": "Basta con conti sparsi e informazioni frammentate. È tempo di avere una visione completa della tua situazione finanziaria.",
                 "privacy": {
                     "title": "Confronti Anonimi Intelligenti",
@@ -114,7 +114,7 @@
                 },
                 "analytics": {
                     "title": "Visione Unificata e Completa",
-                    "description": "Ogni banca ha i suoi grafici, ogni app i suoi dati. PaciFinance riunisce tutto: conti correnti, investimenti, crypto in un'unica dashboard dall'alto.",
+                    "description": "Ogni banca ha i suoi grafici, ogni app i suoi dati. Pacifinance riunisce tutto: conti correnti, investimenti, crypto in un'unica dashboard dall'alto.",
                     "features": [
                         "• Tutti i conti in una vista",
                         "• Patrimonio totale in tempo reale",
@@ -208,7 +208,7 @@
             "cta": {
                 "title": "Vuoi Smettere di Navigare a Vista nelle Tue",
                 "subtitle": "Finanze",
-                "description": "Basta conti sparsi e confusione. Unifica tutto in PaciFinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
+                "description": "Basta conti sparsi e confusione. Unifica tutto in Pacifinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
                 "button": "Apri il Tuo Account Gratuito",
                 "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente"
             },
@@ -218,7 +218,7 @@
                 "freeForever": "Gratuito per Sempre"
             },
             "donation": {
-                "title": "Ti piace PaciFinance? Aiutaci a Mantenerlo Gratuito!",
+                "title": "Ti piace Pacifinance? Aiutaci a Mantenerlo Gratuito!",
                 "description": "Questa piattaforma è mantenuta interamente attraverso le donazioni della community. Il tuo supporto ci aiuta a continuare a migliorare e aggiungere nuove funzionalità."
             }
         }
@@ -290,20 +290,20 @@
         },
         "community": {
             "title": "Comunità",
-            "donationText": "PaciFinance è completamente gratuito e vive solo attraverso le donazioni.",
+            "donationText": "Pacifinance è completamente gratuito e vive solo attraverso le donazioni.",
             "supportTitle": "Sostieni il Progetto",
             "supportDescription": "Il tuo contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità. Ogni donazione è molto apprezzata!"
         },
         "languages": {
             "title": "Lingue Disponibili",
-            "description": "PaciFinance è disponibile in più lingue"
+            "description": "Pacifinance è disponibile in più lingue"
         },
         "madeWith": "Fatto con",
         "forPrivacy": "per la tua privacy"
     },
     "roadmap": {
         "title": "Roadmap",
-        "subtitle": "Scopri dove sta andando PaciFinance. Ogni funzionalità è pensata in ottica community, anche grazie ai feedback degli utenti.",
+        "subtitle": "Scopri dove sta andando Pacifinance. Ogni funzionalità è pensata in ottica community, anche grazie ai feedback degli utenti.",
         "completed": "Completato",
         "inProgress": "In Corso",
         "planned": "Pianificato",
@@ -314,7 +314,7 @@
         "security": "Sicurezza",
         "noItems": "Nessun elemento",
         "feedbackTitle": "Hai un'idea o hai trovato un bug?",
-        "feedbackDescription": "PaciFinance è un progetto community-centrico. Il tuo feedback è fondamentale!",
+        "feedbackDescription": "Pacifinance è un progetto community-centrico. Il tuo feedback è fondamentale!",
         "feedbackButton": "Invia Feedback"
     },
     "sidebar": {
@@ -510,7 +510,7 @@
             "bugReport": "Segnala un bug",
             "bugReportSubtitle": "Apri una segnalazione su GitHub",
             "installApp": "Installa come App",
-            "installAppSubtitle": "Aggiungi PaciFinance alla schermata home",
+            "installAppSubtitle": "Aggiungi Pacifinance alla schermata home",
             "pastDateBalance": "Impatto bilancio per date passate",
             "pastDateBalanceSubtitle": "Scegli cosa succede quando inserisci spese o entrate con date di mesi precedenti",
             "pastDateBalanceAsk": "Chiedi ogni volta",
@@ -1339,7 +1339,7 @@
                             "Analizza 3 mesi di estratti conto per le uscite variabili reali",
                             "Categorizza: cibo, trasporti, svago, shopping, salute, altro",
                             "Assegna una percentuale realistica al risparmio (inizia con 10%)",
-                            "Usa PaciFinance per monitorare automaticamente",
+                            "Usa Pacifinance per monitorare automaticamente",
                             "Rivedi il budget ogni mese e aggiusta le categorie",
                             "Celebra i piccoli successi per mantenere la motivazione"
                         ]
@@ -1357,7 +1357,7 @@
                     "outflow_tracking": {
                         "title": "Tracciamento Intelligente delle Uscite",
                         "tips": [
-                            "Usa PaciFinance per avere una visione unificata di tutti i conti",
+                            "Usa Pacifinance per avere una visione unificata di tutti i conti",
                             "Categorizza le spese subito - non rimandare",
                             "Controlla il conto almeno 2 volte a settimana",
                             "Identifica le 'spese fantasma': piccoli acquisti che sommati pesano",
@@ -1592,8 +1592,8 @@
             "answer6CallToAction": "In ogni pagina in basso a destra troverai un pop-up per supportare il progetto. Grazie da parte di tutto il team!.",
             "question7": "Come posso eliminare il mio account?",
             "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. ",
-            "question8": "Posso installare PaciFinance come app?",
-            "answer8": "Sì! PaciFinance è una Progressive Web App (PWA) e può essere installata su qualsiasi dispositivo — iPhone, Android o desktop — direttamente dal browser. Vai nelle Impostazioni per le istruzioni passo-passo per il tuo dispositivo."
+            "question8": "Posso installare Pacifinance come app?",
+            "answer8": "Sì! Pacifinance è una Progressive Web App (PWA) e può essere installata su qualsiasi dispositivo — iPhone, Android o desktop — direttamente dal browser. Vai nelle Impostazioni per le istruzioni passo-passo per il tuo dispositivo."
         },
         "developers": {
             "title": "Team",
@@ -1606,30 +1606,30 @@
     },
     "pwaInstall": {
         "title": "Installa come App",
-        "subtitle": "Usa PaciFinance come un'app nativa",
+        "subtitle": "Usa Pacifinance come un'app nativa",
         "detected": "Il tuo dispositivo",
-        "intro": "PaciFinance può essere installata come app sul tuo dispositivo per un accesso rapido, supporto offline e un'esperienza nativa — senza bisogno dell'app store.",
-        "tip": "Una volta installata, PaciFinance apparirà nella schermata home come qualsiasi altra app, con caricamento più veloce e a schermo intero.",
+        "intro": "Pacifinance può essere installata come app sul tuo dispositivo per un accesso rapido, supporto offline e un'esperienza nativa — senza bisogno dell'app store.",
+        "tip": "Una volta installata, Pacifinance apparirà nella schermata home come qualsiasi altra app, con caricamento più veloce e a schermo intero.",
         "steps": {
             "ios": [
-                "Apri PaciFinance in Safari (obbligatorio — non funziona da Chrome o altri browser su iOS)",
+                "Apri Pacifinance in Safari (obbligatorio — non funziona da Chrome o altri browser su iOS)",
                 "Tocca il pulsante Condividi (il quadrato con la freccia verso l'alto) in basso allo schermo",
                 "Scorri e tocca \"Aggiungi alla schermata Home\"",
-                "Dai un nome (o lascia PaciFinance) e tocca \"Aggiungi\"",
-                "Fatto! Troverai PaciFinance nella schermata home"
+                "Dai un nome (o lascia Pacifinance) e tocca \"Aggiungi\"",
+                "Fatto! Troverai Pacifinance nella schermata home"
             ],
             "android": [
-                "Apri PaciFinance in Chrome (o un altro browser supportato)",
+                "Apri Pacifinance in Chrome (o un altro browser supportato)",
                 "Tocca il menu a tre puntini (⋮) in alto a destra",
                 "Tocca \"Aggiungi a schermata Home\" o \"Installa app\"",
                 "Conferma toccando \"Installa\" nel popup",
-                "Fatto! PaciFinance è ora installata e disponibile dalla schermata home"
+                "Fatto! Pacifinance è ora installata e disponibile dalla schermata home"
             ],
             "desktop": [
-                "Apri PaciFinance in Chrome, Edge o un altro browser basato su Chromium",
-                "Clicca l'icona di installazione (⊕) nella barra degli indirizzi, oppure apri il menu del browser (⋮) e seleziona \"Installa PaciFinance\"",
+                "Apri Pacifinance in Chrome, Edge o un altro browser basato su Chromium",
+                "Clicca l'icona di installazione (⊕) nella barra degli indirizzi, oppure apri il menu del browser (⋮) e seleziona \"Installa Pacifinance\"",
                 "Conferma cliccando \"Installa\" nella finestra di dialogo",
-                "Fatto! PaciFinance si aprirà in una finestra dedicata e apparirà nel tuo launcher"
+                "Fatto! Pacifinance si aprirà in una finestra dedicata e apparirà nel tuo launcher"
             ]
         }
     },
@@ -1638,7 +1638,7 @@
             "title": "Privacy Policy",
             "introduction": {
                 "title": "Introduzione",
-                "content": "La tua privacy è la nostra priorità assoluta. PaciFinance è stato progettato fin dall'inizio con la privacy al centro. Questa politica spiega come gestiamo i tuoi dati con il massimo rispetto per la tua privacy."
+                "content": "La tua privacy è la nostra priorità assoluta. Pacifinance è stato progettato fin dall'inizio con la privacy al centro. Questa politica spiega come gestiamo i tuoi dati con il massimo rispetto per la tua privacy."
             },
             "dataCollection": {
                 "title": "Raccolta Dati",
@@ -1672,11 +1672,11 @@
         "title": "Domande Frequenti",
         "questions": [
             {
-                "question": "PaciFinance è davvero gratuito?",
-                "answer": "Sì, PaciFinance è completamente gratuito. Non ci sono costi nascosti, abbonamenti o limitazioni. La piattaforma è sostenuta da donazioni volontarie."
+                "question": "Pacifinance è davvero gratuito?",
+                "answer": "Sì, Pacifinance è completamente gratuito. Non ci sono costi nascosti, abbonamenti o limitazioni. La piattaforma è sostenuta da donazioni volontarie."
             },
             {
-                "question": "Come funziona la privacy su PaciFinance?",
+                "question": "Come funziona la privacy su Pacifinance?",
                 "answer": "La privacy è al centro di tutto ciò che facciamo. I tuoi dati sono sempre anonimi e non vengono mai condivisi. Utilizziamo solo cookie tecnici necessari per il funzionamento."
             },
             {
@@ -1689,7 +1689,7 @@
             },
             {
                 "question": "Come posso supportare il progetto?",
-                "answer": "Il modo migliore per supportare PaciFinance è attraverso donazioni volontarie via Buy Me a Coffee. Ogni contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità."
+                "answer": "Il modo migliore per supportare Pacifinance è attraverso donazioni volontarie via Buy Me a Coffee. Ogni contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità."
             }
         ],
         "stillHaveQuestions": "Hai ancora domande?",
@@ -1738,8 +1738,8 @@
             "button": "Dona Invece"
         },
         "donation": {
-            "title": "Supporta PaciFinance",
-            "description": "Se PaciFinance ti è utile, considera una donazione per aiutarci a mantenere la piattaforma online e sviluppare nuove funzionalità. Ogni contributo è molto apprezzato!",
+            "title": "Supporta Pacifinance",
+            "description": "Se Pacifinance ti è utile, considera una donazione per aiutarci a mantenere la piattaforma online e sviluppare nuove funzionalità. Ogni contributo è molto apprezzato!",
             "disclaimer": "Le donazioni sono completamente volontarie e non sbloccano funzionalità aggiuntive."
         }
     },
@@ -2114,7 +2114,7 @@
         "undoPartial": "⚠️ Annullamento parziale — {success} rimosse, {failed} fallite"
     },
     "onboarding": {
-        "welcomeTitle": "Benvenuto su PaciFinance!",
+        "welcomeTitle": "Benvenuto su Pacifinance!",
         "welcomeSubtitle": "Completa questi 4 passaggi per sbloccare la tua dashboard finanziaria completa con grafici, confronti e analisi.",
         "stepsCompleted": "completati",
         "step1Title": "Completa il Profilo",
@@ -2580,7 +2580,7 @@
             "showTraderChart": "Grafico Avanzato",
             "hideTraderChart": "Nascondi Grafico Avanzato",
             "fundamentals": "Dati Fondamentali",
-            "analysisDisclaimer": "La seguente analisi di mercato è fornita da TradingView solo a scopo informativo. Non costituisce consulenza finanziaria. PaciFinance non è responsabile per decisioni basate su questi dati. Confrontarsi sempre con un professionista finanziario qualificato.",
+            "analysisDisclaimer": "La seguente analisi di mercato è fornita da TradingView solo a scopo informativo. Non costituisce consulenza finanziaria. Pacifinance non è responsabile per decisioni basate su questi dati. Confrontarsi sempre con un professionista finanziario qualificato.",
             "noMatchHint": "Nessun risultato nella lista. Premi Invio per cercare questo simbolo direttamente su TradingView",
             "symbolDisclaimer": "Questo simbolo non è nella nostra lista. Se i grafici non si caricano, assicurati di aver usato il simbolo TradingView corretto (es. NASDAQ:AAPL, non \"Apple\").",
             "clearSearch": "✕ Cancella ricerca",

@@ -2,7 +2,7 @@
 applyTo: "src/__tests__/**"
 ---
 
-# Testing — PaciFinance Rules
+# Testing — Pacifinance Rules
 
 ## Test Location
 ```

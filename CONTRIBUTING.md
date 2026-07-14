@@ -1,112 +1,114 @@
-# Contributing to PaciFinance
+﻿# Contributing to Pacifinance
 
-Thanks for your interest in contributing! PaciFinance is a privacy-first personal
-finance app. This guide explains how to set up the project, the rules that keep
-the codebase consistent, and how to submit changes.
+Thanks for your interest in contributing. Pacifinance is a privacy-first personal finance app, so technical quality and data-safety habits matter equally here.
 
-## Getting started
+This guide explains how to set up the project, what to check before opening a pull request, and how to keep the codebase ready for open-source collaboration.
+
+## Getting Started
 
 ```bash
 git clone <repo-url>
 cd pacifinance-serverless
 npm install
-cp .env.example .env   # fill in what you need (see comments in the file)
+cp .env.example .env
 
-npm run dev            # frontend (Vite, http://localhost:5173)
-npm run dev:server     # backend (Express, http://localhost:3000)
+npm run dev
+npm run dev:server
 ```
 
-The frontend proxies `/api/*` to the local Express server (see `vite.config.mjs`).
-For most UI work you can also use the built-in **demo mode**, which mocks the
-whole API layer and needs no backend or database at all.
+The frontend proxies `/api/*` to the local Express server through `vite.config.mjs`. For most UI work you can also use demo mode, which mocks the API layer and does not need a backend or database.
 
-Backend requirements (only if you work on server features): a Supabase project
-with `supabase/schema.sql` applied, plus the env vars listed in `.env.example`.
-Optional integrations (Upstash Redis, CoinGecko, OpenFIGI, Turnstile) degrade
-gracefully when unconfigured.
+Backend work requires a Supabase project with `supabase/schema.sql` applied, plus the env vars listed in `.env.example`. Optional integrations such as Upstash Redis, CoinGecko, OpenFIGI, and Turnstile should degrade gracefully when unconfigured.
 
-## Before you open a PR
+## Privacy Rules For Contributors
 
-Run the full check locally — CI runs the same on every PR:
+Never commit or paste:
+
+- `.env` files, API keys, access tokens, cookies, database dumps, or production logs;
+- real transactions, bank names tied to a person, merchant notes, salaries, balances, screenshots, or exported spreadsheets;
+- profile combinations that could identify a real user;
+- benchmark examples with tiny cohorts or exact personal records.
+
+Use synthetic data in tests, fixtures, screenshots, and docs. If a bug needs a real example, reduce it to the smallest anonymized shape before opening an issue or PR.
+
+## Anonymous Benchmark Rules
+
+Changes touching comparisons, rankings, profile matching, averages, or community statistics must preserve these rules:
+
+1. Participation must be explicit and reversible.
+2. Clients must receive aggregate statistics only, never raw peer rows.
+3. Small cohorts must be suppressed, merged, or marked unavailable.
+4. Profile fields should be bucketed before comparison.
+5. Financial values used for community statistics should be rounded or aggregated.
+6. Every result should expose period, cohort size, freshness, method, and confidence when available.
+7. Demo and test accounts must not influence real community aggregates.
+
+Read [docs/PRIVACY_ANONYMITY.md](docs/PRIVACY_ANONYMITY.md) and [docs/COMMUNITY_BENCHMARK_STRATEGY.md](docs/COMMUNITY_BENCHMARK_STRATEGY.md) before changing that area.
+
+## Before You Open A PR
+
+Run the relevant checks locally:
 
 ```bash
-npm run lint && npm test && npm run build
-npm run test:server        # if you touched server/
+npm run lint
+npm test
+npm run build
+npm run test:server   # if you touched server/
 ```
 
-When you use an AI assistant to help with the change, ask it to finish every update with a short commit message in English. That keeps the history readable for open source reviews and future maintainers.
+If you use an AI assistant, ask it to finish with a short English commit message. That keeps the history readable for future maintainers.
 
-## Project structure
+## Project Structure
 
-```
+```text
 src/
-  components/   # Presentational components — no context imports in reusable ones
-  pages/        # Routes — assemble contexts + sections
-  sections/     # Feature blocks — may use contexts
-  contexts/     # Global state (fixed provider order, see below)
-  hooks/        # Shared React hooks
-  services/     # API clients (axios), injected via ServiceContext
-  utils/        # Pure functions (selectors, routing, math)
-  constants/    # Single-source-of-truth schemas (balance keys, API paths…)
-  data/         # Static config (colors, icons, currencies)
-  styles/       # Shared styled-components
-  types/        # Shared TypeScript types (API contract in types/api.ts)
-  i18n/         # locales/*.json — 6 languages (it, en, es, de, fr, pt-BR)
-  __tests__/    # Mirrors src/
-server/src/     # Express backend (deployed as a single Vercel function)
-  routes/       # public / cron / private routers (RPC-style POST endpoints)
-  db/models/    # One module per table, Supabase queries live only here
-  libs/         # Pure helpers (dates, money, timeouts, rate limiting)
-  cache/        # Redis-backed cache (crypto prices, user averages)
-supabase/       # schema.sql (canonical) + migrations/
-api/index.ts    # Single Vercel serverless entrypoint (wraps the Express app)
+  components/   Reusable UI components
+  pages/        Route-level pages
+  sections/     Feature blocks
+  contexts/     Global state providers
+  hooks/        Shared React hooks
+  services/     API clients
+  utils/        Pure helpers, selectors, import/export logic
+  constants/    Shared schemas and API paths
+  data/         Static config, colors, icons, currencies
+  styles/       Shared styled-components
+  types/        Shared TypeScript/API contracts
+  i18n/         Locale JSON files
+  __tests__/    Frontend tests
+server/src/     Express backend
+supabase/       SQL schema and migrations
+api/index.ts    Vercel serverless entrypoint
 ```
 
-Context provider order is fixed:
-`MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toast`.
+Context provider order is fixed: `MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toast`.
 
-## Critical rules
+## Critical Rules
 
-These rules exist because breaking them causes real, hard-to-spot bugs:
+1. i18n: every UI string goes in all `src/i18n/locales/*.json` files.
+2. Routing: use `LocalizedLink` and `useLocalizedNavigate` for localized URLs.
+3. Currency: the database stores EUR only; display values through `CurrencyContext`.
+4. Selectors: read `userData` through `src/utils/userDataSelectors.ts`.
+5. Mocks: mirror new `userData` fields in demo/mock data.
+6. Colors/icons: use shared helpers from `src/data/` for financial categories.
+7. Wording: prefer "outflows" over "expenses" for money leaving the account.
+8. TypeScript: avoid `any`; declare props as interfaces.
+9. Dates: avoid UTC-midnight date bugs; use `toDateOnly` in server code.
+10. Balance keys: use helpers from `src/constants/balanceSchema.ts` instead of hand-indexing snapshots.
 
-1. **i18n** — every UI string goes in **all** `src/i18n/locales/*.json` files.
-   Never hardcode user-facing text (there is known legacy debt here; don't add more).
-2. **Routing** — use `LocalizedLink` (not `Link`) and `useLocalizedNavigate`
-   (not `useNavigate`): URLs are language-prefixed.
-3. **Currency** — the database stores **EUR only**. Display values via
-   `formatAmount()` from `CurrencyContext`. Never hardcode `€` or `EUR`.
-4. **Selectors** — read `userData` only through `src/utils/userDataSelectors.ts`.
-5. **Mocks** — any new `userData` field must be mirrored in `MockAuthContext.tsx`
-   so demo mode stays complete.
-6. **Colors/Icons** — use `getAssetColor()`, `getCategoryColor()` from `src/data/`.
-   No hardcoded hex colors for financial data.
-7. **Wording** — say "outflows", not "expenses" (expenses excludes investments).
-8. **TypeScript** — strict, no `any`. Props are declared as `interface`.
-9. **Dates** — never use `.toISOString().split('T')[0]` (UTC-midnight timezone
-   bug). Build date strings from explicit getters (see `toDateOnly` in
-   `server/src/libs/datelib.ts`).
-10. **Balance keys** — never index balance snapshots by hand: use the helpers in
-    `src/constants/balanceSchema.ts` (`buildAddBalancePayload`,
-    `snapshotToEurMap`, `buildSnapshotWithDeltas`). Mixing camelCase/snake_case
-    keys silently zeroes assets.
-
-## Submitting changes
+## Submitting Changes
 
 1. Fork and create a feature branch from `main`.
-2. Keep PRs focused — one feature or fix per PR.
-3. Add or update tests for what you change (`src/__tests__/` mirrors `src/`).
-4. Make sure `npm run lint && npm test && npm run build` passes.
-5. Fill in the PR template. Screenshots are welcome for UI changes.
+2. Keep PRs focused: one feature or fix per PR.
+3. Add or update tests for behavior you change.
+4. Include screenshots for UI changes when useful.
+5. Explain privacy impact when touching auth, profile data, comparison, import/export, analytics, or storage.
 
-For larger features, please open an issue first to discuss the approach —
-it avoids wasted work on both sides.
+For larger features, open an issue first so the design can be discussed before implementation.
 
-## Reporting security issues
+## Reporting Security Issues
 
-Please do **not** open public issues for security vulnerabilities.
-See [SECURITY.md](SECURITY.md).
+Do not open public issues for security vulnerabilities. See [SECURITY.md](SECURITY.md).
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the
-[GNU AGPL-3.0](LICENSE).
+By contributing, you agree that your contributions will be licensed under the [GNU AGPL-3.0](LICENSE).

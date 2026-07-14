@@ -1,4 +1,4 @@
-# Copilot Instructions — PaciFinance
+# Copilot Instructions — Pacifinance
 
 > React + TypeScript personal finance app. Anonymous auth (userId+password, no email). IT/EN i18n. 19 currencies. Vite + styled-components.
 > Detailed rules live in `.github/instructions/`. Skills in `.agents/skills/`. Prompts in `.github/prompts/`.

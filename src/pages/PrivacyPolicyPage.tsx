@@ -21,9 +21,9 @@ export default function PrivacyPolicyPage() {
       }}
     >
       <SEOHead 
-        title={language === 'it' ? 'Privacy Policy | PaciFinance' : 'Privacy Policy | PaciFinance'}
-        description={language === 'it' ? 'Leggi la Privacy Policy di PaciFinance per capire come proteggiamo e utilizziamo i tuoi dati personali.' : 'Read PaciFinance Privacy Policy to understand how we protect and use your personal data.'}
-        keywords={language === 'it' ? 'privacy policy, protezione dati, GDPR, PaciFinance' : 'privacy policy, data protection, GDPR, PaciFinance'}
+        title={language === 'it' ? 'Privacy Policy | Pacifinance' : 'Privacy Policy | Pacifinance'}
+        description={language === 'it' ? 'Leggi la Privacy Policy di Pacifinance per capire come proteggiamo e utilizziamo i tuoi dati personali.' : 'Read Pacifinance Privacy Policy to understand how we protect and use your personal data.'}
+        keywords={language === 'it' ? 'privacy policy, protezione dati, GDPR, Pacifinance' : 'privacy policy, data protection, GDPR, Pacifinance'}
         canonical="/privacy-policy"
       />
       <Header

@@ -1,5 +1,5 @@
 /**
- * PaciFinance theme contract.
+ * Pacifinance theme contract.
  *
  * Keep in sync with the objects exported from `src/styles/Themes.jsx`.
  * When this interface changes, styled-components automatically picks up the

@@ -69,7 +69,7 @@ npm test               # ← tutti i test, nessuna regressione
 
 ---
 
-### Esempi Dominio PaciFinance
+### Esempi Dominio Pacifinance
 
 #### Selector (utils)
 ```ts

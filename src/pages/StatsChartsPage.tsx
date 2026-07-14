@@ -57,8 +57,8 @@ function StatsChartsPage() {
   return (
     <Div>
       <SEOHead 
-        title={language === 'it' ? 'Grafici e Statistiche | PaciFinance' : 'Charts & Statistics | PaciFinance'}
-        description={language === 'it' ? 'Visualizza grafici dettagliati e statistiche delle tue finanze personali su PaciFinance.' : 'View detailed charts and statistics of your personal finances on PaciFinance.'}
+        title={language === 'it' ? 'Grafici e Statistiche | Pacifinance' : 'Charts & Statistics | Pacifinance'}
+        description={language === 'it' ? 'Visualizza grafici dettagliati e statistiche delle tue finanze personali su Pacifinance.' : 'View detailed charts and statistics of your personal finances on Pacifinance.'}
         noindex={true}
       />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />

@@ -15,9 +15,9 @@ export default function PricingPage() {
   return (
     <div className="w-full flex flex-col min-h-screen overflow-auto" style={{ background: theme.backgroundColor }}>
       <SEOHead 
-        title={language === 'it' ? 'Prezzi e Piani | PaciFinance' : 'Pricing and Plans | PaciFinance'}
-        description={language === 'it' ? 'Scopri i piani e i prezzi di PaciFinance per la gestione delle tue finanze personali. Scegli il piano più adatto alle tue esigenze.' : 'Discover PaciFinance plans and pricing for managing your personal finances. Choose the plan that best suits your needs.'}
-        keywords={language === 'it' ? 'prezzi, piani, abbonamento, PaciFinance, finanze personali, costo app finanze, piano gratuito, piano premium' : 'pricing, plans, subscription, PaciFinance, personal finance, finance app cost, free plan, premium plan'}
+        title={language === 'it' ? 'Prezzi e Piani | Pacifinance' : 'Pricing and Plans | Pacifinance'}
+        description={language === 'it' ? 'Scopri i piani e i prezzi di Pacifinance per la gestione delle tue finanze personali. Scegli il piano più adatto alle tue esigenze.' : 'Discover Pacifinance plans and pricing for managing your personal finances. Choose the plan that best suits your needs.'}
+        keywords={language === 'it' ? 'prezzi, piani, abbonamento, Pacifinance, finanze personali, costo app finanze, piano gratuito, piano premium' : 'pricing, plans, subscription, Pacifinance, personal finance, finance app cost, free plan, premium plan'}
         canonical="/pricing"
         language={language}
       />
@@ -214,8 +214,8 @@ export default function PricingPage() {
             <BuyMeACoffeeWidget />
             <p className="text-sm opacity-70 text-center max-w-md" style={{ color: theme.textColor }}>
               {language === "it"
-                ? "Il tuo supporto ci aiuta a mantenere PaciFinance gratuito per tutti. Ogni donazione, anche piccola, fa la differenza!"
-                : "Your support helps us keep PaciFinance free for everyone. Every donation, no matter how small, makes a difference!"}
+                ? "Il tuo supporto ci aiuta a mantenere Pacifinance gratuito per tutti. Ogni donazione, anche piccola, fa la differenza!"
+                : "Your support helps us keep Pacifinance free for everyone. Every donation, no matter how small, makes a difference!"}
             </p>
           </div>
           <p className="text-xs mt-4 opacity-60" style={{ color: theme.textColor }}>

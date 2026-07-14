@@ -2,7 +2,7 @@ name: Deploy to Vercel
 
 # Deploys via the Vercel CLI instead of Vercel's native Git integration, so
 # this keeps working on the Hobby plan even after the repo moves into the
-# PaciFinance GitHub organization (Vercel's dashboard "Import" flow nudges
+# Pacifinance GitHub organization (Vercel's dashboard "Import" flow nudges
 # org-owned repos toward a paid Team; deploying by CLI with a personal
 # account token sidesteps that entirely - the deploy is authenticated by the
 # Vercel token/project, not by which GitHub entity owns the source repo).

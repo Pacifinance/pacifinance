@@ -1,5 +1,5 @@
 /**
- * Fuzzy category matching — free text → PaciFinance category index.
+ * Fuzzy category matching — free text → Pacifinance category index.
  *
  * Deliberately isolated from utils/dataImport.ts (which re-exports
  * matchCategory for backward compatibility): dataImport.ts pulls in
@@ -21,7 +21,7 @@ const OUTFLOW_CATEGORIES = EXPENSE_CATEGORY_CODES.map(c => ({
 }));
 
 /**
- * Aliases for fuzzy matching user categories → PaciFinance categories
+ * Aliases for fuzzy matching user categories → Pacifinance categories
  */
 const CATEGORY_ALIASES = {
   // Italian aliases
@@ -63,7 +63,7 @@ const CATEGORY_ALIASES = {
 };
 
 /**
- * Fuzzy match a user's category string to a PaciFinance category index
+ * Fuzzy match a user's category string to a Pacifinance category index
  * @param {string} userCategory
  * @returns {{ index: number, label: string, isIncome: boolean } | null}
  */

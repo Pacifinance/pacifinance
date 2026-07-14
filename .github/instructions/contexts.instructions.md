@@ -2,7 +2,7 @@
 applyTo: "src/contexts/**"
 ---
 
-# Contexts — PaciFinance Rules
+# Contexts — Pacifinance Rules
 
 ## Provider Hierarchy (NEVER change order)
 ```

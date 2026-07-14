@@ -87,16 +87,16 @@
 
 ### ❓ FAQ
 
-**IT**: "domande frequenti finanze", "come funziona PaciFinance", "supporto app", "sicurezza dati finanziari"
-**EN**: "finance app FAQ", "how PaciFinance works", "app support", "financial data security"
-**DE**: "häufig gestellte Fragen", "PaciFinance Anleitung", "Datensicherheit"
+**IT**: "domande frequenti finanze", "come funziona Pacifinance", "supporto app", "sicurezza dati finanziari"
+**EN**: "finance app FAQ", "how Pacifinance works", "app support", "financial data security"
+**DE**: "häufig gestellte Fragen", "Pacifinance Anleitung", "Datensicherheit"
 
 ---
 
 ### 📞 Contact
 
-**IT**: "contatti", "supporto clienti", "assistenza PaciFinance", "richiesta informazioni"
-**EN**: "contact us", "customer support", "PaciFinance help", "get in touch"
+**IT**: "contatti", "supporto clienti", "assistenza Pacifinance", "richiesta informazioni"
+**EN**: "contact us", "customer support", "Pacifinance help", "get in touch"
 **DE**: "Kontakt", "Kundensupport", "Hilfe anfordern"
 
 ---
@@ -105,17 +105,17 @@
 
 ### Homepage IT
 ```
-Gestisci le tue finanze personali con PaciFinance: traccia spese, confronta il tuo budget in modo anonimo e ottimizza il risparmio. App gratuita e sicura. Privacy garantita. 🇮🇹
+Gestisci le tue finanze personali con Pacifinance: traccia spese, confronta il tuo budget in modo anonimo e ottimizza il risparmio. App gratuita e sicura. Privacy garantita. 🇮🇹
 ```
 
 ### Homepage EN
 ```
-Manage your personal finances with PaciFinance: track expenses, compare your budget anonymously, and optimize savings. Free and secure app. Privacy-first. 🌍
+Manage your personal finances with Pacifinance: track expenses, compare your budget anonymously, and optimize savings. Free and secure app. Privacy-first. 🌍
 ```
 
 ### Homepage DE
 ```
-Verwalten Sie Ihre persönlichen Finanzen mit PaciFinance: Ausgaben verfolgen, Budget anonym vergleichen, Ersparnisse optimieren. Kostenlose & sichere App. Datenschutz zuerst. 🇩🇪
+Verwalten Sie Ihre persönlichen Finanzen mit Pacifinance: Ausgaben verfolgen, Budget anonym vergleichen, Ersparnisse optimieren. Kostenlose & sichere App. Datenschutz zuerst. 🇩🇪
 ```
 
 ---

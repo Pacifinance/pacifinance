@@ -1,4 +1,4 @@
-# PaciFinance - Analisi, Idee e Feature Planning
+# Pacifinance - Analisi, Idee e Feature Planning
 
 > Documento centralizzato per analisi tecniche, idee future e planning delle feature.
 > Le analisi vengono spostate qui dal `todo.md` per tenerlo pulito come puro checklist.
@@ -81,7 +81,7 @@ Se lo si variabilizza si potrebbero mettere dei lucchetti su quelli successivi c
 
 ### Contesto Attuale
 
-Attualmente PaciFinance ha un sistema di autenticazione **ultra-minimale orientato alla privacy**:
+Attualmente Pacifinance ha un sistema di autenticazione **ultra-minimale orientato alla privacy**:
 - L'utente si registra inserendo **solo una password**
 - Il sistema genera automaticamente un **ID univoco** (userId)
 - L'utente accede con **ID + password**
@@ -245,7 +245,7 @@ function normalizeEmail(email) {
 **Trasparenza consigliata:** Spiegare chiaramente all'utente:
 - "La tua email è cifrata nel nostro database. Nessuno può leggerla direttamente."
 - "Usiamo la tua email SOLO per: recupero password, recupero ID, e reminder (se attivati)."
-- "Puoi usare PaciFinance anche senza email — ma non potremo aiutarti a recuperare l'account."
+- "Puoi usare Pacifinance anche senza email — ma non potremo aiutarti a recuperare l'account."
 
 ### Magic Link e Reminder: il Dilemma Privacy
 
@@ -325,7 +325,7 @@ EMAIL_ENCRYPTION_KEY=<random 32-byte key, hex encoded>
 
 1. **Setup Webhook BMC** → Registra un endpoint del tuo server (es. `POST /api/webhooks/bmc`) nella dashboard BMC ([studio.buymeacoffee.com/webhooks](https://studio.buymeacoffee.com/webhooks))
 2. **Ricezione evento** → Quando qualcuno dona, BMC invia un payload JSON con info del supporter (email, nome, messaggio)
-3. **Matching utente** → Il server confronta l'`emailHash` del donatore con gli `emailHash` degli utenti registrati su PaciFinance (⚠️ richiede che l'utente abbia fornito la stessa email sia su BMC che su PaciFinance)
+3. **Matching utente** → Il server confronta l'`emailHash` del donatore con gli `emailHash` degli utenti registrati su Pacifinance (⚠️ richiede che l'utente abbia fornito la stessa email sia su BMC che su Pacifinance)
 4. **Flag nel database** → Se c'è match, imposta `hasDonated: true` sul documento utente (nessun dato di pagamento salvato!)
 5. **Badge "Supporter"** → Il frontend legge il flag da `userData.hasDonated` e sblocca il badge
 
@@ -336,7 +336,7 @@ EMAIL_ENCRYPTION_KEY=<random 32-byte key, hex encoded>
 - ✅ Token di verifica webhook per autenticità delle richieste
 
 **Approccio alternativo (più semplice, senza webhook):**
-- L'utente dona su BMC, poi clicca "Ho donato" in PaciFinance
+- L'utente dona su BMC, poi clicca "Ho donato" in Pacifinance
 - Il server verifica tramite l'API BMC (endpoint `/supporters`) se l'emailHash corrisponde
 - Se confermato, sblocca il badge
 

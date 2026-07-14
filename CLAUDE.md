@@ -1,4 +1,4 @@
-# PaciFinance — Claude Code Context
+# Pacifinance — Claude Code Context
 
 ## Quick Commands
 ```bash

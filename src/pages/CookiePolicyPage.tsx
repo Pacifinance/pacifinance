@@ -14,9 +14,9 @@ export default function CookiePolicyPage() {
   return (
     <>
       <SEOHead 
-        title={language === 'it' ? 'Politica sui Cookie | PaciFinance' : 'Cookie Policy | PaciFinance'}
-        description={language === 'it' ? 'Politica sui Cookie per PaciFinance - Scopri come utilizziamo i cookie sulla nostra piattaforma finanziaria.' : 'Cookie Policy for PaciFinance - Learn about how we use cookies on our privacy-focused personal finance platform.'}
-        keywords={language === 'it' ? 'politica cookie, privacy, gestione cookie, PaciFinance' : 'cookie policy, privacy, cookie management, PaciFinance'}
+        title={language === 'it' ? 'Politica sui Cookie | Pacifinance' : 'Cookie Policy | Pacifinance'}
+        description={language === 'it' ? 'Politica sui Cookie per Pacifinance - Scopri come utilizziamo i cookie sulla nostra piattaforma finanziaria.' : 'Cookie Policy for Pacifinance - Learn about how we use cookies on our privacy-focused personal finance platform.'}
+        keywords={language === 'it' ? 'politica cookie, privacy, gestione cookie, Pacifinance' : 'cookie policy, privacy, cookie management, Pacifinance'}
         canonical="/cookie-policy"
       />
 
@@ -51,8 +51,8 @@ export default function CookiePolicyPage() {
                 </h2>
                 <p className="mb-4 leading-relaxed">
                   {language === 'it'
-                    ? 'PaciFinance utilizza solo cookie tecnici necessari per il funzionamento del sito e cookie analitici anonimi per migliorare il servizio.'
-                    : 'PaciFinance only uses technical cookies necessary for the site to function and anonymous analytics cookies to improve the service.'
+                    ? 'Pacifinance utilizza solo cookie tecnici necessari per il funzionamento del sito e cookie analitici anonimi per migliorare il servizio.'
+                    : 'Pacifinance only uses technical cookies necessary for the site to function and anonymous analytics cookies to improve the service.'
                   }
                 </p>
                 <ul className="list-disc list-inside space-y-2 ml-4">

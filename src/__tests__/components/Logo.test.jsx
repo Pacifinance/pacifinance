@@ -54,21 +54,21 @@ describe('Logo Component', () => {
     it('should render the logo', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       expect(logo).toBeInTheDocument();
     });
 
     it('should have correct alt text', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
-      expect(logo).toHaveAttribute('alt', 'PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
+      expect(logo).toHaveAttribute('alt', 'Pacifinance Logo');
     });
 
     it('should have src attribute', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       expect(logo).toHaveAttribute('src');
     });
   });
@@ -77,7 +77,7 @@ describe('Logo Component', () => {
     it('should navigate to home on click', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       fireEvent.click(logo.parentElement);
       
       expect(mockNavigate).toHaveBeenCalledWith('/en', undefined);
@@ -86,7 +86,7 @@ describe('Logo Component', () => {
     it('should navigate only once per click', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       fireEvent.click(logo.parentElement);
       
       expect(mockNavigate).toHaveBeenCalledTimes(1);
@@ -97,7 +97,7 @@ describe('Logo Component', () => {
     it('should have cursor pointer on container', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       const container = logo.parentElement;
       
       expect(container).toHaveStyle({ cursor: 'pointer' });
@@ -108,7 +108,7 @@ describe('Logo Component', () => {
     it('should handle mouse enter event', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       const container = logo.parentElement;
       
       // Should not throw on hover
@@ -118,7 +118,7 @@ describe('Logo Component', () => {
     it('should handle mouse leave event', () => {
       render(<LogoPaci />, { wrapper: Wrapper });
       
-      const logo = screen.getByAltText('PaciFinance Logo');
+      const logo = screen.getByAltText('Pacifinance Logo');
       const container = logo.parentElement;
       
       // Should not throw on hover leave

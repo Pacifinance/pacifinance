@@ -239,7 +239,7 @@ function Info({ theme }) {
                                     fontWeight: 'bold',
                                     fontSize: '1.1rem'
                                 }}>
-                                    ☕ Support PaciFinance
+                                    ☕ Support Pacifinance
                                 </div>
                             </ModernCoffeeButton>
                         </a>

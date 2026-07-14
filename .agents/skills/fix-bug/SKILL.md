@@ -1,7 +1,7 @@
 # Skill: Fix Bug
 
 ## Purpose
-Diagnosi e fix di bug in PaciFinance con verifica che non vengano introdotte regressioni.
+Diagnosi e fix di bug in Pacifinance con verifica che non vengano introdotte regressioni.
 
 ## Trigger
 Usa questa skill quando: *c'è un bug*, *qualcosa non funziona*, *errore in console*, *test fallisce*, *comportamento inatteso*.
@@ -57,7 +57,7 @@ Se il bug è un pattern ricorrente (vedi tabella Phase 2): aggiorna la tabella c
 if (isLoading || !userData) return <Skeleton />;
 
 // Traduzione mancante — fallback sicuro
-const title = translations?.dashboard?.title ?? 'PaciFinance';
+const title = translations?.dashboard?.title ?? 'Pacifinance';
 
 // Data locale (non UTC)
 const today = new Date().toLocaleDateString('sv'); // 'YYYY-MM-DD'

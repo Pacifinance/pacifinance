@@ -1308,7 +1308,7 @@ const SettingsPage = () => {
                                 lineHeight: "1.4",
                                 opacity: 0.7
                             }}>
-                                {translations.sidebar.settings.installAppSubtitle || (language === "it" ? "Aggiungi PaciFinance alla schermata home" : "Add PaciFinance to your home screen")}
+                                {translations.sidebar.settings.installAppSubtitle || (language === "it" ? "Aggiungi Pacifinance alla schermata home" : "Add Pacifinance to your home screen")}
                             </p>
                             <PWAInstallGuide variant="compact" />
                         </div>

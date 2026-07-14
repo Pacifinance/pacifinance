@@ -34,7 +34,7 @@ export default function BuyMeACoffeeWidget() {
       }}
       data-umami-event="support-pacifinance-bmc"
     >
-      ☕ Support PaciFinance
+      ☕ Support Pacifinance
     </a>
   );
 }

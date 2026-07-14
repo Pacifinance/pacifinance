@@ -1,4 +1,4 @@
-# PaciFinance — Analisi Flow Conversioni Valuta
+# Pacifinance — Analisi Flow Conversioni Valuta
 
 > Documento di riferimento per il flusso completo delle conversioni EUR ↔ valuta display.
 > Ultima revisione: Aprile 2026

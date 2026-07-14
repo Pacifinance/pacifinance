@@ -1,6 +1,6 @@
 {
-  "name": "PaciFinance - Personal Finance",
-  "short_name": "PaciFinance",
+  "name": "Pacifinance - Personal Finance",
+  "short_name": "Pacifinance",
   "description": "Gestisci le tue finanze personali con dashboard, grafici e statistiche avanzate",
   "start_url": "/",
   "scope": "/",

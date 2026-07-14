@@ -16,8 +16,8 @@ export const getSocialMetadata = (language) => {
   
   return {
     title: isItalian 
-      ? "Unifica le Tue Finanze - Dashboard Multi-Piattaforma PaciFinance"
-      : "Unify Your Finances - PaciFinance Multi-Platform Dashboard",
+      ? "Unifica le Tue Finanze - Dashboard Multi-Piattaforma Pacifinance"
+      : "Unify Your Finances - Pacifinance Multi-Platform Dashboard",
     
     description: isItalian
       ? "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti."

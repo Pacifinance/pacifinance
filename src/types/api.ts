@@ -1,6 +1,6 @@
 /**
  * Centralized types for every request / response between the frontend and
- * the PaciFinance backend (`server/src/routes/**`).
+ * the Pacifinance backend (`server/src/routes/**`).
  *
  * Naming convention used across this file:
  *   - `*Request`  → payload sent to the server in `req.body`

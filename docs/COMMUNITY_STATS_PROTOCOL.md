@@ -1,6 +1,6 @@
 # Community Stats Protocol (draft v1)
 
-This document defines the boundary between a self-hosted PaciFinance instance
+This document defines the boundary between a self-hosted Pacifinance instance
 and the optional hosted community-statistics service. It is a protocol draft,
 not an enabled network endpoint.
 

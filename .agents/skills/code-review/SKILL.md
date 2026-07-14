@@ -1,7 +1,7 @@
 # Skill: Code Review
 
 ## Purpose
-Review sistematico del codice PaciFinance per correttezza, sicurezza, convenzioni e qualità.
+Review sistematico del codice Pacifinance per correttezza, sicurezza, convenzioni e qualità.
 
 ## Trigger
 Usa quando: *revisione PR*, *review del codice*, *controlla questo file*, *è corretto?*

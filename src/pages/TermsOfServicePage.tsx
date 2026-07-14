@@ -14,9 +14,9 @@ export default function TermsOfServicePage() {
   return (
     <>
       <SEOHead 
-        title={language === 'it' ? 'Termini di Servizio | PaciFinance' : 'Terms of Service | PaciFinance'}
-        description={language === 'it' ? 'Termini di Servizio per PaciFinance - Comprendi i tuoi diritti e responsabilità utilizzando la nostra piattaforma finanziaria.' : 'Terms of Service for PaciFinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform.'}
-        keywords={language === 'it' ? 'termini di servizio, condizioni, diritti, PaciFinance' : 'terms of service, conditions, rights, PaciFinance'}
+        title={language === 'it' ? 'Termini di Servizio | Pacifinance' : 'Terms of Service | Pacifinance'}
+        description={language === 'it' ? 'Termini di Servizio per Pacifinance - Comprendi i tuoi diritti e responsabilità utilizzando la nostra piattaforma finanziaria.' : 'Terms of Service for Pacifinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform.'}
+        keywords={language === 'it' ? 'termini di servizio, condizioni, diritti, Pacifinance' : 'terms of service, conditions, rights, Pacifinance'}
         canonical="/terms-of-service"
       />
 
@@ -47,8 +47,8 @@ export default function TermsOfServicePage() {
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
                   {language === 'it' 
-                    ? 'Utilizzando PaciFinance, accetti questi termini di servizio. Se non accetti questi termini, non utilizzare la piattaforma.'
-                    : 'By using PaciFinance, you accept these terms of service. If you do not accept these terms, do not use the platform.'
+                    ? 'Utilizzando Pacifinance, accetti questi termini di servizio. Se non accetti questi termini, non utilizzare la piattaforma.'
+                    : 'By using Pacifinance, you accept these terms of service. If you do not accept these terms, do not use the platform.'
                   }
                 </p>
               </section>
@@ -59,8 +59,8 @@ export default function TermsOfServicePage() {
                 </h2>
                 <p className="mb-4 leading-relaxed">
                   {language === 'it'
-                    ? 'PaciFinance è fornito gratuitamente per uso personale. Non è consentito utilizzare la piattaforma per scopi commerciali non autorizzati.'
-                    : 'PaciFinance is provided free of charge for personal use. You may not use the platform for unauthorized commercial purposes.'
+                    ? 'Pacifinance è fornito gratuitamente per uso personale. Non è consentito utilizzare la piattaforma per scopi commerciali non autorizzati.'
+                    : 'Pacifinance is provided free of charge for personal use. You may not use the platform for unauthorized commercial purposes.'
                   }
                 </p>
               </section>
@@ -83,8 +83,8 @@ export default function TermsOfServicePage() {
                 </h2>
                 <p className="leading-relaxed">
                   {language === 'it'
-                    ? 'PaciFinance è fornito "così com\'è". Non garantiamo che il servizio sia sempre disponibile o privo di errori.'
-                    : 'PaciFinance is provided "as is". We do not guarantee that the service will always be available or error-free.'
+                    ? 'Pacifinance è fornito "così com\'è". Non garantiamo che il servizio sia sempre disponibile o privo di errori.'
+                    : 'Pacifinance is provided "as is". We do not guarantee that the service will always be available or error-free.'
                   }
                 </p>
               </section>

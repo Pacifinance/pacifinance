@@ -10,7 +10,7 @@ Usa quando: *aggiungi tipo transazione*, *nuova categoria di uscita/entrata*, *n
 
 ## Instructions
 
-PaciFinance gestisce transazioni tramite tag backend. Ogni tipo di transazione ha:
+Pacifinance gestisce transazioni tramite tag backend. Ogni tipo di transazione ha:
 - Un tag nel sistema tags (`outflowsTags`, `incomesTags`, `paymentTags`)
 - Colori/icone centralizzati
 - Chiavi i18n per display

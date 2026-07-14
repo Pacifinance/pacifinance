@@ -4,7 +4,7 @@
  * Handles parsing CSV/Excel files and preparing data for import.
  * All parsing happens client-side — no file upload to server.
  * 
- * Strategy B: Column Mapping — user maps their columns to PaciFinance fields.
+ * Strategy B: Column Mapping — user maps their columns to Pacifinance fields.
  */
 
 import Papa from 'papaparse';
@@ -323,7 +323,7 @@ export const autoDetectColumns = (headers, rows) => {
  * @property {string} date - YYYY-MM-DD format
  * @property {number} amount - Positive number
  * @property {boolean} isOutflow - true = expense, false = income
- * @property {number} categoryIndex - PaciFinance category index
+ * @property {number} categoryIndex - Pacifinance category index
  * @property {string} categoryLabel - Display label
  * @property {string} notes - Notes/description
  * @property {number} rowIndex - Original row index for error tracking

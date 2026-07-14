@@ -1,5 +1,5 @@
 /**
- * Currency configuration for PaciFinance multi-currency support.
+ * Currency configuration for Pacifinance multi-currency support.
  * 
  * All values in the database are stored in EUR.
  * Conversion happens at display-time (fromEUR) and input-time (toEUR).

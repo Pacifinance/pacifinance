@@ -225,7 +225,7 @@ export default function LandingFooter({ theme }) {
         <div className="pt-8 border-t" style={{ borderColor: theme.borderColor }}>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm opacity-70">
-              © {new Date().getFullYear()} PaciFinance. {translations.footer.rights}
+              © {new Date().getFullYear()} Pacifinance. {translations.footer.rights}
             </p>
             <span className="text-xs opacity-50 order-last md:order-none">
               v{APP_VERSION}

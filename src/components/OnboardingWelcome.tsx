@@ -320,7 +320,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
       <WelcomeCard $isDark={isDark}>
         <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🚀</div>
         <WelcomeTitle $textColor={textColor}>
-          {t.welcomeTitle || 'Welcome to PaciFinance!'}
+          {t.welcomeTitle || 'Welcome to Pacifinance!'}
         </WelcomeTitle>
         <WelcomeSubtitle $subtextColor={subtextColor}>
           {t.welcomeSubtitle || 'Complete these 4 steps to unlock your full financial dashboard with charts, comparisons, and insights.'}

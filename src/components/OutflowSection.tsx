@@ -178,6 +178,9 @@ const TableSection = styled.div`
   overflow: hidden;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e2e8f0'};
   background: ${p => p.theme.mode === 'dark' ? p.theme.backgroundColor : '#fff'};
+  box-shadow: ${p => p.theme.mode === 'dark'
+    ? '0 18px 45px rgba(0,0,0,0.18)'
+    : '0 18px 45px rgba(15,23,42,0.07)'};
 `;
 
 const TableHeader = styled.div`
@@ -468,6 +471,24 @@ const TableScroll = styled.div`
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: ${p => p.theme.buttonBackgroundColor}88 transparent;
+
+  &::-webkit-scrollbar { height: 7px; }
+  &::-webkit-scrollbar-thumb { background: ${p => p.theme.buttonBackgroundColor}88; border-radius: 999px; }
+`;
+
+const MobileTableHint = styled.div`
+  display: none;
+  padding: 0.55rem 0.9rem;
+  color: ${p => p.theme.textColor};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#f8fafc'};
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+  font-size: 0.72rem;
+  font-weight: 650;
+  opacity: 0.72;
+
+  @media (max-width: 768px) { display: flex; justify-content: space-between; }
 `;
 
 const ActionBtn = styled.button`
@@ -477,20 +498,25 @@ const ActionBtn = styled.button`
   font-size: 0.8rem;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
   &:hover:not(:disabled) { transform: scale(1.08); }
   &.delete {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-    box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+    background: rgba(239,68,68,0.11);
+    color: #ef4444;
   }
   &.edit {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    box-shadow: 0 2px 4px rgba(59,130,246,0.3);
+    background: rgba(59,130,246,0.11);
+    color: #3b82f6;
     &:hover:not(:disabled) { transform: scale(1.08); }
   }
   &.cancel {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    box-shadow: 0 2px 4px rgba(245,158,11,0.3);
+    background: rgba(245,158,11,0.11);
+    color: #d97706;
     &:hover:not(:disabled) { transform: scale(1.08); }
   }
 `;
@@ -536,16 +562,11 @@ const InlineSelect = styled.select`
 const TotalRow = styled.tr`
   font-weight: 700;
   td { text-align: center; }
-  &.filtered {
-    background: #ff6b6b;
-    color: #6b1a1a;
-    font-size: 1.02em;
-  }
-  &.grand {
-    background: #e23c3c;
-    color: #fff;
-    font-size: 1.08em;
-  }
+  background: ${p => p.$filtered ? 'rgba(239,68,68,0.13)' : 'rgba(239,68,68,0.2)'};
+  color: ${p => p.theme.textColor};
+  font-size: 1.02em;
+  td { border-top: 1px solid rgba(239,68,68,0.28); }
+  td:first-child, td:last-child { background: inherit !important; position: static; }
 `;
 
 const PercentBadge = styled.span`
@@ -1189,17 +1210,18 @@ export default function OutflowSection({
         );
       }),
     ];
-    if (filtersActive) {
-      rows.push(
-        <TotalRow key="total-filtered-outflow" className="filtered">
+    rows.push(
+        <TotalRow key="total-visible-outflow" theme={theme} $filtered={Boolean(filtersActive)}>
           <td colSpan={2} style={{ textAlign: 'center' }}>
-            {translations.general.totalFiltered || 'Total Filtered'}
+            {filtersActive
+              ? (translations.general.totalFiltered || 'Totale filtrato')
+              : (translations.general.totalPeriod || 'Totale periodo')}
           </td>
           <td style={{ textAlign: 'center' }}>
             {isHidden
               ? '****'
-              : formatNumber(totals.totalFiltered)}{' '}{currencySymbol}
-            {!isHidden && totals.totalAll > 0 && (
+              : formatNumber(filtersActive ? totals.totalFiltered : totals.totalAll)}{' '}{currencySymbol}
+            {filtersActive && !isHidden && totals.totalAll > 0 && (
               <>
                 {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
               </>
@@ -1207,18 +1229,6 @@ export default function OutflowSection({
           </td>
           <td colSpan={3}></td>
         </TotalRow>,
-      );
-    }
-    rows.push(
-      <TotalRow key="total-outflow" className="grand">
-        <td colSpan={2} style={{ textAlign: 'center' }}>{translations.general.total}</td>
-        <td style={{ textAlign: 'center' }}>
-          {isHidden
-            ? '****'
-            : formatNumber(totals.totalAll)}{' '}{currencySymbol}
-        </td>
-        <td colSpan={3}></td>
-      </TotalRow>,
     );
     return rows;
   }
@@ -1617,14 +1627,20 @@ export default function OutflowSection({
         {tableView === 'chart' ? (
           renderCategoryChart()
         ) : (
-          <TableScroll>
-            <StyledTable theme={theme} className="outflow-table">
-              <thead>{renderTableHeader()}</thead>
-              <tbody>
-                {renderOutflowItems(chosenOutflowsToShow)}
-              </tbody>
-            </StyledTable>
-          </TableScroll>
+          <>
+            <MobileTableHint theme={theme}>
+              <span>{language === 'it' ? 'Scorri per vedere tutte le colonne' : 'Scroll to see all columns'}</span>
+              <span aria-hidden="true">← →</span>
+            </MobileTableHint>
+            <TableScroll>
+              <StyledTable theme={theme} className="outflow-table">
+                <thead>{renderTableHeader()}</thead>
+                <tbody>
+                  {renderOutflowItems(chosenOutflowsToShow)}
+                </tbody>
+              </StyledTable>
+            </TableScroll>
+          </>
         )}
       </TableSection>
     </SectionWrapper>

@@ -43,7 +43,10 @@ const shimmer = keyframes`
 // Layout principale per la dashboard
 export const MainDashboardLayout = styled.div`
   min-height: 100vh;
-  background: ${props => props.theme.backgroundColor};
+  background:
+    radial-gradient(circle at 85% 2%, ${props => props.theme.buttonBackgroundColor}14 0, transparent 28rem),
+    radial-gradient(circle at 8% 32%, ${props => props.theme.mode === 'dark' ? 'rgba(59,130,246,0.07)' : 'rgba(59,130,246,0.05)'} 0, transparent 24rem),
+    ${props => props.theme.backgroundColor};
   position: relative;
   overflow-x: hidden;
   
@@ -55,25 +58,25 @@ export const MainDashboardLayout = styled.div`
 `;
 
 export const DashboardContent = styled.div`
-  padding: 2rem 0rem; /* Rimuoviamo padding laterale per attaccare alla sidebar */
+  padding: 2rem 0;
   max-width: none; /* Rimuoviamo max-width per utilizzare tutto lo spazio */
   margin: 0;
   animation: ${fadeInUp} 0.8s ease-out;
   /* useScrollNavigation richiede solo documentHeight > windowHeight + 100px per
      attivare lo scroll-to-next-page: questi valori sono un margine di sicurezza,
      non il meccanismo principale (il contenuto reale ormai supera già un viewport). */
-  min-height: 108vh;
-  padding-bottom: 12vh;
+  min-height: 100vh;
+  padding-bottom: 7rem;
 
   @media (max-width: 768px) {
-    padding: 80px 0.5rem 10vh 0.5rem; /* 80px top per evitare overlap con mobile header (70px) */
-    min-height: 106vh;
+    padding: 78px 0 7rem;
+    min-height: 100vh;
   }
 `;
 
 // Header della dashboard
 export const ModernDashboardHeader = styled.header`
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   animation: ${fadeInUp} 0.8s ease-out;
 
   @media (max-width: 768px) {
@@ -84,29 +87,30 @@ export const ModernDashboardHeader = styled.header`
 export const ModernDashboardTitle = styled.h1`
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
+  justify-content: flex-start;
+  background: ${props => props.theme.mode === 'dark'
+    ? 'linear-gradient(120deg, #fff 0%, #dbeafe 58%, #34d399 100%)'
+    : 'linear-gradient(120deg, #0f172a 0%, #334155 58%, #079164 100%)'};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem); /* Dimensione ridotta */
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.75rem;
-  text-align: center;
+  font-size: clamp(1.85rem, 3vw, 2.65rem);
+  font-weight: 780;
+  letter-spacing: -0.045em;
+  margin: 0 0 1rem;
+  text-align: left;
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 1.5rem; /* Più piccolo su mobile */
+    align-items: flex-start;
+    font-size: 1.55rem;
     margin-bottom: 0.75rem;
   }
 `;
 
 // Overview del bilancio
 export const ModernBalanceOverview = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(420px, 1.5fr);
   align-items: center;
   background: ${props => props.theme.mode === 'dark' 
     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)'
@@ -117,12 +121,12 @@ export const ModernBalanceOverview = styled.div`
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(7, 145, 100, 0.2)'
   };
-  border-radius: 1.2rem;
-  padding: 1.5rem 1rem;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
   margin-bottom: 1rem;
   box-shadow: ${props => props.theme.mode === 'dark'
-    ? '0 15px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(7, 145, 100, 0.1)'
-    : '0 15px 30px rgba(0, 0, 0, 0.08), 0 0 20px rgba(7, 145, 100, 0.1)'
+    ? '0 24px 60px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255,255,255,0.05)'
+    : '0 24px 60px rgba(15, 23, 42, 0.09), inset 0 1px rgba(255,255,255,0.9)'
   };
   position: relative;
   overflow: hidden;
@@ -140,8 +144,9 @@ export const ModernBalanceOverview = styled.div`
   }
 
   .balance-main {
-    text-align: center;
-    margin-bottom: 1.2rem;
+    text-align: left;
+    margin: 0;
+    padding-right: 1.5rem;
 
     h2 {
       color: ${props => props.theme.textColor};
@@ -162,7 +167,7 @@ export const ModernBalanceOverview = styled.div`
     .balance-subtitle {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       color: ${props => props.theme.textColor};
       font-size: 0.85rem;
       opacity: 0.7;
@@ -170,7 +175,8 @@ export const ModernBalanceOverview = styled.div`
   }
 
   .balance-metrics {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 1rem;
 
     @media (max-width: 768px) {
@@ -181,12 +187,17 @@ export const ModernBalanceOverview = styled.div`
   }
 
   @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     padding: 1rem 0.75rem;
     margin-bottom: 0.75rem;
     border-radius: 0.8rem;
 
     .balance-main {
       margin-bottom: 0.75rem;
+      padding-right: 0;
+      text-align: left;
 
       h2 {
         font-size: 0.85rem;
@@ -198,8 +209,11 @@ export const ModernBalanceOverview = styled.div`
 
       .balance-subtitle {
         font-size: 0.75rem;
+        justify-content: flex-start;
       }
     }
+
+    .balance-metrics { display: flex; }
   }
 `;
 
@@ -217,7 +231,7 @@ export const ModernMetricCard = styled.div`
   };
   border-radius: 0.8rem;
   padding: 1rem;
-  min-width: 160px;
+  min-width: 0;
   transition: all 0.3s ease;
 
   &:hover {
@@ -419,8 +433,8 @@ export const InvestmentCardWrapper = styled.div`
   }
 
   @media (max-width: 768px) {
-    flex: 0 0 calc(50% - 0.25rem);
-    max-width: calc(50% - 0.25rem);
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 `;
 
@@ -448,6 +462,7 @@ export const ModernAssetCard = styled.div`
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16), inset 0 1px rgba(255,255,255,0.18);
 
   &::before {
     content: '';
@@ -664,6 +679,9 @@ export const ModernInvestmentCard = styled.div`
   overflow: hidden;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${props => props.theme.mode === 'dark'
+    ? '0 12px 30px rgba(0,0,0,0.2), inset 0 1px rgba(255,255,255,0.04)'
+    : '0 12px 30px rgba(15,23,42,0.07), inset 0 1px rgba(255,255,255,0.8)'};
 
   &::before {
     content: '';
@@ -858,7 +876,7 @@ export const ModernChartContainer = styled.div`
     ? 'rgba(255, 255, 255, 0.1)'
     : 'rgba(7, 145, 100, 0.2)'
   };
-  border-radius: 2rem;
+  border-radius: 1.25rem;
   padding: 1.25rem;
   text-align: center;
   transition: all 0.3s ease;
@@ -967,7 +985,7 @@ export const ModernIncomeExpenseSection = styled.section`
     ? 'rgba(255, 255, 255, 0.02)'
     : 'rgba(255, 255, 255, 0.8)'
   };
-  border-radius: 20px;
+  border-radius: 24px;
   backdrop-filter: blur(20px);
   border: 1px solid ${props => props.theme.mode === 'dark'
     ? 'rgba(255, 255, 255, 0.1)'
@@ -982,7 +1000,7 @@ export const ModernIncomeExpenseSection = styled.section`
   @media (max-width: 768px) {
     margin: 1rem 0;
     padding: 0.85rem;
-    border-radius: 12px;
+    border-radius: 16px;
   }
 `;
 
@@ -1079,31 +1097,32 @@ export const ModernIncomeExpenseCard = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 0.75rem;
+    padding: 0.7rem 0.35rem;
     min-width: auto;
     border-radius: 12px;
 
     .expense-icon {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       margin-bottom: 0.4rem;
     }
 
     .expense-content {
       h4.expense-name {
-        font-size: 0.85rem;
+        font-size: 0.72rem;
       }
 
       .expense-value {
-        font-size: 1.2rem;
+        font-size: clamp(0.82rem, 3.2vw, 1.05rem);
+        white-space: nowrap;
       }
 
       .expense-description {
-        font-size: 0.75rem;
+        display: none;
       }
 
       .income-outflow-button {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.75rem;
+        padding: 0.35rem 0.45rem;
+        font-size: 0.65rem;
       }
     }
   }

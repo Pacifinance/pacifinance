@@ -100,10 +100,10 @@
 ### Fase 3 — Apertura (open source)
 - [ ] Audit segreti/credenziali nella history git prima di aprire il repo
 - [x] Scegliere licenza: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche
-- [ ] Trasferire il repo serverless nell'organizzazione GitHub Pacifinance (transfer, non copia: GitHub crea i redirect automatici); archiviare il repo legacy con README che punta al nuovo
+- [x] Trasferire il repo serverless nell'organizzazione GitHub Pacifinance (transfer, non copia: GitHub crea i redirect automatici); archiviare il repo legacy con README che punta al nuovo
 - [x] Deploy Vercel da repo in org SENZA Vercel Pro: workflow `.github/workflows/deploy-vercel.yml` (Vercel CLI, non l'import nativo — l'import da org spinge verso Team a pagamento, il deploy via CLI+token personale no). Push su `main` → produzione, PR → preview con commento URL. Resta da: creare i 3 secrets (VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID via `vercel link` locale) e scollegare la Git integration nativa su Vercel per non deployare due volte
 - [ ] Org GitHub: 2FA obbligatoria per i membri, branch protection su main (PR + review), CODEOWNERS, secrets SOLO negli env di deploy (Vercel/Supabase), mai nel repo
-- [ ] Co-owner: aggiungere un secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2)
+- [x] Co-owner: aggiungere un secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2)
 - [x] Rimosso il widget BuyMeACoffee floating globale (script iniettato fuori dall'albero React, restava visibile su ogni pagina inclusa l'app autenticata dopo la prima visita a Landing/Pricing/Info — invasivo e incoerente col posizionamento privacy-first); sostituito con un link statico "☕ Support Pacifinance" solo dove c'è già una sezione di supporto dedicata
 - [x] FUNDING.yml: link BuyMeACoffee come canale statico iniziale; GitHub Sponsors aggiungibile quando attivo
 - [x] README + CONTRIBUTING in inglese, CI pubblica (GitHub Actions: lint+test+build su PR — gratis per repo pubblici)

@@ -91,10 +91,13 @@ import { isNewUser } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
 
 const ResponsivePadding = styled.div`
+  width: min(100%, 1440px);
+  margin: 0 auto;
   padding: 0 2rem;
+  box-sizing: border-box;
   
   @media (max-width: 768px) {
-    padding: 0 0.5rem;
+    padding: 0 0.75rem;
   }
 `;
 
@@ -885,10 +888,9 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
                     {/* Card principali: Entrate, Uscite, Risparmiato */}
                     <div style={{
-                        display: 'flex',
-                        flexDirection: isMobileScreen ? 'column' : 'row',
+                        display: 'grid',
+                        gridTemplateColumns: isMobileScreen ? 'repeat(3, minmax(0, 1fr))' : 'repeat(3, minmax(220px, 1fr))',
                         gap: isMobileScreen ? '0.75rem' : '1.25rem',
-                        justifyContent: 'space-around'
                     }}>
                         {incExpData.map((item, index) => (
                             <ModernIncomeExpenseCard key={index} theme={theme} itemColor={item.color}>

@@ -21,10 +21,17 @@ const ToolbarContainer = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  width: fit-content;
+  margin: 0 0 1rem auto;
+  padding: 0.3rem;
+  border-radius: 0.85rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)'};
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.72)'};
+  box-shadow: ${props => props.theme.mode === 'dark' ? '0 10px 30px rgba(0,0,0,0.16)' : '0 10px 30px rgba(15,23,42,0.06)'};
+  backdrop-filter: blur(14px);
   
   @media (max-width: 768px) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     gap: 0.35rem;
   }
 `;
@@ -34,7 +41,7 @@ const ToolbarButton = styled.button`
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.75rem;
-  border-radius: 0.6rem;
+  border-radius: 0.65rem;
   border: 1px solid ${props => props.$active
     ? 'rgba(34,197,94,0.4)'
     : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};

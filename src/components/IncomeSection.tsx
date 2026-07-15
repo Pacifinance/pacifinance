@@ -207,6 +207,9 @@ const TableSection = styled.div`
   background: ${(p) => p.theme.mode === 'dark'
     ? p.theme.backgroundColor
     : '#fff'};
+  box-shadow: ${(p) => p.theme.mode === 'dark'
+    ? '0 18px 45px rgba(0,0,0,0.18)'
+    : '0 18px 45px rgba(15,23,42,0.07)'};
 `;
 
 const TableHeader = styled.div`
@@ -234,6 +237,24 @@ const TableScroll = styled.div`
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: ${(p) => p.theme.buttonBackgroundColor}88 transparent;
+
+  &::-webkit-scrollbar { height: 7px; }
+  &::-webkit-scrollbar-thumb { background: ${(p) => p.theme.buttonBackgroundColor}88; border-radius: 999px; }
+`;
+
+const MobileTableHint = styled.div`
+  display: none;
+  padding: 0.55rem 0.9rem;
+  color: ${(p) => p.theme.textColor};
+  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#f8fafc'};
+  border-bottom: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+  font-size: 0.72rem;
+  font-weight: 650;
+  opacity: 0.72;
+
+  @media (max-width: 768px) { display: flex; justify-content: space-between; }
 `;
 
 const ActionBtn = styled.button`
@@ -291,16 +312,10 @@ const InlineInput = styled.input`
 `;
 
 const TotalRow = styled.tr`
-  font-weight: 600;
-  
-  &.filtered {
-    background: rgba(16, 185, 129, 0.12) !important;
-    td { color: #059669; }
-  }
-  &.grand {
-    background: rgba(16, 185, 129, 0.2) !important;
-    td { color: #047857; font-weight: 700; }
-  }
+  font-weight: 700;
+  background: ${(p) => p.$filtered ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.2)'} !important;
+  td { color: ${(p) => p.theme.mode === 'dark' ? '#6ee7b7' : '#047857'}; border-top: 1px solid rgba(16,185,129,0.25); }
+  td:first-child, td:last-child { background: inherit !important; position: static; }
 `;
 
 const PercentBadge = styled.span`
@@ -802,17 +817,18 @@ export default function IncomeSection({
         );
       }),
     ];
-    if (filtersActive) {
-      rows.push(
-        <TotalRow key="total-filtered-income" className="filtered">
+    rows.push(
+        <TotalRow key="total-visible-income" theme={theme} $filtered={Boolean(filtersActive)}>
           <td style={{ textAlign: 'center' }}>
-            {translations.general.totalFiltered || 'Total Filtered'}
+            {filtersActive
+              ? (translations.general.totalFiltered || 'Totale filtrato')
+              : (translations.general.totalPeriod || 'Totale periodo')}
           </td>
           <td style={{ textAlign: 'center' }}>
             {isHidden
               ? '****'
-              : formatNumber(totals.totalFiltered)}{' '}{currencySymbol}
-            {!isHidden && totals.totalAll > 0 && (
+              : formatNumber(filtersActive ? totals.totalFiltered : totals.totalAll)}{' '}{currencySymbol}
+            {filtersActive && !isHidden && totals.totalAll > 0 && (
               <>
                 {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
               </>
@@ -820,18 +836,6 @@ export default function IncomeSection({
           </td>
           <td colSpan={3}></td>
         </TotalRow>,
-      );
-    }
-    rows.push(
-      <TotalRow key="total-income" className="grand">
-        <td style={{ textAlign: 'center' }}>{translations.general.total}</td>
-        <td style={{ textAlign: 'center' }}>
-          {isHidden
-            ? '****'
-            : formatNumber(totals.totalAll)}{' '}{currencySymbol}
-        </td>
-        <td colSpan={3}></td>
-      </TotalRow>,
     );
     return rows;
   }
@@ -994,6 +998,10 @@ export default function IncomeSection({
               ))}
           </ThemedSelect>
         </TableHeader>
+        <MobileTableHint theme={theme}>
+          <span>{language === 'it' ? 'Scorri per vedere tutte le colonne' : 'Scroll to see all columns'}</span>
+          <span aria-hidden="true">← →</span>
+        </MobileTableHint>
         <TableScroll>
           <StyledTable theme={theme} className="income-table">
             <thead>{renderTableHeader()}</thead>

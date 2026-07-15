@@ -48,6 +48,21 @@ export const useScrollNavigation = (enabled = true) => {
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [triggerIntervalId, setTriggerIntervalId] = useState(null);
   const [pageLoadTime, setPageLoadTime] = useState(Date.now());
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 839px)').matches
+      : false
+  );
+  const navigationEnabled = enabled && !isMobileViewport;
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const mediaQuery = window.matchMedia('(max-width: 839px)');
+    const handleChange = (event) => setIsMobileViewport(event.matches);
+    setIsMobileViewport(mediaQuery.matches);
+    mediaQuery.addEventListener?.('change', handleChange);
+    return () => mediaQuery.removeEventListener?.('change', handleChange);
+  }, []);
 
 // Periodo di grazia dopo il caricamento della pagina (3 secondi)
 const PAGE_LOAD_GRACE_PERIOD = 3000;
@@ -58,7 +73,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
   }, [location.pathname]);
 
   const navigateToPage = useCallback((direction) => {
-    if (!enabled || isNavigating) return;
+    if (!navigationEnabled || isNavigating) return;
 
     const currentIndex = getCurrentPageIndex();
     if (currentIndex === -1) return; // Pagina non nel ciclo di scroll
@@ -98,7 +113,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
       }, 1500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, isNavigating, getCurrentPageIndex, navigate]);
+  }, [navigationEnabled, isNavigating, getCurrentPageIndex, navigate]);
 
   // Funzione per navigare manualmente tramite pulsante
   const navigateToPageManually = useCallback((direction) => {
@@ -130,7 +145,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
 
   const handleScroll = useCallback(() => {
     // Ignora gli eventi di scroll se è in corso uno scroll automatico
-    if (!enabled || isNavigating || !pageHasScrollableContent || isAutoScrolling) return;
+    if (!navigationEnabled || isNavigating || !pageHasScrollableContent || isAutoScrolling) return;
 
     // Periodo di grazia dopo il caricamento della pagina
     const currentTime = Date.now();
@@ -190,10 +205,13 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
       stopTriggerZone();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, isNavigating, pageHasScrollableContent, isAutoScrolling, showTriggerZone, triggerDirection, getCurrentPageIndex, stopTriggerZone, lastDismissalTime, location.pathname]);
+  }, [navigationEnabled, isNavigating, pageHasScrollableContent, isAutoScrolling, showTriggerZone, triggerDirection, getCurrentPageIndex, stopTriggerZone, lastDismissalTime, location.pathname]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!navigationEnabled) {
+      stopTriggerZone();
+      return;
+    }
 
     const throttledHandleScroll = () => {
       requestAnimationFrame(handleScroll);
@@ -207,7 +225,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
     return () => {
       window.removeEventListener('scroll', throttledHandleScroll);
     };
-  }, [enabled, handleScroll]);
+  }, [navigationEnabled, handleScroll, stopTriggerZone]);
 
   // Reset quando cambia pagina
   useEffect(() => {
@@ -228,7 +246,7 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
 
   // Controlla periodicamente se la pagina diventa scrollabile (per contenuto dinamico)
   useEffect(() => {
-    if (!enabled) return;
+    if (!navigationEnabled) return;
 
     const checkScrollable = () => {
       const windowHeight = window.innerHeight;
@@ -242,14 +260,14 @@ const PAGE_LOAD_GRACE_PERIOD = 3000;
 
     const interval = setInterval(checkScrollable, 2000);
     return () => clearInterval(interval);
-  }, [enabled, pageHasScrollableContent]);
+  }, [navigationEnabled, pageHasScrollableContent]);
 
   return {
     isNavigating,
     showTriggerZone,
     triggerDirection,
     triggerProgress,
-    isScrollNavigationEnabled: enabled && getCurrentPageIndex() !== -1 && pageHasScrollableContent,
+    isScrollNavigationEnabled: navigationEnabled && getCurrentPageIndex() !== -1 && pageHasScrollableContent,
     pageHasScrollableContent,
     currentPageIndex: getCurrentPageIndex(),
     totalPages: PAGE_ORDER.length,

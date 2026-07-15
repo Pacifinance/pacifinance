@@ -924,6 +924,7 @@ export const StyledTable = styled.table`
   color: ${(props) => props.theme.textColor};
   margin: 0 auto;
   font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
 
   &.outflow-table {
     min-width: 700px;
@@ -937,7 +938,7 @@ export const StyledTable = styled.table`
       ${(props) => props.theme.buttonBackgroundColor}dd 100%
     );
     color: white;
-    padding: 0.7rem 0.5rem;
+    padding: 0.8rem 0.65rem;
     font-weight: 600;
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -982,7 +983,7 @@ export const StyledTable = styled.table`
 
   /* ── Body cells ── */
   td {
-    padding: 0.55rem 0.5rem;
+    padding: 0.72rem 0.65rem;
     text-align: center;
     vertical-align: middle;
     border-bottom: 1px solid
@@ -1000,12 +1001,26 @@ export const StyledTable = styled.table`
 
   /* ── Row interactions ── */
   tbody tr {
-    transition: background-color 0.15s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
   }
   tbody tr:hover {
     background-color: ${(props) => props.theme.mode === 'dark'
       ? 'rgba(255,255,255,0.035)'
       : 'rgba(0,0,0,0.025)'} !important;
+  }
+
+  &.income-table td:nth-child(2),
+  &.outflow-table td:nth-child(3) {
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  &.income-table td:nth-child(3),
+  &.outflow-table td:nth-child(4) {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* ── Bottom corners on last row ── */
@@ -1014,36 +1029,53 @@ export const StyledTable = styled.table`
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
-    min-width: 500px;
-    &.outflow-table { min-width: 580px; }
-    th, td { padding: 0.4rem 0.3rem; font-size: 0.8rem; }
-    th { font-size: 0.72rem; }
+    min-width: 680px;
+    &.outflow-table { min-width: 820px; }
+    th, td { padding: 0.65rem 0.55rem; font-size: 0.8rem; }
+    th { font-size: 0.7rem; }
+
+    th:first-child, td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      box-shadow: 7px 0 12px -12px rgba(0,0,0,0.7);
+    }
+    th:first-child { z-index: 4; }
+    tbody td:first-child {
+      background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
+      font-weight: 700;
+    }
+
+    th:last-child, td:last-child {
+      position: sticky;
+      right: 0;
+      z-index: 2;
+      box-shadow: -7px 0 12px -12px rgba(0,0,0,0.7);
+    }
+    th:last-child { z-index: 4; }
+    tbody td:last-child {
+      background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
+    }
   }
 
   @media (max-width: 600px) {
-    min-width: 400px !important;
-    &.outflow-table { min-width: 450px !important; }
+    min-width: 680px !important;
+    &.outflow-table { min-width: 820px !important; }
     th, td {
-      font-size: 0.72rem !important;
-      padding: 0.3rem 0.2rem !important;
-      min-width: 55px !important;
-      line-height: 1.25 !important;
+      font-size: 0.78rem !important;
+      padding: 0.62rem 0.5rem !important;
+      line-height: 1.3 !important;
     }
     th { font-size: 0.68rem !important; }
     select, input, button {
-      font-size: 0.72rem !important;
-      padding: 0.2rem 0.3rem !important;
+      font-size: 0.75rem !important;
+      min-height: 34px;
     }
   }
 
   @media (max-width: 480px) {
-    min-width: 360px !important;
-    &.outflow-table { min-width: 400px !important; }
-    th, td {
-      font-size: 0.68rem !important;
-      padding: 0.25rem 0.15rem !important;
-      min-width: 48px !important;
-    }
+    min-width: 680px !important;
+    &.outflow-table { min-width: 820px !important; }
   }
 `;
 

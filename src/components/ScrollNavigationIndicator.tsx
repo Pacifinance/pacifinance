@@ -52,8 +52,7 @@ const NavigationIndicator = styled.div`
   animation: ${slideIn} 0.3s ease-out;
   
   @media (max-width: 768px) {
-    right: 1rem;
-    gap: 0.3rem;
+    display: none;
   }
 `;
 
@@ -107,9 +106,7 @@ const BottomLoadingIndicator = styled.div`
   justify-content: center;
   
   @media (max-width: 839px) {
-    bottom: 74px;
-    min-height: 100px;
-    border-radius: 16px 16px 0 0;
+    display: none;
   }
 `;
 
@@ -216,6 +213,8 @@ const NavigationOverlay = styled.div`
   align-items: center;
   justify-content: center;
   animation: ${slideIn} 0.3s ease-out;
+
+  @media (max-width: 839px) { display: none; }
 `;
 
 const CenterLoadingSpinner = styled.div`

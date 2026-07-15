@@ -860,6 +860,19 @@
             "deleteBalanceRestore": "Du kannst eines der Guthaben wiederherstellen oder den Eintrag einfach löschen, ohne die Guthaben zu ändern.",
             "decreaseWhichBalance": "Abziehen von",
             "makeRecurring": "Jeden Monat wiederholen",
+            "visualization": {
+                "viewLabel": "Ausgabenansicht",
+                "list": "Liste",
+                "chart": "Kategorien",
+                "monthlyTotal": "In diesem Monat ausgegeben",
+                "filteredTotal": "Gefilterte Summe",
+                "transactions": "Ausgaben",
+                "ofMonth": "des Monats",
+                "topCategory": "Hauptkategorie",
+                "averageExpense": "Durchschnittsausgabe",
+                "categories": "Kategorien",
+                "empty": "Keine Ausgaben fuer den ausgewaehlten Zeitraum"
+            },
             "multiInsert": {
                 "toggle": "Mehrfacheingabe",
                 "title": "Mehrere Ausgaben eingeben",

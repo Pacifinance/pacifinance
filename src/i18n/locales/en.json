@@ -862,6 +862,19 @@
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
             "decreaseWhichBalance": "Subtract from",
             "makeRecurring": "Make it recurring every month",
+            "visualization": {
+                "viewLabel": "Outflow view",
+                "list": "List",
+                "chart": "Categories",
+                "monthlyTotal": "Total spent this month",
+                "filteredTotal": "Filtered total",
+                "transactions": "expenses",
+                "ofMonth": "of the month",
+                "topCategory": "Top category",
+                "averageExpense": "Average expense",
+                "categories": "Categories",
+                "empty": "No outflows for the selected period"
+            },
             "multiInsert": {
                 "toggle": "Multi-insert",
                 "title": "Batch Insert Outflows",

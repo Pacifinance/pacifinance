@@ -860,6 +860,19 @@
             "deleteBalanceRestore": "Tu peux choisir de restaurer l'un des soldes, ou simplement supprimer l'entrée sans modifier les soldes.",
             "decreaseWhichBalance": "Soustraire de",
             "makeRecurring": "Rendre récurrent chaque mois",
+            "visualization": {
+                "viewLabel": "Vue des sorties",
+                "list": "Liste",
+                "chart": "Catégories",
+                "monthlyTotal": "Total dépensé ce mois-ci",
+                "filteredTotal": "Total filtré",
+                "transactions": "dépenses",
+                "ofMonth": "du mois",
+                "topCategory": "Catégorie principale",
+                "averageExpense": "Dépense moyenne",
+                "categories": "Catégories",
+                "empty": "Aucune sortie pour la période sélectionnée"
+            },
             "multiInsert": {
                 "toggle": "Multi-insertion",
                 "title": "Insertion multiple de sorties",

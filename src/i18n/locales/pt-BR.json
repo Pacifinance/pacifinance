@@ -860,6 +860,19 @@
             "deleteBalanceRestore": "Você pode escolher restaurar um dos saldos, ou apenas excluir o registro sem modificar os saldos.",
             "decreaseWhichBalance": "Subtrair de",
             "makeRecurring": "Tornar recorrente todo mês",
+            "visualization": {
+                "viewLabel": "Visualização de saídas",
+                "list": "Lista",
+                "chart": "Categorias",
+                "monthlyTotal": "Total gasto neste mês",
+                "filteredTotal": "Total filtrado",
+                "transactions": "despesas",
+                "ofMonth": "do mês",
+                "topCategory": "Categoria principal",
+                "averageExpense": "Despesa média",
+                "categories": "Categorias",
+                "empty": "Nenhuma saída para o período selecionado"
+            },
             "multiInsert": {
                 "toggle": "Multi-inserção",
                 "title": "Inserção múltipla de saídas",

@@ -862,6 +862,19 @@
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
             "decreaseWhichBalance": "Sottrai da",
             "makeRecurring": "Rendi ricorrente ogni mese",
+            "visualization": {
+                "viewLabel": "Visualizzazione uscite",
+                "list": "Lista",
+                "chart": "Categorie",
+                "monthlyTotal": "Totale speso nel mese",
+                "filteredTotal": "Totale filtrato",
+                "transactions": "spese",
+                "ofMonth": "del mese",
+                "topCategory": "Categoria principale",
+                "averageExpense": "Spesa media",
+                "categories": "Categorie",
+                "empty": "Nessuna uscita per il periodo selezionato"
+            },
             "multiInsert": {
                 "toggle": "Multi-inserimento",
                 "title": "Inserimento multiplo uscite",

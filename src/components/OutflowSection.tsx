@@ -2,7 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTimes,
+  faCalendarAlt,
+  faPen,
+  faCheck,
+  faRotateLeft,
+  faSortUp,
+  faSortDown,
+  faSort,
+  faLayerGroup,
+  faList,
+  faChartBar,
+} from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
@@ -178,11 +190,276 @@ const TableHeader = styled.div`
   border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f1f5f9'};
 `;
 
+const HeaderMain = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+`;
+
 const TableTitle = styled.h3`
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
   color: ${p => p.theme.textColor};
+`;
+
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
+const ViewSwitch = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#f8fafc'};
+`;
+
+const ViewButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: ${p => p.$active ? '#fff' : p.theme.textColor};
+  background: ${p => p.$active ? p.theme.buttonBackgroundColor : 'transparent'};
+  opacity: ${p => p.$active ? 1 : 0.7};
+  transition: opacity 0.2s ease, background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  svg {
+    font-size: 0.85rem;
+  }
+`;
+
+const MonthlySummary = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) repeat(3, minmax(120px, 0.55fr));
+  gap: 0.8rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+  background:
+    linear-gradient(135deg, ${p => p.theme.buttonBackgroundColor}18, transparent 38%),
+    ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#fbfdff'};
+
+  @media (max-width: 820px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+    padding: 0.9rem;
+  }
+`;
+
+const SummaryHero = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 0;
+`;
+
+const SummaryLabel = styled.span`
+  color: ${p => p.theme.textColor};
+  opacity: 0.62;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+`;
+
+const SummaryValue = styled.strong`
+  color: ${p => p.theme.textColor};
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  line-height: 1;
+  font-weight: 800;
+`;
+
+const SummarySubtext = styled.span`
+  color: ${p => p.theme.textColor};
+  opacity: 0.58;
+  font-size: 0.82rem;
+`;
+
+const SummaryTile = styled.div`
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.78)'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.075)' : '#e8edf5'};
+  min-width: 0;
+`;
+
+const SummaryTileValue = styled.div`
+  color: ${p => p.theme.textColor};
+  font-size: 1rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ChartPanel = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+
+  @media (max-width: 840px) {
+    grid-template-columns: 1fr;
+    padding: 0.9rem;
+  }
+`;
+
+const BarsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+`;
+
+const CategoryBarButton = styled.button`
+  border: 1px solid ${p => p.$active
+    ? p.theme.buttonBackgroundColor
+    : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5eaf2'};
+  border-radius: 12px;
+  background: ${p => p.$active
+    ? `${p.theme.buttonBackgroundColor}12`
+    : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#fff'};
+  padding: 0.75rem;
+  color: ${p => p.theme.textColor};
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: ${p => p.theme.buttonBackgroundColor};
+    transform: translateY(-1px);
+  }
+`;
+
+const BarTopLine = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+`;
+
+const BarLabel = styled.div`
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const BarMeta = styled.div`
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  font-weight: 750;
+  opacity: 0.82;
+`;
+
+const BarTrack = styled.div`
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#edf2f7'};
+`;
+
+const BarFill = styled.div`
+  width: ${p => p.$width}%;
+  height: 100%;
+  min-width: ${p => p.$width > 0 ? '6px' : '0'};
+  border-radius: inherit;
+  background: ${p => p.$color};
+`;
+
+const DetailPanel = styled.div`
+  border-radius: 12px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5eaf2'};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#fff'};
+  min-height: 260px;
+  overflow: hidden;
+`;
+
+const DetailHeader = styled.div`
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : '#edf2f7'};
+`;
+
+const DetailTitle = styled.h4`
+  margin: 0 0 0.25rem;
+  color: ${p => p.theme.textColor};
+  font-size: 0.98rem;
+`;
+
+const DetailSub = styled.div`
+  color: ${p => p.theme.textColor};
+  opacity: 0.58;
+  font-size: 0.8rem;
+`;
+
+const DetailList = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-height: 360px;
+  overflow-y: auto;
+`;
+
+const DetailRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.055)' : '#f1f5f9'};
+`;
+
+const DetailRowTitle = styled.div`
+  color: ${p => p.theme.textColor};
+  font-size: 0.88rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const DetailRowMeta = styled.div`
+  color: ${p => p.theme.textColor};
+  opacity: 0.56;
+  font-size: 0.75rem;
+  margin-top: 0.18rem;
+`;
+
+const EmptyChart = styled.div`
+  padding: 2.25rem 1rem;
+  text-align: center;
+  color: ${p => p.theme.textColor};
+  opacity: 0.62;
+  font-weight: 650;
 `;
 
 
@@ -370,6 +647,8 @@ export default function OutflowSection({
 
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
+  const [tableView, setTableView] = React.useState('list');
+  const [selectedChartCategory, setSelectedChartCategory] = React.useState(null);
 
   // Inline editing state
   const [editingAdd, setEditingAdd] = React.useState(null);
@@ -494,6 +773,111 @@ export default function OutflowSection({
       totalAll,
     };
   }
+
+  const getDisplayCategory = React.useCallback((add) => {
+    const parent = translateTag(add.categoryTag?.label, language, 'expense');
+    if (add.userCategory?.label) {
+      return `${parent} / ${add.userCategory.label}`;
+    }
+    return parent || translations.general.other || 'Altro';
+  }, [language, translations.general.other]);
+
+  const getParentCategory = React.useCallback((add) => (
+    translateTag(add.categoryTag?.label, language, 'expense') || translations.general.other || 'Altro'
+  ), [language, translations.general.other]);
+
+  const getCategoryKey = React.useCallback((add) => {
+    const parentIndex = add.categoryTag?.index ?? add.categoryTag?.label ?? 'unknown';
+    return add.userCategory?.id ? `${parentIndex}:custom:${add.userCategory.id}` : `${parentIndex}:parent`;
+  }, []);
+
+  const applyTableFilters = React.useCallback((rows) => {
+    return rows.filter((add) => {
+      const addDate = new Date(add.date).toISOString().slice(0, 10);
+      let dateMatch = true;
+      if (outflowDateFilterStart && outflowDateFilterEnd) {
+        dateMatch = addDate >= outflowDateFilterStart && addDate <= outflowDateFilterEnd;
+      } else if (outflowDateFilterStart) {
+        dateMatch = addDate >= outflowDateFilterStart;
+      } else if (outflowDateFilterEnd) {
+        dateMatch = addDate <= outflowDateFilterEnd;
+      }
+      return (
+        (!outflowCategoryFilter ||
+          translateTag(add.categoryTag?.label, language, 'expense') === outflowCategoryFilter) &&
+        (!outflowTypologyFilter ||
+          translateTag(add.paymentType?.label, language, 'payment') === outflowTypologyFilter) &&
+        (!outflowNoteFilter ||
+          (add.notes &&
+            add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
+        dateMatch
+      );
+    });
+  }, [
+    language,
+    outflowCategoryFilter,
+    outflowDateFilterEnd,
+    outflowDateFilterStart,
+    outflowNoteFilter,
+    outflowTypologyFilter,
+  ]);
+
+  const sortOutflowRows = React.useCallback((rows) => {
+    if (!sortColumn) return rows;
+    return [...rows].sort((a, b) => {
+      let aVal, bVal;
+      switch (sortColumn) {
+        case 'category':
+          aVal = getDisplayCategory(a);
+          bVal = getDisplayCategory(b);
+          break;
+        case 'typology':
+          aVal = translateTag(a.paymentType?.label, language, 'payment');
+          bVal = translateTag(b.paymentType?.label, language, 'payment');
+          break;
+        case 'amount':
+          aVal = a.amount || 0;
+          bVal = b.amount || 0;
+          break;
+        case 'note':
+          aVal = a.notes || '';
+          bVal = b.notes || '';
+          break;
+        case 'date':
+          aVal = new Date(a.date).getTime();
+          bVal = new Date(b.date).getTime();
+          break;
+        default:
+          return 0;
+      }
+      if (typeof aVal === 'string') {
+        const cmp = aVal.localeCompare(bVal);
+        return sortDirection === 'asc' ? cmp : -cmp;
+      }
+      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+    });
+  }, [getDisplayCategory, language, sortColumn, sortDirection]);
+
+  const buildCategoryBreakdown = React.useCallback((rows) => {
+    const groups = new Map();
+    rows.forEach((add) => {
+      const key = getCategoryKey(add);
+      const existing = groups.get(key) || {
+        key,
+        label: getDisplayCategory(add),
+        parentLabel: getParentCategory(add),
+        total: 0,
+        count: 0,
+        items: [],
+        colorKey: add.categoryTag?.key || add.categoryTag?.label || getParentCategory(add),
+      };
+      existing.total += add.amount || 0;
+      existing.count += 1;
+      existing.items.push(add);
+      groups.set(key, existing);
+    });
+    return [...groups.values()].sort((a, b) => b.total - a.total);
+  }, [getCategoryKey, getDisplayCategory, getParentCategory]);
 
   function getDateRangeForMonth(monthOption) {
     if (!monthOption) return { min: '', max: '' };
@@ -641,62 +1025,7 @@ export default function OutflowSection({
   }
 
   function renderOutflowItems(chosenOutflowsToShow) {
-    let filtered = chosenOutflowsToShow.filter((add) => {
-      const addDate = new Date(add.date).toISOString().slice(0, 10);
-      let dateMatch = true;
-      if (outflowDateFilterStart && outflowDateFilterEnd) {
-        dateMatch = addDate >= outflowDateFilterStart && addDate <= outflowDateFilterEnd;
-      } else if (outflowDateFilterStart) {
-        dateMatch = addDate >= outflowDateFilterStart;
-      } else if (outflowDateFilterEnd) {
-        dateMatch = addDate <= outflowDateFilterEnd;
-      }
-      return (
-        (!outflowCategoryFilter ||
-          translateTag(add.categoryTag?.label, language, 'expense') === outflowCategoryFilter) &&
-        (!outflowTypologyFilter ||
-          translateTag(add.paymentType?.label, language, 'payment') === outflowTypologyFilter) &&
-        (!outflowNoteFilter ||
-          (add.notes &&
-            add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
-        dateMatch
-      );
-    });
-
-    if (sortColumn) {
-      filtered = [...filtered].sort((a, b) => {
-        let aVal, bVal;
-        switch (sortColumn) {
-          case 'category':
-            aVal = translateTag(a.categoryTag?.label, language, 'expense');
-            bVal = translateTag(b.categoryTag?.label, language, 'expense');
-            break;
-          case 'typology':
-            aVal = translateTag(a.paymentType?.label, language, 'payment');
-            bVal = translateTag(b.paymentType?.label, language, 'payment');
-            break;
-          case 'amount':
-            aVal = a.amount || 0;
-            bVal = b.amount || 0;
-            break;
-          case 'note':
-            aVal = a.notes || '';
-            bVal = b.notes || '';
-            break;
-          case 'date':
-            aVal = new Date(a.date).getTime();
-            bVal = new Date(b.date).getTime();
-            break;
-          default:
-            return 0;
-        }
-        if (typeof aVal === 'string') {
-          const cmp = aVal.localeCompare(bVal);
-          return sortDirection === 'asc' ? cmp : -cmp;
-        }
-        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
-      });
-    }
+    const filtered = sortOutflowRows(applyTableFilters(chosenOutflowsToShow));
 
     const totals = getTotals(filtered, chosenOutflowsToShow);
     const filtersActive =
@@ -820,9 +1149,7 @@ export default function OutflowSection({
             <td>
               {isHidden
                 ? '****'
-                : add.userCategory?.label
-                  ? `${translateTag(add.categoryTag?.label, language, 'expense')} / ${add.userCategory.label}`
-                  : translateTag(add.categoryTag?.label, language, 'expense')}
+                : getDisplayCategory(add)}
             </td>
             <td>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</td>
             <td>
@@ -910,6 +1237,124 @@ export default function OutflowSection({
     '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
     '& .MuiSelect-select': { padding: '8px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
     '& .MuiSvgIcon-root': { color: theme.textColor },
+  };
+
+  const chosenOutflowsToShow = React.useMemo(
+    () => getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey),
+    [allOutflowsAdds, selectedOutflowMonthKey],
+  );
+  const filteredOutflows = React.useMemo(
+    () => sortOutflowRows(applyTableFilters(chosenOutflowsToShow)),
+    [applyTableFilters, chosenOutflowsToShow, sortOutflowRows],
+  );
+  const totals = React.useMemo(
+    () => getTotals(filteredOutflows, chosenOutflowsToShow),
+    [chosenOutflowsToShow, filteredOutflows],
+  );
+  const categoryBreakdown = React.useMemo(
+    () => buildCategoryBreakdown(filteredOutflows),
+    [buildCategoryBreakdown, filteredOutflows],
+  );
+  const maxCategoryTotal = categoryBreakdown[0]?.total || 0;
+  const selectedCategory = categoryBreakdown.find((item) => item.key === selectedChartCategory) || categoryBreakdown[0] || null;
+  const topCategory = categoryBreakdown[0] || null;
+  const averageOutflow = filteredOutflows.length > 0 ? totals.totalFiltered / filteredOutflows.length : 0;
+  const filtersActive =
+    outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter ||
+    outflowDateFilterStart || outflowDateFilterEnd;
+
+  React.useEffect(() => {
+    if (!categoryBreakdown.length) {
+      setSelectedChartCategory(null);
+      return;
+    }
+    if (!selectedChartCategory || !categoryBreakdown.some((item) => item.key === selectedChartCategory)) {
+      setSelectedChartCategory(categoryBreakdown[0].key);
+    }
+  }, [categoryBreakdown, selectedChartCategory]);
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  };
+
+  const renderCategoryChart = () => {
+    if (isHidden) {
+      return (
+        <EmptyChart theme={theme}>
+          ****
+        </EmptyChart>
+      );
+    }
+
+    if (!categoryBreakdown.length) {
+      return (
+        <EmptyChart theme={theme}>
+          {translations.insert.outflowSection.visualization?.empty || 'Nessuna uscita per il periodo selezionato'}
+        </EmptyChart>
+      );
+    }
+
+    return (
+      <ChartPanel theme={theme}>
+        <BarsList>
+          {categoryBreakdown.map((category) => {
+            const rawColor = getCategoryColor(category.colorKey);
+            const color = getLighterSolidColor(rawColor);
+            const width = maxCategoryTotal > 0 ? Math.max(4, (category.total / maxCategoryTotal) * 100) : 0;
+            const percentage = totals.totalFiltered > 0 ? (category.total / totals.totalFiltered) * 100 : 0;
+            return (
+              <CategoryBarButton
+                key={category.key}
+                type="button"
+                theme={theme}
+                $active={selectedCategory?.key === category.key}
+                onClick={() => setSelectedChartCategory(category.key)}
+              >
+                <BarTopLine>
+                  <BarLabel>{category.label}</BarLabel>
+                  <BarMeta>
+                    {formatNumber(category.total)} {currencySymbol} · {percentage.toFixed(1)}%
+                  </BarMeta>
+                </BarTopLine>
+                <BarTrack theme={theme}>
+                  <BarFill $width={width} $color={color} />
+                </BarTrack>
+              </CategoryBarButton>
+            );
+          })}
+        </BarsList>
+
+        <DetailPanel theme={theme}>
+          <DetailHeader theme={theme}>
+            <DetailTitle theme={theme}>
+              {selectedCategory?.label}
+            </DetailTitle>
+            <DetailSub theme={theme}>
+              {selectedCategory?.count || 0} {translations.insert.outflowSection.visualization?.transactions || 'spese'} · {' '}
+              {formatNumber(selectedCategory?.total || 0)} {currencySymbol}
+            </DetailSub>
+          </DetailHeader>
+          <DetailList>
+            {(selectedCategory?.items || []).map((add, index) => (
+              <DetailRow key={`${add.date}-${add.amount}-${index}`} theme={theme}>
+                <div>
+                  <DetailRowTitle theme={theme}>
+                    {add.notes || translateTag(add.paymentType?.label, language, 'payment')}
+                  </DetailRowTitle>
+                  <DetailRowMeta theme={theme}>
+                    {formatDate(add.date)} · {translateTag(add.paymentType?.label, language, 'payment')}
+                  </DetailRowMeta>
+                </div>
+                <DetailRowTitle theme={theme}>
+                  {formatNumber(add.amount)} {currencySymbol}
+                </DetailRowTitle>
+              </DetailRow>
+            ))}
+          </DetailList>
+        </DetailPanel>
+      </ChartPanel>
+    );
   };
 
   return (
@@ -1087,32 +1532,100 @@ export default function OutflowSection({
       {/* ── Transaction Table ── */}
       <TableSection theme={theme}>
         <TableHeader theme={theme}>
-          <TableTitle theme={theme}>
-            {translations.insert.outflowSection.titleListing}
-          </TableTitle>
-          <ThemedSelect
-            value={selectedOutflowsMonth}
-            onChange={handleOutflowsMonthChange}
-          >
-            {outflowMonthOptions &&
-              outflowMonthOptions.length > 0 &&
-              outflowMonthOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-          </ThemedSelect>
+          <HeaderMain>
+            <TableTitle theme={theme}>
+              {translations.insert.outflowSection.titleListing}
+            </TableTitle>
+            <ViewSwitch theme={theme} aria-label={translations.insert.outflowSection.visualization?.viewLabel || 'Visualizzazione'}>
+              <ViewButton
+                type="button"
+                theme={theme}
+                $active={tableView === 'list'}
+                onClick={() => setTableView('list')}
+              >
+                <FontAwesomeIcon icon={faList} />
+                {translations.insert.outflowSection.visualization?.list || 'Lista'}
+              </ViewButton>
+              <ViewButton
+                type="button"
+                theme={theme}
+                $active={tableView === 'chart'}
+                onClick={() => setTableView('chart')}
+              >
+                <FontAwesomeIcon icon={faChartBar} />
+                {translations.insert.outflowSection.visualization?.chart || 'Categorie'}
+              </ViewButton>
+            </ViewSwitch>
+          </HeaderMain>
+          <HeaderActions>
+            <ThemedSelect
+              value={selectedOutflowsMonth}
+              onChange={handleOutflowsMonthChange}
+            >
+              {outflowMonthOptions &&
+                outflowMonthOptions.length > 0 &&
+                outflowMonthOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+            </ThemedSelect>
+          </HeaderActions>
         </TableHeader>
-        <TableScroll>
-          <StyledTable theme={theme} className="outflow-table">
-            <thead>{renderTableHeader()}</thead>
-            <tbody>
-              {renderOutflowItems(
-                getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey),
-              )}
-            </tbody>
-          </StyledTable>
-        </TableScroll>
+        <MonthlySummary theme={theme}>
+          <SummaryHero>
+            <SummaryLabel theme={theme}>
+              {filtersActive
+                ? (translations.insert.outflowSection.visualization?.filteredTotal || 'Totale filtrato')
+                : (translations.insert.outflowSection.visualization?.monthlyTotal || 'Totale speso nel mese')}
+            </SummaryLabel>
+            <SummaryValue theme={theme}>
+              {isHidden ? '****' : `${formatNumber(filtersActive ? totals.totalFiltered : totals.totalAll)} ${currencySymbol}`}
+            </SummaryValue>
+            <SummarySubtext theme={theme}>
+              {filteredOutflows.length} {translations.insert.outflowSection.visualization?.transactions || 'spese'}
+              {filtersActive && totals.totalAll > 0 && !isHidden
+                ? ` · ${((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}% ${translations.insert.outflowSection.visualization?.ofMonth || 'del mese'}`
+                : ''}
+            </SummarySubtext>
+          </SummaryHero>
+          <SummaryTile theme={theme}>
+            <SummaryLabel theme={theme}>
+              {translations.insert.outflowSection.visualization?.topCategory || 'Categoria principale'}
+            </SummaryLabel>
+            <SummaryTileValue theme={theme}>
+              {isHidden ? '****' : topCategory?.label || '-'}
+            </SummaryTileValue>
+          </SummaryTile>
+          <SummaryTile theme={theme}>
+            <SummaryLabel theme={theme}>
+              {translations.insert.outflowSection.visualization?.averageExpense || 'Spesa media'}
+            </SummaryLabel>
+            <SummaryTileValue theme={theme}>
+              {isHidden ? '****' : `${formatNumber(averageOutflow)} ${currencySymbol}`}
+            </SummaryTileValue>
+          </SummaryTile>
+          <SummaryTile theme={theme}>
+            <SummaryLabel theme={theme}>
+              {translations.insert.outflowSection.visualization?.categories || 'Categorie'}
+            </SummaryLabel>
+            <SummaryTileValue theme={theme}>
+              {isHidden ? '****' : categoryBreakdown.length}
+            </SummaryTileValue>
+          </SummaryTile>
+        </MonthlySummary>
+        {tableView === 'chart' ? (
+          renderCategoryChart()
+        ) : (
+          <TableScroll>
+            <StyledTable theme={theme} className="outflow-table">
+              <thead>{renderTableHeader()}</thead>
+              <tbody>
+                {renderOutflowItems(chosenOutflowsToShow)}
+              </tbody>
+            </StyledTable>
+          </TableScroll>
+        )}
       </TableSection>
     </SectionWrapper>
   );

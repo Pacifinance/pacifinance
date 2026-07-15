@@ -862,6 +862,19 @@
             "deleteBalanceRestore": "Puedes elegir restaurar uno de los balances, o simplemente eliminar la entrada sin modificar los balances.",
             "decreaseWhichBalance": "Restar de",
             "makeRecurring": "Hacer que se repita cada mes",
+            "visualization": {
+                "viewLabel": "Vista de gastos",
+                "list": "Lista",
+                "chart": "Categorías",
+                "monthlyTotal": "Total gastado este mes",
+                "filteredTotal": "Total filtrado",
+                "transactions": "gastos",
+                "ofMonth": "del mes",
+                "topCategory": "Categoría principal",
+                "averageExpense": "Gasto medio",
+                "categories": "Categorías",
+                "empty": "No hay gastos para el período seleccionado"
+            },
             "multiInsert": {
                 "toggle": "Multi-inserción",
                 "title": "Inserción múltiple de gastos",

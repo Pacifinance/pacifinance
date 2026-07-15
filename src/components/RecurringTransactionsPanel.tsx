@@ -19,6 +19,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, getSelectSx,
 } from './multiInsert/SharedStyles';
 import { getMuiSelectMenuProps } from './ThemedSelect';
+import CategoryPicker from './CategoryPicker';
 import { ModernActionButton } from '../styles/MyStyled';
 
 const EmptyState = styled.p`
@@ -179,10 +180,11 @@ const SecondaryButton = styled.button`
   cursor: pointer;
 `;
 
-const emptyForm = { isExpense: true, categoryKey: '', paymentTypeKey: '', amount: '', dayOfMonth: '1', notes: '' };
+const emptyForm = { isExpense: true, categoryKey: '', userCategoryId: null, paymentTypeKey: '', amount: '', dayOfMonth: '1', notes: '' };
 
 export default function RecurringTransactionsPanel({
-  theme, items, outflowsTags, incomesTags, paymentTags, onClose, onChanged,
+  theme, items, outflowsTags, incomesTags, paymentTags, customCategories,
+  onCreateCategory, onClose, onChanged,
 }) {
   const { language, translations } = useContext(LanguageContext);
   const { toEUR, fromEUR, formatAmount, currencySymbol } = useContext(CurrencyContext);
@@ -215,6 +217,7 @@ export default function RecurringTransactionsPanel({
     setForm({
       isExpense: item.isExpense,
       categoryKey: item.categoryTag?.index ?? '',
+      userCategoryId: item.userCategory?.id ?? null,
       paymentTypeKey: item.paymentType?.index ?? defaultPaymentTypeKey,
       amount: String(fromEUR(item.amount)),
       dayOfMonth: String(item.dayOfMonth),
@@ -244,6 +247,7 @@ export default function RecurringTransactionsPanel({
         notes: form.notes,
         payment_type: form.isExpense ? Number(form.paymentTypeKey) : 0,
         category_tag: Number(form.categoryKey),
+        user_category_id: form.userCategoryId,
         day_of_month: Number(form.dayOfMonth),
       });
       resetForm();
@@ -327,7 +331,7 @@ export default function RecurringTransactionsPanel({
                   type="button"
                   theme={theme}
                   $active={form.isExpense}
-                  onClick={() => setForm((f) => ({ ...f, isExpense: true, categoryKey: '' }))}
+                  onClick={() => setForm((f) => ({ ...f, isExpense: true, categoryKey: '', userCategoryId: null }))}
                 >
                   {translations?.general?.outflows || 'Uscita'}
                 </ModeButton>
@@ -336,7 +340,7 @@ export default function RecurringTransactionsPanel({
                   theme={theme}
                   $active={!form.isExpense}
                   $income
-                  onClick={() => setForm((f) => ({ ...f, isExpense: false, categoryKey: '' }))}
+                  onClick={() => setForm((f) => ({ ...f, isExpense: false, categoryKey: '', userCategoryId: null }))}
                 >
                   {translations?.general?.incomes || 'Entrata'}
                 </ModeButton>
@@ -345,21 +349,20 @@ export default function RecurringTransactionsPanel({
               <FieldsGrid theme={theme}>
                 <label>
                   {translations?.general?.category || 'Categoria'}
-                  <Select
-                    value={form.categoryKey}
-                    onChange={(e) => setForm((f) => ({ ...f, categoryKey: e.target.value }))}
-                    displayEmpty
-                    size="small"
-                    sx={selectSx}
-                    MenuProps={menuProps}
-                  >
-                    <MenuItem value=""><em>{translations?.general?.selectAnOption || '—'}</em></MenuItem>
-                    {sortTagsByLanguage(categoryTags, language, form.isExpense ? 'expense' : 'income').map((tag) => (
-                      <MenuItem key={tag.index} value={tag.index}>
-                        {translateTag(tag.label, language, form.isExpense ? 'expense' : 'income')}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={categoryTags}
+                    customCategories={customCategories}
+                    categoryType={form.isExpense ? 'expense' : 'income'}
+                    categoryKey={form.categoryKey}
+                    userCategoryId={form.userCategoryId}
+                    onSelect={({ categoryKey, userCategoryId }) =>
+                      setForm((f) => ({ ...f, categoryKey, userCategoryId }))
+                    }
+                    onCreateCategory={(parentIndex, label) =>
+                      onCreateCategory(parentIndex, label, form.isExpense)}
+                    placeholder={translations?.general?.selectAnOption || '—'}
+                  />
                 </label>
 
                 {form.isExpense && (

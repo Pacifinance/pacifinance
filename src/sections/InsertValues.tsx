@@ -2259,6 +2259,12 @@ export default function InsertValue({
               outflowsTags={OutflowsTags}
               incomesTags={incomesTags}
               paymentTags={paymentTags}
+              customCategories={getCustomCategories(userData)}
+              onCreateCategory={(parentIndex, label, isExpense) => addCustomCategory({
+                label,
+                parent_index: parentIndex,
+                is_expense: isExpense,
+              })}
               onClose={() => setShowRecurringPanel(false)}
               onChanged={refreshRecurringItems}
             />

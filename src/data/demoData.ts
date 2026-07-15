@@ -279,6 +279,7 @@ export const generateDemoData = () => {
       expenses: 914,
       incomes: 2506,
       savingsRates: 0,
+      assetAllocation: { liquid: 46, investments: 42, crypto: 12 },
       expensesByCategory: {
         1: 120, 2: 80, 3: 350, 4: 450, 5: 600,
         6: 200, 7: 150, 8: 500, 9: 100, 10: 50,
@@ -290,6 +291,7 @@ export const generateDemoData = () => {
       expenses: 1358,
       incomes: 2506,
       savingsRates: 37,
+      assetAllocation: { liquid: 38, investments: 50, crypto: 12 },
       expensesByCategory: {
         1: 235, 2: 437, 3: 3024, 4: 1978, 5: 2348,
         6: 1571, 7: 1037, 8: 3902, 9: 674, 10: 52,

@@ -10,6 +10,7 @@ describe("benchmark metric rows", () => {
             data: [{
                 user_id: "user-a",
                 balance_total: "1234.50",
+                asset_allocation: {liquid: "40.5", investments: "54.5", crypto: "5"},
                 monthly_income: "2500",
                 monthly_expenses: null,
                 yearly_income: "30000",
@@ -22,6 +23,7 @@ describe("benchmark metric rows", () => {
         await expect(benchmarks.getMetricRows(["user-a"], new ExtDate("2026-07-01"))).resolves.toEqual([{
             userId: "user-a",
             balanceTotal: 1234.5,
+            assetAllocation: {liquid: 40.5, investments: 54.5, crypto: 5},
             monthlyIncome: 2500,
             monthlyExpenses: null,
             yearlyIncome: 30000,

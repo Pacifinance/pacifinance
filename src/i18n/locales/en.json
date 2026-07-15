@@ -1095,6 +1095,8 @@
                 "investments": "Investments",
                 "crypto": "Crypto",
                 "other": "Other",
+                "avgSimilar": "Similar Users Avg",
+                "avgAll": "All Users Avg",
                 "noAssets": "No assets recorded"
             },
             "spendingCategories": {

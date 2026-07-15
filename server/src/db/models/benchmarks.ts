@@ -4,11 +4,18 @@ import { ExtDate } from "../../libs/datelib"
 export type BenchmarkMetricRow = {
     userId: string,
     balanceTotal: number | null,
+    assetAllocation: AssetAllocation | null,
     monthlyIncome: number | null,
     monthlyExpenses: number | null,
     yearlyIncome: number | null,
     yearlyExpenses: number | null,
     yearlyExpensesByCategory: Record<number, number>
+}
+
+export type AssetAllocation = {
+    liquid: number,
+    investments: number,
+    crypto: number
 }
 
 function numberOrNull(value: unknown) {
@@ -41,6 +48,13 @@ async function getMetricRows(userIds: string[], currentMonth: ExtDate): Promise<
         return {
             userId: row.user_id as string,
             balanceTotal: numberOrNull(row.balance_total),
+            assetAllocation: row.asset_allocation && typeof row.asset_allocation === "object"
+                ? {
+                    liquid: Number(row.asset_allocation.liquid ?? 0),
+                    investments: Number(row.asset_allocation.investments ?? 0),
+                    crypto: Number(row.asset_allocation.crypto ?? 0)
+                }
+                : null,
             monthlyIncome: numberOrNull(row.monthly_income),
             monthlyExpenses: numberOrNull(row.monthly_expenses),
             yearlyIncome: numberOrNull(row.yearly_income),

@@ -1,6 +1,7 @@
 import db from "../db/db"
 import redis from "../cache/redisClient"
 import { ExtDate } from "../libs/datelib"
+import type { AssetAllocation } from "../db/models/benchmarks"
 import { rankFromBalancePool, rankFromExpensePool } from "./ranking"
 import similarUsers, {
     MIN_COHORT,
@@ -36,6 +37,7 @@ export type CustomBenchmark = {
         balances: number | null,
         incomes: number | null,
         expenses: number | null
+        assetAllocation: AssetAllocation | null
     },
     rankings: {
         balance: number,
@@ -48,6 +50,15 @@ function averagePool(pool: Array<{ userId: string, total: number }>, excludedUse
     const values = pool.filter((entry) => entry.userId !== excludedUserId).map((entry) => entry.total)
     if (values.length === 0) return null
     return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 100) / 100
+}
+
+function averageAssetAllocation(rows: Array<{ assetAllocation: AssetAllocation | null }>): AssetAllocation | null {
+    const allocations = rows.flatMap((row) => row.assetAllocation ? [row.assetAllocation] : [])
+    if (allocations.length === 0) return null
+    const average = (key: keyof AssetAllocation) => Math.round(
+        allocations.reduce((sum, allocation) => sum + allocation[key], 0) / allocations.length * 100
+    ) / 100
+    return { liquid: average("liquid"), investments: average("investments"), crypto: average("crypto") }
 }
 
 function cacheKey(userId: string, factors: ComparisonFactorGroup[]) {
@@ -127,7 +138,7 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
         return {
             available: false,
             ...base,
-            averages: { balances: null, incomes: null, expenses: null },
+            averages: { balances: null, incomes: null, expenses: null, assetAllocation: null },
             rankings: { balance: 0, incomes: 0, outflows: 0 }
         }
     }
@@ -138,10 +149,12 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
     const rankPoolIds = [...cohort.userIds, userId]
     const referenceDate = ExtDate.fromNow()
     referenceDate.moveByMonths(-1)
-    const [balancePool, incomePool, expensePool] = await Promise.all([
+    const currentMonth = ExtDate.fromReferenceMonthStart(ExtDate.fromNow())
+    const [balancePool, incomePool, expensePool, metricRows] = await Promise.all([
         db.balances.getRankingPool(rankPoolIds, true),
         db.expenses.getExpenseRankingPool(rankPoolIds, false, referenceDate),
-        db.expenses.getExpenseRankingPool(rankPoolIds, true, referenceDate)
+        db.expenses.getExpenseRankingPool(rankPoolIds, true, referenceDate),
+        db.benchmarks.getMetricRows(cohort.userIds, currentMonth)
     ])
 
     const result: CustomBenchmark = {
@@ -150,7 +163,8 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
         averages: {
             balances: averagePool(balancePool, userId),
             incomes: averagePool(incomePool, userId),
-            expenses: averagePool(expensePool, userId)
+            expenses: averagePool(expensePool, userId),
+            assetAllocation: averageAssetAllocation(metricRows)
         },
         rankings: {
             balance: rankFromBalancePool(balancePool, userId),

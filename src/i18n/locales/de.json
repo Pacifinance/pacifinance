@@ -1080,6 +1080,8 @@
                 "investments": "Investitionen",
                 "crypto": "Krypto",
                 "other": "Sonstiges",
+                "avgSimilar": "Durchschnitt ähnlicher Nutzer",
+                "avgAll": "Durchschnitt aller Nutzer",
                 "noAssets": "Keine Vermögenswerte erfasst"
             },
             "spendingCategories": {

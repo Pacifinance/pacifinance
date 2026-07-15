@@ -2,7 +2,7 @@ import { ExtDate } from "../../libs/datelib"
 import { roundCurrency, toCents, fromCents } from "../../libs/money"
 
 import users from "../../db/models/users"
-import benchmarks, { type BenchmarkMetricRow } from "../../db/models/benchmarks"
+import benchmarks, { type AssetAllocation, type BenchmarkMetricRow } from "../../db/models/benchmarks"
 import similarUsers, { MIN_COHORT } from "../../services/similarUsers"
 
 /**
@@ -57,6 +57,7 @@ export type Averages = {
     expensesByCategory: {
         [categoryIndex: number]: number
     },
+    assetAllocation: AssetAllocation | null,
     distributions: {
         balances: DistributionSummary,
         expenses: DistributionSummary,
@@ -122,6 +123,7 @@ class AveragesData {
     private expensesByCategory: {
         [categoryIndex: number]: Accumulator
     }
+    private assetAllocation: Record<keyof AssetAllocation, Accumulator>
 
     public constructor() {
         this.balances = new Accumulator()
@@ -129,6 +131,11 @@ class AveragesData {
         this.incomes = new Accumulator()
         this.savingRates = new Accumulator()
         this.expensesByCategory = {}
+        this.assetAllocation = {
+            liquid: new Accumulator(),
+            investments: new Accumulator(),
+            crypto: new Accumulator()
+        }
 
     }
 
@@ -154,6 +161,12 @@ class AveragesData {
         this.expensesByCategory[categoryIndex].accumulate(value)
     }
 
+    public addAssetAllocation(value: AssetAllocation) {
+        this.assetAllocation.liquid.accumulate(value.liquid)
+        this.assetAllocation.investments.accumulate(value.investments)
+        this.assetAllocation.crypto.accumulate(value.crypto)
+    }
+
     public getAverages(): Averages {
         return {
             balances: this.balances.getAverage(),
@@ -166,6 +179,11 @@ class AveragesData {
                 const average = acc.getAverage()
                 return average === null ? obj : {...obj, [Number(categoryIndex)]: average}
             }, {} as { [categoryIndex: number]: number }),
+            assetAllocation: this.assetAllocation.liquid.getAverage() === null ? null : {
+                liquid: this.assetAllocation.liquid.getAverage() ?? 0,
+                investments: this.assetAllocation.investments.getAverage() ?? 0,
+                crypto: this.assetAllocation.crypto.getAverage() ?? 0
+            },
             distributions: {
                 balances: this.balances.getDistribution(),
                 expenses: this.expenses.getDistribution(),
@@ -223,6 +241,8 @@ function computeAveragesForCohorts(cohorts: MetricCohorts, rowsByUserId: Map<str
 
         if (balanceSet.has(userId) && row.balanceTotal !== null)
             averagesData.addBalance(row.balanceTotal)
+        if (balanceSet.has(userId) && row.assetAllocation !== null)
+            averagesData.addAssetAllocation(row.assetAllocation)
         if (incomesSet.has(userId) && row.monthlyIncome !== null)
             averagesData.addIncome(row.monthlyIncome)
         if (outflowsSet.has(userId) && row.monthlyExpenses !== null)
@@ -283,6 +303,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
             incomes: null,
             savingsRates: null,
             expensesByCategory: {},
+            assetAllocation: null,
             distributions: {
                 balances: {count: 0, median: null, firstQuartile: null, thirdQuartile: null},
                 expenses: {count: 0, median: null, firstQuartile: null, thirdQuartile: null},

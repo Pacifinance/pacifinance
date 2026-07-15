@@ -590,6 +590,27 @@ const ProgressBarRow = styled.div`
   }
 `;
 
+const AllocationBenchmarks = styled.div`
+  margin: -0.15rem 0 0.85rem 80px;
+  padding-left: 0.75rem;
+  border-left: 2px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
+
+  .benchmark-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.15rem 0;
+    font-size: 0.75rem;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.52)'};
+  }
+
+  .benchmark-value { font-weight: 600; }
+
+  @media (max-width: 520px) {
+    margin-left: 0;
+  }
+`;
+
 const SavingsRateDisplay = styled.div`
   display: flex;
   flex-direction: column;
@@ -1270,11 +1291,19 @@ function Comparison({ theme, userData, isHidden}) {
         const investments = (currentBalance.stocks || 0) + (currentBalance.etf || 0) + (currentBalance.bonds || 0) + (currentBalance.funds || 0) + (currentBalance.commodities || 0);
         const crypto = (currentBalance.bitcoin || 0) + (currentBalance.crypto || 0);
         
+        const similarAllocation = customBenchmark?.available
+            ? customBenchmark.averages.assetAllocation
+            : userAverages.similar?.assetAllocation;
+        const allAllocation = userAverages.all?.assetAllocation;
         const allocations = [
-            { name: translations.comparison.cards.assetAllocation.liquid || 'Liquidità', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
-            { name: translations.comparison.cards.assetAllocation.investments || 'Investimenti', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
-            { name: translations.comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
-        ].filter(a => a.value > 0);
+            { key: 'liquid', name: translations.comparison.cards.assetAllocation.liquid || 'Liquidità', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
+            { key: 'investments', name: translations.comparison.cards.assetAllocation.investments || 'Investimenti', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
+            { key: 'crypto', name: translations.comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
+        ].map(asset => ({
+            ...asset,
+            similarPercentage: similarAllocation?.[asset.key] ?? null,
+            allPercentage: allAllocation?.[asset.key] ?? null
+        }));
         
         return allocations.sort((a, b) => b.percentage - a.percentage);
     };
@@ -1779,21 +1808,27 @@ function Comparison({ theme, userData, isHidden}) {
                             <ExpandableCardContent expanded={expandedCards['assets']} theme={theme}>
                                 <ProgressBarContainer>
                                     {assetAllocation.map((asset, index) => (
-                                        <ProgressBarRow key={index} theme={theme}>
-                                            <span className="label">{asset.name}</span>
-                                            <div className="bar-wrapper">
-                                                <div 
-                                                    className="bar-fill" 
-                                                    style={{ 
-                                                        width: `${asset.percentage}%`, 
-                                                        background: asset.color 
-                                                    }} 
-                                                />
-                                            </div>
-                                            <span className="percentage">
-                                                {isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}
-                                            </span>
-                                        </ProgressBarRow>
+                                        <React.Fragment key={asset.key}>
+                                            <ProgressBarRow theme={theme}>
+                                                <span className="label">{asset.name}</span>
+                                                <div className="bar-wrapper">
+                                                    <div className="bar-fill" style={{ width: `${asset.percentage}%`, background: asset.color }} />
+                                                </div>
+                                                <span className="percentage">
+                                                    {isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}
+                                                </span>
+                                            </ProgressBarRow>
+                                            <AllocationBenchmarks theme={theme}>
+                                                <div className="benchmark-row">
+                                                    <span>{translations.comparison.cards.assetAllocation.avgSimilar || 'Media Utenti Simili'}</span>
+                                                    <span className="benchmark-value">{asset.similarPercentage === null ? (translations.general.comingSoon || '—') : (isHidden ? '**%' : `${asset.similarPercentage.toFixed(0)}%`)}</span>
+                                                </div>
+                                                <div className="benchmark-row">
+                                                    <span>{translations.comparison.cards.assetAllocation.avgAll || 'Media Tutti gli Utenti'}</span>
+                                                    <span className="benchmark-value">{asset.allPercentage === null ? (translations.general.comingSoon || '—') : (isHidden ? '**%' : `${asset.allPercentage.toFixed(0)}%`)}</span>
+                                                </div>
+                                            </AllocationBenchmarks>
+                                        </React.Fragment>
                                     ))}
                                     <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'}` }}>
                                         {assetAllocation.map((asset, index) => (

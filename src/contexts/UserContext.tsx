@@ -34,6 +34,7 @@ const emptyAverageBucket = {
   incomes: null,
   savingsRates: null,
   expensesByCategory: null,
+  assetAllocation: null,
 };
 
 const defaultAverages = {

@@ -30,12 +30,19 @@ export interface CustomBenchmark {
     balances: number | null;
     incomes: number | null;
     expenses: number | null;
+    assetAllocation: AssetAllocation | null;
   };
   rankings: {
     balance: number;
     incomes: number;
     outflows: number;
   };
+}
+
+export interface AssetAllocation {
+  liquid: number;
+  investments: number;
+  crypto: number;
 }
 
 export interface CustomBenchmarkPreview {

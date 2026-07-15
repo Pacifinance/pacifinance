@@ -1,13 +1,16 @@
 -- Community benchmark source data in one round trip. The application selects
 -- anonymous cohorts in memory, so this function returns only numeric totals
 -- and official parent-category indexes, never transaction notes or details.
-create or replace function public.get_benchmark_metric_rows(
+drop function if exists public.get_benchmark_metric_rows(uuid[], date);
+
+create function public.get_benchmark_metric_rows(
   p_user_ids uuid[],
   p_current_month date default date_trunc('month', now())::date
 )
 returns table(
   user_id uuid,
   balance_total numeric,
+  asset_allocation jsonb,
   monthly_income numeric,
   monthly_expenses numeric,
   yearly_income numeric,
@@ -21,8 +24,19 @@ language sql stable as $$
   latest_balances as (
     select distinct on (b.user_id)
       b.user_id,
-      (b.bank + b.cash + b.digital_services + b.stocks + b.etf + b.bitcoin + b.crypto + b.bonds + b.funds + b.commodities + b.emergency_fund) as balance_total
+      totals.balance_total,
+      case when totals.balance_total > 0 then jsonb_build_object(
+        'liquid', round(totals.liquid / totals.balance_total * 100, 2),
+        'investments', round(totals.investments / totals.balance_total * 100, 2),
+        'crypto', round(totals.crypto / totals.balance_total * 100, 2)
+      ) end as asset_allocation
     from public.balances b
+    cross join lateral (select
+      b.bank + b.cash + b.digital_services + b.emergency_fund as liquid,
+      b.stocks + b.etf + b.bonds + b.funds + b.commodities as investments,
+      b.bitcoin + b.crypto as crypto,
+      b.bank + b.cash + b.digital_services + b.emergency_fund + b.stocks + b.etf + b.bonds + b.funds + b.commodities + b.bitcoin + b.crypto as balance_total
+    ) totals
     join eligible e on e.user_id = b.user_id
     where b.user_date < p_current_month
     order by b.user_id, b.user_date desc, b.recorded_at desc
@@ -62,7 +76,7 @@ language sql stable as $$
     from category_totals
     group by user_id
   )
-  select u.user_id, b.balance_total, m.monthly_income, m.monthly_expenses,
+  select u.user_id, b.balance_total, b.asset_allocation, m.monthly_income, m.monthly_expenses,
     y.yearly_income, y.yearly_expenses,
     coalesce(c.yearly_expenses_by_category, '{}'::jsonb)
   from eligible u

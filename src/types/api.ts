@@ -370,6 +370,11 @@ export interface StatsAverageBucket {
   incomes: number | null;
   savingsRates: number | null;
   expensesByCategory: Record<string, number> | null;
+  assetAllocation: {
+    liquid: number;
+    investments: number;
+    crypto: number;
+  } | null;
   distributions?: {
     balances: DistributionSummary;
     expenses: DistributionSummary;

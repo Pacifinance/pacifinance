@@ -17,6 +17,8 @@ import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import WhatsNewBanner from './WhatsNewBanner';
 
 const ToolbarContainer = styled.div`
+  position: relative;
+  z-index: 1200;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -25,10 +27,11 @@ const ToolbarContainer = styled.div`
   margin: 0 0 1rem auto;
   padding: 0.3rem;
   border-radius: 0.85rem;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)'};
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.72)'};
-  box-shadow: ${props => props.theme.mode === 'dark' ? '0 10px 30px rgba(0,0,0,0.16)' : '0 10px 30px rgba(15,23,42,0.06)'};
-  backdrop-filter: blur(14px);
+  border: 1px solid ${props => props.theme.buttonBackgroundColor}38;
+  background: linear-gradient(135deg,
+    ${props => props.theme.buttonBackgroundColor}18,
+    ${props => props.theme.buttonBackgroundColor}08);
+  box-shadow: 0 10px 30px ${props => props.theme.buttonBackgroundColor}12;
   
   @media (max-width: 768px) {
     margin-bottom: 0.75rem;
@@ -43,19 +46,20 @@ const ToolbarButton = styled.button`
   padding: 0.45rem 0.75rem;
   border-radius: 0.65rem;
   border: 1px solid ${props => props.$active
-    ? 'rgba(34,197,94,0.4)'
-    : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};
+    ? `${props.theme.buttonBackgroundColor}70`
+    : `${props.theme.buttonBackgroundColor}28`};
   background: ${props => props.$active
-    ? (props.theme.mode === 'dark' ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.08)')
-    : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)')};
-  color: ${props => props.$active ? '#22c55e' : props.theme.textColor};
+    ? `${props.theme.buttonBackgroundColor}28`
+    : `${props.theme.buttonBackgroundColor}0d`};
+  color: ${props => props.$active ? props.theme.buttonBackgroundColor : props.theme.textColor};
   font-size: 0.8rem;
   font-weight: ${props => props.$active ? '600' : '400'};
   cursor: pointer;
   transition: all 0.2s ease;
   
   &:hover {
-    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'};
+    background: ${props => props.theme.buttonBackgroundColor}20;
+    border-color: ${props => props.theme.buttonBackgroundColor}55;
   }
   
   svg {

@@ -36,6 +36,7 @@ const pulse = keyframes`
 
 const Wrapper = styled.div`
   position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
 `;
@@ -49,20 +50,21 @@ const IconBtn = styled.button`
   border-radius: 0.6rem;
   border: 1px solid ${p =>
     p.$active
-      ? 'rgba(34,197,94,0.4)'
-      : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'};
+      ? `${p.theme.buttonBackgroundColor}70`
+      : `${p.theme.buttonBackgroundColor}28`};
   background: ${p =>
     p.$active
-      ? (p.theme.mode === 'dark' ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.08)')
-      : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)')};
-  color: ${p => p.$active ? '#22c55e' : p.theme.textColor};
+      ? `${p.theme.buttonBackgroundColor}28`
+      : `${p.theme.buttonBackgroundColor}0d`};
+  color: ${p => p.$active ? p.theme.buttonBackgroundColor : p.theme.textColor};
   font-size: 0.8rem;
   font-weight: ${p => p.$active ? '600' : '400'};
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'};
+    background: ${p => p.theme.buttonBackgroundColor}20;
+    border-color: ${p => p.theme.buttonBackgroundColor}55;
   }
 
   svg { font-size: 1rem; }
@@ -93,7 +95,7 @@ const DropdownOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9998;
+  z-index: 12000;
 `;
 
 const Dropdown = styled.div`
@@ -107,7 +109,7 @@ const Dropdown = styled.div`
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
   border-radius: 14px;
   padding: 1rem 1.1rem;
-  z-index: 9999;
+  z-index: 12001;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   animation: ${fadeSlideIn} 0.2s ease-out;
 

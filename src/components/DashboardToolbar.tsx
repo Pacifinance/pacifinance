@@ -11,7 +11,7 @@ import React, { useState, useContext, useRef } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import { MdDragIndicator, MdViewModule, MdTableRows, MdSettings, MdRefresh } from 'react-icons/md';
+import { MdDragIndicator, MdViewModule, MdTableRows, MdSettings, MdRefresh, MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import { IoClose } from 'react-icons/io5';
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import WhatsNewBanner from './WhatsNewBanner';
@@ -185,6 +185,28 @@ const SectionItem = styled.div`
       background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
     }
   }
+
+  .reorder-actions {
+    display: inline-flex;
+    gap: 0.15rem;
+  }
+
+  .reorder-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 0.45rem;
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.055)' : 'rgba(15,23,42,0.045)'};
+    color: ${props => props.theme.textColor};
+    cursor: pointer;
+
+    &:hover:not(:disabled) { background: ${props => props.theme.buttonBackgroundColor}1c; }
+    &:disabled { opacity: 0.22; cursor: default; }
+  }
 `;
 
 const ResetButton = styled.button`
@@ -228,7 +250,7 @@ const DashboardToolbar = ({
   viewMode,
   toggleViewMode,
 }) => {
-  const { translations } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   useContext(MediaQueryContext);
   const [showPanel, setShowPanel] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
@@ -317,7 +339,10 @@ const DashboardToolbar = ({
         <ToolbarButton 
           theme={theme} 
           $active={showPanel}
-          onClick={() => setShowPanel(true)}
+          onClick={() => {
+            if (viewMode === 'compact') toggleViewMode();
+            setShowPanel(true);
+          }}
           title={t.customize || 'Personalizza layout'}
           data-umami-event="dashboard-customize"
         >
@@ -366,6 +391,28 @@ const DashboardToolbar = ({
                 <span className="section-name">
                   {sectionNames[section.id] || section.id}
                 </span>
+                <div className="reorder-actions">
+                  <button
+                    type="button"
+                    className="reorder-button"
+                    disabled={index === 0}
+                    onClick={() => moveSection(index, index - 1)}
+                    aria-label={language === 'it' ? 'Sposta sezione in alto' : 'Move section up'}
+                    title={language === 'it' ? 'Sposta in alto' : 'Move up'}
+                  >
+                    <MdKeyboardArrowUp />
+                  </button>
+                  <button
+                    type="button"
+                    className="reorder-button"
+                    disabled={index === sections.length - 1}
+                    onClick={() => moveSection(index, index + 1)}
+                    aria-label={language === 'it' ? 'Sposta sezione in basso' : 'Move section down'}
+                    title={language === 'it' ? 'Sposta in basso' : 'Move down'}
+                  >
+                    <MdKeyboardArrowDown />
+                  </button>
+                </div>
                 <button
                   className="visibility-toggle"
                   onClick={(e) => {

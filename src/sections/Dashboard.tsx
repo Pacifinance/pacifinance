@@ -101,6 +101,16 @@ const ResponsivePadding = styled.div`
   }
 `;
 
+const OrderedDashboardSections = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const DashboardSectionSlot = styled.div`
+  order: ${p => p.$order};
+  min-width: 0;
+`;
+
 const Dashboard = ({ theme, userData, isHidden }) => {
     const [isLoading, setIsLoading] = useState(true);
     const { language, translations } = useContext(LanguageContext);
@@ -443,6 +453,10 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
     // Check if a section is visible
     const isSectionVisible = (sectionId) => visibleSections.includes(sectionId);
+    const getSectionOrder = (sectionId) => {
+        const index = sections.findIndex((section) => section.id === sectionId);
+        return index === -1 ? sections.length : index;
+    };
 
     return (
         <MainDashboardLayout theme={theme}>
@@ -467,8 +481,10 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         </Suspense>
                     )}
 
+                    <OrderedDashboardSections>
                     {/* Balance Overview */}
-                    {isSectionVisible('balance-overview') && <ModernDashboardHeader theme={theme}>
+                    {isSectionVisible('balance-overview') && <DashboardSectionSlot $order={viewMode === 'cards' ? getSectionOrder('balance-overview') : 0}>
+                    <ModernDashboardHeader theme={theme}>
                                 <ModernDashboardTitle theme={theme}>
                                     {translations.dashboard.title}
                                 </ModernDashboardTitle>
@@ -515,13 +531,15 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                             </ModernMetricCard>
                         </div>
                     </ModernBalanceOverview>
-                </ModernDashboardHeader>}
+                    </ModernDashboardHeader>
+                    </DashboardSectionSlot>}
 
                 {/* Quick add: record an outflow/income in seconds, both view modes */}
                 <QuickAddTransaction theme={theme} />
 
                 {/* View Mode: Compact (table) vs Cards (detailed sections) */}
                 {viewMode === 'compact' ? (
+                    <DashboardSectionSlot $order={1}>
                     <DashboardCompactView
                         theme={theme}
                         isHidden={isHidden}
@@ -539,10 +557,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         liquidityAccountsByAssetKey={liquidityAccountsByAssetKey}
                         categoryPreMonthTotals={categoryPreMonthTotals}
                     />
+                    </DashboardSectionSlot>
                 ) : (
                 <>
 
                 {isSectionVisible('liquidity-investments') && (
+                <DashboardSectionSlot $order={getSectionOrder('liquidity-investments')}>
                 <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '0.75rem' : '1.25rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
                     <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '0.75rem' : '1.25rem' }}>
@@ -876,10 +896,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         })()}
                     </div>
                 </div>
+                </DashboardSectionSlot>
                 )}
 
                 {/* Sezione Entrate e Uscite */}
                 {isSectionVisible('income-expense') && (
+                <DashboardSectionSlot $order={getSectionOrder('income-expense')}>
                 <ModernIncomeExpenseSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <FaEuroSign style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
@@ -1083,10 +1105,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         </div>
                     )}
                 </ModernIncomeExpenseSection>
+                </DashboardSectionSlot>
                 )}
 
                 {/* Sezione Grafici */}
                 {isSectionVisible('charts') && (
+                <DashboardSectionSlot $order={getSectionOrder('charts')}>
                 <ModernChartsSection theme={theme}>
                     <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.6rem' : '1rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
                         <BsGraphUpArrow style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
@@ -1239,24 +1263,30 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         </ModernChartContainer>
                     </div>
                 </ModernChartsSection>
+                </DashboardSectionSlot>
                 )}
 
                 {/* Financial Insights Section (lazy loaded) */}
                 {isSectionVisible('financial-insights') && (
+                <DashboardSectionSlot $order={getSectionOrder('financial-insights')}>
                 <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
                     <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
                 </Suspense>
+                </DashboardSectionSlot>
                 )}
 
                 {/* Goal Tracking Section */}
                 {isSectionVisible('goal-tracker') && (
+                <DashboardSectionSlot $order={getSectionOrder('goal-tracker')}>
                 <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
                     <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
                 </Suspense>
+                </DashboardSectionSlot>
                 )}
 
                 </>
                 )}
+                </OrderedDashboardSections>
 
                 </ResponsivePadding>
             </DashboardContent>

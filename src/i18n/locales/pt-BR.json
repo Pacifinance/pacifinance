@@ -572,7 +572,14 @@
         "loading": "Carregando dados do painel...",
         "loadingError": "Erro ao carregar dados. Por favor, tente novamente.",
         "loadingTimeout": "O carregamento está demorando mais do que o esperado...",
-        "retry": "Tentar novamente"
+        "retry": "Tentar novamente",
+        "showDetails": "Mostrar detalhes",
+        "hideDetails": "Ocultar detalhes",
+        "collapseSection": "Recolher seção",
+        "expandSection": "Expandir seção",
+        "manage": "Gerenciar",
+        "update": "Atualizar",
+        "addBalance": "Adicionar valor"
     },
     "graphs": {
         "title": "Gráficos",
@@ -1962,6 +1969,10 @@
         "customizeTitle": "Personalizar o painel",
         "dragHint": "Arraste as seções para reorganizá-las. Clique no ícone do olho para ocultá-las.",
         "resetLayout": "Restaurar padrão",
+        "density": "Densidade",
+        "densityComfortable": "Confortável",
+        "densityCompact": "Compacta",
+        "switchDensity": "Alterar densidade dos cartões",
         "assetOverview": "Visão geral dos ativos",
         "asset": "Ativo",
         "category": "Categoria",

@@ -572,7 +572,14 @@
         "loading": "Dashboard-Daten werden geladen...",
         "loadingError": "Fehler beim Laden der Daten. Bitte versuchen Sie es erneut.",
         "loadingTimeout": "Das Laden dauert länger als erwartet...",
-        "retry": "Erneut versuchen"
+        "retry": "Erneut versuchen",
+        "showDetails": "Details anzeigen",
+        "hideDetails": "Details ausblenden",
+        "collapseSection": "Abschnitt einklappen",
+        "expandSection": "Abschnitt ausklappen",
+        "manage": "Verwalten",
+        "update": "Aktualisieren",
+        "addBalance": "Wert hinzufügen"
     },
     "graphs": {
         "title": "Diagramme & Statistiken",
@@ -1962,6 +1969,10 @@
         "customizeTitle": "Dashboard anpassen",
         "dragHint": "Ziehe Abschnitte zum Neuordnen. Klicke auf das Augensymbol zum Ausblenden.",
         "resetLayout": "Auf Standard-Layout zurücksetzen",
+        "density": "Dichte",
+        "densityComfortable": "Komfortabel",
+        "densityCompact": "Kompakt",
+        "switchDensity": "Kartendichte ändern",
         "assetOverview": "Vermögensübersicht",
         "asset": "Vermögenswert",
         "category": "Kategorie",

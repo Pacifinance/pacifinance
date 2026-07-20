@@ -572,7 +572,14 @@
         "loading": "Chargement des données du tableau de bord...",
         "loadingError": "Erreur de chargement des données. Veuillez réessayer.",
         "loadingTimeout": "Le chargement prend plus de temps que prévu...",
-        "retry": "Réessayer"
+        "retry": "Réessayer",
+        "showDetails": "Afficher les détails",
+        "hideDetails": "Masquer les détails",
+        "collapseSection": "Réduire la section",
+        "expandSection": "Développer la section",
+        "manage": "Gérer",
+        "update": "Mettre à jour",
+        "addBalance": "Ajouter une valeur"
     },
     "graphs": {
         "title": "Graphiques",
@@ -1962,6 +1969,10 @@
         "customizeTitle": "Personnaliser le tableau de bord",
         "dragHint": "Glisse et dépose les sections pour les réorganiser. Clique sur l'icône œil pour les masquer.",
         "resetLayout": "Réinitialiser par défaut",
+        "density": "Densité",
+        "densityComfortable": "Confortable",
+        "densityCompact": "Compacte",
+        "switchDensity": "Changer la densité des cartes",
         "assetOverview": "Aperçu des actifs",
         "asset": "Actif",
         "category": "Catégorie",

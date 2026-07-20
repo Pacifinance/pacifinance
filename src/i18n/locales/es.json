@@ -574,7 +574,14 @@
         "loading": "Cargando datos del panel...",
         "loadingError": "Error al cargar los datos. Por favor, inténtalo de nuevo.",
         "loadingTimeout": "La carga está tardando más de lo esperado...",
-        "retry": "Reintentar"
+        "retry": "Reintentar",
+        "showDetails": "Mostrar detalles",
+        "hideDetails": "Ocultar detalles",
+        "collapseSection": "Contraer sección",
+        "expandSection": "Expandir sección",
+        "manage": "Gestionar",
+        "update": "Actualizar",
+        "addBalance": "Añadir valor"
     },
     "graphs": {
         "title": "Gráficos y estadísticas",
@@ -1964,6 +1971,10 @@
         "customizeTitle": "Personalizar panel",
         "dragHint": "Arrastra las secciones para reordenarlas. Haz clic en el icono del ojo para ocultarlas.",
         "resetLayout": "Restablecer diseño predeterminado",
+        "density": "Densidad",
+        "densityComfortable": "Cómoda",
+        "densityCompact": "Compacta",
+        "switchDensity": "Cambiar densidad de las tarjetas",
         "assetOverview": "Resumen de activos",
         "asset": "Activo",
         "category": "Categoría",

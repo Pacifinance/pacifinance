@@ -182,4 +182,109 @@ describe('useDashboardLayout', () => {
     const { result } = renderHook(() => useDashboardLayout());
     expect(result.current.sections).toEqual(DEFAULT_SECTIONS);
   });
+
+  // ── collapsedGroups ────────────────────────────────────────────
+
+  it('should default collapsedGroups to an empty object', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+    expect(result.current.collapsedGroups).toEqual({});
+  });
+
+  it('should toggle a group collapsed state independently', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+
+    act(() => {
+      result.current.toggleGroupCollapsed('investments');
+    });
+
+    expect(result.current.collapsedGroups.investments).toBe(true);
+    expect(result.current.collapsedGroups.liquidity).toBeUndefined();
+
+    act(() => {
+      result.current.toggleGroupCollapsed('investments');
+    });
+
+    expect(result.current.collapsedGroups.investments).toBe(false);
+  });
+
+  it('should persist collapsedGroups to localStorage', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+
+    act(() => {
+      result.current.toggleGroupCollapsed('emergencyFund');
+    });
+
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      'pacifinance-dashboard-collapsed-groups',
+      JSON.stringify({ emergencyFund: true })
+    );
+  });
+
+  it('should restore collapsedGroups from localStorage', () => {
+    localStorage.getItem.mockImplementation((key) => {
+      if (key === 'pacifinance-dashboard-collapsed-groups') {
+        return JSON.stringify({ investments: true });
+      }
+      return null;
+    });
+
+    const { result } = renderHook(() => useDashboardLayout());
+    expect(result.current.collapsedGroups).toEqual({ investments: true });
+  });
+
+  // ── cardDensity ────────────────────────────────────────────────
+
+  it('should default cardDensity to "comfortable"', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+    expect(result.current.cardDensity).toBe('comfortable');
+  });
+
+  it('should toggle cardDensity between comfortable and compact', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+
+    act(() => {
+      result.current.toggleCardDensity();
+    });
+
+    expect(result.current.cardDensity).toBe('compact');
+
+    act(() => {
+      result.current.toggleCardDensity();
+    });
+
+    expect(result.current.cardDensity).toBe('comfortable');
+  });
+
+  it('should accept explicit setCardDensity', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+
+    act(() => {
+      result.current.setCardDensity('compact');
+    });
+
+    expect(result.current.cardDensity).toBe('compact');
+  });
+
+  it('should persist cardDensity to localStorage', () => {
+    const { result } = renderHook(() => useDashboardLayout());
+
+    act(() => {
+      result.current.toggleCardDensity();
+    });
+
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      'pacifinance-dashboard-card-density',
+      'compact'
+    );
+  });
+
+  it('should restore cardDensity from localStorage', () => {
+    localStorage.getItem.mockImplementation((key) => {
+      if (key === 'pacifinance-dashboard-card-density') return 'compact';
+      return null;
+    });
+
+    const { result } = renderHook(() => useDashboardLayout());
+    expect(result.current.cardDensity).toBe('compact');
+  });
 });

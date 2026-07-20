@@ -11,7 +11,7 @@ import React, { useState, useContext, useRef } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import { MdDragIndicator, MdViewModule, MdTableRows, MdSettings, MdRefresh, MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
+import { MdDragIndicator, MdViewModule, MdTableRows, MdSettings, MdRefresh, MdKeyboardArrowUp, MdKeyboardArrowDown, MdViewComfy, MdViewCompact } from 'react-icons/md';
 import { IoClose } from 'react-icons/io5';
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import WhatsNewBanner from './WhatsNewBanner';
@@ -253,6 +253,8 @@ const DashboardToolbar = ({
   resetLayout,
   viewMode,
   toggleViewMode,
+  cardDensity,
+  toggleCardDensity,
 }) => {
   const { language, translations } = useContext(LanguageContext);
   useContext(MediaQueryContext);
@@ -338,6 +340,23 @@ const DashboardToolbar = ({
             {viewMode === 'cards' ? (t.compact || 'Compatta') : (t.cards || 'Card')}
           </span>
         </ToolbarButton>
+
+        {/* Card Density Toggle (card view only) */}
+        {viewMode === 'cards' && toggleCardDensity && (
+          <ToolbarButton
+            theme={theme}
+            $active={cardDensity === 'compact'}
+            onClick={toggleCardDensity}
+            title={t.switchDensity || 'Cambia densità delle card'}
+            aria-label={t.switchDensity || 'Change card density'}
+            data-umami-event="dashboard-toggle-density"
+          >
+            {cardDensity === 'compact' ? <MdViewCompact /> : <MdViewComfy />}
+            <span className="btn-label">
+              {cardDensity === 'compact' ? (t.densityCompact || 'Compatta') : (t.densityComfortable || 'Comoda')}
+            </span>
+          </ToolbarButton>
+        )}
 
         {/* Customize Layout */}
         <ToolbarButton 

@@ -15,20 +15,16 @@ import {
     BsArrowUpRight,
     BsArrowDownLeft
 } from "react-icons/bs";
-import { 
-    FaChartLine, 
-    FaCoins,
+import {
+    FaChartLine,
     FaRocket,
     FaEuroSign
 } from "react-icons/fa";
-import { 
-    AiOutlinePlusCircle,
-    AiOutlineEuro
+import {
+    AiOutlinePlusCircle
 } from "react-icons/ai";
-import { 
-    MdAccountBalance,
-    MdTrendingUp,
-    MdDashboard
+import {
+    MdAccountBalance
 } from "react-icons/md";
 import { assetIcons } from '../data/assetIcons';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
@@ -51,10 +47,6 @@ import {
 import {
     ModernDashboardHeader,
     ModernBalanceOverview,
-    ModernAssetsGrid,
-    ModernInvestmentsGrid,
-    ModernAssetCard,
-    ModernInvestmentCard,
     ModernChartsSection,
     ModernChartContainer,
     FloatingElement,
@@ -64,16 +56,14 @@ import {
     ModernIncomeExpenseCard,
     MainDashboardLayout,
     DashboardContent,
-    InvestmentCardWrapper,
-    InvestmentRowWrapper,
-    AssetCardWrapper,
-    SubEntriesList,
-    SubEntryRow,
-    SubEntriesMore
+    PortfolioGrid,
+    PortfolioExtraInfo
 } from '../styles/ModernDashboardStyled';
 import { useDemoServices } from '../hooks/useDemoServices';
 import InvestmentHoldingsPanel from '../components/InvestmentHoldingsPanel';
 import LiquidityAccountsPanel from '../components/LiquidityAccountsPanel';
+import PortfolioSection from '../components/PortfolioSection';
+import PortfolioAssetCard from '../components/PortfolioAssetCard';
 import { isVerifiableAssetKey } from '../constants/investmentSchema';
 import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
 const FinancialInsights = lazy(() => import('../components/FinancialInsights'));
@@ -85,7 +75,6 @@ import DashboardCompactView from '../components/DashboardCompactView';
 import QuickAddTransaction from '../components/QuickAddTransaction';
 import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
-import { BsPercent } from 'react-icons/bs';
 import { GiUmbrella } from 'react-icons/gi';
 import { isNewUser } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
@@ -115,7 +104,10 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const [isLoading, setIsLoading] = useState(true);
     const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
-    const { sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode } = useDashboardLayout();
+    const {
+        sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode,
+        collapsedGroups, toggleGroupCollapsed, cardDensity, toggleCardDensity
+    } = useDashboardLayout();
     const { investmentService, liquidityAccountService } = useDemoServices();
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
     const [liquidityAccounts, setLiquidityAccounts] = useState([]);
@@ -472,6 +464,8 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         resetLayout={resetLayout}
                         viewMode={viewMode}
                         toggleViewMode={toggleViewMode}
+                        cardDensity={cardDensity}
+                        toggleCardDensity={toggleCardDensity}
                     />
 
                     {/* Onboarding for new users with no data */}
@@ -565,335 +559,222 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 <DashboardSectionSlot $order={getSectionOrder('liquidity-investments')}>
                 <div style={{ display: 'flex', flexDirection: isMobileScreen ? 'column' : 'row', gap: isMobileScreen ? '0.75rem' : '1.25rem' }}>
                     {/* Colonna Sinistra - Liquidità + Emergency Fund */}
-                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: isMobileScreen ? '0.75rem' : '1.25rem' }}>
-                        {/* Sezione Bilanci Tradizionali - Layout intelligente */}
-                        <div>
-                            <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.5rem' : '0.75rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
-                                <MdAccountBalance style={{ marginRight: '8px', color: assetColors.totalLiquidity }} />
-                                {translations.dashboard.liquidityAvailability}
-                            </h3>
-                            {(() => {
-                                // Filtra gli asset con valore > 0 per il layout
-                                const activeAssets = traditionalAssets.filter(a => a.value > 0);
-                                const count = activeAssets.length;
-                                
-                                // Funzione helper per renderizzare una card asset
-                                const renderAssetCard = (asset, index) => {
-                                    const IconComponent = asset.icon;
-                                    const subEntries = (liquidityAccountsByAssetKey[asset.key] || [])
-                                        .slice()
-                                        .sort((a, b) => (b.currentValue ?? 0) - (a.currentValue ?? 0));
-                                    return (
-                                        <AssetCardWrapper
-                                            key={index}
-                                            $itemCount={count}
-                                            $index={index}
-                                        >
-                                            <ModernAssetCard theme={theme} gradient={asset.gradient}>
-                                                <FloatingElement delay={index * 0.2}>
-                                                    <div className="card-header">
-                                                        <div className="icon-container">
-                                                            <IconComponent className="asset-icon" />
-                                                        </div>
-                                                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+                        {(() => {
+                            const activeAssets = traditionalAssets.filter(a => a.value > 0);
+                            if (activeAssets.length === 0) return null;
+                            return (
+                                <PortfolioSection
+                                    theme={theme}
+                                    icon={MdAccountBalance}
+                                    title={translations.dashboard.liquidityAvailability}
+                                    totalLabel={formatCurrency(totalTraditional)}
+                                    accent={assetColors.totalLiquidity}
+                                    collapsed={!!collapsedGroups.liquidity}
+                                    onToggleCollapsed={() => toggleGroupCollapsed('liquidity')}
+                                    expandLabel={translations.dashboard.expandSection}
+                                    collapseLabel={translations.dashboard.collapseSection}
+                                >
+                                    <PortfolioGrid $density={cardDensity}>
+                                        {activeAssets.map((asset) => {
+                                            const IconComponent = asset.icon;
+                                            const subEntries = (liquidityAccountsByAssetKey[asset.key] || [])
+                                                .slice()
+                                                .sort((a, b) => (b.currentValue ?? 0) - (a.currentValue ?? 0));
+                                            return (
+                                                <PortfolioAssetCard
+                                                    key={asset.key}
+                                                    theme={theme}
+                                                    icon={IconComponent}
+                                                    color={asset.color}
+                                                    gradient={asset.gradient}
+                                                    density={cardDensity}
+                                                    name={isHidden ? '****' : asset.name}
+                                                    value={formatCurrency(asset.value)}
+                                                    pills={[`${formatPercentage(asset.value, totalBalance)} ${translations.dashboard.ofTotal}`]}
+                                                    progressPercent={isHidden ? null : (totalBalance > 0 ? (asset.value / totalBalance) * 100 : 0)}
+                                                    showDetailsLabel={translations.dashboard.showDetails}
+                                                    hideDetailsLabel={translations.dashboard.hideDetails}
+                                                    subEntries={!isHidden ? subEntries.slice(0, 4).map((entry) => ({
+                                                        id: entry.id,
+                                                        label: entry.label,
+                                                        value: formatCurrency(entry.currentValue ?? 0)
+                                                    })) : []}
+                                                    subEntriesMoreLabel={!isHidden && subEntries.length > 4
+                                                        ? translations.liquidityAccounts.calculatedFromN.replace('{count}', subEntries.length)
+                                                        : undefined}
+                                                    actions={(
+                                                        <>
                                                             <button
                                                                 type="button"
-                                                                className="action-button"
+                                                                className="icon-action"
                                                                 onClick={() => setOpenSubAccountsAssetKey(asset.key)}
                                                                 aria-label={translations.liquidityAccounts.manageLink}
+                                                                title={translations.liquidityAccounts.manageLink}
                                                                 data-umami-event="dashboard-manage-liquidity"
                                                             >
                                                                 <BiListUl />
                                                             </button>
-                                                            <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-balance">
+                                                            <LocalizedLink
+                                                                to="/insert-values?section=balance"
+                                                                className="icon-action"
+                                                                aria-label={translations.dashboard.addBalance}
+                                                                title={translations.dashboard.addBalance}
+                                                                data-umami-event="dashboard-add-balance"
+                                                            >
                                                                 <AiOutlinePlusCircle />
                                                             </LocalizedLink>
-                                                        </div>
-                                                    </div>
+                                                        </>
+                                                    )}
+                                                />
+                                            );
+                                        })}
+                                    </PortfolioGrid>
+                                </PortfolioSection>
+                            );
+                        })()}
 
-                                                    <div className="card-content">
-                                                        <h4 className="asset-name">{isHidden ? '****' : asset.name}</h4>
-                                                        <div className="asset-value">{formatCurrency(asset.value)}</div>
-                                                        <div className="asset-percentage">
-                                                            {formatPercentage(asset.value, totalBalance)} {translations.dashboard.ofTotal}
-                                                        </div>
-                                                        {!isHidden && subEntries.length > 0 && (
-                                                            <SubEntriesList $color="white">
-                                                                {subEntries.slice(0, 4).map((entry) => (
-                                                                    <SubEntryRow key={entry.id}>
-                                                                        <span className="sub-entry-label">{entry.label}</span>
-                                                                        <span className="sub-entry-value">{formatCurrency(entry.currentValue ?? 0)}</span>
-                                                                    </SubEntryRow>
-                                                                ))}
-                                                                {subEntries.length > 4 && (
-                                                                    <SubEntriesMore>
-                                                                        {translations.liquidityAccounts.calculatedFromN.replace('{count}', subEntries.length)}
-                                                                    </SubEntriesMore>
-                                                                )}
-                                                            </SubEntriesList>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="card-footer">
-                                                        <div className="progress-bar">
-                                                            <div
-                                                                className="progress-fill"
-                                                                style={{
-                                                                    width: `${formatPercentage(asset.value, totalBalance)}%`,
-                                                                    backgroundColor: asset.color
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </FloatingElement>
-                                            </ModernAssetCard>
-                                        </AssetCardWrapper>
-                                    );
-                                };
-
-                                // Layout standard - solo asset con valore > 0
-                                return (
-                                    <ModernAssetsGrid theme={theme} $itemCount={activeAssets.length}>
-                                        {activeAssets.map((asset, index) => renderAssetCard(asset, index))}
-                                    </ModernAssetsGrid>
-                                );
-                            })()}
-                        </div>
-
-                        {/* Sezione Fondo di Emergenza - Layout intelligente */}
                         {emergencyFundAsset.value > 0 && (
-                            <div>
-                                <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.5rem' : '0.75rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
-                                    <GiUmbrella style={{ marginRight: '8px', color: emergencyFundAsset.color }} />
-                                    {translations.dashboard.emergencySecurity}
-                                </h3>
-                                <ModernAssetsGrid theme={theme} $itemCount={1}>
-                                    <AssetCardWrapper $itemCount={1} $index={0}>
-                                        <ModernAssetCard theme={theme} gradient={emergencyFundAsset.gradient}>
-                                            <FloatingElement delay={0.3}>
-                                                <div className="card-header">
-                                                    <div className="icon-container">
-                                                        <GiUmbrella className="asset-icon" />
-                                                    </div>
-                                                    <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                                        <button
-                                                            type="button"
-                                                            className="action-button"
-                                                            onClick={() => setOpenSubAccountsAssetKey('emergencyFund')}
-                                                            aria-label={translations.liquidityAccounts.manageLink}
-                                                            data-umami-event="dashboard-manage-emergency"
-                                                        >
-                                                            <BiListUl />
-                                                        </button>
-                                                        <LocalizedLink to="/insert-values?section=balance" className="action-button" data-umami-event="dashboard-add-emergency">
-                                                            <AiOutlinePlusCircle />
-                                                        </LocalizedLink>
-                                                    </div>
-                                                </div>
-
-                                                <div className="card-content">
-                                                    <h4 className="asset-name">{isHidden ? '****' : emergencyFundAsset.name}</h4>
-                                                    <div className="asset-value">{formatCurrency(emergencyFundAsset.value)}</div>
-                                                    <div className="asset-percentage">
-                                                        {formatPercentage(emergencyFundAsset.value, totalBalance)} {translations.dashboard.ofTotal}
-                                                    </div>
-                                                    {emergencyFundProgress !== null && !isHidden && (
-                                                        <div style={{
-                                                            fontSize: isMobileScreen ? '0.55rem' : '0.8rem',
-                                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-                                                            marginTop: '0.15rem',
-                                                            lineHeight: '1.2'
-                                                        }}>
-                                                            {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
-                                                        </div>
-                                                    )}
-                                                    {!isHidden && (liquidityAccountsByAssetKey.emergencyFund || []).length > 0 && (
-                                                        <SubEntriesList $color="white">
-                                                            {(liquidityAccountsByAssetKey.emergencyFund || [])
-                                                                .slice()
-                                                                .sort((a, b) => (b.currentValue ?? 0) - (a.currentValue ?? 0))
-                                                                .slice(0, 4)
-                                                                .map((entry) => (
-                                                                    <SubEntryRow key={entry.id}>
-                                                                        <span className="sub-entry-label">{entry.label}</span>
-                                                                        <span className="sub-entry-value">{formatCurrency(entry.currentValue ?? 0)}</span>
-                                                                    </SubEntryRow>
-                                                                ))}
-                                                        </SubEntriesList>
-                                                    )}
-                                                </div>
-                                                
-                                                <div className="card-footer">
-                                                    <div className="progress-bar">
-                                                        <div 
-                                                            className="progress-fill" 
-                                                            style={{ 
-                                                                width: `${formatPercentage(emergencyFundAsset.value, totalBalance)}%`,
-                                                                backgroundColor: emergencyFundAsset.color
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </FloatingElement>
-                                        </ModernAssetCard>
-                                    </AssetCardWrapper>
-                                </ModernAssetsGrid>
-                            </div>
+                            <PortfolioSection
+                                theme={theme}
+                                icon={GiUmbrella}
+                                title={translations.dashboard.emergencySecurity}
+                                totalLabel={formatCurrency(emergencyFundAsset.value)}
+                                accent={emergencyFundAsset.color}
+                                collapsed={!!collapsedGroups.emergencyFund}
+                                onToggleCollapsed={() => toggleGroupCollapsed('emergencyFund')}
+                                expandLabel={translations.dashboard.expandSection}
+                                collapseLabel={translations.dashboard.collapseSection}
+                            >
+                                <PortfolioGrid $density={cardDensity}>
+                                    <PortfolioAssetCard
+                                        theme={theme}
+                                        icon={GiUmbrella}
+                                        color={emergencyFundAsset.color}
+                                        gradient={emergencyFundAsset.gradient}
+                                        density={cardDensity}
+                                        name={isHidden ? '****' : emergencyFundAsset.name}
+                                        value={formatCurrency(emergencyFundAsset.value)}
+                                        pills={[`${formatPercentage(emergencyFundAsset.value, totalBalance)} ${translations.dashboard.ofTotal}`]}
+                                        progressPercent={isHidden ? null : (totalBalance > 0 ? (emergencyFundAsset.value / totalBalance) * 100 : 0)}
+                                        showDetailsLabel={translations.dashboard.showDetails}
+                                        hideDetailsLabel={translations.dashboard.hideDetails}
+                                        extraInfo={emergencyFundProgress !== null && !isHidden ? (
+                                            <PortfolioExtraInfo theme={theme}>
+                                                {translations.general.objective}: {emergencyFundProgress.toFixed(0)}% ({formatCurrency(emergencyFundAsset.value)} / {formatCurrency(emergencyFundTarget)})
+                                            </PortfolioExtraInfo>
+                                        ) : null}
+                                        subEntries={!isHidden ? (liquidityAccountsByAssetKey.emergencyFund || [])
+                                            .slice()
+                                            .sort((a, b) => (b.currentValue ?? 0) - (a.currentValue ?? 0))
+                                            .slice(0, 4)
+                                            .map((entry) => ({ id: entry.id, label: entry.label, value: formatCurrency(entry.currentValue ?? 0) })) : []}
+                                        actions={(
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="icon-action"
+                                                    onClick={() => setOpenSubAccountsAssetKey('emergencyFund')}
+                                                    aria-label={translations.liquidityAccounts.manageLink}
+                                                    title={translations.liquidityAccounts.manageLink}
+                                                    data-umami-event="dashboard-manage-emergency"
+                                                >
+                                                    <BiListUl />
+                                                </button>
+                                                <LocalizedLink
+                                                    to="/insert-values?section=balance"
+                                                    className="icon-action"
+                                                    aria-label={translations.dashboard.addBalance}
+                                                    title={translations.dashboard.addBalance}
+                                                    data-umami-event="dashboard-add-emergency"
+                                                >
+                                                    <AiOutlinePlusCircle />
+                                                </LocalizedLink>
+                                            </>
+                                        )}
+                                    />
+                                </PortfolioGrid>
+                            </PortfolioSection>
                         )}
                     </div>
 
                     {/* Colonna Destra - Investimenti */}
                     <div style={{ flex: '1' }}>
-                        <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.5rem' : '0.75rem', fontSize: isMobileScreen ? '1.1rem' : '1.5rem', fontWeight: '600' }}>
-                            <FaChartLine style={{ marginRight: '8px', color: assetColors.totalInvestments }} />
-                            {translations.dashboard.portfolioInvestments}
-                        </h3>
-                        {/* Layout intelligente per gli investimenti */}
-                        {(() => {
-                            const count = investments.length;
-                            
-                            // Funzione helper per renderizzare una card
-                            const renderInvestmentCard = (investment, index) => {
-                                const IconComponent = investment.icon;
-                                const subEntries = (holdingsByAssetKey[investment.key] || [])
-                                    .slice()
-                                    .sort((a, b) => (b.currentValue ?? b.investedAmount ?? 0) - (a.currentValue ?? a.investedAmount ?? 0));
-                                return (
-                                    <InvestmentCardWrapper 
-                                        key={index} 
-                                        $itemCount={count} 
-                                        $index={index}
-                                    >
-                                        <ModernInvestmentCard theme={theme} gradient={investment.gradient}>
-                                            <FloatingElement delay={index * 0.15}>
-                                                <div className="card-header">
-                                                    <div className="icon-container">
-                                                        <IconComponent className="investment-icon" />
-                                                        {investment.comingSoon && (
-                                                            <div style={{
-                                                                position: 'absolute',
-                                                                top: '-8px',
-                                                                right: '-8px',
-                                                                backgroundColor: '#22c55e',
-                                                                color: 'white',
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: '600',
-                                                                padding: '2px 6px',
-                                                                borderRadius: '8px',
-                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                                            }}>
-                                                                {language === 'it' ? 'Presto' : 'Soon'}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="investment-type">
-                                                        <span>{isHidden ? '****' : investment.description}</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="card-content">
-                                                    <h4 className="investment-name">{isHidden ? '****' : investment.name}</h4>
-                                                    <div className="investment-value">{formatCurrency(investment.value)}</div>
-                                                    <div className="investment-stats">
-                                                        {formatPercentage(investment.value, totalInvestments)} {translations.dashboard.ofPortfolio} · {formatPercentage(investment.value, totalBalance)} {translations.dashboard.ofTotal}
-                                                    </div>
-                                                    {!isHidden && subEntries.length > 0 && (
-                                                        <SubEntriesList $color={theme.textColor}>
-                                                            {subEntries.slice(0, 4).map((entry) => (
-                                                                <SubEntryRow key={entry.id}>
-                                                                    <span className="sub-entry-label">{entry.instrument?.symbol ?? '—'}</span>
-                                                                    <span className="sub-entry-value">{formatCurrency(entry.currentValue ?? entry.investedAmount ?? 0)}</span>
-                                                                </SubEntryRow>
-                                                            ))}
-                                                            {subEntries.length > 4 && (
-                                                                <SubEntriesMore>
-                                                                    {translations.investments.holdings.calculatedFromN.replace('{count}', subEntries.length)}
-                                                                </SubEntriesMore>
-                                                            )}
-                                                        </SubEntriesList>
-                                                    )}
-                                                </div>
-
-                                                <div className="card-footer">
-                                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        {investments.length > 0 && (
+                            <PortfolioSection
+                                theme={theme}
+                                icon={FaChartLine}
+                                title={translations.dashboard.portfolioInvestments}
+                                totalLabel={formatCurrency(totalInvestments)}
+                                accent={assetColors.totalInvestments}
+                                collapsed={!!collapsedGroups.investments}
+                                onToggleCollapsed={() => toggleGroupCollapsed('investments')}
+                                expandLabel={translations.dashboard.expandSection}
+                                collapseLabel={translations.dashboard.collapseSection}
+                            >
+                                <PortfolioGrid $density={cardDensity}>
+                                    {investments.map((investment) => {
+                                        const IconComponent = investment.icon;
+                                        const subEntries = (holdingsByAssetKey[investment.key] || [])
+                                            .slice()
+                                            .sort((a, b) => (b.currentValue ?? b.investedAmount ?? 0) - (a.currentValue ?? a.investedAmount ?? 0));
+                                        return (
+                                            <PortfolioAssetCard
+                                                key={investment.key}
+                                                theme={theme}
+                                                icon={IconComponent}
+                                                color={investment.color}
+                                                gradient={investment.gradient}
+                                                density={cardDensity}
+                                                name={isHidden ? '****' : investment.name}
+                                                value={formatCurrency(investment.value)}
+                                                badge={investment.comingSoon ? (language === 'it' ? 'Presto' : 'Soon') : undefined}
+                                                pills={[
+                                                    `${formatPercentage(investment.value, totalInvestments)} ${translations.dashboard.ofPortfolio}`,
+                                                    `${formatPercentage(investment.value, totalBalance)} ${translations.dashboard.ofTotal}`
+                                                ]}
+                                                progressPercent={isHidden ? null : (totalInvestments > 0 ? (investment.value / totalInvestments) * 100 : 0)}
+                                                showDetailsLabel={translations.dashboard.showDetails}
+                                                hideDetailsLabel={translations.dashboard.hideDetails}
+                                                subEntries={!isHidden ? subEntries.slice(0, 4).map((entry) => ({
+                                                    id: entry.id,
+                                                    label: entry.instrument?.symbol ?? '—',
+                                                    value: formatCurrency(entry.currentValue ?? entry.investedAmount ?? 0)
+                                                })) : []}
+                                                subEntriesMoreLabel={!isHidden && subEntries.length > 4
+                                                    ? translations.investments.holdings.calculatedFromN.replace('{count}', subEntries.length)
+                                                    : undefined}
+                                                actions={(
+                                                    <>
                                                         {isVerifiableAssetKey(investment.key) && (
                                                             <button
                                                                 type="button"
+                                                                className="icon-action"
                                                                 onClick={() => setOpenSubAccountsAssetKey(investment.key)}
                                                                 aria-label={translations.investments.holdings.manageLink}
+                                                                title={translations.investments.holdings.manageLink}
                                                                 data-umami-event="dashboard-manage-holdings"
-                                                                style={{
-                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                    background: 'transparent', color: theme.textColor,
-                                                                    border: `1.5px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}`,
-                                                                    borderRadius: '0.6rem', padding: '0.6rem 0.9rem', fontSize: '0.85rem',
-                                                                    fontWeight: 600, cursor: 'pointer',
-                                                                }}
                                                             >
                                                                 <BiListUl />
                                                             </button>
                                                         )}
-                                                        <LocalizedLink to="/insert-values?section=balance" className="update-button" data-umami-event="dashboard-update-investment" style={{ flex: 1 }}>
-                                                            <HiOutlinePencilAlt style={{ marginRight: '6px' }} />
-                                                            {translations.dashboard.updateValue}
+                                                        <LocalizedLink
+                                                            to="/insert-values?section=balance"
+                                                            className="icon-action"
+                                                            aria-label={translations.dashboard.updateValue}
+                                                            title={translations.dashboard.updateValue}
+                                                            data-umami-event="dashboard-update-investment"
+                                                        >
+                                                            <HiOutlinePencilAlt />
                                                         </LocalizedLink>
-                                                    </div>
-                                                </div>
-                                            </FloatingElement>
-                                        </ModernInvestmentCard>
-                                    </InvestmentCardWrapper>
-                                );
-                            };
-
-                            // Layout per 3 card: 2 sopra + 1 centrata sotto
-                            if (count === 3) {
-                                return (
-                                    <ModernInvestmentsGrid theme={theme} $itemCount={count}>
-                                        <InvestmentRowWrapper>
-                                            {investments.slice(0, 2).map((inv, idx) => renderInvestmentCard(inv, idx))}
-                                        </InvestmentRowWrapper>
-                                        <InvestmentRowWrapper $centered>
-                                            {renderInvestmentCard(investments[2], 2)}
-                                        </InvestmentRowWrapper>
-                                    </ModernInvestmentsGrid>
-                                );
-                            }
-                            
-                            // Layout per 5 card: 3 sopra + 2 centrate sotto
-                            if (count === 5) {
-                                return (
-                                    <ModernInvestmentsGrid theme={theme} $itemCount={count}>
-                                        <InvestmentRowWrapper>
-                                            {investments.slice(0, 3).map((inv, idx) => renderInvestmentCard(inv, idx))}
-                                        </InvestmentRowWrapper>
-                                        <InvestmentRowWrapper $centered>
-                                            {investments.slice(3, 5).map((inv, idx) => renderInvestmentCard(inv, idx + 3))}
-                                        </InvestmentRowWrapper>
-                                    </ModernInvestmentsGrid>
-                                );
-                            }
-                            
-                            // Layout per 7 card: 4 sopra + 3 centrate sotto
-                            if (count === 7) {
-                                return (
-                                    <ModernInvestmentsGrid theme={theme} $itemCount={count}>
-                                        <InvestmentRowWrapper>
-                                            {investments.slice(0, 4).map((inv, idx) => renderInvestmentCard(inv, idx))}
-                                        </InvestmentRowWrapper>
-                                        <InvestmentRowWrapper $centered>
-                                            {investments.slice(4, 7).map((inv, idx) => renderInvestmentCard(inv, idx + 4))}
-                                        </InvestmentRowWrapper>
-                                    </ModernInvestmentsGrid>
-                                );
-                            }
-
-                            // Layout standard per altri numeri (1, 2, 4, 6, 8+)
-                            return (
-                                <ModernInvestmentsGrid theme={theme} $itemCount={count}>
-                                    {investments.map((investment, index) => renderInvestmentCard(investment, index))}
-                                </ModernInvestmentsGrid>
-                            );
-                        })()}
+                                                    </>
+                                                )}
+                                            />
+                                        );
+                                    })}
+                                </PortfolioGrid>
+                            </PortfolioSection>
+                        )}
                     </div>
                 </div>
                 </DashboardSectionSlot>

@@ -574,7 +574,14 @@
         "loading": "Caricamento dati dashboard...",
         "loadingError": "Errore nel caricamento dei dati. Riprova.",
         "loadingTimeout": "Il caricamento sta impiegando più tempo del previsto...",
-        "retry": "Riprova"
+        "retry": "Riprova",
+        "showDetails": "Mostra dettagli",
+        "hideDetails": "Nascondi dettagli",
+        "collapseSection": "Comprimi sezione",
+        "expandSection": "Espandi sezione",
+        "manage": "Gestisci",
+        "update": "Aggiorna",
+        "addBalance": "Aggiungi valore"
     },
     "graphs": {
         "title": "Grafici e Statistiche",
@@ -1980,6 +1987,10 @@
         "customizeTitle": "Personalizza Dashboard",
         "dragHint": "Trascina le sezioni per riordinarle. Clicca l'icona occhio per nasconderle.",
         "resetLayout": "Ripristina layout predefinito",
+        "density": "Densità",
+        "densityComfortable": "Comoda",
+        "densityCompact": "Compatta",
+        "switchDensity": "Cambia densità delle card",
         "assetOverview": "Panoramica Asset",
         "asset": "Asset",
         "category": "Categoria",

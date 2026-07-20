@@ -305,192 +305,171 @@ export const ModernMetricCard = styled.div`
   }
 `;
 
-// Grid per i bilanci tradizionali - Layout intelligente basato sul numero di card
-export const ModernAssetsGrid = styled.div`
+// ─────────────────────────────────────────────────────────────────
+// Portfolio section (Liquidità / Emergenza / Investimenti) — card view
+// Elegant, uniform, collapsible groups + responsive auto-fill grid.
+// ─────────────────────────────────────────────────────────────────
+
+export const PortfolioSectionCard = styled.section`
+  background: ${props => props.theme.mode === 'dark'
+    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%)'
+    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.6) 100%)'
+  };
+  backdrop-filter: blur(20px);
+  border: 1px solid ${props => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.08)'
+    : 'rgba(15, 23, 42, 0.07)'
+  };
+  border-radius: 1.25rem;
+  padding: 1.1rem;
+  margin-bottom: 1.1rem;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9rem;
+    padding: 0.65rem;
+    margin-bottom: 0.65rem;
+  }
+`;
+
+export const PortfolioSectionHeader = styled.button`
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  justify-content: ${props => {
-    const count = props.$itemCount || 0;
-    if (count === 1) return 'flex-start';
-    if (count === 3) return 'center';
-    return 'flex-start';
-  }};
-
-  @media (max-width: 768px) {
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-`;
-
-// Wrapper per singola card asset (liquidità) con layout intelligente
-export const AssetCardWrapper = styled.div`
-  flex: ${props => {
-    const count = props.$itemCount || 1;
-    
-    // 1 card: dimensione fissa
-    if (count === 1) return '0 0 calc(50% - 0.5rem)';
-    
-    // 2 card: 50% ciascuna
-    if (count === 2) return '0 0 calc(50% - 0.5rem)';
-    
-    // 3 card: 33% ciascuna su una riga
-    if (count === 3) return '0 0 calc(33.333% - 0.667rem)';
-    
-    // 4 card: 2x2 grid
-    if (count === 4) return '0 0 calc(50% - 0.5rem)';
-    
-    // 5+ card: griglia a 3 colonne
-    return '0 0 calc(33.333% - 0.667rem)';
-  }};
-  
-  max-width: ${props => {
-    const count = props.$itemCount || 1;
-    if (count === 1) return '320px';
-    return 'none';
-  }};
-
-  @media (max-width: 1024px) {
-    flex: ${props => {
-      const count = props.$itemCount || 1;
-      if (count === 1) return '0 0 100%';
-      return '0 0 calc(50% - 0.5rem)';
-    }};
-    max-width: ${props => props.$itemCount === 1 ? '320px' : 'none'};
-  }
-
-  @media (max-width: 768px) {
-    flex: 0 0 calc(50% - 0.25rem);
-    max-width: calc(50% - 0.25rem);
-  }
-`;
-
-// Grid per gli investimenti - Layout intelligente basato sul numero di card
-export const ModernInvestmentsGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  justify-content: ${props => {
-    const count = props.$itemCount || 0;
-    if (count === 1) return 'flex-start';
-    if (count === 3) return 'center';
-    return 'flex-start';
-  }};
-
-  @media (max-width: 768px) {
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-`;
-
-// Wrapper per singola card investimento con layout intelligente
-export const InvestmentCardWrapper = styled.div`
-  flex: ${props => {
-    const count = props.$itemCount || 1;
-    const index = props.$index || 0;
-    
-    // 1 card: dimensione fissa
-    if (count === 1) return '0 0 calc(50% - 0.5rem)';
-    
-    // 2 card: 50% ciascuna
-    if (count === 2) return '0 0 calc(50% - 0.5rem)';
-    
-    // 3 card: prime 2 al 50%, terza al 50% centrata
-    if (count === 3) {
-      if (index < 2) return '0 0 calc(50% - 0.5rem)';
-      return '0 0 calc(50% - 0.5rem)';
-    }
-    
-    // 4 card: 2x2 grid
-    if (count === 4) return '0 0 calc(50% - 0.5rem)';
-    
-    // 5 card: 3 sopra + 2 centrate sotto
-    if (count === 5) {
-      if (index < 3) return '0 0 calc(33.333% - 0.667rem)';
-      return '0 0 calc(33.333% - 0.667rem)';
-    }
-    
-    // 6+ card: griglia a 3 colonne
-    return '0 0 calc(33.333% - 0.667rem)';
-  }};
-  
-  max-width: ${props => {
-    const count = props.$itemCount || 1;
-    if (count === 1) return '320px';
-    if (count <= 4) return 'none';
-    return 'none';
-  }};
-
-  @media (max-width: 1024px) {
-    flex: ${props => {
-      const count = props.$itemCount || 1;
-      if (count === 1) return '0 0 100%';
-      return '0 0 calc(50% - 0.5rem)';
-    }};
-    max-width: ${props => props.$itemCount === 1 ? '320px' : 'none'};
-  }
-
-  @media (max-width: 768px) {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-`;
-
-// Wrapper per centrare la riga delle card quando necessario (es. 3 card, la terza va centrata)
-export const InvestmentRowWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
   width: 100%;
-  justify-content: ${props => props.$centered ? 'center' : 'flex-start'};
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .section-icon {
+    font-size: 1.15rem;
+    color: ${props => props.$accent || props.theme.textColor};
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: ${props => props.theme.textColor};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .section-total {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: ${props => props.$accent || props.theme.textColor};
+    opacity: 0.85;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-right: 0.5rem;
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    display: flex;
+    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'};
+    transform: rotate(${props => props.$collapsed ? '-90deg' : '0deg'});
+    transition: transform 0.25s ease;
+    font-size: 1.1rem;
+  }
 
   @media (max-width: 768px) {
-    gap: 0.5rem;
+    .section-title {
+      font-size: 0.95rem;
+    }
+
+    .section-total {
+      font-size: 0.72rem;
+    }
   }
 `;
 
-// Card per i bilanci tradizionali
-export const ModernAssetCard = styled.div`
-  background: ${props => props.gradient || 'linear-gradient(135deg, #079164 0%, #27ae60 100%)'};
-  border-radius: 1rem;
-  padding: 0.85rem;
-  color: white;
+export const PortfolioSectionBody = styled.div`
+  margin-top: 0.9rem;
+  animation: ${fadeInUp} 0.35s ease-out;
+
+  @media (max-width: 768px) {
+    margin-top: 0.6rem;
+  }
+`;
+
+export const PortfolioGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(${props => props.$density === 'compact' ? '150px' : '188px'}, 1fr));
+  gap: ${props => props.$density === 'compact' ? '0.6rem' : '0.9rem'};
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(${props => props.$density === 'compact' ? '135px' : '160px'}, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: ${props => props.$density === 'compact' ? '0.45rem' : '0.6rem'};
+  }
+`;
+
+export const PortfolioCard = styled.div`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  background: ${props => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.045)'
+    : 'rgba(255, 255, 255, 0.85)'
+  };
+  border: 1px solid ${props => props.theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.09)'
+    : 'rgba(15, 23, 42, 0.08)'
+  };
+  border-radius: 0.9rem;
+  padding: ${props => props.$density === 'compact' ? '0.6rem' : '0.85rem'};
   overflow: hidden;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16), inset 0 1px rgba(255,255,255,0.18);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: ${props => props.theme.mode === 'dark'
+    ? '0 6px 16px rgba(0,0,0,0.18)'
+    : '0 6px 16px rgba(15,23,42,0.06)'
+  };
 
   &::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0);
-    transition: all 0.3s ease;
-    pointer-events: none;
+    width: 3px;
+    height: 100%;
+    background: ${props => props.$gradient || props.$color || '#079164'};
   }
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-
-    &::before {
-      background: rgba(255, 255, 255, 0.1);
-    }
+    transform: translateY(-3px);
+    box-shadow: ${props => props.theme.mode === 'dark'
+      ? '0 12px 26px rgba(0,0,0,0.28)'
+      : '0 12px 26px rgba(15,23,42,0.12)'
+    };
   }
 
   @media (max-width: 768px) {
-    cursor: default;
+    border-radius: 0.7rem;
+    padding: ${props => props.$density === 'compact' ? '0.5rem' : '0.6rem'};
 
     &:hover {
       transform: none;
-      box-shadow: none;
+      box-shadow: ${props => props.theme.mode === 'dark'
+        ? '0 6px 16px rgba(0,0,0,0.18)'
+        : '0 6px 16px rgba(15,23,42,0.06)'
+      };
     }
 
     &:active {
@@ -499,142 +478,158 @@ export const ModernAssetCard = styled.div`
     }
   }
 
-  .card-header {
+  .card-top {
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .icon-chip {
+    display: flex;
     align-items: center;
-    margin-bottom: 0.6rem;
+    justify-content: center;
+    width: ${props => props.$density === 'compact' ? '1.7rem' : '2.1rem'};
+    height: ${props => props.$density === 'compact' ? '1.7rem' : '2.1rem'};
+    border-radius: 0.55rem;
+    background: ${props => props.$gradient || props.$color || '#079164'};
+    flex-shrink: 0;
 
-    .icon-container {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 0.65rem;
-      padding: 0.55rem;
-      backdrop-filter: blur(10px);
-
-      .asset-icon {
-        font-size: 1.25rem;
-        color: white;
-      }
-    }
-
-    .action-button {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    svg {
       color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(1.1);
-      }
+      font-size: ${props => props.$density === 'compact' ? '0.9rem' : '1.05rem'};
     }
   }
 
-  .card-content {
-    margin-bottom: 0.6rem;
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
 
-    .asset-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      opacity: 0.9;
-    }
+  .icon-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 0.5rem;
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.045)'};
+    color: ${props => props.theme.textColor};
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 
-    .asset-value {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 0.3rem;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
+    svg { font-size: 0.85rem; }
 
-    .asset-percentage {
-      font-size: 0.75rem;
-      opacity: 0.8;
+    &:hover {
+      background: ${props => props.$gradient || props.$color || '#079164'};
+      color: white;
+      transform: scale(1.06);
     }
   }
 
-  .card-footer {
-    .progress-bar {
-      height: 3px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
-      overflow: hidden;
+  .card-name {
+    font-size: ${props => props.$density === 'compact' ? '0.68rem' : '0.75rem'};
+    font-weight: 600;
+    color: ${props => props.theme.textColor};
+    opacity: 0.65;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-      .progress-fill {
-        height: 100%;
-        background: white;
-        border-radius: 2px;
-        transition: width 1s ease-out;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-      }
-    }
+  .card-value {
+    font-size: ${props => props.$density === 'compact' ? '1rem' : '1.25rem'};
+    font-weight: 800;
+    color: ${props => props.theme.textColor};
+    line-height: 1.15;
+    margin-bottom: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-pill {
+    font-size: 0.63rem;
+    font-weight: 700;
+    color: ${props => props.$color || '#079164'};
+    background: ${props => props.$color || '#079164'}1a;
+    border-radius: 0.4rem;
+    padding: 0.15rem 0.4rem;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    height: 3px;
+    border-radius: 2px;
+    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)'};
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: ${props => props.$gradient || props.$color || '#079164'};
+    transition: width 1s ease-out;
   }
 
   @media (max-width: 768px) {
-    border-radius: 0.75rem;
-    padding: 0.5rem;
-
-    .card-header {
-      margin-bottom: 0.4rem;
-
-      .icon-container {
-        padding: 0.4rem;
-        border-radius: 0.5rem;
-
-        .asset-icon {
-          font-size: 1rem;
-        }
-      }
-
-      .action-button {
-        width: 28px;
-        height: 28px;
-        font-size: 1rem;
-        position: relative;
-        z-index: 2;
-      }
-    }
-
-    .card-content {
-      margin-bottom: 0.4rem;
-
-      .asset-name {
-        font-size: 0.7rem;
-        margin-bottom: 0.15rem;
-      }
-
-      .asset-value {
-        font-size: 1rem;
-        margin-bottom: 0.15rem;
-      }
-
-      .asset-percentage {
-        font-size: 0.6rem;
-      }
-    }
-
-    .card-footer .progress-bar {
-      height: 3px;
-    }
+    .card-name { font-size: 0.6rem; }
+    .card-value { font-size: 0.9rem; }
+    .card-pill { font-size: 0.56rem; }
+    .icon-action { width: 1.5rem; height: 1.5rem; svg { font-size: 0.75rem; } }
   }
 `;
-export const SubEntriesList = styled.div`
+
+export const PortfolioCardDetailsToggle = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.3rem;
+  width: 100%;
+  border: none;
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)'};
+  background: none;
+  color: ${props => props.theme.textColor};
+  opacity: 0.6;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  svg {
+    font-size: 0.8rem;
+    transform: rotate(${props => props.$expanded ? '180deg' : '0deg'});
+    transition: transform 0.2s ease;
+  }
+
+  &:hover { opacity: 1; }
+`;
+
+export const PortfolioCardDetails = styled.div`
   margin-top: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid ${props => props.$color || 'currentColor'}33;
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)'};
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  color: ${props => props.$color || 'inherit'};
+  gap: 0.3rem;
+  animation: ${fadeInUp} 0.25s ease-out;
 `;
 
 export const SubEntryRow = styled.div`
@@ -643,9 +638,10 @@ export const SubEntryRow = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.72rem;
+  color: ${props => props.theme.textColor};
 
   .sub-entry-label {
-    opacity: 0.85;
+    opacity: 0.7;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -659,201 +655,16 @@ export const SubEntryRow = styled.div`
 
 export const SubEntriesMore = styled.div`
   font-size: 0.66rem;
-  opacity: 0.65;
+  opacity: 0.55;
+  color: ${props => props.theme.textColor};
   text-align: right;
 `;
 
-export const ModernInvestmentCard = styled.div`
-  background: ${props => props.theme.mode === 'dark' 
-    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)'
-    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)'
-  };
-  backdrop-filter: blur(20px);
-  border: 1px solid ${props => props.theme.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.1)'
-  };
-  border-radius: 1rem;
-  padding: 0.85rem;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: ${props => props.theme.mode === 'dark'
-    ? '0 12px 30px rgba(0,0,0,0.2), inset 0 1px rgba(255,255,255,0.04)'
-    : '0 12px 30px rgba(15,23,42,0.07), inset 0 1px rgba(255,255,255,0.8)'};
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: ${props => props.gradient || 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)'};
-    transition: width 0.3s ease;
-  }
-
-  &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: ${props => props.theme.mode === 'dark' 
-      ? '0 20px 40px rgba(0, 0, 0, 0.3)'
-      : '0 20px 40px rgba(0, 0, 0, 0.15)'
-    };
-
-    &::before {
-      width: 100%;
-      opacity: 0.1;
-    }
-  }
-
-  @media (max-width: 768px) {
-    cursor: default;
-
-    &:hover {
-      transform: none;
-      box-shadow: none;
-
-      &::before {
-        width: 3px;
-        opacity: 1;
-      }
-    }
-
-    &:active {
-      transform: scale(0.98);
-      transition: transform 0.1s ease;
-    }
-  }
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.6rem;
-
-    .icon-container {
-      background: ${props => props.gradient || 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)'};
-      border-radius: 0.65rem;
-      padding: 0.55rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-      .investment-icon {
-        font-size: 1.25rem;
-        color: white;
-      }
-    }
-
-    .investment-type {
-      span {
-        background: ${props => props.gradient || 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)'};
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-    }
-  }
-
-  .card-content {
-    margin-bottom: 0.6rem;
-
-    .investment-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: ${props => props.theme.textColor};
-      margin-bottom: 0.4rem;
-    }
-
-    .investment-value {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: ${props => props.theme.textColor};
-      margin-bottom: 0.4rem;
-    }
-
-    .investment-stats {
-      font-size: 0.72rem;
-      color: ${props => props.theme.textColor};
-      opacity: 0.75;
-      margin-top: 0.15rem;
-    }
-  }
-
-  .card-footer {
-    .update-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: ${props => props.gradient || 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)'};
-      color: white;
-      border: none;
-      border-radius: 0.6rem;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.3s ease;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    border-radius: 0.75rem;
-    padding: 0.5rem;
-
-    &::before {
-      width: 3px;
-    }
-
-    .card-header {
-      margin-bottom: 0.4rem;
-
-      .icon-container {
-        padding: 0.4rem;
-        border-radius: 0.5rem;
-
-        .investment-icon {
-          font-size: 1rem;
-        }
-      }
-
-      .investment-type span {
-        font-size: 0.55rem;
-      }
-    }
-
-    .card-content {
-      margin-bottom: 0.4rem;
-
-      .investment-name {
-        font-size: 0.75rem;
-        margin-bottom: 0.2rem;
-      }
-
-      .investment-value {
-        font-size: 1rem;
-        margin-bottom: 0.3rem;
-      }
-
-      .investment-stats {
-        font-size: 0.6rem;
-      }
-    }
-
-    .card-footer .update-button {
-      padding: 0.35rem 0.6rem;
-      font-size: 0.7rem;
-      border-radius: 0.4rem;
-    }
-  }
+export const PortfolioExtraInfo = styled.div`
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: ${props => props.theme.textColor};
+  opacity: 0.75;
 `;
 
 // Sezione grafici

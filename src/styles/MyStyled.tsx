@@ -1027,6 +1027,22 @@ export const StyledTable = styled.table`
   tbody tr:last-child td:first-child { border-bottom-left-radius: 10px; }
   tbody tr:last-child td:last-child  { border-bottom-right-radius: 10px; }
 
+  /* ── Actions column (edit/delete) always reachable ──
+     Sticky to the right at every width, not just mobile: with privacy mode
+     off, real category/note/date values are long enough that the table
+     overflows horizontally, and without this the edit/delete buttons scroll
+     out of view along with the rest of the row. */
+  th:last-child, td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    box-shadow: -7px 0 12px -12px rgba(0,0,0,0.7);
+  }
+  th:last-child { z-index: 4; }
+  tbody td:last-child {
+    background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
+  }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     min-width: 680px;
@@ -1044,17 +1060,6 @@ export const StyledTable = styled.table`
     tbody td:first-child {
       background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
       font-weight: 700;
-    }
-
-    th:last-child, td:last-child {
-      position: sticky;
-      right: 0;
-      z-index: 2;
-      box-shadow: -7px 0 12px -12px rgba(0,0,0,0.7);
-    }
-    th:last-child { z-index: 4; }
-    tbody td:last-child {
-      background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
     }
   }
 

@@ -45,7 +45,10 @@
         "clearFilter": "Cancella",
         "currentMonth": "Mese corrente",
         "all": "Tutti",
-        "valid": "valide"
+        "valid": "valide",
+        "filters": "Filtri",
+        "clearAllFilters": "Cancella filtri",
+        "filterByNote": "Filtra per nota..."
     },
     "months": {
         "january": "Gennaio",

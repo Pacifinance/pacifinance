@@ -45,7 +45,10 @@
         "clearFilter": "Limpar",
         "currentMonth": "Mês atual",
         "all": "Todos",
-        "valid": "válidas"
+        "valid": "válidas",
+        "filters": "Filtros",
+        "clearAllFilters": "Limpar filtros",
+        "filterByNote": "Filtrar por nota..."
     },
     "cookie": {
         "title": "Nós usamos cookies 🍪",

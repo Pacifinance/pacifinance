@@ -476,19 +476,160 @@ const TableScroll = styled.div`
 
   &::-webkit-scrollbar { height: 7px; }
   &::-webkit-scrollbar-thumb { background: ${p => p.theme.buttonBackgroundColor}88; border-radius: 999px; }
+
+  @media (max-width: 768px) { display: none; }
 `;
 
-const MobileTableHint = styled.div`
+/* ─── Mobile card list (replaces the horizontally-scrolling table below 768px) ─── */
+const MobileCardWrap = styled.div`
   display: none;
-  padding: 0.55rem 0.9rem;
-  color: ${p => p.theme.textColor};
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#f8fafc'};
-  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
-  font-size: 0.72rem;
-  font-weight: 650;
-  opacity: 0.72;
+  @media (max-width: 768px) { display: block; }
+`;
 
-  @media (max-width: 768px) { display: flex; justify-content: space-between; }
+const FilterToggleRow = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0.7rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: ${p => p.theme.textColor};
+  cursor: pointer;
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+`;
+
+const FilterBadge = styled.span`
+  background: ${p => p.theme.buttonBackgroundColor};
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  margin-left: 6px;
+`;
+
+const FilterPanel = styled.div`
+  display: ${p => p.$open ? 'flex' : 'none'};
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc'};
+`;
+
+const FilterRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const FilterLabel = styled.label`
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.6;
+  color: ${p => p.theme.textColor};
+`;
+
+const FilterInlineRow = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  > input { flex: 1; min-width: 0; }
+`;
+
+const ClearFiltersBtn = styled.button`
+  align-self: flex-start;
+  border: none;
+  background: rgba(239,68,68,0.13);
+  color: #ef4444;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+`;
+
+const CardList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem;
+`;
+
+const TxCard = styled.div`
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  background: ${p => p.$gradient};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+`;
+
+const CardTopRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+`;
+
+const CardCategory = styled.div`
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: ${p => p.theme.textColor};
+`;
+
+const CardAmount = styled.div`
+  font-weight: 800;
+  font-size: 1rem;
+  color: ${p => p.theme.textColor};
+  white-space: nowrap;
+`;
+
+const CardMetaRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: ${p => p.theme.textColor};
+  opacity: 0.75;
+  gap: 0.5rem;
+`;
+
+const CardNote = styled.div`
+  font-size: 0.78rem;
+  color: ${p => p.theme.textColor};
+  opacity: 0.65;
+  margin-top: 0.3rem;
+  overflow-wrap: anywhere;
+`;
+
+const CardActionsRow = styled.div`
+  display: flex;
+  gap: 6px;
+  margin-top: 0.5rem;
+  justify-content: flex-end;
+`;
+
+const CardEditGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const TotalCard = styled.div`
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  background: ${p => p.$filtered ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.2)'};
+  color: ${p => p.theme.mode === 'dark' ? '#6ee7b7' : '#047857'};
 `;
 
 const ActionBtn = styled.button`
@@ -670,6 +811,7 @@ export default function OutflowSection({
   const [sortDirection, setSortDirection] = React.useState('asc');
   const [tableView, setTableView] = React.useState('list');
   const [selectedChartCategory, setSelectedChartCategory] = React.useState(null);
+  const [showMobileFilters, setShowMobileFilters] = React.useState(false);
 
   // Inline editing state
   const [editingAdd, setEditingAdd] = React.useState(null);
@@ -1233,6 +1375,179 @@ export default function OutflowSection({
     return rows;
   }
 
+  function renderOutflowCards(chosenOutflowsToShow) {
+    const filtered = sortOutflowRows(applyTableFilters(chosenOutflowsToShow));
+    const totals = getTotals(filtered, chosenOutflowsToShow);
+    const filtersActive =
+      outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter ||
+      outflowDateFilterStart || outflowDateFilterEnd;
+
+    return (
+      <>
+        {filtered.map((add, index) => {
+          let colorKey = undefined;
+          if (add.categoryTag && add.categoryTag.key) {
+            colorKey = add.categoryTag.key;
+          } else if (add.categoryTag && add.categoryTag.label) {
+            colorKey = add.categoryTag.label;
+          } else if (add.categoryTag && add.categoryTag.translations) {
+            const keys = Object.keys(add.categoryTag.translations);
+            if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
+          }
+          const rawColor = getCategoryColor(colorKey);
+          const processedColor = isHidden
+            ? getGrayscaleColor(rawColor, index)
+            : getLighterSolidColor(rawColor);
+          const rowGradient = getGradientForCategory(processedColor);
+
+          if (isEditingRow(add)) {
+            return (
+              <TxCard key={index} theme={theme} $gradient="rgba(59, 130, 246, 0.08)" style={{ outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
+                <CardEditGrid>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={OutflowsTags}
+                    customCategories={customCategories}
+                    categoryType="expense"
+                    categoryKey={editValues.categoryKey}
+                    userCategoryId={editValues.userCategoryId ?? null}
+                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                      setEditValues(prev => ({
+                        ...prev,
+                        categoryKey,
+                        categoryValue: userCategoryLabel || categoryValue,
+                        parentValue: categoryValue,
+                        userCategoryId,
+                        userCategoryLabel,
+                      }))
+                    }
+                    onCreateCategory={onCreateCategory}
+                    disabled={isSaving}
+                    placeholder={translations.insert.outflowSection.placeholderCategory}
+                  />
+                  <InlineSelect
+                    theme={theme}
+                    value={editValues.typologyKey}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
+                  >
+                    {sortTagsByLanguage(paymentTags, language, 'payment').filter(item => item.label !== 'none').map((item) => (
+                      <option key={item.index} value={item.index}>
+                        {translateTag(item.label, language, 'payment')}
+                      </option>
+                    ))}
+                  </InlineSelect>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <InlineInput
+                      type="text"
+                      theme={theme}
+                      value={editValues.amount}
+                      onChange={handleEditAmountChange}
+                    />
+                    <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+                  </div>
+                  <InlineInput
+                    type="text"
+                    theme={theme}
+                    value={editValues.note}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
+                    maxLength={64}
+                    placeholder={translations.insert.outflowSection.tableColumns?.note || 'Note'}
+                  />
+                  <InlineInput
+                    type="date"
+                    theme={theme}
+                    value={editValues.date}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
+                    max={currentDate}
+                  />
+                </CardEditGrid>
+                <CardActionsRow>
+                  <ActionBtn
+                    className="edit"
+                    onClick={handleSaveInline}
+                    disabled={isSaving}
+                    title={translations.insert.outflowSection.editButton}
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </ActionBtn>
+                  <ActionBtn
+                    className="cancel"
+                    onClick={handleCancelInline}
+                    disabled={isSaving}
+                    title={translations.insert.outflowSection.cancelEdit}
+                  >
+                    <FontAwesomeIcon icon={faRotateLeft} />
+                  </ActionBtn>
+                </CardActionsRow>
+              </TxCard>
+            );
+          }
+
+          return (
+            <TxCard key={index} theme={theme} $gradient={rowGradient}>
+              <CardTopRow>
+                <CardCategory theme={theme}>
+                  {isHidden ? '****' : getDisplayCategory(add)}
+                </CardCategory>
+                <CardAmount theme={theme}>
+                  {isHidden ? '****' : formatNumber(add.amount)} {currencySymbol}
+                </CardAmount>
+              </CardTopRow>
+              <CardMetaRow theme={theme}>
+                <span>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</span>
+                <span>
+                  {isHidden
+                    ? '****'
+                    : (() => {
+                        const d = new Date(add.date);
+                        return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                      })()}
+                </span>
+              </CardMetaRow>
+              {!isHidden && add.notes && (
+                <CardNote theme={theme}>{add.notes}</CardNote>
+              )}
+              <CardActionsRow>
+                <ActionBtn
+                  className="edit"
+                  data-umami-event="editOutflow"
+                  onClick={() => startEditing(add)}
+                  title={translations.insert.outflowSection.editingLabel}
+                >
+                  <FontAwesomeIcon icon={faPen} />
+                </ActionBtn>
+                <ActionBtn
+                  className="delete"
+                  data-umami-event="deleteOutflow"
+                  onClick={() => onDeleteOutflow(add.date, add.amount, add)}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </ActionBtn>
+              </CardActionsRow>
+            </TxCard>
+          );
+        })}
+        <TotalCard theme={theme} $filtered={Boolean(filtersActive)}>
+          <span>
+            {filtersActive
+              ? (translations.general.totalFiltered || 'Totale filtrato')
+              : (translations.general.totalPeriod || 'Totale periodo')}
+          </span>
+          <span>
+            {isHidden
+              ? '****'
+              : formatNumber(filtersActive ? totals.totalFiltered : totals.totalAll)}{' '}{currencySymbol}
+            {filtersActive && !isHidden && totals.totalAll > 0 && (
+              <>
+                {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
+              </>
+            )}
+          </span>
+        </TotalCard>
+      </>
+    );
+  }
+
   /* ─── MUI Select shared sx ─── */
   const selectSx = {
     borderRadius: '10px',
@@ -1272,6 +1587,13 @@ export default function OutflowSection({
   const filtersActive =
     outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter ||
     outflowDateFilterStart || outflowDateFilterEnd;
+  const activeFilterCount = [
+    outflowCategoryFilter,
+    outflowTypologyFilter,
+    outflowNoteFilter,
+    outflowDateFilterStart || outflowDateFilterEnd,
+  ].filter(Boolean).length;
+  const mobileDateRange = getDateRangeForMonth(outflowMonthOptions[selectedOutflowsMonth]);
 
   React.useEffect(() => {
     if (!categoryBreakdown.length) {
@@ -1628,10 +1950,6 @@ export default function OutflowSection({
           renderCategoryChart()
         ) : (
           <>
-            <MobileTableHint theme={theme}>
-              <span>{language === 'it' ? 'Scorri per vedere tutte le colonne' : 'Scroll to see all columns'}</span>
-              <span aria-hidden="true">← →</span>
-            </MobileTableHint>
             <TableScroll>
               <StyledTable theme={theme} className="outflow-table">
                 <thead>{renderTableHeader()}</thead>
@@ -1640,6 +1958,96 @@ export default function OutflowSection({
                 </tbody>
               </StyledTable>
             </TableScroll>
+            <MobileCardWrap>
+              <FilterToggleRow theme={theme} type="button" onClick={() => setShowMobileFilters((v) => !v)}>
+                <span>
+                  {translations.general.filters || 'Filtri'}
+                  {activeFilterCount > 0 && <FilterBadge theme={theme}>{activeFilterCount}</FilterBadge>}
+                </span>
+                <FontAwesomeIcon icon={showMobileFilters ? faSortUp : faSortDown} />
+              </FilterToggleRow>
+              <FilterPanel theme={theme} $open={showMobileFilters}>
+                <FilterRow>
+                  <FilterLabel theme={theme}>{translations.insert.outflowSection.tableColumns.category}</FilterLabel>
+                  <ThemedSelect
+                    value={outflowCategoryFilter}
+                    onChange={(e) => setOutflowCategoryFilter(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="">{translations.general.all}</option>
+                    {OutflowsTags.map((item) => (
+                      <option key={item.index} value={translateTag(item.label, language, 'expense')}>
+                        {translateTag(item.label, language, 'expense')}
+                      </option>
+                    ))}
+                  </ThemedSelect>
+                </FilterRow>
+                <FilterRow>
+                  <FilterLabel theme={theme}>{translations.insert.outflowSection.tableColumns.typology}</FilterLabel>
+                  <ThemedSelect
+                    value={outflowTypologyFilter}
+                    onChange={(e) => setOutflowTypologyFilter(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="">{translations.general.all}</option>
+                    {paymentTags.map((item) =>
+                      item.label !== 'none' && (
+                        <option key={item.index} value={translateTag(item.label, language, 'payment')}>
+                          {translateTag(item.label, language, 'payment')}
+                        </option>
+                      ),
+                    )}
+                  </ThemedSelect>
+                </FilterRow>
+                <FilterRow>
+                  <FilterLabel theme={theme}>{translations.insert.outflowSection.tableColumns.note}</FilterLabel>
+                  <input
+                    type="text"
+                    placeholder={translations.general.filterByNote}
+                    value={outflowNoteFilter}
+                    onChange={(e) => setOutflowNoteFilter(e.target.value)}
+                    style={{ width: '100%', boxSizing: 'border-box' }}
+                  />
+                </FilterRow>
+                <FilterRow>
+                  <FilterLabel theme={theme}>{translations.general.date || 'Data'}</FilterLabel>
+                  <FilterInlineRow>
+                    <input
+                      type="date"
+                      value={outflowDateFilterStart || ''}
+                      onChange={(e) => setOutflowDateFilterStart(e.target.value)}
+                      min={mobileDateRange.min}
+                      max={mobileDateRange.max}
+                    />
+                    <span style={{ fontSize: '0.75em', opacity: 0.7 }}>-</span>
+                    <input
+                      type="date"
+                      value={outflowDateFilterEnd || ''}
+                      onChange={(e) => setOutflowDateFilterEnd(e.target.value)}
+                      min={mobileDateRange.min}
+                      max={mobileDateRange.max}
+                    />
+                  </FilterInlineRow>
+                </FilterRow>
+                {activeFilterCount > 0 && (
+                  <ClearFiltersBtn
+                    type="button"
+                    onClick={() => {
+                      setOutflowCategoryFilter('');
+                      setOutflowTypologyFilter('');
+                      setOutflowNoteFilter('');
+                      setOutflowDateFilterStart('');
+                      setOutflowDateFilterEnd('');
+                    }}
+                  >
+                    {translations.general.clearAllFilters}
+                  </ClearFiltersBtn>
+                )}
+              </FilterPanel>
+              <CardList>
+                {renderOutflowCards(chosenOutflowsToShow)}
+              </CardList>
+            </MobileCardWrap>
           </>
         )}
       </TableSection>

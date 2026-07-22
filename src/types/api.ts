@@ -155,6 +155,7 @@ export type ExpensesGetResponse = ExpensesMonthDto[];
 
 /** One transaction as returned by the server's toExpense() shape (/expenses/get, /expenses/month). */
 export interface TransactionDto {
+  id: number;
   date: string;
   amount: number;
   isExpense: boolean;
@@ -179,7 +180,10 @@ export interface MonthDetailRequest {
 export type MonthDetailResponse = TransactionDto[];
 
 export interface ExpenseDeleteRequest {
-  expense: Pick<ExpenseDto, 'date' | 'amount' | 'is_expense'>;
+  // Prefer { id }: exact, can't match a sibling transaction with the same
+  // date/amount/direction. The date/amount/is_expense shape is a legacy
+  // fallback for callers that don't have the row id (e.g. import-undo).
+  expense: { id: number } | Pick<ExpenseDto, 'date' | 'amount' | 'is_expense'>;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

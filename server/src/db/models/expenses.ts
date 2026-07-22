@@ -6,7 +6,7 @@ import tags from "./tags"
 import { encryptField, decryptField } from "../crypto"
 
 const EXPENSE_SELECT = `
-    occurred_at, amount, is_expense, notes,
+    id, occurred_at, amount, is_expense, notes,
     balance_asset_key, balance_detail_type, balance_detail_id,
     payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type),
@@ -38,6 +38,7 @@ function mapTagJoin(row: any) {
 
 function toExpense(row: any) {
     return {
+        id: row.id as number,
         date: row.occurred_at,
         amount: row.amount as number,
         isExpense: row.is_expense as boolean,
@@ -223,7 +224,30 @@ async function getMonthlyTotalsByUserId(user_id: string, months?: number) {
 }
 
 /**
- * Deletes an expense/income of a user, given the entry date, amount and direction
+ * Deletes a single expense/income by its row id, scoped to the owning user.
+ * The precise, preferred way to delete a transaction — unlike
+ * deleteExpenseByData below, it can never match more than one row (e.g. two
+ * identical-looking transactions on the same day, same amount).
+ * @param user_id uuid of the user
+ * @param id row id of the expense
+ * @returns {deletedCount} object
+ */
+async function deleteExpenseById(user_id: string, id: number) {
+    const {error, count} = await supabase.from("expenses")
+        .delete({count: "exact"})
+        .eq("user_id", user_id)
+        .eq("id", id)
+    if (error) console.error("expenses.deleteExpenseById: failed to delete expense", error)
+    if (error) return null
+    return {deletedCount: count ?? 0}
+}
+
+/**
+ * Deletes an expense/income of a user, given the entry date, amount and direction.
+ * Fragile by nature (can match more than one row if two transactions share the
+ * same date/amount/direction) — kept only for callers that don't have the row
+ * id (e.g. import-undo, which deletes right after a batch insert). Prefer
+ * deleteExpenseById wherever the row id is available.
  * @param user_id uuid of the user
  * @param date Date of the expense
  * @param amount Amount of the expense
@@ -273,5 +297,6 @@ export default {
     getTotalMonthlyExpensesByUserId,
     getMonthlyTotalsByUserId,
     getExpenseRankingPool,
+    deleteExpenseById,
     deleteExpenseByData
 };

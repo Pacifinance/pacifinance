@@ -24,6 +24,7 @@ describe('MultiOutflowInsert helpers', () => {
       expect(row.amount).toBe('');
       expect(row.note).toBe('');
       expect(row.balanceSource).toBe('');
+      expect(row.makeRecurring).toBe(false);
       expect(row.id).toBeDefined();
       expect(row.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
@@ -38,6 +39,7 @@ describe('MultiOutflowInsert helpers', () => {
         date: '2026-01-15',
         note: 'test',
         balanceSource: 'Banca',
+        makeRecurring: true,
       });
       expect(row.categoryKey).toBe('5');
       expect(row.categoryValue).toBe('Food');
@@ -47,6 +49,7 @@ describe('MultiOutflowInsert helpers', () => {
       expect(row.date).toBe('2026-01-15');
       expect(row.note).toBe('test');
       expect(row.balanceSource).toBe('Banca');
+      expect(row.makeRecurring).toBe(true);
     });
 
     it('should generate unique ids', () => {

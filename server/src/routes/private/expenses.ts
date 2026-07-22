@@ -143,9 +143,15 @@ expensesRouter.post("/month", async (req, res) => {
 })
 
 expensesRouter.post("/delete", async (req, res) => {
-    // Delete the requested expense
+    // Delete the requested expense. Prefer the row id (exact, can't accidentally
+    // match a sibling transaction with the same date/amount/direction) — fall
+    // back to the old value-match only for callers that don't have it yet
+    // (e.g. import-undo, right after a batch insert).
     const expense = req.body.expense;
-    const del_res = await db.expenses.deleteExpenseByData(req.userId as string, expense.date, expense.amount, expense.is_expense);
+    const id = Number(expense?.id)
+    const del_res = Number.isFinite(id)
+        ? await db.expenses.deleteExpenseById(req.userId as string, id)
+        : await db.expenses.deleteExpenseByData(req.userId as string, expense.date, expense.amount, expense.is_expense);
     // Check if the document was deleted successfully. Send
     // status code 500 (Internal Server Error) if it failed
     if (del_res === null || del_res.deletedCount !== 1)

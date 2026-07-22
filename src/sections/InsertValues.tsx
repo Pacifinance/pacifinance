@@ -427,8 +427,10 @@ export default function InsertValue({
   // Delete states
   const [deleteIncomeDate, setDeleteIncomeDate] = useState("");
   const [deleteIncomeAmount, setDeleteIncomeAmount] = useState("");
+  const [deleteIncomeId, setDeleteIncomeId] = useState(null);
   const [deleteOutflowDate, setDeleteOutflowDate] = useState("");
   const [deleteOutflowAmount, setDeleteOutflowAmount] = useState("");
+  const [deleteOutflowId, setDeleteOutflowId] = useState(null);
   // True when the delete modal's source was auto-filled from the source stored
   // with the transaction at insert time (shows an explanatory note in the modal)
   const [deleteSourcePrefilled, setDeleteSourcePrefilled] = useState(false);
@@ -1237,7 +1239,28 @@ export default function InsertValue({
           row.balanceSource,
         );
         return financeService.addExpenseOrIncome(inExJson)
-          .then((res) => { if (res.status === 200) success++; else failed++; })
+          .then(async (res) => {
+            if (res.status !== 200) { failed++; return; }
+            success++;
+            // Same "make recurring" flag as the single-insert flow: create a
+            // template so this row gets re-inserted automatically every month.
+            if (row.makeRecurring) {
+              const dayOfMonth = Math.min(28, Math.max(1, Number(row.date.split('-')[2]) || 1));
+              try {
+                await recurringTransactionService.saveRecurring({
+                  is_expense: true,
+                  amount: inExJson.expense.amount,
+                  notes: inExJson.expense.notes,
+                  payment_type: inExJson.expense.payment_type,
+                  category_tag: inExJson.expense.category_tag,
+                  user_category_id: inExJson.expense.user_category_id,
+                  day_of_month: dayOfMonth,
+                });
+              } catch (recurringError) {
+                console.error('Failed to create recurring template:', recurringError);
+              }
+            }
+          })
           .catch(() => { failed++; });
       });
       await Promise.all(promises);
@@ -1502,6 +1525,7 @@ export default function InsertValue({
   const handleDeleteIncome = (date, amount, row = null) => {
     setDeleteIncomeAmount(amount);
     setDeleteIncomeDate(date);
+    setDeleteIncomeId(row?.id ?? null);
     const storedLabel = findSourceLabelForTransaction(row);
     setSelectedOption(storedLabel || '');
     setDeleteSourcePrefilled(Boolean(storedLabel));
@@ -1511,6 +1535,7 @@ export default function InsertValue({
   const handleDeleteOutflow = (date, amount, row = null) => {
     setDeleteOutflowDate(date);
     setDeleteOutflowAmount(amount);
+    setDeleteOutflowId(row?.id ?? null);
     const storedLabel = findSourceLabelForTransaction(row);
     setSelectedOption(storedLabel || '');
     setDeleteSourcePrefilled(Boolean(storedLabel));
@@ -1568,6 +1593,7 @@ export default function InsertValue({
       // 2. Delete original.
       const deleteResult = await financeService.deleteExpenseOrIncome({
         expense: {
+          id: originalAdd.id ?? undefined,
           date: originalAdd.date,
           amount: oldAmountEUR,
           is_expense: isOutflow,
@@ -1848,6 +1874,7 @@ export default function InsertValue({
   const handleIncomesDelete = async () => {
     const data = {
       expense: {
+        id: deleteIncomeId ?? undefined,
         date: deleteIncomeDate,
         amount: Number(deleteIncomeAmount) || 0,
         is_expense: false,
@@ -1905,6 +1932,7 @@ export default function InsertValue({
   const handleOutflowsDelete = async () => {
     const data = {
       expense: {
+        id: deleteOutflowId ?? undefined,
         date: deleteOutflowDate,
         amount: Number(deleteOutflowAmount) || 0,
         is_expense: true,

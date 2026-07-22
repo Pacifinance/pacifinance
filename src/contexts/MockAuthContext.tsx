@@ -174,6 +174,7 @@ export const mockUserData = {
             ];
             const months = [];
             const now = new Date();
+            let nextOutflowId = 1;
             for (let m = 0; m < 12; m++) {
                 const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
                 const year = d.getFullYear();
@@ -183,6 +184,7 @@ export const mockUserData = {
                 recurringTemplates.forEach(tpl => {
                     const jitter = Math.floor(Math.random() * 11) - 5;
                     txs.push({
+                        id: nextOutflowId++,
                         date: new Date(year, month, Math.floor(Math.random() * 27) + 1).toISOString().split('T')[0],
                         amount: Math.max(tpl.amount + jitter, 8),
                         categoryTag: tpl.category,
@@ -199,6 +201,7 @@ export const mockUserData = {
                 const n = Math.floor(Math.random() * 9) + 10;
                 for (let i = 0; i < n; i++) {
                     txs.push({
+                        id: nextOutflowId++,
                         date: new Date(year, month, Math.floor(Math.random() * 27) + 1).toISOString().split('T')[0],
                         amount: Math.floor(Math.random() * 200) + 15,
                         categoryTag: categories[Math.floor(Math.random() * categories.length)],
@@ -249,6 +252,7 @@ export const mockUserData = {
             // Mese corrente [0] - array di transazioni income
             [
                 {
+                    id: 1,
                     date: new Date().toISOString().split('T')[0],
                     amount: 2800,
                     categoryTag: incomesTags.find(t => t.label === 'salary') || incomesTags[0],

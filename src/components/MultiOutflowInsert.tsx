@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import styled from 'styled-components';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faCopy, faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -25,6 +26,26 @@ export { handleAmountInput, formatAmountBlur, groupAmountsByBalanceSource };
 /* ─── Helpers (exported for testing) ─── */
 const currentDate = new Date().toISOString().split('T')[0];
 
+// Raw (untranslated) payment-tag labels that suggest a recurring template —
+// mirrors OutflowSection's single-insert behavior.
+const RECURRING_PAYMENT_LABELS = ['subscription', 'periodic payment'];
+
+const RecurringCheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: ${p => p.theme.textColor};
+  cursor: pointer;
+
+  input {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
+`;
+
 export const createEmptyRow = (defaults = {}) => ({
   id: Date.now() + Math.random(),
   categoryKey: defaults.categoryKey ?? '',
@@ -38,6 +59,7 @@ export const createEmptyRow = (defaults = {}) => ({
   date: defaults.date ?? currentDate,
   note: defaults.note ?? '',
   balanceSource: defaults.balanceSource ?? '',
+  makeRecurring: defaults.makeRecurring ?? false,
 });
 
 /* ─── Component ─── */
@@ -94,6 +116,7 @@ export default function MultiOutflowInsert({
       date: last.date,
       note: last.note,
       balanceSource: last.balanceSource,
+      makeRecurring: last.makeRecurring,
     })]);
   };
 
@@ -201,8 +224,13 @@ export default function MultiOutflowInsert({
                       const key = e.target.value;
                       const item = paymentTags.find(t => t.index === key);
                       if (item) {
-                        updateRow(row.id, 'typoKey', key);
-                        updateRow(row.id, 'typoValue', translateTag(item.label, language, 'payment'));
+                        // Subscriptions/periodic payments default to "make it recurring" —
+                        // any other typology switches it back off (user can still toggle manually).
+                        updateRowFields(row.id, {
+                          typoKey: key,
+                          typoValue: translateTag(item.label, language, 'payment'),
+                          makeRecurring: RECURRING_PAYMENT_LABELS.includes(item.label),
+                        });
                       }
                     }}
                     sx={selectSx}
@@ -225,6 +253,20 @@ export default function MultiOutflowInsert({
                     )}
                   </Select>
                 </div>
+
+                {RECURRING_PAYMENT_LABELS.includes(paymentTags.find(t => t.index === row.typoKey)?.label) && (
+                  <RowFieldFull>
+                    <RecurringCheckboxLabel theme={theme}>
+                      <input
+                        type="checkbox"
+                        checked={row.makeRecurring}
+                        onChange={(e) => updateRow(row.id, 'makeRecurring', e.target.checked)}
+                        disabled={isSubmitting}
+                      />
+                      {translations.insert.outflowSection.makeRecurring || 'Rendi ricorrente ogni mese'}
+                    </RecurringCheckboxLabel>
+                  </RowFieldFull>
+                )}
 
                 {/* Amount */}
                 <div>

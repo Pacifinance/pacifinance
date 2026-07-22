@@ -3,14 +3,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import WarningIcon from '@mui/icons-material/Warning';
 import CloseIcon from '@mui/icons-material/Close';
 
-const ToastNotification = ({ 
-  message, 
-  type = 'success', // 'success' or 'error'
-  duration = 4000, 
+const ToastNotification = ({
+  message,
+  type = 'success', // 'success', 'warning' or 'error'
+  duration = 4000,
   onClose,
-  show = false 
+  show = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -41,9 +42,8 @@ const ToastNotification = ({
 
   if (!isVisible) return null;
 
-  const isSuccess = type === 'success';
-  const bgColor = isSuccess ? '#4CAF50' : '#f44336';
-  const Icon = isSuccess ? CheckCircleIcon : ErrorIcon;
+  const bgColor = type === 'success' ? '#4CAF50' : type === 'warning' ? '#f59e0b' : '#f44336';
+  const Icon = type === 'success' ? CheckCircleIcon : type === 'warning' ? WarningIcon : ErrorIcon;
 
   // On mobile: position above BottomNavBar (60px + 16px gap), compact style
   const mobileStyles = isMobile ? {

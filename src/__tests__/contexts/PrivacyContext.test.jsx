@@ -23,75 +23,75 @@ const TestConsumer = () => {
 
 describe('PrivacyContext', () => {
   describe('PrivacyProvider', () => {
-    it('should provide default isHidden as false', () => {
+    it('should provide default isHidden as true (secure default)', () => {
       render(
         <PrivacyProvider>
           <TestConsumer />
         </PrivacyProvider>
       );
-      
-      expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
+
+      expect(screen.getByTestId('is-hidden')).toHaveTextContent('hidden');
     });
   });
 
   describe('toggleHidden', () => {
-    it('should toggle from visible to hidden', async () => {
+    it('should toggle from hidden to visible', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <PrivacyProvider>
           <TestConsumer />
         </PrivacyProvider>
       );
-      
-      expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
-      
-      await user.click(screen.getByTestId('toggle'));
-      
+
       expect(screen.getByTestId('is-hidden')).toHaveTextContent('hidden');
+
+      await user.click(screen.getByTestId('toggle'));
+
+      expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
     });
 
-    it('should toggle from hidden back to visible', async () => {
+    it('should toggle from visible back to hidden', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <PrivacyProvider>
           <TestConsumer />
         </PrivacyProvider>
       );
-      
-      // Toggle to hidden
-      await user.click(screen.getByTestId('toggle'));
-      expect(screen.getByTestId('is-hidden')).toHaveTextContent('hidden');
-      
-      // Toggle back to visible
+
+      // Toggle to visible
       await user.click(screen.getByTestId('toggle'));
       expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
+
+      // Toggle back to hidden
+      await user.click(screen.getByTestId('toggle'));
+      expect(screen.getByTestId('is-hidden')).toHaveTextContent('hidden');
     });
 
     it('should maintain state through multiple toggles', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <PrivacyProvider>
           <TestConsumer />
         </PrivacyProvider>
       );
-      
-      // Initial: visible
-      expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
-      
-      // Toggle 1: hidden
-      await user.click(screen.getByTestId('toggle'));
+
+      // Initial: hidden
       expect(screen.getByTestId('is-hidden')).toHaveTextContent('hidden');
-      
-      // Toggle 2: visible
+
+      // Toggle 1: visible
       await user.click(screen.getByTestId('toggle'));
       expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
-      
-      // Toggle 3: hidden
+
+      // Toggle 2: hidden
       await user.click(screen.getByTestId('toggle'));
       expect(screen.getByTestId('is-hidden')).toHaveTextContent('hidden');
+
+      // Toggle 3: visible
+      await user.click(screen.getByTestId('toggle'));
+      expect(screen.getByTestId('is-hidden')).toHaveTextContent('visible');
     });
   });
 

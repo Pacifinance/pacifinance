@@ -22,21 +22,27 @@ vi.mock('../../components/ToastNotification', () => ({
 
 // Test component that uses the context
 const TestConsumer = ({ message }) => {
-  const { showSuccess, showError } = useToast();
-  
+  const { showSuccess, showError, showWarning } = useToast();
+
   return (
     <div>
-      <button 
-        data-testid="show-success" 
+      <button
+        data-testid="show-success"
         onClick={() => showSuccess(message || 'Success message')}
       >
         Show Success
       </button>
-      <button 
-        data-testid="show-error" 
+      <button
+        data-testid="show-error"
         onClick={() => showError(message || 'Error message')}
       >
         Show Error
+      </button>
+      <button
+        data-testid="show-warning"
+        onClick={() => showWarning(message || 'Warning message')}
+      >
+        Show Warning
       </button>
     </div>
   );
@@ -161,6 +167,26 @@ describe('ToastContext', () => {
       
       await waitFor(() => {
         expect(screen.getByTestId('toast-error')).toHaveTextContent('Custom error message');
+      });
+    });
+  });
+
+  describe('showWarning', () => {
+    it('should show warning toast when triggered', async () => {
+      render(
+        <ToastProvider>
+          <TestConsumer message="Please double-check this!" />
+        </ToastProvider>
+      );
+
+      const warningButton = screen.getByTestId('show-warning');
+
+      await act(async () => {
+        warningButton.click();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('toast-warning')).toHaveTextContent('Please double-check this!');
       });
     });
   });

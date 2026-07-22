@@ -34,8 +34,12 @@ export const ToastProvider = ({ children }) => {
     showToast(message, 'error', duration);
   };
 
+  const showWarning = (message, duration = 4000) => {
+    showToast(message, 'warning', duration);
+  };
+
   return (
-    <ToastContext.Provider value={{ showSuccess, showError }}>
+    <ToastContext.Provider value={{ showSuccess, showError, showWarning }}>
       {children}
       {toasts.map(toast => (
         <ToastNotification

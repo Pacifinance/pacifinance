@@ -106,7 +106,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     const { isMobileScreen } = useContext(MediaQueryContext);
     const {
         sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode,
-        collapsedGroups, toggleGroupCollapsed, cardDensity, toggleCardDensity
+        collapsedGroups, toggleGroupCollapsed
     } = useDashboardLayout();
     const { investmentService, liquidityAccountService } = useDemoServices();
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
@@ -464,8 +464,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         resetLayout={resetLayout}
                         viewMode={viewMode}
                         toggleViewMode={toggleViewMode}
-                        cardDensity={cardDensity}
-                        toggleCardDensity={toggleCardDensity}
                     />
 
                     {/* Onboarding for new users with no data */}
@@ -575,7 +573,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                     expandLabel={translations.dashboard.expandSection}
                                     collapseLabel={translations.dashboard.collapseSection}
                                 >
-                                    <PortfolioGrid $density={cardDensity}>
+                                    <PortfolioGrid>
                                         {activeAssets.map((asset) => {
                                             const IconComponent = asset.icon;
                                             const subEntries = (liquidityAccountsByAssetKey[asset.key] || [])
@@ -588,7 +586,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                     icon={IconComponent}
                                                     color={asset.color}
                                                     gradient={asset.gradient}
-                                                    density={cardDensity}
                                                     name={isHidden ? '****' : asset.name}
                                                     value={formatCurrency(asset.value)}
                                                     pills={[`${formatPercentage(asset.value, totalBalance)} ${translations.dashboard.ofTotal}`]}
@@ -646,13 +643,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 expandLabel={translations.dashboard.expandSection}
                                 collapseLabel={translations.dashboard.collapseSection}
                             >
-                                <PortfolioGrid $density={cardDensity}>
+                                <PortfolioGrid>
                                     <PortfolioAssetCard
                                         theme={theme}
                                         icon={GiUmbrella}
                                         color={emergencyFundAsset.color}
                                         gradient={emergencyFundAsset.gradient}
-                                        density={cardDensity}
                                         name={isHidden ? '****' : emergencyFundAsset.name}
                                         value={formatCurrency(emergencyFundAsset.value)}
                                         pills={[`${formatPercentage(emergencyFundAsset.value, totalBalance)} ${translations.dashboard.ofTotal}`]}
@@ -712,7 +708,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 expandLabel={translations.dashboard.expandSection}
                                 collapseLabel={translations.dashboard.collapseSection}
                             >
-                                <PortfolioGrid $density={cardDensity}>
+                                <PortfolioGrid>
                                     {investments.map((investment) => {
                                         const IconComponent = investment.icon;
                                         const subEntries = (holdingsByAssetKey[investment.key] || [])
@@ -725,7 +721,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                 icon={IconComponent}
                                                 color={investment.color}
                                                 gradient={investment.gradient}
-                                                density={cardDensity}
                                                 name={isHidden ? '****' : investment.name}
                                                 value={formatCurrency(investment.value)}
                                                 badge={investment.comingSoon ? (language === 'it' ? 'Presto' : 'Soon') : undefined}

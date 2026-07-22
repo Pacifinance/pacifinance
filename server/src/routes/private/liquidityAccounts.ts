@@ -15,8 +15,7 @@ function parseAccountPayload(body: Record<string, unknown>) {
     if (
         !isOneOf(assetKey, db.liquidityAccounts.LIQUIDITY_ACCOUNT_ASSET_KEYS) ||
         label.length === 0 ||
-        !Number.isFinite(currentValue) ||
-        currentValue < 0
+        !Number.isFinite(currentValue)
     ) {
         return null
     }

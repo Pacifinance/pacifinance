@@ -518,7 +518,11 @@
             "pastDateBalanceSubtitle": "Choose what happens when you insert outflows or incomes with dates in previous months",
             "pastDateBalanceAsk": "Ask every time",
             "pastDateBalanceNone": "No balance impact",
-            "pastDateBalancePastMonth": "Update that month's balance"
+            "pastDateBalancePastMonth": "Update that month's balance",
+            "privacyDefault": "Privacy at login",
+            "privacyDefaultSubtitle": "Choose whether amounts should start hidden every time you log in",
+            "privacyDefaultAlwaysHidden": "Always hidden at login (recommended)",
+            "privacyDefaultRememberLast": "Remember last choice"
         }
     },
 
@@ -935,6 +939,9 @@
             "selectCategory": "Select a category",
             "selectPaymentType": "Select a payment type",
             "insertValidValue": "Insert a valid value greater than 0"
+        },
+        "warnings": {
+            "negativeAccountBalance": "\"{account}\"'s balance is now negative. If the account isn't really overdrawn, remember to update its balance."
         },
         "pastDateBalance": {
             "title": "Past date detected",
@@ -1990,10 +1997,6 @@
         "customizeTitle": "Customize Dashboard",
         "dragHint": "Drag sections to reorder them. Click the eye icon to hide them.",
         "resetLayout": "Reset to default layout",
-        "density": "Density",
-        "densityComfortable": "Comfortable",
-        "densityCompact": "Compact",
-        "switchDensity": "Change card density",
         "assetOverview": "Asset Overview",
         "asset": "Asset",
         "category": "Category",

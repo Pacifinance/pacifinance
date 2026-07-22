@@ -518,7 +518,11 @@
             "pastDateBalanceSubtitle": "Choose what happens when you insert outflows or incomes with dates in previous months",
             "pastDateBalanceAsk": "Ask every time",
             "pastDateBalanceNone": "No balance impact",
-            "pastDateBalancePastMonth": "Update that month's balance"
+            "pastDateBalancePastMonth": "Update that month's balance",
+            "privacyDefault": "Privacidad al iniciar sesión",
+            "privacyDefaultSubtitle": "Elige si los importes deben empezar ocultos cada vez que inicias sesión",
+            "privacyDefaultAlwaysHidden": "Ocultar siempre al iniciar sesión (recomendado)",
+            "privacyDefaultRememberLast": "Recordar la última elección"
         }
     },
 
@@ -935,6 +939,9 @@
             "selectCategory": "Selecciona una categoría",
             "selectPaymentType": "Selecciona un tipo de pago",
             "insertValidValue": "Introduce un valor válido mayor que 0"
+        },
+        "warnings": {
+            "negativeAccountBalance": "El saldo de \"{account}\" ahora es negativo. Si la cuenta no está realmente en números rojos, recuerda actualizar su saldo."
         },
         "pastDateBalance": {
             "title": "Past date detected",
@@ -1974,10 +1981,6 @@
         "customizeTitle": "Personalizar panel",
         "dragHint": "Arrastra las secciones para reordenarlas. Haz clic en el icono del ojo para ocultarlas.",
         "resetLayout": "Restablecer diseño predeterminado",
-        "density": "Densidad",
-        "densityComfortable": "Cómoda",
-        "densityCompact": "Compacta",
-        "switchDensity": "Cambiar densidad de las tarjetas",
         "assetOverview": "Resumen de activos",
         "asset": "Activo",
         "category": "Categoría",

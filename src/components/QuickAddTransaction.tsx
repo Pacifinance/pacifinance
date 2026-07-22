@@ -340,7 +340,7 @@ export default function QuickAddTransaction({ theme }) {
   const { translations } = useContext(LanguageContext);
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
-  const { showError } = useToast();
+  const { showError, showWarning } = useToast();
   const { financeService, investmentService, liquidityAccountService } = useDemoServices();
 
   const t = translations?.dashboard?.quickAdd || {};
@@ -459,14 +459,22 @@ export default function QuickAddTransaction({ theme }) {
       if (source.detailType === 'liquidity') {
         const account = liquidityAccounts.find((item) => item.id === source.detailId);
         if (!account) return;
+        const newValue = (Number(account.currentValue) || 0) + deltaEUR;
         await liquidityAccountService.saveAccount({
           id: account.id,
           asset_key: account.assetKey,
           label: account.label,
-          current_value: (Number(account.currentValue) || 0) + deltaEUR,
+          current_value: newValue,
           currency: account.currency,
           notes: account.notes,
         });
+        // Negative balances are allowed (real overdrafts happen), but it's more often
+        // a sign the account wasn't kept up to date — nudge the user, don't block them.
+        if (newValue < 0) {
+          const warning = (translations.insert.warnings?.negativeAccountBalance || '')
+            .replace('{account}', account.label);
+          if (warning) showWarning(warning, 6000);
+        }
         return;
       }
       if (source.detailType === 'investment') {

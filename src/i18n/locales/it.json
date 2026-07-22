@@ -518,7 +518,11 @@
             "pastDateBalanceSubtitle": "Scegli cosa succede quando inserisci spese o entrate con date di mesi precedenti",
             "pastDateBalanceAsk": "Chiedi ogni volta",
             "pastDateBalanceNone": "Nessun impatto sul bilancio",
-            "pastDateBalancePastMonth": "Aggiorna bilancio del mese"
+            "pastDateBalancePastMonth": "Aggiorna bilancio del mese",
+            "privacyDefault": "Privacy all'accesso",
+            "privacyDefaultSubtitle": "Scegli se gli importi devono partire nascosti ogni volta che accedi",
+            "privacyDefaultAlwaysHidden": "Nascondi sempre all'accesso (consigliato)",
+            "privacyDefaultRememberLast": "Ricorda l'ultima scelta"
         }
     },
 
@@ -935,6 +939,9 @@
             "selectCategory": "Seleziona una categoria",
             "selectPaymentType": "Seleziona un tipo di pagamento",
             "insertValidValue": "Inserisci un valore valido maggiore di 0"
+        },
+        "warnings": {
+            "negativeAccountBalance": "Il saldo di \"{account}\" è ora negativo. Se il conto non è davvero in rosso, ricordati di aggiornarne il bilancio."
         },
         "pastDateBalance": {
             "title": "Data passata rilevata",
@@ -1990,10 +1997,6 @@
         "customizeTitle": "Personalizza Dashboard",
         "dragHint": "Trascina le sezioni per riordinarle. Clicca l'icona occhio per nasconderle.",
         "resetLayout": "Ripristina layout predefinito",
-        "density": "Densità",
-        "densityComfortable": "Comoda",
-        "densityCompact": "Compatta",
-        "switchDensity": "Cambia densità delle card",
         "assetOverview": "Panoramica Asset",
         "asset": "Asset",
         "category": "Categoria",

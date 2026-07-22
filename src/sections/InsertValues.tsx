@@ -373,7 +373,7 @@ export default function InsertValue({
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory } = useContext(UserContext) || {};
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
   const { financeService, investmentService, liquidityAccountService, recurringTransactionService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
@@ -641,15 +641,23 @@ export default function InsertValue({
     if (meta.detailType === 'liquidity') {
       const account = liquidityAccounts.find((item) => item.id === meta.detailId);
       if (!account) return;
+      const newValue = (Number(account.currentValue) || 0) + deltaEUR;
       await liquidityAccountService.saveAccount({
         id: account.id,
         asset_key: account.assetKey,
         label: account.label,
-        current_value: (Number(account.currentValue) || 0) + deltaEUR,
+        current_value: newValue,
         currency: account.currency,
         notes: account.notes,
       });
       await refreshLiquidityAccounts();
+      // Negative balances are allowed (real overdrafts happen), but it's more often
+      // a sign the account wasn't kept up to date — nudge the user, don't block them.
+      if (newValue < 0) {
+        const warning = (translations.insert.warnings?.negativeAccountBalance || '')
+          .replace('{account}', account.label);
+        if (warning) showWarning(warning, 6000);
+      }
       return;
     }
 

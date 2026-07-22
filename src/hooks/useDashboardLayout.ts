@@ -11,7 +11,6 @@ import { useState, useCallback, useEffect } from 'react';
 const STORAGE_KEY = 'pacifinance-dashboard-layout';
 const VIEW_MODE_KEY = 'pacifinance-dashboard-viewmode';
 const COLLAPSED_GROUPS_KEY = 'pacifinance-dashboard-collapsed-groups';
-const CARD_DENSITY_KEY = 'pacifinance-dashboard-card-density';
 
 // Default section order
 export const DEFAULT_SECTIONS = [
@@ -94,27 +93,6 @@ export const useDashboardLayout = () => {
     setCollapsedGroups(prev => ({ ...prev, [groupId]: !prev[groupId] }));
   }, []);
 
-  // Card density: 'comfortable' (default) or 'compact'
-  const [cardDensity, setCardDensity] = useState(() => {
-    try {
-      return localStorage.getItem(CARD_DENSITY_KEY) || 'comfortable';
-    } catch {
-      return 'comfortable';
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(CARD_DENSITY_KEY, cardDensity);
-    } catch {
-      // ignore
-    }
-  }, [cardDensity]);
-
-  const toggleCardDensity = useCallback(() => {
-    setCardDensity(prev => prev === 'comfortable' ? 'compact' : 'comfortable');
-  }, []);
-
   // Drag-and-drop: move section from one position to another
   const moveSection = useCallback((fromIndex, toIndex) => {
     setSections(prev => {
@@ -156,8 +134,5 @@ export const useDashboardLayout = () => {
     toggleViewMode,
     collapsedGroups,
     toggleGroupCollapsed,
-    cardDensity,
-    setCardDensity,
-    toggleCardDensity,
   };
 };

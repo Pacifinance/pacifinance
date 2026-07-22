@@ -65,6 +65,7 @@ import {
     faCheck
 } from "@fortawesome/free-solid-svg-icons";
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
+import { usePrivacyDefaultPref, PRIVACY_DEFAULT_CHOICES } from "../hooks/usePrivacyDefaultPref";
 
 const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
@@ -84,6 +85,9 @@ const SettingsPage = () => {
 
     // Past-date balance preference (used by insert flows)
     const { pref: pastDatePref, setPref: setPastDatePref } = usePastDateBalancePref();
+
+    // Privacy mode default at login (secure by default; opt-in to remember the last choice)
+    const { pref: privacyDefaultPref, setPref: setPrivacyDefaultPref } = usePrivacyDefaultPref();
 
     // Shared account actions via DI hook
     const accountActions = useAccountActions({
@@ -1380,6 +1384,71 @@ const SettingsPage = () => {
                                     style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
                                 >
                                     {translations.sidebar.settings.pastDateBalancePastMonth || (language === "it" ? "Aggiorna bilancio del mese" : "Update that month's balance")}
+                                </option>
+                            </select>
+                        </div>
+
+                        {/* Privacy mode default preference */}
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                padding: "1.25rem",
+                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
+                                borderRadius: "14px",
+                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                            }}
+                        >
+                            <h3 style={{
+                                marginBottom: "0.5rem",
+                                color: theme.textColor,
+                                fontSize: "1.1rem",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <FontAwesomeIcon icon={faEyeSlash} style={{
+                                    marginRight: "0.6rem",
+                                    color: theme.buttonBackgroundColor,
+                                    fontSize: "0.95rem"
+                                }} />
+                                {translations.sidebar.settings.privacyDefault || (language === "it" ? "Privacy all'accesso" : "Privacy at login")}
+                            </h3>
+                            <p style={{
+                                color: theme.textColor,
+                                marginBottom: "0.85rem",
+                                fontSize: "0.8rem",
+                                lineHeight: "1.4",
+                                opacity: 0.7
+                            }}>
+                                {translations.sidebar.settings.privacyDefaultSubtitle || (language === "it" ? "Scegli se gli importi devono partire nascosti ogni volta che accedi" : "Choose whether amounts should start hidden every time you log in")}
+                            </p>
+                            <select
+                                value={privacyDefaultPref}
+                                onChange={(e) => setPrivacyDefaultPref(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "0.6rem 0.75rem",
+                                    borderRadius: "10px",
+                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
+                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
+                                    fontSize: "0.88rem",
+                                    fontFamily: "inherit",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <option
+                                    value={PRIVACY_DEFAULT_CHOICES.ALWAYS_HIDDEN}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.privacyDefaultAlwaysHidden || (language === "it" ? "Nascondi sempre all'accesso (consigliato)" : "Always hidden at login (recommended)")}
+                                </option>
+                                <option
+                                    value={PRIVACY_DEFAULT_CHOICES.REMEMBER_LAST}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.privacyDefaultRememberLast || (language === "it" ? "Ricorda l'ultima scelta" : "Remember last choice")}
                                 </option>
                             </select>
                         </div>

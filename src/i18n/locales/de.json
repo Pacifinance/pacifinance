@@ -518,7 +518,11 @@
             "pastDateBalanceSubtitle": "Choose what happens when you insert outflows or incomes with dates in previous months",
             "pastDateBalanceAsk": "Ask every time",
             "pastDateBalanceNone": "No balance impact",
-            "pastDateBalancePastMonth": "Update that month's balance"
+            "pastDateBalancePastMonth": "Update that month's balance",
+            "privacyDefault": "Privatsphäre beim Login",
+            "privacyDefaultSubtitle": "Wähle, ob Beträge bei jeder Anmeldung standardmäßig ausgeblendet sein sollen",
+            "privacyDefaultAlwaysHidden": "Beim Login immer ausblenden (empfohlen)",
+            "privacyDefaultRememberLast": "Letzte Auswahl merken"
         }
     },
     "whatsNew": {
@@ -933,6 +937,9 @@
             "selectCategory": "Kategorie auswählen",
             "selectPaymentType": "Zahlungsart auswählen",
             "insertValidValue": "Gib einen gültigen Wert größer als 0 ein"
+        },
+        "warnings": {
+            "negativeAccountBalance": "Der Saldo von \"{account}\" ist jetzt negativ. Falls das Konto nicht wirklich überzogen ist, aktualisiere bitte den Saldo."
         },
         "pastDateBalance": {
             "title": "Past date detected",
@@ -1972,10 +1979,6 @@
         "customizeTitle": "Dashboard anpassen",
         "dragHint": "Ziehe Abschnitte zum Neuordnen. Klicke auf das Augensymbol zum Ausblenden.",
         "resetLayout": "Auf Standard-Layout zurücksetzen",
-        "density": "Dichte",
-        "densityComfortable": "Komfortabel",
-        "densityCompact": "Kompakt",
-        "switchDensity": "Kartendichte ändern",
         "assetOverview": "Vermögensübersicht",
         "asset": "Vermögenswert",
         "category": "Kategorie",

@@ -408,16 +408,16 @@ export const PortfolioSectionBody = styled.div`
 
 export const PortfolioGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(${props => props.$density === 'compact' ? '150px' : '188px'}, 1fr));
-  gap: ${props => props.$density === 'compact' ? '0.6rem' : '0.9rem'};
+  grid-template-columns: repeat(auto-fill, minmax(188px, 1fr));
+  gap: 0.9rem;
 
   @media (max-width: 1024px) {
-    grid-template-columns: repeat(auto-fill, minmax(${props => props.$density === 'compact' ? '135px' : '160px'}, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: ${props => props.$density === 'compact' ? '0.45rem' : '0.6rem'};
+    gap: 0.6rem;
   }
 `;
 
@@ -434,7 +434,7 @@ export const PortfolioCard = styled.div`
     : 'rgba(15, 23, 42, 0.08)'
   };
   border-radius: 0.9rem;
-  padding: ${props => props.$density === 'compact' ? '0.6rem' : '0.85rem'};
+  padding: 0.85rem;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   box-shadow: ${props => props.theme.mode === 'dark'
@@ -462,7 +462,7 @@ export const PortfolioCard = styled.div`
 
   @media (max-width: 768px) {
     border-radius: 0.7rem;
-    padding: ${props => props.$density === 'compact' ? '0.5rem' : '0.6rem'};
+    padding: 0.6rem;
 
     &:hover {
       transform: none;
@@ -490,15 +490,15 @@ export const PortfolioCard = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: ${props => props.$density === 'compact' ? '1.7rem' : '2.1rem'};
-    height: ${props => props.$density === 'compact' ? '1.7rem' : '2.1rem'};
+    width: 2.1rem;
+    height: 2.1rem;
     border-radius: 0.55rem;
     background: ${props => props.$gradient || props.$color || '#079164'};
     flex-shrink: 0;
 
     svg {
       color: white;
-      font-size: ${props => props.$density === 'compact' ? '0.9rem' : '1.05rem'};
+      font-size: 1.05rem;
     }
   }
 
@@ -534,7 +534,7 @@ export const PortfolioCard = styled.div`
   }
 
   .card-name {
-    font-size: ${props => props.$density === 'compact' ? '0.68rem' : '0.75rem'};
+    font-size: 0.75rem;
     font-weight: 600;
     color: ${props => props.theme.textColor};
     opacity: 0.65;
@@ -547,7 +547,7 @@ export const PortfolioCard = styled.div`
   }
 
   .card-value {
-    font-size: ${props => props.$density === 'compact' ? '1rem' : '1.25rem'};
+    font-size: 1.25rem;
     font-weight: 800;
     color: ${props => props.theme.textColor};
     line-height: 1.15;

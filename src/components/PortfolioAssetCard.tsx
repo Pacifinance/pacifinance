@@ -41,7 +41,6 @@ interface PortfolioAssetCardProps {
     subEntriesMoreLabel?: string;
     extraInfo?: React.ReactNode;
     actions?: React.ReactNode;
-    density?: 'comfortable' | 'compact';
     showDetailsLabel: string;
     hideDetailsLabel: string;
 }
@@ -60,7 +59,6 @@ const PortfolioAssetCard: React.FC<PortfolioAssetCardProps> = ({
     subEntriesMoreLabel,
     extraInfo,
     actions,
-    density = 'comfortable',
     showDetailsLabel,
     hideDetailsLabel,
 }) => {
@@ -68,7 +66,7 @@ const PortfolioAssetCard: React.FC<PortfolioAssetCardProps> = ({
     const hasDetails = subEntries.length > 0 || !!extraInfo;
 
     return (
-        <PortfolioCard theme={theme} $color={color} $gradient={gradient} $density={density}>
+        <PortfolioCard theme={theme} $color={color} $gradient={gradient}>
             <div className="card-top">
                 <div className="icon-chip">
                     <Icon />

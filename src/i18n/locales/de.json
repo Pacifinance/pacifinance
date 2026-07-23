@@ -48,7 +48,10 @@
         "valid": "gültig",
         "filters": "Filter",
         "clearAllFilters": "Filter zurücksetzen",
-        "filterByNote": "Nach Notiz filtern..."
+        "filterByNote": "Nach Notiz filtern...",
+        "from": "Von",
+        "to": "Bis",
+        "allDates": "Alle Daten"
     },
     "cookie": {
         "title": "Wir verwenden Cookies",

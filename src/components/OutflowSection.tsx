@@ -26,6 +26,7 @@ import {
 import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
+import DateFilterPopover from './DateFilterPopover';
 import CategoryPicker from './CategoryPicker';
 import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
@@ -1140,7 +1141,7 @@ export default function OutflowSection({
             />
           </div>
         </th>
-        <th style={{ minWidth: 180 }}>
+        <th style={{ minWidth: 120 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <span
               onClick={() => handleSort('date')}
@@ -1150,36 +1151,24 @@ export default function OutflowSection({
               {translations.general.date || 'Data'}
               {getSortIcon('date')}
             </span>
-            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              <input
-                type="date"
-                value={outflowDateFilterStart || ''}
-                onChange={(e) => setOutflowDateFilterStart(e.target.value)}
-                min={min}
-                max={max}
-                style={{ width: 110 }}
-              />
-              <span style={{ fontSize: '0.75em', opacity: 0.7 }}>-</span>
-              <input
-                type="date"
-                value={outflowDateFilterEnd || ''}
-                onChange={(e) => setOutflowDateFilterEnd(e.target.value)}
-                min={min}
-                max={max}
-                style={{ width: 110 }}
-              />
-            </div>
-            {(outflowDateFilterStart || outflowDateFilterEnd) && (
-              <button
-                onClick={() => { setOutflowDateFilterStart(''); setOutflowDateFilterEnd(''); }}
-                style={{
-                  color: '#fff', background: 'rgba(255,107,107,0.6)', border: 'none',
-                  borderRadius: 4, padding: '2px 8px', fontSize: '0.7em', cursor: 'pointer',
-                }}
-              >
-                {translations.general.clearFilter || 'Clear'}
-              </button>
-            )}
+            <DateFilterPopover
+              theme={theme}
+              startValue={outflowDateFilterStart}
+              endValue={outflowDateFilterEnd}
+              onStartChange={setOutflowDateFilterStart}
+              onEndChange={setOutflowDateFilterEnd}
+              onClear={() => { setOutflowDateFilterStart(''); setOutflowDateFilterEnd(''); }}
+              min={min}
+              max={max}
+              accentColor="#ff6b6b"
+              labels={{
+                date: translations.general.date || 'Data',
+                from: translations.general.from || 'Da',
+                to: translations.general.to || 'A',
+                all: translations.general.allDates || 'Tutte le date',
+                clear: translations.general.clearFilter || 'Clear',
+              }}
+            />
           </div>
         </th>
         <th></th>

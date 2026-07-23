@@ -48,7 +48,10 @@
         "valid": "valide",
         "filters": "Filtri",
         "clearAllFilters": "Cancella filtri",
-        "filterByNote": "Filtra per nota..."
+        "filterByNote": "Filtra per nota...",
+        "from": "Da",
+        "to": "A",
+        "allDates": "Tutte le date"
     },
     "months": {
         "january": "Gennaio",

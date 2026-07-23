@@ -13,6 +13,7 @@ import {
 import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
+import DateFilterPopover from './DateFilterPopover';
 import CategoryPicker from './CategoryPicker';
 import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 
@@ -569,7 +570,7 @@ export default function IncomeSection({
             />
           </div>
         </th>
-        <th style={{ minWidth: 180 }}>
+        <th style={{ minWidth: 120 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <span
               onClick={() => handleSort('date')}
@@ -579,36 +580,24 @@ export default function IncomeSection({
               {translations.general.date || 'Data'}
               {getSortIcon('date')}
             </span>
-            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              <input
-                type="date"
-                value={incomeDateFilterStart || ''}
-                onChange={(e) => setIncomeDateFilterStart(e.target.value)}
-                min={min}
-                max={max}
-                style={{ width: 110 }}
-              />
-              <span style={{ fontSize: '0.75em', opacity: 0.7 }}>-</span>
-              <input
-                type="date"
-                value={incomeDateFilterEnd || ''}
-                onChange={(e) => setIncomeDateFilterEnd(e.target.value)}
-                min={min}
-                max={max}
-                style={{ width: 110 }}
-              />
-            </div>
-            {(incomeDateFilterStart || incomeDateFilterEnd) && (
-              <button
-                onClick={() => { setIncomeDateFilterStart(''); setIncomeDateFilterEnd(''); }}
-                style={{
-                  color: '#fff', background: 'rgba(46,204,113,0.6)', border: 'none',
-                  borderRadius: 4, padding: '2px 8px', fontSize: '0.7em', cursor: 'pointer',
-                }}
-              >
-                {translations.general.clearFilter || 'Clear'}
-              </button>
-            )}
+            <DateFilterPopover
+              theme={theme}
+              startValue={incomeDateFilterStart}
+              endValue={incomeDateFilterEnd}
+              onStartChange={setIncomeDateFilterStart}
+              onEndChange={setIncomeDateFilterEnd}
+              onClear={() => { setIncomeDateFilterStart(''); setIncomeDateFilterEnd(''); }}
+              min={min}
+              max={max}
+              accentColor="#2ecc71"
+              labels={{
+                date: translations.general.date || 'Data',
+                from: translations.general.from || 'Da',
+                to: translations.general.to || 'A',
+                all: translations.general.allDates || 'Tutte le date',
+                clear: translations.general.clearFilter || 'Clear',
+              }}
+            />
           </div>
         </th>
         <th></th>

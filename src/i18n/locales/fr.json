@@ -48,7 +48,10 @@
         "valid": "valides",
         "filters": "Filtres",
         "clearAllFilters": "Effacer les filtres",
-        "filterByNote": "Filtrer par note..."
+        "filterByNote": "Filtrer par note...",
+        "from": "Du",
+        "to": "Au",
+        "allDates": "Toutes les dates"
     },
     "cookie": {
         "title": "Nous utilisons des cookies 🍪",

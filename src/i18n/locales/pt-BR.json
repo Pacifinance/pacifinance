@@ -48,7 +48,10 @@
         "valid": "válidas",
         "filters": "Filtros",
         "clearAllFilters": "Limpar filtros",
-        "filterByNote": "Filtrar por nota..."
+        "filterByNote": "Filtrar por nota...",
+        "from": "De",
+        "to": "Até",
+        "allDates": "Todas as datas"
     },
     "cookie": {
         "title": "Nós usamos cookies 🍪",

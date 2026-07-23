@@ -527,7 +527,11 @@
             "privacyDefault": "Privacidade ao entrar",
             "privacyDefaultSubtitle": "Escolha se os valores devem começar ocultos toda vez que você entrar",
             "privacyDefaultAlwaysHidden": "Sempre ocultar ao entrar (recomendado)",
-            "privacyDefaultRememberLast": "Lembrar a última escolha"
+            "privacyDefaultRememberLast": "Lembrar a última escolha",
+            "generalSection": "Preferências Gerais",
+            "privacySection": "Privacidade",
+            "dataSection": "Gestão de Dados",
+            "appSupportSection": "App e Suporte"
         }
     },
     "whatsNew": {

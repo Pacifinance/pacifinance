@@ -527,7 +527,11 @@
             "privacyDefault": "Privacidad al iniciar sesión",
             "privacyDefaultSubtitle": "Elige si los importes deben empezar ocultos cada vez que inicias sesión",
             "privacyDefaultAlwaysHidden": "Ocultar siempre al iniciar sesión (recomendado)",
-            "privacyDefaultRememberLast": "Recordar la última elección"
+            "privacyDefaultRememberLast": "Recordar la última elección",
+            "generalSection": "Preferencias Generales",
+            "privacySection": "Privacidad",
+            "dataSection": "Gestión de Datos",
+            "appSupportSection": "App y Soporte"
         }
     },
 

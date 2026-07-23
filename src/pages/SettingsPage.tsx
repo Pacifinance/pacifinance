@@ -21,6 +21,8 @@ import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import PWAInstallGuide from "../components/PWAInstallGuide";
 import LanguageSelector from "../components/LanguageSelector";
+import SettingsGroup, { SettingsSubHeading, SettingsDivider } from "../components/SettingsGroup";
+import SettingsRow from "../components/SettingsRow";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -30,12 +32,9 @@ import {
     TitleDashboard,
     MyButton,
     StyledSection,
-    TitleSection,
     MuiCustomTextField,
     MuiCustomIconButton,
     MuiCustomInputAdornment,
-    EyeVisibility,
-    EyeVisibilityOff,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -138,7 +137,7 @@ const SettingsPage = () => {
     const [newCategoryParentIndex, setNewCategoryParentIndex] = useState("");
     const [newCategoryLabel, setNewCategoryLabel] = useState("");
     const [isCreatingCategory, setIsCreatingCategory] = useState(false);
-    
+
     // Stati per il filtro dati export
     const [exportFilter, setExportFilter] = useState("all");
     const [selectedMonth, setSelectedMonth] = useState("");
@@ -281,7 +280,7 @@ const SettingsPage = () => {
     // Funzioni per l'export dei dati
     const handleExportData = async (format) => {
         setExportLoading(true);
-        
+
         try {
             if (!userData || typeof userData !== 'object') {
                 throw new Error('Dati utente non disponibili per l\'export');
@@ -298,7 +297,7 @@ const SettingsPage = () => {
                     completeUserData = userData;
                 }
             }
-            
+
             const filterOptions = {
                 type: exportFilter,
                 month: selectedMonth ? parseInt(selectedMonth) : null,
@@ -322,15 +321,15 @@ const SettingsPage = () => {
                     throw new Error('Formato non supportato');
             }
             showSuccess(
-                language === 'it' 
+                language === 'it'
                     ? `Dati esportati con successo in formato ${format.toUpperCase()}!`
                     : `Data successfully exported in ${format.toUpperCase()} format!`
             );
         } catch (error) {
-            let errorMsg = language === 'it' 
-                ? 'Errore durante l\'esportazione dei dati' 
+            let errorMsg = language === 'it'
+                ? 'Errore durante l\'esportazione dei dati'
                 : 'Error during data export';
-                
+
             if (error.message?.includes('HTTP error') || error.message?.includes('Network')) {
                 errorMsg = language === 'it'
                     ? 'Errore di connessione al server'
@@ -340,7 +339,7 @@ const SettingsPage = () => {
                     ? 'Dati utente non disponibili'
                     : 'User data not available';
             }
-            
+
             showError(errorMsg);
         } finally {
             setExportLoading(false);
@@ -431,97 +430,28 @@ const SettingsPage = () => {
                             padding: isMobileScreen ? "0.5rem" : "1rem",
                         }}
                     >
-                        {/* Account Preferences */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
+                        {/* ═══ 1. Preferenze Generali — lingua, valuta, tema, comportamento inserimento ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faGlobe}
+                            title={translations.sidebar.settings.generalSection || (language === "it" ? "Preferenze Generali" : "General Preferences")}
                         >
-                            <h3 style={{ 
-                                marginBottom: "0.75rem", 
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faGlobe} style={{ 
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.sidebar.settings.preferencesSection || (language === "it" ? "Preferenze Account" : "Account Preferences")}
-                            </h3>
-                            
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                                {/* Language */}
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "0.6rem 0.75rem",
-                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "10px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
-                                    }}
+                                <SettingsRow
+                                    theme={theme}
+                                    icon={faLanguage}
+                                    label={translations.sidebar.settings.language}
+                                    subtitle={translations.sidebar?.settings?.languageSubtitle || "Change interface language"}
                                 >
-                                    <div>
-                                        <label style={{
-                                            fontWeight: "600",
-                                            color: theme.textColor,
-                                            fontSize: "0.9rem",
-                                            display: "block",
-                                            marginBottom: "0.15rem"
-                                        }}>
-                                            <FontAwesomeIcon icon={faLanguage} style={{ marginRight: "0.4rem", fontSize: "0.85rem" }} />
-                                            {translations.sidebar.settings.language}
-                                        </label>
-                                        <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-                                            fontSize: "0.75rem"
-                                        }}>
-                                            {translations.sidebar?.settings?.languageSubtitle || "Change interface language"}
-                                        </span>
-                                    </div>
                                     <LanguageSelector theme={theme} variant="full" />
-                                </div>
+                                </SettingsRow>
 
-                                {/* Currency */}
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "0.6rem 0.75rem",
-                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "10px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
-                                    }}
+                                <SettingsRow
+                                    theme={theme}
+                                    icon={faCoins}
+                                    label={translations.sidebar.settings.currency}
+                                    subtitle={translations.sidebar.settings.currencySubtitle}
                                 >
-                                    <div>
-                                        <label style={{
-                                            fontWeight: "600",
-                                            color: theme.textColor,
-                                            fontSize: "0.9rem",
-                                            display: "block",
-                                            marginBottom: "0.15rem"
-                                        }}>
-                                            <FontAwesomeIcon icon={faCoins} style={{ marginRight: "0.4rem", fontSize: "0.85rem" }} />
-                                            {translations.sidebar.settings.currency}
-                                        </label>
-                                        <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-                                            fontSize: "0.75rem"
-                                        }}>
-                                            {translations.sidebar.settings.currencySubtitle}
-                                        </span>
-                                    </div>
                                     <select
                                         value={currency}
                                         onChange={(e) => setCurrency(e.target.value)}
@@ -543,47 +473,136 @@ const SettingsPage = () => {
                                             </option>
                                         ))}
                                     </select>
-                                </div>
+                                </SettingsRow>
+
+                                <SettingsRow
+                                    theme={theme}
+                                    icon={faPalette}
+                                    label={translations.sidebar.settings.light}
+                                    subtitle={language === "it" ? "Cambia tema scuro/chiaro" : "Switch dark/light theme"}
+                                >
+                                    <ToggleModeButton
+                                        theme={theme}
+                                        mode={mode}
+                                        toggleMode={toggleMode}
+                                    />
+                                </SettingsRow>
                             </div>
-                        </div>
 
-                        {/* Custom Categories */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
+                            <SettingsDivider theme={theme} />
+
+                            <SettingsSubHeading
+                                theme={theme}
+                                icon={faHistory}
+                                description={translations.sidebar.settings.pastDateBalanceSubtitle || (language === "it" ? "Scegli cosa succede quando inserisci spese o entrate con date di mesi precedenti" : "Choose what happens when you insert expenses or incomes with dates in previous months")}
+                            >
+                                {translations.sidebar.settings.pastDateBalance || (language === "it" ? "Impatto bilancio per date passate" : "Past-date balance impact")}
+                            </SettingsSubHeading>
+                            <select
+                                value={pastDatePref}
+                                onChange={(e) => setPastDatePref(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "0.6rem 0.75rem",
+                                    borderRadius: "10px",
+                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
+                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
+                                    fontSize: "0.88rem",
+                                    fontFamily: "inherit",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <option
+                                    value={PAST_DATE_BALANCE_CHOICES.ASK}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.pastDateBalanceAsk || (language === "it" ? "Chiedi ogni volta" : "Ask every time")}
+                                </option>
+                                <option
+                                    value={PAST_DATE_BALANCE_CHOICES.NONE}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.pastDateBalanceNone || (language === "it" ? "Nessun impatto sul bilancio" : "No balance impact")}
+                                </option>
+                                <option
+                                    value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.pastDateBalancePastMonth || (language === "it" ? "Aggiorna bilancio del mese" : "Update that month's balance")}
+                                </option>
+                            </select>
+                        </SettingsGroup>
+
+                        {/* ═══ 2. Privacy — nascondi importi ora + default all'accesso ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faEyeSlash}
+                            title={translations.sidebar.settings.privacySection || (language === "it" ? "Privacy" : "Privacy")}
                         >
-                            <h3 style={{
-                                marginBottom: "0.4rem",
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faTag} style={{
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {language === "it" ? "Categorie personalizzate" : "Custom categories"}
-                            </h3>
-                            <p style={{
-                                margin: "0 0 0.75rem",
-                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)',
-                                fontSize: "0.78rem",
-                                lineHeight: 1.5
-                            }}>
-                                {language === "it"
-                                    ? "Puoi crearle mentre inserisci una spesa o un'entrata. Qui puoi rinominarle o eliminarle: le statistiche restano sempre sulla categoria madre."
-                                    : "Create them while adding an expense or income. Here you can rename or delete them: statistics always stay linked to the parent category."}
-                            </p>
+                            <SettingsRow
+                                theme={theme}
+                                label={translations.sidebar.settings.privacy}
+                                subtitle={language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts"}
+                            >
+                                <PrivacyToggleModeButton
+                                    theme={theme}
+                                    mode={mode}
+                                    toggleHidden={toggleHidden}
+                                    isHidden={isHidden}
+                                />
+                            </SettingsRow>
 
+                            <SettingsDivider theme={theme} />
+
+                            <SettingsSubHeading
+                                theme={theme}
+                                description={translations.sidebar.settings.privacyDefaultSubtitle || (language === "it" ? "Scegli se gli importi devono partire nascosti ogni volta che accedi" : "Choose whether amounts should start hidden every time you log in")}
+                            >
+                                {translations.sidebar.settings.privacyDefault || (language === "it" ? "Privacy all'accesso" : "Privacy at login")}
+                            </SettingsSubHeading>
+                            <select
+                                value={privacyDefaultPref}
+                                onChange={(e) => setPrivacyDefaultPref(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "0.6rem 0.75rem",
+                                    borderRadius: "10px",
+                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
+                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
+                                    fontSize: "0.88rem",
+                                    fontFamily: "inherit",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <option
+                                    value={PRIVACY_DEFAULT_CHOICES.ALWAYS_HIDDEN}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.privacyDefaultAlwaysHidden || (language === "it" ? "Nascondi sempre all'accesso (consigliato)" : "Always hidden at login (recommended)")}
+                                </option>
+                                <option
+                                    value={PRIVACY_DEFAULT_CHOICES.REMEMBER_LAST}
+                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
+                                >
+                                    {translations.sidebar.settings.privacyDefaultRememberLast || (language === "it" ? "Ricorda l'ultima scelta" : "Remember last choice")}
+                                </option>
+                            </select>
+                        </SettingsGroup>
+
+                        {/* ═══ 3. Categorie personalizzate — richiudibile, così tante voci non spingono giù il resto ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faTag}
+                            title={language === "it" ? "Categorie personalizzate" : "Custom categories"}
+                            description={language === "it"
+                                ? "Puoi crearle mentre inserisci una spesa o un'entrata. Qui puoi rinominarle o eliminarle: le statistiche restano sempre sulla categoria madre."
+                                : "Create them while adding an expense or income. Here you can rename or delete them: statistics always stay linked to the parent category."}
+                            collapsible
+                            defaultOpen={customCategories.length === 0}
+                            badge={customCategories.length > 0 ? customCategories.length : undefined}
+                        >
                             <div style={{
                                 display: "grid",
                                 gridTemplateColumns: isMobileScreen ? "1fr" : "0.8fr 1.1fr 1.4fr auto",
@@ -818,138 +837,317 @@ const SettingsPage = () => {
                                     })}
                                 </div>
                             )}
-                        </div>
+                        </SettingsGroup>
 
-                        {/* Theme & Display */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
+                        {/* ═══ 4. Gestione Dati — esporta / importa ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faDownload}
+                            title={translations.sidebar.settings.dataSection || (language === "it" ? "Gestione Dati" : "Data Management")}
                         >
-                            <h3 style={{ 
-                                marginBottom: "0.75rem", 
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faPalette} style={{ 
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.sidebar.settings.themeSection ||
-                                    (language === "it" ? "Tema e Aspetto" : "Theme and Appearance")}
-                            </h3>
-                            
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "0.6rem 0.75rem",
-                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "10px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
-                                    }}
-                                >
-                                    <div>
-                                        <label style={{
-                                            fontWeight: "600",
-                                            color: theme.textColor,
-                                            fontSize: "0.9rem",
-                                            display: "block",
-                                            marginBottom: "0.15rem"
-                                        }}>
-                                            {translations.sidebar.settings.light}
-                                        </label>
-                                        <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-                                            fontSize: "0.75rem"
-                                        }}>
-                                            {language === "it" ? "Cambia tema scuro/chiaro" : "Switch dark/light theme"}
-                                        </span>
-                                    </div>
-                                    <ToggleModeButton
-                                        theme={theme}
-                                        mode={mode}
-                                        toggleMode={toggleMode}
-                                    />
-                                </div>
+                            <SettingsSubHeading
+                                theme={theme}
+                                description={language === "it" ? "Scarica i tuoi dati in diversi formati" : "Download your data in different formats"}
+                            >
+                                {language === "it" ? "Esporta" : "Export"}
+                            </SettingsSubHeading>
 
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "0.6rem 0.75rem",
-                                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        borderRadius: "10px",
-                                        border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
-                                    }}
-                                >
+                            <div style={{
+                                backgroundColor: theme.cardColor,
+                                border: `1px solid ${theme.borderColor}`,
+                                borderRadius: "10px",
+                                padding: "0.75rem",
+                                marginBottom: "0.75rem"
+                            }}>
+                                <h4 style={{
+                                    color: theme.textColor,
+                                    marginBottom: "0.5rem",
+                                    fontSize: "0.9rem"
+                                }}>
+                                    {language === "it" ? "Filtro Dati" : "Data Filter"}
+                                </h4>
+
+                                <div style={{
+                                    display: "grid",
+                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(160px, 1fr))",
+                                    gap: "0.5rem",
+                                    alignItems: "end"
+                                }}>
                                     <div>
                                         <label style={{
-                                            fontWeight: "600",
                                             color: theme.textColor,
-                                            fontSize: "0.9rem",
-                                            display: "block",
-                                            marginBottom: "0.15rem"
+                                            fontSize: "0.8rem",
+                                            marginBottom: "0.3rem",
+                                            display: "block"
                                         }}>
-                                            {translations.sidebar.settings.privacy}
+                                            {language === "it" ? "Periodo" : "Period"}
                                         </label>
-                                        <span style={{
-                                            color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-                                            fontSize: "0.75rem"
-                                        }}>
-                                            {language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts"}
-                                        </span>
+                                        <select
+                                            value={exportFilter}
+                                            onChange={(e) => setExportFilter(e.target.value)}
+                                            style={{
+                                                width: "100%",
+                                                padding: "0.5rem",
+                                                border: `1px solid ${theme.borderColor}`,
+                                                borderRadius: "8px",
+                                                backgroundColor: theme.inputBackground,
+                                                color: "#000000",
+                                                fontSize: "0.9rem"
+                                            }}
+                                        >
+                                            <option value="all" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Tutti i dati" : "All data"}
+                                            </option>
+                                            <option value="last12" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Ultimi 12 mesi" : "Last 12 months"}
+                                            </option>
+                                            <option value="specific" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                {language === "it" ? "Mese specifico" : "Specific month"}
+                                            </option>
+                                        </select>
                                     </div>
-                                    <PrivacyToggleModeButton
-                                        theme={theme}
-                                        mode={mode}
-                                        toggleHidden={toggleHidden}
-                                        isHidden={isHidden}
-                                    />
+
+                                    {exportFilter === "specific" && (
+                                        <>
+                                            <div>
+                                                <label style={{
+                                                    color: theme.textColor,
+                                                    fontSize: "0.9rem",
+                                                    marginBottom: "0.5rem",
+                                                    display: "block"
+                                                }}>
+                                                    {language === "it" ? "Mese" : "Month"}
+                                                </label>
+                                                <select
+                                                    value={selectedMonth}
+                                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.75rem",
+                                                        border: `1px solid ${theme.borderColor}`,
+                                                        borderRadius: "8px",
+                                                        backgroundColor: theme.inputBackground,
+                                                        color: "#000000",
+                                                        fontSize: "0.9rem"
+                                                    }}
+                                                >
+                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        {language === "it" ? "Seleziona mese" : "Select month"}
+                                                    </option>
+                                                    {months.map(month => (
+                                                        <option key={month.value} value={month.value} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                            {month.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label style={{
+                                                    color: theme.textColor,
+                                                    fontSize: "0.9rem",
+                                                    marginBottom: "0.5rem",
+                                                    display: "block"
+                                                }}>
+                                                    {language === "it" ? "Anno" : "Year"}
+                                                </label>
+                                                <select
+                                                    value={selectedYear}
+                                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.75rem",
+                                                        border: `1px solid ${theme.borderColor}`,
+                                                        borderRadius: "8px",
+                                                        backgroundColor: theme.inputBackground,
+                                                        color: "#000000",
+                                                        fontSize: "0.9rem"
+                                                    }}
+                                                >
+                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        {language === "it" ? "Seleziona anno" : "Select year"}
+                                                    </option>
+                                                    {years.map(year => (
+                                                        <option key={year} value={year} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                            {year}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Security Settings */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
-                        >
-                            <h3 style={{ 
-                                marginBottom: "0.75rem", 
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: isMobileScreen ? "1fr 1fr" : "repeat(4, 1fr)",
+                                gap: "0.5rem",
                             }}>
-                                <FontAwesomeIcon icon={faUserShield} style={{ 
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.sidebar.settings.securitySection ||
-                                    (language === "it" ? "Sicurezza" : "Security")}
-                            </h3>
+                                {/* CSV Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('csv')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#28a745",
+                                        color: "white",
+                                        fontSize: "0.8rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 2px 8px rgba(40, 167, 69, 0.2)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileCsv} style={{ marginRight: "0.5rem" }} />
+                                    CSV
+                                </MyButton>
 
+                                {/* Excel Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('excel')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#217346",
+                                        color: "white",
+                                        fontSize: "0.8rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 2px 8px rgba(33, 115, 70, 0.2)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileExcel} style={{ marginRight: "0.5rem" }} />
+                                    Excel
+                                </MyButton>
+
+                                {/* JSON Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('json')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#17a2b8",
+                                        color: "white",
+                                        fontSize: "0.8rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 2px 8px rgba(23, 162, 184, 0.2)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "0.5rem" }} />
+                                    JSON
+                                </MyButton>
+
+                                {/* PDF Export */}
+                                <MyButton
+                                    onClick={() => handleExportData('pdf')}
+                                    disabled={exportLoading}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: exportLoading ? "#d3d3d3" : "#dc3545",
+                                        color: "white",
+                                        fontSize: "0.8rem",
+                                        fontWeight: "500",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 2px 8px rgba(220, 53, 69, 0.2)"
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: "0.5rem" }} />
+                                    PDF
+                                </MyButton>
+                            </div>
+
+                            {exportLoading && (
+                                <div style={{
+                                    textAlign: "center",
+                                    marginTop: "1rem",
+                                    color: theme.textColor,
+                                    fontSize: "0.9rem",
+                                    fontStyle: "italic"
+                                }}>
+                                    {language === "it" ? "Esportazione in corso..." : "Exporting data..."}
+                                </div>
+                            )}
+
+                            <SettingsDivider theme={theme} />
+
+                            <SettingsSubHeading
+                                theme={theme}
+                                description={translations.dataImport?.subtitle || (language === "it"
+                                    ? "Importa le tue transazioni da CSV o Excel"
+                                    : "Import your transactions from CSV or Excel")}
+                            >
+                                {translations.dataImport?.title || (language === "it" ? "Importa" : "Import")}
+                            </SettingsSubHeading>
+
+                            {!showImportWizard ? (
+                                <MyButton
+                                    theme={theme}
+                                    onClick={() => setShowImportWizard(true)}
+                                    style={{
+                                        backgroundColor: "#079164",
+                                        color: "white",
+                                        border: "none",
+                                        padding: "0.8rem 1.5rem",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                    }}
+                                    data-umami-event="import-wizard-opened"
+                                >
+                                    <FontAwesomeIcon icon={faUpload} />
+                                    {translations.dataImport?.openWizard || (language === "it" ? "Importa da file" : "Import from file")}
+                                </MyButton>
+                            ) : (
+                                <>
+                                    <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+                                        <button
+                                            onClick={() => setShowImportWizard(false)}
+                                            style={{
+                                                background: "none", border: "none", cursor: "pointer",
+                                                color: theme.textColor, opacity: 0.5, fontSize: "0.85rem",
+                                                textDecoration: "underline",
+                                            }}
+                                        >
+                                            ✕ {language === "it" ? "Chiudi" : "Close"}
+                                        </button>
+                                    </div>
+                                    <Suspense fallback={
+                                        <div style={{ textAlign: "center", padding: "2rem", color: theme.textColor }}>
+                                            {language === "it" ? "Caricamento..." : "Loading..."}
+                                        </div>
+                                    }>
+                                        <DataImportWizard
+                                            onClose={() => setShowImportWizard(false)}
+                                            onImportComplete={() => setShowImportWizard(false)}
+                                        />
+                                    </Suspense>
+                                </>
+                            )}
+                        </SettingsGroup>
+
+                        {/* ═══ 5. Sicurezza — cambio ID e password ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faUserShield}
+                            title={translations.sidebar.settings.securitySection || (language === "it" ? "Sicurezza" : "Security")}
+                        >
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                 <div>
                                     <Tooltip title={isDemo ? demoTooltip : ''} arrow placement="top">
@@ -973,7 +1171,7 @@ const SettingsPage = () => {
                                                 ? "#d3d3d3"
                                                 : theme.buttonBackgroundColor,
                                             boxShadow: isDemo
-                                                ? "none" 
+                                                ? "none"
                                                 : "0 2px 8px rgba(7, 145, 100, 0.25)",
                                             transition: "all 0.3s ease",
                                             pointerEvents: isDemo ? 'none' : 'auto'
@@ -1070,7 +1268,7 @@ const SettingsPage = () => {
                                                 ? "#d3d3d3"
                                                 : theme.buttonBackgroundColor,
                                             boxShadow: isDemo
-                                                ? "none" 
+                                                ? "none"
                                                 : "0 2px 8px rgba(7, 145, 100, 0.25)",
                                             transition: "all 0.3s ease",
                                             pointerEvents: isDemo ? 'none' : 'auto'
@@ -1228,616 +1426,42 @@ const SettingsPage = () => {
                                     </form>
                                 )}
                                 </div>
-
-                                {/* Bug Report */}
-                                <a
-                                    href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ textDecoration: "none" }}
-                                    data-umami-event="settings-bug-report-clicked"
-                                >
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                            padding: "0.6rem 0.75rem",
-                                            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                            borderRadius: "10px",
-                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`,
-                                            cursor: "pointer",
-                                            transition: "all 0.2s ease",
-                                        }}
-                                    >
-                                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                            <FontAwesomeIcon icon={faBug} style={{ 
-                                                color: theme.buttonBackgroundColor,
-                                                fontSize: "0.85rem"
-                                            }} />
-                                            <div>
-                                                <span style={{
-                                                    fontWeight: "600",
-                                                    color: theme.textColor,
-                                                    fontSize: "0.9rem",
-                                                    display: "block",
-                                                    marginBottom: "0.1rem"
-                                                }}>
-                                                    {translations.sidebar.settings.bugReport || (language === "it" ? "Segnala un bug" : "Report a bug")}
-                                                </span>
-                                                <span style={{
-                                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-                                                    fontSize: "0.75rem"
-                                                }}>
-                                                    {translations.sidebar.settings.bugReportSubtitle || (language === "it" ? "Apri una segnalazione su GitHub" : "Open a report on GitHub")}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span style={{ color: theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)', fontSize: "0.8rem" }}>↗</span>
-                                    </div>
-                                </a>
                             </div>
-                        </div>
+                        </SettingsGroup>
 
-                        {/* Install as App (PWA) Section */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
+                        {/* ═══ 6. App e Assistenza — PWA install + bug report ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faMobileScreen}
+                            title={translations.sidebar.settings.appSupportSection || (language === "it" ? "App e Assistenza" : "App & Support")}
                         >
-                            <h3 style={{ 
-                                marginBottom: "0.75rem", 
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faMobileScreen} style={{ 
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
+                            <SettingsSubHeading
+                                theme={theme}
+                                description={translations.sidebar.settings.installAppSubtitle || (language === "it" ? "Aggiungi Pacifinance alla schermata home" : "Add Pacifinance to your home screen")}
+                            >
                                 {translations.sidebar.settings.installApp || (language === "it" ? "Installa come App" : "Install as App")}
-                            </h3>
-                            <p style={{ 
-                                color: theme.textColor, 
-                                marginBottom: "0.75rem",
-                                fontSize: "0.8rem",
-                                lineHeight: "1.4",
-                                opacity: 0.7
-                            }}>
-                                {translations.sidebar.settings.installAppSubtitle || (language === "it" ? "Aggiungi Pacifinance alla schermata home" : "Add Pacifinance to your home screen")}
-                            </p>
+                            </SettingsSubHeading>
                             <PWAInstallGuide variant="compact" />
-                        </div>
 
-                        {/* Past-date balance preference */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
+                            <SettingsDivider theme={theme} />
+
+                            <SettingsRow
+                                theme={theme}
+                                icon={faBug}
+                                label={translations.sidebar.settings.bugReport || (language === "it" ? "Segnala un bug" : "Report a bug")}
+                                subtitle={translations.sidebar.settings.bugReportSubtitle || (language === "it" ? "Apri una segnalazione su GitHub" : "Open a report on GitHub")}
+                                href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
+                                external
+                            />
+                        </SettingsGroup>
+
+                        {/* ═══ 7. Zona Pericolosa — eliminazione account ═══ */}
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faExclamationTriangle}
+                            title={translations.sidebar.settings.dangerZone || (language === "it" ? "Zona Pericolosa" : "Danger Zone")}
+                            danger
                         >
-                            <h3 style={{
-                                marginBottom: "0.5rem",
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faHistory} style={{
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.sidebar.settings.pastDateBalance || (language === "it" ? "Impatto bilancio per date passate" : "Past-date balance impact")}
-                            </h3>
-                            <p style={{
-                                color: theme.textColor,
-                                marginBottom: "0.85rem",
-                                fontSize: "0.8rem",
-                                lineHeight: "1.4",
-                                opacity: 0.7
-                            }}>
-                                {translations.sidebar.settings.pastDateBalanceSubtitle || (language === "it" ? "Scegli cosa succede quando inserisci spese o entrate con date di mesi precedenti" : "Choose what happens when you insert expenses or incomes with dates in previous months")}
-                            </p>
-                            <select
-                                value={pastDatePref}
-                                onChange={(e) => setPastDatePref(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "0.6rem 0.75rem",
-                                    borderRadius: "10px",
-                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
-                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
-                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
-                                    fontSize: "0.88rem",
-                                    fontFamily: "inherit",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <option
-                                    value={PAST_DATE_BALANCE_CHOICES.ASK}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
-                                    {translations.sidebar.settings.pastDateBalanceAsk || (language === "it" ? "Chiedi ogni volta" : "Ask every time")}
-                                </option>
-                                <option
-                                    value={PAST_DATE_BALANCE_CHOICES.NONE}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
-                                    {translations.sidebar.settings.pastDateBalanceNone || (language === "it" ? "Nessun impatto sul bilancio" : "No balance impact")}
-                                </option>
-                                <option
-                                    value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
-                                    {translations.sidebar.settings.pastDateBalancePastMonth || (language === "it" ? "Aggiorna bilancio del mese" : "Update that month's balance")}
-                                </option>
-                            </select>
-                        </div>
-
-                        {/* Privacy mode default preference */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
-                        >
-                            <h3 style={{
-                                marginBottom: "0.5rem",
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faEyeSlash} style={{
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.sidebar.settings.privacyDefault || (language === "it" ? "Privacy all'accesso" : "Privacy at login")}
-                            </h3>
-                            <p style={{
-                                color: theme.textColor,
-                                marginBottom: "0.85rem",
-                                fontSize: "0.8rem",
-                                lineHeight: "1.4",
-                                opacity: 0.7
-                            }}>
-                                {translations.sidebar.settings.privacyDefaultSubtitle || (language === "it" ? "Scegli se gli importi devono partire nascosti ogni volta che accedi" : "Choose whether amounts should start hidden every time you log in")}
-                            </p>
-                            <select
-                                value={privacyDefaultPref}
-                                onChange={(e) => setPrivacyDefaultPref(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "0.6rem 0.75rem",
-                                    borderRadius: "10px",
-                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
-                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
-                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
-                                    fontSize: "0.88rem",
-                                    fontFamily: "inherit",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <option
-                                    value={PRIVACY_DEFAULT_CHOICES.ALWAYS_HIDDEN}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
-                                    {translations.sidebar.settings.privacyDefaultAlwaysHidden || (language === "it" ? "Nascondi sempre all'accesso (consigliato)" : "Always hidden at login (recommended)")}
-                                </option>
-                                <option
-                                    value={PRIVACY_DEFAULT_CHOICES.REMEMBER_LAST}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
-                                    {translations.sidebar.settings.privacyDefaultRememberLast || (language === "it" ? "Ricorda l'ultima scelta" : "Remember last choice")}
-                                </option>
-                            </select>
-                        </div>
-
-                        {/* Data Export Section */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
-                        >
-                            <h3 style={{ 
-                                marginBottom: "0.75rem", 
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faDownload} style={{ 
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {language === "it" ? "Esportazione Dati" : "Data Export"}
-                            </h3>
-                            <p style={{ 
-                                color: theme.textColor, 
-                                marginBottom: "0.75rem",
-                                fontSize: "0.8rem",
-                                lineHeight: "1.4",
-                                opacity: 0.7
-                            }}>
-                                {language === "it" 
-                                    ? "Scarica i tuoi dati in diversi formati"
-                                    : "Download your data in different formats"}
-                            </p>
-
-                            {/* Filtri Export */}
-                            <div style={{
-                                backgroundColor: theme.cardColor,
-                                border: `1px solid ${theme.borderColor}`,
-                                borderRadius: "10px",
-                                padding: "0.75rem",
-                                marginBottom: "0.75rem"
-                            }}>
-                                <h4 style={{ 
-                                    color: theme.textColor, 
-                                    marginBottom: "0.5rem",
-                                    fontSize: "0.9rem"
-                                }}>
-                                    {language === "it" ? "Filtro Dati" : "Data Filter"}
-                                </h4>
-                                
-                                <div style={{
-                                    display: "grid",
-                                    gridTemplateColumns: isMobileScreen ? "1fr" : "repeat(auto-fit, minmax(160px, 1fr))",
-                                    gap: "0.5rem",
-                                    alignItems: "end"
-                                }}>
-                                    <div>
-                                        <label style={{ 
-                                            color: theme.textColor, 
-                                            fontSize: "0.8rem",
-                                            marginBottom: "0.3rem",
-                                            display: "block"
-                                        }}>
-                                            {language === "it" ? "Periodo" : "Period"}
-                                        </label>
-                                        <select
-                                            value={exportFilter}
-                                            onChange={(e) => setExportFilter(e.target.value)}
-                                            style={{
-                                                width: "100%",
-                                                padding: "0.5rem",
-                                                border: `1px solid ${theme.borderColor}`,
-                                                borderRadius: "8px",
-                                                backgroundColor: theme.inputBackground,
-                                                color: "#000000",
-                                                fontSize: "0.9rem"
-                                            }}
-                                        >
-                                            <option value="all" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                {language === "it" ? "Tutti i dati" : "All data"}
-                                            </option>
-                                            <option value="last12" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                {language === "it" ? "Ultimi 12 mesi" : "Last 12 months"}
-                                            </option>
-                                            <option value="specific" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                {language === "it" ? "Mese specifico" : "Specific month"}
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    {exportFilter === "specific" && (
-                                        <>
-                                            <div>
-                                                <label style={{ 
-                                                    color: theme.textColor, 
-                                                    fontSize: "0.9rem",
-                                                    marginBottom: "0.5rem",
-                                                    display: "block"
-                                                }}>
-                                                    {language === "it" ? "Mese" : "Month"}
-                                                </label>
-                                                <select
-                                                    value={selectedMonth}
-                                                    onChange={(e) => setSelectedMonth(e.target.value)}
-                                                    style={{
-                                                        width: "100%",
-                                                        padding: "0.75rem",
-                                                        border: `1px solid ${theme.borderColor}`,
-                                                        borderRadius: "8px",
-                                                        backgroundColor: theme.inputBackground,
-                                                        color: "#000000",
-                                                        fontSize: "0.9rem"
-                                                    }}
-                                                >
-                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                        {language === "it" ? "Seleziona mese" : "Select month"}
-                                                    </option>
-                                                    {months.map(month => (
-                                                        <option key={month.value} value={month.value} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                            {month.label}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <label style={{ 
-                                                    color: theme.textColor, 
-                                                    fontSize: "0.9rem",
-                                                    marginBottom: "0.5rem",
-                                                    display: "block"
-                                                }}>
-                                                    {language === "it" ? "Anno" : "Year"}
-                                                </label>
-                                                <select
-                                                    value={selectedYear}
-                                                    onChange={(e) => setSelectedYear(e.target.value)}
-                                                    style={{
-                                                        width: "100%",
-                                                        padding: "0.75rem",
-                                                        border: `1px solid ${theme.borderColor}`,
-                                                        borderRadius: "8px",
-                                                        backgroundColor: theme.inputBackground,
-                                                        color: "#000000",
-                                                        fontSize: "0.9rem"
-                                                    }}
-                                                >
-                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                        {language === "it" ? "Seleziona anno" : "Select year"}
-                                                    </option>
-                                                    {years.map(year => (
-                                                        <option key={year} value={year} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
-                                                            {year}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                            
-                            <div style={{
-                                display: "grid",
-                                gridTemplateColumns: isMobileScreen ? "1fr 1fr" : "repeat(4, 1fr)",
-                                gap: "0.5rem",
-                            }}>
-                                {/* CSV Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('csv')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "0.6rem",
-                                        borderRadius: "8px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#28a745",
-                                        color: "white",
-                                        fontSize: "0.8rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 2px 8px rgba(40, 167, 69, 0.2)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFileCsv} style={{ marginRight: "0.5rem" }} />
-                                    CSV
-                                </MyButton>
-
-                                {/* Excel Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('excel')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "0.6rem",
-                                        borderRadius: "8px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#217346",
-                                        color: "white",
-                                        fontSize: "0.8rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 2px 8px rgba(33, 115, 70, 0.2)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFileExcel} style={{ marginRight: "0.5rem" }} />
-                                    Excel
-                                </MyButton>
-
-                                {/* JSON Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('json')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "0.6rem",
-                                        borderRadius: "8px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#17a2b8",
-                                        color: "white",
-                                        fontSize: "0.8rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 2px 8px rgba(23, 162, 184, 0.2)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "0.5rem" }} />
-                                    JSON
-                                </MyButton>
-
-                                {/* PDF Export */}
-                                <MyButton
-                                    onClick={() => handleExportData('pdf')}
-                                    disabled={exportLoading}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: "0.6rem",
-                                        borderRadius: "8px",
-                                        backgroundColor: exportLoading ? "#d3d3d3" : "#dc3545",
-                                        color: "white",
-                                        fontSize: "0.8rem",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                        boxShadow: "0 2px 8px rgba(220, 53, 69, 0.2)"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: "0.5rem" }} />
-                                    PDF
-                                </MyButton>
-                            </div>
-
-                            {exportLoading && (
-                                <div style={{
-                                    textAlign: "center",
-                                    marginTop: "1rem",
-                                    color: theme.textColor,
-                                    fontSize: "0.9rem",
-                                    fontStyle: "italic"
-                                }}>
-                                    {language === "it" ? "Esportazione in corso..." : "Exporting data..."}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Data Import Section */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)',
-                                borderRadius: "14px",
-                                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-                            }}
-                        >
-                            <h3 style={{
-                                marginBottom: "0.75rem",
-                                color: theme.textColor,
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faUpload} style={{
-                                    marginRight: "0.6rem",
-                                    color: theme.buttonBackgroundColor,
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.dataImport?.title || (language === "it" ? "Importa Dati" : "Import Data")}
-                            </h3>
-                            <p style={{
-                                color: theme.textColor,
-                                marginBottom: "0.75rem",
-                                fontSize: "0.8rem",
-                                lineHeight: "1.4",
-                                opacity: 0.7,
-                            }}>
-                                {translations.dataImport?.subtitle || (language === "it"
-                                    ? "Importa le tue transazioni da CSV o Excel"
-                                    : "Import your transactions from CSV or Excel")}
-                            </p>
-
-                            {!showImportWizard ? (
-                                <MyButton
-                                    theme={theme}
-                                    onClick={() => setShowImportWizard(true)}
-                                    style={{
-                                        backgroundColor: "#079164",
-                                        color: "white",
-                                        border: "none",
-                                        padding: "0.8rem 1.5rem",
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        gap: "0.5rem",
-                                    }}
-                                    data-umami-event="import-wizard-opened"
-                                >
-                                    <FontAwesomeIcon icon={faUpload} />
-                                    {translations.dataImport?.openWizard || (language === "it" ? "Importa da file" : "Import from file")}
-                                </MyButton>
-                            ) : (
-                                <>
-                                    <div style={{ textAlign: "right", marginBottom: "1rem" }}>
-                                        <button
-                                            onClick={() => setShowImportWizard(false)}
-                                            style={{
-                                                background: "none", border: "none", cursor: "pointer",
-                                                color: theme.textColor, opacity: 0.5, fontSize: "0.85rem",
-                                                textDecoration: "underline",
-                                            }}
-                                        >
-                                            ✕ {language === "it" ? "Chiudi" : "Close"}
-                                        </button>
-                                    </div>
-                                    <Suspense fallback={
-                                        <div style={{ textAlign: "center", padding: "2rem", color: theme.textColor }}>
-                                            {language === "it" ? "Caricamento..." : "Loading..."}
-                                        </div>
-                                    }>
-                                        <DataImportWizard
-                                            onClose={() => setShowImportWizard(false)}
-                                            onImportComplete={() => setShowImportWizard(false)}
-                                        />
-                                    </Suspense>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Danger Zone */}
-                        <div
-                            style={{
-                                marginBottom: "1rem",
-                                padding: "1.25rem",
-                                backgroundColor: theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.1)' : '#fff5f5',
-                                borderRadius: "14px",
-                                border: `2px solid ${theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.3)' : '#feb2b2'}`,
-                                boxShadow: "0 4px 16px rgba(220, 53, 69, 0.1)",
-                            }}
-                        >
-                            <h3 style={{
-                                marginBottom: "0.75rem",
-                                color: "#dc3545",
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center"
-                            }}>
-                                <FontAwesomeIcon icon={faExclamationTriangle} style={{ 
-                                    marginRight: "0.6rem",
-                                    color: "#dc3545",
-                                    fontSize: "0.95rem"
-                                }} />
-                                {translations.sidebar.settings.dangerZone ||
-                                    (language === "it" ? "Zona Pericolosa" : "Danger Zone")}
-                            </h3>
-                            
                             <div style={{
                                 backgroundColor: theme.mode === 'dark' ? 'rgba(220, 53, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)',
                                 padding: "0.6rem 0.75rem",
@@ -1851,7 +1475,7 @@ const SettingsPage = () => {
                                     margin: "0",
                                     fontWeight: "500"
                                 }}>
-                                    {language === "it" 
+                                    {language === "it"
                                         ? "⚠️ Attenzione: L'eliminazione dell'account è irreversibile e cancellerà tutti i tuoi dati."
                                         : "⚠️ Warning: Account deletion is irreversible and will delete all your data."}
                                 </p>
@@ -1879,7 +1503,7 @@ const SettingsPage = () => {
                                     color: "white",
                                     border: "none",
                                     boxShadow: isDemo
-                                        ? "none" 
+                                        ? "none"
                                         : "0 2px 8px rgba(220, 53, 69, 0.3)",
                                     transition: "all 0.3s ease",
                                     pointerEvents: isDemo ? 'none' : 'auto'
@@ -1943,9 +1567,9 @@ const SettingsPage = () => {
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </SettingsGroup>
 
-                        <div style={{ 
+                        <div style={{
                             textAlign: "center",
                             marginTop: "1.5rem",
                             padding: "1rem",

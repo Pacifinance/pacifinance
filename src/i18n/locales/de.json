@@ -527,7 +527,11 @@
             "privacyDefault": "Privatsphäre beim Login",
             "privacyDefaultSubtitle": "Wähle, ob Beträge bei jeder Anmeldung standardmäßig ausgeblendet sein sollen",
             "privacyDefaultAlwaysHidden": "Beim Login immer ausblenden (empfohlen)",
-            "privacyDefaultRememberLast": "Letzte Auswahl merken"
+            "privacyDefaultRememberLast": "Letzte Auswahl merken",
+            "generalSection": "Allgemeine Einstellungen",
+            "privacySection": "Datenschutz",
+            "dataSection": "Datenverwaltung",
+            "appSupportSection": "App & Support"
         }
     },
     "whatsNew": {

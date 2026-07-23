@@ -527,7 +527,11 @@
             "privacyDefault": "Confidentialité à la connexion",
             "privacyDefaultSubtitle": "Choisissez si les montants doivent être masqués à chaque connexion",
             "privacyDefaultAlwaysHidden": "Toujours masqués à la connexion (recommandé)",
-            "privacyDefaultRememberLast": "Se souvenir du dernier choix"
+            "privacyDefaultRememberLast": "Se souvenir du dernier choix",
+            "generalSection": "Préférences Générales",
+            "privacySection": "Confidentialité",
+            "dataSection": "Gestion des Données",
+            "appSupportSection": "App et Assistance"
         }
     },
     "whatsNew": {

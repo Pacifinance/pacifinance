@@ -527,7 +527,11 @@
             "privacyDefault": "Privacy at login",
             "privacyDefaultSubtitle": "Choose whether amounts should start hidden every time you log in",
             "privacyDefaultAlwaysHidden": "Always hidden at login (recommended)",
-            "privacyDefaultRememberLast": "Remember last choice"
+            "privacyDefaultRememberLast": "Remember last choice",
+            "generalSection": "General Preferences",
+            "privacySection": "Privacy",
+            "dataSection": "Data Management",
+            "appSupportSection": "App & Support"
         }
     },
 

@@ -527,7 +527,11 @@
             "privacyDefault": "Privacy all'accesso",
             "privacyDefaultSubtitle": "Scegli se gli importi devono partire nascosti ogni volta che accedi",
             "privacyDefaultAlwaysHidden": "Nascondi sempre all'accesso (consigliato)",
-            "privacyDefaultRememberLast": "Ricorda l'ultima scelta"
+            "privacyDefaultRememberLast": "Ricorda l'ultima scelta",
+            "generalSection": "Preferenze Generali",
+            "privacySection": "Privacy",
+            "dataSection": "Gestione Dati",
+            "appSupportSection": "App e Assistenza"
         }
     },
 

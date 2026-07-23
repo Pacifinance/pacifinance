@@ -51,7 +51,9 @@
         "filterByNote": "Filtra per nota...",
         "from": "Da",
         "to": "A",
-        "allDates": "Tutte le date"
+        "allDates": "Tutte le date",
+        "closeAllNotifications": "Chiudi tutte",
+        "customRangeNote": "intervallo personalizzato"
     },
     "months": {
         "january": "Gennaio",

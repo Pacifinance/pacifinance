@@ -18,6 +18,8 @@ import type {
   UserSetRequest,
   BenchmarkConsentRequest,
   BenchmarkConsentResponse,
+  SeenBadgesRequest,
+  SeenBadgesResponse,
 } from '../types/api';
 
 export interface UserService {
@@ -26,6 +28,7 @@ export interface UserService {
   getUserInfo(): Promise<UserGetResponse | Record<string, never>>;
   updateProfile(data: UserSetRequest): Promise<AxiosResponse>;
   setBenchmarkConsent(contribute: boolean): Promise<BenchmarkConsentResponse>;
+  setSeenBadges(badgeIds: string[]): Promise<SeenBadgesResponse>;
   login(userId: string, password: string, turnstileToken?: string): Promise<AxiosResponse>;
   register(password: string, repeatedPassword: string, turnstileToken?: string): Promise<AxiosResponse>;
   logout(): Promise<void>;
@@ -66,6 +69,12 @@ export const createUserService = (apiClient: AxiosInstance): UserService => ({
   async setBenchmarkConsent(contribute) {
     const payload: BenchmarkConsentRequest = { contribute };
     const res = await apiClient.post<BenchmarkConsentResponse>('/api/user/benchmark-consent', payload);
+    return res.data;
+  },
+
+  async setSeenBadges(badgeIds) {
+    const payload: SeenBadgesRequest = { badge_ids: badgeIds };
+    const res = await apiClient.post<SeenBadgesResponse>('/api/user/seen-badges', payload);
     return res.data;
   },
 

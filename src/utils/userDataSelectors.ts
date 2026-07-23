@@ -77,6 +77,9 @@ export const getBalanceForMonth = (
   return null;
 };
 
+// Badge IDs already notified server-side (see useAchievementNotifications)
+export const getSeenBadges = (userData: UserDataLike): string[] => userData?.seenBadges || [];
+
 // Individual asset selectors for current month
 export const getCashValue = (userData: UserDataLike): number => getCurrentBalance(userData).cash || 0;
 export const getBankValue = (userData: UserDataLike): number => getCurrentBalance(userData).bank || 0;

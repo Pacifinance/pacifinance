@@ -47,6 +47,31 @@ describe("private backend routes", () => {
         expect(mockDb.benchmarkSnapshots.deleteProfilesByUserId).toHaveBeenCalledWith("user-uuid")
     })
 
+    it("persists the set of already-notified gamification badges", async () => {
+        mockDb.users.setSeenBadgesByUserId.mockResolvedValue({seenBadges: ["firstMonth", "firstSave"]})
+
+        const response = await request(app, "/api/user/seen-badges", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {badge_ids: ["firstMonth", "firstSave"]}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({seenBadges: ["firstMonth", "firstSave"]})
+        expect(mockDb.users.setSeenBadgesByUserId).toHaveBeenCalledWith("user-uuid", ["firstMonth", "firstSave"])
+    })
+
+    it("rejects seen-badges payloads that aren't an array of strings", async () => {
+        const response = await request(app, "/api/user/seen-badges", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {badge_ids: "not-an-array"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.users.setSeenBadgesByUserId).not.toHaveBeenCalled()
+    })
+
     it("refreshes expired sessions and sets replacement cookies", async () => {
         mockSupabase.auth.getClaims.mockResolvedValue({data: null, error: {message: "expired"}})
         mockSupabase.auth.refreshSession.mockResolvedValue({

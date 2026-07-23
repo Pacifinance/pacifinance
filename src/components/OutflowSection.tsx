@@ -25,6 +25,7 @@ import {
 } from '../styles/MyStyled';
 import { getCategoryColor } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
+import { indexToMonthKey } from '../utils/userDataSelectors';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 import DateFilterPopover from './DateFilterPopover';
 import CategoryPicker from './CategoryPicker';
@@ -797,12 +798,20 @@ export default function OutflowSection({
   setOutflowDateFilterStart,
   outflowDateFilterEnd,
   setOutflowDateFilterEnd,
+  // Flattened view of every loaded month (+ any on-demand fetched extra
+  // months) — used instead of the single selected month whenever the date
+  // filter is active, so a date range can span across months.
+  flatOutflowsForRange,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
   const pad = (n: number) => String(n).padStart(2, '0');
   const _now = new Date();
   const currentDate = `${_now.getFullYear()}-${pad(_now.getMonth() + 1)}-${pad(_now.getDate())}`;
+  // Date-filter bounds: not clamped to the selected month, so a range can
+  // span across months (or reach further back, on demand — see fetchMonthDetail).
+  const dateFilterMin = `${indexToMonthKey(120)}-01`;
+  const dateFilterMax = currentDate;
 
   const isRecurringEligibleTypology = RECURRING_PAYMENT_LABELS.includes(
     paymentTags.find((item) => item.index === typoOutflow.key)?.label
@@ -1043,16 +1052,6 @@ export default function OutflowSection({
     return [...groups.values()].sort((a, b) => b.total - a.total);
   }, [getCategoryKey, getDisplayCategory, getParentCategory]);
 
-  function getDateRangeForMonth(monthOption) {
-    if (!monthOption) return { min: '', max: '' };
-    const year = monthOption.year;
-    const month = monthOption.month;
-    const firstDay = `${year}-${String(month).padStart(2, '0')}-01`;
-    const lastDayNum = new Date(year, month, 0).getDate();
-    const lastDay = `${year}-${String(month).padStart(2, '0')}-${String(lastDayNum).padStart(2, '0')}`;
-    return { min: firstDay, max: lastDay };
-  }
-
   const getSortIcon = (column) => {
     if (sortColumn !== column) return <FontAwesomeIcon icon={faSort} style={{ marginLeft: 4, opacity: 0.5, fontSize: '0.8em' }} />;
     return sortDirection === 'asc' 
@@ -1061,7 +1060,8 @@ export default function OutflowSection({
   };
 
   function renderTableHeader() {
-    const { min, max } = getDateRangeForMonth(outflowMonthOptions[selectedOutflowsMonth]);
+    const min = dateFilterMin;
+    const max = dateFilterMax;
     return (
       <tr>
         <th>
@@ -1347,6 +1347,11 @@ export default function OutflowSection({
             {filtersActive
               ? (translations.general.totalFiltered || 'Totale filtrato')
               : (translations.general.totalPeriod || 'Totale periodo')}
+            {outflowDateRangeActive && (
+              <div style={{ fontSize: '0.68em', opacity: 0.65, fontWeight: 400 }}>
+                {translations.general.customRangeNote || 'intervallo personalizzato'}
+              </div>
+            )}
           </td>
           <td style={{ textAlign: 'center' }}>
             {isHidden
@@ -1521,6 +1526,11 @@ export default function OutflowSection({
             {filtersActive
               ? (translations.general.totalFiltered || 'Totale filtrato')
               : (translations.general.totalPeriod || 'Totale periodo')}
+            {outflowDateRangeActive && (
+              <div style={{ fontSize: '0.68em', opacity: 0.65, fontWeight: 400 }}>
+                {translations.general.customRangeNote || 'intervallo personalizzato'}
+              </div>
+            )}
           </span>
           <span>
             {isHidden
@@ -1557,6 +1567,14 @@ export default function OutflowSection({
     () => getAddsForMonth(allOutflowsAdds, selectedOutflowMonthKey),
     [allOutflowsAdds, selectedOutflowMonthKey],
   );
+  // A date-range filter isn't clamped to the selected month (see dateFilterMin/Max
+  // above) — once active, the list/cards view reads from every loaded month (+ any
+  // on-demand fetched ones) instead of just the current month's bucket, so a range
+  // like "all of June through July" actually shows June transactions too.
+  const outflowDateRangeActive = Boolean(outflowDateFilterStart || outflowDateFilterEnd);
+  const outflowsSourceForList = outflowDateRangeActive && flatOutflowsForRange
+    ? flatOutflowsForRange
+    : chosenOutflowsToShow;
   const filteredOutflows = React.useMemo(
     () => sortOutflowRows(applyTableFilters(chosenOutflowsToShow)),
     [applyTableFilters, chosenOutflowsToShow, sortOutflowRows],
@@ -1582,7 +1600,7 @@ export default function OutflowSection({
     outflowNoteFilter,
     outflowDateFilterStart || outflowDateFilterEnd,
   ].filter(Boolean).length;
-  const mobileDateRange = getDateRangeForMonth(outflowMonthOptions[selectedOutflowsMonth]);
+  const mobileDateRange = { min: dateFilterMin, max: dateFilterMax };
 
   React.useEffect(() => {
     if (!categoryBreakdown.length) {
@@ -1943,7 +1961,7 @@ export default function OutflowSection({
               <StyledTable theme={theme} className="outflow-table">
                 <thead>{renderTableHeader()}</thead>
                 <tbody>
-                  {renderOutflowItems(chosenOutflowsToShow)}
+                  {renderOutflowItems(outflowsSourceForList)}
                 </tbody>
               </StyledTable>
             </TableScroll>
@@ -2034,7 +2052,7 @@ export default function OutflowSection({
                 )}
               </FilterPanel>
               <CardList>
-                {renderOutflowCards(chosenOutflowsToShow)}
+                {renderOutflowCards(outflowsSourceForList)}
               </CardList>
             </MobileCardWrap>
           </>

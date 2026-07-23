@@ -12,6 +12,7 @@ import {
 } from '../styles/MyStyled';
 import { incomeCategoryColors } from '../data/categoryColors';
 import { getLighterSolidColor, getGrayscaleColor } from '../utils/colorUtils';
+import { indexToMonthKey } from '../utils/userDataSelectors';
 import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 import DateFilterPopover from './DateFilterPopover';
 import CategoryPicker from './CategoryPicker';
@@ -365,12 +366,27 @@ export default function IncomeSection({
   incomeDateFilterEnd,
   setIncomeDateFilterEnd,
   onOpenMultiInsert,
+  // Flattened view of every loaded month (+ any on-demand fetched extra
+  // months) — used instead of the single selected month whenever the date
+  // filter is active, so a date range can span across months.
+  flatIncomesForRange,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
   const _pad = (n: number) => String(n).padStart(2, '0');
   const _now = new Date();
   const currentDate = `${_now.getFullYear()}-${_pad(_now.getMonth() + 1)}-${_pad(_now.getDate())}`;
+  // Date-filter bounds: not clamped to the selected month, so a range can
+  // span across months (or reach further back, on demand — see fetchMonthDetail).
+  const dateFilterMin = `${indexToMonthKey(120)}-01`;
+  const dateFilterMax = currentDate;
+  // Once a date-range filter is active, the table reads from every loaded
+  // month (+ any on-demand fetched ones) instead of just the current
+  // month's bucket — see getAddsForMonth vs. flatIncomesForRange below.
+  const incomeDateRangeActive = Boolean(incomeDateFilterStart || incomeDateFilterEnd);
+  const incomesSourceForList = incomeDateRangeActive && flatIncomesForRange
+    ? flatIncomesForRange
+    : getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey);
 
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
@@ -498,16 +514,6 @@ export default function IncomeSection({
     };
   }
 
-  function getDateRangeForMonth(monthOption) {
-    if (!monthOption) return { min: '', max: '' };
-    const year = monthOption.year;
-    const month = monthOption.month;
-    const firstDay = `${year}-${String(month).padStart(2, '0')}-01`;
-    const lastDayNum = new Date(year, month, 0).getDate();
-    const lastDay = `${year}-${String(month).padStart(2, '0')}-${String(lastDayNum).padStart(2, '0')}`;
-    return { min: firstDay, max: lastDay };
-  }
-
   const getSortIcon = (column) => {
     if (sortColumn !== column) return <FontAwesomeIcon icon={faSort} style={{ marginLeft: 4, opacity: 0.5, fontSize: '0.8em' }} />;
     return sortDirection === 'asc' 
@@ -516,7 +522,8 @@ export default function IncomeSection({
   };
 
   function renderTableHeader() {
-    const { min, max } = getDateRangeForMonth(incomeMonthOptions[selectedIncomesMonth]);
+    const min = dateFilterMin;
+    const max = dateFilterMax;
     return (
       <tr>
         <th>
@@ -812,6 +819,11 @@ export default function IncomeSection({
             {filtersActive
               ? (translations.general.totalFiltered || 'Totale filtrato')
               : (translations.general.totalPeriod || 'Totale periodo')}
+            {incomeDateRangeActive && (
+              <div style={{ fontSize: '0.68em', opacity: 0.65, fontWeight: 400 }}>
+                {translations.general.customRangeNote || 'intervallo personalizzato'}
+              </div>
+            )}
           </td>
           <td style={{ textAlign: 'center' }}>
             {isHidden
@@ -995,9 +1007,7 @@ export default function IncomeSection({
           <StyledTable theme={theme} className="income-table">
             <thead>{renderTableHeader()}</thead>
             <tbody>
-              {renderIncomeItems(
-                getAddsForMonth(allIncomesAdds, selectedIncomeMonthKey),
-              )}
+              {renderIncomeItems(incomesSourceForList)}
             </tbody>
           </StyledTable>
         </TableScroll>

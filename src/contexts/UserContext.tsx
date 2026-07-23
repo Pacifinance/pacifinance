@@ -191,6 +191,7 @@ export const UserProvider = ({ children }) => {
               goals, limits, assets, averages: defaultAverages,
               currency: userProfile.preferredCurrencyCode,
               benchmarkConsent: userProfile.benchmarkConsent,
+              seenBadges: userProfile.seenBadges,
             });
             setSessionUserInfo(null);
             setIsUpdated(true);

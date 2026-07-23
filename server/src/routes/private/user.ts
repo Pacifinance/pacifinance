@@ -195,6 +195,21 @@ userRouter.post("/benchmark-consent", async (req, res) => {
     res.status(200).json(result)
 })
 
+/** Overwrites the set of gamification badge IDs already notified to the user. */
+userRouter.post("/seen-badges", async (req, res) => {
+    const badgeIds = req.body?.badge_ids
+    if (!Array.isArray(badgeIds) || !badgeIds.every((id) => typeof id === "string")) {
+        res.status(400).send()
+        return
+    }
+    const result = await db.users.setSeenBadgesByUserId(req.userId as string, badgeIds)
+    if (result === null) {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(result)
+})
+
 userRouter.post("/goals", async (req, res) => {
     // Set the users's goals and limits
     let expensesLimit = req.body.expenses_limit

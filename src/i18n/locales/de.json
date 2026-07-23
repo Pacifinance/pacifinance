@@ -51,7 +51,9 @@
         "filterByNote": "Nach Notiz filtern...",
         "from": "Von",
         "to": "Bis",
-        "allDates": "Alle Daten"
+        "allDates": "Alle Daten",
+        "closeAllNotifications": "Alle schließen",
+        "customRangeNote": "benutzerdefinierter Zeitraum"
     },
     "cookie": {
         "title": "Wir verwenden Cookies",

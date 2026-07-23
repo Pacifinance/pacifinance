@@ -64,7 +64,10 @@ export const mockUserData = {
     
     // Currency preference resolved from DB (preferredCurrency index → code via currency tags)
     currency: 'EUR',
-    
+
+    // Badge IDs already notified — see useAchievementNotifications
+    seenBadges: [],
+
     // User profile data (come UserContext) — values from i18n
     profile: {
         nationality: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },

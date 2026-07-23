@@ -133,4 +133,6 @@ export interface UserData {
   };
   /** On-demand-fetched single months beyond the loaded window, keyed by 'YYYY-MM' — see fetchMonthDetail in UserContext. */
   extraMonths?: Record<string, TransactionDto[]>;
+  /** Badge IDs the user has already been notified about (server-side, so it doesn't replay on a new device/browser). */
+  seenBadges?: string[];
 }

@@ -51,7 +51,9 @@
         "filterByNote": "Filtrer par note...",
         "from": "Du",
         "to": "Au",
-        "allDates": "Toutes les dates"
+        "allDates": "Toutes les dates",
+        "closeAllNotifications": "Tout fermer",
+        "customRangeNote": "période personnalisée"
     },
     "cookie": {
         "title": "Nous utilisons des cookies 🍪",

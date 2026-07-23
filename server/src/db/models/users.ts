@@ -222,7 +222,7 @@ async function getPublicInfoByUserId(user_id: string) {
     const {data, error} = await supabase.from("profiles")
         .select(`
             user_code, nickname, account_type, created_at,
-            expenses_limit, savings_percent, emergency_fund_goal, benchmark_consent,
+            expenses_limit, savings_percent, emergency_fund_goal, benchmark_consent, seen_badges,
             ${TAG_JOIN_FIELDS}
         `)
         .eq("id", user_id)
@@ -252,6 +252,7 @@ async function getPublicInfoByUserId(user_id: string) {
         yearsOfExperience: mapTagRow(d.years_of_experience),
         preferredCurrency: mapTagRow(d.preferred_currency),
         benchmarkConsent: d.benchmark_consent as boolean,
+        seenBadges: Array.isArray(d.seen_badges) ? d.seen_badges as string[] : [],
         goals: {
             expensesLimit: d.expenses_limit as number,
             savingsPercent: d.savings_percent as number,
@@ -283,6 +284,18 @@ async function setBenchmarkConsentByUserId(user_id: string, consent: boolean) {
         console.warn("users.setBenchmarkConsentByUserId: audit timestamp update skipped", auditError)
 
     return {benchmarkConsent: data.benchmark_consent as boolean}
+}
+
+/** Overwrites the set of gamification badge IDs already notified to the user. */
+async function setSeenBadgesByUserId(user_id: string, badge_ids: string[]) {
+    const {data, error} = await supabase.from("profiles")
+        .update({seen_badges: badge_ids})
+        .eq("id", user_id)
+        .select("id, seen_badges").maybeSingle()
+    if (error) console.error("users.setSeenBadgesByUserId: update failed", error)
+    if (error || !data) return null
+
+    return {seenBadges: (data.seen_badges as string[]) ?? []}
 }
 
 /**
@@ -386,6 +399,7 @@ export default {
     getTypeOfUserId,
     getPublicInfoByUserId,
     setBenchmarkConsentByUserId,
+    setSeenBadgesByUserId,
     setPublicInfoOfUserId,
     setGoalsOfUserId,
     deleteUserById

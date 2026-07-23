@@ -35,6 +35,7 @@ const mocks = vi.hoisted(() => {
             setPasswordOfUserId: vi.fn(),
             getPublicInfoByUserId: vi.fn(),
             setBenchmarkConsentByUserId: vi.fn(),
+            setSeenBadgesByUserId: vi.fn(),
             setPublicInfoOfUserId: vi.fn(),
             setGoalsOfUserId: vi.fn(),
             deleteUserById: vi.fn()
@@ -228,6 +229,7 @@ export function resetServerMocks() {
     mockDb.users.getAllBenchmarkUserIds.mockResolvedValue([])
     mockDb.users.getPublicInfoByUserId.mockResolvedValue({userId: "123456"})
     mockDb.users.setBenchmarkConsentByUserId.mockResolvedValue({benchmarkConsent: false})
+    mockDb.users.setSeenBadgesByUserId.mockResolvedValue({seenBadges: []})
     mockDb.users.setPublicInfoOfUserId.mockResolvedValue({id: "user-uuid"})
     mockDb.users.setGoalsOfUserId.mockResolvedValue({id: "user-uuid"})
     mockDb.users.deleteUserById.mockResolvedValue({id: "user-uuid"})

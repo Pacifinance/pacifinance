@@ -51,7 +51,9 @@
         "filterByNote": "Filtrar por nota...",
         "from": "De",
         "to": "Até",
-        "allDates": "Todas as datas"
+        "allDates": "Todas as datas",
+        "closeAllNotifications": "Fechar tudo",
+        "customRangeNote": "período personalizado"
     },
     "cookie": {
         "title": "Nós usamos cookies 🍪",

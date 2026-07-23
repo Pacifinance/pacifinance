@@ -249,6 +249,7 @@ export interface UserGetResponse {
   yearsOfExperience?: number | null;
   preferredCurrency?: number | null;
   benchmarkConsent?: boolean;
+  seenBadges?: string[];
 }
 
 /** POST /user/set — profile update payload. */
@@ -269,6 +270,10 @@ export interface UserSetRequest {
 
 export interface BenchmarkConsentRequest { contribute: boolean; }
 export interface BenchmarkConsentResponse { benchmarkConsent: boolean; }
+
+/** POST /user/seen-badges — marks gamification badge IDs as already notified. */
+export interface SeenBadgesRequest { badge_ids: string[]; }
+export interface SeenBadgesResponse { seenBadges: string[]; }
 
 export interface UserSetIdRequest { password: string; }
 export interface UserSetIdResponse { new_id: string; }

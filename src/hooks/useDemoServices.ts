@@ -57,6 +57,9 @@ export const useDemoServices = () => {
         ...services.userService,
         updateProfile: async () => FAKE_SUCCESS,
         saveGoals: async () => ({ saved: true }),
+        // No account to persist "seen" badges against — pretend it worked so
+        // the achievement toast logic doesn't retry/log an error every time.
+        setSeenBadges: async (badgeIds: string[]) => ({ seenBadges: badgeIds }),
         // Demo logout: no API call needed, just return success
         // The actual cleanup happens in UserContext via handleSetIsAuthenticated(false)
         logout: async () => FAKE_SUCCESS,

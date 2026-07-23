@@ -32,7 +32,8 @@ import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
     getFundsValue, getCommoditiesValue, getOutflowsTags, getIncomesTags, getPaymentTags,
-    getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth, getCustomCategories
+    getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth, getCustomCategories,
+    getEntriesForMonthKey,
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
@@ -372,7 +373,7 @@ export default function InsertValue({
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
-  const { addCustomCategory } = useContext(UserContext) || {};
+  const { addCustomCategory, fetchMonthDetail } = useContext(UserContext) || {};
   const { showSuccess, showError, showWarning } = useToast();
   const { financeService, investmentService, liquidityAccountService, recurringTransactionService } = useDemoServices();
   const location = useLocation();
@@ -488,6 +489,57 @@ export default function InsertValue({
   const [showIncomeDatePicker, setShowIncomeDatePicker] = useState(false);
   const [showOutflowNoteInput, setShowOutflowNoteInput] = useState(false);
   const [showOutflowDatePicker, setShowOutflowDatePicker] = useState(false);
+
+  // Flattened views combining every loaded month's transactions with any
+  // on-demand fetched "extra" months (see fetchMonthDetail below) — used by
+  // the table's date-range filter so it isn't limited to the single selected
+  // month once the user picks a range that spans (or falls outside) it.
+  const flatOutflowsForRange = React.useMemo(() => {
+    const loaded = Array.isArray(allOutflowsAdds) ? allOutflowsAdds.flat() : [];
+    const extra = userData?.extraMonths
+      ? Object.values(userData.extraMonths).flat().filter((entry) => entry?.isExpense)
+      : [];
+    return [...loaded, ...extra];
+  }, [allOutflowsAdds, userData?.extraMonths]);
+
+  const flatIncomesForRange = React.useMemo(() => {
+    const loaded = Array.isArray(allIncomesAdds) ? allIncomesAdds.flat() : [];
+    const extra = userData?.extraMonths
+      ? Object.values(userData.extraMonths).flat().filter((entry) => !entry?.isExpense)
+      : [];
+    return [...loaded, ...extra];
+  }, [allIncomesAdds, userData?.extraMonths]);
+
+  // When either date-range filter reaches outside the already-loaded window,
+  // fetch the missing calendar month(s) on demand (same mechanism the stats
+  // page uses) instead of loading years of transactions up front.
+  useEffect(() => {
+    if (!fetchMonthDetail || !userData) return;
+    const monthKeysInRange = (startStr, endStr) => {
+      if (!startStr && !endStr) return [];
+      const start = new Date(startStr || endStr);
+      const end = new Date(endStr || startStr);
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return [];
+      const keys = [];
+      const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+      const last = new Date(end.getFullYear(), end.getMonth(), 1);
+      while (cursor <= last) {
+        keys.push(`${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`);
+        cursor.setMonth(cursor.getMonth() + 1);
+      }
+      return keys;
+    };
+    const neededKeys = new Set([
+      ...monthKeysInRange(outflowDateFilterStart, outflowDateFilterEnd),
+      ...monthKeysInRange(incomeDateFilterStart, incomeDateFilterEnd),
+    ]);
+    neededKeys.forEach((key) => {
+      if (getEntriesForMonthKey(userData, key, 'outflows') === null) {
+        const [year, month] = key.split('-').map(Number);
+        fetchMonthDetail(year, month);
+      }
+    });
+  }, [outflowDateFilterStart, outflowDateFilterEnd, incomeDateFilterStart, incomeDateFilterEnd, userData, fetchMonthDetail]);
 
   const balanceBaseValues = {
     bank: bankValue,
@@ -2054,6 +2106,7 @@ export default function InsertValue({
             setSelectedIncomesMonth={setSelectedIncomesMonth}
             incomeMonthOptions={incomeMonthOptions}
             allIncomesAdds={allIncomesAdds}
+            flatIncomesForRange={flatIncomesForRange}
             selectedIncomeMonthKey={selectedIncomeMonthKey}
             incomeCategoryFilter={incomeCategoryFilter}
             setIncomeCategoryFilter={setIncomeCategoryFilter}
@@ -2102,6 +2155,7 @@ export default function InsertValue({
             setSelectedOutflowsMonth={setSelectedOutflowsMonth}
             outflowMonthOptions={outflowMonthOptions}
             allOutflowsAdds={allOutflowsAdds}
+            flatOutflowsForRange={flatOutflowsForRange}
             selectedOutflowMonthKey={selectedOutflowMonthKey}
             outflowCategoryFilter={outflowCategoryFilter}
             setOutflowCategoryFilter={setOutflowCategoryFilter}

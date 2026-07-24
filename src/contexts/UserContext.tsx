@@ -129,14 +129,21 @@ export const UserProvider = ({ children }) => {
             const initialUserInfo = sessionUserInfo;
 
             //************************************* CRITICAL DATA ********************************/
+            // Resolve one request first, before firing the rest in parallel. Supabase
+            // refresh tokens are single-use: if the access token had expired, firing
+            // all 5 requests at once would make each of them race to refresh with the
+            // same refresh token — only the first would succeed, and the other 4 would
+            // get a spurious 401 that forces a logout even though the session was just
+            // renewed by their sibling request. Awaiting one call first lets the
+            // session middleware refresh (and re-cookie) the session exactly once, so
+            // the batch below always runs with an already-valid access token.
+            const tagsData = await userService.getTags();
             const [
-              tagsData,
               customCategories,
               infoData,
               balancesRawData,
               allOutflowsIncomesArray,
             ] = await Promise.all([
-              userService.getTags(),
               financeService.getCustomCategories(),
               initialUserInfo ? Promise.resolve(initialUserInfo) : userService.getUserInfo(),
               financeService.getBalances(),

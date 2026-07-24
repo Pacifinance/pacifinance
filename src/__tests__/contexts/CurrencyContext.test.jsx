@@ -10,19 +10,23 @@ import userEvent from '@testing-library/user-event';
 import { CurrencyContext, CurrencyProvider } from '../../contexts/CurrencyContext';
 import { UserContext } from '../../contexts/UserContext';
 import { LanguageContext } from '../../contexts/LanguageContext';
+import { ServiceContext } from '../../contexts/ServiceContext';
 
 // Wrapper with required contexts
 const createWrapper = (userCurrency = null, language = 'en') => {
   const userData = userCurrency ? { currency: userCurrency } : null;
+  const mockServices = { financeService: { getExchangeRates: vi.fn().mockRejectedValue(new Error('mocked')) } };
 
   return ({ children }) => (
-    <UserContext.Provider value={{ userData }}>
-      <LanguageContext.Provider value={{ language, setLanguage: vi.fn(), translations: {} }}>
-        <CurrencyProvider>
-          {children}
-        </CurrencyProvider>
-      </LanguageContext.Provider>
-    </UserContext.Provider>
+    <ServiceContext.Provider value={mockServices}>
+      <UserContext.Provider value={{ userData }}>
+        <LanguageContext.Provider value={{ language, setLanguage: vi.fn(), translations: {} }}>
+          <CurrencyProvider>
+            {children}
+          </CurrencyProvider>
+        </LanguageContext.Provider>
+      </UserContext.Provider>
+    </ServiceContext.Provider>
   );
 };
 

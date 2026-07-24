@@ -254,6 +254,35 @@ describe("private backend routes", () => {
         expect(response.status).toBe(500)
     })
 
+    it("serves cached exchange rates, refreshing the cache when expired", async () => {
+        mockCache.valueExpired.mockResolvedValueOnce(true)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.08})
+
+        const response = await request(app, "/api/exchange-rates", {
+            method: "GET",
+            headers: {cookie: authCookie}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({EUR: 1, USD: 1.08})
+        expect(mockCache.valueExpired).toHaveBeenCalledWith("exchangeRates")
+        expect(mockCache.invalidate).toHaveBeenCalledWith("exchangeRates")
+        expect(mockCache.get).toHaveBeenCalledWith("exchangeRates")
+    })
+
+    it("skips refreshing exchange rates when the cached value is still fresh", async () => {
+        mockCache.valueExpired.mockResolvedValueOnce(false)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.08})
+
+        const response = await request(app, "/api/exchange-rates", {
+            method: "GET",
+            headers: {cookie: authCookie}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockCache.invalidate).not.toHaveBeenCalled()
+    })
+
     it("renames custom categories without changing their parent category", async () => {
         const response = await request(app, "/api/categories/rename", {
             method: "POST",

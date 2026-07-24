@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { CURRENCIES, FALLBACK_RATES, DEFAULT_CURRENCY, isValidCurrency } from '../data/currencyConfig';
 import { UserContext } from './UserContext';
 import { LanguageContext } from './LanguageContext';
+import { useServices } from './ServiceContext';
 
 const CurrencyContext = createContext();
 
@@ -13,6 +14,7 @@ const RATES_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 export const CurrencyProvider = ({ children }) => {
   const { userData, isAuthenticated } = useContext(UserContext);
   const { language } = useContext(LanguageContext);
+  const { financeService } = useServices();
 
   // Priority: DB (userData.currency) > localStorage > default EUR
   const [currency, setCurrencyState] = useState(() => {
@@ -53,10 +55,8 @@ export const CurrencyProvider = ({ children }) => {
         if (timestamp && (Date.now() - parseInt(timestamp)) < RATES_MAX_AGE) {
           return; // Cache still valid
         }
-        const response = await fetch('https://api.frankfurter.app/latest?from=EUR');
-        if (response.ok) {
-          const data = await response.json();
-          const rates = { EUR: 1, ...data.rates };
+        const rates = await financeService.getExchangeRates();
+        if (rates) {
           setExchangeRates(rates);
           localStorage.setItem(RATES_STORAGE_KEY, JSON.stringify(rates));
           localStorage.setItem(RATES_TIMESTAMP_KEY, String(Date.now()));
@@ -66,7 +66,7 @@ export const CurrencyProvider = ({ children }) => {
       }
     };
     fetchRates();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, financeService]);
 
   // setCurrency: display-only, session-only (does NOT persist to localStorage or DB)
   // Used by Settings page for quick currency conversion

@@ -19,6 +19,7 @@ import type {
   CategoryDeleteRequest,
   CategoryRenameRequest,
   UserCategoryDto,
+  ExchangeRatesResponse,
 } from '../types/api';
 import { withRetry } from '../utils/retryRequest';
 
@@ -45,6 +46,8 @@ export interface FinanceService {
   renameCustomCategory(data: CategoryRenameRequest): Promise<UserCategoryDto>;
   /** POST /categories/delete. */
   deleteCustomCategory(data: CategoryDeleteRequest): Promise<AxiosResponse>;
+  /** GET /exchange-rates — EUR-based rates, cached server-side (refreshed daily). */
+  getExchangeRates(): Promise<ExchangeRatesResponse | null>;
 }
 
 /**
@@ -106,6 +109,11 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
   async deleteCustomCategory(data) {
     const res = await apiClient.post('/api/categories/delete', data);
     return res;
+  },
+
+  async getExchangeRates() {
+    const res = await withRetry(() => apiClient.get<ExchangeRatesResponse>('/api/exchange-rates'));
+    return res.data ?? null;
   },
 });
 

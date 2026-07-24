@@ -450,6 +450,9 @@ export interface PriceDto {
 /** Response of GET /prices/crypto — map keyed by coin id. */
 export type PricesResponse = Record<string, PriceDto>;
 
+/** Response of GET /exchange-rates — currency code -> rate relative to 1 EUR. */
+export type ExchangeRatesResponse = Record<string, number>;
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /investments
  * ═══════════════════════════════════════════════════════════════════════════*/

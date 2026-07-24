@@ -4,6 +4,7 @@ import redis from "./redisClient"
 import averages from "./items/averages"
 import rankings from "./items/rankings"
 import prices from "./items/prices"
+import exchangeRates from "./items/exchangeRates"
 
 interface CacheItemInfo {
     durationSec: number
@@ -26,7 +27,8 @@ const MONTHLY_DURATION_SEC = 32 * 86400
 const expectedItems: {[key: string]: CacheItemInfo} = {
     "userAverages": { durationSec: MONTHLY_DURATION_SEC, fetch: averages.fetchUserAverages },
     "userRankings": { durationSec: MONTHLY_DURATION_SEC, fetch: rankings.fetchUserRankings },
-    "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices }
+    "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices },
+    "exchangeRates": { durationSec: 86400, fetch: exchangeRates.fetchExchangeRates }
 }
 
 /**

@@ -41,7 +41,13 @@ import { addCurrency, roundCurrency } from '../utils/money';
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
 
-const currentDate = new Date().toISOString().split("T")[0];
+// Local date, NOT toISOString().split (UTC-midnight bug, see CLAUDE.md) — must
+// also be recomputed on each call, not memoized at module scope, so a
+// long-lived tab doesn't keep defaulting new entries to a stale day/month.
+const getTodayLocalISO = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
 const createEmptyBalanceInputs = () => Object.fromEntries(ASSET_KEYS.map((key) => [key, '']));
 
 /* ─────────────── Styled Components ─────────────── */
@@ -463,8 +469,8 @@ export default function InsertValue({
   const [noteOutflowAreaValue, setNoteOutflowAreaValue] = useState("");
   const [allIncomesAdds, setAllIncomesAdds] = useState([]);
   const [allOutflowsAdds, setAllOutflowsAdds] = useState([]);
-  const [incomeDate, setIncomeDate] = useState(currentDate);
-  const [outflowDate, setOutflowDate] = useState(currentDate);
+  const [incomeDate, setIncomeDate] = useState(getTodayLocalISO());
+  const [outflowDate, setOutflowDate] = useState(getTodayLocalISO());
   const [balanceDate, setBalanceDate] = useState({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
   const [activePage, setActivePage] = useState("outflows");
   const [OutflowsTags, setOutflowsTags] = useState([]);
@@ -928,7 +934,7 @@ export default function InsertValue({
       // Current month path — use in-memory values + createBalancesJson.
       const currentVal = parseFloat(options[balanceSource]?.[0]) || 0;
       const newVal = currentVal + deltaEUR;
-      const balancesJson = createBalancesJson(currentDate, balanceSource, newVal);
+      const balancesJson = createBalancesJson(getTodayLocalISO(), balanceSource, newVal);
       try {
         const res = await financeService.addBalance(balancesJson);
         if (res?.status === 200) {
@@ -1344,7 +1350,7 @@ export default function InsertValue({
             const currentVal = parseFloat(options[source]?.[0]) || 0;
             overrides[source] = currentVal + deltaEUR;
           }
-          const balancesJson = createBalancesJsonMulti(currentDate, overrides);
+          const balancesJson = createBalancesJsonMulti(getTodayLocalISO(), overrides);
           const balanceRes = await financeService.addBalance(balancesJson);
           if (balanceRes?.status === 200) {
             for (const [source, totalAmount] of sources) {
@@ -1446,7 +1452,7 @@ export default function InsertValue({
             const currentVal = parseFloat(options[source]?.[0]) || 0;
             overrides[source] = currentVal + deltaEUR;
           }
-          const balancesJson = createBalancesJsonMulti(currentDate, overrides);
+          const balancesJson = createBalancesJsonMulti(getTodayLocalISO(), overrides);
           const balanceRes = await financeService.addBalance(balancesJson);
           if (balanceRes?.status === 200) {
             for (const [source, totalAmount] of sources) {
@@ -1883,7 +1889,7 @@ export default function InsertValue({
             if (isOutflow) newValue = valueBalanceSelected - outflowNumber;
             else newValue = valueBalanceSelected + incomeNumber;
 
-            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            const balancesJson = createBalancesJson(getTodayLocalISO(), selectedOption, newValue);
 
             const balancesChange = await financeService.addBalance(balancesJson);
 
@@ -1956,7 +1962,7 @@ export default function InsertValue({
             const valueBalanceSelected = parseFloat(options[selectedOption]?.[0]) || 0;
             const incomeNumber = toEUR(parseFloat(deleteIncomeAmount) || 0);
             const newValue = valueBalanceSelected - incomeNumber;
-            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            const balancesJson = createBalancesJson(getTodayLocalISO(), selectedOption, newValue);
             const balanceRes = await financeService.addBalance(balancesJson);
             if (balanceRes?.status === 200) {
               await applyCurrentDetailSourceDelta(selectedOption, -incomeNumber);
@@ -2014,7 +2020,7 @@ export default function InsertValue({
             const valueBalanceSelected = parseFloat(options[selectedOption]?.[0]) || 0;
             const outflowNumber = toEUR(parseFloat(deleteOutflowAmount) || 0);
             const newValue = valueBalanceSelected + outflowNumber;
-            const balancesJson = createBalancesJson(currentDate, selectedOption, newValue);
+            const balancesJson = createBalancesJson(getTodayLocalISO(), selectedOption, newValue);
             const balanceRes = await financeService.addBalance(balancesJson);
             if (balanceRes?.status === 200) {
               await applyCurrentDetailSourceDelta(selectedOption, outflowNumber);
@@ -2295,7 +2301,7 @@ export default function InsertValue({
                 typoKey: typoOutflow?.key || '',
                 typoValue: typoOutflow?.value || '',
                 amount: outflow || '',
-                date: outflowDate || currentDate,
+                date: outflowDate || getTodayLocalISO(),
                 note: noteOutflowAreaValue || '',
                 balanceSource: selectedOption || '',
               }}
@@ -2321,7 +2327,7 @@ export default function InsertValue({
                 userCategoryId: categoryIncome?.userCategoryId ?? null,
                 userCategoryLabel: categoryIncome?.userCategoryLabel || null,
                 amount: income || '',
-                date: incomeDate || currentDate,
+                date: incomeDate || getTodayLocalISO(),
                 note: noteIncomeAreaValue || '',
                 balanceSource: selectedOption || '',
               }}

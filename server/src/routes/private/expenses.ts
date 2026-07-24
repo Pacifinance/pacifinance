@@ -98,6 +98,10 @@ expensesRouter.post("/add", async (req, res) => {
 expensesRouter.post("/get", async (req, res) => {
     const months = 13
     const year = await db.expenses.getRecentMonthlyExpensesByUserId(req.userId as string, months)
+    if (year === null) {
+        res.status(500).send()
+        return
+    }
     res.status(200).json(year)
 });
 

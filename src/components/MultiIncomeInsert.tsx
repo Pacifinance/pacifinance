@@ -21,7 +21,12 @@ import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
 export { handleAmountInput, formatAmountBlur, groupAmountsByBalanceSource };
 
 /* ─── Helpers (exported for testing) ─── */
-const currentDate = new Date().toISOString().split('T')[0];
+// Local date, NOT toISOString().split (UTC-midnight bug, see CLAUDE.md) — also
+// recomputed on each call rather than memoized at module scope.
+const getTodayLocalISO = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
 
 export const createEmptyIncomeRow = (defaults = {}) => ({
   id: Date.now() + Math.random(),
@@ -31,7 +36,7 @@ export const createEmptyIncomeRow = (defaults = {}) => ({
   userCategoryLabel: defaults.userCategoryLabel ?? '',
   amount: defaults.amount ?? '',
   defaultAmount: defaults.defaultAmount ?? '',
-  date: defaults.date ?? currentDate,
+  date: defaults.date ?? getTodayLocalISO(),
   note: defaults.note ?? '',
   balanceSource: defaults.balanceSource ?? '',
 });
@@ -210,7 +215,7 @@ export default function MultiIncomeInsert({
                     theme={theme}
                     value={row.date}
                     onChange={(e) => updateRow(row.id, 'date', e.target.value)}
-                    max={currentDate}
+                    max={getTodayLocalISO()}
                     disabled={isSubmitting}
                   />
                 </div>

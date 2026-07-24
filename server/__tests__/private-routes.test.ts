@@ -239,6 +239,21 @@ describe("private backend routes", () => {
         expect(mockDb.expenses.getMonthlyExpensesByUserId).not.toHaveBeenCalled()
     })
 
+    it("reports a server error instead of empty months when the batched monthly query fails", async () => {
+        // A genuine DB read failure must surface as an error, not silently look
+        // like "the user has no transactions this month" (which would zero out
+        // the whole dashboard instead of prompting a retry).
+        mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue(null)
+
+        const response = await request(app, "/api/expenses/get", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(500)
+    })
+
     it("renames custom categories without changing their parent category", async () => {
         const response = await request(app, "/api/categories/rename", {
             method: "POST",

@@ -148,7 +148,7 @@ async function getMonthlyExpensesByUserId(user_id: string, reference_date: ExtDa
  * returns the same newest-first monthly bucket shape used by /expenses/get.
  * @param user_id uuid of the user
  * @param months Number of months to include, current month included
- * @returns List of monthly Expense arrays, newest month first
+ * @returns List of monthly Expense arrays (newest month first), or null if the read failed
  */
 async function getRecentMonthlyExpensesByUserId(user_id: string, months: number) {
     const reference_months = []
@@ -170,8 +170,14 @@ async function getRecentMonthlyExpensesByUserId(user_id: string, months: number)
         .lte("occurred_at", range_end.toISOString())
         .order("occurred_at", {ascending: false})
 
-    if (error) console.error("expenses.getRecentMonthlyExpensesByUserId: failed to read recent expenses", error)
-    if (error || !data) return reference_months.map(() => [])
+    // On a genuine query failure, return null (not empty buckets) so the caller can
+    // tell "DB read failed" apart from "user has no transactions this month" — the
+    // latter is legitimate and must not be reported as an error.
+    if (error) {
+        console.error("expenses.getRecentMonthlyExpensesByUserId: failed to read recent expenses", error)
+        return null
+    }
+    if (!data) return reference_months.map(() => [])
 
     const buckets = new Map<string, ReturnType<typeof toExpense>[]>()
     for (const row of data) {

@@ -199,6 +199,37 @@ describe('UserContext — Critical State Transitions', () => {
     });
   });
 
+  it('should skip the session check on static/legal pages that never read isAuthenticated', async () => {
+    const originalPath = window.location.pathname;
+    window.history.pushState({}, '', '/privacy-policy');
+    try {
+      const services = createMockServices();
+      renderWithServices(services);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('is-authenticated')).toHaveTextContent('false');
+      });
+      expect(services.userService.checkSession).not.toHaveBeenCalled();
+    } finally {
+      window.history.pushState({}, '', originalPath);
+    }
+  });
+
+  it('still runs the session check on a language-prefixed static page path', async () => {
+    const originalPath = window.location.pathname;
+    window.history.pushState({}, '', '/it/dashboard');
+    try {
+      const services = createMockServices();
+      renderWithServices(services);
+
+      await waitFor(() => {
+        expect(services.userService.checkSession).toHaveBeenCalledTimes(1);
+      });
+    } finally {
+      window.history.pushState({}, '', originalPath);
+    }
+  });
+
   // ── Data fetch after authentication ──────────────────────────────
 
   it('should fetch and set userData after authentication', async () => {

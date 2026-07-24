@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useServices } from './ServiceContext';
 import { createLegacyBalanceData } from '../utils/userDataSelectors';
 import { generateDemoData } from '../data/demoData';
+import { removeLanguageFromPath } from '../utils/i18nRouting';
 import {
   transformTags,
   transformUserProfile,
@@ -18,6 +19,23 @@ const UserContext = React.createContext();
 
 /** Check if demo mode is active via sessionStorage */
 const isDemoSession = () => sessionStorage.getItem('pacifinance-demo') === 'true';
+
+/**
+ * Purely static/legal pages that never read `isAuthenticated` (verified by
+ * grepping their page components) — visiting them shouldn't cost a session
+ * check against the backend. Landing, FAQ, Pricing and Roadmap are
+ * deliberately NOT here: Roadmap renders a different sidebar when logged in,
+ * and the others are the most likely path into /auth, where resolving
+ * isAuthenticated upfront avoids a loading flash on the redirect.
+ */
+const NO_AUTH_CHECK_PATHS = [
+  '/privacy-policy',
+  '/terms-of-service',
+  '/cookie-policy',
+  '/disclaimer',
+  '/contact',
+  '/sitemap',
+];
 
 const defaultRankings = {
   balance: 0,
@@ -88,6 +106,15 @@ export const UserProvider = ({ children }) => {
         setIsAuthenticated(true);
         setUserData(generateDemoData());
         setIsUpdated(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // Static/legal pages never consult isAuthenticated — skip the session
+      // check entirely rather than spend a request just to discard the result.
+      const currentPath = removeLanguageFromPath(window.location.pathname);
+      if (NO_AUTH_CHECK_PATHS.includes(currentPath)) {
+        setIsAuthenticated(false);
         setIsLoading(false);
         return;
       }

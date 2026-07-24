@@ -80,6 +80,25 @@ describe('financeService', () => {
       const result = await service.getExpensesAndIncomes();
       expect(result).toEqual([]);
     });
+
+    it('retries once on a transient 500 (e.g. a serverless cold start) and returns the data', async () => {
+      const mockData = [[{ amount: 100, isExpense: true }]];
+      mockClient.post
+        .mockRejectedValueOnce({ response: { status: 500 } })
+        .mockResolvedValueOnce({ data: mockData });
+
+      const result = await service.getExpensesAndIncomes();
+
+      expect(mockClient.post).toHaveBeenCalledTimes(2);
+      expect(result).toEqual(mockData);
+    });
+
+    it('does not retry a 401 — an expired/invalid session will not fix itself', async () => {
+      mockClient.post.mockRejectedValue({ response: { status: 401 } });
+
+      await expect(service.getExpensesAndIncomes()).rejects.toEqual({ response: { status: 401 } });
+      expect(mockClient.post).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('addExpenseOrIncome', () => {

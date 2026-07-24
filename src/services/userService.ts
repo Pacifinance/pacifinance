@@ -21,6 +21,7 @@ import type {
   SeenBadgesRequest,
   SeenBadgesResponse,
 } from '../types/api';
+import { withRetry } from '../utils/retryRequest';
 
 export interface UserService {
   checkSession(): Promise<UserGetResponse | null>;
@@ -52,12 +53,12 @@ export const createUserService = (apiClient: AxiosInstance): UserService => ({
   },
 
   async getTags() {
-    const res = await apiClient.post<TagsGetResponse>('/api/tags/get', {});
+    const res = await withRetry(() => apiClient.post<TagsGetResponse>('/api/tags/get', {}));
     return res.data || {};
   },
 
   async getUserInfo() {
-    const res = await apiClient.post<UserGetResponse>('/api/user/get', {});
+    const res = await withRetry(() => apiClient.post<UserGetResponse>('/api/user/get', {}));
     return res.data || {};
   },
 

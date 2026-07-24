@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useContext} from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -35,10 +35,7 @@ function StatsChartsPage() {
     dismissTrigger,
     navigateManually,
     isAutoScrolling 
-  } = useScrollNavigation(true);  useEffect(() => {
-    handleSetIsUpdated(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  } = useScrollNavigation(true);
 
   // Gestisce il click sui punti di navigazione
   const handlePageClick = (pageIndex) => {

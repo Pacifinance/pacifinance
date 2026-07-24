@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useContext} from 'react';
 import { Helmet } from 'react-helmet';
 import { UserContext } from '../contexts/UserContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -9,11 +9,6 @@ import MarketPrices from '../sections/MarketPrices';
 function MarketPricesPage() {
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   const { language } = useContext(LanguageContext);
-
-  useEffect(() => {
-    handleSetIsUpdated(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const seoTitle = language === 'it'
     ? 'Prezzi di Mercato Crypto in Tempo Reale | Pacifinance'

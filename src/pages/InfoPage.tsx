@@ -11,15 +11,12 @@ function InfoPage() {
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
-    handleSetIsUpdated(false);
-    
     const handleResize = () => {
       setIsMobileScreen(window.innerWidth <= 768);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Matomo Tag Manager

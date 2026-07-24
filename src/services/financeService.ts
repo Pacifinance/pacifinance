@@ -20,6 +20,7 @@ import type {
   CategoryRenameRequest,
   UserCategoryDto,
 } from '../types/api';
+import { withRetry } from '../utils/retryRequest';
 
 export interface FinanceService {
   /** GET-style POST to /balances/get. `months` omitted -> default 24-month window; pass a number or 'all' for more. */
@@ -51,7 +52,9 @@ export interface FinanceService {
  */
 export const createFinanceService = (apiClient: AxiosInstance): FinanceService => ({
   async getBalances(months) {
-    const res = await apiClient.post<BalancesGetResponse>('/api/balances/get', months !== undefined ? { months } : {});
+    const res = await withRetry(() =>
+      apiClient.post<BalancesGetResponse>('/api/balances/get', months !== undefined ? { months } : {}),
+    );
     return Array.isArray(res.data) ? res.data : [];
   },
 
@@ -61,7 +64,7 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
   },
 
   async getExpensesAndIncomes() {
-    const res = await apiClient.post<ExpensesGetResponse>('/api/expenses/get', {});
+    const res = await withRetry(() => apiClient.post<ExpensesGetResponse>('/api/expenses/get', {}));
     return Array.isArray(res.data) ? res.data : [];
   },
 
@@ -86,7 +89,7 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
   },
 
   async getCustomCategories() {
-    const res = await apiClient.post<CategoriesGetResponse>('/api/categories/get', {});
+    const res = await withRetry(() => apiClient.post<CategoriesGetResponse>('/api/categories/get', {}));
     return Array.isArray(res.data) ? res.data : [];
   },
 

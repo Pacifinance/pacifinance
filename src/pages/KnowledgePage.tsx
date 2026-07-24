@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
@@ -12,11 +12,6 @@ function KnowledgePage() {
   const { userData, handleSetIsUpdated, handleSetIsAuthenticated } = useContext(UserContext);
   useContext(PrivacyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
-
-  useEffect(() => {
-    handleSetIsUpdated(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <PageLayout>

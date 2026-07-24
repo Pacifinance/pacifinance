@@ -37,15 +37,12 @@ function ComparisonPage() {
     navigateManually,
     isAutoScrolling 
   } = useScrollNavigation(true);  useEffect(() => {
-    handleSetIsUpdated(false);
-    
     const handleResize = () => {
       setIsMobileScreen(window.innerWidth <= 768);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Gestisce il click sui punti di navigazione

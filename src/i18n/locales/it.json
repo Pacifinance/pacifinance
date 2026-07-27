@@ -2707,6 +2707,8 @@
             "loading": "Ricerca in corso...",
             "noResults": "Nessun risultato",
             "verifiedBadge": "Verificato",
+            "addManual": "Aggiungi \"{query}\" come non verificato",
+            "addManualHint": "Non sarà verificato, e non conterà nei confronti con altri utenti.",
             "provider": {
                 "openfigi": "Verificato con OpenFIGI",
                 "coingecko": "Verificato con CoinGecko",
@@ -2730,7 +2732,9 @@
             "manageLink": "Gestisci holding verificati",
             "calculatedFromN": "Calcolato da {count} holding",
             "defaultInstrumentHint": "BTC è precompilato come istanza di riferimento. Rimuovilo per cercare un altro (es. un wallet separato o un'altra blockchain).",
-            "noValueForMonth": "Nessun valore per questo mese"
+            "noValueForMonth": "Nessun valore per questo mese",
+        "unverifiedBadge": "Non verificato",
+        "unverifiedHint": "Non verificato — non conta nei confronti con altri utenti."
         },
         "attribution": {
             "coingecko": "Dati forniti da CoinGecko"
@@ -2756,7 +2760,16 @@
                         },
             "historyBackfillNote": "I mesi passati presenti nel file verranno ricostruiti automaticamente come storico del portafoglio.",
             "historyMonths": "+{count} mesi di storico",
-            "pastMonthNote": "L'importazione aggiorna sempre la posizione di oggi e ricostruisce lo storico dalle date del file — non riguarda solo il mese qui visualizzato."
+            "pastMonthNote": "L'importazione aggiorna sempre la posizione di oggi e ricostruisce lo storico dalle date del file — non riguarda solo il mese qui visualizzato.",
+            "unverifiedTag": "Non verificato",
+            "addUnverified": "Aggiungi come non verificato",
+            "kinds": {
+                        "stock": "Azione",
+                        "etf": "ETF",
+                        "crypto": "Cripto",
+                        "bond": "Obbligazione",
+                        "fund": "Fondo"
+            }
             }
     },
     "liquidityAccounts": {

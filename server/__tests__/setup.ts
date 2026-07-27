@@ -87,6 +87,7 @@ const mocks = vi.hoisted(() => {
             INVESTMENT_POSITION_TYPES: ["single", "pac", "other"],
             INVESTMENT_SEARCH_SOURCES: ["figi", "coingecko"],
             searchInstruments: vi.fn(),
+            createManualInstrument: vi.fn(),
             getInstrumentById: vi.fn(),
             getHoldingsByUserId: vi.fn(),
             insertHolding: vi.fn(),
@@ -256,6 +257,15 @@ export function resetServerMocks() {
     mockDb.categories.renameById.mockResolvedValue({id: 1, parentIndex: 0, parentType: 0, label: "Renamed"})
     mockDb.categories.deleteById.mockResolvedValue({deletedCount: 1})
     mockDb.investments.searchInstruments.mockResolvedValue([])
+    mockDb.investments.createManualInstrument.mockResolvedValue({
+        id: 2,
+        kind: "stock",
+        symbol: "MYSTOCK",
+        name: "My Stock",
+        provider: "manual",
+        verified: false,
+        active: true
+    })
     mockDb.investments.getInstrumentById.mockResolvedValue({
         id: 1,
         kind: "stock",

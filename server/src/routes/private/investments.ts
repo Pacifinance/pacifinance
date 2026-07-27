@@ -13,7 +13,7 @@ function optionalNumber(value: unknown) {
     return Number.isFinite(n) && n >= 0 ? n : undefined
 }
 
-async function parseHoldingPayload(body: any) {
+async function parseHoldingPayload(body: any, user_id: string) {
     const instrumentId = Number(body.instrument_id ?? body.instrumentId)
     const assetKey = common.sanitizeInput(body.asset_key ?? body.assetKey)
     const positionType = common.sanitizeInput(body.position_type ?? body.positionType) || "single"
@@ -34,7 +34,7 @@ async function parseHoldingPayload(body: any) {
         return null
     }
 
-    const instrument = await db.investments.getInstrumentById(instrumentId)
+    const instrument = await db.investments.getInstrumentById(instrumentId, user_id)
     if (instrument === null) return null
 
     return {
@@ -73,11 +73,31 @@ investmentsRouter.post("/instruments/search", async (req, res) => {
 
     const instruments = await db.investments.searchInstruments(
         query,
+        req.userId as string,
         kind === "" ? undefined : kind,
         limit,
         source === "" ? undefined : source,
     )
     res.status(200).json(instruments)
+})
+
+investmentsRouter.post("/instruments/manual", async (req, res) => {
+    const kind = common.sanitizeInput(req.body.kind)
+    const symbol = common.sanitizeInput(req.body.symbol).slice(0, 20)
+    const name = common.sanitizeInput(req.body.name).slice(0, 120)
+    const currency = req.body.currency ? normalizeCurrency(req.body.currency) : null
+
+    if (!isOneOf(kind, db.investments.INVESTMENT_KINDS) || symbol === "" || name === "") {
+        res.status(400).send()
+        return
+    }
+
+    const instrument = await db.investments.createManualInstrument(req.userId as string, {kind, symbol, name, currency})
+    if (instrument === null) {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(instrument)
 })
 
 investmentsRouter.post("/holdings/get", async (req, res) => {
@@ -86,7 +106,7 @@ investmentsRouter.post("/holdings/get", async (req, res) => {
 })
 
 investmentsRouter.post("/holdings/save", async (req, res) => {
-    const payload = await parseHoldingPayload(req.body)
+    const payload = await parseHoldingPayload(req.body, req.userId as string)
     if (payload === null) {
         res.status(400).send()
         return

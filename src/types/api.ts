@@ -506,6 +506,14 @@ export interface InvestmentInstrumentSearchRequest {
 export type InvestmentInstrumentSearchResponse = InvestmentInstrumentDto[];
 export type InvestmentHoldingsGetResponse = InvestmentHoldingDto[];
 
+/** Creates a private, unverified instrument when search finds no verified match — scoped to the creating user only, never shared with other users' searches. */
+export interface InvestmentInstrumentManualCreateRequest {
+  kind: InvestmentKind;
+  symbol: string;
+  name: string;
+  currency?: string | null;
+}
+
 export interface InvestmentHoldingSaveRequest {
   id?: number;
   instrument_id: number;

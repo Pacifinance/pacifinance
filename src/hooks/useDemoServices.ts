@@ -82,6 +82,24 @@ export const useDemoServices = () => {
             return symbol.includes(q) || isin === q || queryWords.every((word) => name.includes(word));
           });
         },
+        createManualInstrument: async (data: { kind: string; symbol: string; name: string; currency?: string | null }) => ({
+          id: -Date.now(),
+          kind: data.kind,
+          symbol: data.symbol,
+          exchange: null,
+          name: data.name,
+          currency: data.currency ?? null,
+          country: null,
+          sector: null,
+          industry: null,
+          figi: null,
+          isin: null,
+          coingeckoId: null,
+          provider: 'manual',
+          verified: false,
+          active: true,
+          metadata: {},
+        }),
         getHoldings: async (): Promise<InvestmentHoldingDto[]> => [],
         saveHolding: async (data: {
           id?: number; instrument_id: number; asset_key: InvestmentHoldingDto['assetKey'];

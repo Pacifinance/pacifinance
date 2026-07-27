@@ -1,8 +1,12 @@
 /**
  * Investment Service — verified instruments and detailed portfolio holdings.
  *
- * The backend intentionally accepts holdings only when linked to a canonical
- * investment instrument, keeping cross-user analytics comparable and clean.
+ * Holdings always link to an instrument, but that instrument doesn't have to
+ * be a verified catalog match: createManualInstrument lets a user register a
+ * private, unverified one when search finds nothing (see
+ * server/src/db/models/investments.ts). Unverified instruments never join the
+ * shared catalog and must never feed cross-user comparisons/analytics —
+ * anything comparison-related must filter on `verified: true`.
  *
  * @module services/investmentService
  */
@@ -16,12 +20,15 @@ import type {
   InvestmentHoldingHistorySaveRequest,
   InvestmentHoldingSaveRequest,
   InvestmentHoldingsGetResponse,
+  InvestmentInstrumentDto,
+  InvestmentInstrumentManualCreateRequest,
   InvestmentInstrumentSearchRequest,
   InvestmentInstrumentSearchResponse,
 } from '../types/api';
 
 export interface InvestmentService {
   searchInstruments(params: InvestmentInstrumentSearchRequest): Promise<InvestmentInstrumentSearchResponse>;
+  createManualInstrument(data: InvestmentInstrumentManualCreateRequest): Promise<InvestmentInstrumentDto>;
   getHoldings(): Promise<InvestmentHoldingsGetResponse>;
   saveHolding(data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto>;
   deleteHolding(data: InvestmentHoldingDeleteRequest): Promise<AxiosResponse>;
@@ -33,6 +40,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   async searchInstruments(params) {
     const res = await apiClient.post<InvestmentInstrumentSearchResponse>('/api/investments/instruments/search', params);
     return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async createManualInstrument(data) {
+    const res = await apiClient.post<InvestmentInstrumentDto>('/api/investments/instruments/manual', data);
+    return res.data;
   },
 
   async getHoldings() {

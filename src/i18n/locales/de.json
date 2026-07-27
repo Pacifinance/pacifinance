@@ -2681,6 +2681,8 @@
             "loading": "Suche läuft...",
             "noResults": "Keine Ergebnisse",
             "verifiedBadge": "Verifiziert",
+            "addManual": "\"{query}\" als nicht verifiziert hinzufügen",
+            "addManualHint": "Wird nicht verifiziert und zählt nicht bei Vergleichen mit anderen Nutzern.",
             "provider": {
                 "openfigi": "Verifiziert mit OpenFIGI",
                 "coingecko": "Verifiziert mit CoinGecko",
@@ -2704,7 +2706,9 @@
             "manageLink": "Verifizierte Bestände verwalten",
             "calculatedFromN": "Berechnet aus {count} Beständen",
             "defaultInstrumentHint": "BTC ist standardmäßig vorausgewählt. Entferne es, um ein anderes zu suchen (z. B. eine separate Wallet oder eine andere Blockchain).",
-            "noValueForMonth": "Kein Wert für diesen Monat"
+            "noValueForMonth": "Kein Wert für diesen Monat",
+        "unverifiedBadge": "Nicht verifiziert",
+        "unverifiedHint": "Nicht verifiziert — zählt nicht bei Vergleichen mit anderen Nutzern."
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko"
@@ -2730,7 +2734,16 @@
                         },
             "historyBackfillNote": "Vergangene Monate aus der Datei werden automatisch als Portfolio-Verlauf nachgetragen.",
             "historyMonths": "+{count} Monate Verlauf",
-            "pastMonthNote": "Der Import aktualisiert immer die heutige Position und ergänzt den Verlauf anhand der Daten in der Datei — er betrifft nicht nur den hier angezeigten Monat."
+            "pastMonthNote": "Der Import aktualisiert immer die heutige Position und ergänzt den Verlauf anhand der Daten in der Datei — er betrifft nicht nur den hier angezeigten Monat.",
+            "unverifiedTag": "Nicht verifiziert",
+            "addUnverified": "Als nicht verifiziert hinzufügen",
+            "kinds": {
+                        "stock": "Aktie",
+                        "etf": "ETF",
+                        "crypto": "Krypto",
+                        "bond": "Anleihe",
+                        "fund": "Fonds"
+            }
             }
     },
     "liquidityAccounts": {

@@ -68,9 +68,21 @@ const HoldingInfo = styled.div`
   min-width: 0;
   color: ${(p) => p.theme.textColor};
 
-  strong { font-size: 0.88rem; }
+  strong { font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; }
   span { font-size: 0.75rem; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   span.no-value { font-style: italic; }
+`;
+
+const UnverifiedBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 20px;
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
 `;
 
 const HoldingActions = styled.div`
@@ -400,7 +412,14 @@ export default function InvestmentHoldingsPanel({
               <React.Fragment key={holding.id}>
                 <HoldingRow theme={theme}>
                   <HoldingInfo theme={theme}>
-                    <strong>{holding.instrument?.symbol ?? '—'}</strong>
+                    <strong>
+                      {holding.instrument?.symbol ?? '—'}
+                      {holding.instrument?.provider === 'manual' && (
+                        <UnverifiedBadge title={t.unverifiedHint || "Not verified — won't count toward comparisons with other users."}>
+                          {t.unverifiedBadge || 'Unverified'}
+                        </UnverifiedBadge>
+                      )}
+                    </strong>
                     <span>{holding.instrument?.name}</span>
                     {formatInstrumentDetails(holding.instrument) !== '' && (
                       <span>{formatInstrumentDetails(holding.instrument)}</span>

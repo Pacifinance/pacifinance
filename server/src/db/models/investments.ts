@@ -28,6 +28,14 @@ type InstrumentRow = {
     verified: boolean
     active: boolean
     metadata: Record<string, unknown> | null
+    owner_user_id: string | null
+}
+
+export type ManualInstrumentInput = {
+    kind: InvestmentKind
+    symbol: string
+    name: string
+    currency: string | null
 }
 
 type HoldingRow = {
@@ -97,6 +105,7 @@ const INSTRUMENT_SELECT = [
     "verified",
     "active",
     "metadata",
+    "owner_user_id",
 ].join(", ")
 
 const HOLDING_SELECT = [
@@ -168,12 +177,15 @@ function toHoldingPayload(user_id: string, input: HoldingInput) {
 
 /**
  * Searches canonical investment instruments already known by the platform (local catalog only).
+ * Only ever returns the shared/verified catalog plus the requesting user's own
+ * private "manual" instruments — never another user's private ones.
  */
-async function searchLocalInstruments(cleanQuery: string, kind?: InvestmentKind, limit = 20) {
+async function searchLocalInstruments(cleanQuery: string, user_id: string, kind?: InvestmentKind, limit = 20) {
     let request = supabase.from("investment_instruments")
         .select(INSTRUMENT_SELECT)
         .eq("active", true)
         .or(`symbol.ilike.%${cleanQuery}%,name.ilike.%${cleanQuery}%,isin.ilike.%${cleanQuery}%,coingecko_id.ilike.%${cleanQuery}%`)
+        .or(`owner_user_id.is.null,owner_user_id.eq.${user_id}`)
         .order("verified", {ascending: false})
         .order("symbol", {ascending: true})
         .limit(limit)
@@ -269,7 +281,7 @@ async function upsertInstrument(input: UpsertInstrumentInput) {
  * `upsertInstrument`, and re-runs the local search so the growing catalog stays the single
  * source of truth for the response shape.
  */
-async function searchInstruments(query: string, kind?: InvestmentKind, limit = 20, sourceHint?: InvestmentSearchSource) {
+async function searchInstruments(query: string, user_id: string, kind?: InvestmentKind, limit = 20, sourceHint?: InvestmentSearchSource) {
     const cleanQuery = query.replace(/[%*,]/g, "").trim()
     if (cleanQuery.length < 2) return []
 
@@ -281,7 +293,7 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     const isinQuery = sourceHint === "figi" && openfigiProvider.isIsin(cleanQuery)
     const effectiveKind = isinQuery ? undefined : kind
 
-    const localResults = await searchLocalInstruments(cleanQuery, effectiveKind, limit)
+    const localResults = await searchLocalInstruments(cleanQuery, user_id, effectiveKind, limit)
     const localHasIsinMatch = localResults.some((instrument) => instrument.isin?.toUpperCase() === cleanQuery.toUpperCase())
     // 'internal' (commodities) never consults an external provider - the catalog is
     // fixed/curated (seed-commodity-instruments.sql), so local results are final.
@@ -302,17 +314,55 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     // already handles concurrent-insert races (23505 retry-read), so this is safe.
     await Promise.all(candidates.map((candidate) => upsertInstrument(candidate)))
 
-    return await searchLocalInstruments(cleanQuery, effectiveKind, limit)
+    return await searchLocalInstruments(cleanQuery, user_id, effectiveKind, limit)
+}
+
+/**
+ * Creates a private, unverified instrument for a user whose search found no
+ * verified match — never joins the shared catalog (owner_user_id scopes it to
+ * this user only, see searchLocalInstruments) and must never be treated as
+ * eligible for cross-user comparisons (callers of anything comparison-related
+ * must filter on verified = true).
+ */
+async function createManualInstrument(user_id: string, input: ManualInstrumentInput) {
+    const payload = {
+        kind: input.kind,
+        symbol: input.symbol,
+        exchange: null,
+        name: input.name,
+        currency: input.currency,
+        country: null,
+        figi: null,
+        isin: null,
+        coingecko_id: null,
+        provider: "manual",
+        verified: false,
+        active: true,
+        metadata: {},
+        owner_user_id: user_id,
+    }
+    const {data, error} = await supabase.from("investment_instruments")
+        .insert(payload).select(INSTRUMENT_SELECT).single()
+    if (error) console.error("investments.createManualInstrument: failed to insert instrument", error)
+    if (error || !data) return null
+    return toInstrument(data as unknown as InstrumentRow)
 }
 
 /**
  * Resolves a canonical instrument by id.
  */
-async function getInstrumentById(id: number) {
+/**
+ * Resolves a canonical instrument by id, scoped so a holding can never be
+ * linked to another user's private "manual" instrument: only the shared
+ * catalog (owner_user_id null) or the requesting user's own private rows are
+ * a valid match — anything else resolves to null, same as "not found".
+ */
+async function getInstrumentById(id: number, user_id: string) {
     const {data, error} = await supabase.from("investment_instruments")
         .select(INSTRUMENT_SELECT)
         .eq("id", id)
         .eq("active", true)
+        .or(`owner_user_id.is.null,owner_user_id.eq.${user_id}`)
         .maybeSingle()
     if (error) console.error("investments.getInstrumentById: failed to read instrument", error)
     if (error || !data) return null
@@ -532,6 +582,7 @@ export default {
     INVESTMENT_SEARCH_SOURCES,
     searchInstruments,
     upsertInstrument,
+    createManualInstrument,
     getInstrumentById,
     getHoldingsByUserId,
     insertHolding,

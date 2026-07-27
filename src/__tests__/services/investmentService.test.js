@@ -35,6 +35,18 @@ describe('investmentService', () => {
     expect(result).toEqual([]);
   });
 
+  it('creates a private, unverified instrument when search finds no match', async () => {
+    const created = { id: -1, kind: 'stock', symbol: 'MYSTOCK', name: 'My Stock', provider: 'manual', verified: false };
+    mockClient.post.mockResolvedValue({ data: created });
+
+    const result = await service.createManualInstrument({ kind: 'stock', symbol: 'MYSTOCK', name: 'My Stock', currency: null });
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/instruments/manual', {
+      kind: 'stock', symbol: 'MYSTOCK', name: 'My Stock', currency: null,
+    });
+    expect(result).toEqual(created);
+  });
+
   it('loads detailed holdings', async () => {
     const holdings = [{ id: 7, assetKey: 'etf', instrument: { symbol: 'VWCE' } }];
     mockClient.post.mockResolvedValue({ data: holdings });

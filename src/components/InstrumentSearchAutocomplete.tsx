@@ -157,6 +157,34 @@ const Attribution = styled.div`
   a { color: inherit; }
 `;
 
+const AddManualButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  margin-top: 0.2rem;
+  border: 1px dashed ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : '#cbd5e1')};
+  border-radius: 8px;
+  background: transparent;
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.85;
+
+  &:hover:not(:disabled) { opacity: 1; }
+  &:disabled { cursor: wait; opacity: 0.5; }
+`;
+
+const ManualHint = styled.p`
+  margin: 0.3rem 0.2rem 0;
+  font-size: 0.68rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.55;
+`;
+
 export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disabled }: InstrumentSearchAutocompleteProps) {
   const { theme } = useContext(ThemeContext);
   const { translations } = useContext(LanguageContext);
@@ -166,6 +194,7 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
   const [results, setResults] = useState<InvestmentInstrumentDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [creatingManual, setCreatingManual] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const requestIdRef = useRef(0);
 
@@ -209,6 +238,23 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
     setOpen(false);
   };
 
+  const handleAddManual = async () => {
+    if (!kind || creatingManual) return;
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setCreatingManual(true);
+    try {
+      const created = await investmentService.createManualInstrument({
+        kind, symbol: trimmed.slice(0, 20).toUpperCase(), name: trimmed, currency: null,
+      });
+      handleSelect(created);
+    } catch (error) {
+      console.error('InstrumentSearchAutocomplete: manual instrument creation failed', error);
+    } finally {
+      setCreatingManual(false);
+    }
+  };
+
   const showDropdown = open && query.trim().length >= MIN_QUERY_LENGTH;
 
   return (
@@ -238,7 +284,21 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
             </DropdownMessage>
           )}
           {!loading && results.length === 0 && (
-            <DropdownMessage theme={theme}>{t.noResults}</DropdownMessage>
+            <>
+              <DropdownMessage theme={theme}>{t.noResults}</DropdownMessage>
+              <AddManualButton
+                type="button"
+                theme={theme}
+                disabled={creatingManual}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleAddManual}
+              >
+                {creatingManual
+                  ? <FontAwesomeIcon icon={faSpinner} spin />
+                  : (t.addManual || 'Add "{query}" as unverified').replace('{query}', query.trim())}
+              </AddManualButton>
+              <ManualHint theme={theme}>{t.addManualHint || "Won't be verified, and won't count toward comparisons with other users."}</ManualHint>
+            </>
           )}
           {!loading && results.map((instrument) => (
             <ResultItem

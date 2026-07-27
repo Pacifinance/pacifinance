@@ -396,7 +396,32 @@ describe("private backend routes", () => {
         expect(response.json).toEqual([
             {id: 1, kind: "stock", symbol: "AAPL", exchange: "NASDAQ", name: "Apple Inc.", verified: true}
         ])
-        expect(mockDb.investments.searchInstruments).toHaveBeenCalledWith("apple", "stock", 30, undefined)
+        expect(mockDb.investments.searchInstruments).toHaveBeenCalledWith("apple", "user-uuid", "stock", 30, undefined)
+    })
+
+    it("creates a private, unverified instrument when search finds no match", async () => {
+        const response = await request(app, "/api/investments/instruments/manual", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {kind: "stock", symbol: "mystock", name: "My Stock", currency: "eur"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toMatchObject({provider: "manual", verified: false})
+        expect(mockDb.investments.createManualInstrument).toHaveBeenCalledWith("user-uuid", {
+            kind: "stock", symbol: "mystock", name: "My Stock", currency: "EUR"
+        })
+    })
+
+    it("rejects a manual instrument request with an invalid kind or empty symbol/name", async () => {
+        const response = await request(app, "/api/investments/instruments/manual", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {kind: "not-a-kind", symbol: "X", name: "Y"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.createManualInstrument).not.toHaveBeenCalled()
     })
 
     it("saves detailed investment holdings only for existing instruments", async () => {
@@ -425,7 +450,7 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(response.json.id).toBe(9)
-        expect(mockDb.investments.getInstrumentById).toHaveBeenCalledWith(1)
+        expect(mockDb.investments.getInstrumentById).toHaveBeenCalledWith(1, "user-uuid")
         expect(mockDb.investments.insertHolding).toHaveBeenCalledWith("user-uuid", {
             instrumentId: 1,
             assetKey: "stocks",
@@ -439,7 +464,7 @@ describe("private backend routes", () => {
         })
     })
 
-    it("rejects detailed holdings that reference unknown instruments", async () => {
+    it("rejects detailed holdings that reference unknown or inaccessible instruments (getInstrumentById scopes to public + own private rows)", async () => {
         mockDb.investments.getInstrumentById.mockResolvedValue(null)
 
         const response = await request(app, "/api/investments/holdings/save", {

@@ -2681,6 +2681,8 @@
             "loading": "Recherche en cours...",
             "noResults": "Aucun résultat",
             "verifiedBadge": "Vérifié",
+            "addManual": "Ajouter « {query} » comme non vérifié",
+            "addManualHint": "Ne sera pas vérifié et ne comptera pas dans les comparaisons avec les autres utilisateurs.",
             "provider": {
                 "openfigi": "Vérifié avec OpenFIGI",
                 "coingecko": "Vérifié avec CoinGecko",
@@ -2704,7 +2706,9 @@
             "manageLink": "Gérer les positions vérifiées",
             "calculatedFromN": "Calculé à partir de {count} positions",
             "defaultInstrumentHint": "BTC est présélectionné par défaut. Supprimez-le pour en rechercher un autre (par ex. un portefeuille séparé ou une autre blockchain).",
-            "noValueForMonth": "Aucune valeur pour ce mois"
+            "noValueForMonth": "Aucune valeur pour ce mois",
+        "unverifiedBadge": "Non vérifié",
+        "unverifiedHint": "Non vérifié — ne compte pas dans les comparaisons avec les autres utilisateurs."
         },
         "attribution": {
             "coingecko": "Données fournies par CoinGecko"
@@ -2730,7 +2734,16 @@
                         },
             "historyBackfillNote": "Les mois passés trouvés dans le fichier seront automatiquement intégrés à l'historique du portefeuille.",
             "historyMonths": "+{count} mois d'historique",
-            "pastMonthNote": "L'import met toujours à jour la position du jour et complète l'historique à partir des dates du fichier — cela ne concerne pas que le mois affiché ici."
+            "pastMonthNote": "L'import met toujours à jour la position du jour et complète l'historique à partir des dates du fichier — cela ne concerne pas que le mois affiché ici.",
+            "unverifiedTag": "Non vérifié",
+            "addUnverified": "Ajouter comme non vérifié",
+            "kinds": {
+                        "stock": "Action",
+                        "etf": "ETF",
+                        "crypto": "Crypto",
+                        "bond": "Obligation",
+                        "fund": "Fonds"
+            }
             }
     },
     "liquidityAccounts": {

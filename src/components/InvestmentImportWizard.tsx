@@ -17,9 +17,10 @@ import {
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from './ImportPlatformGuide';
-import type { InvestmentInstrumentDto } from '../types/api';
+import type { InvestmentInstrumentDto, InvestmentKind } from '../types/api';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
+const MANUAL_KIND_OPTIONS: InvestmentKind[] = ['stock', 'etf', 'crypto', 'bond', 'fund'];
 
 /**
  * CSV import wizard for investment holdings (Trading 212, DEGIRO, Directa,
@@ -46,6 +47,9 @@ interface ImportRowState {
   selected: boolean;
   /** How many distinct past months this row's history will backfill (0 = single month, nothing to backfill). */
   historyMonthCount: number;
+  /** Asset kind picked for a not-found row before adding it as an unverified/manual instrument. */
+  manualKind: InvestmentKind;
+  creatingManual: boolean;
 }
 
 interface InvestmentImportWizardProps {
@@ -123,6 +127,46 @@ const StatusIcon = styled.span`
   &.resolving { color: ${(p) => p.theme.textColor}; opacity: 0.5; }
 `;
 
+const ManualAddRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+
+  select {
+    padding: 0.25rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1')};
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white')};
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.72rem;
+  }
+
+  button {
+    border: none;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    background: rgba(217, 119, 6, 0.14);
+    color: #d97706;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    &:disabled { cursor: wait; opacity: 0.6; }
+  }
+`;
+
+const UnverifiedTag = styled.span`
+  display: inline-flex;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 0.05rem 0.35rem;
+  margin-left: 0.35rem;
+  border-radius: 20px;
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+  vertical-align: middle;
+`;
+
 export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
   const { theme } = useContext(ThemeContext);
   const { translations } = useContext(LanguageContext);
@@ -160,7 +204,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       // Months present in this position's own history, beyond the current one —
       // that's how many past months will get an automatic backfilled snapshot.
       const historyMonthCount = Math.max(0, buildMonthlyPositionTimeline(transactions).length - 1);
-      return { position, transactions, instrument: null, status: 'pending', selected: true, historyMonthCount };
+      return {
+        position, transactions, instrument: null, status: 'pending', selected: true, historyMonthCount,
+        manualKind: 'stock', creatingManual: false,
+      };
     });
     setRows(initialRows);
     void resolveInstruments(initialRows);
@@ -176,16 +223,47 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       }
       setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'resolving' } : r)));
       try {
-        const results = await investmentService.searchInstruments({ query, source: 'figi', limit: 5 });
-        const match = position.isin
+        const findMatch = (results: InvestmentInstrumentDto[]) => (position.isin
           ? results.find((instr) => instr.isin?.toUpperCase() === position.isin)
-          : results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0];
+          : results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0]);
+
+        // The CSV alone doesn't say whether this is a security or a crypto
+        // asset — try OpenFIGI (stocks/ETFs/bonds/funds) first, then fall
+        // back to CoinGecko so crypto rows aren't wrongly marked not-found.
+        const figiResults = await investmentService.searchInstruments({ query, source: 'figi', limit: 5 });
+        let match = findMatch(figiResults);
+        if (!match) {
+          const coingeckoResults = await investmentService.searchInstruments({ query, source: 'coingecko', limit: 5 });
+          match = findMatch(coingeckoResults);
+        }
         setRows((prev) => prev.map((r, idx) => (idx === i
           ? { ...r, instrument: match ?? null, status: match ? 'resolved' : 'not-found', selected: r.selected && Boolean(match) }
           : r)));
       } catch {
         setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
       }
+    }
+  };
+
+  const setManualKind = (index: number, kind: InvestmentKind) => {
+    setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, manualKind: kind } : r)));
+  };
+
+  const handleAddUnverified = async (index: number) => {
+    const row = rows[index];
+    if (row.creatingManual) return;
+    const label = row.position.ticker ?? row.position.name ?? row.position.isin ?? '?';
+    setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, creatingManual: true } : r)));
+    try {
+      const created = await investmentService.createManualInstrument({
+        kind: row.manualKind, symbol: label.slice(0, 20).toUpperCase(), name: row.position.name ?? label, currency: row.position.currency,
+      });
+      setRows((prev) => prev.map((r, idx) => (idx === index
+        ? { ...r, instrument: created, status: 'resolved', selected: true, creatingManual: false }
+        : r)));
+    } catch (error) {
+      console.error('InvestmentImportWizard: manual instrument creation failed', error);
+      setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, creatingManual: false } : r)));
     }
   };
 
@@ -304,6 +382,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
               <PositionInfo theme={theme}>
                 <strong>
                   {row.instrument ? `${row.instrument.symbol} — ${row.instrument.name}` : (row.position.ticker || row.position.name || row.position.isin)}
+                  {row.instrument?.provider === 'manual' && (
+                    <UnverifiedTag theme={theme}>{t.unverifiedTag || 'Unverified'}</UnverifiedTag>
+                  )}
                 </strong>
                 <span>
                   {formatNumber(row.position.quantity)} × {row.position.averagePrice != null ? `${formatNumber(row.position.averagePrice)} ${currencySymbol}` : '—'}
@@ -315,7 +396,23 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 {row.historyMonthCount > 0 && (
                   <span>{(t.historyMonths || '+{count} months of history').replace('{count}', String(row.historyMonthCount))}</span>
                 )}
-                {row.status === 'not-found' && <span>{t.notFound}</span>}
+                {row.status === 'not-found' && (
+                  <>
+                    <span>{t.notFound}</span>
+                    <ManualAddRow theme={theme}>
+                      <select value={row.manualKind} onChange={(e) => setManualKind(index, e.target.value as InvestmentKind)}>
+                        {MANUAL_KIND_OPTIONS.map((kind) => (
+                          <option key={kind} value={kind}>{t.kinds?.[kind] || kind}</option>
+                        ))}
+                      </select>
+                      <button type="button" disabled={row.creatingManual} onClick={() => handleAddUnverified(index)}>
+                        {row.creatingManual
+                          ? <FontAwesomeIcon icon={faSpinner} spin />
+                          : (t.addUnverified || 'Add as unverified')}
+                      </button>
+                    </ManualAddRow>
+                  </>
+                )}
               </PositionInfo>
               <StatusIcon theme={theme} className={row.status}>{statusIcon(row.status)}</StatusIcon>
             </PositionRow>

@@ -34,6 +34,17 @@ export const ASSET_KEY_TO_KIND: Readonly<Record<InvestmentAssetKey, InvestmentKi
   commodities: 'commodity',
 };
 
+/** Inverse of ASSET_KEY_TO_KIND for imports: an instrument's kind decides which balance card the holding lands on. */
+export const KIND_TO_ASSET_KEY: Readonly<Record<InvestmentKind, InvestmentAssetKey | null>> = {
+  stock: 'stocks',
+  etf: 'etf',
+  crypto: 'crypto',
+  bond: 'bonds',
+  fund: 'funds',
+  commodity: 'commodities',
+  other: null,
+};
+
 export const KIND_TO_SEARCH_SOURCE: Readonly<Record<InvestmentKind, InvestmentSearchSource | null>> = {
   stock: 'figi',
   etf: 'figi',

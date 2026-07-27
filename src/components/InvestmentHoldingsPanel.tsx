@@ -1,7 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPen, faTimes, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPen, faTimes, faPlus, faCheck, faFileImport } from '@fortawesome/free-solid-svg-icons';
+
+const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -271,6 +273,7 @@ export default function InvestmentHoldingsPanel({
   const [historicalEditingId, setHistoricalEditingId] = useState<number | null>(null);
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
+  const [showImportWizard, setShowImportWizard] = useState(false);
 
   // Pre-fill the obvious instrument (e.g. BTC for `bitcoin`) on a user's very
   // first holding for this asset key, so they aren't forced to search for it -
@@ -521,6 +524,13 @@ export default function InvestmentHoldingsPanel({
               {t.addTitle}
             </AddTriggerButton>
           ))}
+
+          {isCurrentMonth && (
+            <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
+              <FontAwesomeIcon icon={faFileImport} />
+              {translations.investments.importWizard?.button || 'Importa da CSV'}
+            </AddTriggerButton>
+          )}
         </ModalBody>
 
         {isCurrentMonth && showForm && (
@@ -530,6 +540,15 @@ export default function InvestmentHoldingsPanel({
               {editingId ? t.saveButton : t.addButton}
             </ModernActionButton>
           </ModalFooter>
+        )}
+
+        {showImportWizard && (
+          <Suspense fallback={null}>
+            <InvestmentImportWizard
+              onClose={() => setShowImportWizard(false)}
+              onImported={async () => { await onChanged(); }}
+            />
+          </Suspense>
         )}
       </ModalContainer>
     </Overlay>

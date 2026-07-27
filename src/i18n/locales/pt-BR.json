@@ -2669,7 +2669,27 @@
         },
         "attribution": {
             "coingecko": "Dados fornecidos pelo CoinGecko"
-        }
+        },
+        "importWizard": {
+                        "title": "Importar investimentos de CSV",
+                        "subtitle": "Envie a exportação de transações de uma corretora suportada — as posições serão calculadas automaticamente.",
+                        "dropHint": "Arraste o arquivo CSV aqui ou clique para selecioná-lo",
+                        "unrecognized": "Formato não reconhecido. Tente uma exportação da Trading 212, DEGIRO ou Directa.",
+                        "detected": "Detectado: {platform}",
+                        "positions": "posições encontradas",
+                        "skippedNote": "linhas ignoradas: dividendos/movimentos que não são compra-venda",
+                        "notFound": "Instrumento não encontrado no catálogo — será excluído da importação",
+                        "done": "{count} holdings importados com sucesso",
+                        "importSelected": "Importar {count} selecionados",
+                        "importing": "Importando...",
+                        "button": "Importar de CSV",
+                        "platforms": {
+                                    "trading212": "Trading 212",
+                                    "degiro": "DEGIRO",
+                                    "directa": "Directa",
+                                    "generic": "formato genérico"
+                        }
+            }
     },
     "liquidityAccounts": {
         "title": "Contas detalhadas",

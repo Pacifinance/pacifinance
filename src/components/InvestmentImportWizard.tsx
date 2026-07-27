@@ -1,0 +1,289 @@
+import React, { useContext, useState } from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faFileCsv, faSpinner, faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { ThemeContext } from '../contexts/ThemeContext';
+import { LanguageContext } from '../contexts/LanguageContext';
+import { CurrencyContext } from '../contexts/CurrencyContext';
+import { useDemoServices } from '../hooks/useDemoServices';
+import {
+  Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
+} from './multiInsert/SharedStyles';
+import { ModernActionButton } from '../styles/MyStyled';
+import { parseInvestmentCsv } from '../utils/investmentImport/parsers';
+import { dedupeTransactions, aggregatePositions, AggregatedPosition } from '../utils/investmentImport/aggregate';
+import { formatInstrumentDetails } from '../utils/instrumentDisplay';
+import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
+import type { InvestmentInstrumentDto } from '../types/api';
+
+/**
+ * CSV import wizard for investment holdings (Trading 212, DEGIRO, Directa,
+ * generic Portfolio Performance/Ghostfolio format — see
+ * docs/INVESTMENT_IMPORT_RESEARCH.md). The file is parsed entirely in the
+ * browser: only the resolved, user-confirmed positions reach the API, exactly
+ * like manual entry.
+ */
+
+interface ImportRowState {
+  position: AggregatedPosition;
+  instrument: InvestmentInstrumentDto | null;
+  status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'saved' | 'error';
+  selected: boolean;
+}
+
+interface InvestmentImportWizardProps {
+  onClose: () => void;
+  onImported: () => Promise<void> | void;
+}
+
+const DropZone = styled.label`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.6rem 1rem;
+  border: 2px dashed ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : '#cbd5e1')};
+  border-radius: 12px;
+  cursor: pointer;
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.85rem;
+  text-align: center;
+  opacity: 0.85;
+
+  &:hover { border-color: ${(p) => p.theme.buttonBackgroundColor}; opacity: 1; }
+  input { display: none; }
+  svg { font-size: 1.5rem; opacity: 0.6; }
+`;
+
+const SummaryLine = styled.p`
+  margin: 0;
+  font-size: 0.8rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.7;
+`;
+
+const ErrorLine = styled.p`
+  margin: 0;
+  font-size: 0.8rem;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+`;
+
+const PositionRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 10px;
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)')};
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')};
+
+  input[type='checkbox'] {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    accent-color: ${(p) => p.theme.buttonBackgroundColor};
+    cursor: pointer;
+  }
+`;
+
+const PositionInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+  color: ${(p) => p.theme.textColor};
+
+  strong { font-size: 0.84rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  span { font-size: 0.72rem; opacity: 0.6; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+`;
+
+const StatusIcon = styled.span`
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  &.resolved, &.saved { color: #10b981; }
+  &.not-found, &.error { color: #f59e0b; }
+  &.resolving { color: ${(p) => p.theme.textColor}; opacity: 0.5; }
+`;
+
+export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
+  const { theme } = useContext(ThemeContext);
+  const { translations } = useContext(LanguageContext);
+  const { formatNumber, toEUR, currencySymbol } = useContext(CurrencyContext);
+  const { investmentService } = useDemoServices();
+  const t = translations.investments.importWizard;
+
+  const [rows, setRows] = useState<ImportRowState[]>([]);
+  const [platform, setPlatform] = useState<string | null>(null);
+  const [skippedRows, setSkippedRows] = useState(0);
+  const [parseError, setParseError] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importDone, setImportDone] = useState(false);
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return;
+    setParseError(false);
+    setImportDone(false);
+    const text = await file.text();
+    const parsed = parseInvestmentCsv(text);
+    if (!parsed || parsed.transactions.length === 0) {
+      setParseError(true);
+      setRows([]);
+      setPlatform(null);
+      return;
+    }
+    // Merge with transactions from already-loaded files (multi-file upload for capped exports)
+    const positions = aggregatePositions(dedupeTransactions(parsed.transactions));
+    setPlatform(parsed.platform);
+    setSkippedRows(parsed.skippedRows);
+    const initialRows: ImportRowState[] = positions.map((position) => ({
+      position, instrument: null, status: 'pending', selected: true,
+    }));
+    setRows(initialRows);
+    void resolveInstruments(initialRows);
+  };
+
+  const resolveInstruments = async (toResolve: ImportRowState[]) => {
+    for (let i = 0; i < toResolve.length; i++) {
+      const { position } = toResolve[i];
+      const query = position.isin ?? position.ticker ?? position.name;
+      if (!query) {
+        setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'not-found' } : r)));
+        continue;
+      }
+      setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'resolving' } : r)));
+      try {
+        const results = await investmentService.searchInstruments({ query, source: 'figi', limit: 5 });
+        const match = position.isin
+          ? results.find((instr) => instr.isin?.toUpperCase() === position.isin)
+          : results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0];
+        setRows((prev) => prev.map((r, idx) => (idx === i
+          ? { ...r, instrument: match ?? null, status: match ? 'resolved' : 'not-found', selected: r.selected && Boolean(match) }
+          : r)));
+      } catch {
+        setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
+      }
+    }
+  };
+
+  const importSelected = async () => {
+    if (importing) return;
+    setImporting(true);
+    try {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row.selected || row.status !== 'resolved' || !row.instrument) continue;
+        const assetKey = KIND_TO_ASSET_KEY[row.instrument.kind];
+        if (!assetKey) continue;
+        try {
+          await investmentService.saveHolding({
+            instrument_id: row.instrument.id,
+            asset_key: assetKey,
+            quantity: row.position.quantity,
+            average_price: row.position.averagePrice != null ? toEUR(row.position.averagePrice) : null,
+            current_value: null,
+            invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
+            notes: '',
+          });
+          setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
+        } catch {
+          setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
+        }
+      }
+      setImportDone(true);
+      await onImported();
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const importableCount = rows.filter((r) => r.selected && r.status === 'resolved').length;
+  const savedCount = rows.filter((r) => r.status === 'saved').length;
+
+  const statusIcon = (status: ImportRowState['status']) => {
+    switch (status) {
+      case 'resolving': return <FontAwesomeIcon icon={faSpinner} spin />;
+      case 'resolved': case 'saved': return <FontAwesomeIcon icon={faCircleCheck} />;
+      case 'not-found': case 'error': return <FontAwesomeIcon icon={faTriangleExclamation} />;
+      default: return null;
+    }
+  };
+
+  return (
+    <Overlay theme={theme} onClick={onClose}>
+      <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+        <ModalHeader theme={theme}>
+          <ModalTitle theme={theme}>
+            <h2>{t.title}</h2>
+            <p>{t.subtitle}</p>
+          </ModalTitle>
+          <CloseButton theme={theme} onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
+          </CloseButton>
+        </ModalHeader>
+
+        <ModalBody theme={theme}>
+          <DropZone theme={theme}>
+            <FontAwesomeIcon icon={faFileCsv} />
+            {t.dropHint}
+            <input type="file" accept=".csv,text/csv" onChange={(e) => handleFile(e.target.files?.[0])} />
+          </DropZone>
+
+          {parseError && (
+            <ErrorLine>
+              <FontAwesomeIcon icon={faTriangleExclamation} />
+              {t.unrecognized}
+            </ErrorLine>
+          )}
+
+          {platform && (
+            <SummaryLine theme={theme}>
+              {t.detected.replace('{platform}', t.platforms[platform] || platform)}
+              {' — '}{rows.length} {t.positions}
+              {skippedRows > 0 && ` (${skippedRows} ${t.skippedNote})`}
+            </SummaryLine>
+          )}
+
+          {rows.map((row, index) => (
+            <PositionRow key={row.position.key} theme={theme}>
+              <input
+                type="checkbox"
+                checked={row.selected}
+                disabled={row.status !== 'resolved' || importing || importDone}
+                onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, selected: e.target.checked } : r)))}
+              />
+              <PositionInfo theme={theme}>
+                <strong>
+                  {row.instrument ? `${row.instrument.symbol} — ${row.instrument.name}` : (row.position.ticker || row.position.name || row.position.isin)}
+                </strong>
+                <span>
+                  {formatNumber(row.position.quantity)} × {row.position.averagePrice != null ? `${formatNumber(row.position.averagePrice)} ${currencySymbol}` : '—'}
+                  {row.position.investedAmount != null && ` · ${formatNumber(row.position.investedAmount)} ${currencySymbol}`}
+                </span>
+                {row.instrument && formatInstrumentDetails(row.instrument) !== '' && (
+                  <span>{formatInstrumentDetails(row.instrument)}</span>
+                )}
+                {row.status === 'not-found' && <span>{t.notFound}</span>}
+              </PositionInfo>
+              <StatusIcon theme={theme} className={row.status}>{statusIcon(row.status)}</StatusIcon>
+            </PositionRow>
+          ))}
+
+          {importDone && (
+            <SummaryLine theme={theme}>{t.done.replace('{count}', String(savedCount))}</SummaryLine>
+          )}
+        </ModalBody>
+
+        {rows.length > 0 && !importDone && (
+          <ModalFooter theme={theme}>
+            <ModernActionButton theme={theme} onClick={importSelected} disabled={importableCount === 0 || importing}>
+              {importing
+                ? <><FontAwesomeIcon icon={faSpinner} spin style={{ marginRight: 6 }} />{t.importing}</>
+                : t.importSelected.replace('{count}', String(importableCount))}
+            </ModernActionButton>
+          </ModalFooter>
+        )}
+      </ModalContainer>
+    </Overlay>
+  );
+}

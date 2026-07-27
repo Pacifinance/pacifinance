@@ -9,7 +9,15 @@ import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE } from '../constants/investmen
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import type { InvestmentAssetKey, InvestmentInstrumentDto } from '../types/api';
 
-const SEARCH_DEBOUNCE_MS = 300;
+// Two-stage debounce: the local catalog (no rate limit, cheap) can be
+// queried almost immediately for a snappy feel, but the external provider
+// (OpenFIGI/CoinGecko, rate-limited) is only consulted after a longer pause.
+// Typing a 12-character ISIN one keystroke at a time otherwise fires a
+// provider search on every intermediate fragment ("US0", "US03", ...) —
+// each one a wasted call that can exhaust the shared rate-limit budget
+// before the complete, valid ISIN is ever actually searched.
+const LOCAL_DEBOUNCE_MS = 150;
+const PROVIDER_DEBOUNCE_MS = 700;
 const MIN_QUERY_LENGTH = 2;
 
 interface InstrumentSearchAutocompleteProps {
@@ -195,7 +203,8 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [creatingManual, setCreatingManual] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const localDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const providerDebounceRef = useRef<ReturnType<typeof setTimeout>>();
   const requestIdRef = useRef(0);
 
   const kind = ASSET_KEY_TO_KIND[assetKey];
@@ -203,7 +212,8 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
   const t = translations.investments.search;
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (localDebounceRef.current) clearTimeout(localDebounceRef.current);
+    if (providerDebounceRef.current) clearTimeout(providerDebounceRef.current);
 
     if (query.trim().length < MIN_QUERY_LENGTH || !kind || !source) {
       setResults([]);
@@ -212,11 +222,15 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
     }
 
     const requestId = ++requestIdRef.current;
+    const trimmedQuery = query.trim();
     setLoading(true);
-    debounceRef.current = setTimeout(async () => {
+
+    const runSearch = (withProvider: boolean) => async () => {
       let found: InvestmentInstrumentDto[] = [];
       try {
-        found = await investmentService.searchInstruments({ query: query.trim(), kind, source, limit: 15 });
+        found = await investmentService.searchInstruments({
+          query: trimmedQuery, kind, limit: 15, ...(withProvider ? { source } : {}),
+        });
       } catch (error) {
         console.error('InstrumentSearchAutocomplete: search request failed', error);
       } finally {
@@ -225,9 +239,18 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
           setLoading(false);
         }
       }
-    }, SEARCH_DEBOUNCE_MS);
+    };
 
-    return () => clearTimeout(debounceRef.current);
+    // Fast pass: local catalog only, no provider/rate-limit involved.
+    localDebounceRef.current = setTimeout(runSearch(false), LOCAL_DEBOUNCE_MS);
+    // Slow pass: only once typing has paused for real — this is the one that
+    // may call OpenFIGI/CoinGecko.
+    providerDebounceRef.current = setTimeout(runSearch(true), PROVIDER_DEBOUNCE_MS);
+
+    return () => {
+      clearTimeout(localDebounceRef.current);
+      clearTimeout(providerDebounceRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, kind, source]);
 

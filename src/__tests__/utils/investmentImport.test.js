@@ -104,6 +104,27 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     });
   });
 
+  it('detects and parses a real Trading 212 export using "Time (UTC)" instead of "Time"', () => {
+    // Actual current Trading 212 "account statement" export names this column
+    // "Time (UTC)" — the exact-match header check used to require a literal
+    // "Time" cell and silently rejected every real export as unrecognized.
+    const header = 'Action,Time (UTC),ISIN,Ticker,Name,Notes,ID,No. of shares,Price / share,Currency (Price / share),Exchange rate,Total,Currency (Total),Withholding tax,Currency (Withholding tax),Currency conversion fee,Currency (Currency conversion fee)';
+    const raw = [
+      header,
+      'Dividend (Dividend),2026-06-01 16:07:28+00:00,US92826C8394,V,"Visa",,,0.5911783800,0.569500,USD,0.85818500,0.29,"EUR",0.06,USD,,',
+      'Deposit,2026-06-25 09:15:08+00:00,,,,"Bank Transfer",019efe0f-cae1-7c4c-a65c-46772f7ef3c0,,,,,100.00,"EUR",,,,',
+      'Market buy,2026-06-29 13:30:26+00:00,US5949181045,MSFT,"Microsoft",,EOF53409493596,0.0644277800,377.6000000000,USD,1.14054991,21.36,"EUR",,,0.03,"EUR"',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('trading212');
+    expect(parsed.transactions).toHaveLength(1);
+    expect(parsed.skippedRows).toBe(2); // the dividend and the deposit
+    expect(parsed.transactions[0]).toMatchObject({
+      side: 'buy', isin: 'US5949181045', ticker: 'MSFT', date: '2026-06-29',
+      quantity: 0.06442778, price: 377.6, total: 21.36, currency: 'USD', externalId: 'EOF53409493596',
+    });
+  });
+
   it('detects and parses a Directa export, computing unit price from totals', () => {
     const raw = [
       'Data operazione,Data valuta,Tipo operazione,Ticker,Isin,Protocollo,Descrizione,Quantità,Importo euro,Importo Divisa,Divisa,Riferimento ordine',

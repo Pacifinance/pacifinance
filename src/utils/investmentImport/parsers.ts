@@ -56,8 +56,10 @@ export function detectPlatform(header: string[]): ImportPlatform | null {
   const lower = header.map((h) => h.toLowerCase());
   const has = (...names: string[]) => names.every((n) => lower.includes(n.toLowerCase()));
 
-  // Trading 212: "Action,Time,ISIN,Ticker,Name,No. of shares,Price / share,..."
-  if (has('action', 'time', 'isin') && (has('no. of shares') || has('ticker'))) return 'trading212';
+  // Trading 212: "Action,Time (UTC),ISIN,Ticker,Name,No. of shares,Price / share,..."
+  // (older/regional exports may use a plain "Time" column instead of "Time (UTC)")
+  const hasTime = lower.includes('time') || lower.includes('time (utc)');
+  if (has('action', 'isin') && hasTime && (has('no. of shares') || has('ticker'))) return 'trading212';
   // Directa: "Data operazione,...,Tipo operazione,Ticker,Isin,...,Quantità,Importo euro,...,Divisa,Riferimento ordine"
   if (has('data operazione', 'tipo operazione', 'isin')) return 'directa';
   // DEGIRO Transactions.csv (EN/IT variants share Product+ISIN+Exchange structure)
@@ -76,7 +78,7 @@ const T212_SELL_ACTIONS = ['market sell', 'limit sell', 'stop sell'];
 function parseTrading212(header: string[], rows: string[][]): ParsedImportFile {
   const col = {
     action: findColumn(header, 'Action'),
-    time: findColumn(header, 'Time'),
+    time: findColumn(header, 'Time (UTC)', 'Time'),
     isin: findColumn(header, 'ISIN'),
     ticker: findColumn(header, 'Ticker'),
     name: findColumn(header, 'Name'),

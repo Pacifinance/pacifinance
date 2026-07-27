@@ -217,7 +217,21 @@ async function findExistingInstrument(input: UpsertInstrumentInput) {
  */
 async function upsertInstrument(input: UpsertInstrumentInput) {
     const existing = await findExistingInstrument(input)
-    if (existing) return toInstrument(existing)
+    if (existing) {
+        // Backfill the ISIN on rows first discovered via free-text search (which
+        // carries no ISIN): without this, an instrument already in the catalog
+        // could never be found by ISIN locally, forcing a provider round-trip on
+        // every ISIN search for it.
+        if (input.isin && !existing.isin) {
+            const {data} = await supabase.from("investment_instruments")
+                .update({isin: input.isin})
+                .eq("id", existing.id)
+                .select(INSTRUMENT_SELECT)
+                .maybeSingle()
+            if (data) return toInstrument(data as unknown as InstrumentRow)
+        }
+        return toInstrument(existing)
+    }
 
     const payload = {
         kind: input.kind,
@@ -259,13 +273,23 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     const cleanQuery = query.replace(/[%*,]/g, "").trim()
     if (cleanQuery.length < 2) return []
 
-    const localResults = await searchLocalInstruments(cleanQuery, kind, limit)
+    // An ISIN identifies one exact security the user already owns: ignore the
+    // kind filter (an ETF's ISIN typed from the stocks panel must still be
+    // found, not silently hidden) and don't let unrelated fuzzy local matches
+    // (symbol/name ilike fragments) satisfy the "enough local results" early
+    // return below — only a real local ISIN hit counts.
+    const isinQuery = sourceHint === "figi" && openfigiProvider.isIsin(cleanQuery)
+    const effectiveKind = isinQuery ? undefined : kind
+
+    const localResults = await searchLocalInstruments(cleanQuery, effectiveKind, limit)
+    const localHasIsinMatch = localResults.some((instrument) => instrument.isin?.toUpperCase() === cleanQuery.toUpperCase())
     // 'internal' (commodities) never consults an external provider - the catalog is
     // fixed/curated (seed-commodity-instruments.sql), so local results are final.
-    if (!sourceHint || sourceHint === "internal" || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
+    if (!sourceHint || sourceHint === "internal") return localResults
+    if (isinQuery ? localHasIsinMatch : localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
 
     const candidates = sourceHint === "figi"
-        ? (openfigiProvider.isIsin(cleanQuery)
+        ? (isinQuery
             ? await openfigiProvider.searchOpenFigiByIsin(cleanQuery)
             : await openfigiProvider.searchOpenFigi(cleanQuery))
         : await coingeckoProvider.searchCoingecko(cleanQuery)
@@ -278,7 +302,7 @@ async function searchInstruments(query: string, kind?: InvestmentKind, limit = 2
     // already handles concurrent-insert races (23505 retry-read), so this is safe.
     await Promise.all(candidates.map((candidate) => upsertInstrument(candidate)))
 
-    return await searchLocalInstruments(cleanQuery, kind, limit)
+    return await searchLocalInstruments(cleanQuery, effectiveKind, limit)
 }
 
 /**

@@ -12,6 +12,7 @@ import {
 } from './multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
+import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import type { InvestmentAssetKey, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentInstrumentDto } from '../types/api';
 
 interface InvestmentHoldingsPanelProps {
@@ -398,6 +399,9 @@ export default function InvestmentHoldingsPanel({
                   <HoldingInfo theme={theme}>
                     <strong>{holding.instrument?.symbol ?? '—'}</strong>
                     <span>{holding.instrument?.name}</span>
+                    {formatInstrumentDetails(holding.instrument) !== '' && (
+                      <span>{formatInstrumentDetails(holding.instrument)}</span>
+                    )}
                     {isCurrentMonth ? (
                       <span>{formatAmount(holding.currentValue ?? holding.investedAmount ?? 0)}</span>
                     ) : historicalEntry ? (
@@ -456,7 +460,14 @@ export default function InvestmentHoldingsPanel({
               {form.instrument ? (
                 <>
                   <SelectedInstrument theme={theme}>
-                    <span>{form.instrument.symbol} — {form.instrument.name}</span>
+                    <span>
+                      {form.instrument.symbol} — {form.instrument.name}
+                      {formatInstrumentDetails(form.instrument) !== '' && (
+                        <em style={{ display: 'block', fontSize: '0.72rem', fontWeight: 400, opacity: 0.6, fontStyle: 'normal' }}>
+                          {formatInstrumentDetails(form.instrument)}
+                        </em>
+                      )}
+                    </span>
                     <button
                       type="button"
                       onClick={() => {

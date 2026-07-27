@@ -6,6 +6,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { useDemoServices } from '../hooks/useDemoServices';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE } from '../constants/investmentSchema';
+import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import type { InvestmentAssetKey, InvestmentInstrumentDto } from '../types/api';
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -121,6 +122,15 @@ const ResultName = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const ResultDetails = styled.div`
+  font-size: 0.66rem;
+  opacity: 0.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
 `;
 
 const VerifiedBadge = styled.span`
@@ -240,6 +250,9 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
               <ResultInfo>
                 <ResultSymbol>{instrument.symbol}</ResultSymbol>
                 <ResultName>{instrument.name}</ResultName>
+                {formatInstrumentDetails(instrument) !== '' && (
+                  <ResultDetails>{formatInstrumentDetails(instrument)}</ResultDetails>
+                )}
               </ResultInfo>
               {instrument.provider !== 'manual' && (
                 <VerifiedBadge title={t.provider[instrument.provider] || instrument.provider}>

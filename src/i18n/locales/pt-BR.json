@@ -826,6 +826,11 @@
             "successEdit": "Receita editada com sucesso",
             "editFailed": "Erro ao editar receita. Tente novamente mais tarde.",
             "titleListing": "As receitas do mês selecionado",
+            "visualization": {
+                "viewLabel": "Visualização de receitas",
+                "cards": "Cartões",
+                "table": "Tabela"
+            },
             "tableColumns": {
                 "category": "Categoria",
                 "value": "Valor",
@@ -894,7 +899,10 @@
                 "topCategory": "Categoria principal",
                 "averageExpense": "Despesa média",
                 "categories": "Categorias",
-                "empty": "Nenhuma saída para o período selecionado"
+                "empty": "Nenhuma saída para o período selecionado",
+                "cards": "Cartões",
+                "table": "Tabela",
+                "layoutLabel": "Layout da lista"
             },
             "multiInsert": {
                 "toggle": "Multi-inserção",
@@ -1015,7 +1023,9 @@
             "createAction": "Create",
             "errorEmptyLabel": "Enter a name for the category",
             "errorNoParent": "Select an official category",
-            "errorCreateFailed": "Error creating the category. Please try again."
+            "errorCreateFailed": "Error creating the category. Please try again.",
+            "expandCategory": "Expand subcategories",
+            "collapseCategory": "Collapse subcategories"
         }
     },
     "comparison": {

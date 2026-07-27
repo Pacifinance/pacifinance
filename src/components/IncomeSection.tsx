@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { translateTag } from '../data/tagTranslations';
@@ -17,6 +17,14 @@ import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 import DateFilterPopover from './DateFilterPopover';
 import CategoryPicker from './CategoryPicker';
 import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
+import { useListViewMode } from '../hooks/useListViewMode';
+import { STORAGE_KEYS } from '../constants/storageKeys';
+import {
+  ViewSwitch, ViewButton, TableScroll, CardViewWrap,
+  FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
+  CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow, CardEditGrid,
+  TotalCard, ActionBtn, InlineInput,
+} from './transactionList/TransactionListStyles';
 
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
@@ -235,17 +243,6 @@ const TableTitle = styled.h3`
 
 
 
-const TableScroll = styled.div`
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  scrollbar-width: thin;
-  scrollbar-color: ${(p) => p.theme.buttonBackgroundColor}88 transparent;
-
-  &::-webkit-scrollbar { height: 7px; }
-  &::-webkit-scrollbar-thumb { background: ${(p) => p.theme.buttonBackgroundColor}88; border-radius: 999px; }
-`;
-
 const MobileTableHint = styled.div`
   display: none;
   padding: 0.55rem 0.9rem;
@@ -257,60 +254,6 @@ const MobileTableHint = styled.div`
   opacity: 0.72;
 
   @media (max-width: 768px) { display: flex; justify-content: space-between; }
-`;
-
-const ActionBtn = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: none;
-  cursor: ${(p) => p.disabled ? 'not-allowed' : 'pointer'};
-  font-size: 0.75rem;
-  transition: all 0.15s ease;
-  opacity: ${(p) => p.disabled ? 0.4 : 1};
-
-  &.delete {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    &:hover:not(:disabled) {
-      background: rgba(239, 68, 68, 0.2);
-    }
-  }
-  &.edit {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-    &:hover:not(:disabled) {
-      background: rgba(59, 130, 246, 0.2);
-    }
-  }
-  &.cancel {
-    background: rgba(245, 158, 11, 0.1);
-    color: #d97706;
-    &:hover:not(:disabled) {
-      background: rgba(245, 158, 11, 0.2);
-    }
-  }
-`;
-
-const InlineInput = styled.input`
-  width: 100%;
-  min-width: 50px;
-  padding: 4px 6px;
-  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
-  border-radius: 6px;
-  font-size: 0.82rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
-  color: ${p => p.theme.textColor};
-  box-sizing: border-box;
-  outline: none;
-  font-family: inherit;
-  &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
-  }
 `;
 
 const TotalRow = styled.tr`
@@ -391,6 +334,12 @@ export default function IncomeSection({
   // Sorting state
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
+
+  // Cards vs. table layout for the transaction list — a persisted user choice
+  // (see useListViewMode), mirroring OutflowSection, so it can be picked
+  // freely regardless of device.
+  const [listLayout, setListLayout] = useListViewMode(STORAGE_KEYS.INCOME_LIST_VIEW_MODE);
+  const [showMobileFilters, setShowMobileFilters] = React.useState(false);
 
   // Inline editing state
   const [editingAdd, setEditingAdd] = React.useState(null);
@@ -612,7 +561,15 @@ export default function IncomeSection({
     );
   }
 
-  function renderIncomeItems(chosenIncomesToShow) {
+  const getDisplayCategory = (add) => (
+    add.userCategory?.label
+      ? `${translateTag(add.categoryTag?.label, language, 'income')} / ${add.userCategory.label}`
+      : translateTag(add.categoryTag?.label, language, 'income')
+  );
+
+  // Shared by both the table and card views so filtering/sorting never drifts
+  // between them.
+  function getFilteredSortedIncomes(chosenIncomesToShow) {
     let filtered = chosenIncomesToShow.filter((add) => {
       const addDate = new Date(add.date).toISOString().slice(0, 10);
       let dateMatch = true;
@@ -664,9 +621,22 @@ export default function IncomeSection({
       });
     }
 
+    return filtered;
+  }
+
+  const incomeFiltersActive = Boolean(
+    incomeCategoryFilter || incomeNoteFilter || incomeDateFilterStart || incomeDateFilterEnd
+  );
+  const incomeActiveFilterCount = [
+    incomeCategoryFilter,
+    incomeNoteFilter,
+    incomeDateFilterStart || incomeDateFilterEnd,
+  ].filter(Boolean).length;
+
+  function renderIncomeItems(chosenIncomesToShow) {
+    const filtered = getFilteredSortedIncomes(chosenIncomesToShow);
     const totals = getTotals(filtered, chosenIncomesToShow);
-    const filtersActive =
-      incomeCategoryFilter || incomeNoteFilter || incomeDateFilterStart || incomeDateFilterEnd;
+    const filtersActive = incomeFiltersActive;
     const rows = [
       ...filtered.map((add, index) => {
         let colorKey = undefined;
@@ -770,11 +740,7 @@ export default function IncomeSection({
         return (
           <tr key={index} style={{ background: rowGradient }}>
             <td>
-              {isHidden
-                ? '****'
-                : add.userCategory?.label
-                  ? `${translateTag(add.categoryTag?.label, language, 'income')} / ${add.userCategory.label}`
-                  : translateTag(add.categoryTag?.label, language, 'income')}
+              {isHidden ? '****' : getDisplayCategory(add)}
             </td>
             <td>
               {isHidden
@@ -839,6 +805,170 @@ export default function IncomeSection({
         </TotalRow>,
     );
     return rows;
+  }
+
+  function renderIncomeCards(chosenIncomesToShow) {
+    const filtered = getFilteredSortedIncomes(chosenIncomesToShow);
+    const totals = getTotals(filtered, chosenIncomesToShow);
+    const filtersActive = incomeFiltersActive;
+
+    return (
+      <>
+        {filtered.map((add, index) => {
+          let colorKey = undefined;
+          if (add.categoryTag && add.categoryTag.key) {
+            colorKey = add.categoryTag.key;
+          } else if (add.categoryTag && add.categoryTag.label) {
+            colorKey = add.categoryTag.label;
+          } else if (add.categoryTag && add.categoryTag.translations) {
+            const keys = Object.keys(add.categoryTag.translations);
+            if (keys.length > 0) colorKey = add.categoryTag.translations[keys[0]];
+          }
+          const rawColor = incomeCategoryColors[colorKey] || 'rgba(181, 222, 209, 0.35)';
+          const processedColor = isHidden
+            ? getGrayscaleColor(rawColor, index)
+            : getLighterSolidColor(rawColor);
+          const rowGradient = getGradientForCategory(processedColor);
+
+          if (isEditingRow(add)) {
+            return (
+              <TxCard key={index} theme={theme} $gradient="rgba(59, 130, 246, 0.08)" style={{ outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
+                <CardEditGrid>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={incomesTags}
+                    customCategories={customCategories}
+                    categoryType="income"
+                    categoryKey={editValues.categoryKey}
+                    userCategoryId={editValues.userCategoryId ?? null}
+                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                      setEditValues(prev => ({
+                        ...prev,
+                        categoryKey,
+                        categoryValue: userCategoryLabel || categoryValue,
+                        parentValue: categoryValue,
+                        userCategoryId,
+                        userCategoryLabel,
+                      }))
+                    }
+                    onCreateCategory={onCreateCategory}
+                    disabled={isSaving}
+                    placeholder={translations.insert.incomeSection.placeholderCategory}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <InlineInput
+                      type="text"
+                      theme={theme}
+                      value={editValues.amount}
+                      onChange={handleEditAmountChange}
+                    />
+                    <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+                  </div>
+                  <InlineInput
+                    type="text"
+                    theme={theme}
+                    value={editValues.note}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
+                    maxLength={64}
+                    placeholder={translations.insert.incomeSection.tableColumns?.note || 'Note'}
+                  />
+                  <InlineInput
+                    type="date"
+                    theme={theme}
+                    value={editValues.date}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
+                    max={currentDate}
+                  />
+                </CardEditGrid>
+                <CardActionsRow>
+                  <ActionBtn
+                    className="edit"
+                    onClick={handleSaveInline}
+                    disabled={isSaving}
+                    title={translations.insert.incomeSection.editButton}
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </ActionBtn>
+                  <ActionBtn
+                    className="cancel"
+                    onClick={handleCancelInline}
+                    disabled={isSaving}
+                    title={translations.insert.incomeSection.cancelEdit}
+                  >
+                    <FontAwesomeIcon icon={faRotateLeft} />
+                  </ActionBtn>
+                </CardActionsRow>
+              </TxCard>
+            );
+          }
+
+          return (
+            <TxCard key={index} theme={theme} $gradient={rowGradient}>
+              <CardTopRow>
+                <CardCategory theme={theme}>
+                  {isHidden ? '****' : getDisplayCategory(add)}
+                </CardCategory>
+                <CardAmount theme={theme}>
+                  {isHidden ? '****' : formatNumber(add.amount)} {currencySymbol}
+                </CardAmount>
+              </CardTopRow>
+              <CardMetaRow theme={theme} style={{ justifyContent: 'flex-end' }}>
+                <span>
+                  {isHidden
+                    ? '****'
+                    : (() => {
+                        const d = new Date(add.date);
+                        return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                      })()}
+                </span>
+              </CardMetaRow>
+              {!isHidden && add.notes && (
+                <CardNote theme={theme}>{add.notes}</CardNote>
+              )}
+              <CardActionsRow>
+                <ActionBtn
+                  className="edit"
+                  data-umami-event="editIncome"
+                  onClick={() => startEditing(add)}
+                  title={translations.insert.incomeSection.editingLabel}
+                >
+                  <FontAwesomeIcon icon={faPen} />
+                </ActionBtn>
+                <ActionBtn
+                  className="delete"
+                  data-umami-event="deleteIncome"
+                  onClick={() => onDeleteIncome(add.date, add.amount, add)}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </ActionBtn>
+              </CardActionsRow>
+            </TxCard>
+          );
+        })}
+        <TotalCard theme={theme} $filtered={Boolean(filtersActive)}>
+          <span>
+            {filtersActive
+              ? (translations.general.totalFiltered || 'Totale filtrato')
+              : (translations.general.totalPeriod || 'Totale periodo')}
+            {incomeDateRangeActive && (
+              <div style={{ fontSize: '0.68em', opacity: 0.65, fontWeight: 400 }}>
+                {translations.general.customRangeNote || 'intervallo personalizzato'}
+              </div>
+            )}
+          </span>
+          <span>
+            {isHidden
+              ? '****'
+              : formatNumber(filtersActive ? totals.totalFiltered : totals.totalAll)}{' '}{currencySymbol}
+            {filtersActive && !isHidden && totals.totalAll > 0 && (
+              <>
+                {' '}<PercentBadge>{((totals.totalFiltered / totals.totalAll) * 100).toFixed(1)}%</PercentBadge>
+              </>
+            )}
+          </span>
+        </TotalCard>
+      </>
+    );
   }
 
   /* ─── MUI Select shared sx ─── */
@@ -983,9 +1113,31 @@ export default function IncomeSection({
       {/* ── Transaction Table ── */}
       <TableSection theme={theme}>
         <TableHeader theme={theme}>
-          <TableTitle theme={theme}>
-            {translations.insert.incomeSection.titleListing}
-          </TableTitle>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <TableTitle theme={theme}>
+              {translations.insert.incomeSection.titleListing}
+            </TableTitle>
+            <ViewSwitch theme={theme} aria-label={translations.insert.incomeSection.visualization?.viewLabel || 'Visualizzazione'}>
+              <ViewButton
+                type="button"
+                theme={theme}
+                $active={listLayout === 'cards'}
+                onClick={() => setListLayout('cards')}
+              >
+                <FontAwesomeIcon icon={faThLarge} />
+                {translations.insert.incomeSection.visualization?.cards || 'Schede'}
+              </ViewButton>
+              <ViewButton
+                type="button"
+                theme={theme}
+                $active={listLayout === 'table'}
+                onClick={() => setListLayout('table')}
+              >
+                <FontAwesomeIcon icon={faTableCells} />
+                {translations.insert.incomeSection.visualization?.table || 'Tabella'}
+              </ViewButton>
+            </ViewSwitch>
+          </div>
           <ThemedSelect
             value={selectedIncomesMonth}
             onChange={handleIncomesMonthChange}
@@ -999,18 +1151,95 @@ export default function IncomeSection({
               ))}
           </ThemedSelect>
         </TableHeader>
-        <MobileTableHint theme={theme}>
-          <span>{language === 'it' ? 'Scorri per vedere tutte le colonne' : 'Scroll to see all columns'}</span>
-          <span aria-hidden="true">← →</span>
-        </MobileTableHint>
-        <TableScroll>
-          <StyledTable theme={theme} className="income-table">
-            <thead>{renderTableHeader()}</thead>
-            <tbody>
-              {renderIncomeItems(incomesSourceForList)}
-            </tbody>
-          </StyledTable>
-        </TableScroll>
+        {listLayout === 'table' ? (
+          <>
+            <MobileTableHint theme={theme}>
+              <span>{language === 'it' ? 'Scorri per vedere tutte le colonne' : 'Scroll to see all columns'}</span>
+              <span aria-hidden="true">← →</span>
+            </MobileTableHint>
+            <TableScroll>
+              <StyledTable theme={theme} className="income-table">
+                <thead>{renderTableHeader()}</thead>
+                <tbody>
+                  {renderIncomeItems(incomesSourceForList)}
+                </tbody>
+              </StyledTable>
+            </TableScroll>
+          </>
+        ) : (
+          <CardViewWrap>
+            <FilterToggleRow theme={theme} type="button" onClick={() => setShowMobileFilters((v) => !v)}>
+              <span>
+                {translations.general.filters || 'Filtri'}
+                {incomeActiveFilterCount > 0 && <FilterBadge theme={theme}>{incomeActiveFilterCount}</FilterBadge>}
+              </span>
+              <FontAwesomeIcon icon={showMobileFilters ? faSortUp : faSortDown} />
+            </FilterToggleRow>
+            <FilterPanel theme={theme} $open={showMobileFilters}>
+              <FilterRow>
+                <FilterLabel theme={theme}>{translations.insert.incomeSection.tableColumns.category}</FilterLabel>
+                <ThemedSelect
+                  value={incomeCategoryFilter}
+                  onChange={(e) => setIncomeCategoryFilter(e.target.value)}
+                  style={{ width: '100%' }}
+                >
+                  <option value="">{translations.general.all}</option>
+                  {incomesTags.map((item) => (
+                    <option key={item.index} value={translateTag(item.label, language, 'income')}>
+                      {translateTag(item.label, language, 'income')}
+                    </option>
+                  ))}
+                </ThemedSelect>
+              </FilterRow>
+              <FilterRow>
+                <FilterLabel theme={theme}>{translations.insert.incomeSection.tableColumns.note}</FilterLabel>
+                <input
+                  type="text"
+                  placeholder={translations.general.filterByNote}
+                  value={incomeNoteFilter}
+                  onChange={(e) => setIncomeNoteFilter(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </FilterRow>
+              <FilterRow>
+                <FilterLabel theme={theme}>{translations.general.date || 'Data'}</FilterLabel>
+                <FilterInlineRow>
+                  <input
+                    type="date"
+                    value={incomeDateFilterStart || ''}
+                    onChange={(e) => setIncomeDateFilterStart(e.target.value)}
+                    min={dateFilterMin}
+                    max={dateFilterMax}
+                  />
+                  <span style={{ fontSize: '0.75em', opacity: 0.7 }}>-</span>
+                  <input
+                    type="date"
+                    value={incomeDateFilterEnd || ''}
+                    onChange={(e) => setIncomeDateFilterEnd(e.target.value)}
+                    min={dateFilterMin}
+                    max={dateFilterMax}
+                  />
+                </FilterInlineRow>
+              </FilterRow>
+              {incomeActiveFilterCount > 0 && (
+                <ClearFiltersBtn
+                  type="button"
+                  onClick={() => {
+                    setIncomeCategoryFilter('');
+                    setIncomeNoteFilter('');
+                    setIncomeDateFilterStart('');
+                    setIncomeDateFilterEnd('');
+                  }}
+                >
+                  {translations.general.clearAllFilters}
+                </ClearFiltersBtn>
+              )}
+            </FilterPanel>
+            <CardList>
+              {renderIncomeCards(incomesSourceForList)}
+            </CardList>
+          </CardViewWrap>
+        )}
       </TableSection>
     </SectionWrapper>
   );

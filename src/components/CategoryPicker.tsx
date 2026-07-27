@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTag, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTag, faSpinner, faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { getMuiSelectMenuProps } from './ThemedSelect';
 import {
@@ -56,11 +56,38 @@ export default function CategoryPicker({
   const [dialogError, setDialogError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
+  // Parent categories are collapsed by default and expand on demand — with
+  // many sub-categories, showing them all flattened made the currently-open
+  // dropdown too long to scan. The parent of whatever is already selected
+  // stays expanded so the current choice is visible in context.
+  const [expandedParents, setExpandedParents] = useState(() => new Set());
+  const toggleParentExpanded = (index, e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setExpandedParents((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
+
   const sortedTags = sortTagsByLanguage(officialTags || [], language, categoryType);
   const expectedParentType = categoryType === 'expense' ? 0 : 1;
   const safeCustomCategories = (customCategories || []).filter((category) =>
     category.parentType === undefined || category.parentType === expectedParentType
   );
+
+  // Keep the parent of the currently-selected sub-category expanded, even if
+  // the selection changes externally (e.g. opening the picker for a different
+  // existing transaction) without remounting this component.
+  useEffect(() => {
+    if (userCategoryId == null) return;
+    const custom = safeCustomCategories.find((c) => c.id === userCategoryId);
+    if (!custom) return;
+    setExpandedParents((prev) => (prev.has(custom.parentIndex) ? prev : new Set(prev).add(custom.parentIndex)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userCategoryId]);
 
   // Composite select value so official tags and custom sub-categories never collide: "off:<index>" | "cus:<id>"
   const selectValue = userCategoryId != null
@@ -167,21 +194,37 @@ export default function CategoryPicker({
         {sortedTags.flatMap((tag) => {
           const label = translateTag(tag.label, language, categoryType);
           const children = safeCustomCategories.filter((c) => c.parentIndex === tag.index);
+          const isExpanded = expandedParents.has(tag.index);
           return [
-            <MenuItem key={`off-${tag.index}`} value={`off:${tag.index}`} sx={{ fontWeight: 600 }}>
+            <MenuItem key={`off-${tag.index}`} value={`off:${tag.index}`} sx={{ fontWeight: 600, display: 'flex', alignItems: 'center' }}>
               <span style={{
                 display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
                 background: getCategoryColor(label, language), marginRight: 8, flexShrink: 0,
               }} />
-              {label}
+              <span style={{ flex: 1 }}>{label}</span>
+              {children.length > 0 && (
+                <span
+                  role="button"
+                  aria-label={isExpanded ? t.collapseCategory : t.expandCategory}
+                  onClick={(e) => toggleParentExpanded(tag.index, e)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    marginLeft: 8, padding: '2px 6px', borderRadius: 6,
+                    fontSize: '0.72rem', fontWeight: 500, opacity: 0.6,
+                  }}
+                >
+                  {children.length}
+                  <FontAwesomeIcon icon={isExpanded ? faChevronDown : faChevronRight} style={{ fontSize: 10 }} />
+                </span>
+              )}
             </MenuItem>,
-            ...children.map((c) => (
+            ...(isExpanded ? children.map((c) => (
               <MenuItem key={`cus-${c.id}`} value={`cus:${c.id}`} sx={{ pl: 4, fontSize: '0.85rem', opacity: 0.85 }}>
                 <FontAwesomeIcon icon={faTag} style={{ fontSize: 10, marginRight: 8, opacity: 0.6 }} />
                 <span style={{ opacity: 0.7, marginRight: 6 }}>↳</span>
                 {c.label}
               </MenuItem>
-            )),
+            )) : []),
           ];
         })}
       </Select>

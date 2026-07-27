@@ -14,6 +14,8 @@ import {
   faLayerGroup,
   faList,
   faChartBar,
+  faTableCells,
+  faThLarge,
 } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -30,6 +32,14 @@ import ThemedSelect, { getMuiSelectMenuProps } from './ThemedSelect';
 import DateFilterPopover from './DateFilterPopover';
 import CategoryPicker from './CategoryPicker';
 import { renderBalanceSourceMenuItems } from './multiInsert/balanceSourceMenu';
+import { useListViewMode } from '../hooks/useListViewMode';
+import { STORAGE_KEYS } from '../constants/storageKeys';
+import {
+  ViewSwitch, ViewButton, TableScroll, CardViewWrap,
+  FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
+  CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow, CardEditGrid,
+  TotalCard, ActionBtn, InlineInput,
+} from './transactionList/TransactionListStyles';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
 
@@ -218,42 +228,6 @@ const HeaderActions = styled.div`
   @media (max-width: 640px) {
     width: 100%;
     justify-content: space-between;
-  }
-`;
-
-const ViewSwitch = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 3px;
-  border-radius: 10px;
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#f8fafc'};
-`;
-
-const ViewButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  border: 0;
-  border-radius: 8px;
-  padding: 0.45rem 0.65rem;
-  font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  color: ${p => p.$active ? '#fff' : p.theme.textColor};
-  background: ${p => p.$active ? p.theme.buttonBackgroundColor : 'transparent'};
-  opacity: ${p => p.$active ? 1 : 0.7};
-  transition: opacity 0.2s ease, background 0.2s ease, transform 0.2s ease;
-
-  &:hover {
-    opacity: 1;
-    transform: translateY(-1px);
-  }
-
-  svg {
-    font-size: 0.85rem;
   }
 `;
 
@@ -469,219 +443,6 @@ const EmptyChart = styled.div`
 
 
 
-const TableScroll = styled.div`
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  scrollbar-width: thin;
-  scrollbar-color: ${p => p.theme.buttonBackgroundColor}88 transparent;
-
-  &::-webkit-scrollbar { height: 7px; }
-  &::-webkit-scrollbar-thumb { background: ${p => p.theme.buttonBackgroundColor}88; border-radius: 999px; }
-
-  @media (max-width: 768px) { display: none; }
-`;
-
-/* ─── Mobile card list (replaces the horizontally-scrolling table below 768px) ─── */
-const MobileCardWrap = styled.div`
-  display: none;
-  @media (max-width: 768px) { display: block; }
-`;
-
-const FilterToggleRow = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0.7rem 1rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: ${p => p.theme.textColor};
-  cursor: pointer;
-  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
-`;
-
-const FilterBadge = styled.span`
-  background: ${p => p.theme.buttonBackgroundColor};
-  color: #fff;
-  border-radius: 999px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 1px 7px;
-  margin-left: 6px;
-`;
-
-const FilterPanel = styled.div`
-  display: ${p => p.$open ? 'flex' : 'none'};
-  flex-direction: column;
-  gap: 0.65rem;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc'};
-`;
-
-const FilterRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FilterLabel = styled.label`
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  opacity: 0.6;
-  color: ${p => p.theme.textColor};
-`;
-
-const FilterInlineRow = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  > input { flex: 1; min-width: 0; }
-`;
-
-const ClearFiltersBtn = styled.button`
-  align-self: flex-start;
-  border: none;
-  background: rgba(239,68,68,0.13);
-  color: #ef4444;
-  border-radius: 8px;
-  padding: 5px 10px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-`;
-
-const CardList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 0.75rem;
-`;
-
-const TxCard = styled.div`
-  border-radius: 12px;
-  padding: 0.75rem 0.85rem;
-  background: ${p => p.$gradient};
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
-`;
-
-const CardTopRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
-`;
-
-const CardCategory = styled.div`
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: ${p => p.theme.textColor};
-`;
-
-const CardAmount = styled.div`
-  font-weight: 800;
-  font-size: 1rem;
-  color: ${p => p.theme.textColor};
-  white-space: nowrap;
-`;
-
-const CardMetaRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.4rem;
-  font-size: 0.78rem;
-  color: ${p => p.theme.textColor};
-  opacity: 0.75;
-  gap: 0.5rem;
-`;
-
-const CardNote = styled.div`
-  font-size: 0.78rem;
-  color: ${p => p.theme.textColor};
-  opacity: 0.65;
-  margin-top: 0.3rem;
-  overflow-wrap: anywhere;
-`;
-
-const CardActionsRow = styled.div`
-  display: flex;
-  gap: 6px;
-  margin-top: 0.5rem;
-  justify-content: flex-end;
-`;
-
-const CardEditGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const TotalCard = styled.div`
-  border-radius: 12px;
-  padding: 0.75rem 0.85rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 700;
-  background: ${p => p.$filtered ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.2)'};
-  color: ${p => p.theme.mode === 'dark' ? '#6ee7b7' : '#047857'};
-`;
-
-const ActionBtn = styled.button`
-  border: none;
-  border-radius: 6px;
-  padding: 4px 7px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  &:hover:not(:disabled) { transform: scale(1.08); }
-  &.delete {
-    background: rgba(239,68,68,0.11);
-    color: #ef4444;
-  }
-  &.edit {
-    background: rgba(59,130,246,0.11);
-    color: #3b82f6;
-    &:hover:not(:disabled) { transform: scale(1.08); }
-  }
-  &.cancel {
-    background: rgba(245,158,11,0.11);
-    color: #d97706;
-    &:hover:not(:disabled) { transform: scale(1.08); }
-  }
-`;
-
-const InlineInput = styled.input`
-  width: 100%;
-  min-width: 50px;
-  padding: 4px 6px;
-  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
-  border-radius: 6px;
-  font-size: 0.82rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
-  color: ${p => p.theme.textColor};
-  box-sizing: border-box;
-  outline: none;
-  font-family: inherit;
-  &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
-  }
-`;
-
 const InlineSelect = styled.select`
   width: 100%;
   min-width: 80px;
@@ -820,6 +581,10 @@ export default function OutflowSection({
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
   const [tableView, setTableView] = React.useState('list');
+  // Cards vs. table layout for the transaction list — a persisted user choice
+  // (see useListViewMode) rather than a screen-width breakpoint, so it can be
+  // picked freely regardless of device.
+  const [listLayout, setListLayout] = useListViewMode(STORAGE_KEYS.OUTFLOW_LIST_VIEW_MODE);
   const [selectedChartCategory, setSelectedChartCategory] = React.useState(null);
   const [showMobileFilters, setShowMobileFilters] = React.useState(false);
 
@@ -1895,6 +1660,28 @@ export default function OutflowSection({
                 {translations.insert.outflowSection.visualization?.chart || 'Categorie'}
               </ViewButton>
             </ViewSwitch>
+            {tableView === 'list' && (
+              <ViewSwitch theme={theme} aria-label={translations.insert.outflowSection.visualization?.layoutLabel || 'Layout elenco'}>
+                <ViewButton
+                  type="button"
+                  theme={theme}
+                  $active={listLayout === 'cards'}
+                  onClick={() => setListLayout('cards')}
+                >
+                  <FontAwesomeIcon icon={faThLarge} />
+                  {translations.insert.outflowSection.visualization?.cards || 'Schede'}
+                </ViewButton>
+                <ViewButton
+                  type="button"
+                  theme={theme}
+                  $active={listLayout === 'table'}
+                  onClick={() => setListLayout('table')}
+                >
+                  <FontAwesomeIcon icon={faTableCells} />
+                  {translations.insert.outflowSection.visualization?.table || 'Tabella'}
+                </ViewButton>
+              </ViewSwitch>
+            )}
           </HeaderMain>
           <HeaderActions>
             <ThemedSelect
@@ -1955,17 +1742,17 @@ export default function OutflowSection({
         </MonthlySummary>
         {tableView === 'chart' ? (
           renderCategoryChart()
+        ) : listLayout === 'table' ? (
+          <TableScroll>
+            <StyledTable theme={theme} className="outflow-table">
+              <thead>{renderTableHeader()}</thead>
+              <tbody>
+                {renderOutflowItems(outflowsSourceForList)}
+              </tbody>
+            </StyledTable>
+          </TableScroll>
         ) : (
-          <>
-            <TableScroll>
-              <StyledTable theme={theme} className="outflow-table">
-                <thead>{renderTableHeader()}</thead>
-                <tbody>
-                  {renderOutflowItems(outflowsSourceForList)}
-                </tbody>
-              </StyledTable>
-            </TableScroll>
-            <MobileCardWrap>
+            <CardViewWrap>
               <FilterToggleRow theme={theme} type="button" onClick={() => setShowMobileFilters((v) => !v)}>
                 <span>
                   {translations.general.filters || 'Filtri'}
@@ -2054,8 +1841,7 @@ export default function OutflowSection({
               <CardList>
                 {renderOutflowCards(outflowsSourceForList)}
               </CardList>
-            </MobileCardWrap>
-          </>
+            </CardViewWrap>
         )}
       </TableSection>
     </SectionWrapper>

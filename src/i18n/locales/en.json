@@ -828,6 +828,11 @@
             "successEdit": "Income edited successfully",
             "editFailed": "Error editing income. Please try again later.",
             "titleListing": "The income of the selected month",
+            "visualization": {
+                "viewLabel": "Income view",
+                "cards": "Cards",
+                "table": "Table"
+            },
             "tableColumns": {
                 "category": "Category",
                 "value": "Value",
@@ -896,7 +901,10 @@
                 "topCategory": "Top category",
                 "averageExpense": "Average expense",
                 "categories": "Categories",
-                "empty": "No outflows for the selected period"
+                "empty": "No outflows for the selected period",
+                "cards": "Cards",
+                "table": "Table",
+                "layoutLabel": "List layout"
             },
             "multiInsert": {
                 "toggle": "Multi-insert",
@@ -1017,7 +1025,9 @@
             "createAction": "Create",
             "errorEmptyLabel": "Enter a name for the category",
             "errorNoParent": "Select an official category",
-            "errorCreateFailed": "Error creating the category. Please try again."
+            "errorCreateFailed": "Error creating the category. Please try again.",
+            "expandCategory": "Expand subcategories",
+            "collapseCategory": "Collapse subcategories"
         }
     },
     "comparison": {

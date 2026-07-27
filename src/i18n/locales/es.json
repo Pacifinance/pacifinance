@@ -828,6 +828,11 @@
             "successEdit": "Ingreso editado con éxito",
             "editFailed": "Error al editar el ingreso. Por favor, inténtalo de nuevo más tarde.",
             "titleListing": "Los ingresos del mes seleccionado",
+            "visualization": {
+                "viewLabel": "Vista de ingresos",
+                "cards": "Tarjetas",
+                "table": "Tabla"
+            },
             "tableColumns": {
                 "category": "Categoría",
                 "value": "Valor",
@@ -896,7 +901,10 @@
                 "topCategory": "Categoría principal",
                 "averageExpense": "Gasto medio",
                 "categories": "Categorías",
-                "empty": "No hay gastos para el período seleccionado"
+                "empty": "No hay gastos para el período seleccionado",
+                "cards": "Tarjetas",
+                "table": "Tabla",
+                "layoutLabel": "Diseño de lista"
             },
             "multiInsert": {
                 "toggle": "Multi-inserción",
@@ -1017,7 +1025,9 @@
             "createAction": "Create",
             "errorEmptyLabel": "Enter a name for the category",
             "errorNoParent": "Select an official category",
-            "errorCreateFailed": "Error creating the category. Please try again."
+            "errorCreateFailed": "Error creating the category. Please try again.",
+            "expandCategory": "Expand subcategories",
+            "collapseCategory": "Collapse subcategories"
         }
     },
     "comparison": {

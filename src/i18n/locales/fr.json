@@ -826,6 +826,11 @@
             "successEdit": "Revenu modifié avec succès",
             "editFailed": "Erreur lors de la modification du revenu. Réessaie plus tard.",
             "titleListing": "Les revenus du mois sélectionné",
+            "visualization": {
+                "viewLabel": "Vue des revenus",
+                "cards": "Cartes",
+                "table": "Tableau"
+            },
             "tableColumns": {
                 "category": "Catégorie",
                 "value": "Valeur",
@@ -894,7 +899,10 @@
                 "topCategory": "Catégorie principale",
                 "averageExpense": "Dépense moyenne",
                 "categories": "Catégories",
-                "empty": "Aucune sortie pour la période sélectionnée"
+                "empty": "Aucune sortie pour la période sélectionnée",
+                "cards": "Cartes",
+                "table": "Tableau",
+                "layoutLabel": "Disposition de la liste"
             },
             "multiInsert": {
                 "toggle": "Multi-insertion",
@@ -1015,7 +1023,9 @@
             "createAction": "Create",
             "errorEmptyLabel": "Enter a name for the category",
             "errorNoParent": "Select an official category",
-            "errorCreateFailed": "Error creating the category. Please try again."
+            "errorCreateFailed": "Error creating the category. Please try again.",
+            "expandCategory": "Expand subcategories",
+            "collapseCategory": "Collapse subcategories"
         }
     },
     "comparison": {

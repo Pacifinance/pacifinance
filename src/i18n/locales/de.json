@@ -826,6 +826,11 @@
             "successEdit": "Einnahme erfolgreich bearbeitet",
             "editFailed": "Fehler beim Bearbeiten der Einnahme. Bitte versuche es später erneut.",
             "titleListing": "Die Einnahmen des ausgewählten Monats",
+            "visualization": {
+                "viewLabel": "Einnahmenansicht",
+                "cards": "Karten",
+                "table": "Tabelle"
+            },
             "tableColumns": {
                 "category": "Kategorie",
                 "value": "Betrag",
@@ -894,7 +899,10 @@
                 "topCategory": "Hauptkategorie",
                 "averageExpense": "Durchschnittsausgabe",
                 "categories": "Kategorien",
-                "empty": "Keine Ausgaben fuer den ausgewaehlten Zeitraum"
+                "empty": "Keine Ausgaben fuer den ausgewaehlten Zeitraum",
+                "cards": "Karten",
+                "table": "Tabelle",
+                "layoutLabel": "Listenlayout"
             },
             "multiInsert": {
                 "toggle": "Mehrfacheingabe",
@@ -1015,7 +1023,9 @@
             "createAction": "Create",
             "errorEmptyLabel": "Enter a name for the category",
             "errorNoParent": "Select an official category",
-            "errorCreateFailed": "Error creating the category. Please try again."
+            "errorCreateFailed": "Error creating the category. Please try again.",
+            "expandCategory": "Expand subcategories",
+            "collapseCategory": "Collapse subcategories"
         }
     },
     "comparison": {

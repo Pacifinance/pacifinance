@@ -828,6 +828,11 @@
             "successEdit": "Entrata modificata con successo",
             "editFailed": "Errore nella modifica dell'entrata. Riprova più tardi.",
             "titleListing": "Le entrate del mese selezionato",
+            "visualization": {
+                "viewLabel": "Visualizzazione entrate",
+                "cards": "Schede",
+                "table": "Tabella"
+            },
             "tableColumns": {
                 "category": "Categoria",
                 "value": "Valore",
@@ -896,7 +901,10 @@
                 "topCategory": "Categoria principale",
                 "averageExpense": "Spesa media",
                 "categories": "Categorie",
-                "empty": "Nessuna uscita per il periodo selezionato"
+                "empty": "Nessuna uscita per il periodo selezionato",
+                "cards": "Schede",
+                "table": "Tabella",
+                "layoutLabel": "Layout elenco"
             },
             "multiInsert": {
                 "toggle": "Multi-inserimento",
@@ -1017,7 +1025,9 @@
             "createAction": "Crea",
             "errorEmptyLabel": "Inserisci un nome per la categoria",
             "errorNoParent": "Seleziona una categoria ufficiale",
-            "errorCreateFailed": "Errore durante la creazione della categoria. Riprova."
+            "errorCreateFailed": "Errore durante la creazione della categoria. Riprova.",
+            "expandCategory": "Espandi sottocategorie",
+            "collapseCategory": "Comprimi sottocategorie"
         }
     },
     "comparison": {

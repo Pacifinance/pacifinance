@@ -1006,6 +1006,16 @@
             "missingSnapshotWarning": "Nessun bilancio trovato per {month}/{year}. Aggiornamento bilancio saltato.",
             "summaryBalancesUpdated": "{count} bilanci storici aggiornati"
         },
+        "duplicateWarning": {
+            "titleOutflow": "Possibile uscita duplicata",
+            "titleIncome": "Possibile entrata duplicata",
+            "badge": "Già presente nello storico",
+            "subtitle": "Hai già una transazione molto simile registrata vicino a questa data. Vuoi salvare comunque questa voce?",
+            "existingLabel": "Transazione esistente",
+            "newLabel": "Nuova transazione",
+            "confirm": "Salva comunque",
+            "cancel": "Annulla"
+        },
         "deleteTransaction": {
             "titleOutflow": "Sei sicuro di voler eliminare questa uscita?",
             "titleIncome": "Sei sicuro di voler eliminare questa entrata?",

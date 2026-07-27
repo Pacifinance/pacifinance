@@ -38,8 +38,10 @@ import {
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 import { addCurrency, roundCurrency } from '../utils/money';
+import { findLikelyDuplicates } from '../utils/duplicateDetection';
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
+const DuplicateWarningModal = lazy(() => import('../components/DuplicateWarningModal'));
 
 // Local date, NOT toISOString().split (UTC-midnight bug, see CLAUDE.md) — must
 // also be recomputed on each call, not memoized at module scope, so a
@@ -422,6 +424,58 @@ export default function InsertValue({
     selectedSource: '',
     onResolve: null, // (source|null) => void
   });
+
+  // Duplicate pre-check modal (single manual insert vs. existing history —
+  // the same findLikelyDuplicates heuristic used to flag CSV import rows,
+  // so manual entry and file import are checked against one consistent rule)
+  const [duplicateModal, setDuplicateModal] = useState({
+    isOpen: false,
+    isOutflow: true,
+    existingDate: '',
+    existingAmount: 0,
+    existingNote: '',
+    newDate: '',
+    newAmount: 0,
+    newNote: '',
+    onResolve: null, // (proceed: boolean) => void
+  });
+
+  /**
+   * Checks a single about-to-be-submitted outflow/income against the user's
+   * existing history (manual entries and prior imports alike — both live in
+   * the same `allOutflows`/`allIncomes` store) for a likely duplicate. If a
+   * match is found, opens a confirmation modal and resolves to the user's
+   * choice; otherwise resolves to true immediately (no modal shown).
+   *
+   * Note: history here only covers the rolling ~13-month fetch window
+   * (see getAllOutflows/getAllIncomes), so a duplicate against something
+   * entered further back would not be caught.
+   */
+  const checkForDuplicateBeforeSubmit = (isOutflowCheck, date, amount, notes) => {
+    const candidate = { date, amount, notes };
+    const history = (isOutflowCheck ? getAllOutflows(userData) : getAllIncomes(userData))
+      .flat()
+      .filter(Boolean)
+      .map((e) => ({ date: e.date ? String(e.date).slice(0, 10) : null, amount: e.amount, notes: e.notes }));
+    const [match] = findLikelyDuplicates([candidate], history);
+    if (!match) return Promise.resolve(true);
+    return new Promise((resolve) => {
+      setDuplicateModal({
+        isOpen: true,
+        isOutflow: isOutflowCheck,
+        existingDate: match.matchedAgainst.date,
+        existingAmount: match.matchedAgainst.amount,
+        existingNote: match.matchedAgainst.notes || '',
+        newDate: date,
+        newAmount: amount,
+        newNote: notes || '',
+        onResolve: (proceed) => {
+          setDuplicateModal((m) => ({ ...m, isOpen: false, onResolve: null }));
+          resolve(proceed);
+        },
+      });
+    });
+  };
 
   // Success states
   const [updateBalanceSuccess, setUpdateBalanceSuccess] = useState(false);
@@ -1249,7 +1303,7 @@ export default function InsertValue({
     setIsConfirmBalanceOpen(true);
   };
 
-  const handleAddIncome = () => {
+  const handleAddIncome = async () => {
     if (categoryIncome.value === "") {
       showError(translations.insert.errors.selectCategory);
       return;
@@ -1257,11 +1311,14 @@ export default function InsertValue({
       showError(translations.insert.errors.insertValidValue);
       return;
     }
-    // Directly submit without confirmation modal
+    const eurAmount = toEUR(parseFormattedAmount(income));
+    const proceed = await checkForDuplicateBeforeSubmit(false, incomeDate, eurAmount, noteIncomeAreaValue);
+    if (!proceed) return;
+    // Directly submit without further confirmation modal
     handleConfirmInEx(false);
   };
 
-  const handleAddOutflow = () => {
+  const handleAddOutflow = async () => {
     if (categoryOutflow.value === "") {
       showError(translations.insert.errors.selectCategory);
       return;
@@ -1272,8 +1329,11 @@ export default function InsertValue({
       showError(translations.insert.errors.insertValidValue);
       return;
     }
-    
-    // Directly submit without confirmation modal
+
+    const eurAmount = toEUR(parseFormattedAmount(outflow));
+    const proceed = await checkForDuplicateBeforeSubmit(true, outflowDate, eurAmount, noteOutflowAreaValue);
+    if (!proceed) return;
+    // Directly submit without further confirmation modal
     handleConfirmInEx(true);
   };
 
@@ -2467,6 +2527,24 @@ export default function InsertValue({
                 editModal.onResolve?.({ cancelled: false, source: resolvedSource ?? null })
               }
               onCancel={() => editModal.onResolve?.({ cancelled: true })}
+            />
+          </Suspense>
+        )}
+
+        {duplicateModal.isOpen && (
+          <Suspense fallback={null}>
+            <DuplicateWarningModal
+              isOpen={duplicateModal.isOpen}
+              theme={theme}
+              isOutflow={duplicateModal.isOutflow}
+              existingDate={duplicateModal.existingDate}
+              existingAmount={duplicateModal.existingAmount}
+              existingNote={duplicateModal.existingNote}
+              newDate={duplicateModal.newDate}
+              newAmount={duplicateModal.newAmount}
+              newNote={duplicateModal.newNote}
+              onConfirm={() => duplicateModal.onResolve?.(true)}
+              onCancel={() => duplicateModal.onResolve?.(false)}
             />
           </Suspense>
         )}

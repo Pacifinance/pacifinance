@@ -1006,6 +1006,16 @@
             "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped.",
             "summaryBalancesUpdated": "{count} historical balances updated"
         },
+        "duplicateWarning": {
+            "titleOutflow": "Possible duplicate outflow",
+            "titleIncome": "Possible duplicate income",
+            "badge": "Already in your history",
+            "subtitle": "You already have a very similar transaction recorded close to this date. Do you want to save this one anyway?",
+            "existingLabel": "Existing transaction",
+            "newLabel": "New transaction",
+            "confirm": "Save anyway",
+            "cancel": "Cancel"
+        },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",
             "titleIncome": "Are you sure you want to delete this income?",

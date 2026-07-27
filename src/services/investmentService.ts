@@ -22,12 +22,14 @@ import type {
   InvestmentHoldingsGetResponse,
   InvestmentInstrumentDto,
   InvestmentInstrumentManualCreateRequest,
+  InvestmentInstrumentSearchByIsinsResponse,
   InvestmentInstrumentSearchRequest,
   InvestmentInstrumentSearchResponse,
 } from '../types/api';
 
 export interface InvestmentService {
   searchInstruments(params: InvestmentInstrumentSearchRequest): Promise<InvestmentInstrumentSearchResponse>;
+  searchInstrumentsByIsins(isins: string[]): Promise<InvestmentInstrumentSearchByIsinsResponse>;
   createManualInstrument(data: InvestmentInstrumentManualCreateRequest): Promise<InvestmentInstrumentDto>;
   getHoldings(): Promise<InvestmentHoldingsGetResponse>;
   saveHolding(data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto>;
@@ -40,6 +42,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   async searchInstruments(params) {
     const res = await apiClient.post<InvestmentInstrumentSearchResponse>('/api/investments/instruments/search', params);
     return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async searchInstrumentsByIsins(isins) {
+    const res = await apiClient.post<InvestmentInstrumentSearchByIsinsResponse>('/api/investments/instruments/search-by-isins', { isins });
+    return res.data && typeof res.data === 'object' ? res.data : {};
   },
 
   async createManualInstrument(data) {

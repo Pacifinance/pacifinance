@@ -35,6 +35,26 @@ describe('investmentService', () => {
     expect(result).toEqual([]);
   });
 
+  it('batch-resolves multiple ISINs in one call', async () => {
+    const matches = { US0378331005: { id: 1, kind: 'stock', symbol: 'AAPL' }, US5949181045: null };
+    mockClient.post.mockResolvedValue({ data: matches });
+
+    const result = await service.searchInstrumentsByIsins(['US0378331005', 'US5949181045']);
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/instruments/search-by-isins', {
+      isins: ['US0378331005', 'US5949181045'],
+    });
+    expect(result).toEqual(matches);
+  });
+
+  it('returns an empty object when the batch ISIN response is malformed', async () => {
+    mockClient.post.mockResolvedValue({ data: null });
+
+    const result = await service.searchInstrumentsByIsins(['US0378331005']);
+
+    expect(result).toEqual({});
+  });
+
   it('creates a private, unverified instrument when search finds no match', async () => {
     const created = { id: -1, kind: 'stock', symbol: 'MYSTOCK', name: 'My Stock', provider: 'manual', verified: false };
     mockClient.post.mockResolvedValue({ data: created });

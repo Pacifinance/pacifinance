@@ -504,6 +504,14 @@ export interface InvestmentInstrumentSearchRequest {
 }
 
 export type InvestmentInstrumentSearchResponse = InvestmentInstrumentDto[];
+
+/** Batch ISIN resolution (CSV import) — one round-trip for every position instead of one per ISIN. */
+export interface InvestmentInstrumentSearchByIsinsRequest {
+  isins: string[];
+}
+
+export type InvestmentInstrumentSearchByIsinsResponse = Record<string, InvestmentInstrumentDto | null>;
+
 export type InvestmentHoldingsGetResponse = InvestmentHoldingDto[];
 
 /** Creates a private, unverified instrument when search finds no verified match — scoped to the creating user only, never shared with other users' searches. */

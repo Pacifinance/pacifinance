@@ -399,6 +399,38 @@ describe("private backend routes", () => {
         expect(mockDb.investments.searchInstruments).toHaveBeenCalledWith("apple", "user-uuid", "stock", 30, undefined)
     })
 
+    it("batch-resolves multiple ISINs in one call", async () => {
+        mockDb.investments.searchInstrumentsByIsins.mockResolvedValue({
+            US0378331005: {id: 1, kind: "stock", symbol: "AAPL", verified: true},
+            US5949181045: null
+        })
+
+        const response = await request(app, "/api/investments/instruments/search-by-isins", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {isins: ["US0378331005", "US5949181045"]}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({
+            US0378331005: {id: 1, kind: "stock", symbol: "AAPL", verified: true},
+            US5949181045: null
+        })
+        expect(mockDb.investments.searchInstrumentsByIsins).toHaveBeenCalledWith(["US0378331005", "US5949181045"], "user-uuid")
+    })
+
+    it("returns an empty map for a batch ISIN search with no isins, without querying the DB", async () => {
+        const response = await request(app, "/api/investments/instruments/search-by-isins", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {isins: []}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({})
+        expect(mockDb.investments.searchInstrumentsByIsins).not.toHaveBeenCalled()
+    })
+
     it("creates a private, unverified instrument when search finds no match", async () => {
         const response = await request(app, "/api/investments/instruments/manual", {
             method: "POST",

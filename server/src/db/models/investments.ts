@@ -318,6 +318,49 @@ async function searchInstruments(query: string, user_id: string, kind?: Investme
 }
 
 /**
+ * Batch-resolves multiple ISINs in as few round-trips as possible: one local
+ * lookup for all of them, then a single OpenFIGI /v3/mapping call for
+ * whatever wasn't already in the catalog. Used by the CSV import wizard,
+ * which otherwise has to resolve every position one ISIN at a time via
+ * searchInstruments and quickly exhausts OpenFIGI's shared per-minute rate
+ * limit on anything beyond a handful of holdings (see searchOpenFigiByIsins).
+ * @returns Map of (uppercased) ISIN -> matching instrument, or null when unresolved
+ */
+async function searchInstrumentsByIsins(isins: string[], user_id: string) {
+    const cleanIsins = Array.from(new Set(isins.map((v) => v.trim().toUpperCase()).filter(Boolean)))
+    const result: Record<string, ReturnType<typeof toInstrument> | null> = {}
+    for (const isin of cleanIsins) result[isin] = null
+    if (cleanIsins.length === 0) return result
+
+    const {data, error} = await supabase.from("investment_instruments")
+        .select(INSTRUMENT_SELECT)
+        .eq("active", true)
+        .in("isin", cleanIsins)
+        .or(`owner_user_id.is.null,owner_user_id.eq.${user_id}`)
+    if (error) console.error("investments.searchInstrumentsByIsins: failed to read local instruments", error)
+
+    for (const row of (!error && data ? (data as unknown as InstrumentRow[]) : [])) {
+        if (row.isin) result[row.isin] = toInstrument(row)
+    }
+
+    const missing = cleanIsins.filter((isin) => result[isin] === null)
+    if (missing.length === 0) return result
+
+    const candidatesByIsin = await openfigiProvider.searchOpenFigiByIsins(missing)
+    const toUpsert = missing
+        .map((isin) => candidatesByIsin[isin]?.[0])
+        .filter((candidate): candidate is UpsertInstrumentInput => Boolean(candidate))
+    if (toUpsert.length === 0) return result
+
+    // Parallel, same reasoning as searchInstruments above.
+    const upserted = await Promise.all(toUpsert.map((candidate) => upsertInstrument(candidate)))
+    for (const instrument of upserted) {
+        if (instrument?.isin) result[instrument.isin] = instrument
+    }
+    return result
+}
+
+/**
  * Creates a private, unverified instrument for a user whose search found no
  * verified match — never joins the shared catalog (owner_user_id scopes it to
  * this user only, see searchLocalInstruments) and must never be treated as
@@ -343,9 +386,26 @@ async function createManualInstrument(user_id: string, input: ManualInstrumentIn
     }
     const {data, error} = await supabase.from("investment_instruments")
         .insert(payload).select(INSTRUMENT_SELECT).single()
-    if (error) console.error("investments.createManualInstrument: failed to insert instrument", error)
-    if (error || !data) return null
-    return toInstrument(data as unknown as InstrumentRow)
+    if (!error && data) return toInstrument(data as unknown as InstrumentRow)
+
+    if (error?.code === "23505") {
+        // Unique violation on (kind, symbol, coalesce(exchange, '')): a verified
+        // catalog entry (or another private one) already occupies this exact
+        // combination — most commonly because the DB is still enforcing the
+        // OLD table-wide unique index instead of the scoped-to-owner_user_id
+        // partial one (see supabase/migrations/add-manual-investment-instruments.sql).
+        // Surfacing the existing row instead of a 500 is strictly better either
+        // way: the user only reached "add as unverified" because search didn't
+        // find a match, and one clearly already exists.
+        let request = supabase.from("investment_instruments")
+            .select(INSTRUMENT_SELECT).eq("kind", payload.kind).eq("symbol", payload.symbol)
+        request = payload.exchange ? request.eq("exchange", payload.exchange) : request.is("exchange", null)
+        const {data: conflicting} = await request.maybeSingle()
+        if (conflicting) return toInstrument(conflicting as unknown as InstrumentRow)
+    }
+
+    console.error("investments.createManualInstrument: failed to insert instrument", error)
+    return null
 }
 
 /**
@@ -581,6 +641,7 @@ export default {
     INVESTMENT_POSITION_TYPES,
     INVESTMENT_SEARCH_SOURCES,
     searchInstruments,
+    searchInstrumentsByIsins,
     upsertInstrument,
     createManualInstrument,
     getInstrumentById,

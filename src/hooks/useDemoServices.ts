@@ -82,6 +82,14 @@ export const useDemoServices = () => {
             return symbol.includes(q) || isin === q || queryWords.every((word) => name.includes(word));
           });
         },
+        searchInstrumentsByIsins: async (isins: string[]) => {
+          const result: Record<string, InvestmentInstrumentDto | null> = {};
+          for (const raw of isins) {
+            const isin = raw.trim().toUpperCase();
+            result[isin] = DEMO_INSTRUMENTS.find((i) => i.isin?.toUpperCase() === isin) ?? null;
+          }
+          return result;
+        },
         createManualInstrument: async (data: { kind: string; symbol: string; name: string; currency?: string | null }) => ({
           id: -Date.now(),
           kind: data.kind,

@@ -81,6 +81,22 @@ investmentsRouter.post("/instruments/search", async (req, res) => {
     res.status(200).json(instruments)
 })
 
+investmentsRouter.post("/instruments/search-by-isins", async (req, res) => {
+    const rawIsins = Array.isArray(req.body.isins) ? req.body.isins : []
+    const isins = rawIsins
+        .map((v: unknown) => common.sanitizeInput(String(v ?? "")))
+        .filter((v: string) => v !== "")
+        .slice(0, 200)
+
+    if (isins.length === 0) {
+        res.status(200).json({})
+        return
+    }
+
+    const matches = await db.investments.searchInstrumentsByIsins(isins, req.userId as string)
+    res.status(200).json(matches)
+})
+
 investmentsRouter.post("/instruments/manual", async (req, res) => {
     const kind = common.sanitizeInput(req.body.kind)
     const symbol = common.sanitizeInput(req.body.symbol).slice(0, 20)

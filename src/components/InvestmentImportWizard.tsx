@@ -137,9 +137,17 @@ const ManualAddRow = styled.div`
     padding: 0.25rem 0.4rem;
     border-radius: 6px;
     border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1')};
-    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'white')};
+    background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
     color: ${(p) => p.theme.textColor};
     font-size: 0.72rem;
+
+    /* The closed control's background/color don't reliably cascade into the
+       native options popup — set them explicitly so dark mode isn't left
+       with white-on-white/unreadable options. */
+    option {
+      background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
+      color: ${(p) => p.theme.textColor};
+    }
   }
 
   button {
@@ -214,22 +222,48 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   };
 
   const resolveInstruments = async (toResolve: ImportRowState[]) => {
+    setRows((prev) => prev.map((r, idx) => (idx < toResolve.length ? { ...r, status: 'resolving' } : r)));
+
+    // Resolve every ISIN in ONE batched request first — looking each position
+    // up one at a time (as this used to do) fires one OpenFIGI call per row
+    // and exhausts its shared per-minute rate limit well before a real
+    // portfolio (10+ holdings) finishes, silently marking well-known stocks
+    // as "not found" even though every one of them resolves fine on its own.
+    const isins = Array.from(new Set(
+      toResolve.map((r) => r.position.isin).filter((v): v is string => Boolean(v)),
+    ));
+    let isinMatches: Record<string, InvestmentInstrumentDto | null> = {};
+    if (isins.length > 0) {
+      try {
+        isinMatches = await investmentService.searchInstrumentsByIsins(isins);
+      } catch {
+        isinMatches = {};
+      }
+    }
+
     for (let i = 0; i < toResolve.length; i++) {
       const { position } = toResolve[i];
+
+      const batchMatch = position.isin ? isinMatches[position.isin.toUpperCase()] : null;
+      if (batchMatch) {
+        setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, instrument: batchMatch, status: 'resolved' } : r)));
+        continue;
+      }
+
       const query = position.isin ?? position.ticker ?? position.name;
       if (!query) {
         setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'not-found' } : r)));
         continue;
       }
-      setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'resolving' } : r)));
       try {
         const findMatch = (results: InvestmentInstrumentDto[]) => (position.isin
           ? results.find((instr) => instr.isin?.toUpperCase() === position.isin)
           : results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0]);
 
-        // The CSV alone doesn't say whether this is a security or a crypto
-        // asset — try OpenFIGI (stocks/ETFs/bonds/funds) first, then fall
-        // back to CoinGecko so crypto rows aren't wrongly marked not-found.
+        // Falls back to the per-row path only for positions the batch ISIN
+        // lookup couldn't resolve (no ISIN in the file at all — typically
+        // crypto rows) — try OpenFIGI, then CoinGecko so those aren't
+        // wrongly marked not-found.
         const figiResults = await investmentService.searchInstruments({ query, source: 'figi', limit: 5 });
         let match = findMatch(figiResults);
         if (!match) {

@@ -184,4 +184,67 @@ export async function searchOpenFigiByIsin(isin: string): Promise<UpsertInstrume
     }
 }
 
-export default { searchOpenFigi, searchOpenFigiByIsin, isIsin }
+/**
+ * Batch exact-match lookup for multiple ISINs via a single /v3/mapping
+ * request (the endpoint accepts up to 100 jobs per call) — consumes one
+ * rate-limit slot per chunk instead of one per ISIN. Resolving a CSV
+ * import's positions one ISIN at a time exhausts the shared per-minute
+ * budget well before a real portfolio (10+ holdings) finishes, silently
+ * marking well-known, easily-resolvable stocks as "not found".
+ */
+export async function searchOpenFigiByIsins(isins: string[]): Promise<Record<string, UpsertInstrumentInput[]>> {
+    const cleanIsins = Array.from(new Set(isins.map((v) => v.toUpperCase())))
+    const result: Record<string, UpsertInstrumentInput[]> = {}
+    for (const isin of cleanIsins) result[isin] = []
+    if (cleanIsins.length === 0) return result
+
+    const headers: Record<string, string> = { "Content-Type": "application/json" }
+    if (process.env.OPENFIGI_KEY) headers["X-OPENFIGI-APIKEY"] = process.env.OPENFIGI_KEY
+
+    const controller = new AbortController()
+    const timeoutMs = getTimeoutMs("OPENFIGI_TIMEOUT_MS", 6000)
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+        const BATCH_SIZE = 100 // OpenFIGI's documented per-request cap on /v3/mapping
+        for (let i = 0; i < cleanIsins.length; i += BATCH_SIZE) {
+            const allowed = await checkAndConsumeRateLimit("openfigi", OPENFIGI_SEARCH_LIMIT_PER_MIN)
+            if (!allowed) break
+
+            const batch = cleanIsins.slice(i, i + BATCH_SIZE)
+            const response = await withTimeout(
+                fetch(OPENFIGI_MAPPING_URL, {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(batch.map((isin) => ({ idType: "ID_ISIN", idValue: isin }))),
+                    signal: controller.signal,
+                }),
+                timeoutMs,
+                "OpenFIGI batch mapping request",
+            )
+
+            if (response.status !== 200) {
+                const bodyText = await response.text().catch(() => "")
+                console.error(`openfigiProvider.searchOpenFigiByIsins: request failed with status ${response.status}: ${bodyText}`)
+                continue
+            }
+
+            const body = await response.json() as OpenFigiMappingJobResult[]
+            batch.forEach((isin, idx) => {
+                const job = body[idx]
+                if (!job || job.error || !Array.isArray(job.data)) return
+                result[isin] = job.data
+                    .slice(0, MAX_RESULTS)
+                    .map((r) => toUpsertInput(r, isin))
+                    .filter((candidate): candidate is UpsertInstrumentInput => candidate !== null)
+            })
+        }
+    } catch (error) {
+        console.error("openfigiProvider.searchOpenFigiByIsins: request failed", error)
+    } finally {
+        clearTimeout(timeout)
+    }
+    return result
+}
+
+export default { searchOpenFigi, searchOpenFigiByIsin, searchOpenFigiByIsins, isIsin }

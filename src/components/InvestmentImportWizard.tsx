@@ -244,26 +244,32 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     for (let i = 0; i < toResolve.length; i++) {
       const { position } = toResolve[i];
 
-      const batchMatch = position.isin ? isinMatches[position.isin.toUpperCase()] : null;
-      if (batchMatch) {
-        setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, instrument: batchMatch, status: 'resolved' } : r)));
+      if (position.isin) {
+        // Already attempted by the batch lookup above — that single request
+        // IS the authoritative attempt for every ISIN in the file. Retrying
+        // per-row here would hit the very same (separate, but still limited)
+        // mapping bucket again for nothing: it can only make a later import
+        // attempt more likely to get rate-limited too, for no chance of a
+        // different result this time.
+        const batchMatch = isinMatches[position.isin.toUpperCase()];
+        setRows((prev) => prev.map((r, idx) => (idx === i
+          ? { ...r, instrument: batchMatch ?? null, status: batchMatch ? 'resolved' : 'not-found', selected: r.selected && Boolean(batchMatch) }
+          : r)));
         continue;
       }
 
-      const query = position.isin ?? position.ticker ?? position.name;
+      // No ISIN in the file at all (typically crypto rows) — only these fall
+      // back to a per-row, ticker/name-based search: OpenFIGI's free-text
+      // endpoint first, then CoinGecko.
+      const query = position.ticker ?? position.name;
       if (!query) {
         setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'not-found' } : r)));
         continue;
       }
       try {
-        const findMatch = (results: InvestmentInstrumentDto[]) => (position.isin
-          ? results.find((instr) => instr.isin?.toUpperCase() === position.isin)
-          : results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0]);
+        const findMatch = (results: InvestmentInstrumentDto[]) =>
+          results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0];
 
-        // Falls back to the per-row path only for positions the batch ISIN
-        // lookup couldn't resolve (no ISIN in the file at all — typically
-        // crypto rows) — try OpenFIGI, then CoinGecko so those aren't
-        // wrongly marked not-found.
         const figiResults = await investmentService.searchInstruments({ query, source: 'figi', limit: 5 });
         let match = findMatch(figiResults);
         if (!match) {

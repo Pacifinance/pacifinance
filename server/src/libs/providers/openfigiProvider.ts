@@ -5,7 +5,14 @@ import type { UpsertInstrumentInput } from "../../db/models/investments"
 
 const OPENFIGI_SEARCH_URL = "https://api.openfigi.com/v3/search"
 const OPENFIGI_MAPPING_URL = "https://api.openfigi.com/v3/mapping"
-const OPENFIGI_SEARCH_LIMIT_PER_MIN = 4 // stays under the public 5/min search limit; higher once OPENFIGI_KEY is set
+const OPENFIGI_SEARCH_LIMIT_PER_MIN = 4 // stays under the public 5/min search limit
+// Separate bucket from free-text search: a burst of manual searches (holdings
+// panel) must never starve a CSV import's batch ISIN lookups, and vice versa —
+// they used to share one "openfigi" bucket, so a handful of retries during
+// debugging could keep BOTH permanently rate-limited within the same minute,
+// making every ISIN lookup return "not found" even though OpenFIGI itself
+// resolves them instantly. Raised when OPENFIGI_KEY is set (higher authenticated tier).
+const OPENFIGI_MAPPING_LIMIT_PER_MIN = process.env.OPENFIGI_KEY ? 20 : 8
 const MAX_RESULTS = 8 // bounds the upsertInstrument() fan-out — keep well under Vercel's function timeout
 
 // 2-letter country code + 9 alphanumeric + 1 check digit. OpenFIGI's free-text
@@ -85,7 +92,7 @@ export function isIsin(query: string): boolean {
  * callers fall back to whatever is already in the local catalog.
  */
 export async function searchOpenFigi(query: string): Promise<UpsertInstrumentInput[]> {
-    const allowed = await checkAndConsumeRateLimit("openfigi", OPENFIGI_SEARCH_LIMIT_PER_MIN)
+    const allowed = await checkAndConsumeRateLimit("openfigi-search", OPENFIGI_SEARCH_LIMIT_PER_MIN)
     if (!allowed) return []
 
     const headers: Record<string, string> = { "Content-Type": "application/json" }
@@ -139,7 +146,7 @@ type OpenFigiMappingJobResult = {
  * Same rate-limit/timeout/error-swallowing behavior as searchOpenFigi.
  */
 export async function searchOpenFigiByIsin(isin: string): Promise<UpsertInstrumentInput[]> {
-    const allowed = await checkAndConsumeRateLimit("openfigi", OPENFIGI_SEARCH_LIMIT_PER_MIN)
+    const allowed = await checkAndConsumeRateLimit("openfigi-mapping", OPENFIGI_MAPPING_LIMIT_PER_MIN)
     if (!allowed) return []
 
     const headers: Record<string, string> = { "Content-Type": "application/json" }
@@ -208,7 +215,7 @@ export async function searchOpenFigiByIsins(isins: string[]): Promise<Record<str
     try {
         const BATCH_SIZE = 100 // OpenFIGI's documented per-request cap on /v3/mapping
         for (let i = 0; i < cleanIsins.length; i += BATCH_SIZE) {
-            const allowed = await checkAndConsumeRateLimit("openfigi", OPENFIGI_SEARCH_LIMIT_PER_MIN)
+            const allowed = await checkAndConsumeRateLimit("openfigi-mapping", OPENFIGI_MAPPING_LIMIT_PER_MIN)
             if (!allowed) break
 
             const batch = cleanIsins.slice(i, i + BATCH_SIZE)

@@ -17,6 +17,7 @@ import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
   Repeat as RepeatIcon,
+  Groups as GroupsIcon,
 } from "@mui/icons-material";
 
 const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
@@ -24,6 +25,7 @@ const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert")
 const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));
 const RecurringTransactionsPanel = lazy(() => import("../components/RecurringTransactionsPanel"));
+const SharedExpensesPanel = lazy(() => import("../components/SharedExpensesPanel"));
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "../components/MultiBalanceInsert";
@@ -383,7 +385,7 @@ export default function InsertValue({
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory, fetchMonthDetail } = useContext(UserContext) || {};
   const { showSuccess, showError, showWarning } = useToast();
-  const { financeService, investmentService, liquidityAccountService, recurringTransactionService } = useDemoServices();
+  const { financeService, investmentService, liquidityAccountService, recurringTransactionService, sharedExpenseService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
 
@@ -398,6 +400,15 @@ export default function InsertValue({
   const [showRecurringPanel, setShowRecurringPanel] = useState(false);
   const [recurringItems, setRecurringItems] = useState([]);
   const [makeOutflowRecurring, setMakeOutflowRecurring] = useState(false);
+  const [isSharedExpense, setIsSharedExpense] = useState(false);
+  const [sharedPeopleCount, setSharedPeopleCount] = useState(2);
+  const [sharedReceivables, setSharedReceivables] = useState([]);
+  const [showSharedExpensesPanel, setShowSharedExpensesPanel] = useState(false);
+
+  const refreshSharedReceivables = async () => {
+    const items = await sharedExpenseService.getReceivables();
+    setSharedReceivables(Array.isArray(items) ? items : []);
+  };
 
   const refreshRecurringItems = async () => {
     const items = await recurringTransactionService.getRecurring();
@@ -1330,11 +1341,45 @@ export default function InsertValue({
       return;
     }
 
-    const eurAmount = toEUR(parseFormattedAmount(outflow));
-    const proceed = await checkForDuplicateBeforeSubmit(true, outflowDate, eurAmount, noteOutflowAreaValue);
+    // Capture date/note before handleConfirmInEx resets the form state.
+    const capturedDate = outflowDate;
+    const capturedNote = noteOutflowAreaValue;
+    const totalDisplay = parseFormattedAmount(outflow);
+
+    // Shared expense: only the own share is recorded as a real category
+    // outflow (categoryAmount); the rest is tracked as a receivable so it
+    // never inflates the category's spending analysis (see checkForDuplicateBeforeSubmit
+    // usage below and sharedExpenseService.addReceivable).
+    let categoryAmount = null;
+    let receivableInfo = null;
+    if (isSharedExpense) {
+      const people = Math.max(2, Number(sharedPeopleCount) || 2);
+      const ownShareDisplay = totalDisplay / people;
+      categoryAmount = ownShareDisplay;
+      receivableInfo = { totalDisplay, ownShareDisplay };
+    }
+
+    const eurAmount = toEUR(categoryAmount ?? totalDisplay);
+    const proceed = await checkForDuplicateBeforeSubmit(true, capturedDate, eurAmount, capturedNote);
     if (!proceed) return;
     // Directly submit without further confirmation modal
-    handleConfirmInEx(true);
+    await handleConfirmInEx(true, categoryAmount);
+
+    if (receivableInfo) {
+      try {
+        await sharedExpenseService.addReceivable({
+          date: capturedDate,
+          notes: capturedNote,
+          total_amount: toEUR(receivableInfo.totalDisplay),
+          own_share: toEUR(receivableInfo.ownShareDisplay),
+        });
+        refreshSharedReceivables();
+      } catch (err) {
+        console.error('Failed to record shared-expense receivable:', err);
+      }
+      setIsSharedExpense(false);
+      setSharedPeopleCount(2);
+    }
   };
 
   const handleBatchOutflowSubmit = async (rows, onProgress) => {
@@ -1835,16 +1880,20 @@ export default function InsertValue({
     };
   };
 
-  const handleConfirmInEx = async (isOutflow) => {
+  const handleConfirmInEx = async (isOutflow, categoryAmountOverride = null) => {
     let inExJson = {};
+    // Full amount actually paid — used for the balance-source delta below,
+    // since that's what really left the bank account (see checkForDuplicateBeforeSubmit
+    // / handleAddOutflow for the shared-expense split: only the own-share
+    // portion is recorded as the category outflow via categoryAmountOverride).
     const originalOutflowAmount = outflow; // Store original value for limit check
     const originalIncomeAmount = income; // Store original value for balance update
-    
+
     if (isOutflow) {
       inExJson = createInExJson(
         true,
         outflowDate,
-        outflow,
+        categoryAmountOverride ?? outflow,
         noteOutflowAreaValue,
         typoOutflow.key,
         categoryOutflow.key,
@@ -1897,9 +1946,14 @@ export default function InsertValue({
 
         // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
-          // L'indice 0 corrisponde al mese corrente nell'array outflowsArray
+          // L'indice 0 corrisponde al mese corrente nell'array outflowsArray.
+          // In shared-expense mode, only the own-share (categoryAmountOverride)
+          // counts toward the limit — the rest was never really "spent".
           const currentOutflowsThisMonth = getOutflowsArray(userData)?.[0] || 0;
-          const newTotal = addCurrency(currentOutflowsThisMonth, parseFloat(originalOutflowAmount.replace(',', '.')));
+          const limitCheckAmount = categoryAmountOverride !== null
+            ? categoryAmountOverride
+            : parseFloat(originalOutflowAmount.replace(',', '.'));
+          const newTotal = addCurrency(currentOutflowsThisMonth, limitCheckAmount);
 
           if (newTotal > userData.limits.monthlySpendingLimit) {
             const exceeding = roundCurrency(newTotal - userData.limits.monthlySpendingLimit);
@@ -2247,6 +2301,10 @@ export default function InsertValue({
             balanceSourceMeta={getBalanceSourceMeta()}
             makeRecurring={makeOutflowRecurring}
             setMakeRecurring={setMakeOutflowRecurring}
+            isSharedExpense={isSharedExpense}
+            setIsSharedExpense={setIsSharedExpense}
+            sharedPeopleCount={sharedPeopleCount}
+            setSharedPeopleCount={setSharedPeopleCount}
           />
         </SectionCard>
       );
@@ -2312,6 +2370,16 @@ export default function InsertValue({
                 <RepeatIcon />
                 {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
               </ImportLink>
+              {activePage === "outflows" && (
+                <ImportLink
+                  theme={theme}
+                  onClick={() => { setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
+                  data-umami-event="insert-shared-expenses-open"
+                >
+                  <GroupsIcon />
+                  {translations.insert.sharedExpensesPanel?.navLabel || 'Spese condivise'}
+                </ImportLink>
+              )}
             </>
           )}
         </TabBar>
@@ -2335,6 +2403,16 @@ export default function InsertValue({
               <RepeatIcon />
               {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
             </ImportLinkMobile>
+            {activePage === "outflows" && (
+              <ImportLinkMobile
+                theme={theme}
+                onClick={() => { setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
+                data-umami-event="insert-shared-expenses-open-mobile"
+              >
+                <GroupsIcon />
+                {translations.insert.sharedExpensesPanel?.navLabel || 'Spese condivise'}
+              </ImportLinkMobile>
+            )}
           </>
         )}
 
@@ -2423,6 +2501,17 @@ export default function InsertValue({
               })}
               onClose={() => setShowRecurringPanel(false)}
               onChanged={refreshRecurringItems}
+            />
+          </Suspense>
+        )}
+
+        {showSharedExpensesPanel && (
+          <Suspense fallback={null}>
+            <SharedExpensesPanel
+              theme={theme}
+              items={sharedReceivables}
+              onClose={() => setShowSharedExpensesPanel(false)}
+              onChanged={refreshSharedReceivables}
             />
           </Suspense>
         )}

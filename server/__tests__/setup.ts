@@ -13,6 +13,7 @@ type MockDb = {
     recurringTransactions: Record<string, any>
     benchmarks: Record<string, any>
     benchmarkSnapshots: Record<string, any>
+    sharedExpenses: Record<string, any>
 }
 
 const mocks = vi.hoisted(() => {
@@ -133,6 +134,12 @@ const mocks = vi.hoisted(() => {
             getProfiles: vi.fn(),
             saveProfiles: vi.fn(),
             deleteProfilesByUserId: vi.fn()
+        },
+        sharedExpenses: {
+            getReceivablesByUserId: vi.fn(),
+            insertReceivable: vi.fn(),
+            settleReceivable: vi.fn(),
+            deleteReceivable: vi.fn()
         }
     }
 
@@ -307,6 +314,11 @@ export function resetServerMocks() {
     mockDb.benchmarkSnapshots.getProfiles.mockResolvedValue([])
     mockDb.benchmarkSnapshots.saveProfiles.mockResolvedValue(undefined)
     mockDb.benchmarkSnapshots.deleteProfilesByUserId.mockResolvedValue(undefined)
+
+    mockDb.sharedExpenses.getReceivablesByUserId.mockResolvedValue([])
+    mockDb.sharedExpenses.insertReceivable.mockResolvedValue({id: 1})
+    mockDb.sharedExpenses.settleReceivable.mockResolvedValue({id: 1})
+    mockDb.sharedExpenses.deleteReceivable.mockResolvedValue({deletedCount: 1})
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")

@@ -16,6 +16,7 @@ import recurringTransactionsRouter from "./private/recurringTransactions"
 import goalsRouter from "./private/goals"
 import benchmarksRouter from "./private/benchmarks"
 import exchangeRatesRouter from "./private/exchangeRates"
+import sharedExpensesRouter from "./private/sharedExpenses"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
@@ -86,5 +87,6 @@ rootRouter.use("/recurring-transactions", recurringTransactionsRouter)
 rootRouter.use("/goals", goalsRouter)
 rootRouter.use("/benchmarks", benchmarksRouter)
 rootRouter.use("/exchange-rates", exchangeRatesRouter)
+rootRouter.use("/shared-expenses", sharedExpensesRouter)
 
 export default rootRouter

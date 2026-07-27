@@ -915,6 +915,12 @@
             "deleteBalanceRestore": "Puoi scegliere se ripristinare uno dei saldi, oppure eliminare solo la voce senza modificare i saldi.",
             "decreaseWhichBalance": "Sottrai da",
             "makeRecurring": "Rendi ricorrente ogni mese",
+            "sharedExpense": {
+                "toggleLabel": "Ho pagato per il gruppo (dividi questa spesa)",
+                "peopleLabel": "Persone totali (incluso te)",
+                "previewShare": "La tua quota",
+                "previewReceivable": "Credito verso gli altri"
+            },
             "visualization": {
                 "viewLabel": "Visualizzazione uscite",
                 "list": "Lista",
@@ -1015,6 +1021,20 @@
             "newLabel": "Nuova transazione",
             "confirm": "Salva comunque",
             "cancel": "Annulla"
+        },
+        "sharedExpensesPanel": {
+            "navLabel": "Spese condivise",
+            "title": "Spese condivise",
+            "subtitle": "Crediti verso altri per spese anticipate di gruppo",
+            "emptyState": "Nessuna spesa condivisa ancora. Spuntando \"Ho pagato per il gruppo\" quando aggiungi una uscita, il credito comparirà qui.",
+            "untitled": "Spesa di gruppo",
+            "statusPending": "In attesa",
+            "statusPartial": "Parzialmente recuperato",
+            "statusSettled": "Recuperato",
+            "markReceived": "Segna importo ricevuto",
+            "deleteButton": "Elimina",
+            "amountReceivedLabel": "Importo ricevuto",
+            "confirmSettle": "Conferma"
         },
         "deleteTransaction": {
             "titleOutflow": "Sei sicuro di voler eliminare questa uscita?",

@@ -913,6 +913,12 @@
             "deleteBalanceRestore": "Du kannst eines der Guthaben wiederherstellen oder den Eintrag einfach löschen, ohne die Guthaben zu ändern.",
             "decreaseWhichBalance": "Abziehen von",
             "makeRecurring": "Jeden Monat wiederholen",
+            "sharedExpense": {
+                "toggleLabel": "Ich habe für die Gruppe bezahlt (diese Ausgabe aufteilen)",
+                "peopleLabel": "Personen insgesamt (dich eingeschlossen)",
+                "previewShare": "Dein Anteil",
+                "previewReceivable": "Von anderen geschuldet"
+            },
             "visualization": {
                 "viewLabel": "Ausgabenansicht",
                 "list": "Liste",
@@ -1013,6 +1019,20 @@
             "newLabel": "New transaction",
             "confirm": "Save anyway",
             "cancel": "Cancel"
+        },
+        "sharedExpensesPanel": {
+            "navLabel": "Geteilte Ausgaben",
+            "title": "Geteilte Ausgaben",
+            "subtitle": "Geld, das andere dir für vorgestreckte Gruppenausgaben schulden",
+            "emptyState": "Noch keine geteilten Ausgaben. Aktiviere \"Ich habe für die Gruppe bezahlt\" beim Hinzufügen einer Ausgabe, damit die Forderung hier erscheint.",
+            "untitled": "Gruppenausgabe",
+            "statusPending": "Ausstehend",
+            "statusPartial": "Teilweise zuruckerhalten",
+            "statusSettled": "Zuruckerhalten",
+            "markReceived": "Erhaltenen Betrag markieren",
+            "deleteButton": "Loschen",
+            "amountReceivedLabel": "Erhaltener Betrag",
+            "confirmSettle": "Bestatigen"
         },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",

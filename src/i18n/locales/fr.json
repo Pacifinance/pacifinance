@@ -913,6 +913,12 @@
             "deleteBalanceRestore": "Tu peux choisir de restaurer l'un des soldes, ou simplement supprimer l'entrée sans modifier les soldes.",
             "decreaseWhichBalance": "Soustraire de",
             "makeRecurring": "Rendre récurrent chaque mois",
+            "sharedExpense": {
+                "toggleLabel": "J'ai payé pour le groupe (répartir cette dépense)",
+                "peopleLabel": "Nombre total de personnes (toi inclus)",
+                "previewShare": "Ta part",
+                "previewReceivable": "Dû par les autres"
+            },
             "visualization": {
                 "viewLabel": "Vue des sorties",
                 "list": "Liste",
@@ -1013,6 +1019,20 @@
             "newLabel": "New transaction",
             "confirm": "Save anyway",
             "cancel": "Cancel"
+        },
+        "sharedExpensesPanel": {
+            "navLabel": "Dépenses partagées",
+            "title": "Dépenses partagées",
+            "subtitle": "Argent dû par d'autres pour des dépenses de groupe que tu as avancées",
+            "emptyState": "Aucune dépense partagée pour l'instant. Coche \"J'ai payé pour le groupe\" en ajoutant une dépense et la créance apparaîtra ici.",
+            "untitled": "Dépense de groupe",
+            "statusPending": "En attente",
+            "statusPartial": "Partiellement récupéré",
+            "statusSettled": "Récupéré",
+            "markReceived": "Marquer le montant reçu",
+            "deleteButton": "Supprimer",
+            "amountReceivedLabel": "Montant reçu",
+            "confirmSettle": "Confirmer"
         },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",

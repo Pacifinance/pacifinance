@@ -17,7 +17,7 @@ import { useAuth } from './useAuth';
 import type {
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
-  GoalDto,
+  GoalDto, SharedExpenseReceivableDto,
 } from '../types/api';
 
 const FAKE_SUCCESS = { status: 200, data: { success: true } };
@@ -216,6 +216,34 @@ export const useDemoServices = () => {
           updatedAt: new Date().toISOString(),
         }),
         deleteGoal: async () => FAKE_SUCCESS,
+      },
+      sharedExpenseService: {
+        ...services.sharedExpenseService,
+        getReceivables: async (): Promise<SharedExpenseReceivableDto[]> => [],
+        addReceivable: async (data: {
+          date: string; notes?: string; total_amount: number; own_share: number;
+        }): Promise<SharedExpenseReceivableDto> => ({
+          id: -Date.now(),
+          date: data.date,
+          notes: data.notes ?? '',
+          totalAmount: data.total_amount,
+          ownShare: data.own_share,
+          receivableAmount: data.total_amount - data.own_share,
+          settledAmount: 0,
+          status: 'pending',
+        }),
+        // Demo mode's getReceivables() always returns [] - see saveHoldingHistory above.
+        settleReceivable: async (data): Promise<SharedExpenseReceivableDto> => ({
+          id: data.id,
+          date: new Date().toISOString().slice(0, 10),
+          notes: '',
+          totalAmount: 0,
+          ownShare: 0,
+          receivableAmount: 0,
+          settledAmount: data.amount,
+          status: 'settled',
+        }),
+        deleteReceivable: async () => FAKE_SUCCESS,
       },
     };
   }, [isDemoMode, services]);

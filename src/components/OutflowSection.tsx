@@ -103,6 +103,40 @@ const RecurringCheckboxLabel = styled.label`
   }
 `;
 
+const SharedExpenseFields = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: ${p => p.theme.textColor};
+    opacity: 0.75;
+  }
+
+  input {
+    width: 4rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white'};
+    color: ${p => p.theme.textColor};
+    font-size: 0.85rem;
+  }
+`;
+
+const SharedExpensePreview = styled.span`
+  font-size: 0.78rem;
+  color: ${p => p.theme.textColor};
+  opacity: 0.65;
+  font-style: italic;
+`;
+
 const FieldInput = styled.input`
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
   border-radius: 10px;
@@ -555,6 +589,10 @@ export default function OutflowSection({
   balanceSourceMeta = null,
   makeRecurring = false,
   setMakeRecurring,
+  isSharedExpense = false,
+  setIsSharedExpense,
+  sharedPeopleCount = 2,
+  setSharedPeopleCount,
   outflowDateFilterStart,
   setOutflowDateFilterStart,
   outflowDateFilterEnd,
@@ -577,6 +615,15 @@ export default function OutflowSection({
   const isRecurringEligibleTypology = RECURRING_PAYMENT_LABELS.includes(
     paymentTags.find((item) => item.index === typoOutflow.key)?.label
   );
+
+  // Shared-expense preview: `outflow` already holds the FULL amount fronted
+  // (typed in display currency) — only the per-person share ends up counted
+  // as a real category outflow, the rest is tracked as a receivable.
+  const sharedPeopleCountNum = Math.max(2, Number(sharedPeopleCount) || 2);
+  const sharedTotalTyped = parseFloat(outflow) || 0;
+  const sharedOwnShare = sharedTotalTyped / sharedPeopleCountNum;
+  const sharedReceivable = sharedTotalTyped - sharedOwnShare;
+  const formatPlain = (n: number) => `${currencySymbol}${(Number.isFinite(n) ? n : 0).toFixed(2)}`;
 
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
@@ -1537,6 +1584,36 @@ export default function OutflowSection({
             </RecurringCheckboxLabel>
           </FormField>
         )}
+
+        {/* Shared expense — e.g. paying an Uber/dinner for the whole group */}
+        <FormField style={{ gridColumn: '1 / -1' }}>
+          <RecurringCheckboxLabel theme={theme}>
+            <input
+              type="checkbox"
+              checked={isSharedExpense}
+              onChange={(e) => setIsSharedExpense?.(e.target.checked)}
+            />
+            {translations.insert.outflowSection.sharedExpense?.toggleLabel || 'Ho pagato per il gruppo (dividi questa spesa)'}
+          </RecurringCheckboxLabel>
+          {isSharedExpense && (
+            <SharedExpenseFields theme={theme}>
+              <label>
+                {translations.insert.outflowSection.sharedExpense?.peopleLabel || 'Persone totali (incluso te)'}
+                <input
+                  type="number"
+                  min="2"
+                  value={sharedPeopleCount}
+                  onChange={(e) => setSharedPeopleCount?.(e.target.value)}
+                />
+              </label>
+              <SharedExpensePreview theme={theme}>
+                {(translations.insert.outflowSection.sharedExpense?.previewShare || 'La tua quota')}: {formatPlain(sharedOwnShare)}
+                {' · '}
+                {(translations.insert.outflowSection.sharedExpense?.previewReceivable || 'Credito verso gli altri')}: {formatPlain(sharedReceivable)}
+              </SharedExpensePreview>
+            </SharedExpenseFields>
+          )}
+        </FormField>
 
         {/* Amount */}
         <FormField>

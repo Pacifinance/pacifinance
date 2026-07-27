@@ -634,3 +634,36 @@ export interface GoalSaveRequest {
 }
 
 export interface GoalDeleteRequest { id: number; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * /shared-expenses
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+export type SharedExpenseReceivableStatus = 'pending' | 'partial' | 'settled';
+
+export interface SharedExpenseReceivableDto {
+  id: number;
+  date: string;
+  notes: string;
+  totalAmount: number;
+  ownShare: number;
+  receivableAmount: number;
+  settledAmount: number;
+  status: SharedExpenseReceivableStatus;
+}
+
+export type SharedExpenseReceivablesGetResponse = SharedExpenseReceivableDto[];
+
+export interface SharedExpenseReceivableAddRequest {
+  date: string;
+  notes?: string;
+  total_amount: number;
+  own_share: number;
+}
+
+export interface SharedExpenseReceivableSettleRequest {
+  id: number;
+  amount: number;
+}
+
+export interface SharedExpenseReceivableDeleteRequest { id: number; }

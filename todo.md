@@ -71,6 +71,8 @@
 - [x] Analisi dettagliata uscite: categorie, metodi di pagamento, pattern ricorrenti con confronti mensili <!-- roadmap:detailed-outflow-analysis -->
 - [x] Fix: categorie uscite tradotte in tutte le lingue (i18n category names in DetailedOutflowsAnalysis) <!-- roadmap:i18n-category-colors -->
 - [x] Scelta utente su impatto bilancio per inserimenti datati in mesi passati (past date balance choice) con modale, preferenza persistente e toggle in Impostazioni <!-- roadmap:past-date-balance-choice -->
+- [x] Rilevamento duplicati anche sull'inserimento manuale di uscite/entrate (stessa euristica dell'import CSV), con modale di conferma <!-- roadmap:manual-duplicate-check -->
+- [x] Spese condivise: "ho pagato per il gruppo" su una uscita registra solo la propria quota come spesa reale e traccia il resto come credito verso terzi, recuperabile senza generare un'entrata fittizia <!-- roadmap:shared-expenses -->
 ---
 
 ## Piano strategico (luglio 2026)

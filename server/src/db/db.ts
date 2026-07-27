@@ -10,5 +10,6 @@ import goals from "./models/goals"
 import delqueue from "./models/delqueue"
 import benchmarks from "./models/benchmarks"
 import benchmarkSnapshots from "./models/benchmarkSnapshots"
+import sharedExpenses from "./models/sharedExpenses"
 
-export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks, benchmarkSnapshots}
+export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks, benchmarkSnapshots, sharedExpenses}

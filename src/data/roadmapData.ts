@@ -260,6 +260,30 @@ const roadmapData: RoadmapItem[] = [
     icon: '🕑',
     completedDate: '2026-04',
   },
+  {
+    id: 'manual-duplicate-check',
+    title: { it: 'Controllo Duplicati su Inserimento Manuale', en: 'Duplicate Check on Manual Entry' },
+    description: {
+      it: 'Aggiungendo una uscita o entrata a mano, l\'app avvisa se una transazione molto simile esiste già nello storico (stessa euristica usata dall\'import CSV), lasciandoti scegliere se salvarla comunque.',
+      en: 'When manually adding an outflow or income, the app warns if a very similar transaction already exists in your history (same heuristic used by CSV import), letting you decide whether to save it anyway.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🔍',
+    completedDate: '2026-07',
+  },
+  {
+    id: 'shared-expenses',
+    title: { it: 'Spese Condivise', en: 'Shared Expenses' },
+    description: {
+      it: 'Hai pagato per il gruppo (es. un Uber in vacanza)? Segnalo come spesa condivisa: solo la tua quota conta come spesa reale, il resto resta tracciato come credito da recuperare, senza registrare un\'entrata finta quando ti rimborsano.',
+      en: 'Paid for the whole group (e.g. an Uber on vacation)? Flag it as a shared expense: only your share counts as real spending, the rest is tracked as a receivable to recover later, with no fake income recorded when you get paid back.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🤝',
+    completedDate: '2026-07',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'onboarding',

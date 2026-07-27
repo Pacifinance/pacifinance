@@ -915,6 +915,12 @@
             "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
             "decreaseWhichBalance": "Subtract from",
             "makeRecurring": "Make it recurring every month",
+            "sharedExpense": {
+                "toggleLabel": "I paid for the group (split this expense)",
+                "peopleLabel": "Total people (including you)",
+                "previewShare": "Your share",
+                "previewReceivable": "Owed by others"
+            },
             "visualization": {
                 "viewLabel": "Outflow view",
                 "list": "List",
@@ -1015,6 +1021,20 @@
             "newLabel": "New transaction",
             "confirm": "Save anyway",
             "cancel": "Cancel"
+        },
+        "sharedExpensesPanel": {
+            "navLabel": "Shared expenses",
+            "title": "Shared expenses",
+            "subtitle": "Money owed by others for group expenses you fronted",
+            "emptyState": "No shared expenses yet. Check \"I paid for the group\" when adding an outflow and the receivable will show up here.",
+            "untitled": "Group expense",
+            "statusPending": "Pending",
+            "statusPartial": "Partially recovered",
+            "statusSettled": "Recovered",
+            "markReceived": "Mark amount received",
+            "deleteButton": "Delete",
+            "amountReceivedLabel": "Amount received",
+            "confirmSettle": "Confirm"
         },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",

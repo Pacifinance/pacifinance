@@ -1,4 +1,29 @@
 {
+    "importGuide": {
+        "toggleLabel": "Where do I find this file?",
+        "platforms": {
+            "trading212": {
+                "label": "Trading 212",
+                "steps": "History → export icon (top right) → pick a date range → CSV."
+            },
+            "degiro": {
+                "label": "DEGIRO",
+                "steps": "Activity → History → Export (downloads Transactions.csv)."
+            },
+            "directa": {
+                "label": "Directa",
+                "steps": "Movements → Export (CSV or Excel)."
+            },
+            "revolut": {
+                "label": "Revolut",
+                "steps": "App → Account → Statement → pick the period → Export CSV."
+            },
+            "n26": {
+                "label": "N26",
+                "steps": "N26 app or website → Transactions → Export."
+            }
+        }
+    },
     "assets": {
         "total": "Total",
         "bank": "Bank",
@@ -2171,7 +2196,12 @@
         "tagWithBankCategory": "Tag these transactions with a \"{bank}\" sub-category",
         "retroHint": "{count} past transactions with a similar note are filed under a different category.",
         "retroHintSuggestion": "You can update them manually from the transaction history.",
-        "dismiss": "Dismiss"
+        "dismiss": "Dismiss",
+        "duplicateBadge": "Possible duplicate",
+        "duplicateHint": "Looks like it might already be recorded — deselected by default.",
+        "transferBadge": "Possible transfer",
+        "transferHint": "Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.",
+        "flaggedRowsNote": "{count} rows look like possible duplicates or transfers between your own accounts, and were deselected by default — check the badges below and re-select any that are actually genuine."
     },
     "onboarding": {
         "welcomeTitle": "Welcome to Pacifinance!",
@@ -2723,7 +2753,10 @@
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
                                     "generic": "generic format"
-                        }
+                        },
+            "historyBackfillNote": "Past months found in the file will be backfilled automatically as portfolio history.",
+            "historyMonths": "+{count} months of history",
+            "pastMonthNote": "The import always updates today's position and backfills history from the file's own dates — it doesn't only affect the month shown here."
             }
     },
     "liquidityAccounts": {

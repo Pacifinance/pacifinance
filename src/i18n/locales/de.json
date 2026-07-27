@@ -1,4 +1,29 @@
 {
+    "importGuide": {
+        "toggleLabel": "Wo finde ich diese Datei?",
+        "platforms": {
+            "trading212": {
+                "label": "Trading 212",
+                "steps": "Verlauf → Export-Symbol (oben rechts) → Zeitraum wählen → CSV."
+            },
+            "degiro": {
+                "label": "DEGIRO",
+                "steps": "Aktivität → Verlauf → Exportieren (lädt Transactions.csv herunter)."
+            },
+            "directa": {
+                "label": "Directa",
+                "steps": "Bewegungen → Exportieren (CSV oder Excel)."
+            },
+            "revolut": {
+                "label": "Revolut",
+                "steps": "Revolut-App → Konto → Kontoauszug → Zeitraum wählen → CSV exportieren."
+            },
+            "n26": {
+                "label": "N26",
+                "steps": "N26-App oder Website → Transaktionen → Exportieren."
+            }
+        }
+    },
     "assets": {
         "total": "Gesamt",
         "bank": "Bank",
@@ -2145,7 +2170,12 @@
         "tagWithBankCategory": "Diese Transaktionen mit einer \"{bank}\"-Unterkategorie kennzeichnen",
         "retroHint": "{count} vergangene Transaktionen mit ähnlicher Notiz sind einer anderen Kategorie zugeordnet.",
         "retroHintSuggestion": "Sie können diese manuell im Verlauf aktualisieren.",
-        "dismiss": "Schließen"
+        "dismiss": "Schließen",
+        "duplicateBadge": "Möglicherweise doppelt",
+        "duplicateHint": "Scheint bereits erfasst zu sein — standardmäßig abgewählt.",
+        "transferBadge": "Möglicherweise Überweisung",
+        "transferHint": "Stimmt mit einem gegenläufigen Eintrag gleichen Betrags überein — könnte eine Überweisung zwischen Ihren eigenen Konten sein, kein echtes Einkommen/Ausgabe.",
+        "flaggedRowsNote": "{count} Zeilen sehen wie mögliche Duplikate oder Überweisungen zwischen Ihren eigenen Konten aus und wurden standardmäßig abgewählt — prüfen Sie die Markierungen unten und wählen Sie echte Fälle erneut aus."
     },
     "onboarding": {
         "welcomeTitle": "Willkommen bei Pacifinance!",
@@ -2697,7 +2727,10 @@
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
                                     "generic": "generisches Format"
-                        }
+                        },
+            "historyBackfillNote": "Vergangene Monate aus der Datei werden automatisch als Portfolio-Verlauf nachgetragen.",
+            "historyMonths": "+{count} Monate Verlauf",
+            "pastMonthNote": "Der Import aktualisiert immer die heutige Position und ergänzt den Verlauf anhand der Daten in der Datei — er betrifft nicht nur den hier angezeigten Monat."
             }
     },
     "liquidityAccounts": {

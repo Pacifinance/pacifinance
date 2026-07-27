@@ -40,6 +40,29 @@ export function dedupeTransactions(transactions: ImportedTransaction[]): Importe
   });
 }
 
+/** The same grouping key used throughout this module: ISIN, else ticker, else name. */
+export function positionKeyFor(tx: Pick<ImportedTransaction, 'isin' | 'ticker' | 'name'>): string | null {
+  return tx.isin ?? tx.ticker ?? tx.name ?? null;
+}
+
+/**
+ * Groups transactions by the same key aggregatePositions uses, so callers can
+ * look up "all the raw transactions behind this one aggregated position" —
+ * e.g. to build its monthly history timeline after the user picks which
+ * positions to import.
+ */
+export function groupTransactionsByPositionKey(transactions: ImportedTransaction[]): Map<string, ImportedTransaction[]> {
+  const byKey = new Map<string, ImportedTransaction[]>();
+  for (const tx of transactions) {
+    const key = positionKeyFor(tx);
+    if (!key) continue;
+    const group = byKey.get(key);
+    if (group) group.push(tx);
+    else byKey.set(key, [tx]);
+  }
+  return byKey;
+}
+
 /**
  * Aggregates buy/sell transactions into net positions per instrument.
  * Positions with zero (or negative, i.e. inconsistent) net quantity are
@@ -50,7 +73,7 @@ export function aggregatePositions(transactions: ImportedTransaction[]): Aggrega
 
   for (const tx of transactions) {
     if (tx.quantity == null || tx.quantity <= 0) continue;
-    const key = tx.isin ?? tx.ticker ?? tx.name;
+    const key = positionKeyFor(tx);
     if (!key) continue;
 
     let position = byKey.get(key);
@@ -112,4 +135,48 @@ export function aggregatePositions(transactions: ImportedTransaction[]): Aggrega
 /** Trims float noise from summed fractional share quantities (T212 has 10-decimal shares). */
 function roundQuantity(value: number): number {
   return Number(value.toFixed(10));
+}
+
+/**
+ * Aggregates only the transactions dated on or before `asOfDate` (inclusive,
+ * "YYYY-MM-DD") — the net position as it stood at that point in time, not
+ * today. Rows with no parseable date are excluded (their place in the
+ * timeline is unknown), matching how they're already dropped elsewhere.
+ */
+export function aggregatePositionsAsOf(transactions: ImportedTransaction[], asOfDate: string): AggregatedPosition[] {
+  return aggregatePositions(transactions.filter((tx) => tx.date != null && tx.date <= asOfDate));
+}
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/** Last calendar day of "YYYY-MM" as "YYYY-MM-DD" (pure calendar math, no timezone involved). */
+export function lastDayOfMonth(monthKey: string): string {
+  const [year, month] = monthKey.split('-').map(Number);
+  const day = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  return `${monthKey}-${pad2(day)}`;
+}
+
+export interface MonthlyPositionSnapshot {
+  /** "YYYY-MM" */
+  monthKey: string;
+  /** Net positions as they stood at the end of this month. */
+  positions: AggregatedPosition[];
+}
+
+/**
+ * Reconstructs the portfolio's monthly timeline from transaction dates alone:
+ * one cumulative snapshot per distinct calendar month present in the file, in
+ * chronological order. This is what lets a single CSV import backfill an
+ * instant "value over time" history instead of just today's net position —
+ * every month gets exactly the transactions dated on or before its end,
+ * regardless of where else in the file later or earlier rows appear.
+ */
+export function buildMonthlyPositionTimeline(transactions: ImportedTransaction[]): MonthlyPositionSnapshot[] {
+  const monthKeys = Array.from(new Set(
+    transactions.map((tx) => tx.date?.slice(0, 7)).filter((key): key is string => Boolean(key)),
+  )).sort();
+  return monthKeys.map((monthKey) => ({
+    monthKey,
+    positions: aggregatePositionsAsOf(transactions, lastDayOfMonth(monthKey)),
+  }));
 }

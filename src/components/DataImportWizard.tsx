@@ -56,6 +56,8 @@ import {
   learnFromTransaction, suggestCategory, seedPatternsFromHistoryOnce, findPastMatchesWithDifferentCategory,
 } from '../utils/categoryPatterns';
 import { getAllOutflows, getAllIncomes, getCustomCategories } from '../utils/userDataSelectors';
+import ImportPlatformGuide from './ImportPlatformGuide';
+import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
 
 // ═══════════════════════════════════════════
 // Styled Components
@@ -491,6 +493,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [rowCategories, setRowCategories] = useState({}); // { rowIndex: categoryIndex }
   const [rowNotes, setRowNotes] = useState({}); // { rowIndex: notesString }
   const [showAllRows, setShowAllRows] = useState(false); // toggle to show all rows in preview
+  // rowIndex -> reason, for rows flagged as a likely duplicate or a likely
+  // transfer between the user's own accounts (see utils/duplicateDetection.ts).
+  // Both start deselected by default (safer default), but stay fully editable.
+  const [flaggedRows, setFlaggedRows] = useState({});
 
   // Import state
   const [importing, setImporting] = useState(false);
@@ -747,12 +753,35 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setValidTx(valid);
     setErrorTx(errors);
     setSummary(summarizeImport(valid));
-    // Initialize all valid rows as selected
-    setSelectedRows(new Set(valid.map(tx => tx.rowIndex)));
     // Pre-populate date filter with min/max from parsed data
     const dates = valid.map(tx => tx.date).filter(Boolean).sort();
     setDateFrom(dates[0] || '');
     setDateTo(dates[dates.length - 1] || '');
+
+    // Duplicate/transfer detection — flags rows that look like they repeat
+    // something already in the file or already in the user's history, or that
+    // look like a transfer between the user's own accounts (same amount,
+    // close dates, opposite flow) rather than genuine income/spending.
+    const validOutflows = valid.filter(tx => tx.isOutflow);
+    const validIncomes = valid.filter(tx => !tx.isOutflow);
+    const historyOutflows = getAllOutflows(userData).flat().filter(Boolean)
+      .map(e => ({ date: e.date ? e.date.slice(0, 10) : null, amount: e.amount, notes: e.notes }));
+    const historyIncomes = getAllIncomes(userData).flat().filter(Boolean)
+      .map(e => ({ date: e.date ? e.date.slice(0, 10) : null, amount: e.amount, notes: e.notes }));
+
+    const flags = {};
+    findDuplicatesWithinBatch(validOutflows).forEach(m => { flags[m.item.rowIndex] = 'duplicate'; });
+    findDuplicatesWithinBatch(validIncomes).forEach(m => { flags[m.item.rowIndex] = 'duplicate'; });
+    findLikelyDuplicates(validOutflows, historyOutflows).forEach(m => { flags[m.item.rowIndex] = 'duplicate'; });
+    findLikelyDuplicates(validIncomes, historyIncomes).forEach(m => { flags[m.item.rowIndex] = 'duplicate'; });
+    findLikelyTransfers(validOutflows, validIncomes).forEach(({ outflow, income }) => {
+      flags[outflow.rowIndex] = 'transfer';
+      flags[income.rowIndex] = 'transfer';
+    });
+    setFlaggedRows(flags);
+
+    // Flagged rows start deselected (safer default) — everything else selected
+    setSelectedRows(new Set(valid.filter(tx => !flags[tx.rowIndex]).map(tx => tx.rowIndex)));
 
     // Rows that fell back to the plain default category (no in-file category
     // column match) get a smarter per-row suggestion from the user's own
@@ -1023,6 +1052,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             <p style={{ color: theme.textColor, opacity: 0.7, marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
               {t.uploadDescription || 'Upload a CSV or Excel file with your financial data. We support any format — you\'ll map the columns in the next step.'}
             </p>
+
+            <ImportPlatformGuide theme={theme} platformIds={['revolut', 'n26']} />
 
             <DropZone
               theme={theme}
@@ -1422,6 +1453,13 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               {t.reviewTitle || '📋 Review before importing'}
             </h3>
 
+            {Object.keys(flaggedRows).length > 0 && (
+              <p style={{ color: theme.textColor, opacity: 0.75, fontSize: '0.85rem', marginBottom: '1rem' }}>
+                ⚠️ {(t.flaggedRowsNote || '{count} rows look like possible duplicates or transfers between your own accounts, and were deselected by default — check the badges below and re-select any that are actually genuine.')
+                  .replace('{count}', String(Object.keys(flaggedRows).length))}
+              </p>
+            )}
+
             {/* Summary Cards — based on live selection */}
             {liveSummary && (
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '0.8rem', marginBottom: '1.5rem' }}>
@@ -1605,6 +1643,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                           <Badge $variant={tx.isOutflow ? 'error' : 'success'}>
                             {tx.isOutflow ? (t.outflow || 'Outflow') : (t.income || 'Income')}
                           </Badge>
+                          {flaggedRows[tx.rowIndex] === 'duplicate' && (
+                            <Badge $variant="warning" title={t.duplicateHint || 'Looks like it might already be recorded — deselected by default.'}>
+                              {t.duplicateBadge || 'Possible duplicate'}
+                            </Badge>
+                          )}
+                          {flaggedRows[tx.rowIndex] === 'transfer' && (
+                            <Badge $variant="warning" title={t.transferHint || 'Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.'}>
+                              {t.transferBadge || 'Possible transfer'}
+                            </Badge>
+                          )}
                         </td>
                         <td>
                           <CompactSelect

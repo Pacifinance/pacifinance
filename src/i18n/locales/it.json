@@ -1,4 +1,29 @@
 {
+    "importGuide": {
+        "toggleLabel": "Dove trovo questo file?",
+        "platforms": {
+            "trading212": {
+                "label": "Trading 212",
+                "steps": "Storico → icona di esportazione in alto a destra → scegli l'intervallo di date → CSV."
+            },
+            "degiro": {
+                "label": "DEGIRO",
+                "steps": "Attività → Storico → Esporta (scarica Transactions.csv)."
+            },
+            "directa": {
+                "label": "Directa",
+                "steps": "Movimenti → Esporta (CSV o Excel)."
+            },
+            "revolut": {
+                "label": "Revolut",
+                "steps": "App → Conto → Estratto conto → scegli il periodo → Esporta CSV."
+            },
+            "n26": {
+                "label": "N26",
+                "steps": "App o sito N26 → Transazioni → Esporta."
+            }
+        }
+    },
     "assets": {
         "total": "Totale",
         "bank": "Banca",
@@ -2171,7 +2196,12 @@
         "tagWithBankCategory": "Etichetta queste transazioni con una sottocategoria \"{bank}\"",
         "retroHint": "{count} transazioni passate con una nota simile sono classificate in una categoria diversa.",
         "retroHintSuggestion": "Puoi aggiornarle manualmente dallo storico.",
-        "dismiss": "Chiudi"
+        "dismiss": "Chiudi",
+        "duplicateBadge": "Possibile duplicato",
+        "duplicateHint": "Sembra già registrata — deselezionata di default.",
+        "transferBadge": "Possibile trasferimento",
+        "transferHint": "Corrisponde a un'entrata/uscita di importo uguale — potrebbe essere uno spostamento tra i tuoi conti, non un'entrata o spesa reale.",
+        "flaggedRowsNote": "{count} righe sembrano possibili duplicati o trasferimenti tra i tuoi conti, e sono state deselezionate di default — controlla i badge qui sotto e riseleziona quelle che sono invece genuine."
     },
     "onboarding": {
         "welcomeTitle": "Benvenuto su Pacifinance!",
@@ -2723,7 +2753,10 @@
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
                                     "generic": "formato generico"
-                        }
+                        },
+            "historyBackfillNote": "I mesi passati presenti nel file verranno ricostruiti automaticamente come storico del portafoglio.",
+            "historyMonths": "+{count} mesi di storico",
+            "pastMonthNote": "L'importazione aggiorna sempre la posizione di oggi e ricostruisce lo storico dalle date del file — non riguarda solo il mese qui visualizzato."
             }
     },
     "liquidityAccounts": {

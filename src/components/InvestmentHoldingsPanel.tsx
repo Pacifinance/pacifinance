@@ -525,11 +525,15 @@ export default function InvestmentHoldingsPanel({
             </AddTriggerButton>
           ))}
 
-          {isCurrentMonth && (
-            <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
-              <FontAwesomeIcon icon={faFileImport} />
-              {translations.investments.importWizard?.button || 'Importa da CSV'}
-            </AddTriggerButton>
+          <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
+            <FontAwesomeIcon icon={faFileImport} />
+            {translations.investments.importWizard?.button || 'Importa da CSV'}
+          </AddTriggerButton>
+          {!isCurrentMonth && (
+            <DefaultInstrumentHint theme={theme}>
+              {translations.investments.importWizard?.pastMonthNote
+                || 'The import always updates today\'s position and backfills history from the file\'s own dates — it doesn\'t only affect the month shown here.'}
+            </DefaultInstrumentHint>
           )}
         </ModalBody>
 

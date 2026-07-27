@@ -1,4 +1,29 @@
 {
+    "importGuide": {
+        "toggleLabel": "Où trouver ce fichier ?",
+        "platforms": {
+            "trading212": {
+                "label": "Trading 212",
+                "steps": "Historique → icône d'exportation (en haut à droite) → choisissez la période → CSV."
+            },
+            "degiro": {
+                "label": "DEGIRO",
+                "steps": "Activité → Historique → Exporter (télécharge Transactions.csv)."
+            },
+            "directa": {
+                "label": "Directa",
+                "steps": "Mouvements → Exporter (CSV ou Excel)."
+            },
+            "revolut": {
+                "label": "Revolut",
+                "steps": "App Revolut → Compte → Relevé → choisissez la période → Exporter en CSV."
+            },
+            "n26": {
+                "label": "N26",
+                "steps": "App ou site N26 → Transactions → Exporter."
+            }
+        }
+    },
     "assets": {
         "total": "Total",
         "bank": "Banque",
@@ -2145,7 +2170,12 @@
         "tagWithBankCategory": "Étiqueter ces transactions avec une sous-catégorie « {bank} »",
         "retroHint": "{count} transactions passées avec une note similaire sont classées dans une catégorie différente.",
         "retroHintSuggestion": "Vous pouvez les mettre à jour manuellement depuis l'historique.",
-        "dismiss": "Fermer"
+        "dismiss": "Fermer",
+        "duplicateBadge": "Doublon possible",
+        "duplicateHint": "Semble déjà enregistré — désélectionné par défaut.",
+        "transferBadge": "Virement possible",
+        "transferHint": "Correspond à une entrée de flux opposé du même montant — pourrait être un virement entre vos propres comptes, pas un revenu/une dépense réel(le).",
+        "flaggedRowsNote": "{count} lignes ressemblent à des doublons possibles ou à des virements entre vos propres comptes, et ont été désélectionnées par défaut — vérifiez les badges ci-dessous et resélectionnez celles qui sont authentiques."
     },
     "onboarding": {
         "welcomeTitle": "Bienvenue sur Pacifinance !",
@@ -2697,7 +2727,10 @@
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
                                     "generic": "format générique"
-                        }
+                        },
+            "historyBackfillNote": "Les mois passés trouvés dans le fichier seront automatiquement intégrés à l'historique du portefeuille.",
+            "historyMonths": "+{count} mois d'historique",
+            "pastMonthNote": "L'import met toujours à jour la position du jour et complète l'historique à partir des dates du fichier — cela ne concerne pas que le mois affiché ici."
             }
     },
     "liquidityAccounts": {

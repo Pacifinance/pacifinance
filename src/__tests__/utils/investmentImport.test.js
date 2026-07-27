@@ -3,7 +3,10 @@ import {
   parseImportNumber, parseImportDate, looksLikeIsin, detectDelimiter, splitCsvLine, extractCsvRows,
 } from '../../utils/investmentImport/normalize';
 import { parseInvestmentCsv } from '../../utils/investmentImport/parsers';
-import { dedupeTransactions, aggregatePositions } from '../../utils/investmentImport/aggregate';
+import {
+  dedupeTransactions, aggregatePositions, aggregatePositionsAsOf, buildMonthlyPositionTimeline, lastDayOfMonth,
+  groupTransactionsByPositionKey,
+} from '../../utils/investmentImport/aggregate';
 
 describe('parseImportNumber', () => {
   it('parses plain anglo numbers', () => {
@@ -199,5 +202,88 @@ describe('aggregatePositions', () => {
       tx({ isin: 'US0378331005', ticker: 'AAPL', total: 5000 }),
     ]);
     expect(positions[0].ticker).toBe('AAPL');
+  });
+});
+
+describe('groupTransactionsByPositionKey', () => {
+  it('groups by ISIN, falling back to ticker then name, matching aggregatePositions', () => {
+    const withIsin = { isin: 'US0378331005', ticker: 'AAPL', name: 'Apple' };
+    const tickerOnly = { isin: null, ticker: 'CSCO', name: 'Cisco' };
+    const nameOnly = { isin: null, ticker: null, name: 'Some Fund' };
+    const grouped = groupTransactionsByPositionKey([withIsin, withIsin, tickerOnly, nameOnly]);
+    expect(grouped.get('US0378331005')).toHaveLength(2);
+    expect(grouped.get('CSCO')).toHaveLength(1);
+    expect(grouped.get('Some Fund')).toHaveLength(1);
+  });
+
+  it('drops transactions with no usable identifier', () => {
+    const grouped = groupTransactionsByPositionKey([{ isin: null, ticker: null, name: null }]);
+    expect(grouped.size).toBe(0);
+  });
+});
+
+describe('lastDayOfMonth', () => {
+  it('handles 30/31-day months and February, including leap years', () => {
+    expect(lastDayOfMonth('2024-01')).toBe('2024-01-31');
+    expect(lastDayOfMonth('2024-04')).toBe('2024-04-30');
+    expect(lastDayOfMonth('2024-02')).toBe('2024-02-29'); // leap year
+    expect(lastDayOfMonth('2023-02')).toBe('2023-02-28'); // non-leap year
+  });
+});
+
+describe('aggregatePositionsAsOf', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 1, price: 100, total: 100, currency: 'EUR', externalId: null, ...over,
+  });
+
+  it('only counts transactions dated on or before the cutoff — answers "what if the file has dates before/after the target date"', () => {
+    const transactions = [
+      tx({ date: '2024-01-15', quantity: 10, total: 1000 }),
+      tx({ date: '2024-02-15', quantity: 10, total: 1200 }), // after the March cutoff below? no — before
+      tx({ date: '2024-06-15', quantity: 10, total: 1500 }), // clearly after the cutoff
+    ];
+    const asOfFebruary = aggregatePositionsAsOf(transactions, '2024-02-29');
+    expect(asOfFebruary).toHaveLength(1);
+    expect(asOfFebruary[0].quantity).toBe(20); // only the Jan + Feb buys
+    expect(asOfFebruary[0].investedAmount).toBe(2200);
+  });
+
+  it('excludes rows with no parseable date — their place in the timeline is unknown', () => {
+    const transactions = [tx({ date: null })];
+    expect(aggregatePositionsAsOf(transactions, '2024-12-31')).toHaveLength(0);
+  });
+});
+
+describe('buildMonthlyPositionTimeline', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 1, price: 100, total: 100, currency: 'EUR', externalId: null, ...over,
+  });
+
+  it('produces one cumulative snapshot per distinct month, in chronological order', () => {
+    const transactions = [
+      tx({ date: '2024-03-10', quantity: 5, total: 500 }),
+      tx({ date: '2024-01-10', quantity: 10, total: 1000 }),
+      tx({ date: '2024-01-20', quantity: 2, total: 200 }),
+    ];
+    const timeline = buildMonthlyPositionTimeline(transactions);
+    expect(timeline.map((m) => m.monthKey)).toEqual(['2024-01', '2024-03']); // sorted, February has no rows so it's absent
+    expect(timeline[0].positions[0].quantity).toBe(12); // both January buys
+    expect(timeline[1].positions[0].quantity).toBe(17); // January + March buys, cumulative
+  });
+
+  it('reflects a sell that happens between two snapshot months', () => {
+    const transactions = [
+      tx({ date: '2024-01-10', quantity: 10, total: 1000 }),
+      tx({ side: 'sell', date: '2024-02-10', quantity: 4, total: 500 }),
+    ];
+    const timeline = buildMonthlyPositionTimeline(transactions);
+    expect(timeline[0].positions[0].quantity).toBe(10);
+    expect(timeline[1].positions[0].quantity).toBe(6);
+  });
+
+  it('returns an empty timeline when no transaction has a date', () => {
+    expect(buildMonthlyPositionTimeline([tx({ date: null })])).toEqual([]);
   });
 });

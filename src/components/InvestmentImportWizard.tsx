@@ -10,11 +10,16 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from './multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
-import { parseInvestmentCsv } from '../utils/investmentImport/parsers';
-import { dedupeTransactions, aggregatePositions, AggregatedPosition } from '../utils/investmentImport/aggregate';
+import { parseInvestmentCsv, ImportedTransaction } from '../utils/investmentImport/parsers';
+import {
+  dedupeTransactions, aggregatePositions, buildMonthlyPositionTimeline, groupTransactionsByPositionKey, AggregatedPosition,
+} from '../utils/investmentImport/aggregate';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
+import ImportPlatformGuide from './ImportPlatformGuide';
 import type { InvestmentInstrumentDto } from '../types/api';
+
+const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
 
 /**
  * CSV import wizard for investment holdings (Trading 212, DEGIRO, Directa,
@@ -22,13 +27,25 @@ import type { InvestmentInstrumentDto } from '../types/api';
  * docs/INVESTMENT_IMPORT_RESEARCH.md). The file is parsed entirely in the
  * browser: only the resolved, user-confirmed positions reach the API, exactly
  * like manual entry.
+ *
+ * A holding's identity (instrument/quantity/avg price) always reflects today —
+ * there's no "import into a past month" the way there is for balances, since
+ * the app only lets historical *values* be attached to an already-existing
+ * current holding (see InvestmentHoldingsPanel's historical-edit flow). So
+ * every import creates/updates the current holding from the full file, then
+ * automatically backfills its monthly invested-amount history from the real
+ * transaction dates in the file — that's what makes "value over time" appear
+ * immediately, without needing the user to pick a target month by hand.
  */
 
 interface ImportRowState {
   position: AggregatedPosition;
+  transactions: ImportedTransaction[];
   instrument: InvestmentInstrumentDto | null;
   status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'saved' | 'error';
   selected: boolean;
+  /** How many distinct past months this row's history will backfill (0 = single month, nothing to backfill). */
+  historyMonthCount: number;
 }
 
 interface InvestmentImportWizardProps {
@@ -133,12 +150,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       return;
     }
     // Merge with transactions from already-loaded files (multi-file upload for capped exports)
-    const positions = aggregatePositions(dedupeTransactions(parsed.transactions));
+    const deduped = dedupeTransactions(parsed.transactions);
+    const positions = aggregatePositions(deduped);
+    const transactionsByKey = groupTransactionsByPositionKey(deduped);
     setPlatform(parsed.platform);
     setSkippedRows(parsed.skippedRows);
-    const initialRows: ImportRowState[] = positions.map((position) => ({
-      position, instrument: null, status: 'pending', selected: true,
-    }));
+    const initialRows: ImportRowState[] = positions.map((position) => {
+      const transactions = transactionsByKey.get(position.key) ?? [];
+      // Months present in this position's own history, beyond the current one —
+      // that's how many past months will get an automatic backfilled snapshot.
+      const historyMonthCount = Math.max(0, buildMonthlyPositionTimeline(transactions).length - 1);
+      return { position, transactions, instrument: null, status: 'pending', selected: true, historyMonthCount };
+    });
     setRows(initialRows);
     void resolveInstruments(initialRows);
   };
@@ -176,7 +199,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         const assetKey = KIND_TO_ASSET_KEY[row.instrument.kind];
         if (!assetKey) continue;
         try {
-          await investmentService.saveHolding({
+          const saved = await investmentService.saveHolding({
             instrument_id: row.instrument.id,
             asset_key: assetKey,
             quantity: row.position.quantity,
@@ -185,6 +208,27 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
             notes: '',
           });
+          // Backfill the monthly invested-amount history from the file's own
+          // transaction dates — only invested_amount is known (no historical
+          // market prices are available), current_value is left unset, same
+          // as the existing manual historical-edit flow when nothing's been
+          // entered yet for a month.
+          const timeline = buildMonthlyPositionTimeline(row.transactions);
+          for (const snapshot of timeline) {
+            const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
+            if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
+            try {
+              await investmentService.saveHoldingHistory({
+                holding_id: saved.id,
+                user_date: `${snapshot.monthKey}-01`,
+                current_value: null,
+                invested_amount: toEUR(snapshotPosition.investedAmount),
+              });
+            } catch {
+              // Backfilling one month's history failing shouldn't roll back the
+              // holding itself — the user can still fix it manually later.
+            }
+          }
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
         } catch {
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
@@ -223,6 +267,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         </ModalHeader>
 
         <ModalBody theme={theme}>
+          <ImportPlatformGuide theme={theme} platformIds={INVESTMENT_IMPORT_PLATFORMS} />
           <DropZone theme={theme}>
             <FontAwesomeIcon icon={faFileCsv} />
             {t.dropHint}
@@ -244,6 +289,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             </SummaryLine>
           )}
 
+          {rows.some((r) => r.historyMonthCount > 0) && (
+            <SummaryLine theme={theme}>{t.historyBackfillNote || 'Past months found in the file will be backfilled automatically as portfolio history.'}</SummaryLine>
+          )}
+
           {rows.map((row, index) => (
             <PositionRow key={row.position.key} theme={theme}>
               <input
@@ -262,6 +311,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 </span>
                 {row.instrument && formatInstrumentDetails(row.instrument) !== '' && (
                   <span>{formatInstrumentDetails(row.instrument)}</span>
+                )}
+                {row.historyMonthCount > 0 && (
+                  <span>{(t.historyMonths || '+{count} months of history').replace('{count}', String(row.historyMonthCount))}</span>
                 )}
                 {row.status === 'not-found' && <span>{t.notFound}</span>}
               </PositionInfo>

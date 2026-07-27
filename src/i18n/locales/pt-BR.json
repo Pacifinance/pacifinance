@@ -1,4 +1,29 @@
 {
+    "importGuide": {
+        "toggleLabel": "Onde encontro esse arquivo?",
+        "platforms": {
+            "trading212": {
+                "label": "Trading 212",
+                "steps": "Histórico → ícone de exportar (canto superior direito) → escolha o período → CSV."
+            },
+            "degiro": {
+                "label": "DEGIRO",
+                "steps": "Atividade → Histórico → Exportar (baixa Transactions.csv)."
+            },
+            "directa": {
+                "label": "Directa",
+                "steps": "Movimentos → Exportar (CSV ou Excel)."
+            },
+            "revolut": {
+                "label": "Revolut",
+                "steps": "App Revolut → Conta → Extrato → escolha o período → Exportar CSV."
+            },
+            "n26": {
+                "label": "N26",
+                "steps": "App ou site do N26 → Transações → Exportar."
+            }
+        }
+    },
     "assets": {
         "total": "Total",
         "bank": "Banco",
@@ -2145,7 +2170,12 @@
         "tagWithBankCategory": "Marcar essas transações com uma subcategoria \"{bank}\"",
         "retroHint": "{count} transações passadas com uma nota semelhante estão em uma categoria diferente.",
         "retroHintSuggestion": "Você pode atualizá-las manualmente pelo histórico.",
-        "dismiss": "Fechar"
+        "dismiss": "Fechar",
+        "duplicateBadge": "Possível duplicata",
+        "duplicateHint": "Parece que já foi registrada — desmarcada por padrão.",
+        "transferBadge": "Possível transferência",
+        "transferHint": "Corresponde a um lançamento de fluxo oposto com o mesmo valor — pode ser uma transferência entre suas próprias contas, não uma receita/despesa real.",
+        "flaggedRowsNote": "{count} linhas parecem possíveis duplicatas ou transferências entre suas próprias contas, e foram desmarcadas por padrão — verifique os selos abaixo e selecione novamente as que forem genuínas."
     },
     "onboarding": {
         "welcomeTitle": "Bem-vindo ao Pacifinance!",
@@ -2697,7 +2727,10 @@
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
                                     "generic": "formato genérico"
-                        }
+                        },
+            "historyBackfillNote": "Os meses passados encontrados no arquivo serão preenchidos automaticamente como histórico da carteira.",
+            "historyMonths": "+{count} meses de histórico",
+            "pastMonthNote": "A importação sempre atualiza a posição de hoje e preenche o histórico com as datas do próprio arquivo — não afeta apenas o mês mostrado aqui."
             }
     },
     "liquidityAccounts": {

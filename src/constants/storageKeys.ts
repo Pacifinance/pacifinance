@@ -18,6 +18,8 @@ export const STORAGE_KEYS = {
   DASHBOARD_VIEW_MODE:   'pacifinance-dashboard-view-mode',
   OUTFLOW_LIST_VIEW_MODE: 'pacifinance-outflow-list-view-mode',
   INCOME_LIST_VIEW_MODE:  'pacifinance-income-list-view-mode',
+  CATEGORY_PATTERNS:      'pacifinance-category-patterns',
+  CATEGORY_PATTERNS_SEEDED: 'pacifinance-category-patterns-seeded',
   PAST_DATE_BAL_PREF:    'pacifinance-past-date-balance-pref',
   ACHIEVEMENTS_NOTIFIED: 'pacifinance-achievements-notified',
   ONBOARDING_SEEN:       'pacifinance-onboarding-seen',

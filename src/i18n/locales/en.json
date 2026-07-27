@@ -2162,7 +2162,16 @@
         "undoButton": "Undo import",
         "undoing": "Undoing...",
         "undoSuccess": "✅ Undo completed — {count} transactions removed",
-        "undoPartial": "⚠️ Undo partial — {success} removed, {failed} failed"
+        "undoPartial": "⚠️ Undo partial — {success} removed, {failed} failed",
+        "bankDetected": "Detected: {bank} — columns mapped automatically.",
+        "bankNames": {
+                "revolut": "Revolut",
+                "n26": "N26"
+        },
+        "tagWithBankCategory": "Tag these transactions with a \"{bank}\" sub-category",
+        "retroHint": "{count} past transactions with a similar note are filed under a different category.",
+        "retroHintSuggestion": "You can update them manually from the transaction history.",
+        "dismiss": "Dismiss"
     },
     "onboarding": {
         "welcomeTitle": "Welcome to Pacifinance!",

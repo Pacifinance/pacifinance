@@ -501,6 +501,7 @@ export const toAPIFormat = (tx, paymentType) => ({
     payment_type: tx.isOutflow ? (paymentType ?? 1) : 0,
     category_tag: tx.categoryIndex,
     notes: tx.notes,
+    user_category_id: tx.userCategoryId ?? null,
   },
 });
 

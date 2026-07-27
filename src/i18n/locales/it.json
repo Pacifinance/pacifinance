@@ -2162,7 +2162,16 @@
         "undoButton": "Annulla importazione",
         "undoing": "Annullamento in corso...",
         "undoSuccess": "✅ Annullamento completato — {count} transazioni rimosse",
-        "undoPartial": "⚠️ Annullamento parziale — {success} rimosse, {failed} fallite"
+        "undoPartial": "⚠️ Annullamento parziale — {success} rimosse, {failed} fallite",
+        "bankDetected": "Rilevato: {bank} — colonne mappate automaticamente.",
+        "bankNames": {
+                "revolut": "Revolut",
+                "n26": "N26"
+        },
+        "tagWithBankCategory": "Etichetta queste transazioni con una sottocategoria \"{bank}\"",
+        "retroHint": "{count} transazioni passate con una nota simile sono classificate in una categoria diversa.",
+        "retroHintSuggestion": "Puoi aggiornarle manualmente dallo storico.",
+        "dismiss": "Chiudi"
     },
     "onboarding": {
         "welcomeTitle": "Benvenuto su Pacifinance!",

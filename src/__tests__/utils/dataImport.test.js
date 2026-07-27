@@ -895,6 +895,13 @@ describe('API Format Conversion', () => {
       const tx = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999 };
       expect(toAPIFormat(tx).expense.notes).toBeUndefined();
     });
+
+    it('should pass through userCategoryId when present, and default to null otherwise', () => {
+      const tagged = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 4, notes: '', userCategoryId: 7 };
+      expect(toAPIFormat(tagged).expense.user_category_id).toBe(7);
+      const untagged = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 4, notes: '' };
+      expect(toAPIFormat(untagged).expense.user_category_id).toBeNull();
+    });
   });
 });
 

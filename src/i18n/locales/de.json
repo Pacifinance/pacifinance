@@ -2136,7 +2136,16 @@
         "undoButton": "Import rückgängig machen",
         "undoing": "Wird rückgängig gemacht...",
         "undoSuccess": "✅ Rückgängig abgeschlossen — {count} Transaktionen entfernt",
-        "undoPartial": "⚠️ Teilweise rückgängig — {success} entfernt, {failed} fehlgeschlagen"
+        "undoPartial": "⚠️ Teilweise rückgängig — {success} entfernt, {failed} fehlgeschlagen",
+        "bankDetected": "Erkannt: {bank} — Spalten automatisch zugeordnet.",
+        "bankNames": {
+                "revolut": "Revolut",
+                "n26": "N26"
+        },
+        "tagWithBankCategory": "Diese Transaktionen mit einer \"{bank}\"-Unterkategorie kennzeichnen",
+        "retroHint": "{count} vergangene Transaktionen mit ähnlicher Notiz sind einer anderen Kategorie zugeordnet.",
+        "retroHintSuggestion": "Sie können diese manuell im Verlauf aktualisieren.",
+        "dismiss": "Schließen"
     },
     "onboarding": {
         "welcomeTitle": "Willkommen bei Pacifinance!",

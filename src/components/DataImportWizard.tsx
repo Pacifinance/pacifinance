@@ -50,6 +50,12 @@ import {
 } from '../utils/dataImport';
 import { EXPENSE_CATEGORY_CODES } from '../data/expenseCategoryCodes';
 import { getCategoryColor } from '../data/categoryColors';
+import { detectBankFormat } from '../utils/dataImport/bankFormats';
+import { findExistingBankCategory, distinctCategoryFlows } from '../utils/dataImport/bankCategoryTagging';
+import {
+  learnFromTransaction, suggestCategory, seedPatternsFromHistoryOnce, findPastMatchesWithDifferentCategory,
+} from '../utils/categoryPatterns';
+import { getAllOutflows, getAllIncomes, getCustomCategories } from '../utils/userDataSelectors';
 
 // ═══════════════════════════════════════════
 // Styled Components
@@ -250,6 +256,56 @@ const Badge = styled.span`
   color: ${p => p.$variant === 'success' ? '#079164' : p.$variant === 'error' ? '#dc3545' : '#ffc107'};
 `;
 
+const InfoBanner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 0.75rem;
+  border-radius: 10px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.1)' : 'rgba(59,130,246,0.08)'};
+  border: 1px solid rgba(59,130,246,0.25);
+  color: ${p => p.theme.textColor};
+  font-size: 0.82rem;
+
+  button {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.6;
+    &:hover { opacity: 1; }
+  }
+`;
+
+const BankDetectedBanner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.9rem;
+  border-radius: 10px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(7,145,100,0.12)' : 'rgba(7,145,100,0.08)'};
+  border: 1px solid rgba(7,145,100,0.3);
+  color: ${p => p.theme.textColor};
+  font-size: 0.85rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+`;
+
 const ProgressBar = styled.div`
   height: 6px;
   border-radius: 3px;
@@ -443,6 +499,14 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [undoing, setUndoing] = useState(false);
   const [undoResult, setUndoResult] = useState(null);
 
+  // Detected bank/institution export format (Revolut, N26 — see utils/dataImport/bankFormats.ts),
+  // and whether the user wants imported rows tagged with a bank-named sub-category.
+  const [detectedBank, setDetectedBank] = useState(null);
+  const [tagWithBankCategory, setTagWithBankCategory] = useState(true);
+  // Informational nudge shown after the user manually recategorizes a row, when
+  // past transactions with a similar note are filed under a different category.
+  const [retroHint, setRetroHint] = useState(null);
+
   const fileInputRef = useRef(null);
 
   // Initialize defaultPaymentType from paymentTags once available
@@ -451,6 +515,17 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       setDefaultPaymentType(paymentTags[0].index);
     }
   }, [paymentTags, defaultPaymentType]);
+
+  // Seed the local category-suggestion engine from the user's own already-categorized
+  // history — once real data is available, and only once ever per browser (see
+  // seedPatternsFromHistoryOnce). Never sent anywhere: purely a localStorage-backed
+  // frequency table (see utils/categoryPatterns.ts).
+  useEffect(() => {
+    const outflows = getAllOutflows(userData);
+    const incomes = getAllIncomes(userData);
+    const hasHistory = [...outflows, ...incomes].some((month) => Array.isArray(month) && month.length > 0);
+    if (hasHistory) seedPatternsFromHistoryOnce(outflows, incomes);
+  }, [userData]);
 
   // ─── Derived data ───
 
@@ -517,16 +592,32 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       setHeaders(h);
       setRows(r);
 
-      // Auto-detect columns
-      const detected = autoDetectColumns(h, r);
-      if (detected.dateCol !== null) setDateCol(detected.dateCol);
-      if (detected.amountCol !== null) setAmountCol(detected.amountCol);
-      if (detected.categoryCol !== null) setCategoryCol(detected.categoryCol);
-      if (detected.notesCol !== null) setNotesCol(detected.notesCol);
+      // Known bank export? Use its verified column mapping directly instead of
+      // guessing (see utils/dataImport/bankFormats.ts) — skips manual mapping entirely.
+      const bankFormat = detectBankFormat(h);
+      setDetectedBank(bankFormat?.bank ?? null);
+      setTagWithBankCategory(true);
+
+      let dateColForFormat;
+      if (bankFormat) {
+        setDateCol(bankFormat.mapping.dateCol);
+        setAmountCol(bankFormat.mapping.amountCol);
+        setCategoryCol(bankFormat.mapping.categoryCol ?? -1);
+        setNotesCol(bankFormat.mapping.notesCol ?? -1);
+        dateColForFormat = bankFormat.mapping.dateCol;
+      } else {
+        // Auto-detect columns
+        const detected = autoDetectColumns(h, r);
+        if (detected.dateCol !== null) setDateCol(detected.dateCol);
+        if (detected.amountCol !== null) setAmountCol(detected.amountCol);
+        if (detected.categoryCol !== null) setCategoryCol(detected.categoryCol);
+        if (detected.notesCol !== null) setNotesCol(detected.notesCol);
+        dateColForFormat = detected.dateCol;
+      }
 
       // Auto-detect date format
-      if (detected.dateCol !== null) {
-        const samples = r.slice(0, 10).map(row => row[detected.dateCol]);
+      if (dateColForFormat !== null && dateColForFormat !== undefined) {
+        const samples = r.slice(0, 10).map(row => row[dateColForFormat]);
         const fmt = detectDateFormat(samples);
         if (fmt) setDateFormat(fmt);
       }
@@ -560,15 +651,27 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setHeaders(h);
     setRows(r);
 
-    // Re-run auto-detection
-    const detected = autoDetectColumns(h, r);
-    setDateCol(detected.dateCol !== null ? detected.dateCol : -1);
-    setAmountCol(detected.amountCol !== null ? detected.amountCol : -1);
-    setCategoryCol(detected.categoryCol !== null ? detected.categoryCol : -1);
-    setNotesCol(detected.notesCol !== null ? detected.notesCol : -1);
+    // Re-run detection: known bank format first, generic heuristic otherwise
+    const bankFormat = detectBankFormat(h);
+    setDetectedBank(bankFormat?.bank ?? null);
+    let dateColForFormat;
+    if (bankFormat) {
+      setDateCol(bankFormat.mapping.dateCol);
+      setAmountCol(bankFormat.mapping.amountCol);
+      setCategoryCol(bankFormat.mapping.categoryCol ?? -1);
+      setNotesCol(bankFormat.mapping.notesCol ?? -1);
+      dateColForFormat = bankFormat.mapping.dateCol;
+    } else {
+      const detected = autoDetectColumns(h, r);
+      setDateCol(detected.dateCol !== null ? detected.dateCol : -1);
+      setAmountCol(detected.amountCol !== null ? detected.amountCol : -1);
+      setCategoryCol(detected.categoryCol !== null ? detected.categoryCol : -1);
+      setNotesCol(detected.notesCol !== null ? detected.notesCol : -1);
+      dateColForFormat = detected.dateCol;
+    }
 
-    if (detected.dateCol !== null) {
-      const samples = r.slice(0, 10).map(row => row[detected.dateCol]);
+    if (dateColForFormat !== null && dateColForFormat !== undefined) {
+      const samples = r.slice(0, 10).map(row => row[dateColForFormat]);
       const fmt = detectDateFormat(samples);
       setDateFormat(fmt || '');
     } else {
@@ -650,8 +753,21 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const dates = valid.map(tx => tx.date).filter(Boolean).sort();
     setDateFrom(dates[0] || '');
     setDateTo(dates[dates.length - 1] || '');
-    setRowCategories({});
+
+    // Rows that fell back to the plain default category (no in-file category
+    // column match) get a smarter per-row suggestion from the user's own
+    // learned patterns, when confident enough — still fully editable below.
+    const patternSuggestions = {};
+    valid.forEach(tx => {
+      const defaultForFlow = tx.isOutflow ? defaultOutflowCategory : defaultIncomeCategory;
+      if (tx.categoryIndex === defaultForFlow && tx.notes) {
+        const suggestion = suggestCategory(tx.notes, tx.isOutflow);
+        if (suggestion) patternSuggestions[tx.rowIndex] = suggestion.categoryIndex;
+      }
+    });
+    setRowCategories(patternSuggestions);
     setRowNotes({});
+    setRetroHint(null);
     setShowAllRows(false);
     setStep(2);
   };
@@ -686,8 +802,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     });
   };
 
-  const handleRowCategoryChange = (rowIndex, newCategoryIndex) => {
-    setRowCategories(prev => ({ ...prev, [rowIndex]: newCategoryIndex }));
+  const handleRowCategoryChange = (tx, newCategoryIndex) => {
+    setRowCategories(prev => ({ ...prev, [tx.rowIndex]: newCategoryIndex }));
+    const note = getEffectiveNote(tx);
+    if (!note) { setRetroHint(null); return; }
+    // Teach the local suggestion engine from this correction, then check whether
+    // it now disagrees with how similar past transactions were already filed —
+    // purely informational (no bulk edit here; user can still fix those manually).
+    learnFromTransaction(note, newCategoryIndex, tx.isOutflow);
+    const history = (tx.isOutflow ? getAllOutflows(userData) : getAllIncomes(userData))
+      .flat().filter(Boolean);
+    const matches = findPastMatchesWithDifferentCategory(history, note, newCategoryIndex);
+    setRetroHint(matches.length > 0 ? { rowIndex: tx.rowIndex, count: matches.length } : null);
   };
 
   const handleRowNoteChange = (rowIndex, newNote) => {
@@ -742,13 +868,47 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       return modified;
     });
 
+    // Optional: tag every imported row with a "<Bank>" sub-category, one per
+    // distinct (official category, flow) pair actually used — a custom
+    // category always belongs to a single parent, so e.g. "Food" and
+    // "Transport" rows from the same Revolut export each get their own
+    // "Revolut" sub-category. Reuses an existing one if already created by a
+    // previous import (see findExistingBankCategory).
+    let taggedTx = finalTx;
+    if (detectedBank && tagWithBankCategory) {
+      const bankLabel = t.bankNames?.[detectedBank] || detectedBank;
+      const existingCategories = getCustomCategories(userData);
+      const categoryIdByFlow = {};
+      for (const flow of distinctCategoryFlows(finalTx)) {
+        const flowKey = `${flow.parentIndex}:${flow.isExpense}`;
+        const existing = findExistingBankCategory(existingCategories, flow.parentIndex, flow.isExpense, bankLabel);
+        if (existing) {
+          categoryIdByFlow[flowKey] = existing.id;
+          continue;
+        }
+        try {
+          const created = await financeService.addCustomCategory({
+            label: bankLabel, parent_index: flow.parentIndex, is_expense: flow.isExpense,
+          });
+          categoryIdByFlow[flowKey] = created.id;
+        } catch {
+          // Tagging is a nice-to-have — if creating the sub-category fails, the
+          // transaction still imports, just without the bank tag.
+        }
+      }
+      taggedTx = finalTx.map(tx => {
+        const userCategoryId = categoryIdByFlow[`${tx.categoryIndex}:${tx.isOutflow}`];
+        return userCategoryId !== undefined ? { ...tx, userCategoryId } : tx;
+      });
+    }
+
     let success = 0;
     let failed = 0;
-    const total = finalTx.length;
+    const total = taggedTx.length;
     const BATCH_SIZE = 5;
 
     for (let i = 0; i < total; i += BATCH_SIZE) {
-      const batch = finalTx.slice(i, i + BATCH_SIZE);
+      const batch = taggedTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
         financeService.addExpenseOrIncome(toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType))
           .then(() => { success++; })
@@ -917,6 +1077,24 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 {file?.name} — {allRawRows.length} {t.rows || 'rows'}
               </Badge>
             </div>
+
+            {detectedBank && (
+              <BankDetectedBanner theme={theme}>
+                <span>
+                  ✅ {(t.bankDetected || 'Detected: {bank} — columns mapped automatically.')
+                    .replace('{bank}', t.bankNames?.[detectedBank] || detectedBank)}
+                </span>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={tagWithBankCategory}
+                    onChange={e => setTagWithBankCategory(e.target.checked)}
+                  />
+                  {(t.tagWithBankCategory || 'Tag these transactions with a "{bank}" sub-category')
+                    .replace('{bank}', t.bankNames?.[detectedBank] || detectedBank)}
+                </label>
+              </BankDetectedBanner>
+            )}
 
             {/* Header Row Selector */}
             <div style={{
@@ -1354,6 +1532,17 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             </Card>
           )}
 
+          {retroHint && (
+            <InfoBanner theme={theme}>
+              <span>
+                {(t.retroHint || '{count} past transactions with a similar note are filed under a different category.')
+                  .replace('{count}', retroHint.count)}
+                {' '}{t.retroHintSuggestion || 'You can update them manually from the transaction history.'}
+              </span>
+              <button type="button" onClick={() => setRetroHint(null)} aria-label={t.dismiss || 'Dismiss'}>×</button>
+            </InfoBanner>
+          )}
+
           {/* Transactions Table with Selection & Category Editing */}
           <Card theme={theme} $compact>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -1421,7 +1610,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                           <CompactSelect
                             theme={theme}
                             value={effectiveCat.index}
-                            onChange={e => handleRowCategoryChange(tx.rowIndex, parseInt(e.target.value))}
+                            onChange={e => handleRowCategoryChange(tx, parseInt(e.target.value))}
                           >
                             {tx.isOutflow ? (
                               EXPENSE_CATEGORY_CODES.map(c => (

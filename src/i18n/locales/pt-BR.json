@@ -2716,6 +2716,7 @@
             "provider": {
                 "openfigi": "Verificado com OpenFIGI",
                 "coingecko": "Verificado com CoinGecko",
+                "finnhub": "Verificado com Finnhub",
                 "manual": "Inserido manualmente"
             }
         },
@@ -2741,7 +2742,8 @@
         "unverifiedHint": "Não verificado — não conta nas comparações com outros usuários."
         },
         "attribution": {
-            "coingecko": "Dados fornecidos pelo CoinGecko"
+            "coingecko": "Dados fornecidos pelo CoinGecko",
+            "finnhub": "Dados fornecidos pela Finnhub"
         },
         "importWizard": {
                         "title": "Importar investimentos de CSV",

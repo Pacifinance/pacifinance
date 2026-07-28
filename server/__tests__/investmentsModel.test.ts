@@ -9,8 +9,12 @@ vi.mock("../src/libs/providers/openfigiProvider", () => ({
 vi.mock("../src/libs/providers/coingeckoProvider", () => ({
     default: { searchCoingecko: vi.fn() },
 }))
+vi.mock("../src/libs/providers/finnhubProvider", () => ({
+    default: { searchFinnhub: vi.fn() },
+}))
 
 import openfigiProvider from "../src/libs/providers/openfigiProvider"
+import finnhubProvider from "../src/libs/providers/finnhubProvider"
 
 /** Minimal chainable Supabase query-builder stub: every filter method returns
  * itself, `.single()`/`.maybeSingle()` resolve to the configured result, and
@@ -99,11 +103,56 @@ describe("investments model", () => {
                 ],
                 error: null,
             }))
+            vi.mocked(finnhubProvider.searchFinnhub).mockResolvedValue([])
             vi.mocked(openfigiProvider.searchOpenFigi).mockResolvedValue([])
 
             await investments.searchInstruments("AAPL", "user-1", "stock", 20, "figi")
 
+            expect(finnhubProvider.searchFinnhub).toHaveBeenCalledWith("AAPL", "stock")
             expect(openfigiProvider.searchOpenFigi).toHaveBeenCalledWith("AAPL")
+        })
+
+        it("prefers Finnhub over OpenFIGI for free-text queries and skips OpenFIGI when Finnhub already has results", async () => {
+            vi.mocked(openfigiProvider.isIsin).mockReturnValue(false)
+            // Catch-all for every Supabase round-trip in this run (local search,
+            // then upsertInstrument's existing-row lookup + insert) - the exact
+            // count isn't the point of this test, only the provider ordering is.
+            mockSupabase.from.mockReturnValue(makeChain({data: [], error: null}))
+            vi.mocked(finnhubProvider.searchFinnhub).mockResolvedValue([
+                {kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc", currency: null, country: null, figi: null, isin: null, coingeckoId: null, provider: "finnhub", metadata: {}},
+            ])
+
+            await investments.searchInstruments("AAPL", "user-1", "stock", 20, "figi")
+
+            expect(finnhubProvider.searchFinnhub).toHaveBeenCalledWith("AAPL", "stock")
+            expect(openfigiProvider.searchOpenFigi).not.toHaveBeenCalled()
+        })
+
+        it("prefers OpenFIGI over Finnhub for ISIN queries and skips Finnhub when OpenFIGI already has results", async () => {
+            vi.mocked(openfigiProvider.isIsin).mockReturnValue(true)
+            mockSupabase.from.mockReturnValue(makeChain({data: [], error: null}))
+            vi.mocked(openfigiProvider.searchOpenFigiByIsin).mockResolvedValue([
+                {kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc", currency: null, country: null, figi: "BBG000B9XRY4", isin: "US0378331005", coingeckoId: null, provider: "openfigi", metadata: {}},
+            ])
+
+            await investments.searchInstruments("US0378331005", "user-1", "stock", 20, "figi")
+
+            expect(openfigiProvider.searchOpenFigiByIsin).toHaveBeenCalledWith("US0378331005")
+            expect(finnhubProvider.searchFinnhub).not.toHaveBeenCalled()
+        })
+
+        it("falls back to Finnhub when OpenFIGI has nothing for an ISIN query", async () => {
+            vi.mocked(openfigiProvider.isIsin).mockReturnValue(true)
+            mockSupabase.from.mockReturnValue(makeChain({data: [], error: null}))
+            vi.mocked(openfigiProvider.searchOpenFigiByIsin).mockResolvedValue([])
+            vi.mocked(finnhubProvider.searchFinnhub).mockResolvedValue([
+                {kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc", currency: null, country: null, figi: null, isin: null, coingeckoId: null, provider: "finnhub", metadata: {}},
+            ])
+
+            await investments.searchInstruments("US0378331005", "user-1", "stock", 20, "figi")
+
+            expect(openfigiProvider.searchOpenFigiByIsin).toHaveBeenCalledWith("US0378331005")
+            expect(finnhubProvider.searchFinnhub).toHaveBeenCalledWith("US0378331005", "stock")
         })
     })
 

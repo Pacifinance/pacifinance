@@ -352,6 +352,13 @@ export default function InstrumentSearchAutocomplete({ assetKey, onSelect, disab
               </a>
             </Attribution>
           )}
+          {!loading && source === 'figi' && results.some((instrument) => instrument.provider === 'finnhub') && (
+            <Attribution theme={theme}>
+              <a href="https://finnhub.io" target="_blank" rel="noopener noreferrer">
+                {translations.investments.attribution.finnhub}
+              </a>
+            </Attribution>
+          )}
         </Dropdown>
       )}
     </Wrapper>

@@ -1,6 +1,7 @@
 import supabase from "../supabase"
 import openfigiProvider from "../../libs/providers/openfigiProvider"
 import coingeckoProvider from "../../libs/providers/coingeckoProvider"
+import finnhubProvider from "../../libs/providers/finnhubProvider"
 import { ExtDate, toDateOnly } from "../../libs/datelib"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
@@ -275,8 +276,27 @@ async function upsertInstrument(input: UpsertInstrumentInput) {
 }
 
 /**
+ * Picks between OpenFIGI and Finnhub for stock/ETF/bond/fund lookups so neither provider's
+ * per-minute budget gets exhausted by the other's use case. For ISIN queries, OpenFIGI's
+ * /v3/mapping is authoritative and tried first, falling back to Finnhub (its /search also
+ * accepts ISINs) only if OpenFIGI has nothing. For free-text ticker/name queries, Finnhub is
+ * tried first since its free-tier quota (~60/min) is far more generous than OpenFIGI's
+ * unauthenticated /v3/search (~4-5/min), falling back to OpenFIGI if Finnhub has nothing.
+ */
+async function searchFigiSources(query: string, kind: InvestmentKind | undefined, isinQuery: boolean): Promise<UpsertInstrumentInput[]> {
+    if (isinQuery) {
+        const openfigiResults = await openfigiProvider.searchOpenFigiByIsin(query)
+        if (openfigiResults.length > 0) return openfigiResults
+        return await finnhubProvider.searchFinnhub(query, kind)
+    }
+    const finnhubResults = await finnhubProvider.searchFinnhub(query, kind)
+    if (finnhubResults.length > 0) return finnhubResults
+    return await openfigiProvider.searchOpenFigi(query)
+}
+
+/**
  * Searches canonical investment instruments. When `sourceHint` is provided and the local
- * catalog has too few matches, consults the corresponding external provider (OpenFIGI for
+ * catalog has too few matches, consults the corresponding external provider (OpenFIGI/Finnhub for
  * stocks/ETFs/bonds/funds, CoinGecko for crypto), persists any new candidates via
  * `upsertInstrument`, and re-runs the local search so the growing catalog stays the single
  * source of truth for the response shape.
@@ -310,9 +330,7 @@ async function searchInstruments(query: string, user_id: string, kind?: Investme
         : (localHasExactSymbolMatch || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER)) return localResults
 
     const candidates = sourceHint === "figi"
-        ? (isinQuery
-            ? await openfigiProvider.searchOpenFigiByIsin(cleanQuery)
-            : await openfigiProvider.searchOpenFigi(cleanQuery))
+        ? await searchFigiSources(cleanQuery, kind, isinQuery)
         : await coingeckoProvider.searchCoingecko(cleanQuery)
 
     if (candidates.length === 0) return localResults

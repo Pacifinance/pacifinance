@@ -209,6 +209,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * every row can preview its effect on an already-held instrument's position
    * *before* the user commits to importing (not just reactively after a save conflict). */
   const [existingByInstrumentId, setExistingByInstrumentId] = useState<Map<number, InvestmentHoldingDto>>(new Map());
+  /** Every "YYYY-MM" already recorded as history for each instrument, regardless of
+   * which holding/import produced it — lets a row tell "this file re-covers months
+   * I already have data for" (safe to replace, re-exported same period) apart from
+   * "this file is for months I've never recorded" (must be added, never replace:
+   * see resolveMergeStrategy below). */
+  const [recordedMonthsByInstrumentId, setRecordedMonthsByInstrumentId] = useState<Map<number, Set<string>>>(new Map());
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -239,15 +245,50 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       };
     });
     setRows(initialRows);
-    void resolveInstruments(initialRows);
+    // Fetched (and awaited) *before* instrument resolution starts marking rows
+    // 'resolved' - resolveMergeStrategy/describeExistingImpact must never see a
+    // row go 'resolved' (importable) while these maps are still empty, or a
+    // genuine month-overlap could be missed and wrongly treated as "add".
     try {
-      const holdings = await investmentService.getHoldings();
-      const map = new Map<number, InvestmentHoldingDto>();
-      for (const holding of holdings) if (holding.instrument) map.set(holding.instrument.id, holding);
-      setExistingByInstrumentId(map);
+      const [holdings, history] = await Promise.all([
+        investmentService.getHoldings(),
+        investmentService.getHoldingHistory({}),
+      ]);
+      const holdingMap = new Map<number, InvestmentHoldingDto>();
+      for (const holding of holdings) if (holding.instrument) holdingMap.set(holding.instrument.id, holding);
+      setExistingByInstrumentId(holdingMap);
+
+      const monthsMap = new Map<number, Set<string>>();
+      for (const entry of history) {
+        const months = monthsMap.get(entry.instrumentId) ?? new Set<string>();
+        months.add(entry.userDate.slice(0, 7));
+        monthsMap.set(entry.instrumentId, months);
+      }
+      setRecordedMonthsByInstrumentId(monthsMap);
     } catch {
       setExistingByInstrumentId(new Map());
+      setRecordedMonthsByInstrumentId(new Map());
     }
+    void resolveInstruments(initialRows);
+  };
+
+  // Decides how this row's save should treat an already-held instrument:
+  //  - no existing holding at all -> plain insert, no strategy needed.
+  //  - this file's months don't overlap anything already recorded for the
+  //    instrument -> unambiguous, always add (e.g. an older/newer statement
+  //    for the same broker covering a period never imported before) -
+  //    resolved automatically, the user is never asked.
+  //  - months overlap -> ambiguous only in the sense of "supersede or merge?",
+  //    left to insertHolding's same-source-replace / different-source-conflict
+  //    logic (undefined here so the backend decides, or the user resolves a
+  //    genuine cross-platform conflict).
+  const resolveMergeStrategy = (row: ImportRowState): 'add' | undefined => {
+    if (!row.instrument) return undefined;
+    const existing = existingByInstrumentId.get(row.instrument.id);
+    if (!existing) return undefined;
+    const recordedMonths = recordedMonthsByInstrumentId.get(row.instrument.id);
+    const overlaps = Boolean(recordedMonths) && row.historyMonths.some((m) => recordedMonths!.has(m));
+    return overlaps ? undefined : 'add';
   };
 
   const resolveInstruments = async (toResolve: ImportRowState[]) => {
@@ -372,6 +413,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
             notes: '',
             import_source: platform,
+            merge_strategy: resolveMergeStrategy(row),
           });
           await backfillHistory(row, saved.id);
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
@@ -429,15 +471,27 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   };
 
   // Previews what this row will do to an instrument already held before the user
-  // commits to importing — mirrors insertHolding's own same-source-vs-different-source
-  // decision (see server/src/db/models/investments.ts) so the preview never promises
-  // a merge that won't actually happen, or vice versa.
+  // commits to importing — mirrors resolveMergeStrategy/insertHolding's own
+  // overlap-then-source decision (see server/src/db/models/investments.ts) so the
+  // preview never promises an outcome (replace vs. add vs. ask) that won't
+  // actually happen.
   const describeExistingImpact = (row: ImportRowState, existing: InvestmentHoldingDto) => {
-    const willAutoReplace = existing.importSource === platform || existing.importSource == null;
     const existingQuantity = formatNumber(existing.quantity ?? 0);
     const existingAmount = `${formatNumber(existing.investedAmount ?? 0)} ${currencySymbol}`;
+
+    if (resolveMergeStrategy(row) === 'add') {
+      // Non-overlapping months (e.g. an older or newer statement covering a
+      // period never imported before): unambiguous, always summed, never asked.
+      return (t.existingWillAdd || "Already held: {quantity} units, {amount} — this file covers different months you don't have yet, so it will be ADDED on top, bringing it to {newQuantity} units, {newAmount}")
+        .replace('{quantity}', existingQuantity)
+        .replace('{amount}', existingAmount)
+        .replace('{newQuantity}', formatNumber((existing.quantity ?? 0) + (row.position.quantity ?? 0)))
+        .replace('{newAmount}', `${formatNumber((existing.investedAmount ?? 0) + (row.position.investedAmount ?? 0))} ${currencySymbol}`);
+    }
+
+    const willAutoReplace = existing.importSource === platform || existing.importSource == null;
     if (willAutoReplace) {
-      return (t.existingWillUpdate || 'Already held: {quantity} units, {amount} — this file will update it to {newQuantity} units, {newAmount}')
+      return (t.existingWillUpdate || 'Already held: {quantity} units, {amount} — will be REPLACED (not added to) with {newQuantity} units, {newAmount} from this file')
         .replace('{quantity}', existingQuantity)
         .replace('{amount}', existingAmount)
         .replace('{newQuantity}', formatNumber(row.position.quantity ?? 0))

@@ -2771,7 +2771,8 @@
             "conflictMessage": "A posição atual (a de hoje, não a de um mês específico) para este ativo já tem {quantity} unidades totalizando {amount}, registradas a partir de outra fonte. Somar os dois totais ou substituir o existente por este arquivo?",
             "conflictAdd": "Somar ao existente",
             "conflictReplace": "Substituir",
-            "existingWillUpdate": "Já possui: {quantity} unidades, {amount} — este arquivo vai atualizá-lo para {newQuantity} unidades, {newAmount}",
+            "existingWillAdd": "Já possui: {quantity} unidades, {amount} — este arquivo cobre meses diferentes que você ainda não tem, então será SOMADO, chegando a {newQuantity} unidades, {newAmount}",
+            "existingWillUpdate": "Já possui: {quantity} unidades, {amount} — será SUBSTITUÍDO (não somado) por {newQuantity} unidades, {newAmount} deste arquivo",
             "existingDifferentSource": "Já possui: {quantity} unidades, {amount} — registradas a partir de outra fonte, você será perguntado se deseja somar ou substituir",
             "kinds": {
                         "stock": "Ação",

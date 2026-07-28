@@ -2797,7 +2797,8 @@
             "conflictMessage": "La posizione attuale (di oggi, non un mese specifico) per questo titolo ha già {quantity} unità per un totale di {amount}, tracciati da un'altra fonte. Vuoi sommare i due totali o sostituire quello esistente con questo file?",
             "conflictAdd": "Aggiungi a quanto già presente",
             "conflictReplace": "Sostituisci",
-            "existingWillUpdate": "Già presente: {quantity} unità, {amount} — questo file lo aggiornerà a {newQuantity} unità, {newAmount}",
+            "existingWillAdd": "Già presente: {quantity} unità, {amount} — questo file copre mesi diversi che non hai ancora, verrà quindi SOMMATO, portandolo a {newQuantity} unità, {newAmount}",
+            "existingWillUpdate": "Già presente: {quantity} unità, {amount} — verrà SOSTITUITO (non sommato) con {newQuantity} unità, {newAmount} da questo file",
             "existingDifferentSource": "Già presente: {quantity} unità, {amount} — tracciati da un'altra fonte, ti verrà chiesto se sommarli o sostituirli",
             "kinds": {
                         "stock": "Azione",

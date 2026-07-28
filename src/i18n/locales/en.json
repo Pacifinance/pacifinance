@@ -2797,7 +2797,8 @@
             "conflictMessage": "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?",
             "conflictAdd": "Add to existing",
             "conflictReplace": "Replace",
-            "existingWillUpdate": "Already held: {quantity} units, {amount} — this file will update it to {newQuantity} units, {newAmount}",
+            "existingWillAdd": "Already held: {quantity} units, {amount} — this file covers different months you don't have yet, so it will be ADDED on top, bringing it to {newQuantity} units, {newAmount}",
+            "existingWillUpdate": "Already held: {quantity} units, {amount} — will be REPLACED (not added to) with {newQuantity} units, {newAmount} from this file",
             "existingDifferentSource": "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it",
             "kinds": {
                         "stock": "Stock",

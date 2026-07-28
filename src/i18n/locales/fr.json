@@ -2771,7 +2771,8 @@
             "conflictMessage": "La position actuelle (celle d'aujourd'hui, pas celle d'un mois précis) pour ce titre compte déjà {quantity} unités pour un total de {amount}, suivies depuis une autre source. Additionner les deux totaux, ou remplacer l'existant par ce fichier ?",
             "conflictAdd": "Ajouter à l'existant",
             "conflictReplace": "Remplacer",
-            "existingWillUpdate": "Déjà détenu : {quantity} unités, {amount} — ce fichier le mettra à jour à {newQuantity} unités, {newAmount}",
+            "existingWillAdd": "Déjà détenu : {quantity} unités, {amount} — ce fichier couvre des mois différents que vous n'avez pas encore, il sera donc ADDITIONNÉ, pour atteindre {newQuantity} unités, {newAmount}",
+            "existingWillUpdate": "Déjà détenu : {quantity} unités, {amount} — sera REMPLACÉ (pas additionné) par {newQuantity} unités, {newAmount} de ce fichier",
             "existingDifferentSource": "Déjà détenu : {quantity} unités, {amount} — suivies depuis une autre source, on vous demandera si les ajouter ou les remplacer",
             "kinds": {
                         "stock": "Action",

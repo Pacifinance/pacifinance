@@ -2771,7 +2771,8 @@
             "conflictMessage": "Die aktuelle Position (die von heute, nicht die eines bestimmten Monats) für dieses Instrument hat bereits {quantity} Einheiten im Gesamtwert von {amount}, erfasst aus einer anderen Quelle. Beide Summen addieren oder die bestehende mit dieser Datei ersetzen?",
             "conflictAdd": "Zum Bestehenden hinzufügen",
             "conflictReplace": "Ersetzen",
-            "existingWillUpdate": "Bereits vorhanden: {quantity} Einheiten, {amount} — diese Datei aktualisiert sie auf {newQuantity} Einheiten, {newAmount}",
+            "existingWillAdd": "Bereits vorhanden: {quantity} Einheiten, {amount} — diese Datei deckt andere Monate ab, die du noch nicht hast, wird also ADDIERT und ergibt {newQuantity} Einheiten, {newAmount}",
+            "existingWillUpdate": "Bereits vorhanden: {quantity} Einheiten, {amount} — wird durch {newQuantity} Einheiten, {newAmount} aus dieser Datei ERSETZT (nicht addiert)",
             "existingDifferentSource": "Bereits vorhanden: {quantity} Einheiten, {amount} — aus einer anderen Quelle erfasst, du wirst gefragt, ob hinzugefügt oder ersetzt werden soll",
             "kinds": {
                         "stock": "Aktie",

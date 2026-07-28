@@ -18,7 +18,8 @@ import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from './ImportPlatformGuide';
 import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
-import type { InvestmentInstrumentDto, InvestmentKind } from '../types/api';
+import { HoldingConflictError } from '../services/investmentService';
+import type { InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto } from '../types/api';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
 const MANUAL_KIND_OPTIONS: InvestmentKind[] = ['stock', 'etf', 'crypto', 'bond', 'fund'];
@@ -44,13 +45,15 @@ interface ImportRowState {
   position: AggregatedPosition;
   transactions: ImportedTransaction[];
   instrument: InvestmentInstrumentDto | null;
-  status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'saved' | 'error';
+  status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'conflict' | 'saved' | 'error';
   selected: boolean;
   /** How many distinct past months this row's history will backfill (0 = single month, nothing to backfill). */
   historyMonthCount: number;
   /** Asset kind picked for a not-found row — determines which catalog (OpenFIGI/CoinGecko)
    * the manual re-search below uses, and what kind gets created if added as unverified. */
   manualKind: InvestmentKind;
+  /** Set when status is 'conflict': the already-held holding this row's instrument collided with (see HoldingConflictError). */
+  conflictExisting: InvestmentHoldingDto | null;
 }
 
 interface InvestmentImportWizardProps {
@@ -170,6 +173,25 @@ const UnverifiedTag = styled.span`
   vertical-align: middle;
 `;
 
+const ConflictActions = styled.div`
+  display: flex;
+  gap: 0.4rem;
+`;
+
+const ConflictButton = styled.button`
+  flex: 1;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : '#cbd5e1')};
+  background: transparent;
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { opacity: 0.85; }
+`;
+
 export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
   const { theme } = useContext(ThemeContext);
   const { translations } = useContext(LanguageContext);
@@ -209,7 +231,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       const historyMonthCount = Math.max(0, buildMonthlyPositionTimeline(transactions).length - 1);
       return {
         position, transactions, instrument: null, status: 'pending', selected: true, historyMonthCount,
-        manualKind: 'stock',
+        manualKind: 'stock', conflictExisting: null,
       };
     });
     setRows(initialRows);
@@ -296,6 +318,29 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       : r)));
   };
 
+  // Backfills the monthly invested-amount history from the file's own
+  // transaction dates — only invested_amount is known (no historical market
+  // prices are available), current_value is left unset, same as the existing
+  // manual historical-edit flow when nothing's been entered yet for a month.
+  const backfillHistory = async (row: ImportRowState, holdingId: number) => {
+    const timeline = buildMonthlyPositionTimeline(row.transactions);
+    for (const snapshot of timeline) {
+      const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
+      if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
+      try {
+        await investmentService.saveHoldingHistory({
+          holding_id: holdingId,
+          user_date: `${snapshot.monthKey}-01`,
+          current_value: null,
+          invested_amount: toEUR(snapshotPosition.investedAmount),
+        });
+      } catch {
+        // Backfilling one month's history failing shouldn't roll back the
+        // holding itself — the user can still fix it manually later.
+      }
+    }
+  };
+
   const importSelected = async () => {
     if (importing) return;
     setImporting(true);
@@ -314,37 +359,52 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             current_value: null,
             invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
             notes: '',
+            import_source: platform,
           });
-          // Backfill the monthly invested-amount history from the file's own
-          // transaction dates — only invested_amount is known (no historical
-          // market prices are available), current_value is left unset, same
-          // as the existing manual historical-edit flow when nothing's been
-          // entered yet for a month.
-          const timeline = buildMonthlyPositionTimeline(row.transactions);
-          for (const snapshot of timeline) {
-            const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
-            if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
-            try {
-              await investmentService.saveHoldingHistory({
-                holding_id: saved.id,
-                user_date: `${snapshot.monthKey}-01`,
-                current_value: null,
-                invested_amount: toEUR(snapshotPosition.investedAmount),
-              });
-            } catch {
-              // Backfilling one month's history failing shouldn't roll back the
-              // holding itself — the user can still fix it manually later.
-            }
-          }
+          await backfillHistory(row, saved.id);
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
-        } catch {
-          setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
+        } catch (error) {
+          if (error instanceof HoldingConflictError) {
+            setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'conflict', conflictExisting: error.existing } : r)));
+          } else {
+            setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
+          }
         }
       }
       setImportDone(true);
       await onImported();
     } finally {
       setImporting(false);
+    }
+  };
+
+  // Resolves a 'conflict' row once the user picks how to handle the
+  // already-held instrument: "add" sums both positions (e.g. the same stock
+  // held on a different platform too), "replace" overwrites it (e.g. the
+  // existing holding was a rough manual entry the user wants superseded by
+  // this file's exact numbers).
+  const resolveConflict = async (index: number, strategy: 'add' | 'replace') => {
+    const row = rows[index];
+    if (!row.instrument) return;
+    const assetKey = KIND_TO_ASSET_KEY[row.instrument.kind];
+    if (!assetKey) return;
+    setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'resolving' } : r)));
+    try {
+      const saved = await investmentService.saveHolding({
+        instrument_id: row.instrument.id,
+        asset_key: assetKey,
+        quantity: row.position.quantity,
+        average_price: row.position.averagePrice != null ? toEUR(row.position.averagePrice) : null,
+        current_value: null,
+        invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
+        notes: '',
+        import_source: platform,
+        merge_strategy: strategy,
+      });
+      await backfillHistory(row, saved.id);
+      setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
+    } catch {
+      setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));
     }
   };
 
@@ -355,7 +415,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     switch (status) {
       case 'resolving': return <FontAwesomeIcon icon={faSpinner} spin />;
       case 'resolved': case 'saved': return <FontAwesomeIcon icon={faCircleCheck} />;
-      case 'not-found': case 'error': return <FontAwesomeIcon icon={faTriangleExclamation} />;
+      case 'not-found': case 'conflict': case 'error': return <FontAwesomeIcon icon={faTriangleExclamation} />;
       default: return null;
     }
   };
@@ -439,6 +499,23 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                       assetKey={KIND_TO_ASSET_KEY[row.manualKind]}
                       onSelect={(instrument) => handleManualResolve(index, instrument)}
                     />
+                  </ManualResolveBlock>
+                )}
+                {row.status === 'conflict' && row.conflictExisting && (
+                  <ManualResolveBlock theme={theme}>
+                    <span>
+                      {(t.conflictMessage || 'You already have {quantity} units totaling {amount} — imported from a different source. Add to this position or replace it?')
+                        .replace('{quantity}', formatNumber(row.conflictExisting.quantity ?? 0))
+                        .replace('{amount}', `${formatNumber(row.conflictExisting.investedAmount ?? 0)} ${currencySymbol}`)}
+                    </span>
+                    <ConflictActions>
+                      <ConflictButton theme={theme} type="button" onClick={() => resolveConflict(index, 'add')}>
+                        {t.conflictAdd || 'Add to existing'}
+                      </ConflictButton>
+                      <ConflictButton theme={theme} type="button" onClick={() => resolveConflict(index, 'replace')}>
+                        {t.conflictReplace || 'Replace'}
+                      </ConflictButton>
+                    </ConflictActions>
                   </ManualResolveBlock>
                 )}
               </PositionInfo>

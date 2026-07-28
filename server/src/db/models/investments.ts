@@ -50,6 +50,7 @@ type HoldingRow = {
     currency: string
     notes: string
     updated_at: string
+    import_source: string | null
     instrument: InstrumentRow | InstrumentRow[] | null
 }
 
@@ -63,6 +64,10 @@ export type HoldingInput = {
     investedAmount: number | null
     currency: string
     notes: string
+    /** Which platform/broker export (e.g. "trading212") last produced this holding's
+     * totals - null for manually-added holdings. See insertHolding for how this
+     * decides whether a conflicting re-import is a safe overwrite or must be merged. */
+    importSource: string | null
 }
 
 // 'internal' means "search the local curated catalog only, never call an external
@@ -120,6 +125,7 @@ const HOLDING_SELECT = [
     "currency",
     "notes",
     "updated_at",
+    "import_source",
     `instrument:investment_instruments(${INSTRUMENT_SELECT})`,
 ].join(", ")
 
@@ -157,6 +163,7 @@ function toHolding(row: HoldingRow) {
         currency: row.currency,
         notes: row.notes,
         updatedAt: row.updated_at,
+        importSource: row.import_source,
         instrument: instrument ? toInstrument(instrument) : null,
     }
 }
@@ -173,6 +180,7 @@ function toHoldingPayload(user_id: string, input: HoldingInput) {
         invested_amount: input.investedAmount,
         currency: input.currency,
         notes: input.notes,
+        import_source: input.importSource,
     }
 }
 
@@ -469,26 +477,78 @@ async function getHoldingsByUserId(user_id: string) {
     return (data as unknown as HoldingRow[]).map(toHolding)
 }
 
+type Holding = ReturnType<typeof toHolding>
+
+export type HoldingSaveResult =
+    | {status: "ok"; holding: Holding}
+    // A holding for this instrument already exists, sourced from a different
+    // (or unknown) import - see insertHolding. Neither overwriting nor merging
+    // is safe to assume, so the caller must resolve it explicitly (mergeStrategy).
+    | {status: "conflict"; existing: Holding}
+
+/**
+ * Combines an existing holding with a new import's totals for the same
+ * instrument (mergeStrategy "add") — e.g. the same stock held on both
+ * Trading 212 and Degiro: both positions are real and must be summed, never
+ * have one silently replace the other. Average price is recomputed as a
+ * cost-weighted average of both lots when both are known.
+ */
+function mergeHoldingInputs(existing: Holding, input: HoldingInput): HoldingInput {
+    const quantity = (existing.quantity ?? 0) + (input.quantity ?? 0)
+    const existingCost = existing.averagePrice != null && existing.quantity != null ? existing.averagePrice * existing.quantity : null
+    const inputCost = input.averagePrice != null && input.quantity != null ? input.averagePrice * input.quantity : null
+    const averagePrice = existingCost != null && inputCost != null && quantity > 0
+        ? (existingCost + inputCost) / quantity
+        : (input.averagePrice ?? existing.averagePrice)
+
+    return {
+        ...input,
+        quantity,
+        averagePrice,
+        investedAmount: (existing.investedAmount ?? 0) + (input.investedAmount ?? 0),
+        currentValue: input.currentValue ?? existing.currentValue,
+        importSource: existing.importSource === input.importSource ? existing.importSource : "mixed",
+    }
+}
+
 /**
  * Creates a detailed user holding linked to a verified platform instrument.
- * Refreshes the existing holding instead of failing when one already exists
- * for this instrument (unique(user_id, instrument_id)) — e.g. re-importing a
- * CSV that now covers more history than a previous import: every already-held
- * instrument would otherwise hit the unique violation and error out on every
- * single row instead of picking up the fuller totals.
+ * When one already exists for this instrument (unique(user_id, instrument_id) -
+ * e.g. re-importing a CSV, or importing a second platform's export for a
+ * stock already held elsewhere) the caller must say how to resolve it:
+ *  - no mergeStrategy, same importSource as the existing holding: safe to
+ *    assume it's the same source re-exported with more history - overwrite.
+ *  - no mergeStrategy, different importSource: ambiguous (could be a second
+ *    broker's real, separate position) - returns {status: "conflict"} instead
+ *    of guessing, so the caller can ask the user.
+ *  - mergeStrategy "replace"/"add": the user already resolved the conflict -
+ *    overwrite or sum the two positions respectively.
  */
-async function insertHolding(user_id: string, input: HoldingInput) {
+async function insertHolding(user_id: string, input: HoldingInput, mergeStrategy?: "add" | "replace"): Promise<HoldingSaveResult | null> {
     const {data, error} = await supabase.from("user_investment_holdings")
         .insert(toHoldingPayload(user_id, input))
         .select(HOLDING_SELECT)
         .single()
-    if (!error && data) return toHolding(data as unknown as HoldingRow)
+    if (!error && data) return {status: "ok", holding: toHolding(data as unknown as HoldingRow)}
 
     if (error?.code === "23505") { // unique violation: a holding for this instrument already exists
-        const {data: existing, error: existingErr} = await supabase.from("user_investment_holdings")
-            .select("id").eq("user_id", user_id).eq("instrument_id", input.instrumentId).maybeSingle()
+        const {data: existingRow, error: existingErr} = await supabase.from("user_investment_holdings")
+            .select(HOLDING_SELECT).eq("user_id", user_id).eq("instrument_id", input.instrumentId).maybeSingle()
         if (existingErr) console.error("investments.insertHolding: failed to look up conflicting holding", existingErr)
-        if (existing) return await updateHolding(user_id, (existing as {id: number}).id, input)
+
+        if (existingRow) {
+            const existing = toHolding(existingRow as unknown as HoldingRow)
+
+            if (mergeStrategy === "add") {
+                const updated = await updateHolding(user_id, existing.id, mergeHoldingInputs(existing, input))
+                return updated ? {status: "ok", holding: updated} : null
+            }
+            if (mergeStrategy === "replace" || (!mergeStrategy && existing.importSource === input.importSource)) {
+                const updated = await updateHolding(user_id, existing.id, input)
+                return updated ? {status: "ok", holding: updated} : null
+            }
+            return {status: "conflict", existing}
+        }
     }
 
     console.error("investments.insertHolding: failed to insert holding", error)
@@ -498,7 +558,7 @@ async function insertHolding(user_id: string, input: HoldingInput) {
 /**
  * Updates a detailed user holding, scoped to the owner.
  */
-async function updateHolding(user_id: string, holding_id: number, input: HoldingInput) {
+async function updateHolding(user_id: string, holding_id: number, input: HoldingInput): Promise<Holding | null> {
     const {data, error} = await supabase.from("user_investment_holdings")
         .update({
             instrument_id: input.instrumentId,
@@ -510,6 +570,7 @@ async function updateHolding(user_id: string, holding_id: number, input: Holding
             invested_amount: input.investedAmount,
             currency: input.currency,
             notes: input.notes,
+            import_source: input.importSource,
             updated_at: new Date().toISOString(),
         })
         .eq("user_id", user_id)

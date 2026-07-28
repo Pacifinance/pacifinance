@@ -458,10 +458,13 @@ describe("private backend routes", () => {
 
     it("saves detailed investment holdings only for existing instruments", async () => {
         mockDb.investments.insertHolding.mockResolvedValue({
-            id: 9,
-            assetKey: "stocks",
-            positionType: "pac",
-            instrument: {id: 1, symbol: "AAPL"}
+            status: "ok",
+            holding: {
+                id: 9,
+                assetKey: "stocks",
+                positionType: "pac",
+                instrument: {id: 1, symbol: "AAPL"}
+            }
         })
 
         const response = await request(app, "/api/investments/holdings/save", {
@@ -492,8 +495,9 @@ describe("private backend routes", () => {
             currentValue: 420,
             investedAmount: 375,
             currency: "EUR",
-            notes: "long term"
-        })
+            notes: "long term",
+            importSource: null
+        }, undefined)
     })
 
     it("rejects detailed holdings that reference unknown or inaccessible instruments (getInstrumentById scopes to public + own private rows)", async () => {

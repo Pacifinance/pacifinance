@@ -47,6 +47,7 @@ async function parseHoldingPayload(body: any, user_id: string) {
         investedAmount,
         currency: normalizeCurrency(body.currency),
         notes: common.sanitizeInput(body.notes).slice(0, 240),
+        importSource: common.sanitizeInput(body.import_source ?? body.importSource) || null,
     }
 }
 
@@ -129,11 +130,29 @@ investmentsRouter.post("/holdings/save", async (req, res) => {
     }
 
     const holdingId = req.body.id === undefined || req.body.id === null ? null : Number(req.body.id)
-    const holding = holdingId === null
-        ? await db.investments.insertHolding(req.userId as string, payload)
-        : Number.isFinite(holdingId)
-            ? await db.investments.updateHolding(req.userId as string, holdingId, payload)
-            : null
+
+    if (holdingId === null) {
+        const mergeStrategyRaw = common.sanitizeInput(req.body.merge_strategy ?? req.body.mergeStrategy)
+        const mergeStrategy = mergeStrategyRaw === "add" || mergeStrategyRaw === "replace" ? mergeStrategyRaw : undefined
+        const result = await db.investments.insertHolding(req.userId as string, payload, mergeStrategy)
+        if (result === null) {
+            res.status(500).send()
+            return
+        }
+        if (result.status === "conflict") {
+            // Ambiguous: a holding for this instrument already exists from a different
+            // (or unknown) source - the client must resolve it explicitly (merge_strategy)
+            // instead of the server silently guessing whether to overwrite or sum it.
+            res.status(409).json({existing: result.existing})
+            return
+        }
+        res.status(200).json(result.holding)
+        return
+    }
+
+    const holding = Number.isFinite(holdingId)
+        ? await db.investments.updateHolding(req.userId as string, holdingId, payload)
+        : null
 
     if (holding === null) {
         res.status(500).send()

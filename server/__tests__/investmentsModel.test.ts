@@ -197,33 +197,81 @@ describe("investments model", () => {
         const holdingInput = {
             instrumentId: 42, assetKey: "stocks" as const, positionType: "single" as const,
             quantity: 1, averagePrice: 100, currentValue: null, investedAmount: 100, currency: "EUR", notes: "",
+            importSource: "trading212",
         }
 
         it("inserts and returns a new holding", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({
-                data: {id: 10, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", instrument: null},
+                data: {id: 10, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "trading212", instrument: null},
                 error: null,
             }))
 
             const result = await investments.insertHolding("user-1", holdingInput)
 
-            expect(result).toMatchObject({id: 10, quantity: 1})
+            expect(result).toMatchObject({status: "ok", holding: {id: 10, quantity: 1}})
         })
 
-        it("refreshes the existing holding instead of failing when one already exists for the instrument (re-import)", async () => {
+        it("auto-replaces the existing holding when re-importing the same source (e.g. a fuller CSV export)", async () => {
             // First call: the insert, rejected by the unique(user_id, instrument_id) constraint.
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
-            // Second call: looks up the conflicting holding's id.
-            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 7}, error: null}))
+            // Second call: looks up the conflicting holding — same import_source as the new save.
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "trading212", instrument: null},
+                error: null,
+            }))
             // Third call: the update that refreshes it with the new totals.
             mockSupabase.from.mockReturnValueOnce(makeChain({
-                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 2, average_price: 110, current_value: null, invested_amount: 220, currency: "EUR", notes: "", updated_at: "2026-01-01", instrument: null},
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 2, average_price: 110, current_value: null, invested_amount: 220, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "trading212", instrument: null},
                 error: null,
             }))
 
             const result = await investments.insertHolding("user-1", {...holdingInput, quantity: 2, investedAmount: 220})
 
-            expect(result).toMatchObject({id: 7, quantity: 2, investedAmount: 220})
+            expect(result).toMatchObject({status: "ok", holding: {id: 7, quantity: 2, investedAmount: 220}})
+        })
+
+        it("returns a conflict instead of guessing when the existing holding is from a different import source", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 5, average_price: 90, current_value: null, invested_amount: 450, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "degiro", instrument: null},
+                error: null,
+            }))
+
+            const result = await investments.insertHolding("user-1", holdingInput)
+
+            expect(result).toMatchObject({status: "conflict", existing: {id: 7, importSource: "degiro"}})
+        })
+
+        it("sums quantity/invested amount when the user resolves a conflict with mergeStrategy 'add'", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 5, average_price: 90, current_value: null, invested_amount: 450, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "degiro", instrument: null},
+                error: null,
+            }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 6, average_price: 91.67, current_value: null, invested_amount: 550, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "mixed", instrument: null},
+                error: null,
+            }))
+
+            const result = await investments.insertHolding("user-1", {...holdingInput, quantity: 1, averagePrice: 100, investedAmount: 100}, "add")
+
+            expect(result).toMatchObject({status: "ok", holding: {id: 7, quantity: 6, investedAmount: 550}})
+        })
+
+        it("overwrites the existing holding when the user resolves a conflict with mergeStrategy 'replace'", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 5, average_price: 90, current_value: null, invested_amount: 450, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "degiro", instrument: null},
+                error: null,
+            }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "trading212", instrument: null},
+                error: null,
+            }))
+
+            const result = await investments.insertHolding("user-1", holdingInput, "replace")
+
+            expect(result).toMatchObject({status: "ok", holding: {id: 7, quantity: 1, investedAmount: 100}})
         })
 
         it("returns null when the insert fails for a reason other than a unique violation", async () => {

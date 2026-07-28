@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
 import type {
-  InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
+  InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentHoldingSaveRequest,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
   GoalDto, SharedExpenseReceivableDto,
 } from '../types/api';
@@ -109,12 +109,10 @@ export const useDemoServices = () => {
           metadata: {},
         }),
         getHoldings: async (): Promise<InvestmentHoldingDto[]> => [],
-        saveHolding: async (data: {
-          id?: number; instrument_id: number; asset_key: InvestmentHoldingDto['assetKey'];
-          position_type?: InvestmentHoldingDto['positionType']; quantity?: number | null;
-          average_price?: number | null; current_value?: number | null; invested_amount?: number | null;
-          currency?: string; notes?: string;
-        }): Promise<InvestmentHoldingDto> => ({
+        // Demo mode's getHoldings() always returns [], so a holding for this
+        // instrument can never already exist here - the merge/replace conflict
+        // path is unreachable in demo, same as with the real backend's first save.
+        saveHolding: async (data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto> => ({
           id: data.id ?? -Date.now(),
           assetKey: data.asset_key,
           positionType: data.position_type ?? 'single',
@@ -125,6 +123,7 @@ export const useDemoServices = () => {
           currency: data.currency ?? 'EUR',
           notes: data.notes ?? '',
           updatedAt: new Date().toISOString(),
+          importSource: data.import_source ?? null,
           instrument: DEMO_INSTRUMENTS.find((i) => i.id === data.instrument_id) ?? null,
         }),
         deleteHolding: async () => FAKE_SUCCESS,

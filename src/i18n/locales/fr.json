@@ -2768,6 +2768,9 @@
             "historyMonths": "+{count} mois d'historique",
             "pastMonthNote": "L'import met toujours à jour la position du jour et complète l'historique à partir des dates du fichier — cela ne concerne pas que le mois affiché ici.",
             "unverifiedTag": "Non vérifié",
+            "conflictMessage": "Vous avez déjà {quantity} unités pour un total de {amount} — importées d'une autre source. Ajouter à cette position ou la remplacer ?",
+            "conflictAdd": "Ajouter à l'existant",
+            "conflictReplace": "Remplacer",
             "kinds": {
                         "stock": "Action",
                         "etf": "ETF",

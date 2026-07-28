@@ -491,6 +491,8 @@ export interface InvestmentHoldingDto {
   currency: string;
   notes: string;
   updatedAt: string;
+  /** Which platform/broker export (e.g. "trading212") last produced this holding's totals — null for manually-added holdings. */
+  importSource?: string | null;
   instrument: InvestmentInstrumentDto | null;
 }
 
@@ -533,6 +535,15 @@ export interface InvestmentHoldingSaveRequest {
   invested_amount?: number | null;
   currency?: string;
   notes?: string;
+  /** Platform/broker this save's totals come from (e.g. "trading212") — null/omitted for manual entry. */
+  import_source?: string | null;
+  /** Resolves an existing-holding conflict (see InvestmentHoldingConflict): "add" sums both positions, "replace" overwrites. Omit on the first attempt. */
+  merge_strategy?: 'add' | 'replace';
+}
+
+/** Body of the 409 response saveHolding's endpoint returns when a holding for this instrument already exists from a different/unknown import source. */
+export interface InvestmentHoldingConflict {
+  existing: InvestmentHoldingDto;
 }
 
 export interface InvestmentHoldingDeleteRequest { id: number; }

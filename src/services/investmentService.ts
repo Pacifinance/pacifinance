@@ -10,8 +10,9 @@
  *
  * @module services/investmentService
  */
-import type { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import type {
+  InvestmentHoldingConflict,
   InvestmentHoldingDeleteRequest,
   InvestmentHoldingDto,
   InvestmentHoldingHistoryDto,
@@ -26,6 +27,23 @@ import type {
   InvestmentInstrumentSearchRequest,
   InvestmentInstrumentSearchResponse,
 } from '../types/api';
+
+/**
+ * Thrown by saveHolding when the server responds 409 — a holding for this
+ * instrument already exists from a different/unknown import source (see
+ * server/src/db/models/investments.ts insertHolding). Callers catch this
+ * specifically to ask the user whether to merge or replace, instead of
+ * treating it like any other failed save.
+ */
+export class HoldingConflictError extends Error {
+  existing: InvestmentHoldingDto;
+
+  constructor(existing: InvestmentHoldingDto) {
+    super('A holding for this instrument already exists from a different import source');
+    this.name = 'HoldingConflictError';
+    this.existing = existing;
+  }
+}
 
 export interface InvestmentService {
   searchInstruments(params: InvestmentInstrumentSearchRequest): Promise<InvestmentInstrumentSearchResponse>;
@@ -60,8 +78,15 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   },
 
   async saveHolding(data) {
-    const res = await apiClient.post<InvestmentHoldingDto>('/api/investments/holdings/save', data);
-    return res.data;
+    try {
+      const res = await apiClient.post<InvestmentHoldingDto>('/api/investments/holdings/save', data);
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        throw new HoldingConflictError((error.response.data as InvestmentHoldingConflict).existing);
+      }
+      throw error;
+    }
   },
 
   async deleteHolding(data) {

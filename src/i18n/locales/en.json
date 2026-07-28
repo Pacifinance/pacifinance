@@ -2794,6 +2794,9 @@
             "historyMonths": "+{count} months of history",
             "pastMonthNote": "The import always updates today's position and backfills history from the file's own dates — it doesn't only affect the month shown here.",
             "unverifiedTag": "Unverified",
+            "conflictMessage": "You already have {quantity} units totaling {amount} — imported from a different source. Add to this position or replace it?",
+            "conflictAdd": "Add to existing",
+            "conflictReplace": "Replace",
             "kinds": {
                         "stock": "Stock",
                         "etf": "ETF",

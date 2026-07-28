@@ -295,10 +295,19 @@ async function searchInstruments(query: string, user_id: string, kind?: Investme
 
     const localResults = await searchLocalInstruments(cleanQuery, user_id, effectiveKind, limit)
     const localHasIsinMatch = localResults.some((instrument) => instrument.isin?.toUpperCase() === cleanQuery.toUpperCase())
+    // Same idea as the ISIN check above: a query that exactly matches a seeded/verified
+    // symbol (e.g. typing "AAPL") is as good as it gets — don't let the (heavily
+    // rate-limited, ~4-5 req/min without an API key) provider call happen just because
+    // fewer than MIN_LOCAL_RESULTS_BEFORE_PROVIDER fuzzy matches exist locally. Without
+    // this, a well-seeded catalog still couldn't prevent single-ticker searches from
+    // hitting the provider, since one exact hit is normally far below that threshold.
+    const localHasExactSymbolMatch = localResults.some((instrument) => instrument.symbol?.toUpperCase() === cleanQuery.toUpperCase())
     // 'internal' (commodities) never consults an external provider - the catalog is
     // fixed/curated (seed-commodity-instruments.sql), so local results are final.
     if (!sourceHint || sourceHint === "internal") return localResults
-    if (isinQuery ? localHasIsinMatch : localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER) return localResults
+    if (isinQuery
+        ? localHasIsinMatch
+        : (localHasExactSymbolMatch || localResults.length >= MIN_LOCAL_RESULTS_BEFORE_PROVIDER)) return localResults
 
     const candidates = sourceHint === "figi"
         ? (isinQuery

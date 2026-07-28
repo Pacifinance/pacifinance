@@ -71,6 +71,42 @@ describe("investments model", () => {
         })
     })
 
+    describe("searchInstruments", () => {
+        it("returns the local exact symbol match without calling the provider", async () => {
+            vi.mocked(openfigiProvider.isIsin).mockReturnValue(false)
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [
+                    {id: 1, kind: "stock", symbol: "AAPL", isin: "US0378331005", exchange: "US", name: "Apple Inc", currency: null, country: null, sector: null, industry: null, figi: "BBG000B9XRY4", coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+                ],
+                error: null,
+            }))
+
+            const result = await investments.searchInstruments("AAPL", "user-1", "stock", 20, "figi")
+
+            expect(result).toHaveLength(1)
+            expect(result[0]).toMatchObject({symbol: "AAPL"})
+            expect(openfigiProvider.searchOpenFigi).not.toHaveBeenCalled()
+        })
+
+        it("still consults the provider when there's no exact symbol match and too few fuzzy results", async () => {
+            vi.mocked(openfigiProvider.isIsin).mockReturnValue(false)
+            // Only a loose, non-exact fuzzy hit locally — not an exact symbol match,
+            // and well under MIN_LOCAL_RESULTS_BEFORE_PROVIDER, so the provider must
+            // still be consulted. (candidates=[] short-circuits before any re-query.)
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [
+                    {id: 2, kind: "stock", symbol: "AAPLX", isin: null, exchange: "US", name: "Some Apple-adjacent fund", currency: null, country: null, sector: null, industry: null, figi: null, coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+                ],
+                error: null,
+            }))
+            vi.mocked(openfigiProvider.searchOpenFigi).mockResolvedValue([])
+
+            await investments.searchInstruments("AAPL", "user-1", "stock", 20, "figi")
+
+            expect(openfigiProvider.searchOpenFigi).toHaveBeenCalledWith("AAPL")
+        })
+    })
+
     describe("createManualInstrument", () => {
         it("inserts and returns the new private instrument", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({

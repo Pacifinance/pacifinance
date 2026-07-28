@@ -192,4 +192,56 @@ describe("investments model", () => {
             expect(result).toBeNull()
         })
     })
+
+    describe("insertHolding", () => {
+        const holdingInput = {
+            instrumentId: 42, assetKey: "stocks" as const, positionType: "single" as const,
+            quantity: 1, averagePrice: 100, currentValue: null, investedAmount: 100, currency: "EUR", notes: "",
+        }
+
+        it("inserts and returns a new holding", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 10, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", instrument: null},
+                error: null,
+            }))
+
+            const result = await investments.insertHolding("user-1", holdingInput)
+
+            expect(result).toMatchObject({id: 10, quantity: 1})
+        })
+
+        it("refreshes the existing holding instead of failing when one already exists for the instrument (re-import)", async () => {
+            // First call: the insert, rejected by the unique(user_id, instrument_id) constraint.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
+            // Second call: looks up the conflicting holding's id.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 7}, error: null}))
+            // Third call: the update that refreshes it with the new totals.
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 2, average_price: 110, current_value: null, invested_amount: 220, currency: "EUR", notes: "", updated_at: "2026-01-01", instrument: null},
+                error: null,
+            }))
+
+            const result = await investments.insertHolding("user-1", {...holdingInput, quantity: 2, investedAmount: 220})
+
+            expect(result).toMatchObject({id: 7, quantity: 2, investedAmount: 220})
+        })
+
+        it("returns null when the insert fails for a reason other than a unique violation", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.insertHolding("user-1", holdingInput)
+
+            expect(result).toBeNull()
+        })
+    })
+
+    describe("upsertHoldingHistoryEntry", () => {
+        it("returns null without upserting when the holding doesn't exist for this user", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+
+            const result = await investments.upsertHoldingHistoryEntry("user-1", 999, new Date("2026-01-15"), {currentValue: null, investedAmount: 50})
+
+            expect(result).toBeNull()
+        })
+    })
 })

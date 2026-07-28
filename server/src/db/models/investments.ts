@@ -471,15 +471,28 @@ async function getHoldingsByUserId(user_id: string) {
 
 /**
  * Creates a detailed user holding linked to a verified platform instrument.
+ * Refreshes the existing holding instead of failing when one already exists
+ * for this instrument (unique(user_id, instrument_id)) — e.g. re-importing a
+ * CSV that now covers more history than a previous import: every already-held
+ * instrument would otherwise hit the unique violation and error out on every
+ * single row instead of picking up the fuller totals.
  */
 async function insertHolding(user_id: string, input: HoldingInput) {
     const {data, error} = await supabase.from("user_investment_holdings")
         .insert(toHoldingPayload(user_id, input))
         .select(HOLDING_SELECT)
         .single()
-    if (error) console.error("investments.insertHolding: failed to insert holding", error)
-    if (error || !data) return null
-    return toHolding(data as unknown as HoldingRow)
+    if (!error && data) return toHolding(data as unknown as HoldingRow)
+
+    if (error?.code === "23505") { // unique violation: a holding for this instrument already exists
+        const {data: existing, error: existingErr} = await supabase.from("user_investment_holdings")
+            .select("id").eq("user_id", user_id).eq("instrument_id", input.instrumentId).maybeSingle()
+        if (existingErr) console.error("investments.insertHolding: failed to look up conflicting holding", existingErr)
+        if (existing) return await updateHolding(user_id, (existing as {id: number}).id, input)
+    }
+
+    console.error("investments.insertHolding: failed to insert holding", error)
+    return null
 }
 
 /**
@@ -633,10 +646,17 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
     const {data: holdingRow, error: holdingErr} = await supabase.from("user_investment_holdings")
         .select(HOLDING_SELECT).eq("user_id", user_id).eq("id", holding_id).maybeSingle()
     if (holdingErr) console.error("investments.upsertHoldingHistoryEntry: failed to read holding", holdingErr)
-    if (holdingErr || !holdingRow) return null
+    if (holdingErr) return null
+    if (!holdingRow) {
+        console.error(`investments.upsertHoldingHistoryEntry: holding ${holding_id} not found for user ${user_id}`)
+        return null
+    }
 
     const holding = toHolding(holdingRow as unknown as HoldingRow)
-    if (holding.instrument === null) return null
+    if (holding.instrument === null) {
+        console.error(`investments.upsertHoldingHistoryEntry: holding ${holding_id} has no linked instrument`)
+        return null
+    }
 
     const row = {
         user_id,

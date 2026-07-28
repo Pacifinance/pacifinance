@@ -14,6 +14,13 @@ const OPENFIGI_SEARCH_LIMIT_PER_MIN = 4 // stays under the public 5/min search l
 // resolves them instantly. Raised when OPENFIGI_KEY is set (higher authenticated tier).
 const OPENFIGI_MAPPING_LIMIT_PER_MIN = process.env.OPENFIGI_KEY ? 20 : 8
 const MAX_RESULTS = 8 // bounds the upsertInstrument() fan-out — keep well under Vercel's function timeout
+// /v3/mapping rejects the whole request with HTTP 413 once the job count exceeds
+// this — confirmed against the live API: 10 jobs -> 200, 11 -> 413. Without a key
+// the cap is 10; an authenticated key raises it to the documented 100. Getting this
+// wrong doesn't degrade gracefully - a single oversized batch fails ALL of its ISINs
+// at once (the whole request is rejected, not just the ones over the limit), which
+// is exactly what silently broke CSV imports with more than 10 distinct ISINs.
+const OPENFIGI_MAPPING_BATCH_SIZE = process.env.OPENFIGI_KEY ? 100 : 10
 
 // 2-letter country code + 9 alphanumeric + 1 check digit. OpenFIGI's free-text
 // /v3/search endpoint doesn't reliably match ISINs - exact identifier lookups
@@ -192,12 +199,13 @@ export async function searchOpenFigiByIsin(isin: string): Promise<UpsertInstrume
 }
 
 /**
- * Batch exact-match lookup for multiple ISINs via a single /v3/mapping
- * request (the endpoint accepts up to 100 jobs per call) — consumes one
- * rate-limit slot per chunk instead of one per ISIN. Resolving a CSV
- * import's positions one ISIN at a time exhausts the shared per-minute
- * budget well before a real portfolio (10+ holdings) finishes, silently
- * marking well-known, easily-resolvable stocks as "not found".
+ * Batch exact-match lookup for multiple ISINs via one-or-more /v3/mapping
+ * requests, chunked to OPENFIGI_MAPPING_BATCH_SIZE jobs each (10 without a
+ * key, 100 with one — see that constant) — consumes one rate-limit slot per
+ * chunk instead of one per ISIN. Resolving a CSV import's positions one ISIN
+ * at a time exhausts the shared per-minute budget well before a real
+ * portfolio (10+ holdings) finishes, silently marking well-known,
+ * easily-resolvable stocks as "not found".
  */
 export async function searchOpenFigiByIsins(isins: string[]): Promise<Record<string, UpsertInstrumentInput[]>> {
     const cleanIsins = Array.from(new Set(isins.map((v) => v.toUpperCase())))
@@ -208,17 +216,20 @@ export async function searchOpenFigiByIsins(isins: string[]): Promise<Record<str
     const headers: Record<string, string> = { "Content-Type": "application/json" }
     if (process.env.OPENFIGI_KEY) headers["X-OPENFIGI-APIKEY"] = process.env.OPENFIGI_KEY
 
-    const controller = new AbortController()
     const timeoutMs = getTimeoutMs("OPENFIGI_TIMEOUT_MS", 6000)
-    const timeout = setTimeout(() => controller.abort(), timeoutMs)
 
-    try {
-        const BATCH_SIZE = 100 // OpenFIGI's documented per-request cap on /v3/mapping
-        for (let i = 0; i < cleanIsins.length; i += BATCH_SIZE) {
-            const allowed = await checkAndConsumeRateLimit("openfigi-mapping", OPENFIGI_MAPPING_LIMIT_PER_MIN)
-            if (!allowed) break
+    for (let i = 0; i < cleanIsins.length; i += OPENFIGI_MAPPING_BATCH_SIZE) {
+        const allowed = await checkAndConsumeRateLimit("openfigi-mapping", OPENFIGI_MAPPING_LIMIT_PER_MIN)
+        if (!allowed) break
 
-            const batch = cleanIsins.slice(i, i + BATCH_SIZE)
+        const batch = cleanIsins.slice(i, i + OPENFIGI_MAPPING_BATCH_SIZE)
+        // A fresh controller/timeout per chunk - reusing one across multiple
+        // chunks meant the first chunk's timer kept counting down against
+        // later chunks too, so a slow-but-healthy 2nd/3rd request could be
+        // aborted purely because an earlier one had already used up the budget.
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), timeoutMs)
+        try {
             const response = await withTimeout(
                 fetch(OPENFIGI_MAPPING_URL, {
                     method: "POST",
@@ -245,11 +256,11 @@ export async function searchOpenFigiByIsins(isins: string[]): Promise<Record<str
                     .map((r) => toUpsertInput(r, isin))
                     .filter((candidate): candidate is UpsertInstrumentInput => candidate !== null)
             })
+        } catch (error) {
+            console.error("openfigiProvider.searchOpenFigiByIsins: request failed", error)
+        } finally {
+            clearTimeout(timeout)
         }
-    } catch (error) {
-        console.error("openfigiProvider.searchOpenFigiByIsins: request failed", error)
-    } finally {
-        clearTimeout(timeout)
     }
     return result
 }

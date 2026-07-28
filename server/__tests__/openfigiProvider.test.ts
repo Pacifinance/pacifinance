@@ -88,4 +88,23 @@ describe("openfigiProvider.searchOpenFigiByIsins", () => {
 
         expect(result).toEqual({ US0378331005: [] })
     })
+
+    it("chunks batches of more than 10 ISINs without an API key (OpenFIGI rejects >10 jobs with 413)", async () => {
+        const isins = Array.from({ length: 14 }, (_, i) => `US${String(i).padStart(9, "0")}${i % 10}`)
+        vi.mocked(fetch).mockImplementation(async (_url, init) => {
+            const jobs = JSON.parse((init as { body: string }).body) as Array<{ idValue: string }>
+            return new Response(JSON.stringify(jobs.map(() => ({ data: [figiResult()] }))), { status: 200 })
+        })
+
+        const result = await searchOpenFigiByIsins(isins)
+
+        // 14 ISINs over a 10-per-request cap must take exactly 2 requests (10 + 4),
+        // not 1 (which would get the whole batch rejected with 413 on the real API).
+        expect(fetch).toHaveBeenCalledTimes(2)
+        const firstBatch = JSON.parse((vi.mocked(fetch).mock.calls[0][1] as { body: string }).body)
+        const secondBatch = JSON.parse((vi.mocked(fetch).mock.calls[1][1] as { body: string }).body)
+        expect(firstBatch).toHaveLength(10)
+        expect(secondBatch).toHaveLength(4)
+        for (const isin of isins) expect(result[isin]).toHaveLength(1)
+    })
 })

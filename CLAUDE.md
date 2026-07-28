@@ -10,6 +10,8 @@ npm run roadmap   # rigenera src/data/roadmapData.js
 ```
 After every change: `npm run lint && npm test && npm run build`
 
+**Non avviare `npm run dev` / il dev server per verifiche extra (screenshot, Playwright, browser) di tua iniziativa.** Rallenta molto lo sviluppo e nella maggior parte dei casi l'utente verifica autonomamente. `lint && test && build` è la verifica standard e sufficiente — avvia il dev server solo se l'utente lo chiede esplicitamente.
+
 ## Architecture
 ```
 src/
@@ -73,3 +75,4 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 - Aggiungere toast di successo per operazioni normali
 - Usare `.toISOString().split('T')[0]` (UTC midnight bug)
 - Chiudere un update senza una commit message finale in inglese
+- Avviare il dev server / browser di tua iniziativa per verifiche extra — solo se richiesto esplicitamente

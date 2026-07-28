@@ -2777,7 +2777,7 @@
                         "detected": "Detected: {platform}",
                         "positions": "positions found",
                         "skippedNote": "rows skipped: dividends/non buy-sell movements",
-                        "notFound": "Instrument not found in the catalog — will be excluded from the import",
+                        "notFound": "Not found automatically — search below by ISIN, symbol or name",
                         "done": "{count} holdings imported successfully",
                         "importSelected": "Import {count} selected",
                         "importing": "Importing...",
@@ -2792,7 +2792,6 @@
             "historyMonths": "+{count} months of history",
             "pastMonthNote": "The import always updates today's position and backfills history from the file's own dates — it doesn't only affect the month shown here.",
             "unverifiedTag": "Unverified",
-            "addUnverified": "Add as unverified",
             "kinds": {
                         "stock": "Stock",
                         "etf": "ETF",

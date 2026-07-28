@@ -2751,7 +2751,7 @@
                         "detected": "Detectado: {platform}",
                         "positions": "posições encontradas",
                         "skippedNote": "linhas ignoradas: dividendos/movimentos que não são compra-venda",
-                        "notFound": "Instrumento não encontrado no catálogo — será excluído da importação",
+                        "notFound": "Não encontrado automaticamente — busque abaixo por ISIN, símbolo ou nome",
                         "done": "{count} holdings importados com sucesso",
                         "importSelected": "Importar {count} selecionados",
                         "importing": "Importando...",
@@ -2766,7 +2766,6 @@
             "historyMonths": "+{count} meses de histórico",
             "pastMonthNote": "A importação sempre atualiza a posição de hoje e preenche o histórico com as datas do próprio arquivo — não afeta apenas o mês mostrado aqui.",
             "unverifiedTag": "Não verificado",
-            "addUnverified": "Adicionar como não verificado",
             "kinds": {
                         "stock": "Ação",
                         "etf": "ETF",

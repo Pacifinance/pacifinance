@@ -17,6 +17,7 @@ import {
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from './ImportPlatformGuide';
+import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
 import type { InvestmentInstrumentDto, InvestmentKind } from '../types/api';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
@@ -47,9 +48,9 @@ interface ImportRowState {
   selected: boolean;
   /** How many distinct past months this row's history will backfill (0 = single month, nothing to backfill). */
   historyMonthCount: number;
-  /** Asset kind picked for a not-found row before adding it as an unverified/manual instrument. */
+  /** Asset kind picked for a not-found row — determines which catalog (OpenFIGI/CoinGecko)
+   * the manual re-search below uses, and what kind gets created if added as unverified. */
   manualKind: InvestmentKind;
-  creatingManual: boolean;
 }
 
 interface InvestmentImportWizardProps {
@@ -127,11 +128,17 @@ const StatusIcon = styled.span`
   &.resolving { color: ${(p) => p.theme.textColor}; opacity: 0.5; }
 `;
 
+const ManualResolveBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+`;
+
 const ManualAddRow = styled.div`
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: 0.3rem;
 
   select {
     padding: 0.25rem 0.4rem;
@@ -148,18 +155,6 @@ const ManualAddRow = styled.div`
       background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
       color: ${(p) => p.theme.textColor};
     }
-  }
-
-  button {
-    border: none;
-    border-radius: 6px;
-    padding: 0.25rem 0.5rem;
-    background: rgba(217, 119, 6, 0.14);
-    color: #d97706;
-    font-size: 0.72rem;
-    font-weight: 600;
-    cursor: pointer;
-    &:disabled { cursor: wait; opacity: 0.6; }
   }
 `;
 
@@ -214,7 +209,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       const historyMonthCount = Math.max(0, buildMonthlyPositionTimeline(transactions).length - 1);
       return {
         position, transactions, instrument: null, status: 'pending', selected: true, historyMonthCount,
-        manualKind: 'stock', creatingManual: false,
+        manualKind: 'stock',
       };
     });
     setRows(initialRows);
@@ -289,22 +284,16 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, manualKind: kind } : r)));
   };
 
-  const handleAddUnverified = async (index: number) => {
-    const row = rows[index];
-    if (row.creatingManual) return;
-    const label = row.position.ticker ?? row.position.name ?? row.position.isin ?? '?';
-    setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, creatingManual: true } : r)));
-    try {
-      const created = await investmentService.createManualInstrument({
-        kind: row.manualKind, symbol: label.slice(0, 20).toUpperCase(), name: row.position.name ?? label, currency: row.position.currency,
-      });
-      setRows((prev) => prev.map((r, idx) => (idx === index
-        ? { ...r, instrument: created, status: 'resolved', selected: true, creatingManual: false }
-        : r)));
-    } catch (error) {
-      console.error('InvestmentImportWizard: manual instrument creation failed', error);
-      setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, creatingManual: false } : r)));
-    }
+  // Called once the user finds/picks a match via the manual re-search below
+  // (InstrumentSearchAutocomplete already handles both "select a verified
+  // catalog hit" and "create it as unverified" — either way we just get the
+  // resulting instrument here) — lets a "not-found" row (ISIN lookup failed,
+  // or there was no ISIN at all) be resolved by hand using ISIN, symbol, or
+  // name, instead of only ever landing on "unverified".
+  const handleManualResolve = (index: number, instrument: InvestmentInstrumentDto) => {
+    setRows((prev) => prev.map((r, idx) => (idx === index
+      ? { ...r, instrument, status: 'resolved', selected: true }
+      : r)));
   };
 
   const importSelected = async () => {
@@ -437,7 +426,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                   <span>{(t.historyMonths || '+{count} months of history').replace('{count}', String(row.historyMonthCount))}</span>
                 )}
                 {row.status === 'not-found' && (
-                  <>
+                  <ManualResolveBlock theme={theme}>
                     <span>{t.notFound}</span>
                     <ManualAddRow theme={theme}>
                       <select value={row.manualKind} onChange={(e) => setManualKind(index, e.target.value as InvestmentKind)}>
@@ -445,13 +434,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                           <option key={kind} value={kind}>{t.kinds?.[kind] || kind}</option>
                         ))}
                       </select>
-                      <button type="button" disabled={row.creatingManual} onClick={() => handleAddUnverified(index)}>
-                        {row.creatingManual
-                          ? <FontAwesomeIcon icon={faSpinner} spin />
-                          : (t.addUnverified || 'Add as unverified')}
-                      </button>
                     </ManualAddRow>
-                  </>
+                    <InstrumentSearchAutocomplete
+                      assetKey={KIND_TO_ASSET_KEY[row.manualKind]}
+                      onSelect={(instrument) => handleManualResolve(index, instrument)}
+                    />
+                  </ManualResolveBlock>
                 )}
               </PositionInfo>
               <StatusIcon theme={theme} className={row.status}>{statusIcon(row.status)}</StatusIcon>

@@ -19,6 +19,8 @@
 npm run lint && npm test && npm run build
 ```
 
+**Do not start `npm run dev` / the dev server on your own initiative for extra verification (screenshots, browser checks, Playwright).** It slows development down significantly and the user can verify most things themselves. `lint && test && build` is the standard, sufficient verification — only start the dev server if the user explicitly asks for it.
+
 ---
 
 ## Architecture

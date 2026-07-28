@@ -1,4 +1,5 @@
 import type { InvestmentInstrumentDto } from '../types/api';
+import { getExchangeName } from '../data/exchangeNames';
 
 /**
  * Compact "exchange · currency · ISIN" detail line used to tell apart search
@@ -9,7 +10,7 @@ export const formatInstrumentDetails = (
   instrument: Pick<InvestmentInstrumentDto, 'exchange' | 'currency' | 'isin'> | null | undefined,
 ): string => {
   if (!instrument) return '';
-  return [instrument.exchange, instrument.currency, instrument.isin]
+  return [getExchangeName(instrument.exchange), instrument.currency, instrument.isin]
     .filter((part) => part != null && part !== '')
     .join(' · ');
 };

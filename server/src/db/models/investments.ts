@@ -543,7 +543,12 @@ async function insertHolding(user_id: string, input: HoldingInput, mergeStrategy
                 const updated = await updateHolding(user_id, existing.id, mergeHoldingInputs(existing, input))
                 return updated ? {status: "ok", holding: updated} : null
             }
-            if (mergeStrategy === "replace" || (!mergeStrategy && existing.importSource === input.importSource)) {
+            // A holding with no tracked source (manually added, or imported before
+            // import_source existed) carries no information that contradicts the
+            // new import - safe to treat like a same-source re-import instead of
+            // asking, since there's nothing concrete to conflict with.
+            const sameOrUnknownSource = existing.importSource === input.importSource || existing.importSource === null
+            if (mergeStrategy === "replace" || (!mergeStrategy && sameOrUnknownSource)) {
                 const updated = await updateHolding(user_id, existing.id, input)
                 return updated ? {status: "ok", holding: updated} : null
             }

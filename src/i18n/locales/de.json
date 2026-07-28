@@ -2768,9 +2768,11 @@
             "historyMonths": "+{count} Monate Verlauf",
             "pastMonthNote": "Der Import aktualisiert immer die heutige Position und ergänzt den Verlauf anhand der Daten in der Datei — er betrifft nicht nur den hier angezeigten Monat.",
             "unverifiedTag": "Nicht verifiziert",
-            "conflictMessage": "Du hast bereits {quantity} Einheiten im Gesamtwert von {amount} — aus einer anderen Quelle importiert. Zu dieser Position hinzufügen oder ersetzen?",
+            "conflictMessage": "Die aktuelle Position (die von heute, nicht die eines bestimmten Monats) für dieses Instrument hat bereits {quantity} Einheiten im Gesamtwert von {amount}, erfasst aus einer anderen Quelle. Beide Summen addieren oder die bestehende mit dieser Datei ersetzen?",
             "conflictAdd": "Zum Bestehenden hinzufügen",
             "conflictReplace": "Ersetzen",
+            "existingWillUpdate": "Bereits vorhanden: {quantity} Einheiten, {amount} — diese Datei aktualisiert sie auf {newQuantity} Einheiten, {newAmount}",
+            "existingDifferentSource": "Bereits vorhanden: {quantity} Einheiten, {amount} — aus einer anderen Quelle erfasst, du wirst gefragt, ob hinzugefügt oder ersetzt werden soll",
             "kinds": {
                         "stock": "Aktie",
                         "etf": "ETF",

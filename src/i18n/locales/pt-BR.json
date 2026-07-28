@@ -2768,9 +2768,11 @@
             "historyMonths": "+{count} meses de histórico",
             "pastMonthNote": "A importação sempre atualiza a posição de hoje e preenche o histórico com as datas do próprio arquivo — não afeta apenas o mês mostrado aqui.",
             "unverifiedTag": "Não verificado",
-            "conflictMessage": "Você já tem {quantity} unidades totalizando {amount} — importadas de outra fonte. Somar a esta posição ou substituí-la?",
+            "conflictMessage": "A posição atual (a de hoje, não a de um mês específico) para este ativo já tem {quantity} unidades totalizando {amount}, registradas a partir de outra fonte. Somar os dois totais ou substituir o existente por este arquivo?",
             "conflictAdd": "Somar ao existente",
             "conflictReplace": "Substituir",
+            "existingWillUpdate": "Já possui: {quantity} unidades, {amount} — este arquivo vai atualizá-lo para {newQuantity} unidades, {newAmount}",
+            "existingDifferentSource": "Já possui: {quantity} unidades, {amount} — registradas a partir de outra fonte, você será perguntado se deseja somar ou substituir",
             "kinds": {
                         "stock": "Ação",
                         "etf": "ETF",

@@ -47,8 +47,8 @@ interface ImportRowState {
   instrument: InvestmentInstrumentDto | null;
   status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'conflict' | 'saved' | 'error';
   selected: boolean;
-  /** How many distinct past months this row's history will backfill (0 = single month, nothing to backfill). */
-  historyMonthCount: number;
+  /** Every "YYYY-MM" this position's history will backfill, chronological — includes the current month. */
+  historyMonths: string[];
   /** Asset kind picked for a not-found row — determines which catalog (OpenFIGI/CoinGecko)
    * the manual re-search below uses, and what kind gets created if added as unverified. */
   manualKind: InvestmentKind;
@@ -194,7 +194,7 @@ const ConflictButton = styled.button`
 
 export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
   const { theme } = useContext(ThemeContext);
-  const { translations } = useContext(LanguageContext);
+  const { translations, language } = useContext(LanguageContext);
   const { formatNumber, toEUR, currencySymbol } = useContext(CurrencyContext);
   const { investmentService } = useDemoServices();
   const t = translations.investments.importWizard;
@@ -205,6 +205,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const [parseError, setParseError] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importDone, setImportDone] = useState(false);
+  /** The user's current holdings, keyed by instrument id — fetched once per file so
+   * every row can preview its effect on an already-held instrument's position
+   * *before* the user commits to importing (not just reactively after a save conflict). */
+  const [existingByInstrumentId, setExistingByInstrumentId] = useState<Map<number, InvestmentHoldingDto>>(new Map());
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -226,16 +230,24 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     setSkippedRows(parsed.skippedRows);
     const initialRows: ImportRowState[] = positions.map((position) => {
       const transactions = transactionsByKey.get(position.key) ?? [];
-      // Months present in this position's own history, beyond the current one —
-      // that's how many past months will get an automatic backfilled snapshot.
-      const historyMonthCount = Math.max(0, buildMonthlyPositionTimeline(transactions).length - 1);
+      // Every distinct month present in this position's own history - what will
+      // get an automatic backfilled snapshot (shown to the user up front below).
+      const historyMonths = buildMonthlyPositionTimeline(transactions).map((s) => s.monthKey);
       return {
-        position, transactions, instrument: null, status: 'pending', selected: true, historyMonthCount,
+        position, transactions, instrument: null, status: 'pending', selected: true, historyMonths,
         manualKind: 'stock', conflictExisting: null,
       };
     });
     setRows(initialRows);
     void resolveInstruments(initialRows);
+    try {
+      const holdings = await investmentService.getHoldings();
+      const map = new Map<number, InvestmentHoldingDto>();
+      for (const holding of holdings) if (holding.instrument) map.set(holding.instrument.id, holding);
+      setExistingByInstrumentId(map);
+    } catch {
+      setExistingByInstrumentId(new Map());
+    }
   };
 
   const resolveInstruments = async (toResolve: ImportRowState[]) => {
@@ -411,6 +423,31 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const importableCount = rows.filter((r) => r.selected && r.status === 'resolved').length;
   const savedCount = rows.filter((r) => r.status === 'saved').length;
 
+  const formatMonthLabel = (monthKey: string) => {
+    const [year, month] = monthKey.split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(language, { month: 'short', year: 'numeric', timeZone: 'UTC' });
+  };
+
+  // Previews what this row will do to an instrument already held before the user
+  // commits to importing — mirrors insertHolding's own same-source-vs-different-source
+  // decision (see server/src/db/models/investments.ts) so the preview never promises
+  // a merge that won't actually happen, or vice versa.
+  const describeExistingImpact = (row: ImportRowState, existing: InvestmentHoldingDto) => {
+    const willAutoReplace = existing.importSource === platform || existing.importSource == null;
+    const existingQuantity = formatNumber(existing.quantity ?? 0);
+    const existingAmount = `${formatNumber(existing.investedAmount ?? 0)} ${currencySymbol}`;
+    if (willAutoReplace) {
+      return (t.existingWillUpdate || 'Already held: {quantity} units, {amount} — this file will update it to {newQuantity} units, {newAmount}')
+        .replace('{quantity}', existingQuantity)
+        .replace('{amount}', existingAmount)
+        .replace('{newQuantity}', formatNumber(row.position.quantity ?? 0))
+        .replace('{newAmount}', `${formatNumber(row.position.investedAmount ?? 0)} ${currencySymbol}`);
+    }
+    return (t.existingDifferentSource || "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it")
+      .replace('{quantity}', existingQuantity)
+      .replace('{amount}', existingAmount);
+  };
+
   const statusIcon = (status: ImportRowState['status']) => {
     switch (status) {
       case 'resolving': return <FontAwesomeIcon icon={faSpinner} spin />;
@@ -456,7 +493,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             </SummaryLine>
           )}
 
-          {rows.some((r) => r.historyMonthCount > 0) && (
+          {rows.some((r) => r.historyMonths.length > 1) && (
             <SummaryLine theme={theme}>{t.historyBackfillNote || 'Past months found in the file will be backfilled automatically as portfolio history.'}</SummaryLine>
           )}
 
@@ -482,8 +519,14 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 {row.instrument && formatInstrumentDetails(row.instrument) !== '' && (
                   <span>{formatInstrumentDetails(row.instrument)}</span>
                 )}
-                {row.historyMonthCount > 0 && (
-                  <span>{(t.historyMonths || '+{count} months of history').replace('{count}', String(row.historyMonthCount))}</span>
+                {row.instrument && (row.status === 'resolved' || row.status === 'conflict') && existingByInstrumentId.has(row.instrument.id) && (
+                  <span>{describeExistingImpact(row, existingByInstrumentId.get(row.instrument.id)!)}</span>
+                )}
+                {row.historyMonths.length > 1 && (
+                  <span>
+                    {(t.historyMonths || '+{count} months of history').replace('{count}', String(row.historyMonths.length - 1))}
+                    {' '}({formatMonthLabel(row.historyMonths[0])} – {formatMonthLabel(row.historyMonths[row.historyMonths.length - 1])})
+                  </span>
                 )}
                 {row.status === 'not-found' && (
                   <ManualResolveBlock theme={theme}>
@@ -504,7 +547,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 {row.status === 'conflict' && row.conflictExisting && (
                   <ManualResolveBlock theme={theme}>
                     <span>
-                      {(t.conflictMessage || 'You already have {quantity} units totaling {amount} — imported from a different source. Add to this position or replace it?')
+                      {(t.conflictMessage || "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?")
                         .replace('{quantity}', formatNumber(row.conflictExisting.quantity ?? 0))
                         .replace('{amount}', `${formatNumber(row.conflictExisting.investedAmount ?? 0)} ${currencySymbol}`)}
                     </span>

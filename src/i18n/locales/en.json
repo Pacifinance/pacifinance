@@ -2794,9 +2794,11 @@
             "historyMonths": "+{count} months of history",
             "pastMonthNote": "The import always updates today's position and backfills history from the file's own dates — it doesn't only affect the month shown here.",
             "unverifiedTag": "Unverified",
-            "conflictMessage": "You already have {quantity} units totaling {amount} — imported from a different source. Add to this position or replace it?",
+            "conflictMessage": "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?",
             "conflictAdd": "Add to existing",
             "conflictReplace": "Replace",
+            "existingWillUpdate": "Already held: {quantity} units, {amount} — this file will update it to {newQuantity} units, {newAmount}",
+            "existingDifferentSource": "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it",
             "kinds": {
                         "stock": "Stock",
                         "etf": "ETF",

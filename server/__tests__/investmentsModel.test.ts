@@ -230,6 +230,22 @@ describe("investments model", () => {
             expect(result).toMatchObject({status: "ok", holding: {id: 7, quantity: 2, investedAmount: 220}})
         })
 
+        it("auto-replaces instead of conflicting when the existing holding has no tracked source (manual entry, or imported before import_source existed)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: null, instrument: null},
+                error: null,
+            }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 7, user_id: "user-1", instrument_id: 42, asset_key: "stocks", position_type: "single", quantity: 2, average_price: 110, current_value: null, invested_amount: 220, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "trading212", instrument: null},
+                error: null,
+            }))
+
+            const result = await investments.insertHolding("user-1", {...holdingInput, quantity: 2, investedAmount: 220})
+
+            expect(result).toMatchObject({status: "ok", holding: {id: 7, quantity: 2, investedAmount: 220}})
+        })
+
         it("returns a conflict instead of guessing when the existing holding is from a different import source", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
             mockSupabase.from.mockReturnValueOnce(makeChain({

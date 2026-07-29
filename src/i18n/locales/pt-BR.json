@@ -2789,7 +2789,7 @@
         "importWizard": {
                         "title": "Importar investimentos de CSV",
                         "subtitle": "Envie a exportação de transações de uma corretora suportada — as posições serão calculadas automaticamente.",
-                        "dropHint": "Arraste o arquivo CSV aqui ou clique para selecioná-lo",
+                        "dropHint": "Arraste um ou mais arquivos CSV aqui ou clique para selecioná-los — se sua corretora limita a exportação a um período, envie todos os arquivos juntos para reconstruir o histórico completo",
                         "unrecognized": "Formato não reconhecido. Tente uma exportação da Trading 212, DEGIRO ou Directa.",
                         "detected": "Detectado: {platform}",
                         "positions": "posições encontradas",

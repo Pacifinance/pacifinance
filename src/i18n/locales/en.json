@@ -2815,7 +2815,7 @@
         "importWizard": {
                         "title": "Import investments from CSV",
                         "subtitle": "Upload your transaction export from a supported broker — positions will be calculated automatically.",
-                        "dropHint": "Drop the CSV file here or click to select it",
+                        "dropHint": "Drop one or more CSV files here or click to select them — if your broker caps exports to one period, upload all the files together to rebuild the full history",
                         "unrecognized": "Unrecognized format. Try an export from Trading 212, DEGIRO or Directa.",
                         "detected": "Detected: {platform}",
                         "positions": "positions found",

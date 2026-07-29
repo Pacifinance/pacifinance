@@ -293,6 +293,37 @@ describe('closedPositions', () => {
     ];
     expect(closedPositions(transactions).map((p) => p.key).sort()).toEqual(['US0378331005', 'US5949181045']);
   });
+
+  // Regression test for a real bug: a broker export capped to one period
+  // (Trading 212: 365 days) means a multi-year portfolio is split across
+  // several files. A position bought and sold within ONE file's own date
+  // range nets to zero there - but if it was rebought in a DIFFERENT
+  // (chronologically later) file, it's still genuinely held. Evaluating
+  // closedPositions per-file in isolation (the bug) reports a false
+  // "sold" against the full, merged history it never sees. The fix is
+  // simply to always call closedPositions/aggregatePositions on the
+  // complete merged transaction set (see recomputeFromMerged in
+  // InvestmentImportWizard.tsx), never on a single file's transactions
+  // alone - this test proves that merged evaluation gives the correct
+  // answer that isolated per-file evaluation cannot.
+  it('does not report a position as closed when it was rebought in a later file, even though it nets to zero within one file alone', () => {
+    const olderFileTransactions = [
+      tx({ quantity: 1, date: '2021-01-11' }),
+      tx({ side: 'sell', quantity: 1, date: '2021-01-14' }),
+    ];
+    const newerFileTransactions = [
+      tx({ quantity: 3, date: '2022-01-13' }),
+    ];
+
+    // The bug: checking the older file in isolation flags it as closed.
+    expect(closedPositions(olderFileTransactions)).toHaveLength(1);
+
+    // The fix: evaluating the complete merged history (both files combined,
+    // regardless of which order they were uploaded in) shows it's still held.
+    const merged = [...olderFileTransactions, ...newerFileTransactions];
+    expect(closedPositions(merged)).toEqual([]);
+    expect(aggregatePositions(merged)).toMatchObject([{ key: 'US0378331005', quantity: 3 }]);
+  });
 });
 
 describe('groupTransactionsByPositionKey', () => {

@@ -271,6 +271,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const t = translations.investments.importWizard;
 
   const [rows, setRows] = useState<ImportRowState[]>([]);
+  /** Every transaction/dividend successfully parsed so far this session, across
+   * however many files have been dropped in (see handleFiles/recomputeFromMerged) -
+   * never cleared between files, so a multi-file upload (or several one-at-a-time
+   * drops) always gets reconciled as one complete history, not file-by-file. */
+  const [allTransactions, setAllTransactions] = useState<ImportedTransaction[]>([]);
+  const [allDividends, setAllDividends] = useState<ImportedDividend[]>([]);
   const [platform, setPlatform] = useState<string | null>(null);
   const [skippedRows, setSkippedRows] = useState(0);
   const [parseError, setParseError] = useState(false);
@@ -301,34 +307,34 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * closed automatically: the user confirms each one explicitly below. */
   const [closedCandidates, setClosedCandidates] = useState<ClosedHoldingCandidate[]>([]);
 
-  const handleFile = async (file: File | undefined) => {
-    if (!file) return;
-    setParseError(false);
-    setImportDone(false);
-    const text = await file.text();
-    const parsed = parseInvestmentCsv(text);
-    if (!parsed || parsed.transactions.length === 0) {
-      setParseError(true);
-      setRows([]);
-      setPlatform(null);
-      return;
-    }
-    // Merge with transactions from already-loaded files (multi-file upload for capped exports)
-    const deduped = dedupeTransactions(parsed.transactions);
+  /**
+   * Recomputes everything (positions, closed-position detection, dividends)
+   * from the FULL set of transactions accumulated so far this session - never
+   * from a single just-uploaded file in isolation. Brokers cap a single
+   * export (Trading 212: 365 days), so a multi-year portfolio is necessarily
+   * spread across several files; computing per-file used to make "closed
+   * position" detection depend on the order files were uploaded in (a buy
+   * living in one file and its matching sell in another would net to a false
+   * "still open"/"already closed" signal depending on which file happened to
+   * be processed - and cross-referenced against the DB - first). Recomputing
+   * from the complete merged history every time removes that dependency
+   * entirely: aggregatePositions/closedPositions always see the whole
+   * picture, so the true net position is correct regardless of upload order.
+   */
+  const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[]) => {
+    const deduped = dedupeTransactions(transactions);
     const positions = aggregatePositions(deduped);
     const transactionsByKey = groupTransactionsByPositionKey(deduped);
-    const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(parsed.dividends));
-    setPlatform(parsed.platform);
-    setSkippedRows(parsed.skippedRows);
+    const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(dividends));
     const initialRows: ImportRowState[] = positions.map((position) => {
-      const transactions = transactionsByKey.get(position.key) ?? [];
+      const positionTransactions = transactionsByKey.get(position.key) ?? [];
       // Every distinct month present in this position's own history - what will
       // get an automatic backfilled snapshot (shown to the user up front below).
-      const historyMonths = buildMonthlyPositionTimeline(transactions).map((s) => s.monthKey);
-      const dividends = dividendsByKey.get(position.key) ?? [];
+      const historyMonths = buildMonthlyPositionTimeline(positionTransactions).map((s) => s.monthKey);
+      const positionDividends = dividendsByKey.get(position.key) ?? [];
       return {
-        position, transactions, dividends, instrument: null, status: 'pending', selected: true, historyMonths,
-        manualKind: 'stock', conflictExisting: null,
+        position, transactions: positionTransactions, dividends: positionDividends, instrument: null,
+        status: 'pending', selected: true, historyMonths, manualKind: 'stock', conflictExisting: null,
       };
     });
     setRows(initialRows);
@@ -359,10 +365,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setRecordedHistoryByInstrumentId(historyMap);
       setRecordedQuantityByInstrumentId(quantityMap);
 
-      // Cross-reference against already-held instruments: a position the file
-      // shows fully sold (dropped by aggregatePositions above) that matches an
-      // existing, still-nonzero holding means that holding is stale and needs
-      // the user's explicit confirmation to close.
+      // Cross-reference against already-held instruments: a position the merged
+      // history shows fully sold (dropped by aggregatePositions above) that
+      // matches an existing, still-nonzero holding means that holding is stale
+      // and needs the user's explicit confirmation to close.
       const closed = closedPositions(deduped);
       const candidates: ClosedHoldingCandidate[] = [];
       for (const holding of holdingMap.values()) {
@@ -379,6 +385,48 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setClosedCandidates([]);
     }
     void resolveInstruments(initialRows);
+  };
+
+  // Accepts one or several files at once (the file picker allows a multi-select,
+  // and the dropzone stays usable after the first file to add more later) -
+  // every file's transactions/dividends are added to what's already loaded
+  // this session, then everything is recomputed from that complete merged set
+  // (see recomputeFromMerged). A file that fails to parse is skipped rather
+  // than wiping out anything already loaded; the "unrecognized format" error
+  // only shows when NOTHING has ever loaded successfully yet.
+  const handleFiles = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    setParseError(false);
+    setImportDone(false);
+
+    let newTransactions: ImportedTransaction[] = [];
+    let newDividends: ImportedDividend[] = [];
+    let newSkipped = 0;
+    let lastPlatform: string | null = null;
+
+    for (const file of Array.from(fileList)) {
+      const text = await file.text();
+      const parsed = parseInvestmentCsv(text);
+      if (!parsed || parsed.transactions.length === 0) continue;
+      newTransactions = newTransactions.concat(parsed.transactions);
+      newDividends = newDividends.concat(parsed.dividends);
+      newSkipped += parsed.skippedRows;
+      lastPlatform = parsed.platform;
+    }
+
+    if (!lastPlatform) {
+      if (allTransactions.length === 0) setParseError(true);
+      return;
+    }
+
+    const mergedTransactions = allTransactions.concat(newTransactions);
+    const mergedDividends = allDividends.concat(newDividends);
+    setAllTransactions(mergedTransactions);
+    setAllDividends(mergedDividends);
+    setSkippedRows((prev) => prev + newSkipped);
+    setPlatform(lastPlatform);
+
+    await recomputeFromMerged(mergedTransactions, mergedDividends);
   };
 
   // Decides how this row's save should treat an already-held instrument:
@@ -714,9 +762,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       .replace('{amount}', existingAmount);
   };
 
-  // Previews the dividends this row's file contains — aggregateDividends
-  // returns at most one entry here since row.dividends is already scoped to a
-  // single instrument (see groupDividendsByPositionKey in handleFile).
+  // Previews the dividends found for this row — aggregateDividends returns at
+  // most one entry here since row.dividends is already scoped to a single
+  // instrument (see groupDividendsByPositionKey in recomputeFromMerged).
   const describeDividends = (row: ImportRowState) => {
     const [summary] = aggregateDividends(row.dividends);
     if (!summary) return null;
@@ -753,7 +801,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           <DropZone theme={theme}>
             <FontAwesomeIcon icon={faFileCsv} />
             {t.dropHint}
-            <input type="file" accept=".csv,text/csv" onChange={(e) => handleFile(e.target.files?.[0])} />
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              multiple
+              onChange={(e) => { void handleFiles(e.target.files); e.target.value = ''; }}
+            />
           </DropZone>
 
           {parseError && (

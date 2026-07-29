@@ -2789,7 +2789,7 @@
         "importWizard": {
                         "title": "Investitionen aus CSV importieren",
                         "subtitle": "Laden Sie den Transaktions-Export eines unterstützten Brokers hoch — die Positionen werden automatisch berechnet.",
-                        "dropHint": "CSV-Datei hier ablegen oder klicken zum Auswählen",
+                        "dropHint": "Eine oder mehrere CSV-Dateien hier ablegen oder klicken zum Auswählen — wenn dein Broker den Export auf einen Zeitraum begrenzt, lade alle Dateien zusammen hoch, um den vollständigen Verlauf zu rekonstruieren",
                         "unrecognized": "Format nicht erkannt. Versuchen Sie einen Export von Trading 212, DEGIRO oder Directa.",
                         "detected": "Erkannt: {platform}",
                         "positions": "Positionen gefunden",

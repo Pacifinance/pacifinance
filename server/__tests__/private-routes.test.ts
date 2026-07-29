@@ -532,6 +532,51 @@ describe("private backend routes", () => {
         )
     })
 
+    it("passes an explicit quantity through for a monthly backfill (the import wizard's own reconstructed quantity for that month)", async () => {
+        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({
+            status: "ok",
+            entry: {id: 21, holdingId: 16, userDate: "2024-01-01", currentValue: null, investedAmount: 1000, quantity: 10}
+        })
+
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 16, user_date: "2024-01-01", current_value: null, invested_amount: 1000, quantity: 10}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.investments.upsertHoldingHistoryEntry).toHaveBeenCalledWith(
+            "user-uuid", 16, new Date("2024-01-01"), {currentValue: null, investedAmount: 1000, quantity: 10}
+        )
+    })
+
+    it("omits quantity (denormalize from the live holding) when the request doesn't send one", async () => {
+        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({
+            status: "ok",
+            entry: {id: 22, holdingId: 16, userDate: "2026-07-01", currentValue: 2000, investedAmount: 1500}
+        })
+
+        await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 16, user_date: "2026-07-01", current_value: 2000, invested_amount: 1500}
+        })
+
+        const call = mockDb.investments.upsertHoldingHistoryEntry.mock.calls[0]
+        expect(call[3].quantity).toBeUndefined()
+    })
+
+    it("rejects a history save with an invalid quantity", async () => {
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 16, user_date: "2024-01-01", current_value: null, invested_amount: 1000, quantity: -5}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.upsertHoldingHistoryEntry).not.toHaveBeenCalled()
+    })
+
     it("rejects a history save with a reason when the payload is malformed", async () => {
         const response = await request(app, "/api/investments/holdings/history/save", {
             method: "POST",
@@ -614,6 +659,36 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(503)
         expect(mockDb.investments.refreshHoldingPrices).not.toHaveBeenCalled()
+    })
+
+    it("backfills historical prices using cached exchange rates", async () => {
+        mockCache.valueExpired.mockResolvedValueOnce(false)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.08})
+        mockDb.investments.backfillHistoricalPrices.mockResolvedValue([{holdingId: 16, monthsFilled: 12}])
+
+        const response = await request(app, "/api/investments/holdings/backfill-historical-prices", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([{holdingId: 16, monthsFilled: 12}])
+        expect(mockDb.investments.backfillHistoricalPrices).toHaveBeenCalledWith("user-uuid", {EUR: 1, USD: 1.08})
+    })
+
+    it("returns 503 for a historical price backfill when exchange rates aren't available", async () => {
+        mockCache.valueExpired.mockResolvedValueOnce(true)
+        mockCache.get.mockResolvedValueOnce(null)
+
+        const response = await request(app, "/api/investments/holdings/backfill-historical-prices", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(503)
+        expect(mockDb.investments.backfillHistoricalPrices).not.toHaveBeenCalled()
     })
 
     it("reads the monthly investment target setting", async () => {

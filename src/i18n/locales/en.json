@@ -737,6 +737,12 @@
             "sparseHistoryDescription": "Keep updating your balance every month to build your holdings' history.",
             "noHoldingsTitle": "No investments recorded",
             "noHoldingsDescription": "Add a detailed holding (stocks, ETFs, crypto, ...) to see this analysis.",
+            "refreshPrices": "Refresh prices",
+            "refreshingPrices": "Refreshing…",
+            "backfillHistoricalPrices": "Fetch historical prices",
+            "backfillingHistoricalPrices": "Fetching historical prices…",
+            "backfillResultFilled": "{months} months filled in across {holdings} positions.",
+            "backfillResultEmpty": "No historical prices were available for your positions right now.",
             "insights": {
                 "title": "Portfolio insights",
                 "totalInvested": "Total invested",
@@ -2797,9 +2803,7 @@
             "defaultInstrumentHint": "BTC is pre-filled by default. Remove it to search for a different one (e.g. a separate wallet or another blockchain).",
             "noValueForMonth": "No value set for this month",
         "unverifiedBadge": "Unverified",
-        "unverifiedHint": "Not verified — won't count toward comparisons with other users.",
-        "refreshPrices": "Refresh prices",
-        "refreshingPrices": "Refreshing…"
+        "unverifiedHint": "Not verified — won't count toward comparisons with other users."
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko",

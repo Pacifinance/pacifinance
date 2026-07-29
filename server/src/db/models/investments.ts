@@ -774,7 +774,14 @@ async function getHoldingHistoryByUserId(user_id: string, months?: number, userD
     return (data as unknown as HoldingHistoryRow[]).map(toHoldingHistory)
 }
 
-export type HoldingHistoryEntryInput = { currentValue: number | null, investedAmount: number | null }
+// quantity is optional: when provided (the import wizard's monthly backfill
+// always knows the real quantity held that month, from buildMonthlyPositionTimeline),
+// it's stored as-is instead of being denormalized from today's live holding -
+// otherwise every past month's row would show today's quantity, not what was
+// actually held then, making a genuine "quantity owned this month" figure
+// impossible and silently overstating how much of a historical price move
+// applied to the position at the time.
+export type HoldingHistoryEntryInput = { currentValue: number | null, investedAmount: number | null, quantity?: number | null }
 
 // "not_found": the holding truly doesn't exist / isn't owned by this user - a
 // client-side problem (stale id, wrong account). "db_error": the query itself
@@ -822,7 +829,7 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
         asset_key: holding.assetKey,
         symbol: holding.instrument.symbol,
         name: holding.instrument.name,
-        quantity: holding.quantity,
+        quantity: input.quantity !== undefined ? input.quantity : holding.quantity,
         average_price: holding.averagePrice,
         current_value: input.currentValue,
         invested_amount: input.investedAmount,
@@ -840,6 +847,86 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
     }
     if (!data) return {status: "db_error", message: "upsert returned no row"}
     return {status: "ok", entry: toHoldingHistory(data as unknown as HoldingHistoryRow)}
+}
+
+export interface HistoricalPriceBackfillResult {
+    holdingId: number
+    monthsFilled: number
+}
+
+/**
+ * Fills in current_value for PAST months that only have cost-basis
+ * (invested_amount) history, using each instrument's own historical monthly
+ * closing price (Finnhub for stocks/ETFs, CoinGecko for crypto - already in
+ * EUR) multiplied by the quantity actually held that month (see
+ * upsertHoldingHistoryEntry's quantity parameter, and the import wizard's
+ * backfillHistory, which is what actually stores a real per-month quantity
+ * instead of always denormalizing today's). This is what turns "value over
+ * time" from a cost-basis-only trend into a real market-value trend for
+ * months before the user started using "Refresh prices" regularly.
+ *
+ * One provider call per instrument (not per month) covers its whole history
+ * range. Best-effort and partial by design: an instrument whose provider has
+ * no historical data for it (unsupported plan/tier, delisted, too far back,
+ * or simply an untracked kind) is silently skipped, never a hard failure -
+ * see getHistoricalMonthlyPrices's own contract on both providers. Never
+ * overwrites a month that already has a real current_value (from a manual
+ * entry or a previous refresh) - only fills genuine gaps.
+ */
+async function backfillHistoricalPrices(user_id: string, eurRates: Record<string, number>): Promise<HistoricalPriceBackfillResult[]> {
+    const holdings = await getHoldingsByUserId(user_id)
+    const backfillable = holdings.filter((h) =>
+        h.instrument !== null
+        && (h.instrument.kind === "stock" || h.instrument.kind === "etf" || h.instrument.kind === "crypto")
+        && h.quantity != null && h.quantity > 0)
+    if (backfillable.length === 0) return []
+
+    const history = await getHoldingHistoryByUserId(user_id)
+    const historyByHoldingId = new Map<number, typeof history>()
+    for (const entry of history) {
+        if (entry.holdingId === null) continue
+        const rows = historyByHoldingId.get(entry.holdingId) ?? []
+        rows.push(entry)
+        historyByHoldingId.set(entry.holdingId, rows)
+    }
+
+    const results: HistoricalPriceBackfillResult[] = []
+    for (const holding of backfillable) {
+        const instrument = holding.instrument as NonNullable<typeof holding.instrument>
+        const gaps = (historyByHoldingId.get(holding.id) ?? [])
+            .filter((row) => row.currentValue == null && row.quantity != null && row.quantity > 0)
+            .sort((a, b) => a.userDate.localeCompare(b.userDate))
+        if (gaps.length === 0) continue
+
+        const fromUnix = Math.floor(new Date(gaps[0].userDate).getTime() / 1000)
+        const toUnix = Math.floor(Date.now() / 1000)
+
+        const isCrypto = instrument.kind === "crypto"
+        if (isCrypto && !instrument.coingeckoId) continue
+        const priceByMonth = isCrypto
+            ? await coingeckoProvider.getHistoricalMonthlyPrices(instrument.coingeckoId as string, fromUnix, toUnix)
+            : await finnhubProvider.getHistoricalMonthlyPrices(instrument.symbol, fromUnix, toUnix)
+        if (!priceByMonth) continue
+
+        const priceCurrency = isCrypto ? "EUR" : (instrument.currency ?? "USD")
+        const rate = priceCurrency === "EUR" ? 1 : eurRates[priceCurrency]
+        if (!rate) continue
+
+        let monthsFilled = 0
+        for (const gap of gaps) {
+            const monthKey = gap.userDate.slice(0, 7)
+            const price = priceByMonth.get(monthKey)
+            if (price == null) continue
+
+            const currentValue = roundCurrency((price / rate) * (gap.quantity as number))
+            const result = await upsertHoldingHistoryEntry(user_id, holding.id, new Date(gap.userDate), {
+                currentValue, investedAmount: gap.investedAmount, quantity: gap.quantity,
+            })
+            if (result.status === "ok") monthsFilled++
+        }
+        if (monthsFilled > 0) results.push({holdingId: holding.id, monthsFilled})
+    }
+    return results
 }
 
 export type InvestmentSettings = { monthlyTarget: number | null }
@@ -881,6 +968,7 @@ export default {
     getInstrumentById,
     getHoldingsByUserId,
     refreshHoldingPrices,
+    backfillHistoricalPrices,
     insertHolding,
     updateHolding,
     deleteHolding,

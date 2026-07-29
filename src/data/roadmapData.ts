@@ -320,6 +320,18 @@ const roadmapData: RoadmapItem[] = [
     icon: '🎯',
     completedDate: '2026-07',
   },
+  {
+    id: 'historical-price-backfill',
+    title: { it: 'Recupero Prezzi Storici', en: 'Historical Price Backfill' },
+    description: {
+      it: 'Un pulsante dedicato recupera un prezzo di mercato mensile per ogni azione/ETF (Finnhub) e crypto (CoinGecko), moltiplicato per la quantità effettivamente posseduta in quel mese — trasforma l\'andamento del portafoglio da una semplice curva di costo storico a un vero andamento di mercato, anche per i mesi precedenti al primo utilizzo di "Aggiorna prezzi".',
+      en: 'A dedicated button fetches one monthly market price per stock/ETF (Finnhub) and crypto (CoinGecko), multiplied by the quantity actually held that month — turns the portfolio\'s value-over-time from a plain cost-basis curve into a real market trend, even for months before "Refresh prices" was first used.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🕰️',
+    completedDate: '2026-07',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'onboarding',

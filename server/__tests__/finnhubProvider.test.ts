@@ -3,7 +3,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
 const { checkAndConsumeRateLimit } = vi.hoisted(() => ({ checkAndConsumeRateLimit: vi.fn() }))
 vi.mock("../src/libs/rateLimiter", () => ({ checkAndConsumeRateLimit, default: { checkAndConsumeRateLimit } }))
 
-import { getQuote } from "../src/libs/providers/finnhubProvider"
+import { getQuote, getHistoricalMonthlyPrices } from "../src/libs/providers/finnhubProvider"
 
 describe("finnhubProvider.getQuote", () => {
     const originalKey = process.env.FINNHUB_KEY
@@ -55,6 +55,65 @@ describe("finnhubProvider.getQuote", () => {
         checkAndConsumeRateLimit.mockResolvedValue(false)
 
         const result = await getQuote("AAPL")
+
+        expect(fetch).not.toHaveBeenCalled()
+        expect(result).toBeNull()
+    })
+})
+
+describe("finnhubProvider.getHistoricalMonthlyPrices", () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        checkAndConsumeRateLimit.mockResolvedValue(true)
+        process.env.FINNHUB_KEY = "test-key"
+    })
+
+    afterEach(() => {
+        process.env.FINNHUB_KEY = undefined
+    })
+
+    it("returns null without calling fetch when no API key is configured", async () => {
+        delete process.env.FINNHUB_KEY
+        const result = await getHistoricalMonthlyPrices("AAPL", 1704067200, 1735689600)
+        expect(result).toBeNull()
+        expect(fetch).not.toHaveBeenCalled()
+    })
+
+    it("maps close prices to their calendar month, in one call for the whole range", async () => {
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            s: "ok",
+            c: [150.0, 155.5],
+            t: [1704067200, 1706745600], // 2024-01-01, 2024-02-01 (UTC)
+        }), { status: 200 }))
+
+        const result = await getHistoricalMonthlyPrices("AAPL", 1704067200, 1706745600)
+
+        expect(result).toEqual(new Map([["2024-01", 150.0], ["2024-02", 155.5]]))
+        expect(fetch).toHaveBeenCalledTimes(1)
+        const [url] = vi.mocked(fetch).mock.calls[0]
+        expect(url).toContain("resolution=M")
+    })
+
+    it("returns null when Finnhub reports no_data (e.g. delisted symbol, or unsupported for this plan/exchange)", async () => {
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ s: "no_data" }), { status: 200 }))
+
+        const result = await getHistoricalMonthlyPrices("UNKNOWN", 1704067200, 1706745600)
+
+        expect(result).toBeNull()
+    })
+
+    it("returns null (not a throw) on a non-200 response (e.g. a plan/permission rejection)", async () => {
+        vi.mocked(fetch).mockResolvedValue(new Response("forbidden", { status: 403 }))
+
+        const result = await getHistoricalMonthlyPrices("AAPL", 1704067200, 1706745600)
+
+        expect(result).toBeNull()
+    })
+
+    it("returns null without calling fetch when rate-limited", async () => {
+        checkAndConsumeRateLimit.mockResolvedValue(false)
+
+        const result = await getHistoricalMonthlyPrices("AAPL", 1704067200, 1706745600)
 
         expect(fetch).not.toHaveBeenCalled()
         expect(result).toBeNull()

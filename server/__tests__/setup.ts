@@ -93,6 +93,7 @@ const mocks = vi.hoisted(() => {
             getInstrumentById: vi.fn(),
             getHoldingsByUserId: vi.fn(),
             refreshHoldingPrices: vi.fn(),
+            backfillHistoricalPrices: vi.fn(),
             insertHolding: vi.fn(),
             updateHolding: vi.fn(),
             deleteHolding: vi.fn(),

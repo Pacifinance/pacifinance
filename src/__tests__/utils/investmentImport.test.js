@@ -5,7 +5,7 @@ import {
 import { parseInvestmentCsv } from '../../utils/investmentImport/parsers';
 import {
   dedupeTransactions, aggregatePositions, aggregatePositionsAsOf, buildMonthlyPositionTimeline, lastDayOfMonth,
-  groupTransactionsByPositionKey, baselineInvestedBefore, closedPositions,
+  groupTransactionsByPositionKey, lastRecordedValueBefore, closedPositions,
 } from '../../utils/investmentImport/aggregate';
 
 describe('parseImportNumber', () => {
@@ -338,15 +338,15 @@ describe('buildMonthlyPositionTimeline', () => {
   });
 });
 
-describe('baselineInvestedBefore', () => {
+describe('lastRecordedValueBefore', () => {
   it('returns 0 when nothing is recorded yet (first-ever import)', () => {
-    expect(baselineInvestedBefore(undefined, '2024-01')).toBe(0);
-    expect(baselineInvestedBefore(new Map(), '2024-01')).toBe(0);
+    expect(lastRecordedValueBefore(undefined, '2024-01')).toBe(0);
+    expect(lastRecordedValueBefore(new Map(), '2024-01')).toBe(0);
   });
 
   it('returns 0 when every recorded month is on or after the cutoff', () => {
     const recorded = new Map([['2024-01', 500], ['2024-02', 600]]);
-    expect(baselineInvestedBefore(recorded, '2024-01')).toBe(0);
+    expect(lastRecordedValueBefore(recorded, '2024-01')).toBe(0);
   });
 
   it('carries forward the last recorded value strictly before the cutoff month — the multi-file export scenario', () => {
@@ -354,11 +354,11 @@ describe('baselineInvestedBefore', () => {
     // several separate file uploads. Re-importing the 2024 file must pick up where
     // the earlier (2021-2023) file's own backfill left off, not start from zero.
     const recorded = new Map([['2023-11', 1800], ['2023-12', 2000]]);
-    expect(baselineInvestedBefore(recorded, '2024-01')).toBe(2000);
+    expect(lastRecordedValueBefore(recorded, '2024-01')).toBe(2000);
   });
 
   it('ignores a null recorded value for the closest prior month and returns 0', () => {
     const recorded = new Map([['2023-12', null]]);
-    expect(baselineInvestedBefore(recorded, '2024-01')).toBe(0);
+    expect(lastRecordedValueBefore(recorded, '2024-01')).toBe(0);
   });
 });

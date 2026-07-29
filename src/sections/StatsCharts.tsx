@@ -344,6 +344,24 @@ const RefreshPricesButton = styled.button`
   svg { font-size: 0.9rem; }
 `;
 
+const ActionButtonsRow = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+
+  ${RefreshPricesButton} { margin: 0; }
+`;
+
+const ActionResultLine = styled.p`
+  text-align: center;
+  font-size: 0.8rem;
+  opacity: 0.65;
+  margin: -1rem 0 1.5rem 0;
+  color: ${(props) => props.theme.textColor};
+`;
+
 const CategoryPill = styled.button`
   padding: 0.45rem 1rem;
   border-radius: 999px;
@@ -483,6 +501,8 @@ export default function StatsCharts() {
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
+    const [backfillingHistoricalPrices, setBackfillingHistoricalPrices] = useState(false);
+    const [historicalBackfillResult, setHistoricalBackfillResult] = useState(null);
 
     // Lazy fetch: only pulled once the Portfolio Holdings tab is actually opened,
     // so users who never visit it never pay for the extra requests.
@@ -527,6 +547,29 @@ export default function StatsCharts() {
             setHoldingHistory(Array.isArray(history) ? history : []);
         } finally {
             setRefreshingPrices(false);
+        }
+    };
+
+    // Heavier, occasional operation (one provider call per instrument,
+    // covering its whole history) - deliberately separate from "Refresh
+    // prices" (meant to be clicked often) rather than folded into it. Fills
+    // in real market value for past months that only have cost-basis history
+    // - partial/best-effort by design, some instruments may not have
+    // historical data available depending on the provider's plan/coverage.
+    const handleBackfillHistoricalPrices = async () => {
+        if (backfillingHistoricalPrices) return;
+        setBackfillingHistoricalPrices(true);
+        setHistoricalBackfillResult(null);
+        try {
+            const results = await investmentService.backfillHistoricalPrices();
+            const [history] = await Promise.all([
+                investmentService.getHoldingHistory(),
+            ]);
+            setHoldingHistory(Array.isArray(history) ? history : []);
+            const monthsFilled = results.reduce((sum, r) => sum + r.monthsFilled, 0);
+            setHistoricalBackfillResult({ holdingsCount: results.length, monthsFilled });
+        } finally {
+            setBackfillingHistoricalPrices(false);
         }
     };
 
@@ -789,11 +832,38 @@ export default function StatsCharts() {
                         </CategoryPillsRow>
                     )}
 
-                    {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')) && (
-                        <RefreshPricesButton theme={theme} type="button" onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="stats-refresh-prices">
-                            <RefreshCw size={14} style={refreshingPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
-                            {refreshingPrices ? (t.refreshingPrices || 'Refreshing…') : (t.refreshPrices || 'Refresh prices')}
-                        </RefreshPricesButton>
+                    {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')
+                        || availableAssetKeys.includes('bitcoin') || availableAssetKeys.includes('crypto')) && (
+                        <ActionButtonsRow>
+                            {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')) && (
+                                <RefreshPricesButton theme={theme} type="button" onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="stats-refresh-prices">
+                                    <RefreshCw size={14} style={refreshingPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
+                                    {refreshingPrices ? (t.refreshingPrices || 'Refreshing…') : (t.refreshPrices || 'Refresh prices')}
+                                </RefreshPricesButton>
+                            )}
+                            <RefreshPricesButton
+                                theme={theme}
+                                type="button"
+                                onClick={handleBackfillHistoricalPrices}
+                                disabled={backfillingHistoricalPrices}
+                                data-umami-event="stats-backfill-historical-prices"
+                            >
+                                <RefreshCw size={14} style={backfillingHistoricalPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
+                                {backfillingHistoricalPrices
+                                    ? (t.backfillingHistoricalPrices || 'Fetching historical prices…')
+                                    : (t.backfillHistoricalPrices || 'Fetch historical prices')}
+                            </RefreshPricesButton>
+                        </ActionButtonsRow>
+                    )}
+
+                    {historicalBackfillResult && (
+                        <ActionResultLine theme={theme}>
+                            {historicalBackfillResult.monthsFilled > 0
+                                ? (t.backfillResultFilled || '{months} months filled in across {holdings} positions.')
+                                    .replace('{months}', String(historicalBackfillResult.monthsFilled))
+                                    .replace('{holdings}', String(historicalBackfillResult.holdingsCount))
+                                : (t.backfillResultEmpty || "No historical prices were available for your positions right now.")}
+                        </ActionResultLine>
                     )}
 
                     <ChartGrid columns={2}>

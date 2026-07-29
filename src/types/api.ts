@@ -516,6 +516,12 @@ export type InvestmentInstrumentSearchByIsinsResponse = Record<string, Investmen
 
 export type InvestmentHoldingsGetResponse = InvestmentHoldingDto[];
 
+export interface HistoricalPriceBackfillResultDto {
+  holdingId: number;
+  monthsFilled: number;
+}
+export type InvestmentHistoricalPriceBackfillResponse = HistoricalPriceBackfillResultDto[];
+
 /** Creates a private, unverified instrument when search finds no verified match — scoped to the creating user only, never shared with other users' searches. */
 export interface InvestmentInstrumentManualCreateRequest {
   kind: InvestmentKind;
@@ -572,6 +578,8 @@ export interface InvestmentHoldingHistorySaveRequest {
   user_date: string;
   current_value: number | null;
   invested_amount: number | null;
+  /** Quantity actually held that month — omit to keep denormalizing from the live holding (e.g. a current-month refresh). */
+  quantity?: number | null;
 }
 
 export interface InvestmentSettingsDto {

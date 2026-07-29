@@ -7,10 +7,10 @@ vi.mock("../src/libs/providers/openfigiProvider", () => ({
     default: { searchOpenFigi: vi.fn(), searchOpenFigiByIsin: vi.fn(), searchOpenFigiByIsins: vi.fn(), isIsin: vi.fn() },
 }))
 vi.mock("../src/libs/providers/coingeckoProvider", () => ({
-    default: { searchCoingecko: vi.fn() },
+    default: { searchCoingecko: vi.fn(), getHistoricalMonthlyPrices: vi.fn() },
 }))
 vi.mock("../src/libs/providers/finnhubProvider", () => ({
-    default: { searchFinnhub: vi.fn(), getQuote: vi.fn() },
+    default: { searchFinnhub: vi.fn(), getQuote: vi.fn(), getHistoricalMonthlyPrices: vi.fn() },
 }))
 vi.mock("../src/cache/quoteCache", () => ({
     default: { getCachedQuote: vi.fn(), setCachedQuote: vi.fn() },
@@ -18,6 +18,7 @@ vi.mock("../src/cache/quoteCache", () => ({
 
 import openfigiProvider from "../src/libs/providers/openfigiProvider"
 import finnhubProvider from "../src/libs/providers/finnhubProvider"
+import coingeckoProvider from "../src/libs/providers/coingeckoProvider"
 import quoteCache from "../src/cache/quoteCache"
 
 /** Minimal chainable Supabase query-builder stub: every filter method returns
@@ -326,6 +327,39 @@ describe("investments model", () => {
 
             expect(result).toEqual({status: "db_error", message: "there is no unique or exclusion constraint matching the ON CONFLICT specification"})
         })
+
+        const holdingRow = {
+            id: 16, user_id: "user-1", instrument_id: 1, asset_key: "stocks", position_type: "single",
+            quantity: 15, average_price: 100, current_value: null, invested_amount: 1500, currency: "EUR",
+            notes: "", updated_at: "2026-01-01", import_source: "trading212",
+            instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: null, coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+        }
+
+        it("uses the given quantity for a past month, instead of denormalizing today's live quantity", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
+            const upsertChain = makeChain({data: {...holdingRow, quantity: 10, user_date: "2024-01-01"}, error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+
+            await investments.upsertHoldingHistoryEntry("user-1", 16, new Date("2024-01-15"), {currentValue: null, investedAmount: 1000, quantity: 10})
+
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({quantity: 10}),
+                expect.anything(),
+            )
+        })
+
+        it("falls back to the live holding's quantity when none is given (e.g. a current-month price refresh)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
+            const upsertChain = makeChain({data: holdingRow, error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+
+            await investments.upsertHoldingHistoryEntry("user-1", 16, new Date("2026-07-01"), {currentValue: 2000, investedAmount: 1500})
+
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({quantity: 15}),
+                expect.anything(),
+            )
+        })
     })
 
     describe("refreshHoldingPrices", () => {
@@ -410,6 +444,76 @@ describe("investments model", () => {
             const result = await investments.refreshHoldingPrices("user-1", {EUR: 1})
 
             expect(result).toEqual([])
+        })
+    })
+
+    describe("backfillHistoricalPrices", () => {
+        const holdingRow = {
+            id: 16, user_id: "user-1", instrument_id: 1, asset_key: "stocks", position_type: "single",
+            quantity: 15, average_price: 100, current_value: 2000, invested_amount: 1500, currency: "EUR",
+            notes: "", updated_at: "2026-01-01", import_source: "trading212",
+            instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: null, coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+        }
+        const gapRow = (overrides: Record<string, unknown>) => ({
+            id: 1, holding_id: 16, instrument_id: 1, asset_key: "stocks", symbol: "AAPL", name: "Apple Inc.",
+            average_price: 100, current_value: null, invested_amount: 1000, currency: "EUR",
+            user_date: "2024-01-01", recorded_at: "2024-01-01", ...overrides,
+        })
+
+        it("fills current_value for gap months using the historical price times the quantity held that month", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [gapRow({quantity: 5, user_date: "2024-01-01"}), gapRow({id: 2, quantity: 10, user_date: "2024-02-01"})],
+                error: null,
+            }))
+            vi.mocked(finnhubProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([["2024-01", 100], ["2024-02", 110]]))
+            // upsertHoldingHistoryEntry's own holding lookup + upsert, once per gap month.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 5}), current_value: 500}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 10}), current_value: 1100}, error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1, USD: 1.1})
+
+            expect(finnhubProvider.getHistoricalMonthlyPrices).toHaveBeenCalledWith("AAPL", expect.any(Number), expect.any(Number))
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 2}])
+        })
+
+        it("skips an instrument the provider has no historical data for, without failing the whole backfill", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 5})], error: null}))
+            vi.mocked(finnhubProvider.getHistoricalMonthlyPrices).mockResolvedValue(null)
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1, USD: 1.1})
+
+            expect(result).toEqual([])
+        })
+
+        it("uses CoinGecko (already in EUR) instead of Finnhub for crypto holdings", async () => {
+            const cryptoHolding = {
+                ...holdingRow, asset_key: "crypto",
+                instrument: {...holdingRow.instrument, kind: "crypto", symbol: "BTC", currency: null, coingecko_id: "bitcoin"},
+            }
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [cryptoHolding], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 1})], error: null}))
+            vi.mocked(coingeckoProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([["2024-01", 40000]]))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: cryptoHolding, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 1}), current_value: 40000}, error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1})
+
+            expect(coingeckoProvider.getHistoricalMonthlyPrices).toHaveBeenCalledWith("bitcoin", expect.any(Number), expect.any(Number))
+            expect(finnhubProvider.getHistoricalMonthlyPrices).not.toHaveBeenCalled()
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 1}])
+        })
+
+        it("returns an empty array when there are no holdings to backfill", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1})
+
+            expect(result).toEqual([])
+            expect(finnhubProvider.getHistoricalMonthlyPrices).not.toHaveBeenCalled()
         })
     })
 

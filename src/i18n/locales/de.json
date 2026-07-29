@@ -735,6 +735,12 @@
             "sparseHistoryDescription": "Aktualisiere dein Guthaben weiterhin jeden Monat, um den Verlauf deiner Investitionen aufzubauen.",
             "noHoldingsTitle": "Keine Investitionen erfasst",
             "noHoldingsDescription": "Füge eine detaillierte Position (Aktien, ETFs, Krypto, ...) hinzu, um diese Analyse zu sehen.",
+            "refreshPrices": "Preise aktualisieren",
+            "refreshingPrices": "Wird aktualisiert…",
+            "backfillHistoricalPrices": "Historische Preise abrufen",
+            "backfillingHistoricalPrices": "Historische Preise werden abgerufen…",
+            "backfillResultFilled": "{months} Monate für {holdings} Positionen ergänzt.",
+            "backfillResultEmpty": "Für deine Positionen sind derzeit keine historischen Preise verfügbar.",
             "insights": {
                 "title": "Portfolio-Einblicke",
                 "totalInvested": "Investiert insgesamt",
@@ -2771,9 +2777,7 @@
             "defaultInstrumentHint": "BTC ist standardmäßig vorausgewählt. Entferne es, um ein anderes zu suchen (z. B. eine separate Wallet oder eine andere Blockchain).",
             "noValueForMonth": "Kein Wert für diesen Monat",
         "unverifiedBadge": "Nicht verifiziert",
-        "unverifiedHint": "Nicht verifiziert — zählt nicht bei Vergleichen mit anderen Nutzern.",
-        "refreshPrices": "Preise aktualisieren",
-        "refreshingPrices": "Wird aktualisiert…"
+        "unverifiedHint": "Nicht verifiziert — zählt nicht bei Vergleichen mit anderen Nutzern."
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko",

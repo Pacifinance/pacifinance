@@ -87,6 +87,24 @@ describe('investmentService', () => {
     expect(result).toEqual(holdings);
   });
 
+  it('backfills historical prices', async () => {
+    const results = [{ holdingId: 16, monthsFilled: 12 }];
+    mockClient.post.mockResolvedValue({ data: results });
+
+    const result = await service.backfillHistoricalPrices();
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/holdings/backfill-historical-prices', {});
+    expect(result).toEqual(results);
+  });
+
+  it('returns an empty array when the historical backfill response is malformed', async () => {
+    mockClient.post.mockResolvedValue({ data: null });
+
+    const result = await service.backfillHistoricalPrices();
+
+    expect(result).toEqual([]);
+  });
+
   it('saves a holding linked to a canonical instrument', async () => {
     const holding = { id: 9, assetKey: 'stocks', instrument: { id: 1, symbol: 'AAPL' } };
     const payload = { instrument_id: 1, asset_key: 'stocks', current_value: 420 };

@@ -162,4 +162,76 @@ export async function getQuote(symbol: string): Promise<Quote | null> {
     }
 }
 
-export default { searchFinnhub, getQuote }
+const FINNHUB_CANDLE_URL = "https://finnhub.io/api/v1/stock/candle"
+// Separate bucket again - a historical backfill runs once per instrument (not
+// per user click, unlike quote/search), but must still never compete with
+// them for the shared 60/min free-tier budget.
+const FINNHUB_CANDLE_LIMIT_PER_MIN = 55
+
+type FinnhubCandleResponse = {
+    c?: number[] // close prices
+    t?: number[] // candle open times, unix seconds
+    s?: string // "ok" | "no_data"
+}
+
+/**
+ * Fetches one monthly closing price per calendar month Finnhub has data for,
+ * between `fromUnix` and `toUnix` (unix seconds) - a single call covers the
+ * whole range (resolution=M), not one call per month, so backfilling years of
+ * history costs one request per instrument, not one per instrument-month.
+ *
+ * NOTE: Finnhub's free tier has historically restricted /stock/candle to paid
+ * plans for at least some exchanges/symbols - this isn't guaranteed to work
+ * on every account. Returns null (never throws) when no key is configured, on
+ * rate limit, timeout, a non-200 response (including a plan/permission
+ * rejection), or when Finnhub reports "no_data" for the symbol/range -
+ * callers must treat a null result as "this instrument's historical prices
+ * aren't available", not as an error to alarm the user with.
+ */
+export async function getHistoricalMonthlyPrices(symbol: string, fromUnix: number, toUnix: number): Promise<Map<string, number> | null> {
+    const apiKey = process.env.FINNHUB_KEY
+    if (!apiKey) return null
+    if (fromUnix >= toUnix) return null
+
+    const allowed = await checkAndConsumeRateLimit("finnhub-candle", FINNHUB_CANDLE_LIMIT_PER_MIN)
+    if (!allowed) return null
+
+    const controller = new AbortController()
+    const timeoutMs = getTimeoutMs("FINNHUB_TIMEOUT_MS", 6000)
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+        const url = `${FINNHUB_CANDLE_URL}?symbol=${encodeURIComponent(symbol)}&resolution=M&from=${fromUnix}&to=${toUnix}&token=${apiKey}`
+        const response = await withTimeout(
+            fetch(url, { signal: controller.signal }),
+            timeoutMs,
+            "Finnhub candle request",
+        )
+
+        if (response.status !== 200) {
+            console.error(`finnhubProvider.getHistoricalMonthlyPrices: request failed with status ${response.status} for ${symbol} (may require a paid Finnhub plan)`)
+            return null
+        }
+
+        const body = await response.json() as FinnhubCandleResponse
+        if (body.s !== "ok" || !Array.isArray(body.c) || !Array.isArray(body.t) || body.c.length === 0) return null
+
+        const byMonth = new Map<string, number>()
+        for (let i = 0; i < body.c.length; i++) {
+            const price = body.c[i]
+            const timestamp = body.t[i]
+            if (typeof price !== "number" || price <= 0 || typeof timestamp !== "number") continue
+            const candleDate = new Date(timestamp * 1000)
+            const monthKey = `${candleDate.getUTCFullYear()}-${String(candleDate.getUTCMonth() + 1).padStart(2, "0")}`
+            byMonth.set(monthKey, price)
+        }
+        return byMonth.size > 0 ? byMonth : null
+    } catch (error) {
+        console.error(`finnhubProvider.getHistoricalMonthlyPrices: request failed for ${symbol}`, error)
+        return null
+    } finally {
+        clearTimeout(timeout)
+    }
+}
+
+export default { searchFinnhub, getQuote, getHistoricalMonthlyPrices }

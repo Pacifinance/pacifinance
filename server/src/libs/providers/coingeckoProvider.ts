@@ -106,4 +106,75 @@ export async function searchCoingecko(query: string): Promise<UpsertInstrumentIn
     }
 }
 
-export default { searchCoingecko }
+const CG_RANGE_URL = "https://api.coingecko.com/api/v3/coins"
+// Separate bucket from search - a historical backfill runs once per coin (not
+// per user click), but must still never compete with search for the shared
+// demo-plan budget.
+const COINGECKO_HISTORY_LIMIT_PER_MIN = 25
+
+type CoinGeckoRangeResponse = {
+    prices?: [number, number][] // [unix ms, price]
+}
+
+/**
+ * Fetches one price point per calendar month between `fromUnix` and `toUnix`
+ * (unix seconds), directly in EUR (no separate exchange-rate conversion
+ * needed, unlike Finnhub's stock quotes). A single call covers the whole
+ * range - CoinGecko returns daily granularity automatically for ranges over
+ * ~90 days, and this keeps only the last data point of each month.
+ *
+ * NOTE: CoinGecko's free/demo tier has, at various points, limited how far
+ * back a single range request can go - this isn't guaranteed to return the
+ * instrument's full history. Returns null (never throws) when no key is
+ * configured for demo auth, on rate limit, timeout, or a non-200/malformed
+ * response - callers must treat a null result as "not available", not an error.
+ */
+export async function getHistoricalMonthlyPrices(coinId: string, fromUnix: number, toUnix: number): Promise<Map<string, number> | null> {
+    if (fromUnix >= toUnix) return null
+
+    const allowed = await checkAndConsumeRateLimit("coingecko-history", COINGECKO_HISTORY_LIMIT_PER_MIN)
+    if (!allowed) return null
+
+    const controller = new AbortController()
+    const timeoutMs = getTimeoutMs("CG_TIMEOUT_MS", 6000)
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+        const url = `${CG_RANGE_URL}/${encodeURIComponent(coinId)}/market_chart/range?vs_currency=eur&from=${fromUnix}&to=${toUnix}`
+        const response = await withTimeout(
+            fetch(url, {
+                method: "GET",
+                headers: { accept: "application/json", "x-cg-demo-api-key": process.env.CG_KEY ?? "" },
+                signal: controller.signal,
+            }),
+            timeoutMs,
+            "CoinGecko historical range request",
+        )
+
+        if (response.status !== 200) {
+            console.error(`coingeckoProvider.getHistoricalMonthlyPrices: request failed with status ${response.status} for ${coinId}`)
+            return null
+        }
+
+        const body = await response.json() as CoinGeckoRangeResponse
+        if (!Array.isArray(body.prices) || body.prices.length === 0) return null
+
+        // Keep only the latest data point within each calendar month - an
+        // approximate "monthly close" from CoinGecko's daily series.
+        const byMonth = new Map<string, number>()
+        for (const [timestampMs, price] of body.prices) {
+            if (typeof price !== "number" || price <= 0) continue
+            const pointDate = new Date(timestampMs)
+            const monthKey = `${pointDate.getUTCFullYear()}-${String(pointDate.getUTCMonth() + 1).padStart(2, "0")}`
+            byMonth.set(monthKey, price) // later (more recent) points overwrite earlier ones in the same month
+        }
+        return byMonth.size > 0 ? byMonth : null
+    } catch (error) {
+        console.error(`coingeckoProvider.getHistoricalMonthlyPrices: request failed for ${coinId}`, error)
+        return null
+    } finally {
+        clearTimeout(timeout)
+    }
+}
+
+export default { searchCoingecko, getHistoricalMonthlyPrices }

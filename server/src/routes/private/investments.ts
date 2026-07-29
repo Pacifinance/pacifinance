@@ -134,6 +134,17 @@ investmentsRouter.post("/holdings/refresh-prices", async (req, res) => {
     res.status(200).json(holdings)
 })
 
+investmentsRouter.post("/holdings/backfill-historical-prices", async (req, res) => {
+    if (await cache.valueExpired("exchangeRates")) await cache.invalidate("exchangeRates")
+    const eurRates = await cache.get("exchangeRates")
+    if (!eurRates) {
+        res.status(503).send()
+        return
+    }
+    const results = await db.investments.backfillHistoricalPrices(req.userId as string, eurRates)
+    res.status(200).json(results)
+})
+
 investmentsRouter.post("/holdings/save", async (req, res) => {
     const payload = await parseHoldingPayload(req.body, req.userId as string)
     if (payload === null) {
@@ -198,7 +209,7 @@ investmentsRouter.post("/holdings/history", async (req, res) => {
     res.status(200).json(history)
 })
 
-function parseHoldingHistoryPayload(body: any): {holdingId: number, userDate: Date, currentValue: number | null, investedAmount: number | null} | {error: string} {
+function parseHoldingHistoryPayload(body: any): {holdingId: number, userDate: Date, currentValue: number | null, investedAmount: number | null, quantity?: number | null} | {error: string} {
     const holdingId = Number(body.holding_id ?? body.holdingId)
     const userDate = new Date(body.user_date ?? body.userDate)
     const currentValue = optionalNumber(body.current_value ?? body.currentValue)
@@ -211,7 +222,15 @@ function parseHoldingHistoryPayload(body: any): {holdingId: number, userDate: Da
     if (currentValue === undefined) return {error: "current_value must be a non-negative number or null"}
     if (investedAmount === undefined) return {error: "invested_amount must be a non-negative number or null"}
 
-    return {holdingId, userDate, currentValue, investedAmount}
+    // Distinguishes "not sent at all" (denormalize from the live holding, the
+    // pre-existing behavior) from "sent, even if null" (the import wizard's
+    // monthly backfill, which always knows the real quantity held that month).
+    const rawQuantity = body.quantity ?? body.holdingQuantity
+    if (rawQuantity === undefined) return {holdingId, userDate, currentValue, investedAmount}
+    const quantity = optionalNumber(rawQuantity)
+    if (quantity === undefined) return {error: "quantity must be a non-negative number or null"}
+
+    return {holdingId, userDate, currentValue, investedAmount, quantity}
 }
 
 investmentsRouter.post("/holdings/history/save", async (req, res) => {
@@ -225,7 +244,7 @@ investmentsRouter.post("/holdings/history/save", async (req, res) => {
         req.userId as string,
         parsed.holdingId,
         parsed.userDate,
-        {currentValue: parsed.currentValue, investedAmount: parsed.investedAmount},
+        {currentValue: parsed.currentValue, investedAmount: parsed.investedAmount, quantity: parsed.quantity},
     )
     if (result.status === "not_found") {
         res.status(400).json({error: "holding not found, or not owned by this user"})

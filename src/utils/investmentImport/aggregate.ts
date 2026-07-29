@@ -181,16 +181,17 @@ export function lastDayOfMonth(monthKey: string): string {
 
 /**
  * Finds the most recently recorded value for a month strictly before
- * `beforeMonth` ("YYYY-MM"), or 0 if there is none - the "starting balance"
- * a newly-imported file's own cumulative timeline needs to be added on top
- * of. Brokers cap how much history a single export covers (e.g. Trading212:
- * 365 days), so a multi-year portfolio is necessarily built from several
- * separately-uploaded files; each file's own transactions only reconstruct a
- * cumulative total *within its own date range*, with no way to know what was
- * already invested before it started - without this baseline, every month
- * covered by a later file would understate the true total.
+ * `beforeMonth` ("YYYY-MM"), or 0 if there is none - the "starting balance" a
+ * newly-imported file's own cumulative timeline (invested amount OR quantity -
+ * both need this the same way) needs to be added on top of. Brokers cap how
+ * much history a single export covers (e.g. Trading212: 365 days), so a
+ * multi-year portfolio is necessarily built from several separately-uploaded
+ * files; each file's own transactions only reconstruct a cumulative total
+ * *within its own date range*, with no way to know what was already invested/
+ * held before it started - without this baseline, every month covered by a
+ * later file would understate the true total.
  */
-export function baselineInvestedBefore(recorded: Map<string, number | null> | undefined, beforeMonth: string): number {
+export function lastRecordedValueBefore(recorded: Map<string, number | null> | undefined, beforeMonth: string): number {
   if (!recorded) return 0;
   const priorMonths = Array.from(recorded.keys()).filter((m) => m < beforeMonth).sort();
   const lastPriorMonth = priorMonths[priorMonths.length - 1];

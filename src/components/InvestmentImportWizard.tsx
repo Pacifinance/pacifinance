@@ -13,7 +13,7 @@ import { ModernActionButton } from '../styles/MyStyled';
 import { parseInvestmentCsv, ImportedTransaction } from '../utils/investmentImport/parsers';
 import {
   dedupeTransactions, aggregatePositions, buildMonthlyPositionTimeline, groupTransactionsByPositionKey,
-  baselineInvestedBefore, closedPositions, positionKeyFor, AggregatedPosition,
+  lastRecordedValueBefore, closedPositions, positionKeyFor, AggregatedPosition,
 } from '../utils/investmentImport/aggregate';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
@@ -285,6 +285,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * hasn't actually changed — re-importing an identical file otherwise re-sends
    * every single month again for no reason. */
   const [recordedHistoryByInstrumentId, setRecordedHistoryByInstrumentId] = useState<Map<number, Map<string, number | null>>>(new Map());
+  /** Same idea as recordedHistoryByInstrumentId but for quantity - a separately
+   * uploaded earlier file's own cumulative quantity-per-month also needs
+   * carrying forward (see lastRecordedValueBefore), or a later file's months
+   * would show only what *it* bought, not the true running total held. */
+  const [recordedQuantityByInstrumentId, setRecordedQuantityByInstrumentId] = useState<Map<number, Map<string, number | null>>>(new Map());
   /** Already-held instruments the file shows have since been fully sold
    * (net quantity zero) — aggregatePositions itself drops these positions
    * entirely, so without this the wizard would silently never reconcile a
@@ -335,12 +340,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setExistingByInstrumentId(holdingMap);
 
       const historyMap = new Map<number, Map<string, number | null>>();
+      const quantityMap = new Map<number, Map<string, number | null>>();
       for (const entry of history) {
         const months = historyMap.get(entry.instrumentId) ?? new Map<string, number | null>();
         months.set(entry.userDate.slice(0, 7), entry.investedAmount);
         historyMap.set(entry.instrumentId, months);
+
+        const quantityMonths = quantityMap.get(entry.instrumentId) ?? new Map<string, number | null>();
+        quantityMonths.set(entry.userDate.slice(0, 7), entry.quantity);
+        quantityMap.set(entry.instrumentId, quantityMonths);
       }
       setRecordedHistoryByInstrumentId(historyMap);
+      setRecordedQuantityByInstrumentId(quantityMap);
 
       // Cross-reference against already-held instruments: a position the file
       // shows fully sold (dropped by aggregatePositions above) that matches an
@@ -358,6 +369,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     } catch {
       setExistingByInstrumentId(new Map());
       setRecordedHistoryByInstrumentId(new Map());
+      setRecordedQuantityByInstrumentId(new Map());
       setClosedCandidates([]);
     }
     void resolveInstruments(initialRows);
@@ -485,13 +497,19 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const backfillHistory = async (row: ImportRowState, holdingId: number, instrumentId: number) => {
     const timeline = buildMonthlyPositionTimeline(row.transactions);
     const recorded = recordedHistoryByInstrumentId.get(instrumentId);
+    const recordedQuantity = recordedQuantityByInstrumentId.get(instrumentId);
     const earliestMonth = timeline[0]?.monthKey;
-    const baseline = earliestMonth ? baselineInvestedBefore(recorded, earliestMonth) : 0;
+    const baseline = earliestMonth ? lastRecordedValueBefore(recorded, earliestMonth) : 0;
+    const quantityBaseline = earliestMonth ? lastRecordedValueBefore(recordedQuantity, earliestMonth) : 0;
 
     for (const snapshot of timeline) {
       const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
       const investedAmountEUR = baseline + toEUR(snapshotPosition.investedAmount);
+      // Quantity actually held that month — for the "quantity bought per
+      // month" figure and, in the future, to price a historical current_value
+      // correctly (price × quantity held then, not today's quantity).
+      const quantityThatMonth = quantityBaseline + snapshotPosition.quantity;
       const alreadyRecorded = recorded?.get(snapshot.monthKey);
       if (alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01) continue;
       try {
@@ -500,6 +518,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           user_date: `${snapshot.monthKey}-01`,
           current_value: null,
           invested_amount: investedAmountEUR,
+          quantity: quantityThatMonth,
         });
       } catch {
         // Backfilling one month's history failing shouldn't roll back the

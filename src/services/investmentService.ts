@@ -21,6 +21,7 @@ import type {
   InvestmentHoldingHistorySaveRequest,
   InvestmentHoldingSaveRequest,
   InvestmentHoldingsGetResponse,
+  InvestmentHistoricalPriceBackfillResponse,
   InvestmentInstrumentDto,
   InvestmentInstrumentManualCreateRequest,
   InvestmentInstrumentSearchByIsinsResponse,
@@ -53,6 +54,7 @@ export interface InvestmentService {
   createManualInstrument(data: InvestmentInstrumentManualCreateRequest): Promise<InvestmentInstrumentDto>;
   getHoldings(): Promise<InvestmentHoldingsGetResponse>;
   refreshPrices(): Promise<InvestmentHoldingsGetResponse>;
+  backfillHistoricalPrices(): Promise<InvestmentHistoricalPriceBackfillResponse>;
   saveHolding(data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto>;
   deleteHolding(data: InvestmentHoldingDeleteRequest): Promise<AxiosResponse>;
   getHoldingHistory(params?: InvestmentHoldingHistoryRequest): Promise<InvestmentHoldingHistoryResponse>;
@@ -84,6 +86,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
 
   async refreshPrices() {
     const res = await apiClient.post<InvestmentHoldingsGetResponse>('/api/investments/holdings/refresh-prices', {});
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async backfillHistoricalPrices() {
+    const res = await apiClient.post<InvestmentHistoricalPriceBackfillResponse>('/api/investments/holdings/backfill-historical-prices', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 

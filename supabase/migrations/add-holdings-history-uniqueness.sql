@@ -1,17 +1,32 @@
 -- Makes user_investment_holding_history / user_liquidity_account_history
 -- upsertable: one row per (holding/account, month), instead of the append-only
--- log they started as. Partial index (only where the FK is non-null) so
--- orphaned rows left behind by a deleted live holding/account (holding_id /
--- account_id -> null via "on delete set null") never collide with each other
--- or with new rows.
+-- log they started as.
+--
+-- NOT a partial index (no "where holding_id is not null"), even though
+-- orphaned rows exist (holding_id / account_id -> null via "on delete set
+-- null"). A first version of this migration used a partial index for that
+-- reason, but it silently broke every upsert: the Supabase JS client's
+-- `.upsert(rows, {onConflict: "user_id,holding_id,user_date"})` always emits
+-- a plain `ON CONFLICT (col, col, col)` with no WHERE clause, and Postgres
+-- only lets a bare column list infer a *partial* unique index when the
+-- statement's own ON CONFLICT clause repeats that index's WHERE predicate
+-- verbatim - which the JS client has no way to do. Every upsert therefore
+-- failed with 42P10 ("no unique or exclusion constraint matching the ON
+-- CONFLICT specification"), even though the index existed and looked correct
+-- in `pg_indexes`. A plain (non-partial) unique index doesn't need the
+-- predicate to protect orphaned rows anyway: Postgres unique indexes already
+-- treat every NULL as distinct from every other NULL, so any number of rows
+-- with holding_id/account_id NULL for the same user_id+user_date coexist
+-- without conflicting - the partial predicate was solving a problem that
+-- plain SQL NULL semantics already solve.
 
-create unique index if not exists user_investment_holding_history_uidx
-  on public.user_investment_holding_history (user_id, holding_id, user_date)
-  where holding_id is not null;
+drop index if exists public.user_investment_holding_history_uidx;
+create unique index user_investment_holding_history_uidx
+  on public.user_investment_holding_history (user_id, holding_id, user_date);
 
-create unique index if not exists user_liquidity_account_history_uidx
-  on public.user_liquidity_account_history (user_id, account_id, user_date)
-  where account_id is not null;
+drop index if exists public.user_liquidity_account_history_uidx;
+create unique index user_liquidity_account_history_uidx
+  on public.user_liquidity_account_history (user_id, account_id, user_date);
 
 -- Parity with user_investment_holdings' policy style (writes actually go
 -- through the service-role client, which bypasses RLS - see

@@ -106,17 +106,21 @@ liquidityAccountsRouter.post("/history/save", async (req, res) => {
         return
     }
 
-    const entry = await db.liquidityAccounts.upsertAccountHistoryEntry(
+    const result = await db.liquidityAccounts.upsertAccountHistoryEntry(
         req.userId as string,
         payload.accountId,
         payload.userDate,
         {currentValue: payload.currentValue},
     )
-    if (entry === null) {
-        res.status(400).send() // account not found, or not owned by this user
+    if (result.status === "not_found") {
+        res.status(400).json({error: "account not found, or not owned by this user"})
         return
     }
-    res.status(200).json(entry)
+    if (result.status === "db_error") {
+        res.status(500).json({error: result.message})
+        return
+    }
+    res.status(200).json(result.entry)
 })
 
 export default liquidityAccountsRouter

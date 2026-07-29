@@ -780,11 +780,12 @@ export type HoldingHistoryEntryInput = { currentValue: number | null, investedAm
 // client-side problem (stale id, wrong account). "db_error": the query itself
 // failed for a reason that has nothing to do with which holding was asked for
 // (e.g. a schema issue - see the onConflict clause below, which requires a
-// unique index on (user_id, holding_id, user_date) that a past migration adds
-// SEPARATELY from the table's own creation; if that migration was never run
-// against a given database, every upsert here fails with Postgres error
-// 42P10). Callers must surface these two very differently - "not_found" is
-// nothing to worry about, "db_error" means something is actually broken.
+// PLAIN, non-partial unique index on (user_id, holding_id, user_date) - see
+// supabase/migrations/add-holdings-history-uniqueness.sql for why it must not
+// be partial. If that index is missing or wrong, every upsert here fails with
+// Postgres error 42P10). Callers must surface these two very differently -
+// "not_found" is nothing to worry about, "db_error" means something is
+// actually broken.
 export type UpsertHistoryResult =
     | {status: "not_found"}
     | {status: "db_error"; message: string}

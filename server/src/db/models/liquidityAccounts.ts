@@ -192,17 +192,31 @@ async function getAccountHistoryByUserId(user_id: string, months?: number, userD
 
 export type AccountHistoryEntryInput = { currentValue: number }
 
+// Same "not_found" vs "db_error" split as investments.upsertHoldingHistoryEntry
+// (see that function's comment) - a schema issue here (e.g. the unique index
+// on (user_id, account_id, user_date) being missing/wrong) must surface as a
+// 500 with the real Postgres error, not blend into an innocuous-looking
+// "account not found" 400 that hides a systemic failure.
+export type UpsertAccountHistoryResult =
+    | {status: "not_found"}
+    | {status: "db_error"; message: string}
+    | {status: "ok"; entry: ReturnType<typeof toAccountHistory>}
+
 /**
  * Backfills/updates a single liquidity account's value for a specific month,
  * scoped to the owning user. Denormalizes the live account's label/asset_key
- * (same shape snapshotAccountsForUser already writes). Returns null if the
- * account isn't found/owned.
+ * (same shape snapshotAccountsForUser already writes).
  */
-async function upsertAccountHistoryEntry(user_id: string, account_id: number, user_date: Date, input: AccountHistoryEntryInput) {
+async function upsertAccountHistoryEntry(
+    user_id: string, account_id: number, user_date: Date, input: AccountHistoryEntryInput,
+): Promise<UpsertAccountHistoryResult> {
     const {data: accountRow, error: accountErr} = await supabase.from("user_liquidity_accounts")
         .select(ACCOUNT_SELECT).eq("user_id", user_id).eq("id", account_id).maybeSingle()
-    if (accountErr) console.error("liquidityAccounts.upsertAccountHistoryEntry: failed to read account", accountErr)
-    if (accountErr || !accountRow) return null
+    if (accountErr) {
+        console.error("liquidityAccounts.upsertAccountHistoryEntry: failed to read account", accountErr)
+        return {status: "db_error", message: accountErr.message}
+    }
+    if (!accountRow) return {status: "not_found"}
 
     const account = toAccount(accountRow as unknown as AccountRow)
     const row = {
@@ -219,9 +233,12 @@ async function upsertAccountHistoryEntry(user_id: string, account_id: number, us
         .upsert(row, {onConflict: "user_id,account_id,user_date"})
         .select(ACCOUNT_HISTORY_SELECT)
         .single()
-    if (error) console.error("liquidityAccounts.upsertAccountHistoryEntry: failed to upsert history row", error)
-    if (error || !data) return null
-    return toAccountHistory(data as unknown as AccountHistoryRow)
+    if (error) {
+        console.error("liquidityAccounts.upsertAccountHistoryEntry: failed to upsert history row", error)
+        return {status: "db_error", message: error.message}
+    }
+    if (!data) return {status: "db_error", message: "upsert returned no row"}
+    return {status: "ok", entry: toAccountHistory(data as unknown as AccountHistoryRow)}
 }
 
 export default {

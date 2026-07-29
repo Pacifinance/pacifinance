@@ -317,6 +317,69 @@ investmentsRouter.post("/dividends/summary", async (req, res) => {
     res.status(200).json(summary)
 })
 
+function parseTransactionPayload(body: any): {instrumentId: number, holdingId: number | null, side: "buy" | "sell", quantity: number, price: number | null, currency: string | null, total: number | null, totalCurrency: string | null, tradeDate: Date, externalId: string | null, source: string} | {error: string} {
+    const instrumentId = Number(body.instrument_id ?? body.instrumentId)
+    const holdingIdRaw = body.holding_id ?? body.holdingId
+    const holdingId = holdingIdRaw === undefined || holdingIdRaw === null || holdingIdRaw === "" ? null : Number(holdingIdRaw)
+    const side = common.sanitizeInput(body.side)
+    const quantity = Number(body.quantity)
+    const price = optionalNumber(body.price)
+    const total = optionalNumber(body.total)
+    const tradeDate = new Date(body.trade_date ?? body.tradeDate)
+    const now = new Date()
+    const source = common.sanitizeInput(body.source).slice(0, 40)
+
+    if (!Number.isFinite(instrumentId)) return {error: "invalid instrument_id"}
+    if (holdingId !== null && !Number.isFinite(holdingId)) return {error: "invalid holding_id"}
+    if (side !== "buy" && side !== "sell") return {error: "side must be 'buy' or 'sell'"}
+    if (!Number.isFinite(quantity) || quantity <= 0) return {error: "quantity must be a positive number"}
+    if (price === undefined) return {error: "price must be a non-negative number or null"}
+    if (total === undefined) return {error: "total must be a non-negative number or null"}
+    if (isNaN(tradeDate.getTime())) return {error: "invalid trade_date"}
+    if (tradeDate > now) return {error: "trade_date is in the future"}
+    if (source === "") return {error: "source is required"}
+
+    return {
+        instrumentId,
+        holdingId,
+        side,
+        quantity,
+        price,
+        currency: body.currency ? normalizeCurrency(body.currency) : null,
+        total,
+        totalCurrency: (body.total_currency ?? body.totalCurrency) ? normalizeCurrency(body.total_currency ?? body.totalCurrency) : null,
+        tradeDate,
+        externalId: common.sanitizeInput(body.external_id ?? body.externalId).slice(0, 120) || null,
+        source,
+    }
+}
+
+investmentsRouter.post("/transactions/save", async (req, res) => {
+    const parsed = parseTransactionPayload(req.body)
+    if ("error" in parsed) {
+        res.status(400).json({error: parsed.error})
+        return
+    }
+
+    const instrument = await db.investments.getInstrumentById(parsed.instrumentId, req.userId as string)
+    if (instrument === null) {
+        res.status(400).json({error: "instrument not found, or not owned by this user"})
+        return
+    }
+
+    const transaction = await db.investments.upsertTransaction(req.userId as string, parsed)
+    if (transaction === null) {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(transaction)
+})
+
+investmentsRouter.post("/transactions/get", async (req, res) => {
+    const transactions = await db.investments.getTransactionsByUserId(req.userId as string)
+    res.status(200).json(transactions)
+})
+
 investmentsRouter.post("/settings/get", async (req, res) => {
     const settings = await db.investments.getInvestmentSettings(req.userId as string)
     res.status(200).json(settings)

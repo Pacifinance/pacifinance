@@ -17,6 +17,7 @@ import { useAuth } from './useAuth';
 import type {
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentHoldingSaveRequest,
   InvestmentSettingsDto, InvestmentDividendDto, InvestmentDividendSummaryResponse,
+  InvestmentTransactionDto, InvestmentTransactionsGetResponse,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
   GoalDto, SharedExpenseReceivableDto,
 } from '../types/api';
@@ -171,6 +172,25 @@ export const useDemoServices = () => {
         }),
         // Demo mode's getHoldings() always returns [] - nothing to summarize.
         getDividendsSummary: async (): Promise<InvestmentDividendSummaryResponse> => [],
+        // No session-backed transaction ledger in demo mode - echoes the save back
+        // (like saveDividend above) without persisting it.
+        saveTransaction: async (data): Promise<InvestmentTransactionDto> => ({
+          id: -Date.now(),
+          instrumentId: data.instrument_id,
+          holdingId: data.holding_id ?? null,
+          side: data.side,
+          quantity: data.quantity,
+          price: data.price ?? null,
+          currency: data.currency ?? null,
+          total: data.total ?? null,
+          totalCurrency: data.total_currency ?? null,
+          tradeDate: data.trade_date,
+          externalId: data.external_id ?? null,
+          source: data.source,
+          recordedAt: new Date().toISOString(),
+        }),
+        // Demo mode has no persisted transaction history to reconcile against.
+        getTransactions: async (): Promise<InvestmentTransactionsGetResponse> => [],
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,

@@ -617,4 +617,106 @@ describe("investments model", () => {
             expect(result).toEqual([])
         })
     })
+
+    describe("upsertTransaction", () => {
+        const transactionInput = {
+            instrumentId: 1, holdingId: 10, side: "buy" as const, quantity: 2, price: 150, currency: "USD",
+            total: 279.5, totalCurrency: "USD", tradeDate: new Date("2022-01-13"), externalId: "EXT-9", source: "trading212",
+        }
+
+        it("upserts on the (user, instrument, external_id) key when an external id is provided", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {
+                    id: 1, instrument_id: 1, holding_id: 10, side: "buy", quantity: 2, price: 150, currency: "USD",
+                    total: 279.5, total_currency: "USD", trade_date: "2022-01-13", external_id: "EXT-9", source: "trading212",
+                    recorded_at: "2022-01-13T00:00:00Z",
+                },
+                error: null,
+            }))
+
+            const result = await investments.upsertTransaction("user-1", transactionInput)
+
+            expect(result).toMatchObject({id: 1, side: "buy", quantity: 2, externalId: "EXT-9", source: "trading212"})
+        })
+
+        it("plain inserts when no external id is available (broker didn't provide one)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {
+                    id: 2, instrument_id: 1, holding_id: 10, side: "sell", quantity: 1, price: 155, currency: "USD",
+                    total: 155, total_currency: "USD", trade_date: "2022-02-01", external_id: null, source: "directa",
+                    recorded_at: "2022-02-01T00:00:00Z",
+                },
+                error: null,
+            }))
+
+            const result = await investments.upsertTransaction("user-1", {...transactionInput, side: "sell", externalId: null, source: "directa"})
+
+            expect(result).toMatchObject({id: 2, side: "sell", externalId: null, source: "directa"})
+        })
+
+        it("returns null when the save fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.upsertTransaction("user-1", transactionInput)
+
+            expect(result).toBeNull()
+        })
+    })
+
+    describe("getTransactionsByUserId", () => {
+        it("returns every transaction with its instrument identity attached", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [
+                    {
+                        instrument_id: 1, side: "buy", quantity: 2, price: 150, currency: "USD", total: 279.5,
+                        total_currency: "USD", trade_date: "2022-01-13", external_id: "EXT-9",
+                        instrument: {isin: "US0378331005", symbol: "AAPL", name: "Apple"},
+                    },
+                    {
+                        instrument_id: 1, side: "sell", quantity: 1, price: 160, currency: "USD", total: 160,
+                        total_currency: "USD", trade_date: "2022-03-01", external_id: null,
+                        instrument: {isin: "US0378331005", symbol: "AAPL", name: "Apple"},
+                    },
+                ],
+                error: null,
+            }))
+
+            const result = await investments.getTransactionsByUserId("user-1")
+
+            expect(result).toEqual([
+                {
+                    instrumentId: 1, isin: "US0378331005", symbol: "AAPL", name: "Apple", side: "buy", quantity: 2,
+                    price: 150, currency: "USD", total: 279.5, totalCurrency: "USD", tradeDate: "2022-01-13", externalId: "EXT-9",
+                },
+                {
+                    instrumentId: 1, isin: "US0378331005", symbol: "AAPL", name: "Apple", side: "sell", quantity: 1,
+                    price: 160, currency: "USD", total: 160, totalCurrency: "USD", tradeDate: "2022-03-01", externalId: null,
+                },
+            ])
+        })
+
+        it("drops rows whose instrument no longer exists (join comes back null)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [
+                    {
+                        instrument_id: 1, side: "buy", quantity: 2, price: 150, currency: "USD", total: 279.5,
+                        total_currency: "USD", trade_date: "2022-01-13", external_id: "EXT-9", instrument: null,
+                    },
+                ],
+                error: null,
+            }))
+
+            const result = await investments.getTransactionsByUserId("user-1")
+
+            expect(result).toEqual([])
+        })
+
+        it("returns an empty array when the query fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.getTransactionsByUserId("user-1")
+
+            expect(result).toEqual([])
+        })
+    })
 })

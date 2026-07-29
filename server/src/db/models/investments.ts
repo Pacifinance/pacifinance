@@ -1083,6 +1083,165 @@ async function getDividendsSummaryByUserId(user_id: string): Promise<DividendSum
     return Array.from(byInstrument.values()).sort((a, b) => b.totalAmount - a.totalAmount)
 }
 
+type TransactionRow = {
+    id: number
+    instrument_id: number
+    holding_id: number | null
+    side: "buy" | "sell"
+    quantity: number
+    price: number | null
+    currency: string | null
+    total: number | null
+    total_currency: string | null
+    trade_date: string
+    external_id: string | null
+    source: string
+    recorded_at: string
+}
+
+const TRANSACTION_SELECT = [
+    "id", "instrument_id", "holding_id", "side", "quantity", "price", "currency",
+    "total", "total_currency", "trade_date", "external_id", "source", "recorded_at",
+].join(", ")
+
+function toTransaction(row: TransactionRow) {
+    return {
+        id: row.id,
+        instrumentId: row.instrument_id,
+        holdingId: row.holding_id,
+        side: row.side,
+        quantity: row.quantity,
+        price: row.price,
+        currency: row.currency,
+        total: row.total,
+        totalCurrency: row.total_currency,
+        tradeDate: row.trade_date,
+        externalId: row.external_id,
+        source: row.source,
+        recordedAt: row.recorded_at,
+    }
+}
+
+export type TransactionInput = {
+    instrumentId: number
+    holdingId: number | null
+    side: "buy" | "sell"
+    quantity: number
+    price: number | null
+    currency: string | null
+    /** Already converted to EUR (DB is always EUR) - see convertAmountToEUR on the frontend. */
+    total: number | null
+    totalCurrency: string | null
+    tradeDate: Date
+    externalId: string | null
+    source: string
+}
+
+/**
+ * Records a single buy/sell transaction, scoped to the owning user. Idempotent
+ * when the broker provides an external id (see upsertDividend for the exact
+ * same reasoning/tradeoffs) - lets a future import session fetch the complete
+ * transaction history (getTransactionsByUserId) and reconcile "is this
+ * position now closed" correctly, regardless of which files were uploaded in
+ * which session, in which order (see recomputeFromMerged in
+ * InvestmentImportWizard.tsx, which is the actual consumer of this).
+ */
+async function upsertTransaction(user_id: string, input: TransactionInput) {
+    const payload = {
+        user_id,
+        instrument_id: input.instrumentId,
+        holding_id: input.holdingId,
+        side: input.side,
+        quantity: input.quantity,
+        price: input.price,
+        currency: input.currency,
+        total: input.total,
+        total_currency: input.totalCurrency,
+        trade_date: toDateOnly(input.tradeDate),
+        external_id: input.externalId,
+        source: input.source,
+    }
+
+    const query = supabase.from("user_investment_transactions")
+    const {data, error} = input.externalId
+        ? await query.upsert(payload, {onConflict: "user_id,instrument_id,external_id"}).select(TRANSACTION_SELECT).single()
+        : await query.insert(payload).select(TRANSACTION_SELECT).single()
+
+    if (error) {
+        console.error("investments.upsertTransaction: failed to save transaction", error)
+        return null
+    }
+    return data ? toTransaction(data as unknown as TransactionRow) : null
+}
+
+export interface TransactionSummaryEntry {
+    instrumentId: number
+    isin: string | null
+    symbol: string
+    name: string
+    side: "buy" | "sell"
+    quantity: number
+    price: number | null
+    currency: string | null
+    total: number | null
+    totalCurrency: string | null
+    tradeDate: string
+    externalId: string | null
+}
+
+/**
+ * All of the user's recorded buy/sell transactions, with enough instrument
+ * identity (isin/symbol/name) for the CSV import wizard to merge them
+ * client-side with a freshly-parsed file's own transactions (same shape as
+ * ImportedTransaction) before recomputing closed-position status across
+ * EVERY session that has ever imported data, not just the current browser
+ * session - see recomputeFromMerged in InvestmentImportWizard.tsx. Unlike
+ * getDividendsSummaryByUserId this returns the raw per-transaction rows, not
+ * an aggregate: the wizard needs the actual trade dates and sides to
+ * reconstruct net quantity correctly, not just a running total.
+ */
+async function getTransactionsByUserId(user_id: string): Promise<TransactionSummaryEntry[]> {
+    const {data, error} = await supabase.from("user_investment_transactions")
+        .select(`instrument_id, side, quantity, price, currency, total, total_currency, trade_date, external_id, instrument:investment_instruments(isin, symbol, name)`)
+        .eq("user_id", user_id)
+    if (error) console.error("investments.getTransactionsByUserId: failed to read transactions", error)
+    if (error || !data) return []
+
+    type Row = {
+        instrument_id: number
+        side: "buy" | "sell"
+        quantity: number
+        price: number | null
+        currency: string | null
+        total: number | null
+        total_currency: string | null
+        trade_date: string
+        external_id: string | null
+        instrument: {isin: string | null; symbol: string; name: string} | {isin: string | null; symbol: string; name: string}[] | null
+    }
+
+    return (data as unknown as Row[])
+        .map((row): TransactionSummaryEntry | null => {
+            const instrument = Array.isArray(row.instrument) ? row.instrument[0] : row.instrument
+            if (!instrument) return null
+            return {
+                instrumentId: row.instrument_id,
+                isin: instrument.isin,
+                symbol: instrument.symbol,
+                name: instrument.name,
+                side: row.side,
+                quantity: row.quantity,
+                price: row.price,
+                currency: row.currency,
+                total: row.total,
+                totalCurrency: row.total_currency,
+                tradeDate: row.trade_date,
+                externalId: row.external_id,
+            }
+        })
+        .filter((entry): entry is TransactionSummaryEntry => entry !== null)
+}
+
 export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
@@ -1106,4 +1265,6 @@ export default {
     saveInvestmentSettings,
     upsertDividend,
     getDividendsSummaryByUserId,
+    upsertTransaction,
+    getTransactionsByUserId,
 }

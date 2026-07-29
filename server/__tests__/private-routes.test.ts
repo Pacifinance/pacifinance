@@ -693,6 +693,78 @@ describe("private backend routes", () => {
         ])
     })
 
+    it("saves a buy/sell transaction", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, symbol: "AAPL", name: "Apple"})
+        mockDb.investments.upsertTransaction.mockResolvedValue({
+            id: 7, instrumentId: 1, holdingId: 16, side: "buy", quantity: 2, price: 150, currency: "USD",
+            total: 279.5, totalCurrency: "USD", tradeDate: "2022-01-13", externalId: "EXT-9", source: "trading212",
+            recordedAt: "2022-01-13T00:00:00Z"
+        })
+
+        const response = await request(app, "/api/investments/transactions/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                instrument_id: 1, holding_id: 16, side: "buy", quantity: 2, price: 150, currency: "usd",
+                total: 279.5, total_currency: "usd", trade_date: "2022-01-13", external_id: "EXT-9", source: "trading212"
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toMatchObject({id: 7, side: "buy", quantity: 2})
+        expect(mockDb.investments.upsertTransaction).toHaveBeenCalledWith("user-uuid", {
+            instrumentId: 1, holdingId: 16, side: "buy", quantity: 2, price: 150, currency: "USD",
+            total: 279.5, totalCurrency: "USD", tradeDate: new Date("2022-01-13"), externalId: "EXT-9", source: "trading212"
+        })
+    })
+
+    it("rejects a transaction save with a reason when the payload is malformed", async () => {
+        const response = await request(app, "/api/investments/transactions/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, side: "hold", quantity: 2, trade_date: "2022-01-13", source: "trading212"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(response.json).toEqual({error: "side must be 'buy' or 'sell'"})
+        expect(mockDb.investments.upsertTransaction).not.toHaveBeenCalled()
+    })
+
+    it("rejects a transaction save for an instrument that doesn't exist or isn't owned by this user", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue(null)
+
+        const response = await request(app, "/api/investments/transactions/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 999, side: "buy", quantity: 2, trade_date: "2022-01-13", source: "trading212"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.upsertTransaction).not.toHaveBeenCalled()
+    })
+
+    it("returns the full transaction history for the user", async () => {
+        mockDb.investments.getTransactionsByUserId.mockResolvedValue([
+            {
+                instrumentId: 1, isin: "US0378331005", symbol: "AAPL", name: "Apple", side: "buy", quantity: 2,
+                price: 150, currency: "USD", total: 279.5, totalCurrency: "USD", tradeDate: "2022-01-13", externalId: "EXT-9"
+            }
+        ])
+
+        const response = await request(app, "/api/investments/transactions/get", {
+            method: "POST",
+            headers: {cookie: authCookie}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([
+            {
+                instrumentId: 1, isin: "US0378331005", symbol: "AAPL", name: "Apple", side: "buy", quantity: 2,
+                price: 150, currency: "USD", total: 279.5, totalCurrency: "USD", tradeDate: "2022-01-13", externalId: "EXT-9"
+            }
+        ])
+    })
+
     it("refreshes holding prices using cached exchange rates, refreshing the cache when expired", async () => {
         mockCache.valueExpired.mockResolvedValueOnce(true)
         mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.08})

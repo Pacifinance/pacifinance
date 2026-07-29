@@ -629,6 +629,57 @@ export interface InvestmentDividendSummaryDto {
 
 export type InvestmentDividendSummaryResponse = InvestmentDividendSummaryDto[];
 
+export interface InvestmentTransactionDto {
+  id: number;
+  instrumentId: number;
+  holdingId: number | null;
+  side: 'buy' | 'sell';
+  quantity: number;
+  price: number | null;
+  /** Original currency of the price, for reference only — null when unknown. */
+  currency: string | null;
+  /** EUR (DB is always EUR). */
+  total: number | null;
+  /** Original currency of the total before EUR conversion, for reference only. */
+  totalCurrency: string | null;
+  /** "YYYY-MM-DD" */
+  tradeDate: string;
+  externalId: string | null;
+  source: string;
+  recordedAt: string;
+}
+
+export interface InvestmentTransactionSaveRequest {
+  instrument_id: number;
+  holding_id?: number | null;
+  side: 'buy' | 'sell';
+  quantity: number;
+  price?: number | null;
+  currency?: string | null;
+  total?: number | null;
+  total_currency?: string | null;
+  trade_date: string;
+  external_id?: string | null;
+  source: string;
+}
+
+export interface InvestmentTransactionSummaryDto {
+  instrumentId: number;
+  isin: string | null;
+  symbol: string;
+  name: string;
+  side: 'buy' | 'sell';
+  quantity: number;
+  price: number | null;
+  currency: string | null;
+  total: number | null;
+  totalCurrency: string | null;
+  tradeDate: string;
+  externalId: string | null;
+}
+
+export type InvestmentTransactionsGetResponse = InvestmentTransactionSummaryDto[];
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /liquidity-accounts
  * ═══════════════════════════════════════════════════════════════════════════*/

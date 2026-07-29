@@ -171,4 +171,33 @@ describe('investmentService', () => {
 
     expect(result).toEqual([]);
   });
+
+  it('saves a buy/sell transaction', async () => {
+    const transaction = { id: 7, instrumentId: 1, holdingId: 16, side: 'buy', quantity: 2, source: 'trading212' };
+    const payload = { instrument_id: 1, holding_id: 16, side: 'buy', quantity: 2, trade_date: '2022-01-13', source: 'trading212' };
+    mockClient.post.mockResolvedValue({ data: transaction });
+
+    const result = await service.saveTransaction(payload);
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/transactions/save', payload);
+    expect(result).toEqual(transaction);
+  });
+
+  it('reads the full transaction history', async () => {
+    const transactions = [{ instrumentId: 1, isin: 'US0378331005', symbol: 'AAPL', name: 'Apple', side: 'buy', quantity: 2 }];
+    mockClient.post.mockResolvedValue({ data: transactions });
+
+    const result = await service.getTransactions();
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/transactions/get', {});
+    expect(result).toEqual(transactions);
+  });
+
+  it('returns an empty array when the transactions response is malformed', async () => {
+    mockClient.post.mockResolvedValue({ data: null });
+
+    const result = await service.getTransactions();
+
+    expect(result).toEqual([]);
+  });
 });

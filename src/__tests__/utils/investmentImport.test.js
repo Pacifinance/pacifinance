@@ -324,6 +324,35 @@ describe('closedPositions', () => {
     expect(closedPositions(merged)).toEqual([]);
     expect(aggregatePositions(merged)).toMatchObject([{ key: 'US0378331005', quantity: 3 }]);
   });
+
+  // Same underlying bug, but across SEPARATE wizard sessions rather than
+  // separate files in one session: the older file was imported (and its
+  // transactions persisted to user_investment_transactions) in an earlier
+  // session that has since ended, and the browser now only holds the newer
+  // file's transactions in memory. Without merging in what the server
+  // already has (see getTransactions/toImportedTransaction/recomputeFromMerged
+  // in InvestmentImportWizard.tsx), this session would evaluate the newer
+  // file alone and correctly see it as open — so this specific regression
+  // instead needs the reverse split: this session sees ONLY the closing sell,
+  // with the earlier buy already sitting server-side from a prior session.
+  it('does not report a position as closed when the offsetting buy was recorded in an earlier, separate session (not just an earlier file this session)', () => {
+    const alreadyPersistedFromEarlierSession = [
+      tx({ quantity: 3, date: '2022-01-13', externalId: 'EARLIER-SESSION-BUY' }),
+    ];
+    const thisSessionsOwnFile = [
+      tx({ side: 'sell', quantity: 1, date: '2024-06-15', externalId: 'THIS-SESSION-SELL' }),
+    ];
+
+    // The bug: evaluating only what this session's own file loaded flags it
+    // as closed, with no way to know about the earlier session's buy.
+    expect(closedPositions(thisSessionsOwnFile)).toHaveLength(1);
+
+    // The fix: merging in the persisted server-side ledger (regardless of
+    // which session originally saved it) shows the position is still held.
+    const merged = dedupeTransactions([...thisSessionsOwnFile, ...alreadyPersistedFromEarlierSession]);
+    expect(closedPositions(merged)).toEqual([]);
+    expect(aggregatePositions(merged)).toMatchObject([{ key: 'US0378331005', quantity: 2 }]);
+  });
 });
 
 describe('groupTransactionsByPositionKey', () => {

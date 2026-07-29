@@ -21,10 +21,28 @@ import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from './ImportPlatformGuide';
 import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
 import { HoldingConflictError } from '../services/investmentService';
-import type { InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto } from '../types/api';
+import type { InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto, InvestmentTransactionSummaryDto } from '../types/api';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
 const MANUAL_KIND_OPTIONS: InvestmentKind[] = ['stock', 'etf', 'crypto', 'bond', 'fund'];
+
+/** Converts a row already persisted to the server-side transaction ledger back
+ * into the same shape the CSV parsers produce, so it can be merged with this
+ * session's freshly-parsed transactions (see recomputeFromMerged) using the
+ * exact same dedupe/aggregate/closedPositions functions either source uses. */
+const toImportedTransaction = (tx: InvestmentTransactionSummaryDto): ImportedTransaction => ({
+  side: tx.side,
+  isin: tx.isin,
+  ticker: tx.symbol,
+  name: tx.name,
+  date: tx.tradeDate,
+  quantity: tx.quantity,
+  price: tx.price,
+  total: tx.total,
+  currency: tx.currency,
+  totalCurrency: tx.totalCurrency,
+  externalId: tx.externalId,
+});
 
 /**
  * CSV import wizard for investment holdings (Trading 212, DEGIRO, Directa,
@@ -66,6 +84,12 @@ interface ClosedHoldingCandidate {
   /** Last transaction date the file has for this instrument — the month a closing snapshot gets backfilled to. */
   lastTransactionDate: string | null;
   status: 'pending' | 'closing' | 'closed' | 'error';
+  /** The underlying buy/sell transactions (this session's own + whatever was
+   * already persisted server-side, see recomputeFromMerged) that determined
+   * this holding is closed — persisted to the transaction ledger once the
+   * user confirms via handleCloseHolding, so the closing sell itself is never
+   * missing from the ledger just because it didn't go through importSelected. */
+  transactions: ImportedTransaction[];
 }
 
 interface InvestmentImportWizardProps {
@@ -343,9 +367,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     // row go 'resolved' (importable) while these maps are still empty, or a
     // genuine month-overlap could be missed and wrongly treated as "add".
     try {
-      const [holdings, history] = await Promise.all([
+      const [holdings, history, savedTransactions] = await Promise.all([
         investmentService.getHoldings(),
         investmentService.getHoldingHistory({}),
+        investmentService.getTransactions(),
       ]);
       const holdingMap = new Map<number, InvestmentHoldingDto>();
       for (const holding of holdings) if (holding.instrument) holdingMap.set(holding.instrument.id, holding);
@@ -369,13 +394,27 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       // history shows fully sold (dropped by aggregatePositions above) that
       // matches an existing, still-nonzero holding means that holding is stale
       // and needs the user's explicit confirmation to close.
-      const closed = closedPositions(deduped);
+      //
+      // This check specifically merges in every transaction already persisted
+      // server-side (see saveTransactions below), not just this session's own
+      // `deduped` - a file uploaded in an earlier, separate session already
+      // saved its transactions there, so a later session importing files in a
+      // different order (or just one file alone) can still see the complete
+      // history instead of only what happens to be loaded right now. The
+      // session-scoped `deduped`/`transactionsByKey` above are deliberately
+      // left untouched for the actual "rows to import" list - that must only
+      // ever reflect files loaded in THIS session, not every instrument ever
+      // saved historically.
+      const savedAsImported = savedTransactions.map(toImportedTransaction);
+      const mergedForClosedCheck = dedupeTransactions([...deduped, ...savedAsImported]);
+      const transactionsByKeyForClosed = groupTransactionsByPositionKey(mergedForClosedCheck);
+      const closed = closedPositions(mergedForClosedCheck);
       const candidates: ClosedHoldingCandidate[] = [];
       for (const holding of holdingMap.values()) {
         if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;
         const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
         const match = key ? closed.find((p) => p.key === key) : undefined;
-        if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending'});
+        if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending', transactions: key ? (transactionsByKeyForClosed.get(key) ?? []) : []});
       }
       setClosedCandidates(candidates);
     } catch {
@@ -607,6 +646,41 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     }
   };
 
+  // Persists every underlying buy/sell transaction to the server-side ledger
+  // (user_investment_transactions) — the counterpart to saveDividends above,
+  // for the same reason: this is what lets a LATER, separate wizard session
+  // see the complete transaction history (via getTransactions in
+  // recomputeFromMerged) even when it only has one out-of-order file loaded,
+  // instead of only ever reconciling against whatever happens to be in the
+  // current browser session. Safe to re-run on a re-imported file: the
+  // backend upserts on (instrument, external_id) when the broker provided one
+  // (see upsertTransaction in the model), so an already-recorded transaction
+  // is never double-counted, just re-confirmed.
+  const saveTransactions = async (transactions: ImportedTransaction[], instrumentId: number, holdingId: number) => {
+    for (const tx of transactions) {
+      if (!tx.date || tx.quantity == null) continue;
+      try {
+        await investmentService.saveTransaction({
+          instrument_id: instrumentId,
+          holding_id: holdingId,
+          side: tx.side,
+          quantity: tx.quantity,
+          price: tx.price,
+          currency: tx.currency,
+          total: tx.total != null ? convertAmountToEUR(Math.abs(tx.total), tx.totalCurrency) : null,
+          total_currency: tx.totalCurrency,
+          trade_date: tx.date,
+          external_id: tx.externalId,
+          source: platform ?? 'generic',
+        });
+      } catch {
+        // One transaction failing to save shouldn't roll back the holding
+        // itself or the rest of the transactions — same reasoning as
+        // saveDividends/backfillHistory.
+      }
+    }
+  };
+
   const importSelected = async () => {
     if (importing) return;
     setImporting(true);
@@ -630,6 +704,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           });
           await backfillHistory(row, saved.id, row.instrument.id);
           await saveDividends(row, saved.id);
+          await saveTransactions(row.transactions, row.instrument.id, saved.id);
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
         } catch (error) {
           if (error instanceof HoldingConflictError) {
@@ -671,6 +746,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       });
       await backfillHistory(row, saved.id, row.instrument.id);
       await saveDividends(row, saved.id);
+      await saveTransactions(row.transactions, row.instrument.id, saved.id);
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
     } catch {
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));
@@ -711,6 +787,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           // the "andamento nel tempo" chart's final drop-to-zero point is missing.
         }
       }
+      await saveTransactions(candidate.transactions, candidate.holding.instrument.id, candidate.holding.id);
       setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closed' } : c)));
       await onImported();
     } catch {

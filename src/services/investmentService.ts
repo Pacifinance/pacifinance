@@ -32,6 +32,9 @@ import type {
   InvestmentInstrumentSearchResponse,
   InvestmentSettingsDto,
   InvestmentSettingsSaveRequest,
+  InvestmentTransactionDto,
+  InvestmentTransactionSaveRequest,
+  InvestmentTransactionsGetResponse,
 } from '../types/api';
 
 /**
@@ -66,6 +69,8 @@ export interface InvestmentService {
   saveSettings(data: InvestmentSettingsSaveRequest): Promise<InvestmentSettingsDto>;
   saveDividend(data: InvestmentDividendSaveRequest): Promise<InvestmentDividendDto>;
   getDividendsSummary(): Promise<InvestmentDividendSummaryResponse>;
+  saveTransaction(data: InvestmentTransactionSaveRequest): Promise<InvestmentTransactionDto>;
+  getTransactions(): Promise<InvestmentTransactionsGetResponse>;
 }
 
 export const createInvestmentService = (apiClient: AxiosInstance): InvestmentService => ({
@@ -143,6 +148,16 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
 
   async getDividendsSummary() {
     const res = await apiClient.post<InvestmentDividendSummaryResponse>('/api/investments/dividends/summary', {});
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async saveTransaction(data) {
+    const res = await apiClient.post<InvestmentTransactionDto>('/api/investments/transactions/save', data);
+    return res.data;
+  },
+
+  async getTransactions() {
+    const res = await apiClient.post<InvestmentTransactionsGetResponse>('/api/investments/transactions/get', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 });

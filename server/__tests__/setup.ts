@@ -103,7 +103,9 @@ const mocks = vi.hoisted(() => {
             getInvestmentSettings: vi.fn(),
             saveInvestmentSettings: vi.fn(),
             upsertDividend: vi.fn(),
-            getDividendsSummaryByUserId: vi.fn()
+            getDividendsSummaryByUserId: vi.fn(),
+            upsertTransaction: vi.fn(),
+            getTransactionsByUserId: vi.fn()
         },
         liquidityAccounts: {
             LIQUIDITY_ACCOUNT_ASSET_KEYS: ["bank", "cash", "digitalServices", "emergencyFund"],

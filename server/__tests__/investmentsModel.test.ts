@@ -336,12 +336,18 @@ describe("investments model", () => {
             instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: "US0378331005", coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
         }
 
-        it("converts a USD quote to EUR and updates current_value, caching the quote for other users", async () => {
+        it("converts a USD quote to EUR and updates current_value, caching the quote for other users, and backfills this month's history", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
             vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
             vi.mocked(finnhubProvider.getQuote).mockResolvedValue({price: 200})
             mockSupabase.from.mockReturnValueOnce(makeChain({
                 data: {...stockHoldingRow, current_value: 1739.13},
+                error: null,
+            }))
+            // upsertHoldingHistoryEntry's own holding lookup + history upsert.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: stockHoldingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 50, holding_id: 16, instrument_id: 1, asset_key: "stocks", symbol: "AAPL", name: "Apple Inc.", quantity: 10, average_price: 100, current_value: 1739.13, invested_amount: 1000, currency: "EUR", user_date: "2026-07-01", recorded_at: "2026-07-01"},
                 error: null,
             }))
 
@@ -358,6 +364,11 @@ describe("investments model", () => {
             vi.mocked(quoteCache.getCachedQuote).mockResolvedValue({price: 200})
             mockSupabase.from.mockReturnValueOnce(makeChain({
                 data: {...stockHoldingRow, current_value: 1739.13},
+                error: null,
+            }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: stockHoldingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 50, holding_id: 16, instrument_id: 1, asset_key: "stocks", symbol: "AAPL", name: "Apple Inc.", quantity: 10, average_price: 100, current_value: 1739.13, invested_amount: 1000, currency: "EUR", user_date: "2026-07-01", recorded_at: "2026-07-01"},
                 error: null,
             }))
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPen, faTimes, faPlus, faCheck, faFileImport, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPen, faTimes, faPlus, faCheck, faFileImport } from '@fortawesome/free-solid-svg-icons';
 
 const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -49,6 +49,27 @@ const EmptyState = styled.p`
   color: ${(p) => p.theme.textColor};
   opacity: 0.55;
   text-align: center;
+`;
+
+const SectionLabel = styled.h3`
+  margin: 0 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.5;
+`;
+
+/** Visually groups every "add" control (manual form/trigger + CSV import) into
+ * one distinct block, set apart from the holdings list above it — the two
+ * used to blend into a single flat list of buttons and rows. */
+const AddSection = styled.div`
+  margin-top: 1.1rem;
+  padding: 0.9rem 0.9rem 0.2rem;
+  border-radius: 12px;
+  border: 1px dashed ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)')};
 `;
 
 const HoldingRow = styled.div`
@@ -298,10 +319,6 @@ export default function InvestmentHoldingsPanel({
   const { fromEUR, toEUR, formatAmount } = useContext(CurrencyContext);
   const { investmentService } = useDemoServices();
   const t = translations.investments.holdings;
-  // Live price refresh only covers stocks/ETFs (see refreshHoldingPrices server-side) -
-  // crypto/bonds/funds/commodities have no Finnhub coverage here.
-  const panelKind = ASSET_KEY_TO_KIND[assetKey];
-  const supportsPriceRefresh = panelKind === 'stock' || panelKind === 'etf';
 
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -312,18 +329,6 @@ export default function InvestmentHoldingsPanel({
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
-  const [refreshingPrices, setRefreshingPrices] = useState(false);
-
-  const handleRefreshPrices = async () => {
-    if (refreshingPrices) return;
-    setRefreshingPrices(true);
-    try {
-      await investmentService.refreshPrices();
-      await onChanged();
-    } finally {
-      setRefreshingPrices(false);
-    }
-  };
 
   // Pre-fill the obvious instrument (e.g. BTC for `bitcoin`) on a user's very
   // first holding for this asset key, so they aren't forced to search for it -
@@ -441,6 +446,7 @@ export default function InvestmentHoldingsPanel({
         </ModalHeader>
 
         <ModalBody theme={theme}>
+          <SectionLabel theme={theme}>{t.positionsListTitle}</SectionLabel>
           {holdings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
 
           {holdings.map((holding) => {
@@ -538,91 +544,89 @@ export default function InvestmentHoldingsPanel({
             );
           })}
 
-          {isCurrentMonth && (showForm ? (
-            <FormSection theme={theme}>
-              <FormTitle theme={theme}>{editingId ? t.editTitle : t.addTitle}</FormTitle>
+          <AddSection theme={theme}>
+            <SectionLabel theme={theme}>{t.addSectionTitle}</SectionLabel>
 
-              {form.instrument ? (
-                <>
-                  <SelectedInstrument theme={theme}>
-                    <span>
-                      {form.instrument.symbol} — {form.instrument.name}
-                      {formatInstrumentDetails(form.instrument) !== '' && (
-                        <em style={{ display: 'block', fontSize: '0.72rem', fontWeight: 400, opacity: 0.6, fontStyle: 'normal' }}>
-                          {formatInstrumentDetails(form.instrument)}
-                        </em>
-                      )}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForm((f) => ({ ...f, instrument: null }));
-                        setIsDefaultPrefilled(false);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faTimes} />
-                    </button>
-                  </SelectedInstrument>
-                  {isDefaultPrefilled && (
-                    <DefaultInstrumentHint theme={theme}>{t.defaultInstrumentHint}</DefaultInstrumentHint>
-                  )}
-                </>
-              ) : (
-                <InstrumentSearchAutocomplete
-                  assetKey={assetKey}
-                  onSelect={(instrument) => setForm((f) => ({ ...f, instrument }))}
+            {isCurrentMonth && (showForm ? (
+              <FormSection theme={theme} style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+                <FormTitle theme={theme}>{editingId ? t.editTitle : t.addTitle}</FormTitle>
+
+                {form.instrument ? (
+                  <>
+                    <SelectedInstrument theme={theme}>
+                      <span>
+                        {form.instrument.symbol} — {form.instrument.name}
+                        {formatInstrumentDetails(form.instrument) !== '' && (
+                          <em style={{ display: 'block', fontSize: '0.72rem', fontWeight: 400, opacity: 0.6, fontStyle: 'normal' }}>
+                            {formatInstrumentDetails(form.instrument)}
+                          </em>
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm((f) => ({ ...f, instrument: null }));
+                          setIsDefaultPrefilled(false);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </button>
+                    </SelectedInstrument>
+                    {isDefaultPrefilled && (
+                      <DefaultInstrumentHint theme={theme}>{t.defaultInstrumentHint}</DefaultInstrumentHint>
+                    )}
+                  </>
+                ) : (
+                  <InstrumentSearchAutocomplete
+                    assetKey={assetKey}
+                    onSelect={(instrument) => setForm((f) => ({ ...f, instrument }))}
+                  />
+                )}
+
+                <FieldsGrid theme={theme}>
+                  <label>
+                    {t.quantity}
+                    <input type="number" value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} />
+                  </label>
+                  <label>
+                    {t.averagePrice}
+                    <input type="number" value={form.averagePrice} onChange={(e) => setForm((f) => ({ ...f, averagePrice: e.target.value }))} />
+                  </label>
+                  <label>
+                    {t.currentValue}
+                    <input type="number" value={form.currentValue} onChange={(e) => setForm((f) => ({ ...f, currentValue: e.target.value }))} />
+                  </label>
+                  <label>
+                    {t.investedAmount}
+                    <input type="number" value={form.investedAmount} onChange={(e) => setForm((f) => ({ ...f, investedAmount: e.target.value }))} />
+                  </label>
+                </FieldsGrid>
+
+                <NotesInput
+                  theme={theme}
+                  placeholder={t.notesPlaceholder}
+                  value={form.notes}
+                  onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 />
-              )}
+              </FormSection>
+            ) : (
+              <AddTriggerButton type="button" theme={theme} onClick={() => setShowForm(true)} style={{ marginTop: 0 }}>
+                <FontAwesomeIcon icon={faPlus} />
+                {t.addTitle}
+              </AddTriggerButton>
+            ))}
 
-              <FieldsGrid theme={theme}>
-                <label>
-                  {t.quantity}
-                  <input type="number" value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} />
-                </label>
-                <label>
-                  {t.averagePrice}
-                  <input type="number" value={form.averagePrice} onChange={(e) => setForm((f) => ({ ...f, averagePrice: e.target.value }))} />
-                </label>
-                <label>
-                  {t.currentValue}
-                  <input type="number" value={form.currentValue} onChange={(e) => setForm((f) => ({ ...f, currentValue: e.target.value }))} />
-                </label>
-                <label>
-                  {t.investedAmount}
-                  <input type="number" value={form.investedAmount} onChange={(e) => setForm((f) => ({ ...f, investedAmount: e.target.value }))} />
-                </label>
-              </FieldsGrid>
-
-              <NotesInput
-                theme={theme}
-                placeholder={t.notesPlaceholder}
-                value={form.notes}
-                onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-              />
-            </FormSection>
-          ) : (
-            <AddTriggerButton type="button" theme={theme} onClick={() => setShowForm(true)}>
-              <FontAwesomeIcon icon={faPlus} />
-              {t.addTitle}
+            <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
+              <FontAwesomeIcon icon={faFileImport} />
+              {translations.investments.importWizard?.button || 'Importa da CSV'}
             </AddTriggerButton>
-          ))}
-
-          <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
-            <FontAwesomeIcon icon={faFileImport} />
-            {translations.investments.importWizard?.button || 'Importa da CSV'}
-          </AddTriggerButton>
-          {isCurrentMonth && supportsPriceRefresh && holdings.length > 0 && (
-            <AddTriggerButton type="button" theme={theme} onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="investment-refresh-prices">
-              <FontAwesomeIcon icon={faRotate} spin={refreshingPrices} />
-              {refreshingPrices ? (t.refreshingPrices || 'Refreshing…') : (t.refreshPrices || 'Refresh prices')}
-            </AddTriggerButton>
-          )}
-          {!isCurrentMonth && (
-            <DefaultInstrumentHint theme={theme}>
-              {translations.investments.importWizard?.pastMonthNote
-                || 'The import always updates today\'s position and backfills history from the file\'s own dates — it doesn\'t only affect the month shown here.'}
-            </DefaultInstrumentHint>
-          )}
+            {!isCurrentMonth && (
+              <DefaultInstrumentHint theme={theme}>
+                {translations.investments.importWizard?.pastMonthNote
+                  || 'The import always updates today\'s position and backfills history from the file\'s own dates — it doesn\'t only affect the month shown here.'}
+              </DefaultInstrumentHint>
+            )}
+          </AddSection>
         </ModalBody>
 
         {isCurrentMonth && showForm && (

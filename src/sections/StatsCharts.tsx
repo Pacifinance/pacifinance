@@ -11,7 +11,7 @@ import InOutStats from '../components/InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utils/customGraphsInfo';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain } from 'lucide-react';
+import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain, RefreshCw } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
 import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
 import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
@@ -316,6 +316,34 @@ const CategoryPillsRow = styled.div`
   margin-bottom: 1.5rem;
 `;
 
+const RefreshPricesButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto 1.5rem auto;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: ${(props) => props.theme.textColor};
+  border: 1px dashed ${(props) => (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)')};
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: ${(props) => props.theme.buttonBackgroundColor};
+    color: ${(props) => props.theme.buttonBackgroundColor};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  svg { font-size: 0.9rem; }
+`;
+
 const CategoryPill = styled.button`
   padding: 0.45rem 1rem;
   border-radius: 999px;
@@ -453,6 +481,7 @@ export default function StatsCharts() {
     const [investmentGoals, setInvestmentGoals] = useState([]);
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
+    const [refreshingPrices, setRefreshingPrices] = useState(false);
 
     // Lazy fetch: only pulled once the Portfolio Holdings tab is actually opened,
     // so users who never visit it never pay for the extra requests.
@@ -478,6 +507,25 @@ export default function StatsCharts() {
         })();
         return () => { cancelled = true; };
     }, [activePage, holdingsLoaded, investmentService, goalService]);
+
+    // Portfolio-wide: refreshes every stock/ETF holding regardless of which
+    // category is currently selected (see refreshHoldingPrices server-side),
+    // so it lives here rather than inside a single asset key's holdings panel.
+    const handleRefreshPrices = async () => {
+        if (refreshingPrices) return;
+        setRefreshingPrices(true);
+        try {
+            await investmentService.refreshPrices();
+            const [holdings, history] = await Promise.all([
+                investmentService.getHoldings(),
+                investmentService.getHoldingHistory(),
+            ]);
+            setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
+            setHoldingHistory(Array.isArray(history) ? history : []);
+        } finally {
+            setRefreshingPrices(false);
+        }
+    };
 
     // Simula il caricamento dei dati
     useEffect(() => {
@@ -731,6 +779,13 @@ export default function StatsCharts() {
                                 </CategoryPill>
                             ))}
                         </CategoryPillsRow>
+                    )}
+
+                    {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')) && (
+                        <RefreshPricesButton theme={theme} type="button" onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="stats-refresh-prices">
+                            <RefreshCw size={14} style={refreshingPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
+                            {refreshingPrices ? (t.refreshingPrices || 'Refreshing…') : (t.refreshPrices || 'Refresh prices')}
+                        </RefreshPricesButton>
                     )}
 
                     <ChartGrid columns={2}>

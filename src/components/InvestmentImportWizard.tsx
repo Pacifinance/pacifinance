@@ -123,6 +123,20 @@ const PositionInfo = styled.div`
   span { font-size: 0.72rem; opacity: 0.6; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 `;
 
+/** Unlike PositionInfo's other one-line spans, the merge-impact description can
+ * run long ("already held: X units, Y€ — this file covers different months...")
+ * — truncating it with an ellipsis was hiding the actual outcome, exactly the
+ * information the user needs to trust what importing will do. */
+const ImpactNote = styled.span`
+  font-size: 0.72rem;
+  opacity: 0.6;
+  display: block;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  line-height: 1.4;
+`;
+
 const StatusIcon = styled.span`
   flex-shrink: 0;
   font-size: 0.85rem;
@@ -584,7 +598,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                   <span>{formatInstrumentDetails(row.instrument)}</span>
                 )}
                 {row.instrument && (row.status === 'resolved' || row.status === 'conflict') && existingByInstrumentId.has(row.instrument.id) && (
-                  <span>{describeExistingImpact(row, existingByInstrumentId.get(row.instrument.id)!)}</span>
+                  <ImpactNote theme={theme}>{describeExistingImpact(row, existingByInstrumentId.get(row.instrument.id)!)}</ImpactNote>
                 )}
                 {row.historyMonths.length > 1 && (
                   <span>

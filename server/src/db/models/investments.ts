@@ -496,12 +496,20 @@ async function getHoldingsByUserId(user_id: string) {
  * this is what makes it safe for a user to click "refresh" as often as they
  * like - at most one real Finnhub call per symbol per day happens across the
  * WHOLE app, not per click or per user.
+ *
+ * Also upserts a history entry for the CURRENT month with the fresh
+ * current_value - without this, "refresh prices" only ever updated today's
+ * live number and never accumulated into "value over time"/growth-rate
+ * analysis (see src/utils/investmentAnalytics.ts), so refreshing regularly
+ * never actually built up real history. Best-effort: a failed history
+ * upsert doesn't undo the holding's own price update.
  */
 async function refreshHoldingPrices(user_id: string, eurRates: Record<string, number>) {
     const holdings = await getHoldingsByUserId(user_id)
     const refreshable = holdings.filter((h) =>
         h.instrument !== null && (h.instrument.kind === "stock" || h.instrument.kind === "etf") && h.quantity != null)
 
+    const currentMonthStart = ExtDate.fromThisMonthStart()
     const updated: Holding[] = []
     for (const holding of refreshable) {
         const instrument = holding.instrument as NonNullable<typeof holding.instrument>
@@ -530,7 +538,15 @@ async function refreshHoldingPrices(user_id: string, eurRates: Record<string, nu
             notes: holding.notes,
             importSource: holding.importSource,
         })
-        if (result) updated.push(result)
+        if (!result) continue
+        updated.push(result)
+
+        const historyResult = await upsertHoldingHistoryEntry(user_id, holding.id, currentMonthStart, {
+            currentValue, investedAmount: holding.investedAmount,
+        })
+        if (historyResult.status !== "ok") {
+            console.error(`investments.refreshHoldingPrices: failed to backfill history for holding ${holding.id}`, historyResult)
+        }
     }
     return updated
 }

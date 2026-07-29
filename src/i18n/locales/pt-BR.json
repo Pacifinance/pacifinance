@@ -2746,6 +2746,8 @@
         },
         "holdings": {
             "title": "Posições detalhadas",
+            "positionsListTitle": "Suas posições",
+            "addSectionTitle": "Adicionar uma posição",
             "emptyState": "Ainda não há posições verificadas para este ativo. Adicione uma abaixo.",
             "addTitle": "Adicionar posição",
             "editTitle": "Editar posição",

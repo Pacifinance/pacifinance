@@ -2772,6 +2772,8 @@
         },
         "holdings": {
             "title": "Holding dettagliati",
+            "positionsListTitle": "Le tue posizioni",
+            "addSectionTitle": "Aggiungi una posizione",
             "emptyState": "Nessun holding verificato per questo asset. Aggiungine uno qui sotto.",
             "addTitle": "Aggiungi holding",
             "editTitle": "Modifica holding",

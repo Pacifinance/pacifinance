@@ -2746,6 +2746,8 @@
         },
         "holdings": {
             "title": "Detaillierte Bestände",
+            "positionsListTitle": "Deine Positionen",
+            "addSectionTitle": "Position hinzufügen",
             "emptyState": "Noch keine verifizierten Bestände für dieses Asset. Füge unten einen hinzu.",
             "addTitle": "Bestand hinzufügen",
             "editTitle": "Bestand bearbeiten",

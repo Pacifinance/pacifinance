@@ -2739,7 +2739,9 @@
             "defaultInstrumentHint": "BTC est présélectionné par défaut. Supprimez-le pour en rechercher un autre (par ex. un portefeuille séparé ou une autre blockchain).",
             "noValueForMonth": "Aucune valeur pour ce mois",
         "unverifiedBadge": "Non vérifié",
-        "unverifiedHint": "Non vérifié — ne compte pas dans les comparaisons avec les autres utilisateurs."
+        "unverifiedHint": "Non vérifié — ne compte pas dans les comparaisons avec les autres utilisateurs.",
+        "refreshPrices": "Actualiser les prix",
+        "refreshingPrices": "Actualisation…"
         },
         "attribution": {
             "coingecko": "Données fournies par CoinGecko",

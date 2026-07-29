@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPen, faTimes, faPlus, faCheck, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPen, faTimes, faPlus, faCheck, faFileImport, faRotate } from '@fortawesome/free-solid-svg-icons';
 
 const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -71,6 +71,13 @@ const HoldingInfo = styled.div`
   strong { font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; }
   span { font-size: 0.75rem; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   span.no-value { font-style: italic; }
+`;
+
+const GainLoss = styled.span<{ $positive: boolean }>`
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 1 !important;
+  color: ${(p) => (p.$positive ? '#10b981' : '#ef4444')};
 `;
 
 const UnverifiedBadge = styled.span`
@@ -272,10 +279,14 @@ export default function InvestmentHoldingsPanel({
   assetKey, holdings, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {},
 }: InvestmentHoldingsPanelProps) {
   const { theme } = useContext(ThemeContext);
-  const { translations } = useContext(LanguageContext);
+  const { translations, language } = useContext(LanguageContext);
   const { fromEUR, toEUR, formatAmount } = useContext(CurrencyContext);
   const { investmentService } = useDemoServices();
   const t = translations.investments.holdings;
+  // Live price refresh only covers stocks/ETFs (see refreshHoldingPrices server-side) -
+  // crypto/bonds/funds/commodities have no Finnhub coverage here.
+  const panelKind = ASSET_KEY_TO_KIND[assetKey];
+  const supportsPriceRefresh = panelKind === 'stock' || panelKind === 'etf';
 
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -286,6 +297,18 @@ export default function InvestmentHoldingsPanel({
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
+  const [refreshingPrices, setRefreshingPrices] = useState(false);
+
+  const handleRefreshPrices = async () => {
+    if (refreshingPrices) return;
+    setRefreshingPrices(true);
+    try {
+      await investmentService.refreshPrices();
+      await onChanged();
+    } finally {
+      setRefreshingPrices(false);
+    }
+  };
 
   // Pre-fill the obvious instrument (e.g. BTC for `bitcoin`) on a user's very
   // first holding for this asset key, so they aren't forced to search for it -
@@ -424,6 +447,29 @@ export default function InvestmentHoldingsPanel({
                     {formatInstrumentDetails(holding.instrument) !== '' && (
                       <span>{formatInstrumentDetails(holding.instrument)}</span>
                     )}
+                    {(() => {
+                      const source = isCurrentMonth ? holding : historicalEntry;
+                      if (!source || source.quantity == null || source.averagePrice == null) return null;
+                      const locale = language === 'it' ? 'it-IT' : 'en-US';
+                      return (
+                        <span>
+                          {source.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}
+                          {' × '}
+                          {formatAmount(source.averagePrice)}
+                        </span>
+                      );
+                    })()}
+                    {(() => {
+                      const source = isCurrentMonth ? holding : historicalEntry;
+                      if (!source || source.currentValue == null || source.investedAmount == null || source.investedAmount === 0) return null;
+                      const gain = source.currentValue - source.investedAmount;
+                      const gainPct = (gain / source.investedAmount) * 100;
+                      return (
+                        <GainLoss $positive={gain >= 0}>
+                          {gain >= 0 ? '+' : ''}{formatAmount(gain)} ({gain >= 0 ? '+' : ''}{gainPct.toFixed(1)}%)
+                        </GainLoss>
+                      );
+                    })()}
                     {isCurrentMonth ? (
                       <span>{formatAmount(holding.currentValue ?? holding.investedAmount ?? 0)}</span>
                     ) : historicalEntry ? (
@@ -548,6 +594,12 @@ export default function InvestmentHoldingsPanel({
             <FontAwesomeIcon icon={faFileImport} />
             {translations.investments.importWizard?.button || 'Importa da CSV'}
           </AddTriggerButton>
+          {isCurrentMonth && supportsPriceRefresh && holdings.length > 0 && (
+            <AddTriggerButton type="button" theme={theme} onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="investment-refresh-prices">
+              <FontAwesomeIcon icon={faRotate} spin={refreshingPrices} />
+              {refreshingPrices ? (t.refreshingPrices || 'Refreshing…') : (t.refreshPrices || 'Refresh prices')}
+            </AddTriggerButton>
+          )}
           {!isCurrentMonth && (
             <DefaultInstrumentHint theme={theme}>
               {translations.investments.importWizard?.pastMonthNote

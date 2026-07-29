@@ -512,4 +512,91 @@ describe("private backend routes", () => {
         expect(response.status).toBe(400)
         expect(mockDb.investments.insertHolding).not.toHaveBeenCalled()
     })
+
+    it("backfills a holding's monthly history", async () => {
+        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({
+            id: 20, holdingId: 16, userDate: "2026-07-01", currentValue: null, investedAmount: 12.44
+        })
+
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 16, user_date: "2026-07-01", current_value: null, invested_amount: 12.44}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toMatchObject({id: 20})
+        expect(mockDb.investments.upsertHoldingHistoryEntry).toHaveBeenCalledWith(
+            "user-uuid", 16, new Date("2026-07-01"), {currentValue: null, investedAmount: 12.44}
+        )
+    })
+
+    it("rejects a history save with a reason when the payload is malformed", async () => {
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: "not-a-number", user_date: "2026-07-01", current_value: null, invested_amount: 12.44}
+        })
+
+        expect(response.status).toBe(400)
+        expect(response.json).toEqual({error: "invalid holding_id"})
+        expect(mockDb.investments.upsertHoldingHistoryEntry).not.toHaveBeenCalled()
+    })
+
+    it("rejects a history save dated in the future, with a reason", async () => {
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 16, user_date: "2999-01-01", current_value: null, invested_amount: 12.44}
+        })
+
+        expect(response.status).toBe(400)
+        expect(response.json).toEqual({error: "user_date is in the future"})
+    })
+
+    it("returns a reason when the holding doesn't exist or isn't owned by this user", async () => {
+        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue(null)
+
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 999, user_date: "2026-07-01", current_value: null, invested_amount: 12.44}
+        })
+
+        expect(response.status).toBe(400)
+        expect(response.json).toEqual({error: "holding not found, or not owned by this user"})
+    })
+
+    it("refreshes holding prices using cached exchange rates, refreshing the cache when expired", async () => {
+        mockCache.valueExpired.mockResolvedValueOnce(true)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.08})
+        mockDb.investments.refreshHoldingPrices.mockResolvedValue([
+            {id: 16, currentValue: 1739.13}
+        ])
+
+        const response = await request(app, "/api/investments/holdings/refresh-prices", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([{id: 16, currentValue: 1739.13}])
+        expect(mockCache.invalidate).toHaveBeenCalledWith("exchangeRates")
+        expect(mockDb.investments.refreshHoldingPrices).toHaveBeenCalledWith("user-uuid", {EUR: 1, USD: 1.08})
+    })
+
+    it("returns 503 for a price refresh when exchange rates aren't available", async () => {
+        mockCache.valueExpired.mockResolvedValueOnce(true)
+        mockCache.get.mockResolvedValueOnce(null)
+
+        const response = await request(app, "/api/investments/holdings/refresh-prices", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(503)
+        expect(mockDb.investments.refreshHoldingPrices).not.toHaveBeenCalled()
+    })
 })

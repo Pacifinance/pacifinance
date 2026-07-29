@@ -77,6 +77,16 @@ describe('investmentService', () => {
     expect(result).toEqual(holdings);
   });
 
+  it('refreshes holding prices', async () => {
+    const holdings = [{ id: 16, currentValue: 1739.13 }];
+    mockClient.post.mockResolvedValue({ data: holdings });
+
+    const result = await service.refreshPrices();
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/holdings/refresh-prices', {});
+    expect(result).toEqual(holdings);
+  });
+
   it('saves a holding linked to a canonical instrument', async () => {
     const holding = { id: 9, assetKey: 'stocks', instrument: { id: 1, symbol: 'AAPL' } };
     const payload = { instrument_id: 1, asset_key: 'stocks', current_value: 420 };

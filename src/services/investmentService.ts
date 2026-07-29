@@ -50,6 +50,7 @@ export interface InvestmentService {
   searchInstrumentsByIsins(isins: string[]): Promise<InvestmentInstrumentSearchByIsinsResponse>;
   createManualInstrument(data: InvestmentInstrumentManualCreateRequest): Promise<InvestmentInstrumentDto>;
   getHoldings(): Promise<InvestmentHoldingsGetResponse>;
+  refreshPrices(): Promise<InvestmentHoldingsGetResponse>;
   saveHolding(data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto>;
   deleteHolding(data: InvestmentHoldingDeleteRequest): Promise<AxiosResponse>;
   getHoldingHistory(params?: InvestmentHoldingHistoryRequest): Promise<InvestmentHoldingHistoryResponse>;
@@ -74,6 +75,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
 
   async getHoldings() {
     const res = await apiClient.post<InvestmentHoldingsGetResponse>('/api/investments/holdings/get', {});
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async refreshPrices() {
+    const res = await apiClient.post<InvestmentHoldingsGetResponse>('/api/investments/holdings/refresh-prices', {});
     return Array.isArray(res.data) ? res.data : [];
   },
 

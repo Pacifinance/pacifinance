@@ -3,6 +3,7 @@ import openfigiProvider from "../../libs/providers/openfigiProvider"
 import coingeckoProvider from "../../libs/providers/coingeckoProvider"
 import finnhubProvider from "../../libs/providers/finnhubProvider"
 import { ExtDate, toDateOnly } from "../../libs/datelib"
+import { roundCurrency } from "../../libs/money"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
 export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"] as const
@@ -477,6 +478,49 @@ async function getHoldingsByUserId(user_id: string) {
     return (data as unknown as HoldingRow[]).map(toHolding)
 }
 
+/**
+ * Refreshes current_value for the user's stock/ETF holdings using a live
+ * Finnhub quote (crypto/bonds/funds/commodities aren't attempted - Finnhub
+ * has no reliable coverage for them here). Quotes come back in the
+ * instrument's own trading currency (assumed USD when unknown - matches
+ * every researched broker export in this app so far) and are converted to
+ * EUR with `eurRates` before being stored, same as every other money value
+ * on a holding (see toHoldingPayload). Best-effort per holding: a missing
+ * quote or exchange rate skips just that one holding, never the rest.
+ */
+async function refreshHoldingPrices(user_id: string, eurRates: Record<string, number>) {
+    const holdings = await getHoldingsByUserId(user_id)
+    const refreshable = holdings.filter((h) =>
+        h.instrument !== null && (h.instrument.kind === "stock" || h.instrument.kind === "etf") && h.quantity != null)
+
+    const updated: Holding[] = []
+    for (const holding of refreshable) {
+        const instrument = holding.instrument as NonNullable<typeof holding.instrument>
+        const quote = await finnhubProvider.getQuote(instrument.symbol)
+        if (!quote) continue
+
+        const quoteCurrency = instrument.currency ?? "USD"
+        const rate = eurRates[quoteCurrency]
+        if (!rate) continue
+
+        const currentValue = roundCurrency((quote.price / rate) * (holding.quantity as number))
+        const result = await updateHolding(user_id, holding.id, {
+            instrumentId: instrument.id,
+            assetKey: holding.assetKey,
+            positionType: holding.positionType,
+            quantity: holding.quantity,
+            averagePrice: holding.averagePrice,
+            currentValue,
+            investedAmount: holding.investedAmount,
+            currency: holding.currency,
+            notes: holding.notes,
+            importSource: holding.importSource,
+        })
+        if (result) updated.push(result)
+    }
+    return updated
+}
+
 type Holding = ReturnType<typeof toHolding>
 
 export type HoldingSaveResult =
@@ -759,6 +803,7 @@ export default {
     createManualInstrument,
     getInstrumentById,
     getHoldingsByUserId,
+    refreshHoldingPrices,
     insertHolding,
     updateHolding,
     deleteHolding,

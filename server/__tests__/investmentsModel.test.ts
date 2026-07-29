@@ -10,7 +10,7 @@ vi.mock("../src/libs/providers/coingeckoProvider", () => ({
     default: { searchCoingecko: vi.fn() },
 }))
 vi.mock("../src/libs/providers/finnhubProvider", () => ({
-    default: { searchFinnhub: vi.fn() },
+    default: { searchFinnhub: vi.fn(), getQuote: vi.fn() },
 }))
 
 import openfigiProvider from "../src/libs/providers/openfigiProvider"
@@ -306,6 +306,60 @@ describe("investments model", () => {
             const result = await investments.upsertHoldingHistoryEntry("user-1", 999, new Date("2026-01-15"), {currentValue: null, investedAmount: 50})
 
             expect(result).toBeNull()
+        })
+    })
+
+    describe("refreshHoldingPrices", () => {
+        const stockHoldingRow = {
+            id: 16, user_id: "user-1", instrument_id: 1, asset_key: "stocks", position_type: "single",
+            quantity: 10, average_price: 100, current_value: null, invested_amount: 1000, currency: "EUR",
+            notes: "", updated_at: "2026-01-01", import_source: "trading212",
+            instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: "US0378331005", coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+        }
+
+        it("converts a USD quote to EUR and updates current_value", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(finnhubProvider.getQuote).mockResolvedValue({price: 200})
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {...stockHoldingRow, current_value: 1739.13},
+                error: null,
+            }))
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1, USD: 1.15})
+
+            expect(finnhubProvider.getQuote).toHaveBeenCalledWith("AAPL")
+            expect(result).toHaveLength(1)
+            expect(result[0]).toMatchObject({id: 16, currentValue: 1739.13})
+        })
+
+        it("skips holdings whose kind Finnhub doesn't cover (e.g. crypto)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [{...stockHoldingRow, asset_key: "crypto", instrument: {...stockHoldingRow.instrument, kind: "crypto", symbol: "BTC"}}],
+                error: null,
+            }))
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1, USD: 1.15})
+
+            expect(finnhubProvider.getQuote).not.toHaveBeenCalled()
+            expect(result).toEqual([])
+        })
+
+        it("skips a holding when Finnhub has no quote for its symbol", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(finnhubProvider.getQuote).mockResolvedValue(null)
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1, USD: 1.15})
+
+            expect(result).toEqual([])
+        })
+
+        it("skips a holding when there's no exchange rate for its trading currency", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(finnhubProvider.getQuote).mockResolvedValue({price: 200})
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1})
+
+            expect(result).toEqual([])
         })
     })
 })

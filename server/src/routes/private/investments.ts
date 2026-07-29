@@ -1,6 +1,7 @@
 import express from "express"
 
 import db from "../../db/db"
+import cache from "../../cache/cache"
 import common, { isOneOf, normalizeCurrency } from "../common"
 
 /* === /investments/* === */
@@ -122,6 +123,17 @@ investmentsRouter.post("/holdings/get", async (req, res) => {
     res.status(200).json(holdings)
 })
 
+investmentsRouter.post("/holdings/refresh-prices", async (req, res) => {
+    if (await cache.valueExpired("exchangeRates")) await cache.invalidate("exchangeRates")
+    const eurRates = await cache.get("exchangeRates")
+    if (!eurRates) {
+        res.status(503).send()
+        return
+    }
+    const holdings = await db.investments.refreshHoldingPrices(req.userId as string, eurRates)
+    res.status(200).json(holdings)
+})
+
 investmentsRouter.post("/holdings/save", async (req, res) => {
     const payload = await parseHoldingPayload(req.body, req.userId as string)
     if (payload === null) {
@@ -186,41 +198,37 @@ investmentsRouter.post("/holdings/history", async (req, res) => {
     res.status(200).json(history)
 })
 
-function parseHoldingHistoryPayload(body: any) {
+function parseHoldingHistoryPayload(body: any): {holdingId: number, userDate: Date, currentValue: number | null, investedAmount: number | null} | {error: string} {
     const holdingId = Number(body.holding_id ?? body.holdingId)
     const userDate = new Date(body.user_date ?? body.userDate)
     const currentValue = optionalNumber(body.current_value ?? body.currentValue)
     const investedAmount = optionalNumber(body.invested_amount ?? body.investedAmount)
     const now = new Date()
 
-    if (
-        !Number.isFinite(holdingId) ||
-        isNaN(userDate.getTime()) ||
-        userDate > now ||
-        currentValue === undefined ||
-        investedAmount === undefined
-    ) {
-        return null
-    }
+    if (!Number.isFinite(holdingId)) return {error: "invalid holding_id"}
+    if (isNaN(userDate.getTime())) return {error: "invalid user_date"}
+    if (userDate > now) return {error: "user_date is in the future"}
+    if (currentValue === undefined) return {error: "current_value must be a non-negative number or null"}
+    if (investedAmount === undefined) return {error: "invested_amount must be a non-negative number or null"}
 
     return {holdingId, userDate, currentValue, investedAmount}
 }
 
 investmentsRouter.post("/holdings/history/save", async (req, res) => {
-    const payload = parseHoldingHistoryPayload(req.body)
-    if (payload === null) {
-        res.status(400).send()
+    const parsed = parseHoldingHistoryPayload(req.body)
+    if ("error" in parsed) {
+        res.status(400).json({error: parsed.error})
         return
     }
 
     const entry = await db.investments.upsertHoldingHistoryEntry(
         req.userId as string,
-        payload.holdingId,
-        payload.userDate,
-        {currentValue: payload.currentValue, investedAmount: payload.investedAmount},
+        parsed.holdingId,
+        parsed.userDate,
+        {currentValue: parsed.currentValue, investedAmount: parsed.investedAmount},
     )
     if (entry === null) {
-        res.status(400).send() // holding not found, or not owned by this user
+        res.status(400).json({error: "holding not found, or not owned by this user"})
         return
     }
     res.status(200).json(entry)

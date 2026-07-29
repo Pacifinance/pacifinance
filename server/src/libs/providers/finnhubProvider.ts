@@ -99,4 +99,67 @@ export async function searchFinnhub(query: string, kind: InvestmentKind = "stock
     }
 }
 
-export default { searchFinnhub }
+const FINNHUB_QUOTE_URL = "https://finnhub.io/api/v1/quote"
+// Separate bucket from search: refreshing a whole portfolio's prices (one
+// quote call per holding) must never compete with, or be starved by, ordinary
+// symbol search - they're both well under Finnhub's 60/min free-tier budget
+// individually, but sharing one bucket would let either one exhaust it for
+// the other during a refresh.
+const FINNHUB_QUOTE_LIMIT_PER_MIN = 55
+
+type FinnhubQuoteResponse = {
+    c?: number // current price
+    pc?: number // previous close
+    t?: number // quote timestamp (0 if the symbol is unknown to Finnhub)
+}
+
+export interface Quote {
+    /** Current price, in the instrument's own trading currency (see the caller for the EUR conversion). */
+    price: number
+}
+
+/**
+ * Fetches a single real-time (free-tier: ~15-20min delayed) quote from
+ * Finnhub. Only ever called for stocks/ETFs - Finnhub has no crypto/commodity
+ * coverage in our usage. Returns null (never throws) when no key is
+ * configured, on rate limit, timeout, upstream error, or when Finnhub simply
+ * doesn't recognize the symbol (t: 0 with no other fields - happens for
+ * manually-entered/unverified symbols it has never heard of).
+ */
+export async function getQuote(symbol: string): Promise<Quote | null> {
+    const apiKey = process.env.FINNHUB_KEY
+    if (!apiKey) return null
+
+    const allowed = await checkAndConsumeRateLimit("finnhub-quote", FINNHUB_QUOTE_LIMIT_PER_MIN)
+    if (!allowed) return null
+
+    const controller = new AbortController()
+    const timeoutMs = getTimeoutMs("FINNHUB_TIMEOUT_MS", 6000)
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+        const url = `${FINNHUB_QUOTE_URL}?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`
+        const response = await withTimeout(
+            fetch(url, { signal: controller.signal }),
+            timeoutMs,
+            "Finnhub quote request",
+        )
+
+        if (response.status !== 200) {
+            console.error(`finnhubProvider.getQuote: request failed with status ${response.status}`)
+            return null
+        }
+
+        const body = await response.json() as FinnhubQuoteResponse
+        if (!body.t || typeof body.c !== "number" || body.c <= 0) return null
+
+        return { price: body.c }
+    } catch (error) {
+        console.error("finnhubProvider.getQuote: request failed", error)
+        return null
+    } finally {
+        clearTimeout(timeout)
+    }
+}
+
+export default { searchFinnhub, getQuote }

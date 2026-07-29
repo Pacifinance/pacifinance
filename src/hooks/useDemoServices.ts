@@ -109,6 +109,8 @@ export const useDemoServices = () => {
           metadata: {},
         }),
         getHoldings: async (): Promise<InvestmentHoldingDto[]> => [],
+        // Demo mode's getHoldings() always returns [] - nothing to refresh.
+        refreshPrices: async (): Promise<InvestmentHoldingDto[]> => [],
         // Demo mode's getHoldings() always returns [], so a holding for this
         // instrument can never already exist here - the merge/replace conflict
         // path is unreachable in demo, same as with the real backend's first save.

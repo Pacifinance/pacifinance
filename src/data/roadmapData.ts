@@ -284,6 +284,18 @@ const roadmapData: RoadmapItem[] = [
     icon: '🤝',
     completedDate: '2026-07',
   },
+  {
+    id: 'live-stock-prices',
+    title: { it: 'Prezzi di Mercato Live per Azioni/ETF', en: 'Live Market Prices for Stocks/ETFs' },
+    description: {
+      it: 'Un pulsante "Aggiorna prezzi" nel pannello holding recupera la quotazione attuale (Finnhub), la converte in EUR e aggiorna il valore corrente — utile soprattutto dopo un import CSV, dove finora era noto solo il costo storico.',
+      en: 'A "Refresh prices" button in the holdings panel fetches the current quote (Finnhub), converts it to EUR, and updates the current value — especially useful after a CSV import, where until now only the historical cost basis was known.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📈',
+    completedDate: '2026-07',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'onboarding',

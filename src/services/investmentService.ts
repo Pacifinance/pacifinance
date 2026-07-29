@@ -26,6 +26,8 @@ import type {
   InvestmentInstrumentSearchByIsinsResponse,
   InvestmentInstrumentSearchRequest,
   InvestmentInstrumentSearchResponse,
+  InvestmentSettingsDto,
+  InvestmentSettingsSaveRequest,
 } from '../types/api';
 
 /**
@@ -55,6 +57,8 @@ export interface InvestmentService {
   deleteHolding(data: InvestmentHoldingDeleteRequest): Promise<AxiosResponse>;
   getHoldingHistory(params?: InvestmentHoldingHistoryRequest): Promise<InvestmentHoldingHistoryResponse>;
   saveHoldingHistory(data: InvestmentHoldingHistorySaveRequest): Promise<InvestmentHoldingHistoryDto>;
+  getSettings(): Promise<InvestmentSettingsDto>;
+  saveSettings(data: InvestmentSettingsSaveRequest): Promise<InvestmentSettingsDto>;
 }
 
 export const createInvestmentService = (apiClient: AxiosInstance): InvestmentService => ({
@@ -107,6 +111,16 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
 
   async saveHoldingHistory(data) {
     const res = await apiClient.post<InvestmentHoldingHistoryDto>('/api/investments/holdings/history/save', data);
+    return res.data;
+  },
+
+  async getSettings() {
+    const res = await apiClient.post<InvestmentSettingsDto>('/api/investments/settings/get', {});
+    return res.data;
+  },
+
+  async saveSettings(data) {
+    const res = await apiClient.post<InvestmentSettingsDto>('/api/investments/settings/save', data);
     return res.data;
   },
 });

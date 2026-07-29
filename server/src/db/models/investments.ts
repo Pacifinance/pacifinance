@@ -842,6 +842,33 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
     return {status: "ok", entry: toHoldingHistory(data as unknown as HoldingHistoryRow)}
 }
 
+export type InvestmentSettings = { monthlyTarget: number | null }
+
+/**
+ * Reads the user's "how much would I like to invest each month" € target -
+ * a single, optional setting surfaced in Portfolio Insights. Never having set
+ * one is the common case (returns monthlyTarget: null), not an error.
+ */
+async function getInvestmentSettings(user_id: string): Promise<InvestmentSettings> {
+    const {data, error} = await supabase.from("user_investment_settings")
+        .select("monthly_target").eq("user_id", user_id).maybeSingle()
+    if (error) console.error("investments.getInvestmentSettings: failed to read settings", error)
+    return {monthlyTarget: (data as {monthly_target: number | null} | null)?.monthly_target ?? null}
+}
+
+/** onConflict targets the table's own primary key (user_id) - a single row per user, no partial index involved. */
+async function saveInvestmentSettings(user_id: string, monthlyTarget: number | null): Promise<InvestmentSettings | null> {
+    const {data, error} = await supabase.from("user_investment_settings")
+        .upsert({user_id, monthly_target: monthlyTarget, updated_at: new Date().toISOString()}, {onConflict: "user_id"})
+        .select("monthly_target")
+        .single()
+    if (error) {
+        console.error("investments.saveInvestmentSettings: failed to save settings", error)
+        return null
+    }
+    return {monthlyTarget: (data as {monthly_target: number | null}).monthly_target}
+}
+
 export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
@@ -860,4 +887,6 @@ export default {
     snapshotHoldingsForUser,
     getHoldingHistoryByUserId,
     upsertHoldingHistoryEntry,
+    getInvestmentSettings,
+    saveInvestmentSettings,
 }

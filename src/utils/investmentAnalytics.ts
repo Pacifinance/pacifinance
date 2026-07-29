@@ -58,26 +58,84 @@ export interface ContributionEstimate {
 }
 
 /**
+ * Builds, per instrument, a forward-filled month -> value timeline: a month
+ * with no explicit history entry inherits the instrument's last known value
+ * instead of dropping out of the total entirely. Without this, an instrument
+ * that only got a CSV-backfilled snapshot in the months it actually had a
+ * transaction (e.g. bought in Jan/Mar/Jun) would vanish from every other
+ * month's portfolio-wide sum — making it look like money was withdrawn that
+ * month and re-deposited later, when nothing actually changed for it.
+ */
+function forwardFillByMonth(
+  history: InvestmentHoldingHistoryDto[],
+  valueOf: (entry: InvestmentHoldingHistoryDto) => number | null,
+): { months: string[]; totalByMonth: Map<string, number> } {
+  const byInstrument = new Map<number, Map<string, number>>();
+  for (const entry of history) {
+    const value = valueOf(entry);
+    if (value == null) continue;
+    const month = entry.userDate.slice(0, 7);
+    const timeline = byInstrument.get(entry.instrumentId) ?? new Map<string, number>();
+    timeline.set(month, value);
+    byInstrument.set(entry.instrumentId, timeline);
+  }
+
+  const months = Array.from(new Set(
+    Array.from(byInstrument.values()).flatMap((timeline) => Array.from(timeline.keys())),
+  )).sort();
+
+  const totalByMonth = new Map<string, number>();
+  for (const timeline of byInstrument.values()) {
+    let lastKnown: number | null = null;
+    for (const month of months) {
+      if (timeline.has(month)) lastKnown = timeline.get(month) as number;
+      if (lastKnown == null) continue;
+      totalByMonth.set(month, (totalByMonth.get(month) ?? 0) + lastKnown);
+    }
+  }
+  return { months, totalByMonth };
+}
+
+/**
  * Estimates the average monthly amount invested from invested_amount history
  * deltas — this only needs the backfill every CSV import already produces,
  * so it's available far more often than a real growth rate.
  */
 export function estimateMonthlyContribution(history: InvestmentHoldingHistoryDto[], assetKey: AssetKey | null): ContributionEstimate {
   const relevant = assetKey ? history.filter((h) => h.assetKey === assetKey) : history;
-  const byMonth = new Map<string, number>();
-  for (const entry of relevant) {
-    if (entry.investedAmount == null) continue;
-    const month = entry.userDate.slice(0, 7);
-    byMonth.set(month, (byMonth.get(month) ?? 0) + entry.investedAmount);
-  }
-  const months = Array.from(byMonth.keys()).sort();
+  const { months, totalByMonth } = forwardFillByMonth(relevant, (e) => e.investedAmount);
   if (months.length < 2) return { monthlyAverage: null, monthsAvailable: months.length };
 
   let totalDelta = 0;
   for (let i = 1; i < months.length; i++) {
-    totalDelta += (byMonth.get(months[i]) ?? 0) - (byMonth.get(months[i - 1]) ?? 0);
+    totalDelta += (totalByMonth.get(months[i]) ?? 0) - (totalByMonth.get(months[i - 1]) ?? 0);
   }
   return { monthlyAverage: totalDelta / (months.length - 1), monthsAvailable: months.length };
+}
+
+export interface MonthlyContributionPoint {
+  /** "YYYY-MM" */
+  month: string;
+  /** Net new money invested during this month (forward-filled invested_amount delta from the previous month). */
+  amount: number;
+}
+
+/**
+ * Same net-new-money reconstruction as estimateMonthlyContribution, but
+ * returns every individual month instead of a single average — lets the UI
+ * compare each month against a target and show a hit/miss history over time,
+ * not just "on average you invest X/month".
+ */
+export function computeMonthlyContributionSeries(history: InvestmentHoldingHistoryDto[], assetKey: AssetKey | null): MonthlyContributionPoint[] {
+  const relevant = assetKey ? history.filter((h) => h.assetKey === assetKey) : history;
+  const { months, totalByMonth } = forwardFillByMonth(relevant, (e) => e.investedAmount);
+  if (months.length < 2) return [];
+
+  const points: MonthlyContributionPoint[] = [];
+  for (let i = 1; i < months.length; i++) {
+    points.push({ month: months[i], amount: (totalByMonth.get(months[i]) ?? 0) - (totalByMonth.get(months[i - 1]) ?? 0) });
+  }
+  return points;
 }
 
 export interface GrowthRateEstimate {
@@ -95,13 +153,7 @@ export interface GrowthRateEstimate {
  */
 export function estimateMonthlyGrowthRate(history: InvestmentHoldingHistoryDto[], assetKey: AssetKey | null): GrowthRateEstimate {
   const relevant = assetKey ? history.filter((h) => h.assetKey === assetKey) : history;
-  const byMonth = new Map<string, number>();
-  for (const entry of relevant) {
-    if (entry.currentValue == null) continue;
-    const month = entry.userDate.slice(0, 7);
-    byMonth.set(month, (byMonth.get(month) ?? 0) + entry.currentValue);
-  }
-  const months = Array.from(byMonth.keys()).sort();
+  const { months, totalByMonth: byMonth } = forwardFillByMonth(relevant, (e) => e.currentValue);
   if (months.length < 2) return { monthlyRate: null, monthsAvailable: months.length };
 
   const first = byMonth.get(months[0]) ?? 0;

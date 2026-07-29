@@ -574,6 +574,14 @@ export interface InvestmentHoldingHistorySaveRequest {
   invested_amount: number | null;
 }
 
+export interface InvestmentSettingsDto {
+  monthlyTarget: number | null;
+}
+
+export interface InvestmentSettingsSaveRequest {
+  monthly_target: number | null;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /liquidity-accounts
  * ═══════════════════════════════════════════════════════════════════════════*/

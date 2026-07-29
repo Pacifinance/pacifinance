@@ -106,4 +106,22 @@ describe('investmentService', () => {
     expect(mockClient.post).toHaveBeenCalledWith('/api/investments/holdings/delete', { id: 3 });
     expect(result.status).toBe(200);
   });
+
+  it('reads the monthly investment target setting', async () => {
+    mockClient.post.mockResolvedValue({ data: { monthlyTarget: 300 } });
+
+    const result = await service.getSettings();
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/settings/get', {});
+    expect(result).toEqual({ monthlyTarget: 300 });
+  });
+
+  it('saves the monthly investment target setting', async () => {
+    mockClient.post.mockResolvedValue({ data: { monthlyTarget: 250 } });
+
+    const result = await service.saveSettings({ monthly_target: 250 });
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/settings/save', { monthly_target: 250 });
+    expect(result).toEqual({ monthlyTarget: 250 });
+  });
 });

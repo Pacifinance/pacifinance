@@ -73,8 +73,9 @@
 - [x] Scelta utente su impatto bilancio per inserimenti datati in mesi passati (past date balance choice) con modale, preferenza persistente e toggle in Impostazioni <!-- roadmap:past-date-balance-choice -->
 - [x] Rilevamento duplicati anche sull'inserimento manuale di uscite/entrate (stessa euristica dell'import CSV), con modale di conferma <!-- roadmap:manual-duplicate-check -->
 - [x] Spese condivise: "ho pagato per il gruppo" su una uscita registra solo la propria quota come spesa reale e traccia il resto come credito verso terzi, recuperabile senza generare un'entrata fittizia <!-- roadmap:shared-expenses -->
-- [x] Prezzi di mercato live per azioni/ETF via Finnhub: pulsante "Aggiorna prezzi" nel pannello holding, converte la quotazione nella valuta di scambio in EUR e aggiorna il valore corrente <!-- roadmap:live-stock-prices -->
+- [x] Prezzi di mercato live per azioni/ETF via Finnhub: pulsante "Aggiorna prezzi" nei grafici investimenti, converte la quotazione nella valuta di scambio in EUR, aggiorna il valore corrente e ne registra uno storico mensile <!-- roadmap:live-stock-prices -->
 - [x] Analisi adattiva del portafoglio investimenti: guadagno/perdita, migliore/peggiore posizione, media investita al mese e stima del tempo per raggiungere un obiettivo collegato — ogni dato si sblocca in base allo storico realmente inserito, con suggerimenti su cosa aggiungere per un'analisi più precisa <!-- roadmap:portfolio-insights -->
+- [x] Obiettivo di investimento mensile: imposta quanto vorresti investire ogni mese e verifica automaticamente, mese per mese, se lo hai raggiunto, ricostruito dallo storico degli investimenti già registrato <!-- roadmap:investment-monthly-target -->
 ---
 
 ## Piano strategico (luglio 2026)

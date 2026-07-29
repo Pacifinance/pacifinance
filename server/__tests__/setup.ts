@@ -98,7 +98,9 @@ const mocks = vi.hoisted(() => {
             deleteHolding: vi.fn(),
             snapshotHoldingsForUser: vi.fn(),
             getHoldingHistoryByUserId: vi.fn(),
-            upsertHoldingHistoryEntry: vi.fn()
+            upsertHoldingHistoryEntry: vi.fn(),
+            getInvestmentSettings: vi.fn(),
+            saveInvestmentSettings: vi.fn()
         },
         liquidityAccounts: {
             LIQUIDITY_ACCOUNT_ASSET_KEYS: ["bank", "cash", "digitalServices", "emergencyFund"],

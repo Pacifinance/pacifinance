@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   summarizeHoldings, estimateMonthlyContribution, estimateMonthlyGrowthRate, projectGoalETA,
+  computeMonthlyContributionSeries,
 } from '../../utils/investmentAnalytics';
 
 const holding = (overrides) => ({
@@ -64,15 +65,52 @@ describe('estimateMonthlyContribution', () => {
     expect(result.monthlyAverage).toBeCloseTo(75); // (50 + 100) / 2
   });
 
-  it('sums across multiple holdings in the same month before diffing', () => {
+  it('sums across multiple holdings (distinct instruments) in the same month before diffing', () => {
     const history = [
-      historyEntry({ holdingId: 1, userDate: '2026-01-01', investedAmount: 100 }),
-      historyEntry({ holdingId: 2, userDate: '2026-01-01', investedAmount: 50 }),
-      historyEntry({ holdingId: 1, userDate: '2026-02-01', investedAmount: 100 }),
-      historyEntry({ holdingId: 2, userDate: '2026-02-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-01-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 2, instrumentId: 2, userDate: '2026-01-01', investedAmount: 50 }),
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-02-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 2, instrumentId: 2, userDate: '2026-02-01', investedAmount: 100 }),
     ];
     const result = estimateMonthlyContribution(history, 'stocks');
     expect(result.monthlyAverage).toBeCloseTo(50); // 200 - 150
+  });
+
+  it('forward-fills a holding with no snapshot in a given month instead of dropping it from the total', () => {
+    // Instrument 1 only has CSV-backfilled snapshots for Jan/Mar (it wasn't
+    // traded in Feb); instrument 2 was bought in Feb and has no Jan snapshot
+    // at all. Without forward-fill, Feb's total would only see instrument 2
+    // (100) - a fake ~-100 drop from Jan's 100, then a fake ~+150 jump in
+    // March when instrument 1 reappears.
+    const history = [
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-01-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 2, instrumentId: 2, userDate: '2026-02-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-03-01', investedAmount: 150 }),
+    ];
+    const result = estimateMonthlyContribution(history, 'stocks');
+    // Totals once forward-filled: Jan=100, Feb=100(inst1 carried)+100(inst2)=200, Mar=150+100=250.
+    // Delta average: ((200-100) + (250-200)) / 2 = (100 + 50) / 2 = 75.
+    expect(result.monthsAvailable).toBe(3);
+    expect(result.monthlyAverage).toBeCloseTo(75);
+  });
+});
+
+describe('computeMonthlyContributionSeries', () => {
+  it('returns an empty series with fewer than 2 distinct months', () => {
+    expect(computeMonthlyContributionSeries([historyEntry({ userDate: '2026-01-01', investedAmount: 100 })], 'stocks')).toEqual([]);
+  });
+
+  it('returns one point per month after the first, forward-filling gaps', () => {
+    const history = [
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-01-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 2, instrumentId: 2, userDate: '2026-02-01', investedAmount: 100 }),
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-03-01', investedAmount: 150 }),
+    ];
+    const result = computeMonthlyContributionSeries(history, 'stocks');
+    expect(result).toEqual([
+      { month: '2026-02', amount: 100 }, // 200 - 100
+      { month: '2026-03', amount: 50 }, // 250 - 200
+    ]);
   });
 });
 
@@ -100,6 +138,23 @@ describe('estimateMonthlyGrowthRate', () => {
     const result = estimateMonthlyGrowthRate(history, 'stocks');
     expect(result.monthsAvailable).toBe(3);
     expect(result.monthlyRate).toBeCloseTo(0.05, 4); // 5%/month compounded twice: 1000 -> 1102.5
+  });
+
+  it('forward-fills a holding not re-priced every month instead of dropping it from the total', () => {
+    // Instrument 2 only got a fresh quote in January and March (e.g. "Aggiorna
+    // prezzi" wasn't clicked in February) - it must still count toward
+    // February's total at its last known value, not vanish from the sum.
+    const history = [
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-01-01', currentValue: 500 }),
+      historyEntry({ holdingId: 2, instrumentId: 2, userDate: '2026-01-01', currentValue: 500 }),
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-02-01', currentValue: 550 }),
+      historyEntry({ holdingId: 1, instrumentId: 1, userDate: '2026-03-01', currentValue: 605 }),
+      historyEntry({ holdingId: 2, instrumentId: 2, userDate: '2026-03-01', currentValue: 500 }),
+    ];
+    const result = estimateMonthlyGrowthRate(history, 'stocks');
+    // First month total: 500 + 500 = 1000. Last month total: 605 + 500 = 1105.
+    expect(result.monthsAvailable).toBe(3);
+    expect(result.monthlyRate).toBeCloseTo(Math.pow(1105 / 1000, 1 / 2) - 1, 6);
   });
 });
 

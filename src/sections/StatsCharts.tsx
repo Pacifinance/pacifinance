@@ -479,6 +479,7 @@ export default function StatsCharts() {
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
     const [holdingHistory, setHoldingHistory] = useState([]);
     const [investmentGoals, setInvestmentGoals] = useState([]);
+    const [monthlyInvestmentTarget, setMonthlyInvestmentTarget] = useState(null);
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
@@ -490,15 +491,17 @@ export default function StatsCharts() {
         let cancelled = false;
         (async () => {
             try {
-                const [holdings, history, goals] = await Promise.all([
+                const [holdings, history, goals, settings] = await Promise.all([
                     investmentService.getHoldings(),
                     investmentService.getHoldingHistory(),
                     goalService.getGoals(),
+                    investmentService.getSettings(),
                 ]);
                 if (!cancelled) {
                     setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
                     setHoldingHistory(Array.isArray(history) ? history : []);
                     setInvestmentGoals(Array.isArray(goals) ? goals : []);
+                    setMonthlyInvestmentTarget(settings?.monthlyTarget ?? null);
                     setHoldingsLoaded(true);
                 }
             } catch (error) {
@@ -525,6 +528,11 @@ export default function StatsCharts() {
         } finally {
             setRefreshingPrices(false);
         }
+    };
+
+    const handleSaveMonthlyTarget = async (value) => {
+        const saved = await investmentService.saveSettings({ monthly_target: value });
+        setMonthlyInvestmentTarget(saved?.monthlyTarget ?? null);
     };
 
     // Simula il caricamento dei dati
@@ -815,6 +823,8 @@ export default function StatsCharts() {
                         goals={investmentGoals}
                         assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                         isHidden={isHidden}
+                        monthlyTarget={monthlyInvestmentTarget}
+                        onSaveMonthlyTarget={handleSaveMonthlyTarget}
                     />
                 </SectionContainer>
             </>

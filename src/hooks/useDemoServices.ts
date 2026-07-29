@@ -16,6 +16,7 @@ import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
 import type {
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentHoldingSaveRequest,
+  InvestmentSettingsDto,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
   GoalDto, SharedExpenseReceivableDto,
 } from '../types/api';
@@ -148,6 +149,10 @@ export const useDemoServices = () => {
           userDate: data.user_date,
           recordedAt: new Date().toISOString(),
         }),
+        // No session-backed setting to persist in demo mode - echoes the save
+        // back (like saveHolding above) without actually remembering it.
+        getSettings: async (): Promise<InvestmentSettingsDto> => ({ monthlyTarget: null }),
+        saveSettings: async (data): Promise<InvestmentSettingsDto> => ({ monthlyTarget: data.monthly_target }),
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,

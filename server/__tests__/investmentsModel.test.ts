@@ -412,4 +412,40 @@ describe("investments model", () => {
             expect(result).toEqual([])
         })
     })
+
+    describe("getInvestmentSettings", () => {
+        it("returns null monthlyTarget when the user has never set one", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+
+            const result = await investments.getInvestmentSettings("user-1")
+
+            expect(result).toEqual({monthlyTarget: null})
+        })
+
+        it("returns the stored monthlyTarget", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {monthly_target: 300}, error: null}))
+
+            const result = await investments.getInvestmentSettings("user-1")
+
+            expect(result).toEqual({monthlyTarget: 300})
+        })
+    })
+
+    describe("saveInvestmentSettings", () => {
+        it("upserts and returns the saved monthlyTarget", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {monthly_target: 250}, error: null}))
+
+            const result = await investments.saveInvestmentSettings("user-1", 250)
+
+            expect(result).toEqual({monthlyTarget: 250})
+        })
+
+        it("returns null when the upsert fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.saveInvestmentSettings("user-1", 250)
+
+            expect(result).toBeNull()
+        })
+    })
 })

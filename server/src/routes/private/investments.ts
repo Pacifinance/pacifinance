@@ -240,4 +240,23 @@ investmentsRouter.post("/holdings/history/save", async (req, res) => {
     res.status(200).json(result.entry)
 })
 
+investmentsRouter.post("/settings/get", async (req, res) => {
+    const settings = await db.investments.getInvestmentSettings(req.userId as string)
+    res.status(200).json(settings)
+})
+
+investmentsRouter.post("/settings/save", async (req, res) => {
+    const monthlyTarget = optionalNumber(req.body.monthly_target ?? req.body.monthlyTarget)
+    if (monthlyTarget === undefined) {
+        res.status(400).send()
+        return
+    }
+    const result = await db.investments.saveInvestmentSettings(req.userId as string, monthlyTarget)
+    if (result === null) {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(result)
+})
+
 export default investmentsRouter

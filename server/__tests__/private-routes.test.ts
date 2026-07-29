@@ -615,4 +615,68 @@ describe("private backend routes", () => {
         expect(response.status).toBe(503)
         expect(mockDb.investments.refreshHoldingPrices).not.toHaveBeenCalled()
     })
+
+    it("reads the monthly investment target setting", async () => {
+        mockDb.investments.getInvestmentSettings.mockResolvedValue({monthlyTarget: 300})
+
+        const response = await request(app, "/api/investments/settings/get", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({monthlyTarget: 300})
+        expect(mockDb.investments.getInvestmentSettings).toHaveBeenCalledWith("user-uuid")
+    })
+
+    it("saves the monthly investment target setting", async () => {
+        mockDb.investments.saveInvestmentSettings.mockResolvedValue({monthlyTarget: 250})
+
+        const response = await request(app, "/api/investments/settings/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {monthly_target: 250}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({monthlyTarget: 250})
+        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", 250)
+    })
+
+    it("allows clearing the monthly investment target by sending an empty value", async () => {
+        mockDb.investments.saveInvestmentSettings.mockResolvedValue({monthlyTarget: null})
+
+        const response = await request(app, "/api/investments/settings/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {monthly_target: null}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", null)
+    })
+
+    it("rejects an invalid (non-numeric) monthly investment target", async () => {
+        const response = await request(app, "/api/investments/settings/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {monthly_target: "not-a-number"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.saveInvestmentSettings).not.toHaveBeenCalled()
+    })
+
+    it("returns 500 when saving the monthly investment target fails", async () => {
+        mockDb.investments.saveInvestmentSettings.mockResolvedValue(null)
+
+        const response = await request(app, "/api/investments/settings/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {monthly_target: 250}
+        })
+
+        expect(response.status).toBe(500)
+    })
 })

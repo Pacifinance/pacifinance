@@ -308,6 +308,18 @@ const roadmapData: RoadmapItem[] = [
     icon: '🧭',
     completedDate: '2026-07',
   },
+  {
+    id: 'investment-monthly-target',
+    title: { it: 'Obiettivo di Investimento Mensile', en: 'Monthly Investment Target' },
+    description: {
+      it: 'Imposta quanto vorresti investire ogni mese e vedi automaticamente, mese per mese, se lo hai raggiunto — direttamente nelle Analisi del Portafoglio, ricostruito dallo storico degli investimenti già registrato.',
+      en: 'Set how much you\'d like to invest each month and automatically see, month by month, whether you hit it — right inside Portfolio Insights, reconstructed from the investment history you\'ve already recorded.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🎯',
+    completedDate: '2026-07',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'onboarding',

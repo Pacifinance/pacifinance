@@ -733,7 +733,31 @@
             "sparseHistoryTitle": "Historique en construction",
             "sparseHistoryDescription": "Continuez à mettre à jour votre solde chaque mois pour construire l'historique de vos investissements.",
             "noHoldingsTitle": "Aucun investissement enregistré",
-            "noHoldingsDescription": "Ajoutez une position détaillée (actions, ETF, crypto, ...) pour voir cette analyse."
+            "noHoldingsDescription": "Ajoutez une position détaillée (actions, ETF, crypto, ...) pour voir cette analyse.",
+            "insights": {
+                "title": "Analyse du portefeuille",
+                "totalInvested": "Total investi",
+                "totalCurrent": "Valeur actuelle",
+                "totalCurrentCostBasis": "Valeur actuelle (coût historique)",
+                "gainLoss": "Gain/perte",
+                "bestPosition": "Meilleure",
+                "worstPosition": "Pire",
+                "monthlyContribution": "Moyenne investie : {amount}/mois",
+                "contributionHint": "Continuez à enregistrer des mois d'historique pour voir votre contribution mensuelle moyenne.",
+                "missingCurrentValue": "valeurs actuelles réelles (utilisez \"Actualiser les prix\" ou saisissez-les manuellement)",
+                "missingContribution": "au moins 2 mois d'historique",
+                "missingGrowthHistory": "au moins 2 mois de valeurs actuelles réelles, pour estimer la croissance du marché",
+                "unlockMoreHint": "Débloquez une analyse plus détaillée : {items}.",
+                "goalTitle": "Objectif : {name}",
+                "goalReached": "Objectif atteint ! 🎉",
+                "goalETA": "Temps estimé pour l'atteindre : {time}",
+                "etaWithGrowth": "Inclut une estimation du taux de croissance du marché.",
+                "etaConservative": "Estimation prudente : seulement les contributions, sans croissance de marché pour l'instant.",
+                "etaUnreachable": "Au rythme actuel, cet objectif n'est pas atteignable — envisagez d'augmenter vos contributions.",
+                "lessThanAMonth": "moins d'un mois",
+                "monthsCount": "{count} mois",
+                "yearsCount": "{count} ans"
+            }
         },
         "dashboard": {
             "vsLastMonth": "vs mois précédent",

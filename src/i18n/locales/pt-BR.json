@@ -733,7 +733,31 @@
             "sparseHistoryTitle": "Histórico em construção",
             "sparseHistoryDescription": "Continue atualizando seu saldo todos os meses para construir o histórico dos seus investimentos.",
             "noHoldingsTitle": "Nenhum investimento registrado",
-            "noHoldingsDescription": "Adicione uma posição detalhada (ações, ETFs, cripto, ...) para ver esta análise."
+            "noHoldingsDescription": "Adicione uma posição detalhada (ações, ETFs, cripto, ...) para ver esta análise.",
+            "insights": {
+                "title": "Análise do portfólio",
+                "totalInvested": "Total investido",
+                "totalCurrent": "Valor atual",
+                "totalCurrentCostBasis": "Valor atual (custo histórico)",
+                "gainLoss": "Ganho/perda",
+                "bestPosition": "Melhor",
+                "worstPosition": "Pior",
+                "monthlyContribution": "Média investida: {amount}/mês",
+                "contributionHint": "Continue registrando meses de histórico para ver sua contribuição mensal média.",
+                "missingCurrentValue": "valores atuais reais (use \"Atualizar preços\" ou insira-os manualmente)",
+                "missingContribution": "pelo menos 2 meses de histórico",
+                "missingGrowthHistory": "pelo menos 2 meses de valores atuais reais, para estimar o crescimento de mercado",
+                "unlockMoreHint": "Desbloqueie uma análise mais detalhada: {items}.",
+                "goalTitle": "Meta: {name}",
+                "goalReached": "Meta alcançada! 🎉",
+                "goalETA": "Tempo estimado para alcançá-la: {time}",
+                "etaWithGrowth": "Inclui uma taxa de crescimento de mercado estimada.",
+                "etaConservative": "Estimativa conservadora: apenas contribuições, sem crescimento de mercado ainda.",
+                "etaUnreachable": "No ritmo atual essa meta não está no caminho certo — considere aumentar as contribuições.",
+                "lessThanAMonth": "menos de um mês",
+                "monthsCount": "{count} meses",
+                "yearsCount": "{count} anos"
+            }
         },
         "dashboard": {
             "vsLastMonth": "vs mês anterior",

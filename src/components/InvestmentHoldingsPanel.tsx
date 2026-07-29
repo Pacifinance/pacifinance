@@ -66,6 +66,7 @@ const HoldingInfo = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
   color: ${(p) => p.theme.textColor};
 
   strong { font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; }
@@ -73,10 +74,24 @@ const HoldingInfo = styled.div`
   span.no-value { font-style: italic; }
 `;
 
+/** Right-aligned value block — total first (the number that matters most,
+ * given its own visual weight), gain/loss as a secondary line underneath. */
+const HoldingValue = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 0.1rem;
+  color: ${(p) => p.theme.textColor};
+
+  strong { font-size: 0.95rem; font-weight: 700; white-space: nowrap; }
+  span.no-value { font-size: 0.75rem; opacity: 0.6; font-style: italic; white-space: nowrap; }
+`;
+
 const GainLoss = styled.span<{ $positive: boolean }>`
   font-size: 0.75rem;
   font-weight: 600;
-  opacity: 1 !important;
+  white-space: nowrap;
   color: ${(p) => (p.$positive ? '#10b981' : '#ef4444')};
 `;
 
@@ -459,6 +474,15 @@ export default function InvestmentHoldingsPanel({
                         </span>
                       );
                     })()}
+                  </HoldingInfo>
+                  <HoldingValue theme={theme}>
+                    {isCurrentMonth ? (
+                      <strong>{formatAmount(holding.currentValue ?? holding.investedAmount ?? 0)}</strong>
+                    ) : historicalEntry ? (
+                      <strong>{formatAmount(historicalEntry.currentValue ?? historicalEntry.investedAmount ?? 0)}</strong>
+                    ) : (
+                      <span className="no-value">{t.noValueForMonth}</span>
+                    )}
                     {(() => {
                       const source = isCurrentMonth ? holding : historicalEntry;
                       if (!source || source.currentValue == null || source.investedAmount == null || source.investedAmount === 0) return null;
@@ -470,14 +494,7 @@ export default function InvestmentHoldingsPanel({
                         </GainLoss>
                       );
                     })()}
-                    {isCurrentMonth ? (
-                      <span>{formatAmount(holding.currentValue ?? holding.investedAmount ?? 0)}</span>
-                    ) : historicalEntry ? (
-                      <span>{formatAmount(historicalEntry.currentValue ?? historicalEntry.investedAmount ?? 0)}</span>
-                    ) : (
-                      <span className="no-value">{t.noValueForMonth}</span>
-                    )}
-                  </HoldingInfo>
+                  </HoldingValue>
                   <HoldingActions theme={theme}>
                     {isCurrentMonth ? (
                       <>

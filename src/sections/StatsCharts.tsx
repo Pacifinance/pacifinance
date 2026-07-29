@@ -16,6 +16,7 @@ import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
 import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
 import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
 import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
+import PortfolioInsights from '../components/PortfolioInsights';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData } from '../utils/userDataSelectors';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
@@ -444,11 +445,12 @@ export default function StatsCharts() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);
-    const { investmentService } = useDemoServices();
+    const { investmentService, goalService } = useDemoServices();
     const [activePage, setActivePage] = useState("statsBilancio");
     const [isLoading, setIsLoading] = useState(true);
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
     const [holdingHistory, setHoldingHistory] = useState([]);
+    const [investmentGoals, setInvestmentGoals] = useState([]);
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
 
@@ -459,13 +461,15 @@ export default function StatsCharts() {
         let cancelled = false;
         (async () => {
             try {
-                const [holdings, history] = await Promise.all([
+                const [holdings, history, goals] = await Promise.all([
                     investmentService.getHoldings(),
                     investmentService.getHoldingHistory(),
+                    goalService.getGoals(),
                 ]);
                 if (!cancelled) {
                     setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
                     setHoldingHistory(Array.isArray(history) ? history : []);
+                    setInvestmentGoals(Array.isArray(goals) ? goals : []);
                     setHoldingsLoaded(true);
                 }
             } catch (error) {
@@ -473,7 +477,7 @@ export default function StatsCharts() {
             }
         })();
         return () => { cancelled = true; };
-    }, [activePage, holdingsLoaded, investmentService]);
+    }, [activePage, holdingsLoaded, investmentService, goalService]);
 
     // Simula il caricamento dei dati
     useEffect(() => {
@@ -748,6 +752,15 @@ export default function StatsCharts() {
                             />
                         </ChartCard>
                     </ChartGrid>
+
+                    <PortfolioInsights
+                        theme={theme}
+                        holdings={investmentHoldings}
+                        history={holdingHistory}
+                        goals={investmentGoals}
+                        assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
+                        isHidden={isHidden}
+                    />
                 </SectionContainer>
             </>
         );

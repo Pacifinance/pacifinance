@@ -440,5 +440,17 @@
     "category": "feature",
     "icon": "📈",
     "completedDate": "2026-07"
+  },
+  {
+    "id": "portfolio-insights",
+    "todoMatch": "Analisi adattiva del portafoglio",
+    "title": { "it": "Analisi Adattiva del Portafoglio", "en": "Adaptive Portfolio Insights" },
+    "description": {
+      "it": "Guadagno/perdita, posizione migliore/peggiore, media investita al mese e stima del tempo per raggiungere un obiettivo collegato — ogni indicatore si sblocca man mano che inserisci più storico, con suggerimenti chiari su cosa aggiungere per un'analisi più precisa.",
+      "en": "Gain/loss, best/worst position, average monthly contribution, and an ETA estimate toward a linked goal — each figure unlocks as you record more history, with clear hints on what to add for a more precise analysis."
+    },
+    "category": "feature",
+    "icon": "🧭",
+    "completedDate": "2026-07"
   }
 ]

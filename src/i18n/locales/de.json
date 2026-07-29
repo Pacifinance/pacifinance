@@ -733,7 +733,31 @@
             "sparseHistoryTitle": "Verlauf wird aufgebaut",
             "sparseHistoryDescription": "Aktualisiere dein Guthaben weiterhin jeden Monat, um den Verlauf deiner Investitionen aufzubauen.",
             "noHoldingsTitle": "Keine Investitionen erfasst",
-            "noHoldingsDescription": "Füge eine detaillierte Position (Aktien, ETFs, Krypto, ...) hinzu, um diese Analyse zu sehen."
+            "noHoldingsDescription": "Füge eine detaillierte Position (Aktien, ETFs, Krypto, ...) hinzu, um diese Analyse zu sehen.",
+            "insights": {
+                "title": "Portfolio-Einblicke",
+                "totalInvested": "Investiert insgesamt",
+                "totalCurrent": "Aktueller Wert",
+                "totalCurrentCostBasis": "Aktueller Wert (Kaufpreis)",
+                "gainLoss": "Gewinn/Verlust",
+                "bestPosition": "Beste",
+                "worstPosition": "Schlechteste",
+                "monthlyContribution": "Durchschnittlich investiert: {amount}/Monat",
+                "contributionHint": "Erfasse weitere Monate, um deinen durchschnittlichen monatlichen Beitrag zu sehen.",
+                "missingCurrentValue": "echte aktuelle Werte (nutze \"Preise aktualisieren\" oder trage sie manuell ein)",
+                "missingContribution": "mindestens 2 Monate Verlauf",
+                "missingGrowthHistory": "mindestens 2 Monate mit echten aktuellen Werten, um das Marktwachstum zu schätzen",
+                "unlockMoreHint": "Schalte eine detailliertere Analyse frei: {items}.",
+                "goalTitle": "Ziel: {name}",
+                "goalReached": "Ziel erreicht! 🎉",
+                "goalETA": "Geschätzte Zeit bis zum Ziel: {time}",
+                "etaWithGrowth": "Enthält eine geschätzte Marktwachstumsrate.",
+                "etaConservative": "Vorsichtige Schätzung: nur Beiträge, noch kein Marktwachstum angenommen.",
+                "etaUnreachable": "Beim aktuellen Tempo ist dieses Ziel nicht erreichbar — erwäge, die Beiträge zu erhöhen.",
+                "lessThanAMonth": "weniger als ein Monat",
+                "monthsCount": "{count} Monate",
+                "yearsCount": "{count} Jahre"
+            }
         },
         "dashboard": {
             "vsLastMonth": "vs. Vormonat",

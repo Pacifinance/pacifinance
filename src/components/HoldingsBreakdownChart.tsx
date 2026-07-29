@@ -8,7 +8,6 @@ import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer'
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import { getAssetColor } from '../data/assetColors';
 import { RenderCustomizedLabel } from '../utils/customGraphsInfo';
 import { getHoldingValue, getHoldingLabel, paletteColor, OTHER_SLICE_COLOR } from '../utils/holdingsChartHelpers';
 import { getRandomGrayscaleColor } from '../utils/colorUtils';
@@ -89,17 +88,6 @@ const EmptyState = styled.p`
   padding: 2rem 1rem;
 `;
 
-/** Lightens/darkens a hex color by a step index (0 = original), for shading one category's slices. */
-function shadeColor(hex: string, index: number, count: number): string {
-  const amount = count <= 1 ? 0 : Math.round((index / Math.max(count - 1, 1)) * 55) - 20;
-  const clamp = (v: number) => Math.max(0, Math.min(255, v));
-  const num = parseInt(hex.replace('#', ''), 16);
-  const r = clamp(((num >> 16) & 0xff) + amount);
-  const g = clamp(((num >> 8) & 0xff) + amount);
-  const b = clamp((num & 0xff) + amount);
-  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-}
-
 const MAX_SLICES = 8;
 /** A slice materially larger than an even split flags as an overweight rebalancing cue. */
 const OVERWEIGHT_MULTIPLIER = 1.5;
@@ -128,9 +116,13 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   const total = rows.reduce((sum, r) => sum + r.value, 0);
   const overweightThreshold = rows.length > 0 ? (100 / rows.length) * OVERWEIGHT_MULTIPLIER : Infinity;
 
+  // Always one distinct color per position (Tableau-10, same as "all
+  // investments") — shading a single asset-class hue used to be the plan for
+  // a filtered view, but with more than 2-3 positions the shades become too
+  // close to tell apart (e.g. seven stocks all reading as "some red"),
+  // exactly when distinguishing positions matters most.
   const colorFor = (row: (typeof rows)[number], index: number): string => {
     if (row.isOther) return theme.mode === 'dark' ? OTHER_SLICE_COLOR.dark : OTHER_SLICE_COLOR.light;
-    if (assetKey) return shadeColor(getAssetColor(assetKey, 'dark'), index, rows.length);
     return paletteColor(index);
   };
 

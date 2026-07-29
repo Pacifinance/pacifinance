@@ -735,7 +735,31 @@
             "sparseHistoryTitle": "Building your history",
             "sparseHistoryDescription": "Keep updating your balance every month to build your holdings' history.",
             "noHoldingsTitle": "No investments recorded",
-            "noHoldingsDescription": "Add a detailed holding (stocks, ETFs, crypto, ...) to see this analysis."
+            "noHoldingsDescription": "Add a detailed holding (stocks, ETFs, crypto, ...) to see this analysis.",
+            "insights": {
+                "title": "Portfolio insights",
+                "totalInvested": "Total invested",
+                "totalCurrent": "Current value",
+                "totalCurrentCostBasis": "Current value (cost basis)",
+                "gainLoss": "Gain/loss",
+                "bestPosition": "Best",
+                "worstPosition": "Worst",
+                "monthlyContribution": "Average invested: {amount}/month",
+                "contributionHint": "Keep recording months of history to see your average monthly contribution.",
+                "missingCurrentValue": "real current values (use \"Refresh prices\" or enter them by hand)",
+                "missingContribution": "at least 2 months of history",
+                "missingGrowthHistory": "at least 2 months of real current values, to estimate market growth",
+                "unlockMoreHint": "Unlock a more detailed analysis: {items}.",
+                "goalTitle": "Goal: {name}",
+                "goalReached": "Goal reached! 🎉",
+                "goalETA": "Estimated time to reach it: {time}",
+                "etaWithGrowth": "Includes an estimated market growth rate.",
+                "etaConservative": "Conservative estimate: contributions only, no market growth assumed yet.",
+                "etaUnreachable": "At the current pace this goal isn't on track — consider increasing contributions.",
+                "lessThanAMonth": "less than a month",
+                "monthsCount": "{count} months",
+                "yearsCount": "{count} years"
+            }
         },
         "dashboard": {
             "vsLastMonth": "vs previous month",

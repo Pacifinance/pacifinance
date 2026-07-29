@@ -735,7 +735,31 @@
             "sparseHistoryTitle": "Storico in costruzione",
             "sparseHistoryDescription": "Continua ad aggiornare il bilancio ogni mese per costruire lo storico dei tuoi investimenti.",
             "noHoldingsTitle": "Nessun investimento registrato",
-            "noHoldingsDescription": "Aggiungi un holding dettagliato (azioni, ETF, crypto, ...) per vedere questa analisi."
+            "noHoldingsDescription": "Aggiungi un holding dettagliato (azioni, ETF, crypto, ...) per vedere questa analisi.",
+            "insights": {
+                "title": "Approfondimenti sul portafoglio",
+                "totalInvested": "Totale investito",
+                "totalCurrent": "Valore attuale",
+                "totalCurrentCostBasis": "Valore attuale (costo storico)",
+                "gainLoss": "Guadagno/perdita",
+                "bestPosition": "Migliore",
+                "worstPosition": "Peggiore",
+                "monthlyContribution": "Media investita: {amount}/mese",
+                "contributionHint": "Continua a registrare mesi di storico per vedere la media mensile investita.",
+                "missingCurrentValue": "valori attuali reali (usa \"Aggiorna prezzi\" o inseriscili a mano)",
+                "missingContribution": "almeno 2 mesi di storico",
+                "missingGrowthHistory": "almeno 2 mesi di valori attuali reali, per stimare la crescita di mercato",
+                "unlockMoreHint": "Sblocca un'analisi più dettagliata: {items}.",
+                "goalTitle": "Obiettivo: {name}",
+                "goalReached": "Obiettivo raggiunto! 🎉",
+                "goalETA": "Tempo stimato per raggiungerlo: {time}",
+                "etaWithGrowth": "Include una stima della crescita di mercato.",
+                "etaConservative": "Stima prudente: solo i contributi, nessuna crescita di mercato ancora considerata.",
+                "etaUnreachable": "Al ritmo attuale l'obiettivo non è raggiungibile — valuta di aumentare i contributi.",
+                "lessThanAMonth": "meno di un mese",
+                "monthsCount": "{count} mesi",
+                "yearsCount": "{count} anni"
+            }
         },
         "dashboard": {
             "vsLastMonth": "vs mese precedente",

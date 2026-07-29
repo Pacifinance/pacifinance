@@ -55,6 +55,7 @@
         "selectedDate": "Selected date",
         "confirm": "Confirm",
         "cancel": "Cancel",
+        "other": "Other",
         "category": "Category",
         "typology": "Typology",
         "invested": "Invested",
@@ -2833,6 +2834,10 @@
             "existingWillAdd": "Already held: {quantity} units, {amount} — this file covers different months you don't have yet, so it will be ADDED on top, bringing it to {newQuantity} units, {newAmount}",
             "existingWillUpdate": "Already held: {quantity} units, {amount} — will be REPLACED (not added to) with {newQuantity} units, {newAmount} from this file",
             "existingDifferentSource": "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it",
+            "closedPositionsTitle": "Closed positions detected",
+            "closedPositionsNote": "Already in your holdings, but this file shows it was fully sold.",
+            "closedPositionsAction": "Mark as sold",
+            "closedPositionsRetry": "Retry",
             "kinds": {
                         "stock": "Stock",
                         "etf": "ETF",

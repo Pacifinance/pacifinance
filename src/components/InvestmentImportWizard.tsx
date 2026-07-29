@@ -12,7 +12,8 @@ import {
 import { ModernActionButton } from '../styles/MyStyled';
 import { parseInvestmentCsv, ImportedTransaction } from '../utils/investmentImport/parsers';
 import {
-  dedupeTransactions, aggregatePositions, buildMonthlyPositionTimeline, groupTransactionsByPositionKey, AggregatedPosition,
+  dedupeTransactions, aggregatePositions, buildMonthlyPositionTimeline, groupTransactionsByPositionKey,
+  baselineInvestedBefore, closedPositions, positionKeyFor, AggregatedPosition,
 } from '../utils/investmentImport/aggregate';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
@@ -54,6 +55,13 @@ interface ImportRowState {
   manualKind: InvestmentKind;
   /** Set when status is 'conflict': the already-held holding this row's instrument collided with (see HoldingConflictError). */
   conflictExisting: InvestmentHoldingDto | null;
+}
+
+interface ClosedHoldingCandidate {
+  holding: InvestmentHoldingDto;
+  /** Last transaction date the file has for this instrument — the month a closing snapshot gets backfilled to. */
+  lastTransactionDate: string | null;
+  status: 'pending' | 'closing' | 'closed' | 'error';
 }
 
 interface InvestmentImportWizardProps {
@@ -192,6 +200,51 @@ const ConflictActions = styled.div`
   gap: 0.4rem;
 `;
 
+const ClosedSection = styled.div`
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  h4 {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #d97706;
+  }
+`;
+
+const ClosedRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: ${(p) => p.theme.textColor};
+
+  strong { font-weight: 700; }
+  span.note { display: block; font-size: 0.72rem; opacity: 0.65; }
+`;
+
+const CloseHoldingButton = styled.button`
+  flex-shrink: 0;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: transparent;
+  color: #d97706;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) { opacity: 0.85; }
+`;
+
 const ConflictButton = styled.button`
   flex: 1;
   padding: 0.4rem 0.5rem;
@@ -232,6 +285,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * hasn't actually changed — re-importing an identical file otherwise re-sends
    * every single month again for no reason. */
   const [recordedHistoryByInstrumentId, setRecordedHistoryByInstrumentId] = useState<Map<number, Map<string, number | null>>>(new Map());
+  /** Already-held instruments the file shows have since been fully sold
+   * (net quantity zero) — aggregatePositions itself drops these positions
+   * entirely, so without this the wizard would silently never reconcile a
+   * closed position against the stale holding still sitting in the DB. Never
+   * closed automatically: the user confirms each one explicitly below. */
+  const [closedCandidates, setClosedCandidates] = useState<ClosedHoldingCandidate[]>([]);
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -282,9 +341,24 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         historyMap.set(entry.instrumentId, months);
       }
       setRecordedHistoryByInstrumentId(historyMap);
+
+      // Cross-reference against already-held instruments: a position the file
+      // shows fully sold (dropped by aggregatePositions above) that matches an
+      // existing, still-nonzero holding means that holding is stale and needs
+      // the user's explicit confirmation to close.
+      const closed = closedPositions(deduped);
+      const candidates: ClosedHoldingCandidate[] = [];
+      for (const holding of holdingMap.values()) {
+        if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;
+        const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
+        const match = key ? closed.find((p) => p.key === key) : undefined;
+        if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending'});
+      }
+      setClosedCandidates(candidates);
     } catch {
       setExistingByInstrumentId(new Map());
       setRecordedHistoryByInstrumentId(new Map());
+      setClosedCandidates([]);
     }
     void resolveInstruments(initialRows);
   };
@@ -395,13 +469,29 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   // Skips months whose recorded value already matches (re-importing a file
   // that was already imported before would otherwise re-send every single
   // month again for nothing — see recordedHistoryByInstrumentId above).
+  //
+  // Brokers cap how much history a single export covers (Trading212: 365
+  // days), so a portfolio with several years of history was necessarily built
+  // from multiple separate file uploads. Each file's own transactions only
+  // reconstruct a cumulative total *within that file's own date range* -
+  // buildMonthlyPositionTimeline has no way to know a "starting balance" was
+  // already built up by an earlier, separately-uploaded file. Without
+  // carrying that forward, every month after the first file's range would
+  // understate the true total (just this file's own contribution, not
+  // everything invested before it), only catching up once the live holding
+  // itself gets corrected by insertHolding's own add/replace merge - meaning
+  // the recorded history for those months stays permanently wrong even
+  // though the current, most-recent total looks right.
   const backfillHistory = async (row: ImportRowState, holdingId: number, instrumentId: number) => {
     const timeline = buildMonthlyPositionTimeline(row.transactions);
     const recorded = recordedHistoryByInstrumentId.get(instrumentId);
+    const earliestMonth = timeline[0]?.monthKey;
+    const baseline = earliestMonth ? baselineInvestedBefore(recorded, earliestMonth) : 0;
+
     for (const snapshot of timeline) {
       const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
-      const investedAmountEUR = toEUR(snapshotPosition.investedAmount);
+      const investedAmountEUR = baseline + toEUR(snapshotPosition.investedAmount);
       const alreadyRecorded = recorded?.get(snapshot.monthKey);
       if (alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01) continue;
       try {
@@ -483,6 +573,47 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
     } catch {
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));
+    }
+  };
+
+  // Closes a stale holding the file shows has since been fully sold: quantity
+  // and current value go to zero (nothing left to count in the current
+  // breakdown), but invested_amount/notes/average_price are kept exactly as
+  // they were - the position still needs to be findable among all-time
+  // best/worst, it's just no longer active. Never automatic - the user
+  // confirms each one individually (see closedCandidates above).
+  const handleCloseHolding = async (index: number) => {
+    const candidate = closedCandidates[index];
+    if (!candidate || candidate.status === 'closing' || !candidate.holding.instrument) return;
+    setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closing' } : c)));
+    try {
+      await investmentService.saveHolding({
+        id: candidate.holding.id,
+        instrument_id: candidate.holding.instrument.id,
+        asset_key: candidate.holding.assetKey,
+        quantity: 0,
+        average_price: candidate.holding.averagePrice,
+        current_value: 0,
+        invested_amount: candidate.holding.investedAmount,
+        notes: candidate.holding.notes,
+      });
+      if (candidate.lastTransactionDate) {
+        try {
+          await investmentService.saveHoldingHistory({
+            holding_id: candidate.holding.id,
+            user_date: `${candidate.lastTransactionDate.slice(0, 7)}-01`,
+            current_value: 0,
+            invested_amount: candidate.holding.investedAmount,
+          });
+        } catch {
+          // Best-effort - the holding itself is already closed either way, only
+          // the "andamento nel tempo" chart's final drop-to-zero point is missing.
+        }
+      }
+      setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closed' } : c)));
+      await onImported();
+    } catch {
+      setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'error' } : c)));
     }
   };
 
@@ -573,6 +704,31 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
 
           {rows.some((r) => r.historyMonths.length > 1) && (
             <SummaryLine theme={theme}>{t.historyBackfillNote || 'Past months found in the file will be backfilled automatically as portfolio history.'}</SummaryLine>
+          )}
+
+          {closedCandidates.some((c) => c.status !== 'closed') && (
+            <ClosedSection>
+              <h4>{t.closedPositionsTitle || 'Closed positions detected'}</h4>
+              {closedCandidates.filter((c) => c.status !== 'closed').map((candidate) => (
+                <ClosedRow key={candidate.holding.id} theme={theme}>
+                  <span>
+                    <strong>{candidate.holding.instrument?.symbol}</strong> — {candidate.holding.instrument?.name}
+                    <span className="note">
+                      {t.closedPositionsNote || 'Already in your holdings, but this file shows it was fully sold.'}
+                    </span>
+                  </span>
+                  <CloseHoldingButton
+                    type="button"
+                    onClick={() => handleCloseHolding(closedCandidates.indexOf(candidate))}
+                    disabled={candidate.status === 'closing'}
+                  >
+                    {candidate.status === 'error'
+                      ? (t.closedPositionsRetry || 'Retry')
+                      : (t.closedPositionsAction || 'Mark as sold')}
+                  </CloseHoldingButton>
+                </ClosedRow>
+              ))}
+            </ClosedSection>
           )}
 
           {rows.map((row, index) => (

@@ -5,7 +5,7 @@ import {
 import { parseInvestmentCsv } from '../../utils/investmentImport/parsers';
 import {
   dedupeTransactions, aggregatePositions, aggregatePositionsAsOf, buildMonthlyPositionTimeline, lastDayOfMonth,
-  groupTransactionsByPositionKey,
+  groupTransactionsByPositionKey, baselineInvestedBefore, closedPositions,
 } from '../../utils/investmentImport/aggregate';
 
 describe('parseImportNumber', () => {
@@ -226,6 +226,35 @@ describe('aggregatePositions', () => {
   });
 });
 
+describe('closedPositions', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 1, price: 100, total: 100, currency: 'EUR', externalId: null, ...over,
+  });
+
+  it('reports a fully-sold position that aggregatePositions itself drops', () => {
+    const transactions = [tx({ quantity: 5, date: '2024-01-01' }), tx({ side: 'sell', quantity: 5, date: '2024-06-15' })];
+    expect(aggregatePositions(transactions)).toHaveLength(0);
+    const closed = closedPositions(transactions);
+    expect(closed).toHaveLength(1);
+    expect(closed[0]).toMatchObject({ key: 'US0378331005', quantity: 0, lastTransactionDate: '2024-06-15' });
+  });
+
+  it('does not report a position that is still open', () => {
+    const transactions = [tx({ quantity: 10 }), tx({ side: 'sell', quantity: 4 })];
+    expect(closedPositions(transactions)).toEqual([]);
+  });
+
+  it('reports multiple distinct closed positions', () => {
+    const transactions = [
+      tx({ quantity: 5 }), tx({ side: 'sell', quantity: 5 }),
+      tx({ isin: 'US5949181045', ticker: 'MSFT', quantity: 3 }),
+      tx({ isin: 'US5949181045', ticker: 'MSFT', side: 'sell', quantity: 3 }),
+    ];
+    expect(closedPositions(transactions).map((p) => p.key).sort()).toEqual(['US0378331005', 'US5949181045']);
+  });
+});
+
 describe('groupTransactionsByPositionKey', () => {
   it('groups by ISIN, falling back to ticker then name, matching aggregatePositions', () => {
     const withIsin = { isin: 'US0378331005', ticker: 'AAPL', name: 'Apple' };
@@ -306,5 +335,30 @@ describe('buildMonthlyPositionTimeline', () => {
 
   it('returns an empty timeline when no transaction has a date', () => {
     expect(buildMonthlyPositionTimeline([tx({ date: null })])).toEqual([]);
+  });
+});
+
+describe('baselineInvestedBefore', () => {
+  it('returns 0 when nothing is recorded yet (first-ever import)', () => {
+    expect(baselineInvestedBefore(undefined, '2024-01')).toBe(0);
+    expect(baselineInvestedBefore(new Map(), '2024-01')).toBe(0);
+  });
+
+  it('returns 0 when every recorded month is on or after the cutoff', () => {
+    const recorded = new Map([['2024-01', 500], ['2024-02', 600]]);
+    expect(baselineInvestedBefore(recorded, '2024-01')).toBe(0);
+  });
+
+  it('carries forward the last recorded value strictly before the cutoff month — the multi-file export scenario', () => {
+    // A broker export capped at 365 days means a 2021-2026 portfolio is built from
+    // several separate file uploads. Re-importing the 2024 file must pick up where
+    // the earlier (2021-2023) file's own backfill left off, not start from zero.
+    const recorded = new Map([['2023-11', 1800], ['2023-12', 2000]]);
+    expect(baselineInvestedBefore(recorded, '2024-01')).toBe(2000);
+  });
+
+  it('ignores a null recorded value for the closest prior month and returns 0', () => {
+    const recorded = new Map([['2023-12', null]]);
+    expect(baselineInvestedBefore(recorded, '2024-01')).toBe(0);
   });
 });

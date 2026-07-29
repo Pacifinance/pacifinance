@@ -6,7 +6,7 @@
  *
  * @module utils/holdingsChartHelpers
  */
-import type { InvestmentHoldingDto, InvestmentHoldingHistoryDto } from '../types/api';
+import type { InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
 
 export const getHoldingValue = (
   holding: Pick<InvestmentHoldingDto, 'currentValue' | 'investedAmount'> | Pick<InvestmentHoldingHistoryDto, 'currentValue' | 'investedAmount'> | null | undefined,
@@ -30,3 +30,9 @@ export function paletteColor(index: number): string {
 }
 
 export const OTHER_SLICE_COLOR = { light: '#bbbbbb', dark: '#666666' } as const;
+
+/** Fixed, sensible display order for asset categories — stocks/etf/crypto/bonds/... in
+ * roughly "how most people think about their portfolio" order, not alphabetical.
+ * Shared by every "all investments" view that clusters individual positions by
+ * category (breakdown pie legend, history chart legend). */
+export const ASSET_CATEGORY_ORDER: readonly InvestmentAssetKey[] = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];

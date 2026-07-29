@@ -55,6 +55,7 @@
         "selectedDate": "Ausgewähltes Datum",
         "confirm": "Bestätigen",
         "cancel": "Abbrechen",
+        "other": "Andere",
         "category": "Kategorie",
         "typology": "Typologie",
         "invested": "Investiert",
@@ -2807,6 +2808,10 @@
             "existingWillAdd": "Bereits vorhanden: {quantity} Einheiten, {amount} — diese Datei deckt andere Monate ab, die du noch nicht hast, wird also ADDIERT und ergibt {newQuantity} Einheiten, {newAmount}",
             "existingWillUpdate": "Bereits vorhanden: {quantity} Einheiten, {amount} — wird durch {newQuantity} Einheiten, {newAmount} aus dieser Datei ERSETZT (nicht addiert)",
             "existingDifferentSource": "Bereits vorhanden: {quantity} Einheiten, {amount} — aus einer anderen Quelle erfasst, du wirst gefragt, ob hinzugefügt oder ersetzt werden soll",
+            "closedPositionsTitle": "Geschlossene Positionen erkannt",
+            "closedPositionsNote": "Bereits in deinen Beständen, aber diese Datei zeigt, dass sie vollständig verkauft wurde.",
+            "closedPositionsAction": "Als verkauft markieren",
+            "closedPositionsRetry": "Erneut versuchen",
             "kinds": {
                         "stock": "Aktie",
                         "etf": "ETF",

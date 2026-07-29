@@ -55,6 +55,7 @@
         "selectedDate": "Data selecionada",
         "confirm": "Confirmar",
         "cancel": "Cancelar",
+        "other": "Outro",
         "category": "Categoria",
         "typology": "Tipologia",
         "invested": "Investido",
@@ -2807,6 +2808,10 @@
             "existingWillAdd": "Já possui: {quantity} unidades, {amount} — este arquivo cobre meses diferentes que você ainda não tem, então será SOMADO, chegando a {newQuantity} unidades, {newAmount}",
             "existingWillUpdate": "Já possui: {quantity} unidades, {amount} — será SUBSTITUÍDO (não somado) por {newQuantity} unidades, {newAmount} deste arquivo",
             "existingDifferentSource": "Já possui: {quantity} unidades, {amount} — registradas a partir de outra fonte, você será perguntado se deseja somar ou substituir",
+            "closedPositionsTitle": "Posições encerradas detectadas",
+            "closedPositionsNote": "Já está nas suas posições, mas este arquivo mostra que foi totalmente vendida.",
+            "closedPositionsAction": "Marcar como vendida",
+            "closedPositionsRetry": "Tentar novamente",
             "kinds": {
                         "stock": "Ação",
                         "etf": "ETF",

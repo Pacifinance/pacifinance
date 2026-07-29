@@ -30,7 +30,15 @@ function labelFor(holding: InvestmentHoldingDto): string {
 }
 
 export function summarizeHoldings(holdings: InvestmentHoldingDto[], assetKey: AssetKey | null): HoldingsSummary {
-  const relevant = assetKey ? holdings.filter((h) => h.assetKey === assetKey) : holdings;
+  const relevant = (assetKey ? holdings.filter((h) => h.assetKey === assetKey) : holdings)
+    // A holding closed via the import wizard's "mark as sold" flow (quantity
+    // explicitly 0, kept only so its cost basis/history stay queryable for
+    // all-time record-keeping) isn't part of the *current* portfolio -
+    // counting it here would show a fully-sold position as a permanent -100%
+    // "worst", which is technically true but useless for judging what's
+    // actually still held. `quantity == null` (untracked, e.g. a manually
+    // entered aggregate position) is NOT excluded - only explicitly-zero is.
+    .filter((h) => h.quantity !== 0);
   const totalInvested = relevant.reduce((sum, h) => sum + (h.investedAmount ?? 0), 0);
   const totalCurrent = relevant.reduce((sum, h) => sum + (h.currentValue ?? h.investedAmount ?? 0), 0);
   const hasRealCurrentValue = relevant.some((h) => h.currentValue != null);

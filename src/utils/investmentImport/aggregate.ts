@@ -64,11 +64,13 @@ export function groupTransactionsByPositionKey(transactions: ImportedTransaction
 }
 
 /**
- * Aggregates buy/sell transactions into net positions per instrument.
- * Positions with zero (or negative, i.e. inconsistent) net quantity are
- * dropped — fully-closed positions aren't holdings.
+ * Same aggregation aggregatePositions does, but keeps fully-closed (net
+ * quantity zero or negative) positions instead of dropping them — needed to
+ * detect "the file shows this position was fully sold" for an instrument the
+ * user already holds (see closedPositionKeys below), which aggregatePositions'
+ * own filtering would otherwise silently hide from the import wizard entirely.
  */
-export function aggregatePositions(transactions: ImportedTransaction[]): AggregatedPosition[] {
+function aggregateAllPositions(transactions: ImportedTransaction[]): AggregatedPosition[] {
   const byKey = new Map<string, AggregatedPosition & { buyQuantity: number; buyCost: number }>();
 
   for (const tx of transactions) {
@@ -119,7 +121,6 @@ export function aggregatePositions(transactions: ImportedTransaction[]): Aggrega
 
   const positions: AggregatedPosition[] = [];
   for (const position of byKey.values()) {
-    if (position.quantity <= 0) continue;
     const { buyQuantity, buyCost, ...rest } = position;
     positions.push({
       ...rest,
@@ -130,6 +131,28 @@ export function aggregatePositions(transactions: ImportedTransaction[]): Aggrega
   }
   // Largest positions first — the preview list stays scannable
   return positions.sort((a, b) => (b.investedAmount ?? 0) - (a.investedAmount ?? 0));
+}
+
+/**
+ * Aggregates buy/sell transactions into net positions per instrument.
+ * Positions with zero (or negative, i.e. inconsistent) net quantity are
+ * dropped — fully-closed positions aren't holdings to import as new ones
+ * (see closedPositionKeys for detecting a full sell of an already-held one).
+ */
+export function aggregatePositions(transactions: ImportedTransaction[]): AggregatedPosition[] {
+  return aggregateAllPositions(transactions).filter((p) => p.quantity > 0);
+}
+
+/**
+ * Positions the file shows as fully closed (net quantity zero or negative) —
+ * aggregatePositions excludes these entirely, but the import wizard still
+ * needs to know they exist (including their last transaction date, to
+ * backfill a final "sold" snapshot) so it can offer to close any already-held
+ * instrument the file shows has since been fully sold, instead of silently
+ * leaving a stale holding untouched forever.
+ */
+export function closedPositions(transactions: ImportedTransaction[]): AggregatedPosition[] {
+  return aggregateAllPositions(transactions).filter((p) => p.quantity <= 0);
 }
 
 /** Trims float noise from summed fractional share quantities (T212 has 10-decimal shares). */
@@ -154,6 +177,25 @@ export function lastDayOfMonth(monthKey: string): string {
   const [year, month] = monthKey.split('-').map(Number);
   const day = new Date(Date.UTC(year, month, 0)).getUTCDate();
   return `${monthKey}-${pad2(day)}`;
+}
+
+/**
+ * Finds the most recently recorded value for a month strictly before
+ * `beforeMonth` ("YYYY-MM"), or 0 if there is none - the "starting balance"
+ * a newly-imported file's own cumulative timeline needs to be added on top
+ * of. Brokers cap how much history a single export covers (e.g. Trading212:
+ * 365 days), so a multi-year portfolio is necessarily built from several
+ * separately-uploaded files; each file's own transactions only reconstruct a
+ * cumulative total *within its own date range*, with no way to know what was
+ * already invested before it started - without this baseline, every month
+ * covered by a later file would understate the true total.
+ */
+export function baselineInvestedBefore(recorded: Map<string, number | null> | undefined, beforeMonth: string): number {
+  if (!recorded) return 0;
+  const priorMonths = Array.from(recorded.keys()).filter((m) => m < beforeMonth).sort();
+  const lastPriorMonth = priorMonths[priorMonths.length - 1];
+  const lastPriorValue = lastPriorMonth ? recorded.get(lastPriorMonth) : null;
+  return lastPriorValue ?? 0;
 }
 
 export interface MonthlyPositionSnapshot {

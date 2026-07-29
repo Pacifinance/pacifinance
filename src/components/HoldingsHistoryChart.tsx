@@ -13,7 +13,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { CustomTick, compactNumber } from '../utils/customGraphsInfo';
-import { getHoldingValue, paletteColor } from '../utils/holdingsChartHelpers';
+import { getHoldingValue, paletteColor, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import type { InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
 
 interface HoldingsHistoryChartProps {
@@ -67,6 +67,20 @@ const LegendItem = styled.button`
     border-radius: 50%;
     flex-shrink: 0;
   }
+`;
+
+const CategoryHeader = styled.div`
+  flex-basis: 100%;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 0.3rem;
+
+  &:first-child { margin-top: 0; }
 `;
 
 const EmptyState = styled.div`
@@ -125,6 +139,20 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     };
     return ids.sort((a, b) => latestValue(b) - latestValue(a));
   }, [byHolding]);
+
+  // Only the legend's visual layout groups by category when viewing everything
+  // together (fixed order, "other"-less here since every holding has a real
+  // category) — the chart lines/colors and the default-visible top N stay
+  // ranked purely by value, so switching category filters doesn't reshuffle
+  // which lines are shown, only how the legend clusters them.
+  const legendOrder = useMemo(() => {
+    if (assetKey) return rankedIds;
+    return rankedIds.slice().sort((a, b) => {
+      const catA = byHolding[a]?.[0]?.assetKey as InvestmentAssetKey | undefined;
+      const catB = byHolding[b]?.[0]?.assetKey as InvestmentAssetKey | undefined;
+      return ASSET_CATEGORY_ORDER.indexOf(catA as InvestmentAssetKey) - ASSET_CATEGORY_ORDER.indexOf(catB as InvestmentAssetKey);
+    });
+  }, [rankedIds, byHolding, assetKey]);
 
   const [lineVisibility, setLineVisibility] = useState<Record<string, boolean>>({});
   useEffect(() => {
@@ -224,12 +252,21 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
         </ChartComponent>
       </ResponsiveContainer>
       <Legend theme={theme}>
-        {rankedIds.map((id, index) => (
-          <LegendItem key={id} theme={theme} $active={lineVisibility[id]} onClick={() => handleLegendClick(id)} type="button">
-            <span className="dot" style={{ backgroundColor: paletteColor(index) }} />
-            {isHidden ? '****' : labelFor(id)}
-          </LegendItem>
-        ))}
+        {legendOrder.map((id, i) => {
+          const prevId = legendOrder[i - 1];
+          const category = byHolding[id]?.[0]?.assetKey;
+          const prevCategory = prevId ? byHolding[prevId]?.[0]?.assetKey : undefined;
+          const isGroupStart = !assetKey && category && category !== prevCategory;
+          return (
+            <React.Fragment key={id}>
+              {isGroupStart && <CategoryHeader theme={theme}>{translations.assets[category]}</CategoryHeader>}
+              <LegendItem theme={theme} $active={lineVisibility[id]} onClick={() => handleLegendClick(id)} type="button">
+                <span className="dot" style={{ backgroundColor: paletteColor(rankedIds.indexOf(id)) }} />
+                {isHidden ? '****' : labelFor(id)}
+              </LegendItem>
+            </React.Fragment>
+          );
+        })}
       </Legend>
     </>
   );

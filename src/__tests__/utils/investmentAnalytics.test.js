@@ -46,6 +46,25 @@ describe('summarizeHoldings', () => {
     expect(summarizeHoldings(holdings, 'stocks').totalInvested).toBe(100);
     expect(summarizeHoldings(holdings, null).totalInvested).toBe(300);
   });
+
+  it('excludes a closed (fully-sold, quantity=0) position from totals and best/worst', () => {
+    const holdings = [
+      holding({ id: 1, quantity: 2, investedAmount: 100, currentValue: 120 }), // active, +20%
+      holding({ id: 2, quantity: 0, investedAmount: 200, currentValue: 0 }), // closed - would otherwise show as a permanent -100% "worst"
+    ];
+
+    const result = summarizeHoldings(holdings, 'stocks');
+
+    expect(result.count).toBe(1);
+    expect(result.totalInvested).toBe(100);
+    expect(result.totalCurrent).toBe(120);
+    expect(result.worst).toMatchObject({ gainPct: 20 }); // the only remaining (active) holding, not the closed -100% one
+  });
+
+  it('keeps a holding with untracked (null) quantity — only explicitly-zero counts as closed', () => {
+    const holdings = [holding({ quantity: null, investedAmount: 500 })];
+    expect(summarizeHoldings(holdings, 'stocks').count).toBe(1);
+  });
 });
 
 describe('estimateMonthlyContribution', () => {

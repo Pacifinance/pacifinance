@@ -9,7 +9,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { RenderCustomizedLabel } from '../utils/customGraphsInfo';
-import { getHoldingValue, getHoldingLabel, paletteColor, OTHER_SLICE_COLOR } from '../utils/holdingsChartHelpers';
+import { getHoldingValue, getHoldingLabel, paletteColor, OTHER_SLICE_COLOR, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import { getRandomGrayscaleColor } from '../utils/colorUtils';
 import type { InvestmentHoldingDto, InvestmentAssetKey } from '../types/api';
 
@@ -106,10 +106,6 @@ const MAX_SLICES = 8;
 /** A slice materially larger than an even split flags as an overweight rebalancing cue. */
 const OVERWEIGHT_MULTIPLIER = 1.5;
 
-/** Fixed, sensible display order for asset categories — stocks/etf/crypto/bonds/... in
- * roughly "how most people think about their portfolio" order, not alphabetical. */
-const CATEGORY_ORDER: InvestmentAssetKey[] = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
-
 export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHidden }: HoldingsBreakdownChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
@@ -140,7 +136,7 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
       return withOther.slice().sort((a, b) => {
         if (a.isOther) return 1;
         if (b.isOther) return -1;
-        return CATEGORY_ORDER.indexOf(a.assetKey as InvestmentAssetKey) - CATEGORY_ORDER.indexOf(b.assetKey as InvestmentAssetKey);
+        return ASSET_CATEGORY_ORDER.indexOf(a.assetKey as InvestmentAssetKey) - ASSET_CATEGORY_ORDER.indexOf(b.assetKey as InvestmentAssetKey);
       });
     }
     return withOther;

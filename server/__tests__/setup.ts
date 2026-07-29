@@ -293,7 +293,7 @@ export function resetServerMocks() {
     mockDb.investments.deleteHolding.mockResolvedValue({deletedCount: 1})
     mockDb.investments.snapshotHoldingsForUser.mockResolvedValue(undefined)
     mockDb.investments.getHoldingHistoryByUserId.mockResolvedValue([])
-    mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({id: 1})
+    mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({status: "ok", entry: {id: 1}})
 
     mockDb.liquidityAccounts.getAccountsByUserId.mockResolvedValue([])
     mockDb.liquidityAccounts.insertAccount.mockResolvedValue({id: 1})

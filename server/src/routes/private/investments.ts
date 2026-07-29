@@ -221,17 +221,23 @@ investmentsRouter.post("/holdings/history/save", async (req, res) => {
         return
     }
 
-    const entry = await db.investments.upsertHoldingHistoryEntry(
+    const result = await db.investments.upsertHoldingHistoryEntry(
         req.userId as string,
         parsed.holdingId,
         parsed.userDate,
         {currentValue: parsed.currentValue, investedAmount: parsed.investedAmount},
     )
-    if (entry === null) {
+    if (result.status === "not_found") {
         res.status(400).json({error: "holding not found, or not owned by this user"})
         return
     }
-    res.status(200).json(entry)
+    if (result.status === "db_error") {
+        // A genuine server-side failure (e.g. a schema mismatch), not a bad
+        // request - 500, not 400, so it isn't mistaken for one.
+        res.status(500).json({error: result.message})
+        return
+    }
+    res.status(200).json(result.entry)
 })
 
 export default investmentsRouter

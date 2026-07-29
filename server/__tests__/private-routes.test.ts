@@ -515,7 +515,8 @@ describe("private backend routes", () => {
 
     it("backfills a holding's monthly history", async () => {
         mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({
-            id: 20, holdingId: 16, userDate: "2026-07-01", currentValue: null, investedAmount: 12.44
+            status: "ok",
+            entry: {id: 20, holdingId: 16, userDate: "2026-07-01", currentValue: null, investedAmount: 12.44}
         })
 
         const response = await request(app, "/api/investments/holdings/history/save", {
@@ -555,7 +556,7 @@ describe("private backend routes", () => {
     })
 
     it("returns a reason when the holding doesn't exist or isn't owned by this user", async () => {
-        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue(null)
+        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({status: "not_found"})
 
         const response = await request(app, "/api/investments/holdings/history/save", {
             method: "POST",
@@ -565,6 +566,21 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(400)
         expect(response.json).toEqual({error: "holding not found, or not owned by this user"})
+    })
+
+    it("returns 500 with the real reason when the history upsert fails for a DB-level reason (e.g. missing unique constraint)", async () => {
+        mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({
+            status: "db_error", message: "there is no unique or exclusion constraint matching the ON CONFLICT specification"
+        })
+
+        const response = await request(app, "/api/investments/holdings/history/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {holding_id: 16, user_date: "2026-07-01", current_value: null, invested_amount: 12.44}
+        })
+
+        expect(response.status).toBe(500)
+        expect(response.json).toEqual({error: "there is no unique or exclusion constraint matching the ON CONFLICT specification"})
     })
 
     it("refreshes holding prices using cached exchange rates, refreshing the cache when expired", async () => {

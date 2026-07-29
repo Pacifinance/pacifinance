@@ -209,12 +209,15 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * every row can preview its effect on an already-held instrument's position
    * *before* the user commits to importing (not just reactively after a save conflict). */
   const [existingByInstrumentId, setExistingByInstrumentId] = useState<Map<number, InvestmentHoldingDto>>(new Map());
-  /** Every "YYYY-MM" already recorded as history for each instrument, regardless of
-   * which holding/import produced it — lets a row tell "this file re-covers months
-   * I already have data for" (safe to replace, re-exported same period) apart from
-   * "this file is for months I've never recorded" (must be added, never replace:
-   * see resolveMergeStrategy below). */
-  const [recordedMonthsByInstrumentId, setRecordedMonthsByInstrumentId] = useState<Map<number, Set<string>>>(new Map());
+  /** Every "YYYY-MM" already recorded as history for each instrument (mapped to its
+   * recorded invested_amount, in EUR), regardless of which holding/import produced
+   * it — lets a row tell "this file re-covers months I already have data for" (safe
+   * to replace, re-exported same period) apart from "this file is for months I've
+   * never recorded" (must be added, never replace: see resolveMergeStrategy below).
+   * The value itself lets backfillHistory skip re-sending a month whose number
+   * hasn't actually changed — re-importing an identical file otherwise re-sends
+   * every single month again for no reason. */
+  const [recordedHistoryByInstrumentId, setRecordedHistoryByInstrumentId] = useState<Map<number, Map<string, number | null>>>(new Map());
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -258,16 +261,16 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       for (const holding of holdings) if (holding.instrument) holdingMap.set(holding.instrument.id, holding);
       setExistingByInstrumentId(holdingMap);
 
-      const monthsMap = new Map<number, Set<string>>();
+      const historyMap = new Map<number, Map<string, number | null>>();
       for (const entry of history) {
-        const months = monthsMap.get(entry.instrumentId) ?? new Set<string>();
-        months.add(entry.userDate.slice(0, 7));
-        monthsMap.set(entry.instrumentId, months);
+        const months = historyMap.get(entry.instrumentId) ?? new Map<string, number | null>();
+        months.set(entry.userDate.slice(0, 7), entry.investedAmount);
+        historyMap.set(entry.instrumentId, months);
       }
-      setRecordedMonthsByInstrumentId(monthsMap);
+      setRecordedHistoryByInstrumentId(historyMap);
     } catch {
       setExistingByInstrumentId(new Map());
-      setRecordedMonthsByInstrumentId(new Map());
+      setRecordedHistoryByInstrumentId(new Map());
     }
     void resolveInstruments(initialRows);
   };
@@ -286,7 +289,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     if (!row.instrument) return undefined;
     const existing = existingByInstrumentId.get(row.instrument.id);
     if (!existing) return undefined;
-    const recordedMonths = recordedMonthsByInstrumentId.get(row.instrument.id);
+    const recordedMonths = recordedHistoryByInstrumentId.get(row.instrument.id);
     const overlaps = Boolean(recordedMonths) && row.historyMonths.some((m) => recordedMonths!.has(m));
     return overlaps ? undefined : 'add';
   };
@@ -375,17 +378,24 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   // transaction dates — only invested_amount is known (no historical market
   // prices are available), current_value is left unset, same as the existing
   // manual historical-edit flow when nothing's been entered yet for a month.
-  const backfillHistory = async (row: ImportRowState, holdingId: number) => {
+  // Skips months whose recorded value already matches (re-importing a file
+  // that was already imported before would otherwise re-send every single
+  // month again for nothing — see recordedHistoryByInstrumentId above).
+  const backfillHistory = async (row: ImportRowState, holdingId: number, instrumentId: number) => {
     const timeline = buildMonthlyPositionTimeline(row.transactions);
+    const recorded = recordedHistoryByInstrumentId.get(instrumentId);
     for (const snapshot of timeline) {
       const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
+      const investedAmountEUR = toEUR(snapshotPosition.investedAmount);
+      const alreadyRecorded = recorded?.get(snapshot.monthKey);
+      if (alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01) continue;
       try {
         await investmentService.saveHoldingHistory({
           holding_id: holdingId,
           user_date: `${snapshot.monthKey}-01`,
           current_value: null,
-          invested_amount: toEUR(snapshotPosition.investedAmount),
+          invested_amount: investedAmountEUR,
         });
       } catch {
         // Backfilling one month's history failing shouldn't roll back the
@@ -415,7 +425,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             import_source: platform,
             merge_strategy: resolveMergeStrategy(row),
           });
-          await backfillHistory(row, saved.id);
+          await backfillHistory(row, saved.id, row.instrument.id);
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
         } catch (error) {
           if (error instanceof HoldingConflictError) {
@@ -455,7 +465,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         import_source: platform,
         merge_strategy: strategy,
       });
-      await backfillHistory(row, saved.id);
+      await backfillHistory(row, saved.id, row.instrument.id);
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
     } catch {
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));

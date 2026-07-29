@@ -25,7 +25,7 @@ import quoteCache from "../src/cache/quoteCache"
  * the chain is itself awaitable (for calls with no terminal method). */
 function makeChain(result: { data: unknown; error: unknown }) {
     const chain: Record<string, unknown> = {}
-    for (const method of ["select", "eq", "in", "or", "is", "order", "limit", "insert", "update", "delete"]) {
+    for (const method of ["select", "eq", "in", "or", "is", "order", "limit", "insert", "update", "delete", "upsert"]) {
         chain[method] = vi.fn(() => chain)
     }
     chain.single = vi.fn(() => Promise.resolve(result))
@@ -304,12 +304,27 @@ describe("investments model", () => {
     })
 
     describe("upsertHoldingHistoryEntry", () => {
-        it("returns null without upserting when the holding doesn't exist for this user", async () => {
+        it("reports not_found without upserting when the holding doesn't exist for this user", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
 
             const result = await investments.upsertHoldingHistoryEntry("user-1", 999, new Date("2026-01-15"), {currentValue: null, investedAmount: 50})
 
-            expect(result).toBeNull()
+            expect(result).toEqual({status: "not_found"})
+        })
+
+        it("reports a db_error (distinct from not_found) when the upsert itself fails, e.g. a missing unique constraint", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 16, user_id: "user-1", instrument_id: 1, asset_key: "stocks", position_type: "single", quantity: 1, average_price: 100, current_value: null, invested_amount: 100, currency: "EUR", notes: "", updated_at: "2026-01-01", import_source: "trading212", instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: null, coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null}},
+                error: null,
+            }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: null,
+                error: {code: "42P10", message: "there is no unique or exclusion constraint matching the ON CONFLICT specification"},
+            }))
+
+            const result = await investments.upsertHoldingHistoryEntry("user-1", 16, new Date("2026-07-01"), {currentValue: null, investedAmount: 12.44})
+
+            expect(result).toEqual({status: "db_error", message: "there is no unique or exclusion constraint matching the ON CONFLICT specification"})
         })
     })
 

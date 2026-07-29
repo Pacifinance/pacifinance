@@ -760,26 +760,42 @@ async function getHoldingHistoryByUserId(user_id: string, months?: number, userD
 
 export type HoldingHistoryEntryInput = { currentValue: number | null, investedAmount: number | null }
 
+// "not_found": the holding truly doesn't exist / isn't owned by this user - a
+// client-side problem (stale id, wrong account). "db_error": the query itself
+// failed for a reason that has nothing to do with which holding was asked for
+// (e.g. a schema issue - see the onConflict clause below, which requires a
+// unique index on (user_id, holding_id, user_date) that a past migration adds
+// SEPARATELY from the table's own creation; if that migration was never run
+// against a given database, every upsert here fails with Postgres error
+// 42P10). Callers must surface these two very differently - "not_found" is
+// nothing to worry about, "db_error" means something is actually broken.
+export type UpsertHistoryResult =
+    | {status: "not_found"}
+    | {status: "db_error"; message: string}
+    | {status: "ok"; entry: ReturnType<typeof toHoldingHistory>}
+
 /**
  * Backfills/updates a single holding's value for a specific month, scoped to
  * the owning user. Denormalizes the current live holding's instrument/quantity
  * fields (same shape snapshotHoldingsForUser already writes), only the value
- * fields are user-authored. Returns null if the holding isn't found/owned.
+ * fields are user-authored.
  */
-async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, user_date: Date, input: HoldingHistoryEntryInput) {
+async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, user_date: Date, input: HoldingHistoryEntryInput): Promise<UpsertHistoryResult> {
     const {data: holdingRow, error: holdingErr} = await supabase.from("user_investment_holdings")
         .select(HOLDING_SELECT).eq("user_id", user_id).eq("id", holding_id).maybeSingle()
-    if (holdingErr) console.error("investments.upsertHoldingHistoryEntry: failed to read holding", holdingErr)
-    if (holdingErr) return null
+    if (holdingErr) {
+        console.error("investments.upsertHoldingHistoryEntry: failed to read holding", holdingErr)
+        return {status: "db_error", message: holdingErr.message}
+    }
     if (!holdingRow) {
         console.error(`investments.upsertHoldingHistoryEntry: holding ${holding_id} not found for user ${user_id}`)
-        return null
+        return {status: "not_found"}
     }
 
     const holding = toHolding(holdingRow as unknown as HoldingRow)
     if (holding.instrument === null) {
         console.error(`investments.upsertHoldingHistoryEntry: holding ${holding_id} has no linked instrument`)
-        return null
+        return {status: "not_found"}
     }
 
     const row = {
@@ -801,9 +817,12 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
         .upsert(row, {onConflict: "user_id,holding_id,user_date"})
         .select(HOLDING_HISTORY_SELECT)
         .single()
-    if (error) console.error("investments.upsertHoldingHistoryEntry: failed to upsert history row", error)
-    if (error || !data) return null
-    return toHoldingHistory(data as unknown as HoldingHistoryRow)
+    if (error) {
+        console.error("investments.upsertHoldingHistoryEntry: failed to upsert history row", error)
+        return {status: "db_error", message: error.message}
+    }
+    if (!data) return {status: "db_error", message: "upsert returned no row"}
+    return {status: "ok", entry: toHoldingHistory(data as unknown as HoldingHistoryRow)}
 }
 
 export default {

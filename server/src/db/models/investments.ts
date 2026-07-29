@@ -4,6 +4,7 @@ import coingeckoProvider from "../../libs/providers/coingeckoProvider"
 import finnhubProvider from "../../libs/providers/finnhubProvider"
 import { ExtDate, toDateOnly } from "../../libs/datelib"
 import { roundCurrency } from "../../libs/money"
+import quoteCache from "../../cache/quoteCache"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
 export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"] as const
@@ -485,8 +486,16 @@ async function getHoldingsByUserId(user_id: string) {
  * instrument's own trading currency (assumed USD when unknown - matches
  * every researched broker export in this app so far) and are converted to
  * EUR with `eurRates` before being stored, same as every other money value
- * on a holding (see toHoldingPayload). Best-effort per holding: a missing
- * quote or exchange rate skips just that one holding, never the rest.
+ * on a holding (see toHoldingPayload) - the user's own display currency is
+ * applied later, client-side, via the usual formatAmount()/fromEUR() path,
+ * exactly like every other stored amount; nothing display-specific happens
+ * here. Best-effort per holding: a missing quote or exchange rate skips just
+ * that one holding, never the rest.
+ *
+ * A symbol's quote is shared across every user holding it (quoteCache.ts):
+ * this is what makes it safe for a user to click "refresh" as often as they
+ * like - at most one real Finnhub call per symbol per day happens across the
+ * WHOLE app, not per click or per user.
  */
 async function refreshHoldingPrices(user_id: string, eurRates: Record<string, number>) {
     const holdings = await getHoldingsByUserId(user_id)
@@ -496,7 +505,12 @@ async function refreshHoldingPrices(user_id: string, eurRates: Record<string, nu
     const updated: Holding[] = []
     for (const holding of refreshable) {
         const instrument = holding.instrument as NonNullable<typeof holding.instrument>
-        const quote = await finnhubProvider.getQuote(instrument.symbol)
+
+        let quote = await quoteCache.getCachedQuote(instrument.symbol)
+        if (!quote) {
+            quote = await finnhubProvider.getQuote(instrument.symbol)
+            if (quote) await quoteCache.setCachedQuote(instrument.symbol, quote)
+        }
         if (!quote) continue
 
         const quoteCurrency = instrument.currency ?? "USD"

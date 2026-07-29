@@ -12,9 +12,13 @@ vi.mock("../src/libs/providers/coingeckoProvider", () => ({
 vi.mock("../src/libs/providers/finnhubProvider", () => ({
     default: { searchFinnhub: vi.fn(), getQuote: vi.fn() },
 }))
+vi.mock("../src/cache/quoteCache", () => ({
+    default: { getCachedQuote: vi.fn(), setCachedQuote: vi.fn() },
+}))
 
 import openfigiProvider from "../src/libs/providers/openfigiProvider"
 import finnhubProvider from "../src/libs/providers/finnhubProvider"
+import quoteCache from "../src/cache/quoteCache"
 
 /** Minimal chainable Supabase query-builder stub: every filter method returns
  * itself, `.single()`/`.maybeSingle()` resolve to the configured result, and
@@ -317,8 +321,9 @@ describe("investments model", () => {
             instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: "US0378331005", coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
         }
 
-        it("converts a USD quote to EUR and updates current_value", async () => {
+        it("converts a USD quote to EUR and updates current_value, caching the quote for other users", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
             vi.mocked(finnhubProvider.getQuote).mockResolvedValue({price: 200})
             mockSupabase.from.mockReturnValueOnce(makeChain({
                 data: {...stockHoldingRow, current_value: 1739.13},
@@ -328,7 +333,24 @@ describe("investments model", () => {
             const result = await investments.refreshHoldingPrices("user-1", {EUR: 1, USD: 1.15})
 
             expect(finnhubProvider.getQuote).toHaveBeenCalledWith("AAPL")
+            expect(quoteCache.setCachedQuote).toHaveBeenCalledWith("AAPL", {price: 200})
             expect(result).toHaveLength(1)
+            expect(result[0]).toMatchObject({id: 16, currentValue: 1739.13})
+        })
+
+        it("uses an already-cached quote instead of calling Finnhub again", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue({price: 200})
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {...stockHoldingRow, current_value: 1739.13},
+                error: null,
+            }))
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1, USD: 1.15})
+
+            expect(quoteCache.getCachedQuote).toHaveBeenCalledWith("AAPL")
+            expect(finnhubProvider.getQuote).not.toHaveBeenCalled()
+            expect(quoteCache.setCachedQuote).not.toHaveBeenCalled()
             expect(result[0]).toMatchObject({id: 16, currentValue: 1739.13})
         })
 
@@ -346,6 +368,7 @@ describe("investments model", () => {
 
         it("skips a holding when Finnhub has no quote for its symbol", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
             vi.mocked(finnhubProvider.getQuote).mockResolvedValue(null)
 
             const result = await investments.refreshHoldingPrices("user-1", {EUR: 1, USD: 1.15})
@@ -355,6 +378,7 @@ describe("investments model", () => {
 
         it("skips a holding when there's no exchange rate for its trading currency", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
             vi.mocked(finnhubProvider.getQuote).mockResolvedValue({price: 200})
 
             const result = await investments.refreshHoldingPrices("user-1", {EUR: 1})

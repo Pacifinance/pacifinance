@@ -2779,7 +2779,10 @@
             "defaultInstrumentHint": "BTC está preseleccionado por defecto. Elimínalo para buscar otro (p. ej. una wallet distinta u otra blockchain).",
             "noValueForMonth": "Sin valor para este mes",
         "unverifiedBadge": "No verificado",
-        "unverifiedHint": "No verificado — no cuenta en las comparaciones con otros usuarios."
+        "unverifiedHint": "No verificado — no cuenta en las comparaciones con otros usuarios.",
+        "dividendsReceivedTotal": "Dividendos recibidos: {amount}",
+        "dividendsReceived": "Dividendos: {amount}{ratio}",
+        "dividendsOfInvested": "de lo invertido"
         },
         "attribution": {
             "coingecko": "Datos proporcionados por CoinGecko",
@@ -2792,7 +2795,7 @@
                         "unrecognized": "Formato no reconocido. Prueba con una exportación de Trading 212, DEGIRO o Directa.",
                         "detected": "Detectado: {platform}",
                         "positions": "posiciones encontradas",
-                        "skippedNote": "filas omitidas: dividendos/movimientos que no son compra-venta",
+                        "skippedNote": "filas omitidas: depósitos/comisiones/otros movimientos que no son compra, venta o dividendo",
                         "notFound": "No encontrado automáticamente — búscalo abajo por ISIN, símbolo o nombre",
                         "done": "{count} holdings importados correctamente",
                         "importSelected": "Importar {count} seleccionados",
@@ -2806,6 +2809,7 @@
                         },
             "historyBackfillNote": "Los meses pasados encontrados en el archivo se rellenarán automáticamente como historial de la cartera.",
             "historyMonths": "+{count} meses de historial",
+            "dividendsFound": "{count} dividendos encontrados, por un total de {amount}",
             "pastMonthNote": "La importación siempre actualiza la posición de hoy y completa el historial con las fechas del propio archivo — no afecta solo al mes mostrado aquí.",
             "unverifiedTag": "No verificado",
             "conflictMessage": "La posición actual (la de hoy, no la de un mes concreto) de este instrumento ya tiene {quantity} unidades por un total de {amount}, registradas desde otra fuente. ¿Sumar ambos totales o sustituir el existente con este archivo?",

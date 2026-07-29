@@ -2803,7 +2803,10 @@
             "defaultInstrumentHint": "BTC is pre-filled by default. Remove it to search for a different one (e.g. a separate wallet or another blockchain).",
             "noValueForMonth": "No value set for this month",
         "unverifiedBadge": "Unverified",
-        "unverifiedHint": "Not verified — won't count toward comparisons with other users."
+        "unverifiedHint": "Not verified — won't count toward comparisons with other users.",
+        "dividendsReceivedTotal": "Dividends received: {amount}",
+        "dividendsReceived": "Dividends: {amount}{ratio}",
+        "dividendsOfInvested": "of invested"
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko",
@@ -2816,7 +2819,7 @@
                         "unrecognized": "Unrecognized format. Try an export from Trading 212, DEGIRO or Directa.",
                         "detected": "Detected: {platform}",
                         "positions": "positions found",
-                        "skippedNote": "rows skipped: dividends/non buy-sell movements",
+                        "skippedNote": "rows skipped: deposits/fees/other non buy-sell-dividend movements",
                         "notFound": "Not found automatically — search below by ISIN, symbol or name",
                         "done": "{count} holdings imported successfully",
                         "importSelected": "Import {count} selected",
@@ -2830,6 +2833,7 @@
                         },
             "historyBackfillNote": "Past months found in the file will be backfilled automatically as portfolio history.",
             "historyMonths": "+{count} months of history",
+            "dividendsFound": "{count} dividends found, totaling {amount}",
             "pastMonthNote": "The import always updates today's position and backfills history from the file's own dates — it doesn't only affect the month shown here.",
             "unverifiedTag": "Unverified",
             "conflictMessage": "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?",

@@ -2777,7 +2777,10 @@
             "defaultInstrumentHint": "BTC est présélectionné par défaut. Supprimez-le pour en rechercher un autre (par ex. un portefeuille séparé ou une autre blockchain).",
             "noValueForMonth": "Aucune valeur pour ce mois",
         "unverifiedBadge": "Non vérifié",
-        "unverifiedHint": "Non vérifié — ne compte pas dans les comparaisons avec les autres utilisateurs."
+        "unverifiedHint": "Non vérifié — ne compte pas dans les comparaisons avec les autres utilisateurs.",
+        "dividendsReceivedTotal": "Dividendes reçus : {amount}",
+        "dividendsReceived": "Dividendes : {amount}{ratio}",
+        "dividendsOfInvested": "du montant investi"
         },
         "attribution": {
             "coingecko": "Données fournies par CoinGecko",
@@ -2790,7 +2793,7 @@
                         "unrecognized": "Format non reconnu. Essayez un export de Trading 212, DEGIRO ou Directa.",
                         "detected": "Détecté : {platform}",
                         "positions": "positions trouvées",
-                        "skippedNote": "lignes ignorées : dividendes/mouvements hors achat-vente",
+                        "skippedNote": "lignes ignorées : dépôts/frais/autres mouvements hors achat, vente ou dividende",
                         "notFound": "Non trouvé automatiquement — recherchez ci-dessous par ISIN, symbole ou nom",
                         "done": "{count} avoirs importés avec succès",
                         "importSelected": "Importer {count} sélectionnés",
@@ -2804,6 +2807,7 @@
                         },
             "historyBackfillNote": "Les mois passés trouvés dans le fichier seront automatiquement intégrés à l'historique du portefeuille.",
             "historyMonths": "+{count} mois d'historique",
+            "dividendsFound": "{count} dividendes trouvés, pour un total de {amount}",
             "pastMonthNote": "L'import met toujours à jour la position du jour et complète l'historique à partir des dates du fichier — cela ne concerne pas que le mois affiché ici.",
             "unverifiedTag": "Non vérifié",
             "conflictMessage": "La position actuelle (celle d'aujourd'hui, pas celle d'un mois précis) pour ce titre compte déjà {quantity} unités pour un total de {amount}, suivies depuis une autre source. Additionner les deux totaux, ou remplacer l'existant par ce fichier ?",

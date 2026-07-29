@@ -2777,7 +2777,10 @@
             "defaultInstrumentHint": "O BTC é pré-selecionado por padrão. Remova-o para buscar outro (ex.: uma carteira separada ou outra blockchain).",
             "noValueForMonth": "Sem valor definido para este mês",
         "unverifiedBadge": "Não verificado",
-        "unverifiedHint": "Não verificado — não conta nas comparações com outros usuários."
+        "unverifiedHint": "Não verificado — não conta nas comparações com outros usuários.",
+        "dividendsReceivedTotal": "Dividendos recebidos: {amount}",
+        "dividendsReceived": "Dividendos: {amount}{ratio}",
+        "dividendsOfInvested": "do investido"
         },
         "attribution": {
             "coingecko": "Dados fornecidos pelo CoinGecko",
@@ -2790,7 +2793,7 @@
                         "unrecognized": "Formato não reconhecido. Tente uma exportação da Trading 212, DEGIRO ou Directa.",
                         "detected": "Detectado: {platform}",
                         "positions": "posições encontradas",
-                        "skippedNote": "linhas ignoradas: dividendos/movimentos que não são compra-venda",
+                        "skippedNote": "linhas ignoradas: depósitos/taxas/outros movimentos que não são compra, venda ou dividendo",
                         "notFound": "Não encontrado automaticamente — busque abaixo por ISIN, símbolo ou nome",
                         "done": "{count} holdings importados com sucesso",
                         "importSelected": "Importar {count} selecionados",
@@ -2804,6 +2807,7 @@
                         },
             "historyBackfillNote": "Os meses passados encontrados no arquivo serão preenchidos automaticamente como histórico da carteira.",
             "historyMonths": "+{count} meses de histórico",
+            "dividendsFound": "{count} dividendos encontrados, totalizando {amount}",
             "pastMonthNote": "A importação sempre atualiza a posição de hoje e preenche o histórico com as datas do próprio arquivo — não afeta apenas o mês mostrado aqui.",
             "unverifiedTag": "Não verificado",
             "conflictMessage": "A posição atual (a de hoje, não a de um mês específico) para este ativo já tem {quantity} unidades totalizando {amount}, registradas a partir de outra fonte. Somar os dois totais ou substituir o existente por este arquivo?",

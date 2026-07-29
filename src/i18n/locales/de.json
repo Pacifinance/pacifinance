@@ -2777,7 +2777,10 @@
             "defaultInstrumentHint": "BTC ist standardmäßig vorausgewählt. Entferne es, um ein anderes zu suchen (z. B. eine separate Wallet oder eine andere Blockchain).",
             "noValueForMonth": "Kein Wert für diesen Monat",
         "unverifiedBadge": "Nicht verifiziert",
-        "unverifiedHint": "Nicht verifiziert — zählt nicht bei Vergleichen mit anderen Nutzern."
+        "unverifiedHint": "Nicht verifiziert — zählt nicht bei Vergleichen mit anderen Nutzern.",
+        "dividendsReceivedTotal": "Erhaltene Dividenden: {amount}",
+        "dividendsReceived": "Dividenden: {amount}{ratio}",
+        "dividendsOfInvested": "des investierten Betrags"
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko",
@@ -2790,7 +2793,7 @@
                         "unrecognized": "Format nicht erkannt. Versuchen Sie einen Export von Trading 212, DEGIRO oder Directa.",
                         "detected": "Erkannt: {platform}",
                         "positions": "Positionen gefunden",
-                        "skippedNote": "Zeilen übersprungen: Dividenden/Nicht-Kauf-Verkauf-Bewegungen",
+                        "skippedNote": "Zeilen übersprungen: Einzahlungen/Gebühren/andere Bewegungen ohne Kauf, Verkauf oder Dividende",
                         "notFound": "Nicht automatisch gefunden — unten nach ISIN, Symbol oder Name suchen",
                         "done": "{count} Holdings erfolgreich importiert",
                         "importSelected": "{count} ausgewählte importieren",
@@ -2804,6 +2807,7 @@
                         },
             "historyBackfillNote": "Vergangene Monate aus der Datei werden automatisch als Portfolio-Verlauf nachgetragen.",
             "historyMonths": "+{count} Monate Verlauf",
+            "dividendsFound": "{count} Dividenden gefunden, insgesamt {amount}",
             "pastMonthNote": "Der Import aktualisiert immer die heutige Position und ergänzt den Verlauf anhand der Daten in der Datei — er betrifft nicht nur den hier angezeigten Monat.",
             "unverifiedTag": "Nicht verifiziert",
             "conflictMessage": "Die aktuelle Position (die von heute, nicht die eines bestimmten Monats) für dieses Instrument hat bereits {quantity} Einheiten im Gesamtwert von {amount}, erfasst aus einer anderen Quelle. Beide Summen addieren oder die bestehende mit dieser Datei ersetzen?",

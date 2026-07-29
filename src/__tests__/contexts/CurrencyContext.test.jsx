@@ -321,4 +321,66 @@ describe('CurrencyContext', () => {
       expect(screen.getByTestId('result')).toHaveTextContent('0');
     });
   });
+
+  describe('convertAmountToEUR', () => {
+    // Regression test: CSV import previously used toEUR() (display-currency-based)
+    // on values tagged with their own real account currency, silently
+    // mis-converting whenever the display currency differed from the CSV's
+    // currency. convertAmountToEUR takes the source currency explicitly instead.
+    it('ignores the display currency and converts using the explicit source currency', async () => {
+      const user = userEvent.setup();
+      localStorage.getItem.mockReturnValue(null);
+
+      const ConvertTestConsumer = () => {
+        const { convertAmountToEUR, setCurrency } = React.useContext(CurrencyContext);
+        return (
+          <div>
+            <span data-testid="result">{convertAmountToEUR(100, 'USD')}</span>
+            <button data-testid="set-gbp" onClick={() => setCurrency('GBP')}>Set GBP</button>
+          </div>
+        );
+      };
+
+      render(<ConvertTestConsumer />, { wrapper: createWrapper() });
+      // Display currency set to GBP - a value explicitly tagged 'USD' must still
+      // convert at the USD rate (1.08), not GBP's (0.86).
+      await user.click(screen.getByTestId('set-gbp'));
+
+      expect(parseFloat(screen.getByTestId('result').textContent)).toBeCloseTo(100 / 1.08, 2);
+    });
+
+    it('returns the value unchanged for EUR or a missing currency code', () => {
+      localStorage.getItem.mockReturnValue(null);
+
+      const ConvertTestConsumer = () => {
+        const { convertAmountToEUR } = React.useContext(CurrencyContext);
+        return (
+          <div>
+            <span data-testid="eur">{convertAmountToEUR(50, 'EUR')}</span>
+            <span data-testid="missing">{convertAmountToEUR(50, null)}</span>
+            <span data-testid="unknown">{convertAmountToEUR(50, 'ZZZ')}</span>
+          </div>
+        );
+      };
+
+      render(<ConvertTestConsumer />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('eur')).toHaveTextContent('50');
+      expect(screen.getByTestId('missing')).toHaveTextContent('50');
+      expect(screen.getByTestId('unknown')).toHaveTextContent('50');
+    });
+
+    it('handles non-number input', () => {
+      localStorage.getItem.mockReturnValue(null);
+
+      const ConvertTestConsumer = () => {
+        const { convertAmountToEUR } = React.useContext(CurrencyContext);
+        return <span data-testid="result">{convertAmountToEUR('hello', 'USD')}</span>;
+      };
+
+      render(<ConvertTestConsumer />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('result')).toHaveTextContent('0');
+    });
+  });
 });

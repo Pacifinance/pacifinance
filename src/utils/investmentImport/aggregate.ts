@@ -3,7 +3,7 @@
  * files) into per-instrument positions ready to be saved as holdings.
  * Pure functions — no I/O.
  */
-import type { ImportedTransaction } from './parsers';
+import type { ImportedDividend, ImportedTransaction } from './parsers';
 
 export interface AggregatedPosition {
   /** Grouping key: ISIN when available, else ticker, else name. */
@@ -13,11 +13,19 @@ export interface AggregatedPosition {
   name: string | null;
   /** Net quantity after buys - sells. */
   quantity: number;
-  /** Net invested: buy totals - sell totals (account currency), when totals were present. */
+  /** Net invested: buy totals - sell totals, in `investedAmountCurrency`, when totals were present. */
   investedAmount: number | null;
-  /** Weighted average buy price, when prices were present. */
+  /** Weighted average buy price, in `currency`, when prices were present. */
   averagePrice: number | null;
+  /** Currency `averagePrice` is denominated in. */
   currency: string | null;
+  /**
+   * Currency `investedAmount` is denominated in — see ImportedTransaction.totalCurrency
+   * for why this isn't always the same as `currency` (e.g. a USD-priced stock
+   * bought from a EUR Trading 212 account: price is quoted in USD, but Total —
+   * and therefore investedAmount — is already converted to EUR in the file).
+   */
+  investedAmountCurrency: string | null;
   /** Date of the most recent transaction contributing to the position. */
   lastTransactionDate: string | null;
   transactionCount: number;
@@ -36,6 +44,22 @@ export function dedupeTransactions(transactions: ImportedTransaction[]): Importe
     if (!tx.externalId) return true;
     if (seen.has(tx.externalId)) return false;
     seen.add(tx.externalId);
+    return true;
+  });
+}
+
+/**
+ * Same idea as dedupeTransactions, for dividend rows: the platform transaction
+ * id is the dedup key when present (rows without one are kept as-is, since a
+ * same-day duplicate can be legitimate - e.g. two positions in the same
+ * instrument both paying a dividend the same day would look identical here).
+ */
+export function dedupeDividends(dividends: ImportedDividend[]): ImportedDividend[] {
+  const seen = new Set<string>();
+  return dividends.filter((d) => {
+    if (!d.externalId) return true;
+    if (seen.has(d.externalId)) return false;
+    seen.add(d.externalId);
     return true;
   });
 }
@@ -59,6 +83,19 @@ export function groupTransactionsByPositionKey(transactions: ImportedTransaction
     const group = byKey.get(key);
     if (group) group.push(tx);
     else byKey.set(key, [tx]);
+  }
+  return byKey;
+}
+
+/** Same idea as groupTransactionsByPositionKey, for dividend rows. */
+export function groupDividendsByPositionKey(dividends: ImportedDividend[]): Map<string, ImportedDividend[]> {
+  const byKey = new Map<string, ImportedDividend[]>();
+  for (const d of dividends) {
+    const key = positionKeyFor(d);
+    if (!key) continue;
+    const group = byKey.get(key);
+    if (group) group.push(d);
+    else byKey.set(key, [d]);
   }
   return byKey;
 }
@@ -89,6 +126,7 @@ function aggregateAllPositions(transactions: ImportedTransaction[]): AggregatedP
         investedAmount: null,
         averagePrice: null,
         currency: tx.currency,
+        investedAmountCurrency: tx.totalCurrency,
         lastTransactionDate: null,
         transactionCount: 0,
         buyQuantity: 0,
@@ -102,6 +140,7 @@ function aggregateAllPositions(transactions: ImportedTransaction[]): AggregatedP
     position.ticker = position.ticker ?? tx.ticker;
     position.name = position.name ?? tx.name;
     position.currency = position.currency ?? tx.currency;
+    position.investedAmountCurrency = position.investedAmountCurrency ?? tx.totalCurrency;
 
     const signedQuantity = tx.side === 'buy' ? tx.quantity : -tx.quantity;
     position.quantity += signedQuantity;
@@ -158,6 +197,59 @@ export function closedPositions(transactions: ImportedTransaction[]): Aggregated
 /** Trims float noise from summed fractional share quantities (T212 has 10-decimal shares). */
 function roundQuantity(value: number): number {
   return Number(value.toFixed(10));
+}
+
+export interface AggregatedDividend {
+  /** Grouping key: ISIN when available, else ticker, else name — same as AggregatedPosition. */
+  key: string;
+  isin: string | null;
+  ticker: string | null;
+  name: string | null;
+  /** Sum of every payment's amount, in `currency` when all payments share one — see note below. */
+  totalAmount: number;
+  /**
+   * Only set when every payment for this instrument shares the same currency —
+   * left null when they don't (e.g. a US stock that used to pay in USD before
+   * a broker migration started converting to EUR) rather than silently
+   * summing mismatched currencies into one misleading number. The wizard
+   * still saves each individual payment with its own real currency either
+   * way; this only affects the preview total shown before importing.
+   */
+  currency: string | null;
+  paymentCount: number;
+  lastPaidDate: string | null;
+}
+
+/**
+ * Groups dividend payments by the same instrument key aggregatePositions uses,
+ * for the CSV import wizard's pre-import preview (see InvestmentImportWizard).
+ * The actual saved records are always the individual payments (one row per
+ * real payment in user_investment_dividends) — this is only a display total.
+ */
+export function aggregateDividends(dividends: ImportedDividend[]): AggregatedDividend[] {
+  const byKey = new Map<string, AggregatedDividend>();
+  for (const d of dividends) {
+    const key = positionKeyFor(d);
+    if (!key) continue;
+
+    let agg = byKey.get(key);
+    if (!agg) {
+      agg = {
+        key, isin: d.isin, ticker: d.ticker, name: d.name,
+        totalAmount: 0, currency: d.currency, paymentCount: 0, lastPaidDate: null,
+      };
+      byKey.set(key, agg);
+    }
+
+    agg.isin = agg.isin ?? d.isin;
+    agg.ticker = agg.ticker ?? d.ticker;
+    agg.name = agg.name ?? d.name;
+    if (agg.currency !== d.currency) agg.currency = null;
+    agg.totalAmount += d.amount;
+    agg.paymentCount += 1;
+    if (d.date && (!agg.lastPaidDate || d.date > agg.lastPaidDate)) agg.lastPaidDate = d.date;
+  }
+  return Array.from(byKey.values()).sort((a, b) => b.totalAmount - a.totalAmount);
 }
 
 /**

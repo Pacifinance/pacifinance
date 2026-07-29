@@ -15,7 +15,7 @@ import {
 import { ModernActionButton } from '../styles/MyStyled';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
-import type { InvestmentAssetKey, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentInstrumentDto } from '../types/api';
+import type { InvestmentAssetKey, InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentInstrumentDto } from '../types/api';
 
 interface InvestmentHoldingsPanelProps {
   assetKey: InvestmentAssetKey;
@@ -59,6 +59,14 @@ const SectionLabel = styled.h3`
   letter-spacing: 0.04em;
   color: ${(p) => p.theme.textColor};
   opacity: 0.5;
+`;
+
+const DividendsSummary = styled.p`
+  margin: 0 0 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.75;
 `;
 
 /** Visually groups every "add" control (manual form/trigger + CSV import) into
@@ -329,6 +337,26 @@ export default function InvestmentHoldingsPanel({
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
+  /** Per-instrument dividend totals (see server/src/db/models/investments.ts
+   * getDividendsSummaryByUserId) — fetched once per panel open, keyed by
+   * instrument id so each holding row can show its own total and compare it
+   * against invested_amount, without a per-row network call. */
+  const [dividendsByInstrumentId, setDividendsByInstrumentId] = useState<Map<number, InvestmentDividendSummaryDto>>(new Map());
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const summary = await investmentService.getDividendsSummary();
+        if (cancelled) return;
+        setDividendsByInstrumentId(new Map(summary.map((entry) => [entry.instrumentId, entry])));
+      } catch (error) {
+        console.error('InvestmentHoldingsPanel: failed to load dividends summary', error);
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Pre-fill the obvious instrument (e.g. BTC for `bitcoin`) on a user's very
   // first holding for this asset key, so they aren't forced to search for it -
@@ -432,6 +460,15 @@ export default function InvestmentHoldingsPanel({
     }
   };
 
+  // Total dividends received across the instruments actually shown in this
+  // panel (this asset key's holdings) - not every dividend the user has ever
+  // received across every asset key, which would be a different, larger number.
+  const totalDividendsForAssetKey = holdings.reduce((sum, holding) => {
+    if (!holding.instrument) return sum;
+    const entry = dividendsByInstrumentId.get(holding.instrument.id);
+    return sum + (entry?.totalAmount ?? 0);
+  }, 0);
+
   return (
     <Overlay theme={theme} onClick={onClose}>
       <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
@@ -447,6 +484,11 @@ export default function InvestmentHoldingsPanel({
 
         <ModalBody theme={theme}>
           <SectionLabel theme={theme}>{t.positionsListTitle}</SectionLabel>
+          {isCurrentMonth && totalDividendsForAssetKey > 0 && (
+            <DividendsSummary theme={theme}>
+              {(t.dividendsReceivedTotal || 'Dividends received: {amount}').replace('{amount}', formatAmount(totalDividendsForAssetKey))}
+            </DividendsSummary>
+          )}
           {holdings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
 
           {holdings.map((holding) => {
@@ -479,6 +521,14 @@ export default function InvestmentHoldingsPanel({
                           {formatAmount(source.averagePrice)}
                         </span>
                       );
+                    })()}
+                    {isCurrentMonth && holding.instrument && dividendsByInstrumentId.has(holding.instrument.id) && (() => {
+                      const entry = dividendsByInstrumentId.get(holding.instrument.id)!;
+                      const ratio = holding.investedAmount ? (entry.totalAmount / holding.investedAmount) * 100 : null;
+                      const label = (t.dividendsReceived || 'Dividends: {amount}{ratio}')
+                        .replace('{amount}', formatAmount(entry.totalAmount))
+                        .replace('{ratio}', ratio != null ? ` (${ratio.toFixed(1)}% ${t.dividendsOfInvested || 'of invested'})` : '');
+                      return <span>{label}</span>;
                     })()}
                   </HoldingInfo>
                   <HoldingValue theme={theme}>

@@ -16,7 +16,7 @@ import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
 import type {
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentHoldingSaveRequest,
-  InvestmentSettingsDto,
+  InvestmentSettingsDto, InvestmentDividendDto, InvestmentDividendSummaryResponse,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
   GoalDto, SharedExpenseReceivableDto,
 } from '../types/api';
@@ -155,6 +155,22 @@ export const useDemoServices = () => {
         // back (like saveHolding above) without actually remembering it.
         getSettings: async (): Promise<InvestmentSettingsDto> => ({ monthlyTarget: null }),
         saveSettings: async (data): Promise<InvestmentSettingsDto> => ({ monthlyTarget: data.monthly_target }),
+        // No session-backed dividend ledger in demo mode - echoes the save back
+        // (like saveHolding/saveHoldingHistory above) without persisting it.
+        saveDividend: async (data): Promise<InvestmentDividendDto> => ({
+          id: -Date.now(),
+          instrumentId: data.instrument_id,
+          holdingId: data.holding_id ?? null,
+          amount: data.amount,
+          currency: data.currency ?? null,
+          grossAmount: data.gross_amount ?? null,
+          paidDate: data.paid_date,
+          externalId: data.external_id ?? null,
+          source: data.source,
+          recordedAt: new Date().toISOString(),
+        }),
+        // Demo mode's getHoldings() always returns [] - nothing to summarize.
+        getDividendsSummary: async (): Promise<InvestmentDividendSummaryResponse> => [],
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,

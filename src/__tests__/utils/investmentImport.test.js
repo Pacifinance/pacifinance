@@ -6,6 +6,7 @@ import { parseInvestmentCsv } from '../../utils/investmentImport/parsers';
 import {
   dedupeTransactions, aggregatePositions, aggregatePositionsAsOf, buildMonthlyPositionTimeline, lastDayOfMonth,
   groupTransactionsByPositionKey, lastRecordedValueBefore, closedPositions,
+  dedupeDividends, groupDividendsByPositionKey, aggregateDividends,
 } from '../../utils/investmentImport/aggregate';
 
 describe('parseImportNumber', () => {
@@ -102,6 +103,10 @@ describe('detectPlatform / parseInvestmentCsv', () => {
       side: 'buy', isin: 'US17275R1023', ticker: 'CSCO', date: '2023-12-18',
       quantity: 0.029053, price: 49.96, total: 1.33, currency: 'USD', externalId: 'EOF7504196256',
     });
+    // The share price is quoted in USD, but Total is already converted to EUR
+    // right in the file (see Currency (Total)) — using the price's currency to
+    // convert Total/investedAmount later would double-convert an already-EUR value.
+    expect(tx.totalCurrency).toBe('EUR');
   });
 
   it('detects and parses a real Trading 212 export using "Time (UTC)" instead of "Time"', () => {
@@ -118,10 +123,14 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     const parsed = parseInvestmentCsv(raw);
     expect(parsed.platform).toBe('trading212');
     expect(parsed.transactions).toHaveLength(1);
-    expect(parsed.skippedRows).toBe(2); // the dividend and the deposit
+    expect(parsed.skippedRows).toBe(1); // just the deposit — the dividend is now captured, not skipped
     expect(parsed.transactions[0]).toMatchObject({
       side: 'buy', isin: 'US5949181045', ticker: 'MSFT', date: '2026-06-29',
       quantity: 0.06442778, price: 377.6, total: 21.36, currency: 'USD', externalId: 'EOF53409493596',
+    });
+    expect(parsed.dividends).toHaveLength(1);
+    expect(parsed.dividends[0]).toMatchObject({
+      isin: 'US92826C8394', ticker: 'V', date: '2026-06-01', amount: 0.29, currency: 'EUR', externalId: null,
     });
   });
 
@@ -134,11 +143,15 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     const parsed = parseInvestmentCsv(raw);
     expect(parsed.platform).toBe('directa');
     expect(parsed.transactions).toHaveLength(1);
-    expect(parsed.skippedRows).toBe(1); // the dividend ("Provento etf")
+    expect(parsed.skippedRows).toBe(0); // "Provento etf" is now captured as a dividend, not skipped
     expect(parsed.transactions[0]).toMatchObject({
       side: 'buy', isin: 'IE00B2NPKV68', ticker: 'IEMB', date: '2024-12-27', quantity: 10,
     });
     expect(parsed.transactions[0].price).toBeCloseTo(20.95);
+    expect(parsed.dividends).toHaveLength(1);
+    expect(parsed.dividends[0]).toMatchObject({
+      isin: 'IE00B2NPKV68', ticker: 'IEMB', date: '2025-01-15', amount: 20.95, currency: 'EUR', externalId: null,
+    });
   });
 
   it('detects and parses a DEGIRO Transactions.csv, inferring side from quantity sign', () => {
@@ -152,6 +165,25 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     expect(parsed.transactions).toHaveLength(2);
     expect(parsed.transactions[0]).toMatchObject({ side: 'buy', quantity: 5, price: 190.25, isin: 'US0378331005' });
     expect(parsed.transactions[1]).toMatchObject({ side: 'sell', quantity: 2 });
+    // DEGIRO's Transactions.csv contains only trades - dividends are cash
+    // movements recorded in a separate export this parser doesn't read.
+    expect(parsed.dividends).toEqual([]);
+  });
+
+  it('detects and parses a generic (Portfolio Performance / Ghostfolio style) export with a dividend row', () => {
+    const raw = [
+      'Date,Type,ISIN,Ticker,Name,Shares,Price,Total,Currency',
+      '2024-05-10,Buy,US0378331005,AAPL,Apple Inc,2,180,360,EUR',
+      '2024-08-01,Dividend,US0378331005,AAPL,Apple Inc,,,0.48,EUR',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('generic');
+    expect(parsed.transactions).toHaveLength(1);
+    expect(parsed.skippedRows).toBe(0);
+    expect(parsed.dividends).toHaveLength(1);
+    expect(parsed.dividends[0]).toMatchObject({
+      isin: 'US0378331005', ticker: 'AAPL', date: '2024-08-01', amount: 0.48, currency: 'EUR',
+    });
   });
 
   it('returns null for unrecognized files', () => {
@@ -223,6 +255,14 @@ describe('aggregatePositions', () => {
       tx({ isin: 'US0378331005', ticker: 'AAPL', total: 5000 }),
     ]);
     expect(positions[0].ticker).toBe('AAPL');
+  });
+
+  it('tracks investedAmountCurrency separately from currency (Total\'s currency vs Price\'s — see Trading 212)', () => {
+    const positions = aggregatePositions([
+      tx({ currency: 'USD', totalCurrency: 'EUR', quantity: 1, price: 100, total: 90 }),
+    ]);
+    expect(positions[0].currency).toBe('USD');
+    expect(positions[0].investedAmountCurrency).toBe('EUR');
   });
 });
 
@@ -360,5 +400,68 @@ describe('lastRecordedValueBefore', () => {
   it('ignores a null recorded value for the closest prior month and returns 0', () => {
     const recorded = new Map([['2023-12', null]]);
     expect(lastRecordedValueBefore(recorded, '2024-01')).toBe(0);
+  });
+});
+
+describe('dedupeDividends', () => {
+  const div = (externalId, over = {}) => ({
+    isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01', amount: 1, currency: 'EUR', externalId, ...over,
+  });
+
+  it('drops rows sharing a platform id across merged files, keeps id-less rows', () => {
+    const result = dedupeDividends([div('A'), div('A'), div('B'), div(null), div(null)]);
+    expect(result).toHaveLength(4); // A, B, and both null-id rows
+  });
+});
+
+describe('groupDividendsByPositionKey', () => {
+  it('groups by ISIN, falling back to ticker then name, matching aggregateDividends', () => {
+    const withIsin = { isin: 'US0378331005', ticker: 'AAPL', name: 'Apple' };
+    const tickerOnly = { isin: null, ticker: 'CSCO', name: 'Cisco' };
+    const grouped = groupDividendsByPositionKey([withIsin, withIsin, tickerOnly]);
+    expect(grouped.get('US0378331005')).toHaveLength(2);
+    expect(grouped.get('CSCO')).toHaveLength(1);
+  });
+
+  it('drops dividends with no usable identifier', () => {
+    const grouped = groupDividendsByPositionKey([{ isin: null, ticker: null, name: null }]);
+    expect(grouped.size).toBe(0);
+  });
+});
+
+describe('aggregateDividends', () => {
+  const div = (over) => ({
+    isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01', amount: 1, currency: 'EUR', externalId: null, ...over,
+  });
+
+  it('sums payments for the same instrument and tracks the most recent date', () => {
+    const [summary] = aggregateDividends([
+      div({ amount: 0.5, date: '2024-03-01' }),
+      div({ amount: 0.6, date: '2024-06-01' }),
+    ]);
+    expect(summary).toMatchObject({
+      key: 'US0378331005', totalAmount: 1.1, paymentCount: 2, lastPaidDate: '2024-06-01', currency: 'EUR',
+    });
+  });
+
+  it('sorts largest totals first', () => {
+    const summaries = aggregateDividends([
+      div({ isin: 'IE00B2NPKV68', ticker: 'IEMB', amount: 5 }),
+      div({ isin: 'US0378331005', ticker: 'AAPL', amount: 50 }),
+    ]);
+    expect(summaries[0].ticker).toBe('AAPL');
+  });
+
+  it('nulls out currency when payments for the same instrument used different currencies, instead of silently summing mismatched amounts', () => {
+    const [summary] = aggregateDividends([
+      div({ currency: 'USD', amount: 1 }),
+      div({ currency: 'EUR', amount: 1 }),
+    ]);
+    expect(summary.currency).toBeNull();
+    expect(summary.totalAmount).toBe(2); // still summed - the wizard saves each payment with its own real currency regardless
+  });
+
+  it('drops dividends with no usable identifier', () => {
+    expect(aggregateDividends([{ isin: null, ticker: null, name: null, amount: 1, currency: 'EUR', date: null, externalId: null }])).toEqual([]);
   });
 });

@@ -628,6 +628,71 @@ describe("private backend routes", () => {
         expect(response.json).toEqual({error: "there is no unique or exclusion constraint matching the ON CONFLICT specification"})
     })
 
+    it("saves a dividend payment", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, symbol: "V", name: "Visa"})
+        mockDb.investments.upsertDividend.mockResolvedValue({
+            id: 5, instrumentId: 1, holdingId: 16, amount: 0.29, currency: "EUR", grossAmount: 0.29,
+            paidDate: "2026-06-01", externalId: "EXT-1", source: "trading212", recordedAt: "2026-06-01T00:00:00Z"
+        })
+
+        const response = await request(app, "/api/investments/dividends/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                instrument_id: 1, holding_id: 16, amount: 0.29, currency: "eur", gross_amount: 0.29,
+                paid_date: "2026-06-01", external_id: "EXT-1", source: "trading212"
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toMatchObject({id: 5, amount: 0.29})
+        expect(mockDb.investments.upsertDividend).toHaveBeenCalledWith("user-uuid", {
+            instrumentId: 1, holdingId: 16, amount: 0.29, currency: "EUR", grossAmount: 0.29,
+            paidDate: new Date("2026-06-01"), externalId: "EXT-1", source: "trading212"
+        })
+    })
+
+    it("rejects a dividend save with a reason when the payload is malformed", async () => {
+        const response = await request(app, "/api/investments/dividends/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, amount: -5, paid_date: "2026-06-01", source: "trading212"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(response.json).toEqual({error: "amount must be a non-negative number"})
+        expect(mockDb.investments.upsertDividend).not.toHaveBeenCalled()
+    })
+
+    it("rejects a dividend save for an instrument that doesn't exist or isn't owned by this user", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue(null)
+
+        const response = await request(app, "/api/investments/dividends/save", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 999, amount: 1, paid_date: "2026-06-01", source: "trading212"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.upsertDividend).not.toHaveBeenCalled()
+    })
+
+    it("returns the per-instrument dividends summary", async () => {
+        mockDb.investments.getDividendsSummaryByUserId.mockResolvedValue([
+            {instrumentId: 1, symbol: "V", name: "Visa", totalAmount: 0.6, paymentCount: 2, lastPaidDate: "2026-06-01"}
+        ])
+
+        const response = await request(app, "/api/investments/dividends/summary", {
+            method: "POST",
+            headers: {cookie: authCookie}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([
+            {instrumentId: 1, symbol: "V", name: "Visa", totalAmount: 0.6, paymentCount: 2, lastPaidDate: "2026-06-01"}
+        ])
+    })
+
     it("refreshes holding prices using cached exchange rates, refreshing the cache when expired", async () => {
         mockCache.valueExpired.mockResolvedValueOnce(true)
         mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.08})

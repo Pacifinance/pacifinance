@@ -10,10 +10,11 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from './multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
-import { parseInvestmentCsv, ImportedTransaction } from '../utils/investmentImport/parsers';
+import { parseInvestmentCsv, ImportedTransaction, ImportedDividend } from '../utils/investmentImport/parsers';
 import {
   dedupeTransactions, aggregatePositions, buildMonthlyPositionTimeline, groupTransactionsByPositionKey,
   lastRecordedValueBefore, closedPositions, positionKeyFor, AggregatedPosition,
+  dedupeDividends, groupDividendsByPositionKey, aggregateDividends,
 } from '../utils/investmentImport/aggregate';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
@@ -45,6 +46,9 @@ const MANUAL_KIND_OPTIONS: InvestmentKind[] = ['stock', 'etf', 'crypto', 'bond',
 interface ImportRowState {
   position: AggregatedPosition;
   transactions: ImportedTransaction[];
+  /** This position's own dividend payments found in the file (deduped) — saved
+   * alongside the holding once it's resolved (see importSelected/resolveConflict). */
+  dividends: ImportedDividend[];
   instrument: InvestmentInstrumentDto | null;
   status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'conflict' | 'saved' | 'error';
   selected: boolean;
@@ -262,7 +266,7 @@ const ConflictButton = styled.button`
 export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
   const { theme } = useContext(ThemeContext);
   const { translations, language } = useContext(LanguageContext);
-  const { formatNumber, toEUR, currencySymbol } = useContext(CurrencyContext);
+  const { formatNumber, convertAmountToEUR, currencySymbol } = useContext(CurrencyContext);
   const { investmentService } = useDemoServices();
   const t = translations.investments.importWizard;
 
@@ -313,6 +317,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const deduped = dedupeTransactions(parsed.transactions);
     const positions = aggregatePositions(deduped);
     const transactionsByKey = groupTransactionsByPositionKey(deduped);
+    const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(parsed.dividends));
     setPlatform(parsed.platform);
     setSkippedRows(parsed.skippedRows);
     const initialRows: ImportRowState[] = positions.map((position) => {
@@ -320,8 +325,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       // Every distinct month present in this position's own history - what will
       // get an automatic backfilled snapshot (shown to the user up front below).
       const historyMonths = buildMonthlyPositionTimeline(transactions).map((s) => s.monthKey);
+      const dividends = dividendsByKey.get(position.key) ?? [];
       return {
-        position, transactions, instrument: null, status: 'pending', selected: true, historyMonths,
+        position, transactions, dividends, instrument: null, status: 'pending', selected: true, historyMonths,
         manualKind: 'stock', conflictExisting: null,
       };
     });
@@ -505,7 +511,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     for (const snapshot of timeline) {
       const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
-      const investedAmountEUR = baseline + toEUR(snapshotPosition.investedAmount);
+      const investedAmountEUR = baseline + convertAmountToEUR(snapshotPosition.investedAmount, snapshotPosition.investedAmountCurrency);
       // Quantity actually held that month — for the "quantity bought per
       // month" figure and, in the future, to price a historical current_value
       // correctly (price × quantity held then, not today's quantity).
@@ -527,6 +533,32 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     }
   };
 
+  // Records every dividend payment found for this position. Safe to re-run on
+  // a re-imported file: the backend upserts on (instrument, external_id) when
+  // the broker provided one (see upsertDividend in the model), so an already-
+  // recorded payment is never double-counted, just re-confirmed.
+  const saveDividends = async (row: ImportRowState, holdingId: number) => {
+    if (!row.instrument) return;
+    for (const dividend of row.dividends) {
+      if (!dividend.date) continue;
+      try {
+        await investmentService.saveDividend({
+          instrument_id: row.instrument.id,
+          holding_id: holdingId,
+          amount: convertAmountToEUR(dividend.amount, dividend.currency),
+          currency: dividend.currency,
+          gross_amount: dividend.amount,
+          paid_date: dividend.date,
+          external_id: dividend.externalId,
+          source: platform ?? 'generic',
+        });
+      } catch {
+        // One payment failing to save shouldn't roll back the holding itself
+        // or the rest of the payments — same reasoning as backfillHistory.
+      }
+    }
+  };
+
   const importSelected = async () => {
     if (importing) return;
     setImporting(true);
@@ -541,14 +573,15 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             instrument_id: row.instrument.id,
             asset_key: assetKey,
             quantity: row.position.quantity,
-            average_price: row.position.averagePrice != null ? toEUR(row.position.averagePrice) : null,
+            average_price: row.position.averagePrice != null ? convertAmountToEUR(row.position.averagePrice, row.position.currency) : null,
             current_value: null,
-            invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
+            invested_amount: row.position.investedAmount != null ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency) : null,
             notes: '',
             import_source: platform,
             merge_strategy: resolveMergeStrategy(row),
           });
           await backfillHistory(row, saved.id, row.instrument.id);
+          await saveDividends(row, saved.id);
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
         } catch (error) {
           if (error instanceof HoldingConflictError) {
@@ -581,14 +614,15 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         instrument_id: row.instrument.id,
         asset_key: assetKey,
         quantity: row.position.quantity,
-        average_price: row.position.averagePrice != null ? toEUR(row.position.averagePrice) : null,
+        average_price: row.position.averagePrice != null ? convertAmountToEUR(row.position.averagePrice, row.position.currency) : null,
         current_value: null,
-        invested_amount: row.position.investedAmount != null ? toEUR(row.position.investedAmount) : null,
+        invested_amount: row.position.investedAmount != null ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency) : null,
         notes: '',
         import_source: platform,
         merge_strategy: strategy,
       });
       await backfillHistory(row, saved.id, row.instrument.id);
+      await saveDividends(row, saved.id);
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
     } catch {
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));
@@ -653,6 +687,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const existingQuantity = formatNumber(existing.quantity ?? 0);
     const existingAmount = `${formatNumber(existing.investedAmount ?? 0)} ${currencySymbol}`;
 
+    const rowInvestedEUR = row.position.investedAmount != null
+      ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency)
+      : 0;
+
     if (resolveMergeStrategy(row) === 'add') {
       // Non-overlapping months (e.g. an older or newer statement covering a
       // period never imported before): unambiguous, always summed, never asked.
@@ -660,7 +698,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         .replace('{quantity}', existingQuantity)
         .replace('{amount}', existingAmount)
         .replace('{newQuantity}', formatNumber((existing.quantity ?? 0) + (row.position.quantity ?? 0)))
-        .replace('{newAmount}', `${formatNumber((existing.investedAmount ?? 0) + (row.position.investedAmount ?? 0))} ${currencySymbol}`);
+        .replace('{newAmount}', `${formatNumber((existing.investedAmount ?? 0) + rowInvestedEUR)} ${currencySymbol}`);
     }
 
     const willAutoReplace = existing.importSource === platform || existing.importSource == null;
@@ -669,11 +707,23 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         .replace('{quantity}', existingQuantity)
         .replace('{amount}', existingAmount)
         .replace('{newQuantity}', formatNumber(row.position.quantity ?? 0))
-        .replace('{newAmount}', `${formatNumber(row.position.investedAmount ?? 0)} ${currencySymbol}`);
+        .replace('{newAmount}', `${formatNumber(rowInvestedEUR)} ${currencySymbol}`);
     }
     return (t.existingDifferentSource || "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it")
       .replace('{quantity}', existingQuantity)
       .replace('{amount}', existingAmount);
+  };
+
+  // Previews the dividends this row's file contains — aggregateDividends
+  // returns at most one entry here since row.dividends is already scoped to a
+  // single instrument (see groupDividendsByPositionKey in handleFile).
+  const describeDividends = (row: ImportRowState) => {
+    const [summary] = aggregateDividends(row.dividends);
+    if (!summary) return null;
+    const amountEUR = convertAmountToEUR(summary.totalAmount, summary.currency);
+    return (t.dividendsFound || '{count} dividends found, totaling {amount}')
+      .replace('{count}', String(summary.paymentCount))
+      .replace('{amount}', `${formatNumber(amountEUR)} ${currencySymbol}`);
   };
 
   const statusIcon = (status: ImportRowState['status']) => {
@@ -766,8 +816,8 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                   )}
                 </strong>
                 <span>
-                  {formatNumber(row.position.quantity)} × {row.position.averagePrice != null ? `${formatNumber(row.position.averagePrice)} ${currencySymbol}` : '—'}
-                  {row.position.investedAmount != null && ` · ${formatNumber(row.position.investedAmount)} ${currencySymbol}`}
+                  {formatNumber(row.position.quantity)} × {row.position.averagePrice != null ? `${formatNumber(convertAmountToEUR(row.position.averagePrice, row.position.currency))} ${currencySymbol}` : '—'}
+                  {row.position.investedAmount != null && ` · ${formatNumber(convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency))} ${currencySymbol}`}
                 </span>
                 {row.instrument && formatInstrumentDetails(row.instrument) !== '' && (
                   <span>{formatInstrumentDetails(row.instrument)}</span>
@@ -780,6 +830,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                     {(t.historyMonths || '+{count} months of history').replace('{count}', String(row.historyMonths.length - 1))}
                     {' '}({formatMonthLabel(row.historyMonths[0])} – {formatMonthLabel(row.historyMonths[row.historyMonths.length - 1])})
                   </span>
+                )}
+                {row.dividends.length > 0 && (
+                  <span>{describeDividends(row)}</span>
                 )}
                 {row.status === 'not-found' && (
                   <ManualResolveBlock theme={theme}>

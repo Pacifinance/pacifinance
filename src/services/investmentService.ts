@@ -12,6 +12,9 @@
  */
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import type {
+  InvestmentDividendDto,
+  InvestmentDividendSaveRequest,
+  InvestmentDividendSummaryResponse,
   InvestmentHoldingConflict,
   InvestmentHoldingDeleteRequest,
   InvestmentHoldingDto,
@@ -61,6 +64,8 @@ export interface InvestmentService {
   saveHoldingHistory(data: InvestmentHoldingHistorySaveRequest): Promise<InvestmentHoldingHistoryDto>;
   getSettings(): Promise<InvestmentSettingsDto>;
   saveSettings(data: InvestmentSettingsSaveRequest): Promise<InvestmentSettingsDto>;
+  saveDividend(data: InvestmentDividendSaveRequest): Promise<InvestmentDividendDto>;
+  getDividendsSummary(): Promise<InvestmentDividendSummaryResponse>;
 }
 
 export const createInvestmentService = (apiClient: AxiosInstance): InvestmentService => ({
@@ -129,6 +134,16 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   async saveSettings(data) {
     const res = await apiClient.post<InvestmentSettingsDto>('/api/investments/settings/save', data);
     return res.data;
+  },
+
+  async saveDividend(data) {
+    const res = await apiClient.post<InvestmentDividendDto>('/api/investments/dividends/save', data);
+    return res.data;
+  },
+
+  async getDividendsSummary() {
+    const res = await apiClient.post<InvestmentDividendSummaryResponse>('/api/investments/dividends/summary', {});
+    return Array.isArray(res.data) ? res.data : [];
   },
 });
 

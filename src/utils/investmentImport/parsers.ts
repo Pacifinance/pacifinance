@@ -23,17 +23,41 @@ export interface ImportedTransaction {
   quantity: number | null;
   /** Price per unit in `currency` (null when the export only has totals). */
   price: number | null;
-  /** Signed total in the account currency when available. */
+  /** Signed total, in `totalCurrency` when available. */
   total: number | null;
+  /** Currency `price` is denominated in. */
   currency: string | null;
+  /**
+   * Currency `total` is denominated in — NOT always the same as `currency`:
+   * Trading 212 quotes the per-share price in the instrument's own trading
+   * currency (e.g. USD for a US stock) but converts Total to the account's
+   * own currency (e.g. EUR) right in the export, with its own "Currency
+   * (Total)" column and an explicit exchange rate. Converting `total` using
+   * `currency` in that case double-converts an amount that's already in EUR.
+   */
+  totalCurrency: string | null;
   /** Platform transaction/order id — used for multi-file dedup. */
+  externalId: string | null;
+}
+
+export interface ImportedDividend {
+  isin: string | null;
+  ticker: string | null;
+  name: string | null;
+  /** "YYYY-MM-DD" */
+  date: string | null;
+  /** Gross amount received, always positive, in `currency`. */
+  amount: number;
+  currency: string | null;
+  /** Platform transaction id — used for dedup (see dedupeDividends). */
   externalId: string | null;
 }
 
 export interface ParsedImportFile {
   platform: ImportPlatform;
   transactions: ImportedTransaction[];
-  /** Rows recognized as non-trade operations (dividends, deposits, fees...) — counted for the summary. */
+  dividends: ImportedDividend[];
+  /** Rows recognized as non-trade, non-dividend operations (deposits, fees...) — counted for the summary. */
   skippedRows: number;
 }
 
@@ -86,28 +110,52 @@ function parseTrading212(header: string[], rows: string[][]): ParsedImportFile {
     price: findColumn(header, 'Price / share'),
     priceCurrency: findColumn(header, 'Currency (Price / share)'),
     total: findColumn(header, 'Total'),
+    totalCurrency: findColumn(header, 'Currency (Total)'),
     id: findColumn(header, 'ID'),
   };
   const transactions: ImportedTransaction[] = [];
+  const dividends: ImportedDividend[] = [];
   let skippedRows = 0;
   for (const row of rows) {
     const action = (cell(row, col.action) || '').toLowerCase();
     const side = T212_BUY_ACTIONS.includes(action) ? 'buy' : T212_SELL_ACTIONS.includes(action) ? 'sell' : null;
-    if (!side) { skippedRows++; continue; }
-    transactions.push({
-      side,
-      isin: cell(row, col.isin),
-      ticker: cell(row, col.ticker),
-      name: cell(row, col.name),
-      date: parseImportDate(cell(row, col.time)),
-      quantity: parseImportNumber(cell(row, col.shares)),
-      price: parseImportNumber(cell(row, col.price)),
-      total: parseImportNumber(cell(row, col.total)),
-      currency: cell(row, col.priceCurrency),
-      externalId: cell(row, col.id),
-    });
+    if (side) {
+      transactions.push({
+        side,
+        isin: cell(row, col.isin),
+        ticker: cell(row, col.ticker),
+        name: cell(row, col.name),
+        date: parseImportDate(cell(row, col.time)),
+        quantity: parseImportNumber(cell(row, col.shares)),
+        price: parseImportNumber(cell(row, col.price)),
+        total: parseImportNumber(cell(row, col.total)),
+        currency: cell(row, col.priceCurrency),
+        totalCurrency: cell(row, col.totalCurrency),
+        externalId: cell(row, col.id),
+      });
+      continue;
+    }
+    // T212's Action for a dividend payment is e.g. "Dividend (Ordinary)",
+    // "Dividend (Dividend)", "Dividend (Bonus)", "Dividend (Demerger)" —
+    // matching on the "dividend" prefix covers all of these variants.
+    if (action.includes('dividend')) {
+      const amount = parseImportNumber(cell(row, col.total));
+      if (amount != null) {
+        dividends.push({
+          isin: cell(row, col.isin),
+          ticker: cell(row, col.ticker),
+          name: cell(row, col.name),
+          date: parseImportDate(cell(row, col.time)),
+          amount: Math.abs(amount),
+          currency: cell(row, col.totalCurrency),
+          externalId: cell(row, col.id),
+        });
+        continue;
+      }
+    }
+    skippedRows++;
   }
-  return { platform: 'trading212', transactions, skippedRows };
+  return { platform: 'trading212', transactions, dividends, skippedRows };
 }
 
 /* ─── DEGIRO Transactions.csv ─── */
@@ -139,16 +187,25 @@ function parseDegiro(header: string[], rows: string[][]): ParsedImportFile {
       price: parseImportNumber(cell(row, col.price)),
       total: parseImportNumber(cell(row, col.total)),
       currency: null, // travels in unnamed companion columns — resolved at instrument level instead
+      totalCurrency: null,
       externalId: cell(row, col.orderId),
     });
   }
-  return { platform: 'degiro', transactions, skippedRows };
+  // DEGIRO's Transactions.csv contains only trades - dividends are cash
+  // movements recorded in a separate export (Account.csv) this parser doesn't
+  // read, so there's nothing to extract here (never guessed/half-supported).
+  return { platform: 'degiro', transactions, dividends: [], skippedRows };
 }
 
 /* ─── Directa SIM ─── */
 
 const DIRECTA_BUY_TYPES = ['acquisto', 'acquisto etf', 'acquisto azioni', 'sottoscrizione'];
 const DIRECTA_SELL_TYPES = ['vendita', 'vendita etf', 'vendita azioni', 'rimborso'];
+// "Provento" is Directa's umbrella term for any income distribution — ETF
+// distributions, stock dividends, bond coupons ("Provento etf", "Provento
+// azioni", ...) — matching the prefix covers all of them the same way the
+// buy/sell prefix lists above do.
+const DIRECTA_DIVIDEND_PREFIX = 'provento';
 
 function parseDirecta(header: string[], rows: string[][]): ParsedImportFile {
   const col = {
@@ -163,34 +220,57 @@ function parseDirecta(header: string[], rows: string[][]): ParsedImportFile {
     orderRef: findColumn(header, 'Riferimento ordine'),
   };
   const transactions: ImportedTransaction[] = [];
+  const dividends: ImportedDividend[] = [];
   let skippedRows = 0;
   for (const row of rows) {
     const type = (cell(row, col.type) || '').toLowerCase();
     const side = DIRECTA_BUY_TYPES.some((t) => type.startsWith(t)) ? 'buy'
       : DIRECTA_SELL_TYPES.some((t) => type.startsWith(t)) ? 'sell' : null;
-    if (!side) { skippedRows++; continue; }
-    const quantity = parseImportNumber(cell(row, col.quantity));
-    const total = parseImportNumber(cell(row, col.totalEur));
-    transactions.push({
-      side,
-      isin: cell(row, col.isin),
-      ticker: cell(row, col.ticker),
-      name: cell(row, col.name),
-      date: parseImportDate(cell(row, col.date)),
-      quantity: quantity != null ? Math.abs(quantity) : null,
-      price: quantity && total ? Math.abs(total / quantity) : null,
-      total,
-      currency: cell(row, col.currency) || 'EUR',
-      externalId: cell(row, col.orderRef),
-    });
+    if (side) {
+      const quantity = parseImportNumber(cell(row, col.quantity));
+      const total = parseImportNumber(cell(row, col.totalEur));
+      const currency = cell(row, col.currency) || 'EUR';
+      transactions.push({
+        side,
+        isin: cell(row, col.isin),
+        ticker: cell(row, col.ticker),
+        name: cell(row, col.name),
+        date: parseImportDate(cell(row, col.date)),
+        quantity: quantity != null ? Math.abs(quantity) : null,
+        price: quantity && total ? Math.abs(total / quantity) : null,
+        total,
+        currency,
+        totalCurrency: currency,
+        externalId: cell(row, col.orderRef),
+      });
+      continue;
+    }
+    if (type.startsWith(DIRECTA_DIVIDEND_PREFIX)) {
+      const amount = parseImportNumber(cell(row, col.totalEur));
+      if (amount != null) {
+        dividends.push({
+          isin: cell(row, col.isin),
+          ticker: cell(row, col.ticker),
+          name: cell(row, col.name),
+          date: parseImportDate(cell(row, col.date)),
+          amount: Math.abs(amount),
+          currency: cell(row, col.currency) || 'EUR',
+          externalId: cell(row, col.orderRef),
+        });
+        continue;
+      }
+    }
+    skippedRows++;
   }
-  return { platform: 'directa', transactions, skippedRows };
+  return { platform: 'directa', transactions, dividends, skippedRows };
 }
 
 /* ─── Generic (Portfolio Performance / Ghostfolio style) ─── */
 
 const GENERIC_BUY = ['buy', 'acquisto', 'kauf', 'purchase'];
 const GENERIC_SELL = ['sell', 'vendita', 'verkauf'];
+// Covers the common en/it/fr/de/es spellings of "dividend" as a transaction type.
+const GENERIC_DIVIDEND = ['dividend', 'dividendo', 'dividende'];
 
 function parseGeneric(header: string[], rows: string[][]): ParsedImportFile {
   const col = {
@@ -205,26 +285,47 @@ function parseGeneric(header: string[], rows: string[][]): ParsedImportFile {
     currency: findColumn(header, 'Currency', 'Transaction Currency', 'Valuta', 'Divisa'),
   };
   const transactions: ImportedTransaction[] = [];
+  const dividends: ImportedDividend[] = [];
   let skippedRows = 0;
   for (const row of rows) {
     const type = (cell(row, col.type) || '').toLowerCase();
     const side = GENERIC_BUY.some((t) => type.includes(t)) ? 'buy'
       : GENERIC_SELL.some((t) => type.includes(t)) ? 'sell' : null;
-    if (!side) { skippedRows++; continue; }
-    transactions.push({
-      side,
-      isin: cell(row, col.isin),
-      ticker: cell(row, col.ticker),
-      name: cell(row, col.name),
-      date: parseImportDate(cell(row, col.date)),
-      quantity: parseImportNumber(cell(row, col.quantity)),
-      price: parseImportNumber(cell(row, col.price)),
-      total: parseImportNumber(cell(row, col.total)),
-      currency: cell(row, col.currency),
-      externalId: null,
-    });
+    if (side) {
+      const currency = cell(row, col.currency);
+      transactions.push({
+        side,
+        isin: cell(row, col.isin),
+        ticker: cell(row, col.ticker),
+        name: cell(row, col.name),
+        date: parseImportDate(cell(row, col.date)),
+        quantity: parseImportNumber(cell(row, col.quantity)),
+        price: parseImportNumber(cell(row, col.price)),
+        total: parseImportNumber(cell(row, col.total)),
+        currency,
+        totalCurrency: currency,
+        externalId: null,
+      });
+      continue;
+    }
+    if (GENERIC_DIVIDEND.some((t) => type.includes(t))) {
+      const amount = parseImportNumber(cell(row, col.total));
+      if (amount != null) {
+        dividends.push({
+          isin: cell(row, col.isin),
+          ticker: cell(row, col.ticker),
+          name: cell(row, col.name),
+          date: parseImportDate(cell(row, col.date)),
+          amount: Math.abs(amount),
+          currency: cell(row, col.currency),
+          externalId: null,
+        });
+        continue;
+      }
+    }
+    skippedRows++;
   }
-  return { platform: 'generic', transactions, skippedRows };
+  return { platform: 'generic', transactions, dividends, skippedRows };
 }
 
 /* ─── Entry point ─── */
@@ -252,6 +353,10 @@ export function parseInvestmentCsv(rawText: string): ParsedImportFile | null {
   parsed.transactions = parsed.transactions.map((tx) => ({
     ...tx,
     isin: tx.isin && looksLikeIsin(tx.isin) ? tx.isin.toUpperCase() : null,
+  }));
+  parsed.dividends = parsed.dividends.map((d) => ({
+    ...d,
+    isin: d.isin && looksLikeIsin(d.isin) ? d.isin.toUpperCase() : null,
   }));
   return parsed;
 }

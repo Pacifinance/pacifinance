@@ -590,6 +590,45 @@ export interface InvestmentSettingsSaveRequest {
   monthly_target: number | null;
 }
 
+export interface InvestmentDividendDto {
+  id: number;
+  instrumentId: number;
+  holdingId: number | null;
+  /** EUR (DB is always EUR). */
+  amount: number;
+  /** Original currency of the payment, for reference only — null when unknown. */
+  currency: string | null;
+  /** Original amount before EUR conversion, for reference only. */
+  grossAmount: number | null;
+  /** "YYYY-MM-DD" */
+  paidDate: string;
+  externalId: string | null;
+  source: string;
+  recordedAt: string;
+}
+
+export interface InvestmentDividendSaveRequest {
+  instrument_id: number;
+  holding_id?: number | null;
+  amount: number;
+  currency?: string | null;
+  gross_amount?: number | null;
+  paid_date: string;
+  external_id?: string | null;
+  source: string;
+}
+
+export interface InvestmentDividendSummaryDto {
+  instrumentId: number;
+  symbol: string;
+  name: string;
+  totalAmount: number;
+  paymentCount: number;
+  lastPaidDate: string;
+}
+
+export type InvestmentDividendSummaryResponse = InvestmentDividendSummaryDto[];
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /liquidity-accounts
  * ═══════════════════════════════════════════════════════════════════════════*/

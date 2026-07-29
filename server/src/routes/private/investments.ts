@@ -259,6 +259,64 @@ investmentsRouter.post("/holdings/history/save", async (req, res) => {
     res.status(200).json(result.entry)
 })
 
+function parseDividendPayload(body: any): {instrumentId: number, holdingId: number | null, amount: number, currency: string | null, grossAmount: number | null, paidDate: Date, externalId: string | null, source: string} | {error: string} {
+    const instrumentId = Number(body.instrument_id ?? body.instrumentId)
+    const holdingIdRaw = body.holding_id ?? body.holdingId
+    const holdingId = holdingIdRaw === undefined || holdingIdRaw === null || holdingIdRaw === "" ? null : Number(holdingIdRaw)
+    const amount = Number(body.amount)
+    const grossAmount = optionalNumber(body.gross_amount ?? body.grossAmount)
+    const paidDate = new Date(body.paid_date ?? body.paidDate)
+    const now = new Date()
+    const source = common.sanitizeInput(body.source).slice(0, 40)
+
+    if (!Number.isFinite(instrumentId)) return {error: "invalid instrument_id"}
+    if (holdingId !== null && !Number.isFinite(holdingId)) return {error: "invalid holding_id"}
+    if (!Number.isFinite(amount) || amount < 0) return {error: "amount must be a non-negative number"}
+    if (grossAmount === undefined) return {error: "gross_amount must be a non-negative number or null"}
+    if (isNaN(paidDate.getTime())) return {error: "invalid paid_date"}
+    if (paidDate > now) return {error: "paid_date is in the future"}
+    if (source === "") return {error: "source is required"}
+
+    return {
+        instrumentId,
+        holdingId,
+        amount,
+        currency: body.currency ? normalizeCurrency(body.currency) : null,
+        grossAmount,
+        paidDate,
+        externalId: common.sanitizeInput(body.external_id ?? body.externalId).slice(0, 120) || null,
+        source,
+    }
+}
+
+investmentsRouter.post("/dividends/save", async (req, res) => {
+    const parsed = parseDividendPayload(req.body)
+    if ("error" in parsed) {
+        res.status(400).json({error: parsed.error})
+        return
+    }
+
+    // Scoped the same way holdings are: getInstrumentById only returns the shared
+    // catalog plus this user's own private instruments, never another user's.
+    const instrument = await db.investments.getInstrumentById(parsed.instrumentId, req.userId as string)
+    if (instrument === null) {
+        res.status(400).json({error: "instrument not found, or not owned by this user"})
+        return
+    }
+
+    const dividend = await db.investments.upsertDividend(req.userId as string, parsed)
+    if (dividend === null) {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json(dividend)
+})
+
+investmentsRouter.post("/dividends/summary", async (req, res) => {
+    const summary = await db.investments.getDividendsSummaryByUserId(req.userId as string)
+    res.status(200).json(summary)
+})
+
 investmentsRouter.post("/settings/get", async (req, res) => {
     const settings = await db.investments.getInvestmentSettings(req.userId as string)
     res.status(200).json(settings)

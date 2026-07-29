@@ -956,6 +956,133 @@ async function saveInvestmentSettings(user_id: string, monthlyTarget: number | n
     return {monthlyTarget: (data as {monthly_target: number | null}).monthly_target}
 }
 
+type DividendRow = {
+    id: number
+    instrument_id: number
+    holding_id: number | null
+    amount: number
+    currency: string | null
+    gross_amount: number | null
+    paid_date: string
+    external_id: string | null
+    source: string
+    recorded_at: string
+}
+
+const DIVIDEND_SELECT = [
+    "id", "instrument_id", "holding_id", "amount", "currency", "gross_amount",
+    "paid_date", "external_id", "source", "recorded_at",
+].join(", ")
+
+function toDividend(row: DividendRow) {
+    return {
+        id: row.id,
+        instrumentId: row.instrument_id,
+        holdingId: row.holding_id,
+        amount: row.amount,
+        currency: row.currency,
+        grossAmount: row.gross_amount,
+        paidDate: row.paid_date,
+        externalId: row.external_id,
+        source: row.source,
+        recordedAt: row.recorded_at,
+    }
+}
+
+export type DividendInput = {
+    instrumentId: number
+    holdingId: number | null
+    /** Already converted to EUR (DB is always EUR) - see convertAmountToEUR on the frontend. */
+    amount: number
+    currency: string | null
+    grossAmount: number | null
+    paidDate: Date
+    externalId: string | null
+    source: string
+}
+
+/**
+ * Records a single dividend payment, scoped to the owning user. Idempotent
+ * when the broker provides an external id (see the partial unique index in
+ * add-investment-dividends.sql): re-importing the same file upserts the
+ * already-recorded row instead of creating a duplicate, so a dividend can
+ * never be double-counted just because its source file gets re-uploaded.
+ * Rows without an external id (some brokers don't provide one) rely on the
+ * CSV-side dedup pass instead — same tradeoff already accepted for buy/sell
+ * transactions with no order id (see dedupeTransactions).
+ */
+async function upsertDividend(user_id: string, input: DividendInput) {
+    const payload = {
+        user_id,
+        instrument_id: input.instrumentId,
+        holding_id: input.holdingId,
+        amount: input.amount,
+        currency: input.currency,
+        gross_amount: input.grossAmount,
+        paid_date: toDateOnly(input.paidDate),
+        external_id: input.externalId,
+        source: input.source,
+    }
+
+    const query = supabase.from("user_investment_dividends")
+    const {data, error} = input.externalId
+        ? await query.upsert(payload, {onConflict: "user_id,instrument_id,external_id"}).select(DIVIDEND_SELECT).single()
+        : await query.insert(payload).select(DIVIDEND_SELECT).single()
+
+    if (error) {
+        console.error("investments.upsertDividend: failed to save dividend", error)
+        return null
+    }
+    return data ? toDividend(data as unknown as DividendRow) : null
+}
+
+export interface DividendSummaryEntry {
+    instrumentId: number
+    symbol: string
+    name: string
+    totalAmount: number
+    paymentCount: number
+    lastPaidDate: string
+}
+
+/**
+ * Per-instrument dividend totals for the user — feeds the "dividends
+ * received" stat and its comparison against each holding's invested amount
+ * (see InvestmentHoldingsPanel). Aggregated in JS rather than a SQL GROUP BY,
+ * consistent with how the rest of this file treats Supabase as a plain row
+ * store (see getHoldingHistoryByUserId) — a personal-finance app's realistic
+ * per-user row count (dozens to low hundreds) is cheap to just sum here.
+ */
+async function getDividendsSummaryByUserId(user_id: string): Promise<DividendSummaryEntry[]> {
+    const {data, error} = await supabase.from("user_investment_dividends")
+        .select(`amount, paid_date, instrument:investment_instruments(id, symbol, name)`)
+        .eq("user_id", user_id)
+    if (error) console.error("investments.getDividendsSummaryByUserId: failed to read dividends", error)
+    if (error || !data) return []
+
+    const byInstrument = new Map<number, DividendSummaryEntry>()
+    for (const row of data as unknown as {amount: number; paid_date: string; instrument: InstrumentRow | InstrumentRow[] | null}[]) {
+        const instrument = Array.isArray(row.instrument) ? row.instrument[0] : row.instrument
+        if (!instrument) continue
+        const existing = byInstrument.get(instrument.id)
+        if (existing) {
+            existing.totalAmount += row.amount
+            existing.paymentCount += 1
+            if (row.paid_date > existing.lastPaidDate) existing.lastPaidDate = row.paid_date
+        } else {
+            byInstrument.set(instrument.id, {
+                instrumentId: instrument.id,
+                symbol: instrument.symbol,
+                name: instrument.name,
+                totalAmount: row.amount,
+                paymentCount: 1,
+                lastPaidDate: row.paid_date,
+            })
+        }
+    }
+    return Array.from(byInstrument.values()).sort((a, b) => b.totalAmount - a.totalAmount)
+}
+
 export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
@@ -977,4 +1104,6 @@ export default {
     upsertHoldingHistoryEntry,
     getInvestmentSettings,
     saveInvestmentSettings,
+    upsertDividend,
+    getDividendsSummaryByUserId,
 }

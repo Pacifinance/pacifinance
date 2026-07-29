@@ -142,4 +142,33 @@ describe('investmentService', () => {
     expect(mockClient.post).toHaveBeenCalledWith('/api/investments/settings/save', { monthly_target: 250 });
     expect(result).toEqual({ monthlyTarget: 250 });
   });
+
+  it('saves a dividend payment', async () => {
+    const dividend = { id: 5, instrumentId: 1, holdingId: 16, amount: 0.29, source: 'trading212' };
+    const payload = { instrument_id: 1, holding_id: 16, amount: 0.29, paid_date: '2026-06-01', source: 'trading212' };
+    mockClient.post.mockResolvedValue({ data: dividend });
+
+    const result = await service.saveDividend(payload);
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/dividends/save', payload);
+    expect(result).toEqual(dividend);
+  });
+
+  it('reads the per-instrument dividends summary', async () => {
+    const summary = [{ instrumentId: 1, symbol: 'V', name: 'Visa', totalAmount: 0.6, paymentCount: 2, lastPaidDate: '2026-06-01' }];
+    mockClient.post.mockResolvedValue({ data: summary });
+
+    const result = await service.getDividendsSummary();
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/dividends/summary', {});
+    expect(result).toEqual(summary);
+  });
+
+  it('returns an empty array when the dividends summary response is malformed', async () => {
+    mockClient.post.mockResolvedValue({ data: null });
+
+    const result = await service.getDividendsSummary();
+
+    expect(result).toEqual([]);
+  });
 });

@@ -100,6 +100,26 @@ export const CurrencyProvider = ({ children }) => {
   }, [currency, exchangeRates]);
 
   /**
+   * Convert a value to EUR from an EXPLICIT source currency, independent of
+   * the user's display currency preference — for data that's already tagged
+   * with its own real currency (e.g. a CSV import's account/transaction
+   * currency) rather than something the user typed under the currently
+   * selected display currency. Using toEUR() for that data is a silent
+   * correctness bug: it converts using whatever display currency happens to
+   * be selected, not the value's actual currency (e.g. a EUR brokerage
+   * statement gets mis-converted if the display currency is set to USD).
+   * Falls back to no conversion (rate 1) for an unknown/missing currency
+   * code, rather than guessing.
+   */
+  const convertAmountToEUR = useCallback((value, fromCurrency) => {
+    if (typeof value !== 'number' || isNaN(value)) return 0;
+    if (!fromCurrency || fromCurrency === 'EUR') return value;
+    const rate = exchangeRates[fromCurrency] || FALLBACK_RATES[fromCurrency];
+    if (!rate) return value;
+    return value / rate;
+  }, [exchangeRates]);
+
+  /**
    * Format a value from DB (EUR) to display string with currency symbol.
    * @param {number} eurValue - Value in EUR from the database
    * @param {object} opts - Intl.NumberFormat options override
@@ -142,6 +162,7 @@ export const CurrencyProvider = ({ children }) => {
       formatNumber,
       fromEUR,
       toEUR,
+      convertAmountToEUR,
     }}>
       {children}
     </CurrencyContext.Provider>

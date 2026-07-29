@@ -552,4 +552,69 @@ describe("investments model", () => {
             expect(result).toBeNull()
         })
     })
+
+    describe("upsertDividend", () => {
+        const dividendInput = {
+            instrumentId: 1, holdingId: 10, amount: 0.29, currency: "EUR", grossAmount: 0.29,
+            paidDate: new Date("2026-06-01"), externalId: "EXT-1", source: "trading212",
+        }
+
+        it("upserts on the (user, instrument, external_id) key when an external id is provided", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 1, instrument_id: 1, holding_id: 10, amount: 0.29, currency: "EUR", gross_amount: 0.29, paid_date: "2026-06-01", external_id: "EXT-1", source: "trading212", recorded_at: "2026-06-01T00:00:00Z"},
+                error: null,
+            }))
+
+            const result = await investments.upsertDividend("user-1", dividendInput)
+
+            expect(result).toMatchObject({id: 1, amount: 0.29, externalId: "EXT-1", source: "trading212"})
+        })
+
+        it("plain inserts when no external id is available (broker didn't provide one)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 2, instrument_id: 1, holding_id: 10, amount: 20.95, currency: "EUR", gross_amount: 20.95, paid_date: "2025-01-15", external_id: null, source: "directa", recorded_at: "2025-01-15T00:00:00Z"},
+                error: null,
+            }))
+
+            const result = await investments.upsertDividend("user-1", {...dividendInput, externalId: null, source: "directa"})
+
+            expect(result).toMatchObject({id: 2, externalId: null, source: "directa"})
+        })
+
+        it("returns null when the save fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.upsertDividend("user-1", dividendInput)
+
+            expect(result).toBeNull()
+        })
+    })
+
+    describe("getDividendsSummaryByUserId", () => {
+        it("sums payments per instrument and tracks the most recent paid date", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [
+                    {amount: 0.29, paid_date: "2026-03-01", instrument: {id: 1, symbol: "V", name: "Visa"}},
+                    {amount: 0.31, paid_date: "2026-06-01", instrument: {id: 1, symbol: "V", name: "Visa"}},
+                    {amount: 5, paid_date: "2026-01-01", instrument: {id: 2, symbol: "AAPL", name: "Apple Inc"}},
+                ],
+                error: null,
+            }))
+
+            const result = await investments.getDividendsSummaryByUserId("user-1")
+
+            expect(result).toEqual([
+                {instrumentId: 2, symbol: "AAPL", name: "Apple Inc", totalAmount: 5, paymentCount: 1, lastPaidDate: "2026-01-01"},
+                {instrumentId: 1, symbol: "V", name: "Visa", totalAmount: 0.6, paymentCount: 2, lastPaidDate: "2026-06-01"},
+            ])
+        })
+
+        it("returns an empty array when the query fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.getDividendsSummaryByUserId("user-1")
+
+            expect(result).toEqual([])
+        })
+    })
 })

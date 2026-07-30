@@ -6,7 +6,7 @@ import { parseInvestmentCsv } from '../../utils/investmentImport/parsers';
 import {
   dedupeTransactions, aggregatePositions, aggregatePositionsAsOf, buildMonthlyPositionTimeline, lastDayOfMonth,
   groupTransactionsByPositionKey, lastRecordedValueBefore, closedPositions,
-  dedupeDividends, groupDividendsByPositionKey, aggregateDividends,
+  dedupeDividends, groupDividendsByPositionKey, aggregateDividends, reconcileImportPositions,
 } from '../../utils/investmentImport/aggregate';
 
 describe('parseImportNumber', () => {
@@ -523,5 +523,77 @@ describe('aggregateDividends', () => {
 
   it('drops dividends with no usable identifier', () => {
     expect(aggregateDividends([{ isin: null, ticker: null, name: null, amount: 1, currency: 'EUR', date: null, externalId: null }])).toEqual([]);
+  });
+});
+
+describe('reconcileImportPositions', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 1, price: 100, total: 100, currency: 'EUR', totalCurrency: 'EUR', externalId: null, ...over,
+  });
+
+  // Direct regression test for the "value over time" chart resetting instead
+  // of accumulating: a PAC-style monthly buy of the same stock, split across
+  // two separate wizard sessions (file A already imported and persisted
+  // server-side, file B is the "new" upload this session) - the previous bug
+  // was that only file B's own transactions fed the monthly history backfill,
+  // so month 4 onward would show only file B's own small contribution
+  // instead of the true cumulative total built up since month 1.
+  it('produces a genuinely cumulative (never-resetting) monthly total across two separate sessions of the same recurring buy', () => {
+    // Session 1 (already persisted server-side): Jan-Mar, 100 EUR/month.
+    const serverTransactions = [
+      tx({ externalId: 'ORD1', date: '2024-01-27', total: 100 }),
+      tx({ externalId: 'ORD2', date: '2024-02-27', total: 100 }),
+      tx({ externalId: 'ORD3', date: '2024-03-27', total: 100 }),
+    ];
+    // Session 2 (this session's freshly-parsed file): Apr-Jun, 100 EUR/month.
+    const sessionTransactions = [
+      tx({ externalId: 'ORD4', date: '2024-04-27', total: 100 }),
+      tx({ externalId: 'ORD5', date: '2024-05-27', total: 100 }),
+      tx({ externalId: 'ORD6', date: '2024-06-27', total: 100 }),
+    ];
+
+    const { positions, transactionsByKey } = reconcileImportPositions(sessionTransactions, serverTransactions);
+
+    expect(positions).toHaveLength(1);
+    expect(positions[0].investedAmount).toBe(600); // true total across both sessions, not just this session's 300
+
+    const timeline = buildMonthlyPositionTimeline(transactionsByKey.get('US0378331005'));
+    const investedByMonth = timeline.map((s) => s.positions[0]?.investedAmount ?? 0);
+    // Strictly increasing every month, by exactly 100 each time - never resets
+    // at the session/file boundary between March and April.
+    expect(investedByMonth).toEqual([100, 200, 300, 400, 500, 600]);
+    for (let i = 1; i < investedByMonth.length; i++) {
+      expect(investedByMonth[i]).toBeGreaterThan(investedByMonth[i - 1]);
+    }
+  });
+
+  it('reconciles a sell recorded in an earlier session before its matching buy was ever uploaded (reverse chronological order)', () => {
+    // "This session" uploads the OLDEST file first (just the original buy) -
+    // the sell already happened chronologically and was uploaded in an
+    // EARLIER session, so it's already in serverTransactions.
+    const serverTransactions = [
+      tx({ isin: 'US62914V1061', ticker: 'NIO', name: 'NIO', side: 'sell', externalId: 'SELL1', date: '2022-01-12', quantity: 0.04, total: 1.03 }),
+    ];
+    const sessionTransactions = [
+      tx({ isin: 'US62914V1061', ticker: 'NIO', name: 'NIO', externalId: 'BUY1', date: '2021-01-11', quantity: 0.04, total: 2.11 }),
+    ];
+
+    const { positions, closed } = reconcileImportPositions(sessionTransactions, serverTransactions);
+
+    // Not shown as an importable row - the merged history shows it's already
+    // fully closed, so there's nothing to "open" as a new holding.
+    expect(positions).toEqual([]);
+    expect(closed).toHaveLength(1);
+    expect(closed[0]).toMatchObject({ key: 'US62914V1061', quantity: 0 });
+  });
+
+  it('only shows rows for instruments this session actually mentions, even though the merged totals include unrelated server history', () => {
+    const serverTransactions = [tx({ isin: 'US5949181045', ticker: 'MSFT', name: 'Microsoft', total: 500 })];
+    const sessionTransactions = [tx({ total: 100 })]; // AAPL only
+
+    const { positions } = reconcileImportPositions(sessionTransactions, serverTransactions);
+
+    expect(positions.map((p) => p.key)).toEqual(['US0378331005']); // AAPL only, not MSFT
   });
 });

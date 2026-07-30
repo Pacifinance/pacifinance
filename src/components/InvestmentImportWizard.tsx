@@ -12,9 +12,8 @@ import {
 import { ModernActionButton } from '../styles/MyStyled';
 import { parseInvestmentCsv, ImportedTransaction, ImportedDividend } from '../utils/investmentImport/parsers';
 import {
-  dedupeTransactions, aggregatePositions, buildMonthlyPositionTimeline, groupTransactionsByPositionKey,
-  lastRecordedValueBefore, closedPositions, positionKeyFor, AggregatedPosition,
-  dedupeDividends, groupDividendsByPositionKey, aggregateDividends,
+  buildMonthlyPositionTimeline, lastRecordedValueBefore, positionKeyFor, AggregatedPosition,
+  dedupeDividends, groupDividendsByPositionKey, aggregateDividends, reconcileImportPositions,
 } from '../utils/investmentImport/aggregate';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
@@ -358,19 +357,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * merged set, so the numbers themselves are always the true total.
    */
   const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[]) => {
-    const deduped = dedupeTransactions(transactions);
-    const sessionKeys = new Set(groupTransactionsByPositionKey(deduped).keys());
     const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(dividends));
 
     setLoadingSavedTransactions(true);
-    let merged = deduped;
+    let savedTransactions: InvestmentTransactionSummaryDto[] = [];
     const holdingMap = new Map<number, InvestmentHoldingDto>();
     try {
-      const [holdings, history, savedTransactions] = await Promise.all([
+      const [holdings, history, fetchedTransactions] = await Promise.all([
         investmentService.getHoldings(),
         investmentService.getHoldingHistory({}),
         investmentService.getTransactions(),
       ]);
+      savedTransactions = fetchedTransactions;
       for (const holding of holdings) if (holding.instrument) holdingMap.set(holding.instrument.id, holding);
       setExistingByInstrumentId(holdingMap);
 
@@ -387,11 +385,6 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       }
       setRecordedHistoryByInstrumentId(historyMap);
       setRecordedQuantityByInstrumentId(quantityMap);
-
-      // Every transaction already persisted server-side, from ANY session,
-      // in ANY order - merged with this session's own before anything else
-      // gets computed below.
-      merged = dedupeTransactions([...deduped, ...savedTransactions.map(toImportedTransaction)]);
     } catch {
       setExistingByInstrumentId(new Map());
       setRecordedHistoryByInstrumentId(new Map());
@@ -400,8 +393,13 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setLoadingSavedTransactions(false);
     }
 
-    const transactionsByKey = groupTransactionsByPositionKey(merged);
-    const positions = aggregatePositions(merged).filter((p) => sessionKeys.has(p.key));
+    // Every transaction already persisted server-side, from ANY session, in
+    // ANY order, merged with this session's own before anything gets computed
+    // - see reconcileImportPositions for why (avoids the entire computation
+    // depending on which files were uploaded when, in which order).
+    const { positions, transactionsByKey, closed } = reconcileImportPositions(
+      transactions, savedTransactions.map(toImportedTransaction),
+    );
     const initialRows: ImportRowState[] = positions.map((position) => {
       const positionTransactions = transactionsByKey.get(position.key) ?? [];
       // Every distinct month present in this position's COMPLETE history
@@ -417,10 +415,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     setRows(initialRows);
 
     // Cross-reference against already-held instruments: a position the
-    // complete merged history shows fully sold (dropped by aggregatePositions
-    // above) that matches an existing, still-nonzero holding means that
-    // holding is stale and needs the user's explicit confirmation to close.
-    const closed = closedPositions(merged);
+    // complete merged history shows fully sold that matches an existing,
+    // still-nonzero holding means that holding is stale and needs the user's
+    // explicit confirmation to close.
     const candidates: ClosedHoldingCandidate[] = [];
     for (const holding of holdingMap.values()) {
       if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;

@@ -199,6 +199,55 @@ function roundQuantity(value: number): number {
   return Number(value.toFixed(10));
 }
 
+export interface MergedImportPositions {
+  /** Positions to show as importable rows: scoped to instruments THIS session's
+   * files mention (`sessionTransactions`), but with quantity/invested amount
+   * reflecting the COMPLETE merged history (session + everything already
+   * persisted server-side, `serverTransactions`) - never just this file's own
+   * partial view. */
+  positions: AggregatedPosition[];
+  /** Every transaction behind each position key, from the complete merged set -
+   * what a month-by-month history backfill must be computed from, so a
+   * position bought steadily over years shows a genuinely rising cumulative
+   * total instead of resetting at every file boundary. */
+  transactionsByKey: Map<string, ImportedTransaction[]>;
+  /** Positions the complete merged history shows fully closed (net quantity
+   * zero or negative) - aggregatePositions/`positions` above excludes these,
+   * this is what lets the wizard offer to close a stale existing holding. */
+  closed: AggregatedPosition[];
+}
+
+/**
+ * Merges this session's freshly-parsed transactions with every transaction
+ * already persisted server-side (from any past session, any upload order),
+ * then computes everything downstream — which rows to show, their true
+ * quantity, closed-position detection — from that COMPLETE picture, never
+ * from a single file or even a single session in isolation.
+ *
+ * Why this matters: brokers cap a single export (Trading212: 365 days), so a
+ * multi-year portfolio is necessarily spread across several files, uploaded
+ * in however many separate sessions, in whatever order the user happens to
+ * have them in. Computing positions/closed-status from only session-scoped
+ * transactions makes both depend on upload order: a buy living in one file
+ * and its matching sell in another would silently net to whichever partial
+ * view happened to be computed first - and the "value over time" chart would
+ * show each file's own contribution resetting at every file boundary instead
+ * of a genuinely rising cumulative total. Merging the complete ledger before
+ * computing anything removes that dependency entirely.
+ */
+export function reconcileImportPositions(
+  sessionTransactions: ImportedTransaction[],
+  serverTransactions: ImportedTransaction[],
+): MergedImportPositions {
+  const deduped = dedupeTransactions(sessionTransactions);
+  const sessionKeys = new Set(groupTransactionsByPositionKey(deduped).keys());
+  const merged = dedupeTransactions([...deduped, ...serverTransactions]);
+  const transactionsByKey = groupTransactionsByPositionKey(merged);
+  const positions = aggregatePositions(merged).filter((p) => sessionKeys.has(p.key));
+  const closed = closedPositions(merged);
+  return { positions, transactionsByKey, closed };
+}
+
 export interface AggregatedDividend {
   /** Grouping key: ISIN when available, else ticker, else name — same as AggregatedPosition. */
   key: string;

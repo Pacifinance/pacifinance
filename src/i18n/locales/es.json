@@ -2801,6 +2801,8 @@
                         "done": "{count} holdings importados correctamente",
                         "importSelected": "Importar {count} seleccionados",
                         "importing": "Importando...",
+                        "importingProgress": "Guardando posición {current} de {total}...",
+                        "importingFinalizing": "Guardando historial, transacciones y dividendos...",
                         "button": "Importar desde CSV",
                         "platforms": {
                                     "trading212": "Trading 212",

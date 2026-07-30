@@ -143,6 +143,17 @@ describe('investmentService', () => {
     expect(result).toEqual({ monthlyTarget: 250 });
   });
 
+  it('saves a whole batch of monthly history rows in one request', async () => {
+    const response = { savedCount: 2, errors: [] };
+    const payload = { entries: [{ holding_id: 16, user_date: '2024-01-01', current_value: null, invested_amount: 1000 }] };
+    mockClient.post.mockResolvedValue({ data: response });
+
+    const result = await service.saveHoldingHistoryBatch(payload);
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/holdings/history/save-batch', payload);
+    expect(result).toEqual(response);
+  });
+
   it('saves a dividend payment', async () => {
     const dividend = { id: 5, instrumentId: 1, holdingId: 16, amount: 0.29, source: 'trading212' };
     const payload = { instrument_id: 1, holding_id: 16, amount: 0.29, paid_date: '2026-06-01', source: 'trading212' };
@@ -152,6 +163,17 @@ describe('investmentService', () => {
 
     expect(mockClient.post).toHaveBeenCalledWith('/api/investments/dividends/save', payload);
     expect(result).toEqual(dividend);
+  });
+
+  it('saves a whole batch of dividend payments in one request', async () => {
+    const response = { savedCount: 2, errors: [] };
+    const payload = { entries: [{ instrument_id: 1, holding_id: 16, amount: 0.29, paid_date: '2026-06-01', source: 'trading212' }] };
+    mockClient.post.mockResolvedValue({ data: response });
+
+    const result = await service.saveDividendsBatch(payload);
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/dividends/save-batch', payload);
+    expect(result).toEqual(response);
   });
 
   it('reads the per-instrument dividends summary', async () => {
@@ -181,6 +203,17 @@ describe('investmentService', () => {
 
     expect(mockClient.post).toHaveBeenCalledWith('/api/investments/transactions/save', payload);
     expect(result).toEqual(transaction);
+  });
+
+  it('saves a whole batch of buy/sell transactions in one request', async () => {
+    const response = { savedCount: 2, errors: [] };
+    const payload = { entries: [{ instrument_id: 1, holding_id: 16, side: 'buy', quantity: 2, trade_date: '2022-01-13', source: 'trading212' }] };
+    mockClient.post.mockResolvedValue({ data: response });
+
+    const result = await service.saveTransactionsBatch(payload);
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/investments/transactions/save-batch', payload);
+    expect(result).toEqual(response);
   });
 
   it('reads the full transaction history', async () => {

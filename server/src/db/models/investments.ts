@@ -849,6 +849,72 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
     return {status: "ok", entry: toHoldingHistory(data as unknown as HoldingHistoryRow)}
 }
 
+export type HoldingHistoryBatchEntry = {holdingId: number, userDate: Date, currentValue: number | null, investedAmount: number | null, quantity?: number | null}
+export interface HoldingHistoryBatchResult {
+    savedCount: number
+    /** One entry per row that couldn't be saved (unknown holding_id, or a genuine DB error) - never throws, callers decide how much to surface. */
+    errors: string[]
+}
+
+/**
+ * Same as upsertHoldingHistoryEntry, but for many months (possibly across
+ * many holdings) in ONE round trip instead of one HTTP request per month.
+ * The CSV import wizard backfilling years of history for a whole portfolio
+ * used to mean one request per month per holding - hundreds to low thousands
+ * of individual Vercel function invocations / Supabase round trips for a
+ * single import, a real cost and latency problem, not just a slow UI. Two
+ * queries total regardless of how many entries: one to fetch every
+ * referenced holding at once, one bulk upsert for every valid row.
+ */
+async function upsertHoldingHistoryBatch(user_id: string, entries: HoldingHistoryBatchEntry[]): Promise<HoldingHistoryBatchResult> {
+    if (entries.length === 0) return {savedCount: 0, errors: []}
+
+    const holdingIds = Array.from(new Set(entries.map((e) => e.holdingId)))
+    const {data: holdingRows, error: holdingsErr} = await supabase.from("user_investment_holdings")
+        .select(HOLDING_SELECT).eq("user_id", user_id).in("id", holdingIds)
+    if (holdingsErr) {
+        console.error("investments.upsertHoldingHistoryBatch: failed to read holdings", holdingsErr)
+        return {savedCount: 0, errors: [holdingsErr.message]}
+    }
+    const holdingById = new Map((holdingRows ?? []).map((row) => {
+        const holding = toHolding(row as unknown as HoldingRow)
+        return [holding.id, holding] as const
+    }))
+
+    const errors: string[] = []
+    const rows: Record<string, unknown>[] = []
+    for (const entry of entries) {
+        const holding = holdingById.get(entry.holdingId)
+        if (!holding || holding.instrument === null) {
+            errors.push(`holding ${entry.holdingId} not found, or not owned by this user`)
+            continue
+        }
+        rows.push({
+            user_id,
+            holding_id: entry.holdingId,
+            instrument_id: holding.instrument.id,
+            asset_key: holding.assetKey,
+            symbol: holding.instrument.symbol,
+            name: holding.instrument.name,
+            quantity: entry.quantity !== undefined ? entry.quantity : holding.quantity,
+            average_price: holding.averagePrice,
+            current_value: entry.currentValue,
+            invested_amount: entry.investedAmount,
+            currency: holding.currency,
+            user_date: toDateOnly(entry.userDate),
+        })
+    }
+    if (rows.length === 0) return {savedCount: 0, errors}
+
+    const {error} = await supabase.from("user_investment_holding_history")
+        .upsert(rows, {onConflict: "user_id,holding_id,user_date"})
+    if (error) {
+        console.error("investments.upsertHoldingHistoryBatch: failed to upsert history rows", error)
+        return {savedCount: 0, errors: [...errors, error.message]}
+    }
+    return {savedCount: rows.length, errors}
+}
+
 export interface HistoricalPriceBackfillResult {
     holdingId: number
     monthsFilled: number
@@ -1036,6 +1102,76 @@ async function upsertDividend(user_id: string, input: DividendInput) {
     return data ? toDividend(data as unknown as DividendRow) : null
 }
 
+export interface DividendBatchResult {
+    savedCount: number
+    /** One entry per row that couldn't be saved (unknown/foreign instrument_id, or a genuine DB error) - never throws, callers decide how much to surface. */
+    errors: string[]
+}
+
+/**
+ * Resolves which of the given instrument ids are actually visible to this
+ * user (shared catalog or their own private rows) in ONE query - the same
+ * scoping getInstrumentById applies one row at a time, but batch callers
+ * can't afford one query per row (see upsertHoldingHistoryBatch).
+ */
+async function getOwnedInstrumentIds(instrumentIds: number[], user_id: string): Promise<Set<number>> {
+    if (instrumentIds.length === 0) return new Set()
+    const {data, error} = await supabase.from("investment_instruments")
+        .select("id").eq("active", true).in("id", instrumentIds)
+        .or(`owner_user_id.is.null,owner_user_id.eq.${user_id}`)
+    if (error) {
+        console.error("investments.getOwnedInstrumentIds: failed to read instruments", error)
+        return new Set()
+    }
+    return new Set((data ?? []).map((row) => (row as {id: number}).id))
+}
+
+/**
+ * Same as upsertDividend, but for many payments in ONE round trip instead of
+ * one HTTP request per dividend - see upsertHoldingHistoryBatch for why this
+ * matters at import time. Split into two bulk calls at most (entries with a
+ * broker-provided external id upsert together, entries without one insert
+ * together) rather than one call per entry - still a small, fixed number of
+ * queries regardless of how many dividends a whole portfolio import finds.
+ */
+async function upsertDividendsBatch(user_id: string, entries: DividendInput[]): Promise<DividendBatchResult> {
+    if (entries.length === 0) return {savedCount: 0, errors: []}
+
+    const ownedInstrumentIds = await getOwnedInstrumentIds(Array.from(new Set(entries.map((e) => e.instrumentId))), user_id)
+    const errors: string[] = []
+    const valid = entries.filter((e) => {
+        if (ownedInstrumentIds.has(e.instrumentId)) return true
+        errors.push(`instrument ${e.instrumentId} not found, or not owned by this user`)
+        return false
+    })
+
+    const toPayload = (input: DividendInput) => ({
+        user_id, instrument_id: input.instrumentId, holding_id: input.holdingId,
+        amount: input.amount, currency: input.currency, gross_amount: input.grossAmount,
+        paid_date: toDateOnly(input.paidDate), external_id: input.externalId, source: input.source,
+    })
+    const withId = valid.filter((e) => e.externalId).map(toPayload)
+    const withoutId = valid.filter((e) => !e.externalId).map(toPayload)
+
+    let savedCount = 0
+    if (withId.length > 0) {
+        const {data, error} = await supabase.from("user_investment_dividends")
+            .upsert(withId, {onConflict: "user_id,instrument_id,external_id"}).select("id")
+        if (error) {
+            console.error("investments.upsertDividendsBatch: failed to upsert dividends with external_id", error)
+            errors.push(error.message)
+        } else savedCount += (data ?? []).length
+    }
+    if (withoutId.length > 0) {
+        const {data, error} = await supabase.from("user_investment_dividends").insert(withoutId).select("id")
+        if (error) {
+            console.error("investments.upsertDividendsBatch: failed to insert dividends without external_id", error)
+            errors.push(error.message)
+        } else savedCount += (data ?? []).length
+    }
+    return {savedCount, errors}
+}
+
 export interface DividendSummaryEntry {
     instrumentId: number
     symbol: string
@@ -1174,6 +1310,59 @@ async function upsertTransaction(user_id: string, input: TransactionInput) {
     return data ? toTransaction(data as unknown as TransactionRow) : null
 }
 
+export interface TransactionBatchResult {
+    savedCount: number
+    /** One entry per row that couldn't be saved (unknown/foreign instrument_id, or a genuine DB error) - never throws, callers decide how much to surface. */
+    errors: string[]
+}
+
+/**
+ * Same as upsertTransaction, but for many transactions (possibly across many
+ * instruments) in ONE round trip instead of one HTTP request per transaction
+ * - see upsertHoldingHistoryBatch for why this matters at import time. A
+ * portfolio's full transaction history (every individual buy/sell, not just
+ * monthly snapshots) is exactly the case with the most rows: split into two
+ * bulk calls at most, same reasoning as upsertDividendsBatch.
+ */
+async function saveTransactionsBatch(user_id: string, entries: TransactionInput[]): Promise<TransactionBatchResult> {
+    if (entries.length === 0) return {savedCount: 0, errors: []}
+
+    const ownedInstrumentIds = await getOwnedInstrumentIds(Array.from(new Set(entries.map((e) => e.instrumentId))), user_id)
+    const errors: string[] = []
+    const valid = entries.filter((e) => {
+        if (ownedInstrumentIds.has(e.instrumentId)) return true
+        errors.push(`instrument ${e.instrumentId} not found, or not owned by this user`)
+        return false
+    })
+
+    const toPayload = (input: TransactionInput) => ({
+        user_id, instrument_id: input.instrumentId, holding_id: input.holdingId,
+        side: input.side, quantity: input.quantity, price: input.price, currency: input.currency,
+        total: input.total, total_currency: input.totalCurrency, trade_date: toDateOnly(input.tradeDate),
+        external_id: input.externalId, source: input.source,
+    })
+    const withId = valid.filter((e) => e.externalId).map(toPayload)
+    const withoutId = valid.filter((e) => !e.externalId).map(toPayload)
+
+    let savedCount = 0
+    if (withId.length > 0) {
+        const {data, error} = await supabase.from("user_investment_transactions")
+            .upsert(withId, {onConflict: "user_id,instrument_id,external_id"}).select("id")
+        if (error) {
+            console.error("investments.saveTransactionsBatch: failed to upsert transactions with external_id", error)
+            errors.push(error.message)
+        } else savedCount += (data ?? []).length
+    }
+    if (withoutId.length > 0) {
+        const {data, error} = await supabase.from("user_investment_transactions").insert(withoutId).select("id")
+        if (error) {
+            console.error("investments.saveTransactionsBatch: failed to insert transactions without external_id", error)
+            errors.push(error.message)
+        } else savedCount += (data ?? []).length
+    }
+    return {savedCount, errors}
+}
+
 export interface TransactionSummaryEntry {
     instrumentId: number
     isin: string | null
@@ -1261,10 +1450,13 @@ export default {
     snapshotHoldingsForUser,
     getHoldingHistoryByUserId,
     upsertHoldingHistoryEntry,
+    upsertHoldingHistoryBatch,
     getInvestmentSettings,
     saveInvestmentSettings,
     upsertDividend,
+    upsertDividendsBatch,
     getDividendsSummaryByUserId,
     upsertTransaction,
+    saveTransactionsBatch,
     getTransactionsByUserId,
 }

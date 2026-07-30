@@ -582,6 +582,16 @@ export interface InvestmentHoldingHistorySaveRequest {
   quantity?: number | null;
 }
 
+export interface InvestmentHoldingHistorySaveBatchRequest {
+  entries: InvestmentHoldingHistorySaveRequest[];
+}
+
+export interface InvestmentBatchSaveResponse {
+  savedCount: number;
+  /** One message per row that couldn't be saved — never rejects, callers decide how much to surface. */
+  errors: string[];
+}
+
 export interface InvestmentSettingsDto {
   monthlyTarget: number | null;
 }
@@ -616,6 +626,10 @@ export interface InvestmentDividendSaveRequest {
   paid_date: string;
   external_id?: string | null;
   source: string;
+}
+
+export interface InvestmentDividendSaveBatchRequest {
+  entries: InvestmentDividendSaveRequest[];
 }
 
 export interface InvestmentDividendSummaryDto {
@@ -661,6 +675,10 @@ export interface InvestmentTransactionSaveRequest {
   trade_date: string;
   external_id?: string | null;
   source: string;
+}
+
+export interface InvestmentTransactionSaveBatchRequest {
+  entries: InvestmentTransactionSaveRequest[];
 }
 
 export interface InvestmentTransactionSummaryDto {

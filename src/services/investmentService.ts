@@ -12,7 +12,9 @@
  */
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import type {
+  InvestmentBatchSaveResponse,
   InvestmentDividendDto,
+  InvestmentDividendSaveBatchRequest,
   InvestmentDividendSaveRequest,
   InvestmentDividendSummaryResponse,
   InvestmentHoldingConflict,
@@ -21,6 +23,7 @@ import type {
   InvestmentHoldingHistoryDto,
   InvestmentHoldingHistoryRequest,
   InvestmentHoldingHistoryResponse,
+  InvestmentHoldingHistorySaveBatchRequest,
   InvestmentHoldingHistorySaveRequest,
   InvestmentHoldingSaveRequest,
   InvestmentHoldingsGetResponse,
@@ -33,6 +36,7 @@ import type {
   InvestmentSettingsDto,
   InvestmentSettingsSaveRequest,
   InvestmentTransactionDto,
+  InvestmentTransactionSaveBatchRequest,
   InvestmentTransactionSaveRequest,
   InvestmentTransactionsGetResponse,
 } from '../types/api';
@@ -65,11 +69,14 @@ export interface InvestmentService {
   deleteHolding(data: InvestmentHoldingDeleteRequest): Promise<AxiosResponse>;
   getHoldingHistory(params?: InvestmentHoldingHistoryRequest): Promise<InvestmentHoldingHistoryResponse>;
   saveHoldingHistory(data: InvestmentHoldingHistorySaveRequest): Promise<InvestmentHoldingHistoryDto>;
+  saveHoldingHistoryBatch(data: InvestmentHoldingHistorySaveBatchRequest): Promise<InvestmentBatchSaveResponse>;
   getSettings(): Promise<InvestmentSettingsDto>;
   saveSettings(data: InvestmentSettingsSaveRequest): Promise<InvestmentSettingsDto>;
   saveDividend(data: InvestmentDividendSaveRequest): Promise<InvestmentDividendDto>;
+  saveDividendsBatch(data: InvestmentDividendSaveBatchRequest): Promise<InvestmentBatchSaveResponse>;
   getDividendsSummary(): Promise<InvestmentDividendSummaryResponse>;
   saveTransaction(data: InvestmentTransactionSaveRequest): Promise<InvestmentTransactionDto>;
+  saveTransactionsBatch(data: InvestmentTransactionSaveBatchRequest): Promise<InvestmentBatchSaveResponse>;
   getTransactions(): Promise<InvestmentTransactionsGetResponse>;
 }
 
@@ -131,6 +138,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
     return res.data;
   },
 
+  async saveHoldingHistoryBatch(data) {
+    const res = await apiClient.post<InvestmentBatchSaveResponse>('/api/investments/holdings/history/save-batch', data);
+    return res.data;
+  },
+
   async getSettings() {
     const res = await apiClient.post<InvestmentSettingsDto>('/api/investments/settings/get', {});
     return res.data;
@@ -146,6 +158,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
     return res.data;
   },
 
+  async saveDividendsBatch(data) {
+    const res = await apiClient.post<InvestmentBatchSaveResponse>('/api/investments/dividends/save-batch', data);
+    return res.data;
+  },
+
   async getDividendsSummary() {
     const res = await apiClient.post<InvestmentDividendSummaryResponse>('/api/investments/dividends/summary', {});
     return Array.isArray(res.data) ? res.data : [];
@@ -153,6 +170,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
 
   async saveTransaction(data) {
     const res = await apiClient.post<InvestmentTransactionDto>('/api/investments/transactions/save', data);
+    return res.data;
+  },
+
+  async saveTransactionsBatch(data) {
+    const res = await apiClient.post<InvestmentBatchSaveResponse>('/api/investments/transactions/save-batch', data);
     return res.data;
   },
 

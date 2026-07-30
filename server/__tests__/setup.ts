@@ -100,11 +100,14 @@ const mocks = vi.hoisted(() => {
             snapshotHoldingsForUser: vi.fn(),
             getHoldingHistoryByUserId: vi.fn(),
             upsertHoldingHistoryEntry: vi.fn(),
+            upsertHoldingHistoryBatch: vi.fn(),
             getInvestmentSettings: vi.fn(),
             saveInvestmentSettings: vi.fn(),
             upsertDividend: vi.fn(),
+            upsertDividendsBatch: vi.fn(),
             getDividendsSummaryByUserId: vi.fn(),
             upsertTransaction: vi.fn(),
+            saveTransactionsBatch: vi.fn(),
             getTransactionsByUserId: vi.fn()
         },
         liquidityAccounts: {
@@ -301,6 +304,9 @@ export function resetServerMocks() {
     mockDb.investments.snapshotHoldingsForUser.mockResolvedValue(undefined)
     mockDb.investments.getHoldingHistoryByUserId.mockResolvedValue([])
     mockDb.investments.upsertHoldingHistoryEntry.mockResolvedValue({status: "ok", entry: {id: 1}})
+    mockDb.investments.upsertHoldingHistoryBatch.mockResolvedValue({savedCount: 0, errors: []})
+    mockDb.investments.upsertDividendsBatch.mockResolvedValue({savedCount: 0, errors: []})
+    mockDb.investments.saveTransactionsBatch.mockResolvedValue({savedCount: 0, errors: []})
 
     mockDb.liquidityAccounts.getAccountsByUserId.mockResolvedValue([])
     mockDb.liquidityAccounts.insertAccount.mockResolvedValue({id: 1})

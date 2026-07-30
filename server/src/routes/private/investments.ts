@@ -259,6 +259,20 @@ investmentsRouter.post("/holdings/history/save", async (req, res) => {
     res.status(200).json(result.entry)
 })
 
+investmentsRouter.post("/holdings/history/save-batch", async (req, res) => {
+    const rawEntries = Array.isArray(req.body.entries) ? req.body.entries : []
+    const errors: string[] = []
+    const valid: {holdingId: number, userDate: Date, currentValue: number | null, investedAmount: number | null, quantity?: number | null}[] = []
+    for (const raw of rawEntries) {
+        const parsed = parseHoldingHistoryPayload(raw)
+        if ("error" in parsed) errors.push(parsed.error)
+        else valid.push(parsed)
+    }
+
+    const result = await db.investments.upsertHoldingHistoryBatch(req.userId as string, valid)
+    res.status(200).json({savedCount: result.savedCount, errors: [...errors, ...result.errors]})
+})
+
 function parseDividendPayload(body: any): {instrumentId: number, holdingId: number | null, amount: number, currency: string | null, grossAmount: number | null, paidDate: Date, externalId: string | null, source: string} | {error: string} {
     const instrumentId = Number(body.instrument_id ?? body.instrumentId)
     const holdingIdRaw = body.holding_id ?? body.holdingId
@@ -310,6 +324,20 @@ investmentsRouter.post("/dividends/save", async (req, res) => {
         return
     }
     res.status(200).json(dividend)
+})
+
+investmentsRouter.post("/dividends/save-batch", async (req, res) => {
+    const rawEntries = Array.isArray(req.body.entries) ? req.body.entries : []
+    const errors: string[] = []
+    const valid: {instrumentId: number, holdingId: number | null, amount: number, currency: string | null, grossAmount: number | null, paidDate: Date, externalId: string | null, source: string}[] = []
+    for (const raw of rawEntries) {
+        const parsed = parseDividendPayload(raw)
+        if ("error" in parsed) errors.push(parsed.error)
+        else valid.push(parsed)
+    }
+
+    const result = await db.investments.upsertDividendsBatch(req.userId as string, valid)
+    res.status(200).json({savedCount: result.savedCount, errors: [...errors, ...result.errors]})
 })
 
 investmentsRouter.post("/dividends/summary", async (req, res) => {
@@ -373,6 +401,20 @@ investmentsRouter.post("/transactions/save", async (req, res) => {
         return
     }
     res.status(200).json(transaction)
+})
+
+investmentsRouter.post("/transactions/save-batch", async (req, res) => {
+    const rawEntries = Array.isArray(req.body.entries) ? req.body.entries : []
+    const errors: string[] = []
+    const valid: {instrumentId: number, holdingId: number | null, side: "buy" | "sell", quantity: number, price: number | null, currency: string | null, total: number | null, totalCurrency: string | null, tradeDate: Date, externalId: string | null, source: string}[] = []
+    for (const raw of rawEntries) {
+        const parsed = parseTransactionPayload(raw)
+        if ("error" in parsed) errors.push(parsed.error)
+        else valid.push(parsed)
+    }
+
+    const result = await db.investments.saveTransactionsBatch(req.userId as string, valid)
+    res.status(200).json({savedCount: result.savedCount, errors: [...errors, ...result.errors]})
 })
 
 investmentsRouter.post("/transactions/get", async (req, res) => {

@@ -152,6 +152,8 @@ export const useDemoServices = () => {
           userDate: data.user_date,
           recordedAt: new Date().toISOString(),
         }),
+        // Same reasoning as saveHoldingHistory above - unreachable from the UI in demo mode.
+        saveHoldingHistoryBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
         // No session-backed setting to persist in demo mode - echoes the save
         // back (like saveHolding above) without actually remembering it.
         getSettings: async (): Promise<InvestmentSettingsDto> => ({ monthlyTarget: null }),
@@ -170,6 +172,8 @@ export const useDemoServices = () => {
           source: data.source,
           recordedAt: new Date().toISOString(),
         }),
+        // No session-backed dividend ledger in demo mode - same reasoning as saveDividend above.
+        saveDividendsBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
         // Demo mode's getHoldings() always returns [] - nothing to summarize.
         getDividendsSummary: async (): Promise<InvestmentDividendSummaryResponse> => [],
         // No session-backed transaction ledger in demo mode - echoes the save back
@@ -189,6 +193,8 @@ export const useDemoServices = () => {
           source: data.source,
           recordedAt: new Date().toISOString(),
         }),
+        // No session-backed transaction ledger in demo mode - same reasoning as saveTransaction above.
+        saveTransactionsBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
         // Demo mode has no persisted transaction history to reconcile against.
         getTransactions: async (): Promise<InvestmentTransactionsGetResponse> => [],
       },

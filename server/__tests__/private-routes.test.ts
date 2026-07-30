@@ -628,6 +628,62 @@ describe("private backend routes", () => {
         expect(response.json).toEqual({error: "there is no unique or exclusion constraint matching the ON CONFLICT specification"})
     })
 
+    it("saves a whole batch of monthly history rows in one request", async () => {
+        mockDb.investments.upsertHoldingHistoryBatch.mockResolvedValue({savedCount: 2, errors: []})
+
+        const response = await request(app, "/api/investments/holdings/history/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                entries: [
+                    {holding_id: 16, user_date: "2024-01-01", current_value: null, invested_amount: 1000, quantity: 10},
+                    {holding_id: 16, user_date: "2024-02-01", current_value: null, invested_amount: 1200, quantity: 12},
+                ]
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({savedCount: 2, errors: []})
+        expect(mockDb.investments.upsertHoldingHistoryBatch).toHaveBeenCalledWith("user-uuid", [
+            {holdingId: 16, userDate: new Date("2024-01-01"), currentValue: null, investedAmount: 1000, quantity: 10},
+            {holdingId: 16, userDate: new Date("2024-02-01"), currentValue: null, investedAmount: 1200, quantity: 12},
+        ])
+    })
+
+    it("skips malformed rows in a history batch (reporting them) instead of rejecting the whole request", async () => {
+        mockDb.investments.upsertHoldingHistoryBatch.mockResolvedValue({savedCount: 1, errors: []})
+
+        const response = await request(app, "/api/investments/holdings/history/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                entries: [
+                    {holding_id: 16, user_date: "2024-01-01", current_value: null, invested_amount: 1000},
+                    {holding_id: "not-a-number", user_date: "2024-02-01", current_value: null, invested_amount: 500},
+                ]
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({savedCount: 1, errors: ["invalid holding_id"]})
+        expect(mockDb.investments.upsertHoldingHistoryBatch).toHaveBeenCalledWith(
+            "user-uuid", [{holdingId: 16, userDate: new Date("2024-01-01"), currentValue: null, investedAmount: 1000}],
+        )
+    })
+
+    it("treats a missing/non-array entries field as an empty batch", async () => {
+        mockDb.investments.upsertHoldingHistoryBatch.mockResolvedValue({savedCount: 0, errors: []})
+
+        const response = await request(app, "/api/investments/holdings/history/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.investments.upsertHoldingHistoryBatch).toHaveBeenCalledWith("user-uuid", [])
+    })
+
     it("saves a dividend payment", async () => {
         mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, symbol: "V", name: "Visa"})
         mockDb.investments.upsertDividend.mockResolvedValue({
@@ -675,6 +731,42 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(400)
         expect(mockDb.investments.upsertDividend).not.toHaveBeenCalled()
+    })
+
+    it("saves a whole batch of dividend payments in one request", async () => {
+        mockDb.investments.upsertDividendsBatch.mockResolvedValue({savedCount: 2, errors: []})
+
+        const response = await request(app, "/api/investments/dividends/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                entries: [
+                    {instrument_id: 1, holding_id: 16, amount: 0.29, currency: "eur", gross_amount: 0.29, paid_date: "2026-06-01", external_id: "EXT-1", source: "trading212"},
+                    {instrument_id: 1, holding_id: 16, amount: 20.95, currency: "eur", gross_amount: 20.95, paid_date: "2025-01-15", source: "directa"},
+                ]
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({savedCount: 2, errors: []})
+        expect(mockDb.investments.upsertDividendsBatch).toHaveBeenCalledWith("user-uuid", [
+            {instrumentId: 1, holdingId: 16, amount: 0.29, currency: "EUR", grossAmount: 0.29, paidDate: new Date("2026-06-01"), externalId: "EXT-1", source: "trading212"},
+            {instrumentId: 1, holdingId: 16, amount: 20.95, currency: "EUR", grossAmount: 20.95, paidDate: new Date("2025-01-15"), externalId: null, source: "directa"},
+        ])
+    })
+
+    it("skips malformed rows in a dividend batch (reporting them) instead of rejecting the whole request", async () => {
+        mockDb.investments.upsertDividendsBatch.mockResolvedValue({savedCount: 0, errors: []})
+
+        const response = await request(app, "/api/investments/dividends/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {entries: [{instrument_id: 1, amount: -5, paid_date: "2026-06-01", source: "trading212"}]}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({savedCount: 0, errors: ["amount must be a non-negative number"]})
+        expect(mockDb.investments.upsertDividendsBatch).toHaveBeenCalledWith("user-uuid", [])
     })
 
     it("returns the per-instrument dividends summary", async () => {
@@ -741,6 +833,42 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(400)
         expect(mockDb.investments.upsertTransaction).not.toHaveBeenCalled()
+    })
+
+    it("saves a whole batch of buy/sell transactions in one request", async () => {
+        mockDb.investments.saveTransactionsBatch.mockResolvedValue({savedCount: 2, errors: []})
+
+        const response = await request(app, "/api/investments/transactions/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                entries: [
+                    {instrument_id: 1, holding_id: 16, side: "buy", quantity: 2, price: 150, currency: "usd", total: 279.5, total_currency: "usd", trade_date: "2022-01-13", external_id: "EXT-9", source: "trading212"},
+                    {instrument_id: 1, holding_id: 16, side: "sell", quantity: 1, price: 160, currency: "usd", total: 160, total_currency: "usd", trade_date: "2023-05-01", source: "trading212"},
+                ]
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({savedCount: 2, errors: []})
+        expect(mockDb.investments.saveTransactionsBatch).toHaveBeenCalledWith("user-uuid", [
+            {instrumentId: 1, holdingId: 16, side: "buy", quantity: 2, price: 150, currency: "USD", total: 279.5, totalCurrency: "USD", tradeDate: new Date("2022-01-13"), externalId: "EXT-9", source: "trading212"},
+            {instrumentId: 1, holdingId: 16, side: "sell", quantity: 1, price: 160, currency: "USD", total: 160, totalCurrency: "USD", tradeDate: new Date("2023-05-01"), externalId: null, source: "trading212"},
+        ])
+    })
+
+    it("skips malformed rows in a transaction batch (reporting them) instead of rejecting the whole request", async () => {
+        mockDb.investments.saveTransactionsBatch.mockResolvedValue({savedCount: 0, errors: []})
+
+        const response = await request(app, "/api/investments/transactions/save-batch", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {entries: [{instrument_id: 1, side: "hold", quantity: 2, trade_date: "2022-01-13", source: "trading212"}]}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({savedCount: 0, errors: ["side must be 'buy' or 'sell'"]})
+        expect(mockDb.investments.saveTransactionsBatch).toHaveBeenCalledWith("user-uuid", [])
     })
 
     it("returns the full transaction history for the user", async () => {

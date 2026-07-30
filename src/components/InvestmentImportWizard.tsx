@@ -20,7 +20,10 @@ import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from './ImportPlatformGuide';
 import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
 import { HoldingConflictError } from '../services/investmentService';
-import type { InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto, InvestmentTransactionSummaryDto } from '../types/api';
+import type {
+  InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto, InvestmentTransactionSummaryDto,
+  InvestmentHoldingHistorySaveRequest, InvestmentDividendSaveRequest, InvestmentTransactionSaveRequest,
+} from '../types/api';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
 const MANUAL_KIND_OPTIONS: InvestmentKind[] = ['stock', 'etf', 'crypto', 'bond', 'fund'];
@@ -145,6 +148,27 @@ const SummaryLine = styled.p`
   font-size: 0.8rem;
   color: ${(p) => p.theme.textColor};
   opacity: 0.7;
+`;
+
+const ImportProgressBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+
+const ProgressBarTrack = styled.div`
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)')};
+`;
+
+const ProgressBarFill = styled.div`
+  height: 100%;
+  border-radius: 4px;
+  background: ${(p) => p.theme.buttonBackgroundColor};
+  transition: width 0.2s ease;
 `;
 
 const ErrorLine = styled.p`
@@ -363,7 +387,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * it — lets a row tell "this file re-covers months I already have data for" (safe
    * to replace, re-exported same period) apart from "this file is for months I've
    * never recorded" (must be added, never replace: see resolveMergeStrategy below).
-   * The value itself lets backfillHistory skip re-sending a month whose number
+   * The value itself lets buildHistoryEntries skip re-sending a month whose number
    * hasn't actually changed — re-importing an identical file otherwise re-sends
    * every single month again for no reason. */
   const [recordedHistoryByInstrumentId, setRecordedHistoryByInstrumentId] = useState<Map<number, Map<string, number | null>>>(new Map());
@@ -381,12 +405,22 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const [orphanSells, setOrphanSells] = useState<OrphanSellWarning[]>([]);
 
   const [loadingSavedTransactions, setLoadingSavedTransactions] = useState(false);
+  /** Surfaces import progress to the user — a multi-year, multi-instrument
+   * import can take minutes (one saveHolding per position, then a handful of
+   * batch calls for history/dividends/transactions - see buildHistoryEntries
+   * and importSelected). Without this it just looks frozen: the only way to
+   * tell it's still working would be opening devtools' network tab. `phase`
+   * distinguishes "saving position N of M" (one request each, so genuinely
+   * incremental) from "finalizing" (a few large batch requests with no useful
+   * sub-progress to report). */
+  const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
+  const [importPhase, setImportPhase] = useState<'holdings' | 'finalizing' | null>(null);
 
   /**
    * Recomputes everything (which rows to show, their quantity/invested
    * amount, monthly history, closed-position detection) from the COMPLETE
    * transaction history - this session's files merged with every transaction
-   * ever persisted server-side (see saveTransactions), not just from
+   * ever persisted server-side (see buildTransactionEntries), not just from
    * whatever's been dropped in this session. Brokers cap a single export
    * (Trading 212: 365 days), so a multi-year portfolio is necessarily spread
    * across several files, uploaded in however many separate sessions, in
@@ -685,7 +719,16 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   // position's pre-closure months are just as real a part of "value over
   // time" as an open one's, they just happen to end at zero instead of
   // continuing to grow.
-  const backfillHistory = async (transactions: ImportedTransaction[], positionKey: string, holdingId: number, instrumentId: number) => {
+  // Builds this position's monthly backfill rows — no I/O here, just the
+  // request payloads: see importSelected/resolveConflict/handleCloseHolding
+  // for why. A whole-portfolio import can mean thousands of these rows across
+  // every position (40+ months × dozens of holdings is not unusual for a
+  // multi-year history split across several broker exports) - one HTTP
+  // request per row was a genuine cost/latency problem (thousands of Vercel
+  // invocations / Supabase round trips for a single import), not just a slow
+  // UI, so every caller now collects these across ALL positions and sends
+  // them in a handful of batch requests instead (see saveHoldingHistoryBatch).
+  const buildHistoryEntries = (transactions: ImportedTransaction[], positionKey: string, holdingId: number, instrumentId: number): InvestmentHoldingHistorySaveRequest[] => {
     const timeline = buildMonthlyPositionTimeline(transactions);
     const recorded = recordedHistoryByInstrumentId.get(instrumentId);
     const recordedQuantity = recordedQuantityByInstrumentId.get(instrumentId);
@@ -693,14 +736,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const baseline = earliestMonth ? lastRecordedValueBefore(recorded, earliestMonth) : 0;
     const quantityBaseline = earliestMonth ? lastRecordedValueBefore(recordedQuantity, earliestMonth) : 0;
 
-    // Each month is an independent row (same holding, different user_date) -
-    // no ordering dependency between them, so they're saved in parallel
-    // instead of one at a time. An older file can shift EVERY already-saved
-    // later month's cumulative total (it reveals capital that was already
-    // invested before those months even started), so this loop can mean
-    // saving 40+ months for a single position - sequentially awaiting each
-    // one made that case visibly slow for no correctness benefit.
-    const pending: Promise<unknown>[] = [];
+    const entries: InvestmentHoldingHistorySaveRequest[] = [];
     for (const snapshot of timeline) {
       const snapshotPosition = snapshot.positions.find((p) => p.key === positionKey);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
@@ -711,84 +747,101 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       const quantityThatMonth = quantityBaseline + snapshotPosition.quantity;
       const alreadyRecorded = recorded?.get(snapshot.monthKey);
       if (alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01) continue;
-      pending.push(investmentService.saveHoldingHistory({
+      entries.push({
         holding_id: holdingId,
         user_date: `${snapshot.monthKey}-01`,
         current_value: null,
         invested_amount: investedAmountEUR,
         quantity: quantityThatMonth,
-        // One month failing to save shouldn't roll back the holding itself
-        // or the rest of the months - the user can still fix it manually later.
-      }).catch(() => undefined));
+      });
     }
-    await Promise.all(pending);
+    return entries;
   };
 
-  // Records every dividend payment found for this position. Safe to re-run on
-  // a re-imported file: the backend upserts on (instrument, external_id) when
-  // the broker provided one (see upsertDividend in the model), so an already-
-  // recorded payment is never double-counted, just re-confirmed.
-  const saveDividends = async (row: ImportRowState, holdingId: number) => {
-    if (!row.instrument) return;
+  // Builds this position's dividend payment rows — pure, see buildHistoryEntries
+  // above for why. Safe to re-send on a re-imported file: the backend upserts
+  // on (instrument, external_id) when the broker provided one (see
+  // upsertDividend in the model), so an already-recorded payment is never
+  // double-counted, just re-confirmed.
+  const buildDividendEntries = (row: ImportRowState, holdingId: number): InvestmentDividendSaveRequest[] => {
+    if (!row.instrument) return [];
+    const entries: InvestmentDividendSaveRequest[] = [];
     for (const dividend of row.dividends) {
       if (!dividend.date) continue;
-      try {
-        await investmentService.saveDividend({
-          instrument_id: row.instrument.id,
-          holding_id: holdingId,
-          amount: convertAmountToEUR(dividend.amount, dividend.currency),
-          currency: dividend.currency,
-          gross_amount: dividend.amount,
-          paid_date: dividend.date,
-          external_id: dividend.externalId,
-          source: platform ?? 'generic',
-        });
-      } catch {
-        // One payment failing to save shouldn't roll back the holding itself
-        // or the rest of the payments — same reasoning as backfillHistory.
-      }
+      entries.push({
+        instrument_id: row.instrument.id,
+        holding_id: holdingId,
+        amount: convertAmountToEUR(dividend.amount, dividend.currency),
+        currency: dividend.currency,
+        gross_amount: dividend.amount,
+        paid_date: dividend.date,
+        external_id: dividend.externalId,
+        source: platform ?? 'generic',
+      });
     }
+    return entries;
   };
 
-  // Persists every underlying buy/sell transaction to the server-side ledger
-  // (user_investment_transactions) — the counterpart to saveDividends above,
-  // for the same reason: this is what lets a LATER, separate wizard session
-  // see the complete transaction history (via getTransactions in
-  // recomputeFromMerged) even when it only has one out-of-order file loaded,
-  // instead of only ever reconciling against whatever happens to be in the
-  // current browser session. Safe to re-run on a re-imported file: the
-  // backend upserts on (instrument, external_id) when the broker provided one
-  // (see upsertTransaction in the model), so an already-recorded transaction
-  // is never double-counted, just re-confirmed.
-  const saveTransactions = async (transactions: ImportedTransaction[], instrumentId: number, holdingId: number | null) => {
+  // Builds this position's underlying buy/sell transaction rows for the
+  // server-side ledger (user_investment_transactions) — pure, see
+  // buildHistoryEntries above for why. This is what lets a LATER, separate
+  // wizard session see the complete transaction history (via getTransactions
+  // in recomputeFromMerged) even when it only has one out-of-order file
+  // loaded, instead of only ever reconciling against whatever happens to be
+  // in the current browser session. Safe to re-send on a re-imported file:
+  // the backend upserts on (instrument, external_id) when the broker provided
+  // one (see upsertTransaction in the model), so an already-recorded
+  // transaction is never double-counted, just re-confirmed.
+  const buildTransactionEntries = (transactions: ImportedTransaction[], instrumentId: number, holdingId: number | null): InvestmentTransactionSaveRequest[] => {
+    const entries: InvestmentTransactionSaveRequest[] = [];
     for (const tx of transactions) {
       if (!tx.date || tx.quantity == null) continue;
-      try {
-        await investmentService.saveTransaction({
-          instrument_id: instrumentId,
-          holding_id: holdingId,
-          side: tx.side,
-          quantity: tx.quantity,
-          price: tx.price,
-          currency: tx.currency,
-          total: tx.total != null ? convertAmountToEUR(Math.abs(tx.total), tx.totalCurrency) : null,
-          total_currency: tx.totalCurrency,
-          trade_date: tx.date,
-          external_id: tx.externalId,
-          source: platform ?? 'generic',
-        });
-      } catch {
-        // One transaction failing to save shouldn't roll back the holding
-        // itself or the rest of the transactions — same reasoning as
-        // saveDividends/backfillHistory.
-      }
+      entries.push({
+        instrument_id: instrumentId,
+        holding_id: holdingId,
+        side: tx.side,
+        quantity: tx.quantity,
+        price: tx.price,
+        currency: tx.currency,
+        total: tx.total != null ? convertAmountToEUR(Math.abs(tx.total), tx.totalCurrency) : null,
+        total_currency: tx.totalCurrency,
+        trade_date: tx.date,
+        external_id: tx.externalId,
+        source: platform ?? 'generic',
+      });
     }
+    return entries;
+  };
+
+  // Fires the 3 batch calls (history/dividends/transactions) collected across
+  // however many positions were just processed - always a small, fixed number
+  // of requests regardless of portfolio size (see buildHistoryEntries above).
+  // Best-effort per table, same as the old per-item saves: one table failing
+  // (e.g. a network error) shouldn't roll back the holdings themselves or the
+  // other two tables — the user can still fix any gap manually later.
+  const flushBatches = async (
+    historyEntries: InvestmentHoldingHistorySaveRequest[],
+    dividendEntries: InvestmentDividendSaveRequest[],
+    transactionEntries: InvestmentTransactionSaveRequest[],
+  ) => {
+    await Promise.all([
+      historyEntries.length > 0 ? investmentService.saveHoldingHistoryBatch({ entries: historyEntries }).catch(() => undefined) : Promise.resolve(),
+      dividendEntries.length > 0 ? investmentService.saveDividendsBatch({ entries: dividendEntries }).catch(() => undefined) : Promise.resolve(),
+      transactionEntries.length > 0 ? investmentService.saveTransactionsBatch({ entries: transactionEntries }).catch(() => undefined) : Promise.resolve(),
+    ]);
   };
 
   const importSelected = async () => {
     if (importing) return;
     setImporting(true);
+    const total = rows.filter((r) => r.selected && r.status === 'resolved' && r.instrument).length;
+    setImportPhase('holdings');
+    setImportProgress({ current: 0, total });
     try {
+      const historyEntries: InvestmentHoldingHistorySaveRequest[] = [];
+      const dividendEntries: InvestmentDividendSaveRequest[] = [];
+      const transactionEntries: InvestmentTransactionSaveRequest[] = [];
+
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         if (!row.selected || row.status !== 'resolved' || !row.instrument) continue;
@@ -806,9 +859,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             import_source: platform,
             merge_strategy: resolveMergeStrategy(row),
           });
-          await backfillHistory(row.transactions, row.position.key, saved.id, row.instrument.id);
-          await saveDividends(row, saved.id);
-          await saveTransactions(row.transactions, row.instrument.id, saved.id);
+          historyEntries.push(...buildHistoryEntries(row.transactions, row.position.key, saved.id, row.instrument.id));
+          dividendEntries.push(...buildDividendEntries(row, saved.id));
+          transactionEntries.push(...buildTransactionEntries(row.transactions, row.instrument.id, saved.id));
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
         } catch (error) {
           if (error instanceof HoldingConflictError) {
@@ -817,6 +870,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
           }
         }
+        setImportProgress((prev) => (prev ? { ...prev, current: prev.current + 1 } : prev));
       }
       // Orphan sells (see orphanSells above) never become a "row" - there's no
       // holding to save/replace, just the transactions themselves, so a later
@@ -825,12 +879,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       // nothing to attach it to yet.
       for (const orphan of orphanSells) {
         if (!orphan.instrument) continue;
-        await saveTransactions(orphan.transactions, orphan.instrument.id, null);
+        transactionEntries.push(...buildTransactionEntries(orphan.transactions, orphan.instrument.id, null));
       }
+
+      setImportPhase('finalizing');
+      await flushBatches(historyEntries, dividendEntries, transactionEntries);
+
       setImportDone(true);
       await onImported();
     } finally {
       setImporting(false);
+      setImportPhase(null);
+      setImportProgress(null);
     }
   };
 
@@ -857,9 +917,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         import_source: platform,
         merge_strategy: strategy,
       });
-      await backfillHistory(row.transactions, row.position.key, saved.id, row.instrument.id);
-      await saveDividends(row, saved.id);
-      await saveTransactions(row.transactions, row.instrument.id, saved.id);
+      await flushBatches(
+        buildHistoryEntries(row.transactions, row.position.key, saved.id, row.instrument.id),
+        buildDividendEntries(row, saved.id),
+        buildTransactionEntries(row.transactions, row.instrument.id, saved.id),
+      );
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
     } catch {
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));
@@ -889,31 +951,26 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         notes: candidate.holding.notes,
       });
       // Backfills every pre-closure month's cost-basis buildup (same as an
-      // open position - see backfillHistory), not just a single zero point at
-      // closing: a position that grew for two years before being fully sold
+      // open position - see buildHistoryEntries), not just a single zero point
+      // at closing: a position that grew for two years before being fully sold
       // still has a real "value over time" trajectory worth keeping, for
       // whoever chooses to look at it (it's excluded from the default
       // breakdown/totals since it's no longer active, but its own line in the
       // history chart should still show what actually happened). This never
       // touches the closing month itself - buildMonthlyPositionTimeline
       // excludes a month whose net quantity is already zero-or-less, so the
-      // explicit zero-value write below is what covers that one.
+      // explicit zero-value entry below is what covers that one.
       const key = positionKeyFor({isin: instrument.isin ?? null, ticker: instrument.symbol ?? null, name: instrument.name ?? null});
-      if (key) await backfillHistory(candidate.transactions, key, candidate.holding.id, instrument.id);
+      const historyEntries = key ? buildHistoryEntries(candidate.transactions, key, candidate.holding.id, instrument.id) : [];
       if (candidate.lastTransactionDate) {
-        try {
-          await investmentService.saveHoldingHistory({
-            holding_id: candidate.holding.id,
-            user_date: `${candidate.lastTransactionDate.slice(0, 7)}-01`,
-            current_value: 0,
-            invested_amount: candidate.holding.investedAmount,
-          });
-        } catch {
-          // Best-effort - the holding itself is already closed either way, only
-          // the "andamento nel tempo" chart's final drop-to-zero point is missing.
-        }
+        historyEntries.push({
+          holding_id: candidate.holding.id,
+          user_date: `${candidate.lastTransactionDate.slice(0, 7)}-01`,
+          current_value: 0,
+          invested_amount: candidate.holding.investedAmount,
+        });
       }
-      await saveTransactions(candidate.transactions, instrument.id, candidate.holding.id);
+      await flushBatches(historyEntries, [], buildTransactionEntries(candidate.transactions, instrument.id, candidate.holding.id));
       setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closed' } : c)));
       await onImported();
     } catch {
@@ -1150,6 +1207,27 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
               <StatusIcon theme={theme} className={row.status}>{statusIcon(row.status)}</StatusIcon>
             </PositionRow>
           ))}
+
+          {importing && importPhase === 'holdings' && importProgress && (
+            <ImportProgressBlock theme={theme}>
+              <SummaryLine theme={theme}>
+                <FontAwesomeIcon icon={faSpinner} spin style={{ marginRight: 6 }} />
+                {(t.importingProgress || 'Saving position {current} of {total}…')
+                  .replace('{current}', String(importProgress.current + 1 > importProgress.total ? importProgress.total : importProgress.current + 1))
+                  .replace('{total}', String(importProgress.total))}
+              </SummaryLine>
+              <ProgressBarTrack theme={theme}>
+                <ProgressBarFill theme={theme} style={{ width: `${importProgress.total > 0 ? (importProgress.current / importProgress.total) * 100 : 0}%` }} />
+              </ProgressBarTrack>
+            </ImportProgressBlock>
+          )}
+
+          {importing && importPhase === 'finalizing' && (
+            <SummaryLine theme={theme}>
+              <FontAwesomeIcon icon={faSpinner} spin style={{ marginRight: 6 }} />
+              {t.importingFinalizing || 'Saving history, transactions and dividends…'}
+            </SummaryLine>
+          )}
 
           {importDone && (
             <SummaryLine theme={theme}>{t.done.replace('{count}', String(savedCount))}</SummaryLine>

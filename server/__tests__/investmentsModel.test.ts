@@ -362,6 +362,83 @@ describe("investments model", () => {
         })
     })
 
+    describe("upsertHoldingHistoryBatch", () => {
+        it("returns immediately without querying Supabase when given no entries", async () => {
+            const result = await investments.upsertHoldingHistoryBatch("user-1", [])
+
+            expect(result).toEqual({savedCount: 0, errors: []})
+            expect(mockSupabase.from).not.toHaveBeenCalled()
+        })
+
+        const holdingRow = {
+            id: 16, user_id: "user-1", instrument_id: 1, asset_key: "stocks", position_type: "single",
+            quantity: 15, average_price: 100, current_value: null, invested_amount: 1500, currency: "EUR",
+            notes: "", updated_at: "2026-01-01", import_source: "trading212",
+            instrument: {id: 1, kind: "stock", symbol: "AAPL", exchange: null, name: "Apple Inc.", currency: "USD", country: null, sector: null, industry: null, figi: null, isin: null, coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+        }
+
+        it("fetches every referenced holding in one query, then upserts all valid rows in one call", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+            const upsertChain = makeChain({data: null, error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+
+            const result = await investments.upsertHoldingHistoryBatch("user-1", [
+                {holdingId: 16, userDate: new Date("2026-01-01"), currentValue: null, investedAmount: 1000, quantity: 10},
+                {holdingId: 16, userDate: new Date("2026-02-01"), currentValue: null, investedAmount: 1200, quantity: 12},
+            ])
+
+            expect(mockSupabase.from).toHaveBeenCalledTimes(2)
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                [
+                    expect.objectContaining({holding_id: 16, quantity: 10, invested_amount: 1000}),
+                    expect.objectContaining({holding_id: 16, quantity: 12, invested_amount: 1200}),
+                ],
+                {onConflict: "user_id,holding_id,user_date"},
+            )
+            expect(result).toEqual({savedCount: 2, errors: []})
+        })
+
+        it("reports an error for an entry whose holding isn't found or isn't owned by this user, without dropping the other valid rows", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+            const upsertChain = makeChain({data: null, error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+
+            const result = await investments.upsertHoldingHistoryBatch("user-1", [
+                {holdingId: 16, userDate: new Date("2026-01-01"), currentValue: null, investedAmount: 1000},
+                {holdingId: 999, userDate: new Date("2026-01-01"), currentValue: null, investedAmount: 500},
+            ])
+
+            expect(result.savedCount).toBe(1)
+            expect(result.errors).toEqual(["holding 999 not found, or not owned by this user"])
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                [expect.objectContaining({holding_id: 16})],
+                expect.anything(),
+            )
+        })
+
+        it("returns an error and saves nothing if the holdings lookup itself fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.upsertHoldingHistoryBatch("user-1", [
+                {holdingId: 16, userDate: new Date("2026-01-01"), currentValue: null, investedAmount: 1000},
+            ])
+
+            expect(result).toEqual({savedCount: 0, errors: ["boom"]})
+            expect(mockSupabase.from).toHaveBeenCalledTimes(1)
+        })
+
+        it("returns an error and no saved rows when the bulk upsert itself fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "42P10", message: "no unique or exclusion constraint"}}))
+
+            const result = await investments.upsertHoldingHistoryBatch("user-1", [
+                {holdingId: 16, userDate: new Date("2026-01-01"), currentValue: null, investedAmount: 1000},
+            ])
+
+            expect(result).toEqual({savedCount: 0, errors: ["no unique or exclusion constraint"]})
+        })
+    })
+
     describe("refreshHoldingPrices", () => {
         const stockHoldingRow = {
             id: 16, user_id: "user-1", instrument_id: 1, asset_key: "stocks", position_type: "single",
@@ -590,6 +667,46 @@ describe("investments model", () => {
         })
     })
 
+    describe("upsertDividendsBatch", () => {
+        it("returns immediately without querying Supabase when given no entries", async () => {
+            const result = await investments.upsertDividendsBatch("user-1", [])
+
+            expect(result).toEqual({savedCount: 0, errors: []})
+            expect(mockSupabase.from).not.toHaveBeenCalled()
+        })
+
+        const dividendInputs = [
+            {instrumentId: 1, holdingId: 10, amount: 0.29, currency: "EUR", grossAmount: 0.29, paidDate: new Date("2026-06-01"), externalId: "EXT-1", source: "trading212"},
+            {instrumentId: 1, holdingId: 10, amount: 20.95, currency: "EUR", grossAmount: 20.95, paidDate: new Date("2025-01-15"), externalId: null, source: "directa"},
+        ]
+
+        it("splits entries with/without an external id into an upsert and a plain insert, scoped to instruments this user actually owns", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [{id: 1}], error: null}))
+            const upsertChain = makeChain({data: [{id: 1}], error: null})
+            const insertChain = makeChain({data: [{id: 2}], error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+            mockSupabase.from.mockReturnValueOnce(insertChain)
+
+            const result = await investments.upsertDividendsBatch("user-1", dividendInputs)
+
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                [expect.objectContaining({external_id: "EXT-1"})],
+                {onConflict: "user_id,instrument_id,external_id"},
+            )
+            expect(insertChain.insert).toHaveBeenCalledWith([expect.objectContaining({external_id: null, source: "directa"})])
+            expect(result).toEqual({savedCount: 2, errors: []})
+        })
+
+        it("skips (and reports an error for) entries whose instrument isn't owned by this user", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+
+            const result = await investments.upsertDividendsBatch("user-1", [dividendInputs[0]])
+
+            expect(result).toEqual({savedCount: 0, errors: ["instrument 1 not found, or not owned by this user"]})
+            expect(mockSupabase.from).toHaveBeenCalledTimes(1)
+        })
+    })
+
     describe("getDividendsSummaryByUserId", () => {
         it("sums payments per instrument and tracks the most recent paid date", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({
@@ -660,6 +777,45 @@ describe("investments model", () => {
             const result = await investments.upsertTransaction("user-1", transactionInput)
 
             expect(result).toBeNull()
+        })
+    })
+
+    describe("saveTransactionsBatch", () => {
+        it("returns immediately without querying Supabase when given no entries", async () => {
+            const result = await investments.saveTransactionsBatch("user-1", [])
+
+            expect(result).toEqual({savedCount: 0, errors: []})
+            expect(mockSupabase.from).not.toHaveBeenCalled()
+        })
+
+        const transactionInputs = [
+            {instrumentId: 1, holdingId: 10, side: "buy" as const, quantity: 2, price: 150, currency: "USD", total: 279.5, totalCurrency: "USD", tradeDate: new Date("2022-01-13"), externalId: "EXT-9", source: "trading212"},
+            {instrumentId: 1, holdingId: 10, side: "sell" as const, quantity: 1, price: 160, currency: "USD", total: 160, totalCurrency: "USD", tradeDate: new Date("2023-05-01"), externalId: null, source: "trading212"},
+        ]
+
+        it("splits entries with/without an external id into an upsert and a plain insert, scoped to instruments this user actually owns", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [{id: 1}], error: null}))
+            const upsertChain = makeChain({data: [{id: 1}], error: null})
+            const insertChain = makeChain({data: [{id: 2}], error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+            mockSupabase.from.mockReturnValueOnce(insertChain)
+
+            const result = await investments.saveTransactionsBatch("user-1", transactionInputs)
+
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                [expect.objectContaining({external_id: "EXT-9", side: "buy"})],
+                {onConflict: "user_id,instrument_id,external_id"},
+            )
+            expect(insertChain.insert).toHaveBeenCalledWith([expect.objectContaining({external_id: null, side: "sell"})])
+            expect(result).toEqual({savedCount: 2, errors: []})
+        })
+
+        it("skips (and reports an error for) entries whose instrument isn't owned by this user", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+
+            const result = await investments.saveTransactionsBatch("user-1", [transactionInputs[0]])
+
+            expect(result).toEqual({savedCount: 0, errors: ["instrument 1 not found, or not owned by this user"]})
         })
     })
 

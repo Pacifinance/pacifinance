@@ -2818,6 +2818,7 @@
             "conflictReplace": "Remplacer",
             "existingWillAdd": "Déjà détenu : {quantity} unités, {amount} — ce fichier couvre des mois différents que vous n'avez pas encore, il sera donc ADDITIONNÉ, pour atteindre {newQuantity} unités, {newAmount}",
             "existingWillUpdate": "Déjà détenu : {quantity} unités, {amount} — ce fichier ajoute les transactions que vous n'aviez pas encore enregistrées, portant le total à {newQuantity} unités, {newAmount}",
+            "existingAlreadyUpToDate": "Déjà détenu : {quantity} unités, {amount} — ces transactions sont déjà enregistrées, l'import ne changera rien",
             "existingDifferentSource": "Déjà détenu : {quantity} unités, {amount} — suivies depuis une autre source, on vous demandera si les ajouter ou les remplacer",
             "loadingHistory": "Vérification de l'historique complet des transactions…",
             "closedPositionsTitle": "Positions clôturées détectées",
@@ -2826,6 +2827,7 @@
             "closedPositionsRetry": "Réessayer",
             "orphanSellsTitle": "Vente sans achat correspondant",
             "orphanSellsNote": "{ticker} — ce fichier montre une vente, mais aucun achat correspondant n'a été trouvé (ni dans cet import, ni dans votre compte) — l'achat correspondant se trouve probablement dans un autre fichier que vous n'avez pas encore chargé.",
+            "orphanSellsStillPending": "{ticker} — vous avez encore une vente non résolue pour cela, sans achat correspondant trouvé — l'achat se trouve probablement dans un fichier que vous n'avez pas encore chargé. Chargez-le pour réconcilier cela automatiquement.",
             "orphanSellsWillSave": "Elle sera quand même enregistrée lors de l'import, afin que le chargement ultérieur du fichier manquant la réconcilie automatiquement.",
             "orphanSellsUnresolved": "Impossible d'identifier cet instrument, il ne sera donc pas enregistré cette fois.",
             "kinds": {

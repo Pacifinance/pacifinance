@@ -2820,6 +2820,7 @@
             "conflictReplace": "Sustituir",
             "existingWillAdd": "Ya en cartera: {quantity} unidades, {amount} — este archivo cubre meses distintos que aún no tienes, así que se SUMARÁ, quedando en {newQuantity} unidades, {newAmount}",
             "existingWillUpdate": "Ya en cartera: {quantity} unidades, {amount} — este archivo añade las transacciones que aún no tenías registradas, llevando el total a {newQuantity} unidades, {newAmount}",
+            "existingAlreadyUpToDate": "Ya en cartera: {quantity} unidades, {amount} — estas transacciones ya están registradas, importar no cambiará nada",
             "existingDifferentSource": "Ya en cartera: {quantity} unidades, {amount} — registradas desde otra fuente, se te preguntará si sumarlas o sustituirlas",
             "loadingHistory": "Comprobando tu historial completo de transacciones…",
             "closedPositionsTitle": "Posiciones cerradas detectadas",
@@ -2828,6 +2829,7 @@
             "closedPositionsRetry": "Reintentar",
             "orphanSellsTitle": "Venta sin compra correspondiente",
             "orphanSellsNote": "{ticker} — este archivo muestra una venta, pero no se encontró ninguna compra correspondiente (ni en esta importación ni en tu cuenta) — probablemente la compra esté en otro archivo que aún no has subido.",
+            "orphanSellsStillPending": "{ticker} — todavía tienes una venta sin resolver para esto, sin ninguna compra correspondiente — la compra probablemente esté en un archivo que aún no has subido. Súbelo para reconciliar esto automáticamente.",
             "orphanSellsWillSave": "Se registrará de todos modos al importar, así que si subes el archivo que falta más adelante se reconciliará automáticamente.",
             "orphanSellsUnresolved": "No se pudo identificar este instrumento, así que esta vez no se registrará.",
             "kinds": {

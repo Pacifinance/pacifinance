@@ -2844,6 +2844,7 @@
             "conflictReplace": "Sostituisci",
             "existingWillAdd": "Già presente: {quantity} unità, {amount} — questo file copre mesi diversi che non hai ancora, verrà quindi SOMMATO, portandolo a {newQuantity} unità, {newAmount}",
             "existingWillUpdate": "Già presente: {quantity} unità, {amount} — questo file aggiunge le transazioni che non avevi ancora registrato, portando il totale a {newQuantity} unità, {newAmount}",
+            "existingAlreadyUpToDate": "Già presente: {quantity} unità, {amount} — queste transazioni sono già registrate, importare non cambierà nulla",
             "existingDifferentSource": "Già presente: {quantity} unità, {amount} — tracciati da un'altra fonte, ti verrà chiesto se sommarli o sostituirli",
             "loadingHistory": "Verifica dello storico completo delle transazioni…",
             "closedPositionsTitle": "Posizioni chiuse rilevate",
@@ -2852,6 +2853,7 @@
             "closedPositionsRetry": "Riprova",
             "orphanSellsTitle": "Vendita senza acquisto corrispondente",
             "orphanSellsNote": "{ticker} — questo file mostra una vendita, ma non risulta nessun acquisto corrispondente (in questo import né nel tuo account) — probabilmente l'acquisto si trova in un altro file non ancora caricato.",
+            "orphanSellsStillPending": "{ticker} — hai ancora una vendita non risolta per questo titolo, senza un acquisto corrispondente — l'acquisto si trova probabilmente in un file che non hai ancora caricato. Caricalo per riconciliare automaticamente questa transazione.",
             "orphanSellsWillSave": "Verrà comunque registrata quando importi, così caricando in seguito il file mancante verrà riconciliata automaticamente.",
             "orphanSellsUnresolved": "Non è stato possibile identificare questo titolo, quindi questa volta non verrà registrata.",
             "kinds": {

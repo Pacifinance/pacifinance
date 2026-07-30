@@ -2844,6 +2844,7 @@
             "conflictReplace": "Replace",
             "existingWillAdd": "Already held: {quantity} units, {amount} — this file covers different months you don't have yet, so it will be ADDED on top, bringing it to {newQuantity} units, {newAmount}",
             "existingWillUpdate": "Already held: {quantity} units, {amount} — this file adds the transactions you didn't have recorded yet, bringing the total to {newQuantity} units, {newAmount}",
+            "existingAlreadyUpToDate": "Already held: {quantity} units, {amount} — these transactions are already recorded, importing won't change anything",
             "existingDifferentSource": "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it",
             "loadingHistory": "Checking your complete transaction history…",
             "closedPositionsTitle": "Closed positions detected",
@@ -2852,6 +2853,7 @@
             "closedPositionsRetry": "Retry",
             "orphanSellsTitle": "Sell with no matching buy found",
             "orphanSellsNote": "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.",
+            "orphanSellsStillPending": "{ticker} — you still have an unresolved sell for this with no matching buy found — the purchase is probably in a file you haven't uploaded yet. Upload it to reconcile this automatically.",
             "orphanSellsWillSave": "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.",
             "orphanSellsUnresolved": "Couldn't identify this instrument, so it won't be recorded this time.",
             "kinds": {

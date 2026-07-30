@@ -117,6 +117,16 @@ interface OrphanSellWarning {
    * null when it couldn't be resolved, in which case the transactions are
    * simply not saved (nothing to link them to yet). */
   instrument: InvestmentInstrumentDto | null;
+  /** True when every transaction behind this orphan was already in the
+   * server-side ledger BEFORE this recompute (i.e. saved by a past import
+   * session, see saveTransactions/importSelected) - this is a standing,
+   * still-unresolved gap in the account, not something this file just
+   * revealed. Lets the warning say "you still have an unresolved sell"
+   * instead of misleadingly framing it as "this file shows a sell", which
+   * would be wrong (and confusing) the moment the user re-imports any file
+   * touching the same instrument while the real missing buy still hasn't
+   * been uploaded. */
+  alreadyPersisted: boolean;
 }
 
 interface InvestmentImportWizardProps {
@@ -543,11 +553,24 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         orphanIsinMatches = {};
       }
     }
-    setOrphanSells(orphanPositions.map((p) => ({
-      key: p.key, ticker: p.ticker, name: p.name, isin: p.isin, quantity: p.quantity,
-      transactions: transactionsByKey.get(p.key) ?? [],
-      instrument: p.isin ? (orphanIsinMatches[p.isin.toUpperCase()] ?? null) : null,
-    })));
+    // What the server already had BEFORE this recompute - lets an orphan tell
+    // "still unresolved from a past import" apart from "just discovered in
+    // this file" (see alreadyPersisted above), instead of re-framing an
+    // already-known gap as if this file had just revealed it.
+    const persistedExternalIds = new Set(
+      savedTransactions.map((tx) => tx.externalId).filter((id): id is string => Boolean(id)),
+    );
+    setOrphanSells(orphanPositions.map((p) => {
+      const positionTransactions = transactionsByKey.get(p.key) ?? [];
+      const alreadyPersisted = positionTransactions.length > 0
+        && positionTransactions.every((tx) => Boolean(tx.externalId) && persistedExternalIds.has(tx.externalId as string));
+      return {
+        key: p.key, ticker: p.ticker, name: p.name, isin: p.isin, quantity: p.quantity,
+        transactions: positionTransactions,
+        instrument: p.isin ? (orphanIsinMatches[p.isin.toUpperCase()] ?? null) : null,
+        alreadyPersisted,
+      };
+    }));
 
     void resolveInstruments(initialRows);
   };
@@ -1009,6 +1032,23 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         .replace('{newAmount}', `${formatNumber((existing.investedAmount ?? 0) + rowInvestedEUR)} ${currencySymbol}`);
     }
 
+    // Every month this row covers was already recorded, AND the resulting
+    // quantity/invested amount match what's already saved — a re-import of a
+    // file already imported before, with nothing new in it. Distinguished
+    // from the "will be updated" case below (partial overlap, or the numbers
+    // actually differ - e.g. a corrected re-export) so re-importing an
+    // unchanged file doesn't claim to be "adding transactions you didn't have
+    // yet" when it's genuinely adding nothing.
+    const recordedMonths = row.instrument ? recordedHistoryByInstrumentId.get(row.instrument.id) : undefined;
+    const allMonthsAlreadyRecorded = Boolean(recordedMonths) && row.historyMonths.every((m) => recordedMonths!.has(m));
+    const quantityUnchanged = Math.abs((existing.quantity ?? 0) - (row.position.quantity ?? 0)) < 0.0001;
+    const amountUnchanged = Math.abs((existing.investedAmount ?? 0) - rowInvestedEUR) < 0.01;
+    if (allMonthsAlreadyRecorded && quantityUnchanged && amountUnchanged) {
+      return (t.existingAlreadyUpToDate || 'Already held: {quantity} units, {amount} — these transactions are already recorded, importing will not change anything')
+        .replace('{quantity}', existingQuantity)
+        .replace('{amount}', existingAmount);
+    }
+
     const willAutoReplace = existing.importSource === platform || existing.importSource == null;
     if (willAutoReplace) {
       return (t.existingWillUpdate || 'Already held: {quantity} units, {amount} — will be REPLACED (not added to) with {newQuantity} units, {newAmount} from this file')
@@ -1125,12 +1165,19 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
               <h4>{t.orphanSellsTitle || 'Sell with no matching buy found'}</h4>
               {orphanSells.map((orphan) => (
                 <OrphanRow key={orphan.key} theme={theme}>
-                  {(t.orphanSellsNote || "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.")
-                    .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')}
-                  {' '}
-                  {orphan.instrument
-                    ? (t.orphanSellsWillSave || "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.")
-                    : (t.orphanSellsUnresolved || "Couldn't identify this instrument, so it won't be recorded this time.")}
+                  {orphan.alreadyPersisted
+                    ? (t.orphanSellsStillPending || "{ticker} — you still have an unresolved sell for this with no matching buy found — the purchase is probably in a file you haven't uploaded yet. Upload it to reconcile this automatically.")
+                      .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')
+                    : (
+                      <>
+                        {(t.orphanSellsNote || "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.")
+                          .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')}
+                        {' '}
+                        {orphan.instrument
+                          ? (t.orphanSellsWillSave || "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.")
+                          : (t.orphanSellsUnresolved || "Couldn't identify this instrument, so it won't be recorded this time.")}
+                      </>
+                    )}
                 </OrphanRow>
               ))}
             </OrphanSection>

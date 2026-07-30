@@ -353,6 +353,17 @@ describe('closedPositions', () => {
     expect(closedPositions(merged)).toEqual([]);
     expect(aggregatePositions(merged)).toMatchObject([{ key: 'US0378331005', quantity: 2 }]);
   });
+
+  // A sell with NO matching buy anywhere known nets to a genuinely NEGATIVE
+  // quantity (not just zero) - this is the signal the import wizard uses to
+  // warn about a likely-missing file (see orphanSells in
+  // InvestmentImportWizard.tsx): a plain "closed at zero" position (bought
+  // and sold in full) isn't a data problem, but a NEGATIVE one always is.
+  it('reports a strictly negative quantity (not clamped to zero) for a sell with no matching buy at all', () => {
+    const closed = closedPositions([tx({ side: 'sell', quantity: 1, date: '2022-01-12' })]);
+    expect(closed).toHaveLength(1);
+    expect(closed[0].quantity).toBe(-1);
+  });
 });
 
 describe('groupTransactionsByPositionKey', () => {

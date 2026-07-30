@@ -91,6 +91,22 @@ interface ClosedHoldingCandidate {
   transactions: ImportedTransaction[];
 }
 
+/** A sell with no matching buy anywhere known (this import + everything
+ * already persisted server-side) — net quantity is strictly NEGATIVE, not
+ * just zero, which is only mathematically possible if a buy transaction is
+ * still missing (e.g. sitting in a broker export file not uploaded yet).
+ * Purely informational: there's no existing holding to close and nothing to
+ * save, just a heads-up that something is likely missing from the account's
+ * transaction history. */
+interface OrphanSellWarning {
+  key: string;
+  ticker: string | null;
+  name: string | null;
+  isin: string | null;
+  /** Negative — units sold beyond what was ever bought, as far as we know. */
+  quantity: number;
+}
+
 interface InvestmentImportWizardProps {
   onClose: () => void;
   onImported: () => Promise<void> | void;
@@ -256,6 +272,30 @@ const ClosedRow = styled.div`
   span.note { display: block; font-size: 0.72rem; opacity: 0.65; }
 `;
 
+const OrphanSection = styled.div`
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  h4 {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #3b82f6;
+  }
+`;
+
+const OrphanRow = styled.div`
+  font-size: 0.78rem;
+  color: ${(p) => p.theme.textColor};
+
+  strong { font-weight: 700; }
+`;
+
 const CloseHoldingButton = styled.button`
   flex-shrink: 0;
   padding: 0.4rem 0.7rem;
@@ -329,6 +369,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * closed position against the stale holding still sitting in the DB. Never
    * closed automatically: the user confirms each one explicitly below. */
   const [closedCandidates, setClosedCandidates] = useState<ClosedHoldingCandidate[]>([]);
+  const [orphanSells, setOrphanSells] = useState<OrphanSellWarning[]>([]);
 
   const [loadingSavedTransactions, setLoadingSavedTransactions] = useState(false);
 
@@ -418,6 +459,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     // complete merged history shows fully sold that matches an existing,
     // still-nonzero holding means that holding is stale and needs the user's
     // explicit confirmation to close.
+    const existingKeys = new Set<string>();
+    for (const holding of holdingMap.values()) {
+      if (!holding.instrument) continue;
+      const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
+      if (key) existingKeys.add(key);
+    }
     const candidates: ClosedHoldingCandidate[] = [];
     for (const holding of holdingMap.values()) {
       if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;
@@ -426,6 +473,17 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending', transactions: key ? (transactionsByKey.get(key) ?? []) : []});
     }
     setClosedCandidates(candidates);
+
+    // A NEGATIVE net quantity (not just zero) is only mathematically possible
+    // when a buy transaction is still missing from what we know about — more
+    // units were sold than were ever bought, as far as this import + the
+    // complete server-side ledger can tell. Matters most for the exact
+    // scattered/reverse-order upload scenario being stress-tested here: a
+    // lone sell for an instrument that's never been held at all (no matching
+    // buy uploaded yet, in this file or any other) would otherwise be
+    // silently dropped with no trace, instead of flagging that something is
+    // likely still missing from the account's transaction history.
+    setOrphanSells(closed.filter((p) => p.quantity < 0 && !existingKeys.has(p.key)));
 
     void resolveInstruments(initialRows);
   };
@@ -605,6 +663,14 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const baseline = earliestMonth ? lastRecordedValueBefore(recorded, earliestMonth) : 0;
     const quantityBaseline = earliestMonth ? lastRecordedValueBefore(recordedQuantity, earliestMonth) : 0;
 
+    // Each month is an independent row (same holding, different user_date) -
+    // no ordering dependency between them, so they're saved in parallel
+    // instead of one at a time. An older file can shift EVERY already-saved
+    // later month's cumulative total (it reveals capital that was already
+    // invested before those months even started), so this loop can mean
+    // saving 40+ months for a single position - sequentially awaiting each
+    // one made that case visibly slow for no correctness benefit.
+    const pending: Promise<unknown>[] = [];
     for (const snapshot of timeline) {
       const snapshotPosition = snapshot.positions.find((p) => p.key === positionKey);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
@@ -615,19 +681,17 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       const quantityThatMonth = quantityBaseline + snapshotPosition.quantity;
       const alreadyRecorded = recorded?.get(snapshot.monthKey);
       if (alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01) continue;
-      try {
-        await investmentService.saveHoldingHistory({
-          holding_id: holdingId,
-          user_date: `${snapshot.monthKey}-01`,
-          current_value: null,
-          invested_amount: investedAmountEUR,
-          quantity: quantityThatMonth,
-        });
-      } catch {
-        // Backfilling one month's history failing shouldn't roll back the
-        // holding itself — the user can still fix it manually later.
-      }
+      pending.push(investmentService.saveHoldingHistory({
+        holding_id: holdingId,
+        user_date: `${snapshot.monthKey}-01`,
+        current_value: null,
+        invested_amount: investedAmountEUR,
+        quantity: quantityThatMonth,
+        // One month failing to save shouldn't roll back the holding itself
+        // or the rest of the months - the user can still fix it manually later.
+      }).catch(() => undefined));
     }
+    await Promise.all(pending);
   };
 
   // Records every dividend payment found for this position. Safe to re-run on
@@ -958,6 +1022,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 </ClosedRow>
               ))}
             </ClosedSection>
+          )}
+
+          {orphanSells.length > 0 && (
+            <OrphanSection theme={theme}>
+              <h4>{t.orphanSellsTitle || 'Sell with no matching buy found'}</h4>
+              {orphanSells.map((orphan) => (
+                <OrphanRow key={orphan.key} theme={theme}>
+                  {(t.orphanSellsNote || "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.")
+                    .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')}
+                </OrphanRow>
+              ))}
+            </OrphanSection>
           )}
 
           {rows.map((row, index) => (
